@@ -16,6 +16,7 @@ import com.phenoml.api.resources.authtoken.auth.types.AuthGenerateTokenResponse;
 import com.phenoml.api.resources.authtoken.errors.BadRequestError;
 import com.phenoml.api.resources.authtoken.errors.UnauthorizedError;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -52,17 +53,16 @@ public class AsyncRawAuthClient {
                 .newBuilder()
                 .addPathSegments("auth/token")
                 .build();
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
-        }
+        
+        // Create Basic Auth header
+        String credentials = request.getIdentity() + ":" + request.getPassword();
+        String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
+        
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
-                .method("POST", body)
+                .method("POST", RequestBody.create(new byte[0])) // Empty body
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Authorization", "Basic " + encodedCredentials)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Accept", "application/json")
                 .build();

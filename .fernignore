@@ -1,1 +1,6 @@
 # Specify files that shouldn't be modified by Fern
+src/main/java/com/phenoml/api/wrapper/
+src/main/java/com/phenoml/api/Client.java
+src/main/java/com/phenoml/api/AsyncClient.java
+src/main/java/com/phenoml/api/resources/authtoken/auth/RawAuthClient.java
+src/main/java/com/phenoml/api/resources/authtoken/auth/AsyncRawAuthClient.java
