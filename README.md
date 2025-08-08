@@ -11,17 +11,18 @@ Instantiate and use the client with the following:
 ```java
 package com.example.usage;
 
-import com.phenoml.api.PhenoML;
+import com.phenoml.api.Client;
 import com.phenoml.api.resources.agent.requests.AgentCreateRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Example {
     public static void main(String[] args) {
-        PhenoML client = PhenoML
-            .builder()
-            .token("<token>")
-            .build();
+        // Use client with automatic authentication
+        Client client = Client.withCredentials("your-username", "your-password", "https://api.example.com");
+
+        // Or use with existing token
+        // Client client = Client.withToken("your-token", "https://api.example.com");
 
         client.agent().create(
             AgentCreateRequest
@@ -84,7 +85,7 @@ try {
 
 ### Custom Client
 
-This SDK is built to work with any instance of `OkHttpClient`. By default, if no client is provided, the SDK will construct one. 
+This SDK is built to work with any instance of `OkHttpClient`. By default, if no client is provided, the SDK will construct one.
 However, you can pass your own client like so:
 
 ```java
