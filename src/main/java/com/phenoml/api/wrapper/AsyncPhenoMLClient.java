@@ -74,7 +74,7 @@ public class AsyncPhenoMLClient extends AsyncPhenoML {
                 AsyncAuthClient auth = authClient.auth();
                 
                 AuthGenerateTokenRequest request = AuthGenerateTokenRequest.builder()
-                        .identity(username)
+                        .username(username)
                         .password(password)
                         .build();
                 
@@ -99,7 +99,7 @@ public class AsyncPhenoMLClient extends AsyncPhenoML {
             AsyncAuthClient auth = authClient.auth();
             
             AuthGenerateTokenRequest request = AuthGenerateTokenRequest.builder()
-                    .identity(username)
+                    .username(username)
                     .password(password)
                     .build();
             
