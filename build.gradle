@@ -47,7 +47,7 @@ java {
 
 group = 'com.phenoml.maven'
 
-version = '0.0.28'
+version = '0.0.29'
 
 jar {
     dependsOn(":generatePomFileForMavenPublication")
@@ -78,12 +78,12 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.phenoml.maven'
             artifactId = 'phenoml-java-sdk'
-            version = '0.0.28'
+            version = '0.0.29'
             from components.java
             pom {
                 name = 'phenoml'
                 description = 'The official SDK of phenoml'
-                url = 'https://buildwithfern.com'
+                url = 'https://phenoml.com'
                 licenses {
                     license {
                         name = 'The MIT License (MIT)'
@@ -93,13 +93,13 @@ publishing {
                 developers {
                     developer {
                         name = 'phenoml'
-                        email = 'developers@phenoml.com'
+                        email = 'hello@phenoml.com'
                     }
                 }
                 scm {
-                    connection = 'scm:git:git://github.com/fern-demo/phenoml-java-sdk.git'
-                    developerConnection = 'scm:git:git://github.com/fern-demo/phenoml-java-sdk.git'
-                    url = 'https://github.com/fern-demo/phenoml-java-sdk'
+                    connection = 'scm:git:git://github.com/phenoml/phenoml-java-sdk.git'
+                    developerConnection = 'scm:git:git://github.com/phenoml/phenoml-java-sdk.git'
+                    url = 'https://github.com/phenoml/phenoml-java-sdk'
                 }
             }
         }
