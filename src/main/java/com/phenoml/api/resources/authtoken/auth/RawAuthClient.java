@@ -5,7 +5,6 @@ package com.phenoml.api.resources.authtoken.auth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phenoml.api.core.ClientOptions;
-import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.core.PhenoMLApiException;
 import com.phenoml.api.core.PhenoMLException;
@@ -48,11 +47,11 @@ public class RawAuthClient {
                 .newBuilder()
                 .addPathSegments("auth/token")
                 .build();
-        
+
         // Create Basic Auth header
         String credentials = request.getUsername() + ":" + request.getPassword();
         String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
-        
+
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
                 .method("POST", RequestBody.create(new byte[0])) // Empty body
