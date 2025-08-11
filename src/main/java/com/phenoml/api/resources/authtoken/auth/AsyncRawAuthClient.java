@@ -55,7 +55,7 @@ public class AsyncRawAuthClient {
                 .build();
         
         // Create Basic Auth header
-        String credentials = request.getIdentity() + ":" + request.getPassword();
+        String credentials = request.getUsername() + ":" + request.getPassword();
         String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
         
         Request okhttpRequest = new Request.Builder()

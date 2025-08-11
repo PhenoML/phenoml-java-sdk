@@ -1,1 +1,3 @@
+rootProject.name = 'phenoml-java-sdk'
+
 include 'sample-app'

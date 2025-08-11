@@ -1090,7 +1090,7 @@ Obtain an access token using client credentials
 client.authtoken().auth().generateToken(
     AuthGenerateTokenRequest
         .builder()
-        .identity("identity")
+        .username("username")
         .password("password")
         .build()
 );
@@ -1108,7 +1108,7 @@ client.authtoken().auth().generateToken(
 <dl>
 <dd>
 
-**identity:** `String` — The user's username or email
+**username:** `String` — The user's username or email
     
 </dd>
 </dl>

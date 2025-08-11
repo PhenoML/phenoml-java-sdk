@@ -19,14 +19,14 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = AuthGenerateTokenRequest.Builder.class)
 public final class AuthGenerateTokenRequest {
-    private final String identity;
+    private final String username;
 
     private final String password;
 
     private final Map<String, Object> additionalProperties;
 
-    private AuthGenerateTokenRequest(String identity, String password, Map<String, Object> additionalProperties) {
-        this.identity = identity;
+    private AuthGenerateTokenRequest(String username, String password, Map<String, Object> additionalProperties) {
+        this.username = username;
         this.password = password;
         this.additionalProperties = additionalProperties;
     }
@@ -34,9 +34,9 @@ public final class AuthGenerateTokenRequest {
     /**
      * @return The user's username or email
      */
-    @JsonProperty("identity")
-    public String getIdentity() {
-        return identity;
+    @JsonProperty("username")
+    public String getUsername() {
+        return username;
     }
 
     /**
@@ -59,12 +59,12 @@ public final class AuthGenerateTokenRequest {
     }
 
     private boolean equalTo(AuthGenerateTokenRequest other) {
-        return identity.equals(other.identity) && password.equals(other.password);
+        return username.equals(other.username) && password.equals(other.password);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.identity, this.password);
+        return Objects.hash(this.username, this.password);
     }
 
     @java.lang.Override
@@ -72,15 +72,15 @@ public final class AuthGenerateTokenRequest {
         return ObjectMappers.stringify(this);
     }
 
-    public static IdentityStage builder() {
+    public static UsernameStage builder() {
         return new Builder();
     }
 
-    public interface IdentityStage {
+    public interface UsernameStage {
         /**
          * <p>The user's username or email</p>
          */
-        PasswordStage identity(@NotNull String identity);
+        PasswordStage username(@NotNull String username);
 
         Builder from(AuthGenerateTokenRequest other);
     }
@@ -97,8 +97,8 @@ public final class AuthGenerateTokenRequest {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements IdentityStage, PasswordStage, _FinalStage {
-        private String identity;
+    public static final class Builder implements UsernameStage, PasswordStage, _FinalStage {
+        private String username;
 
         private String password;
 
@@ -109,7 +109,7 @@ public final class AuthGenerateTokenRequest {
 
         @java.lang.Override
         public Builder from(AuthGenerateTokenRequest other) {
-            identity(other.getIdentity());
+            username(other.getUsername());
             password(other.getPassword());
             return this;
         }
@@ -120,9 +120,9 @@ public final class AuthGenerateTokenRequest {
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
-        @JsonSetter("identity")
-        public PasswordStage identity(@NotNull String identity) {
-            this.identity = Objects.requireNonNull(identity, "identity must not be null");
+        @JsonSetter("username")
+        public PasswordStage username(@NotNull String username) {
+            this.username = Objects.requireNonNull(username, "username must not be null");
             return this;
         }
 
@@ -140,7 +140,7 @@ public final class AuthGenerateTokenRequest {
 
         @java.lang.Override
         public AuthGenerateTokenRequest build() {
-            return new AuthGenerateTokenRequest(identity, password, additionalProperties);
+            return new AuthGenerateTokenRequest(username, password, additionalProperties);
         }
     }
 }
