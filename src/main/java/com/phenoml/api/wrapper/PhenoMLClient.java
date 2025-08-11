@@ -69,7 +69,7 @@ public class PhenoMLClient extends PhenoML {
             AuthClient auth = authClient.auth();
             
             AuthGenerateTokenRequest request = AuthGenerateTokenRequest.builder()
-                    .identity(username)
+                    .username(username)
                     .password(password)
                     .build();
             
