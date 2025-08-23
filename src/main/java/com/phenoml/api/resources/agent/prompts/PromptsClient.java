@@ -32,20 +32,6 @@ public class PromptsClient {
     }
 
     /**
-     * Retrieves a list of agent prompts belonging to the authenticated user
-     */
-    public PromptsListResponse list() {
-        return this.rawClient.list().body();
-    }
-
-    /**
-     * Retrieves a list of agent prompts belonging to the authenticated user
-     */
-    public PromptsListResponse list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).body();
-    }
-
-    /**
      * Creates a new agent prompt
      */
     public AgentPromptsResponse create(AgentPromptsCreateRequest request) {
@@ -57,6 +43,20 @@ public class PromptsClient {
      */
     public AgentPromptsResponse create(AgentPromptsCreateRequest request, RequestOptions requestOptions) {
         return this.rawClient.create(request, requestOptions).body();
+    }
+
+    /**
+     * Retrieves a list of agent prompts belonging to the authenticated user
+     */
+    public PromptsListResponse list() {
+        return this.rawClient.list().body();
+    }
+
+    /**
+     * Retrieves a list of agent prompts belonging to the authenticated user
+     */
+    public PromptsListResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
     }
 
     /**

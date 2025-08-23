@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'com.diffplug.spotless' version '6.25.0'
+    id 'com.diffplug.spotless' version '6.11.0'
     id 'signing'
     id 'cl.franciscosolis.sonatype-central-upload' version '1.0.3'
 }
@@ -47,7 +47,7 @@ java {
 
 group = 'com.phenoml.maven'
 
-version = '0.0.29'
+version = '0.0.30'
 
 jar {
     dependsOn(":generatePomFileForMavenPublication")
@@ -78,12 +78,12 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.phenoml.maven'
             artifactId = 'phenoml-java-sdk'
-            version = '0.0.29'
+            version = '0.0.30'
             from components.java
             pom {
                 name = 'phenoml'
                 description = 'The official SDK of phenoml'
-                url = 'https://phenoml.com'
+                url = 'https://buildwithfern.com'
                 licenses {
                     license {
                         name = 'The MIT License (MIT)'
@@ -93,7 +93,7 @@ publishing {
                 developers {
                     developer {
                         name = 'phenoml'
-                        email = 'hello@phenoml.com'
+                        email = 'developers@phenoml.com'
                     }
                 }
                 scm {

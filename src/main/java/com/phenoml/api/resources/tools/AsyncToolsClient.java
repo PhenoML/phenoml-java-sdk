@@ -5,6 +5,8 @@ package com.phenoml.api.resources.tools;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.core.Suppliers;
+import com.phenoml.api.resources.tools.mcpserver.AsyncMcpServerClient;
 import com.phenoml.api.resources.tools.requests.CohortRequest;
 import com.phenoml.api.resources.tools.requests.Lang2FhirAndCreateRequest;
 import com.phenoml.api.resources.tools.requests.Lang2FhirAndSearchRequest;
@@ -12,15 +14,19 @@ import com.phenoml.api.resources.tools.types.CohortResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndCreateResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndSearchResponse;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 public class AsyncToolsClient {
     protected final ClientOptions clientOptions;
 
     private final AsyncRawToolsClient rawClient;
 
+    protected final Supplier<AsyncMcpServerClient> mcpServerClient;
+
     public AsyncToolsClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.rawClient = new AsyncRawToolsClient(clientOptions);
+        this.mcpServerClient = Suppliers.memoize(() -> new AsyncMcpServerClient(clientOptions));
     }
 
     /**
@@ -72,5 +78,9 @@ public class AsyncToolsClient {
      */
     public CompletableFuture<CohortResponse> analyzeCohort(CohortRequest request, RequestOptions requestOptions) {
         return this.rawClient.analyzeCohort(request, requestOptions).thenApply(response -> response.body());
+    }
+
+    public AsyncMcpServerClient mcpServer() {
+        return this.mcpServerClient.get();
     }
 }

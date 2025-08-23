@@ -31,6 +31,8 @@ public final class AgentCreateRequest {
 
     private final List<String> prompts;
 
+    private final Optional<List<String>> tools;
+
     private final boolean isActive;
 
     private final Optional<List<String>> tags;
@@ -45,6 +47,7 @@ public final class AgentCreateRequest {
             String name,
             Optional<String> description,
             List<String> prompts,
+            Optional<List<String>> tools,
             boolean isActive,
             Optional<List<String>> tags,
             Optional<AgentProvider> provider,
@@ -53,6 +56,7 @@ public final class AgentCreateRequest {
         this.name = name;
         this.description = description;
         this.prompts = prompts;
+        this.tools = tools;
         this.isActive = isActive;
         this.tags = tags;
         this.provider = provider;
@@ -82,6 +86,14 @@ public final class AgentCreateRequest {
     @JsonProperty("prompts")
     public List<String> getPrompts() {
         return prompts;
+    }
+
+    /**
+     * @return Array of MCP server tool IDs to use for this agent
+     */
+    @JsonProperty("tools")
+    public Optional<List<String>> getTools() {
+        return tools;
     }
 
     /**
@@ -128,6 +140,7 @@ public final class AgentCreateRequest {
         return name.equals(other.name)
                 && description.equals(other.description)
                 && prompts.equals(other.prompts)
+                && tools.equals(other.tools)
                 && isActive == other.isActive
                 && tags.equals(other.tags)
                 && provider.equals(other.provider)
@@ -137,7 +150,14 @@ public final class AgentCreateRequest {
     @java.lang.Override
     public int hashCode() {
         return Objects.hash(
-                this.name, this.description, this.prompts, this.isActive, this.tags, this.provider, this.meta);
+                this.name,
+                this.description,
+                this.prompts,
+                this.tools,
+                this.isActive,
+                this.tags,
+                this.provider,
+                this.meta);
     }
 
     @java.lang.Override
@@ -185,6 +205,13 @@ public final class AgentCreateRequest {
         _FinalStage addAllPrompts(List<String> prompts);
 
         /**
+         * <p>Array of MCP server tool IDs to use for this agent</p>
+         */
+        _FinalStage tools(Optional<List<String>> tools);
+
+        _FinalStage tools(List<String> tools);
+
+        /**
          * <p>Tags for categorizing the agent</p>
          */
         _FinalStage tags(Optional<List<String>> tags);
@@ -215,6 +242,8 @@ public final class AgentCreateRequest {
 
         private Optional<List<String>> tags = Optional.empty();
 
+        private Optional<List<String>> tools = Optional.empty();
+
         private List<String> prompts = new ArrayList<>();
 
         private Optional<String> description = Optional.empty();
@@ -229,6 +258,7 @@ public final class AgentCreateRequest {
             name(other.getName());
             description(other.getDescription());
             prompts(other.getPrompts());
+            tools(other.getTools());
             isActive(other.getIsActive());
             tags(other.getTags());
             provider(other.getProvider());
@@ -314,6 +344,26 @@ public final class AgentCreateRequest {
         }
 
         /**
+         * <p>Array of MCP server tool IDs to use for this agent</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage tools(List<String> tools) {
+            this.tools = Optional.ofNullable(tools);
+            return this;
+        }
+
+        /**
+         * <p>Array of MCP server tool IDs to use for this agent</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "tools", nulls = Nulls.SKIP)
+        public _FinalStage tools(Optional<List<String>> tools) {
+            this.tools = tools;
+            return this;
+        }
+
+        /**
          * <p>Array of prompt IDs to use for this agent</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
@@ -367,7 +417,7 @@ public final class AgentCreateRequest {
         @java.lang.Override
         public AgentCreateRequest build() {
             return new AgentCreateRequest(
-                    name, description, prompts, isActive, tags, provider, meta, additionalProperties);
+                    name, description, prompts, tools, isActive, tags, provider, meta, additionalProperties);
         }
     }
 }

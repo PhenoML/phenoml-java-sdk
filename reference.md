@@ -77,6 +77,14 @@ client.agent().create(
 <dl>
 <dd>
 
+**tools:** `Optional<List<String>>` — Array of MCP server tool IDs to use for this agent
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **isActive:** `Boolean` — Whether the agent is active
     
 </dd>
@@ -305,6 +313,14 @@ client.agent().update(
 <dd>
 
 **prompts:** `Optional<List<String>>` — Array of prompt IDs to use for this agent
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tools:** `Optional<List<String>>` — Array of MCP server tool IDs to use for this agent
     
 </dd>
 </dl>
@@ -579,8 +595,7 @@ client.agent().chat(
 </dl>
 </details>
 
-## Agent Prompts
-<details><summary><code>client.agent.prompts.list() -> PromptsListResponse</code></summary>
+<details><summary><code>client.agent.getChatMessages() -> AgentGetChatMessagesResponse</code></summary>
 <dl>
 <dd>
 
@@ -592,7 +607,7 @@ client.agent().chat(
 <dl>
 <dd>
 
-Retrieves a list of agent prompts belonging to the authenticated user
+Retrieves a list of chat messages for a given chat session
 </dd>
 </dl>
 </dd>
@@ -607,8 +622,52 @@ Retrieves a list of agent prompts belonging to the authenticated user
 <dd>
 
 ```java
-client.agent().prompts().list();
+client.agent().getChatMessages(
+    AgentGetChatMessagesRequest
+        .builder()
+        .chatSessionId("chat_session_id")
+        .build()
+);
 ```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**chatSessionId:** `String` — Chat session ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**numMessages:** `Optional<Integer>` — Number of messages to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**role:** `Optional<String>` — Filter by role
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `Optional<AgentGetChatMessagesRequestOrder>` — Order of messages
+    
 </dd>
 </dl>
 </dd>
@@ -619,6 +678,7 @@ client.agent().prompts().list();
 </dl>
 </details>
 
+## Agent Prompts
 <details><summary><code>client.agent.prompts.create(request) -> AgentPromptsResponse</code></summary>
 <dl>
 <dd>
@@ -710,6 +770,45 @@ client.agent().prompts().create(
 
 **tags:** `Optional<List<String>>` — Tags for categorizing the prompt
     
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.prompts.list() -> PromptsListResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a list of agent prompts belonging to the authenticated user
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.agent().prompts().list();
+```
 </dd>
 </dl>
 </dd>
@@ -2001,6 +2100,457 @@ client.tools().analyzeCohort(
 <dd>
 
 **meta:** `Optional<FhirClientConfig>` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Tools McpServer
+<details><summary><code>client.tools.mcpServer.create(request) -> McpServerResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a new MCP server
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().create(
+    McpServerCreateRequest
+        .builder()
+        .name("My MCP Server")
+        .mcpServerUrl("https://mcp.example.com")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**name:** `String` — Name of the MCP server
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mcpServerUrl:** `String` — URL of the MCP server
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.tools.mcpServer.list() -> McpServerResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists all MCP servers for a specific user
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().list();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.tools.mcpServer.get(mcpServerId) -> McpServerResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Gets a MCP server by ID
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().get("mcp_server_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**mcpServerId:** `String` — ID of the MCP server to retrieve
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.tools.mcpServer.delete(mcpServerId) -> McpServerResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes a MCP server by ID
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().delete("mcp_server_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**mcpServerId:** `String` — ID of the MCP server to delete
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Tools McpServer Tools
+<details><summary><code>client.tools.mcpServer.tools.list(mcpServerId) -> McpServerToolResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists all MCP server tools for a specific MCP server
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().tools().list("mcp_server_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**mcpServerId:** `String` — ID of the MCP server to list tools for
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.tools.mcpServer.tools.get(mcpServerToolId) -> McpServerToolResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Gets a MCP server tool by ID
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().tools().get("mcp_server_tool_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**mcpServerToolId:** `String` — ID of the MCP server tool to retrieve
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.tools.mcpServer.tools.delete(mcpServerToolId) -> McpServerToolResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes a MCP server tool by ID
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().tools().delete("mcp_server_tool_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**mcpServerToolId:** `String` — ID of the MCP server tool to delete
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.tools.mcpServer.tools.call(mcpServerToolId, request) -> McpServerToolCallResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Calls a MCP server tool
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().tools().call(
+    "mcp_server_tool_id",
+    McpServerToolCallRequest
+        .builder()
+        .arguments(
+            new HashMap<String, Object>() {{
+                put("title", "PhenoML Agent API");
+            }}
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**mcpServerToolId:** `String` — ID of the MCP server tool to call
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**arguments:** `Map<String, Object>` — Arguments to pass to the MCP server tool
     
 </dd>
 </dl>

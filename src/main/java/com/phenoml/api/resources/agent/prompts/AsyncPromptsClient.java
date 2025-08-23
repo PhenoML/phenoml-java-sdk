@@ -33,20 +33,6 @@ public class AsyncPromptsClient {
     }
 
     /**
-     * Retrieves a list of agent prompts belonging to the authenticated user
-     */
-    public CompletableFuture<PromptsListResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
-    }
-
-    /**
-     * Retrieves a list of agent prompts belonging to the authenticated user
-     */
-    public CompletableFuture<PromptsListResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
      * Creates a new agent prompt
      */
     public CompletableFuture<AgentPromptsResponse> create(AgentPromptsCreateRequest request) {
@@ -59,6 +45,20 @@ public class AsyncPromptsClient {
     public CompletableFuture<AgentPromptsResponse> create(
             AgentPromptsCreateRequest request, RequestOptions requestOptions) {
         return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieves a list of agent prompts belonging to the authenticated user
+     */
+    public CompletableFuture<PromptsListResponse> list() {
+        return this.rawClient.list().thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieves a list of agent prompts belonging to the authenticated user
+     */
+    public CompletableFuture<PromptsListResponse> list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
     /**
