@@ -5,3 +5,4 @@ src/main/java/com/phenoml/api/AsyncClient.java
 src/main/java/com/phenoml/api/resources/authtoken/auth/RawAuthClient.java
 src/main/java/com/phenoml/api/resources/authtoken/auth/AsyncRawAuthClient.java
 README.md
+LICENSE
