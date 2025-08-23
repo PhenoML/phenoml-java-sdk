@@ -5,21 +5,27 @@ package com.phenoml.api.resources.tools;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.core.Suppliers;
+import com.phenoml.api.resources.tools.mcpserver.McpServerClient;
 import com.phenoml.api.resources.tools.requests.CohortRequest;
 import com.phenoml.api.resources.tools.requests.Lang2FhirAndCreateRequest;
 import com.phenoml.api.resources.tools.requests.Lang2FhirAndSearchRequest;
 import com.phenoml.api.resources.tools.types.CohortResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndCreateResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndSearchResponse;
+import java.util.function.Supplier;
 
 public class ToolsClient {
     protected final ClientOptions clientOptions;
 
     private final RawToolsClient rawClient;
 
+    protected final Supplier<McpServerClient> mcpServerClient;
+
     public ToolsClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.rawClient = new RawToolsClient(clientOptions);
+        this.mcpServerClient = Suppliers.memoize(() -> new McpServerClient(clientOptions));
     }
 
     /**
@@ -71,5 +77,9 @@ public class ToolsClient {
      */
     public CohortResponse analyzeCohort(CohortRequest request, RequestOptions requestOptions) {
         return this.rawClient.analyzeCohort(request, requestOptions).body();
+    }
+
+    public McpServerClient mcpServer() {
+        return this.mcpServerClient.get();
     }
 }

@@ -9,10 +9,12 @@ import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.agent.prompts.PromptsClient;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
 import com.phenoml.api.resources.agent.requests.AgentCreateRequest;
+import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
 import com.phenoml.api.resources.agent.requests.AgentListRequest;
 import com.phenoml.api.resources.agent.requests.AgentUpdateRequest;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
 import com.phenoml.api.resources.agent.types.AgentDeleteResponse;
+import com.phenoml.api.resources.agent.types.AgentGetChatMessagesResponse;
 import com.phenoml.api.resources.agent.types.AgentListResponse;
 import com.phenoml.api.resources.agent.types.AgentResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
@@ -149,6 +151,21 @@ public class AgentClient {
      */
     public AgentChatResponse chat(AgentChatRequest request, RequestOptions requestOptions) {
         return this.rawClient.chat(request, requestOptions).body();
+    }
+
+    /**
+     * Retrieves a list of chat messages for a given chat session
+     */
+    public AgentGetChatMessagesResponse getChatMessages(AgentGetChatMessagesRequest request) {
+        return this.rawClient.getChatMessages(request).body();
+    }
+
+    /**
+     * Retrieves a list of chat messages for a given chat session
+     */
+    public AgentGetChatMessagesResponse getChatMessages(
+            AgentGetChatMessagesRequest request, RequestOptions requestOptions) {
+        return this.rawClient.getChatMessages(request, requestOptions).body();
     }
 
     public PromptsClient prompts() {

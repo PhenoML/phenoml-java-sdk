@@ -29,6 +29,8 @@ public final class AgentTemplate {
 
     private final Optional<List<String>> prompts;
 
+    private final Optional<List<String>> tools;
+
     private final Optional<Boolean> isActive;
 
     private final Optional<List<String>> tags;
@@ -44,6 +46,7 @@ public final class AgentTemplate {
             Optional<String> name,
             Optional<String> description,
             Optional<List<String>> prompts,
+            Optional<List<String>> tools,
             Optional<Boolean> isActive,
             Optional<List<String>> tags,
             Optional<AgentProvider> provider,
@@ -53,6 +56,7 @@ public final class AgentTemplate {
         this.name = name;
         this.description = description;
         this.prompts = prompts;
+        this.tools = tools;
         this.isActive = isActive;
         this.tags = tags;
         this.provider = provider;
@@ -90,6 +94,14 @@ public final class AgentTemplate {
     @JsonProperty("prompts")
     public Optional<List<String>> getPrompts() {
         return prompts;
+    }
+
+    /**
+     * @return Array of MCP server tool IDs used by this agent
+     */
+    @JsonProperty("tools")
+    public Optional<List<String>> getTools() {
+        return tools;
     }
 
     /**
@@ -137,6 +149,7 @@ public final class AgentTemplate {
                 && name.equals(other.name)
                 && description.equals(other.description)
                 && prompts.equals(other.prompts)
+                && tools.equals(other.tools)
                 && isActive.equals(other.isActive)
                 && tags.equals(other.tags)
                 && provider.equals(other.provider)
@@ -146,7 +159,15 @@ public final class AgentTemplate {
     @java.lang.Override
     public int hashCode() {
         return Objects.hash(
-                this.id, this.name, this.description, this.prompts, this.isActive, this.tags, this.provider, this.meta);
+                this.id,
+                this.name,
+                this.description,
+                this.prompts,
+                this.tools,
+                this.isActive,
+                this.tags,
+                this.provider,
+                this.meta);
     }
 
     @java.lang.Override
@@ -168,6 +189,8 @@ public final class AgentTemplate {
 
         private Optional<List<String>> prompts = Optional.empty();
 
+        private Optional<List<String>> tools = Optional.empty();
+
         private Optional<Boolean> isActive = Optional.empty();
 
         private Optional<List<String>> tags = Optional.empty();
@@ -186,6 +209,7 @@ public final class AgentTemplate {
             name(other.getName());
             description(other.getDescription());
             prompts(other.getPrompts());
+            tools(other.getTools());
             isActive(other.getIsActive());
             tags(other.getTags());
             provider(other.getProvider());
@@ -250,6 +274,20 @@ public final class AgentTemplate {
         }
 
         /**
+         * <p>Array of MCP server tool IDs used by this agent</p>
+         */
+        @JsonSetter(value = "tools", nulls = Nulls.SKIP)
+        public Builder tools(Optional<List<String>> tools) {
+            this.tools = tools;
+            return this;
+        }
+
+        public Builder tools(List<String> tools) {
+            this.tools = Optional.ofNullable(tools);
+            return this;
+        }
+
+        /**
          * <p>Whether the agent is active</p>
          */
         @JsonSetter(value = "is_active", nulls = Nulls.SKIP)
@@ -304,7 +342,7 @@ public final class AgentTemplate {
 
         public AgentTemplate build() {
             return new AgentTemplate(
-                    id, name, description, prompts, isActive, tags, provider, meta, additionalProperties);
+                    id, name, description, prompts, tools, isActive, tags, provider, meta, additionalProperties);
         }
     }
 }

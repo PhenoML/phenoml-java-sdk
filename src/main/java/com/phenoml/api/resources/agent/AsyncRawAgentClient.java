@@ -19,10 +19,12 @@ import com.phenoml.api.resources.agent.errors.NotFoundError;
 import com.phenoml.api.resources.agent.errors.UnauthorizedError;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
 import com.phenoml.api.resources.agent.requests.AgentCreateRequest;
+import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
 import com.phenoml.api.resources.agent.requests.AgentListRequest;
 import com.phenoml.api.resources.agent.requests.AgentUpdateRequest;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
 import com.phenoml.api.resources.agent.types.AgentDeleteResponse;
+import com.phenoml.api.resources.agent.types.AgentGetChatMessagesResponse;
 import com.phenoml.api.resources.agent.types.AgentListResponse;
 import com.phenoml.api.resources.agent.types.AgentResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
@@ -652,6 +654,98 @@ public class AsyncRawAgentClient {
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
+                            case 401:
+                                future.completeExceptionally(new UnauthorizedError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 403:
+                                future.completeExceptionally(new ForbiddenError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 500:
+                                future.completeExceptionally(new InternalServerError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                        }
+                    } catch (JsonProcessingException ignored) {
+                        // unable to map error response, throwing generic error
+                    }
+                    future.completeExceptionally(new PhenoMLApiException(
+                            "Error with status code " + response.code(),
+                            response.code(),
+                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                            response));
+                    return;
+                } catch (IOException e) {
+                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+            }
+        });
+        return future;
+    }
+
+    /**
+     * Retrieves a list of chat messages for a given chat session
+     */
+    public CompletableFuture<PhenoMLHttpResponse<AgentGetChatMessagesResponse>> getChatMessages(
+            AgentGetChatMessagesRequest request) {
+        return getChatMessages(request, null);
+    }
+
+    /**
+     * Retrieves a list of chat messages for a given chat session
+     */
+    public CompletableFuture<PhenoMLHttpResponse<AgentGetChatMessagesResponse>> getChatMessages(
+            AgentGetChatMessagesRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("agent/chat/messages");
+        QueryStringMapper.addQueryParameter(httpUrl, "chat_session_id", request.getChatSessionId(), false);
+        if (request.getNumMessages().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "num_messages", request.getNumMessages().get(), false);
+        }
+        if (request.getRole().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "role", request.getRole().get(), false);
+        }
+        if (request.getOrder().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "order", request.getOrder().get(), false);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("GET", null)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        CompletableFuture<PhenoMLHttpResponse<AgentGetChatMessagesResponse>> future = new CompletableFuture<>();
+        client.newCall(okhttpRequest).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    if (response.isSuccessful()) {
+                        future.complete(new PhenoMLHttpResponse<>(
+                                ObjectMappers.JSON_MAPPER.readValue(
+                                        responseBody.string(), AgentGetChatMessagesResponse.class),
+                                response));
+                        return;
+                    }
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+                    try {
+                        switch (response.code()) {
                             case 401:
                                 future.completeExceptionally(new UnauthorizedError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),

@@ -19,10 +19,12 @@ import com.phenoml.api.resources.agent.errors.NotFoundError;
 import com.phenoml.api.resources.agent.errors.UnauthorizedError;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
 import com.phenoml.api.resources.agent.requests.AgentCreateRequest;
+import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
 import com.phenoml.api.resources.agent.requests.AgentListRequest;
 import com.phenoml.api.resources.agent.requests.AgentUpdateRequest;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
 import com.phenoml.api.resources.agent.types.AgentDeleteResponse;
+import com.phenoml.api.resources.agent.types.AgentGetChatMessagesResponse;
 import com.phenoml.api.resources.agent.types.AgentListResponse;
 import com.phenoml.api.resources.agent.types.AgentResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
@@ -504,6 +506,77 @@ public class RawAgentClient {
                     case 400:
                         throw new BadRequestError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Retrieves a list of chat messages for a given chat session
+     */
+    public PhenoMLHttpResponse<AgentGetChatMessagesResponse> getChatMessages(AgentGetChatMessagesRequest request) {
+        return getChatMessages(request, null);
+    }
+
+    /**
+     * Retrieves a list of chat messages for a given chat session
+     */
+    public PhenoMLHttpResponse<AgentGetChatMessagesResponse> getChatMessages(
+            AgentGetChatMessagesRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("agent/chat/messages");
+        QueryStringMapper.addQueryParameter(httpUrl, "chat_session_id", request.getChatSessionId(), false);
+        if (request.getNumMessages().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "num_messages", request.getNumMessages().get(), false);
+        }
+        if (request.getRole().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "role", request.getRole().get(), false);
+        }
+        if (request.getOrder().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "order", request.getOrder().get(), false);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("GET", null)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentGetChatMessagesResponse.class),
+                        response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
                     case 401:
                         throw new UnauthorizedError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
