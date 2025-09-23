@@ -47,7 +47,7 @@ java {
 
 group = 'com.phenoml.maven'
 
-version = '0.0.30'
+version = 'v0.0.32'
 
 jar {
     dependsOn(":generatePomFileForMavenPublication")
@@ -78,7 +78,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.phenoml.maven'
             artifactId = 'phenoml-java-sdk'
-            version = '0.0.30'
+            version = 'v0.0.32'
             from components.java
             pom {
                 name = 'phenoml'

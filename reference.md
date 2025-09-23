@@ -53,63 +53,7 @@ client.agent().create(
 <dl>
 <dd>
 
-**name:** `String` — Agent name
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**description:** `Optional<String>` — Agent description
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**prompts:** `List<String>` — Array of prompt IDs to use for this agent
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**tools:** `Optional<List<String>>` — Array of MCP server tool IDs to use for this agent
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**isActive:** `Boolean` — Whether the agent is active
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**tags:** `Optional<List<String>>` — Tags for categorizing the agent
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**provider:** `Optional<AgentProvider>` — FHIR provider type - can be a single provider or array of providers
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**meta:** `Optional<AgentFhirConfig>` 
+**request:** `AgentCreateRequest` 
     
 </dd>
 </dl>
@@ -270,8 +214,15 @@ Updates an existing agent's configuration
 ```java
 client.agent().update(
     "id",
-    AgentUpdateRequest
+    AgentCreateRequest
         .builder()
+        .name("name")
+        .prompts(
+            new ArrayList<String>(
+                Arrays.asList("prompt_123", "prompt_456")
+            )
+        )
+        .isActive(true)
         .build()
 );
 ```
@@ -296,63 +247,7 @@ client.agent().update(
 <dl>
 <dd>
 
-**name:** `Optional<String>` — Agent name
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**description:** `Optional<String>` — Agent description
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**prompts:** `Optional<List<String>>` — Array of prompt IDs to use for this agent
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**tools:** `Optional<List<String>>` — Array of MCP server tool IDs to use for this agent
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**isActive:** `Optional<Boolean>` — Whether the agent is active
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**tags:** `Optional<List<String>>` — Tags for categorizing the agent
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**provider:** `Optional<AgentProvider>` — FHIR provider type - can be a single provider or array of providers
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**meta:** `Optional<AgentFhirConfig>` 
+**request:** `AgentCreateRequest` 
     
 </dd>
 </dl>
@@ -576,14 +471,6 @@ client.agent().chat(
 <dd>
 
 **agentId:** `String` — The ID of the agent to chat with
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**meta:** `Optional<ChatFhirClientConfig>` — Optional user-specific FHIR configuration overrides
     
 </dd>
 </dl>
@@ -1551,6 +1438,1168 @@ client.construe().cohort(
 </dl>
 </details>
 
+## Fhir
+<details><summary><code>client.fhir.search(fhirProviderId, fhirPath) -> FhirSearchResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
+
+The request is proxied to the configured FHIR server with appropriate authentication headers.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhir().search(
+    "fhir_provider_id",
+    "fhir_path",
+    FhirSearchRequest
+        .builder()
+        .phenomlOnBehalfOf("user@example.com")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fhirProviderId:** `String` 
+
+The ID of the FHIR provider to use. Can be either:
+- A UUID representing the provider ID
+- A provider name (legacy support - will just use the most recently updated provider with this name)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fhirPath:** `String` 
+
+The FHIR resource path to operate on. This follows FHIR RESTful API conventions.
+Examples:
+- "Patient" (for resource type operations)
+- "Patient/123" (for specific resource operations)
+- "Patient/123/_history" (for history operations)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**queryParameters:** `Optional<Map<String, Optional<String>>>` 
+
+FHIR-compliant query parameters for search operations. Supports standard FHIR search parameters including:
+- Resource-specific search parameters (e.g., name for Patient, status for Observation)
+- Common search parameters (_id, _lastUpdated, _tag, _profile, _security, _text, _content, _filter)
+- Result parameters (_count, _offset, _sort, _include, _revinclude, _summary, _elements)
+- Search prefixes for dates, numbers, quantities (eq, ne, gt, ge, lt, le, sa, eb, ap)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**phenomlOnBehalfOf:** `Optional<String>` — Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.fhir.create(fhirProviderId, fhirPath, request) -> FhirResource</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
+
+The request is proxied to the configured FHIR server with appropriate authentication headers.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhir().create(
+    "fhir_provider_id",
+    "fhir_path",
+    FhirCreateRequest
+        .builder()
+        .body(
+            FhirResource
+                .builder()
+                .resourceType("Patient")
+                .build()
+        )
+        .phenomlOnBehalfOf("user@example.com")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fhirProviderId:** `String` 
+
+The ID of the FHIR provider to use. Can be either:
+- A UUID representing the provider ID
+- A provider name (legacy support - will just use the most recently updated provider with this name)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fhirPath:** `String` 
+
+The FHIR resource path to operate on. This follows FHIR RESTful API conventions.
+Examples:
+- "Patient" (for resource type operations)
+- "Patient/123" (for specific resource operations)
+- "Patient/123/_history" (for history operations)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**phenomlOnBehalfOf:** `Optional<String>` — Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `FhirResource` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.fhir.upsert(fhirProviderId, fhirPath, request) -> FhirResource</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
+
+The request is proxied to the configured FHIR server with appropriate authentication headers.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhir().upsert(
+    "fhir_provider_id",
+    "fhir_path",
+    FhirUpsertRequest
+        .builder()
+        .body(
+            FhirResource
+                .builder()
+                .resourceType("Patient")
+                .id("123")
+                .build()
+        )
+        .phenomlOnBehalfOf("user@example.com")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fhirProviderId:** `String` 
+
+The ID of the FHIR provider to use. Can be either:
+- A UUID representing the provider ID
+- A provider name (legacy support - will just use the most recently updated provider with this name)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fhirPath:** `String` 
+
+The FHIR resource path to operate on. This follows FHIR RESTful API conventions.
+Examples:
+- "Patient" (for resource type operations)
+- "Patient/123" (for specific resource operations)
+- "Patient/123/_history" (for history operations)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**phenomlOnBehalfOf:** `Optional<String>` — Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `FhirResource` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.fhir.delete(fhirProviderId, fhirPath) -> Map&lt;String, Object&gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes a FHIR resource from the specified provider.
+
+The request is proxied to the configured FHIR server with appropriate authentication headers.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhir().delete(
+    "fhir_provider_id",
+    "fhir_path",
+    FhirDeleteRequest
+        .builder()
+        .phenomlOnBehalfOf("user@example.com")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fhirProviderId:** `String` 
+
+The ID of the FHIR provider to use. Can be either:
+- A UUID representing the provider ID
+- A provider name (legacy support - will just use the most recently updated provider with this name)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fhirPath:** `String` 
+
+The FHIR resource path to operate on. This follows FHIR RESTful API conventions.
+Examples:
+- "Patient" (for resource type operations)
+- "Patient/123" (for specific resource operations)
+- "Patient/123/_history" (for history operations)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**phenomlOnBehalfOf:** `Optional<String>` — Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.fhir.patch(fhirProviderId, fhirPath, request) -> FhirResource</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Partially updates a FHIR resource on the specified provider using JSON Patch operations as defined in RFC 6902.
+
+The request body should contain an array of JSON Patch operations. Each operation specifies:
+- `op`: The operation type (add, remove, replace, move, copy, test)
+- `path`: JSON Pointer to the target location in the resource
+- `value`: The value to use (required for add, replace, and test operations)
+
+The request is proxied to the configured FHIR server with appropriate authentication headers.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhir().patch(
+    "fhir_provider_id",
+    "fhir_path",
+    FhirPatchRequest
+        .builder()
+        .body(
+            new ArrayList<FhirPatchRequestBodyItem>(
+                Arrays.asList(
+                    FhirPatchRequestBodyItem
+                        .builder()
+                        .op(FhirPatchRequestBodyItemOp.REPLACE)
+                        .path("/name/0/family")
+                        .value("NewFamilyName")
+                        .build()
+                )
+            )
+        )
+        .phenomlOnBehalfOf("user@example.com")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fhirProviderId:** `String` 
+
+The ID of the FHIR provider to use. Can be either:
+- A UUID representing the provider ID
+- A provider name (legacy support - will just use the most recently updated provider with this name)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fhirPath:** `String` 
+
+The FHIR resource path to operate on. This follows FHIR RESTful API conventions.
+Examples:
+- "Patient" (for resource type operations)
+- "Patient/123" (for specific resource operations)
+- "Patient/123/_history" (for history operations)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**phenomlOnBehalfOf:** `Optional<String>` — Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `List<FhirPatchRequestBodyItem>` — Array of JSON Patch operations following RFC 6902
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.fhir.executeBundle(fhirProviderId, request) -> FhirBundle</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
+
+The request body should contain a valid FHIR Bundle resource with transaction or batch type.
+
+The request is proxied to the configured FHIR server with appropriate authentication headers.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhir().executeBundle(
+    "fhir_provider_id",
+    FhirExecuteBundleRequest
+        .builder()
+        .body(
+            FhirBundle
+                .builder()
+                .resourceType("Bundle")
+                .entry(
+                    new ArrayList<FhirBundleEntryItem>(
+                        Arrays.asList(
+                            FhirBundleEntryItem
+                                .builder()
+                                .resource(
+                                    new HashMap<String, Object>() {{
+                                        put("resourceType", "Patient");
+                                        put("name", new
+                                        ArrayList<Object>() {Arrays.asList(new 
+                                            HashMap<String, Object>() {{put("family", "Doe");
+                                                put("given", new
+                                                ArrayList<Object>() {Arrays.asList("John")
+                                                });
+                                            }})
+                                        });
+                                    }}
+                                )
+                                .request(
+                                    FhirBundleEntryItemRequest
+                                        .builder()
+                                        .method(FhirBundleEntryItemRequestMethod.POST)
+                                        .url("Patient")
+                                        .build()
+                                )
+                                .build(),
+                            FhirBundleEntryItem
+                                .builder()
+                                .resource(
+                                    new HashMap<String, Object>() {{
+                                        put("resourceType", "Observation");
+                                        put("status", "final");
+                                        put("subject", new 
+                                        HashMap<String, Object>() {{put("reference", "Patient/123");
+                                        }});
+                                    }}
+                                )
+                                .request(
+                                    FhirBundleEntryItemRequest
+                                        .builder()
+                                        .method(FhirBundleEntryItemRequestMethod.POST)
+                                        .url("Observation")
+                                        .build()
+                                )
+                                .build()
+                        )
+                    )
+                )
+                .build()
+        )
+        .phenomlOnBehalfOf("user@example.com")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fhirProviderId:** `String` 
+
+The ID of the FHIR provider to use. Can be either:
+- A UUID representing the provider ID
+- A provider name (legacy support - will just use the most recently updated provider with this name)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**phenomlOnBehalfOf:** `Optional<String>` — Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `FhirBundle` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## FhirProvider
+<details><summary><code>client.fhirProvider.create(request) -> FhirProviderResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a new FHIR provider configuration with authentication credentials
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhirProvider().create(
+    FhirProviderCreateRequest
+        .builder()
+        .name("Epic Sandbox")
+        .provider(Provider.ATHENAHEALTH)
+        .authMethod(AuthMethod.CLIENT_SECRET)
+        .baseUrl("https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**name:** `String` — Display name for the FHIR provider
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `Optional<String>` — Optional description of the FHIR provider
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**provider:** `Provider` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**authMethod:** `AuthMethod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**baseUrl:** `String` — Base URL of the FHIR server
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**clientId:** `Optional<String>` — OAuth client ID (required for most auth methods)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**clientSecret:** `Optional<String>` — OAuth client secret (required for client_secret and on_behalf_of auth methods)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**serviceAccountKey:** `Optional<ServiceAccountKey>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**scopes:** `Optional<String>` — OAuth scopes to request
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.fhirProvider.list() -> FhirProviderListResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a list of all active FHIR providers for the authenticated user
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhirProvider().list();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.fhirProvider.get(fhirProviderId) -> FhirProviderResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a specific FHIR provider configuration by its ID
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhirProvider().get("fhir_provider_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fhirProviderId:** `String` — ID of the FHIR provider to retrieve
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.fhirProvider.delete(fhirProviderId) -> FhirProviderDeleteResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Soft deletes a FHIR provider by setting is_active to false
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhirProvider().delete("fhir_provider_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fhirProviderId:** `String` — ID of the FHIR provider to delete
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.fhirProvider.addAuthConfig(fhirProviderId, request) -> FhirProviderResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Adds a new authentication configuration to an existing FHIR provider. This enables key rotation and multiple auth configurations per provider.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhirProvider().addAuthConfig(
+    "1716d214-de93-43a4-aa6b-a878d864e2ad",
+    FhirProviderAddAuthConfigRequest
+        .builder()
+        .authMethod(AuthMethod.CLIENT_SECRET)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fhirProviderId:** `String` — ID of the FHIR provider to add auth config to
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**authMethod:** `AuthMethod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**clientSecret:** `Optional<String>` — OAuth client secret (required for client_secret and on_behalf_of auth methods)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**serviceAccountKey:** `Optional<ServiceAccountKey>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**credentialExpiry:** `Optional<OffsetDateTime>` — Expiry time for JWT credentials (only applicable for JWT auth method)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**scopes:** `Optional<String>` — OAuth scopes to request
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.fhirProvider.setActiveAuthConfig(fhirProviderId, request) -> FhirProviderSetActiveAuthConfigResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sets which authentication configuration should be active for a FHIR provider. Only one auth config can be active at a time.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhirProvider().setActiveAuthConfig(
+    "1716d214-de93-43a4-aa6b-a878d864e2ad",
+    FhirProviderSetActiveAuthConfigRequest
+        .builder()
+        .authConfigId("auth-config-123")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fhirProviderId:** `String` — ID of the FHIR provider
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**authConfigId:** `String` — ID of the auth configuration to set as active
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.fhirProvider.removeAuthConfig(fhirProviderId, request) -> FhirProviderRemoveAuthConfigResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Removes an authentication configuration from a FHIR provider. Cannot remove the currently active auth configuration.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhirProvider().removeAuthConfig(
+    "1716d214-de93-43a4-aa6b-a878d864e2ad",
+    FhirProviderRemoveAuthConfigRequest
+        .builder()
+        .authConfigId("auth-config-123")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fhirProviderId:** `String` — ID of the FHIR provider
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**authConfigId:** `String` — ID of the auth configuration to remove
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Lang2Fhir
 <details><summary><code>client.lang2Fhir.create(request) -> Map&lt;String, Object&gt;</code></summary>
 <dl>
@@ -1916,15 +2965,7 @@ client.tools().createFhirResource(
 <dl>
 <dd>
 
-**provider:** `Optional<Lang2FhirAndCreateRequestProvider>` — FHIR provider to use for storing the resource
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**meta:** `Optional<FhirClientConfig>` 
+**provider:** `Optional<String>` — FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)
     
 </dd>
 </dl>
@@ -2015,15 +3056,7 @@ client.tools().searchFhirResources(
 <dl>
 <dd>
 
-**provider:** `Optional<Lang2FhirAndSearchRequestProvider>` — FHIR provider to use for searching
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**meta:** `Optional<FhirClientConfig>` 
+**provider:** `Optional<String>` — FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)
     
 </dd>
 </dl>
@@ -2066,7 +3099,7 @@ client.tools().analyzeCohort(
     CohortRequest
         .builder()
         .text("female patients over 20 with diabetes but not hypertension")
-        .provider(CohortRequestProvider.MEDPLUM)
+        .provider("550e8400-e29b-41d4-a716-446655440000")
         .build()
 );
 ```
@@ -2091,15 +3124,7 @@ client.tools().analyzeCohort(
 <dl>
 <dd>
 
-**provider:** `CohortRequestProvider` — FHIR provider to use for searching
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**meta:** `Optional<FhirClientConfig>` 
+**provider:** `String` — FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)
     
 </dd>
 </dl>

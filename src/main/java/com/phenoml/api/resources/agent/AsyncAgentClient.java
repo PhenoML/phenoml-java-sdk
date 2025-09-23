@@ -8,11 +8,10 @@ import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.agent.prompts.AsyncPromptsClient;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
-import com.phenoml.api.resources.agent.requests.AgentCreateRequest;
 import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
 import com.phenoml.api.resources.agent.requests.AgentListRequest;
-import com.phenoml.api.resources.agent.requests.AgentUpdateRequest;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
+import com.phenoml.api.resources.agent.types.AgentCreateRequest;
 import com.phenoml.api.resources.agent.types.AgentDeleteResponse;
 import com.phenoml.api.resources.agent.types.AgentGetChatMessagesResponse;
 import com.phenoml.api.resources.agent.types.AgentListResponse;
@@ -94,14 +93,7 @@ public class AsyncAgentClient {
     /**
      * Updates an existing agent's configuration
      */
-    public CompletableFuture<AgentResponse> update(String id) {
-        return this.rawClient.update(id).thenApply(response -> response.body());
-    }
-
-    /**
-     * Updates an existing agent's configuration
-     */
-    public CompletableFuture<AgentResponse> update(String id, AgentUpdateRequest request) {
+    public CompletableFuture<AgentResponse> update(String id, AgentCreateRequest request) {
         return this.rawClient.update(id, request).thenApply(response -> response.body());
     }
 
@@ -109,7 +101,7 @@ public class AsyncAgentClient {
      * Updates an existing agent's configuration
      */
     public CompletableFuture<AgentResponse> update(
-            String id, AgentUpdateRequest request, RequestOptions requestOptions) {
+            String id, AgentCreateRequest request, RequestOptions requestOptions) {
         return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
     }
 
