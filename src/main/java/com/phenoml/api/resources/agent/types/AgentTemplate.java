@@ -9,9 +9,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.phenoml.api.core.ObjectMappers;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +42,7 @@ public final class AgentTemplate {
 
     private final Optional<List<String>> tags;
 
-    private final Optional<AgentProvider> provider;
-
-    private final Optional<AgentFhirConfig> meta;
+    private final Optional<Provider> provider;
 
     private final Map<String, Object> additionalProperties;
 
@@ -49,8 +54,7 @@ public final class AgentTemplate {
             Optional<List<String>> tools,
             Optional<Boolean> isActive,
             Optional<List<String>> tags,
-            Optional<AgentProvider> provider,
-            Optional<AgentFhirConfig> meta,
+            Optional<Provider> provider,
             Map<String, Object> additionalProperties) {
         this.id = id;
         this.name = name;
@@ -60,7 +64,6 @@ public final class AgentTemplate {
         this.isActive = isActive;
         this.tags = tags;
         this.provider = provider;
-        this.meta = meta;
         this.additionalProperties = additionalProperties;
     }
 
@@ -121,16 +124,11 @@ public final class AgentTemplate {
     }
 
     /**
-     * @return FHIR provider type - can be a single provider or array of providers
+     * @return FHIR provider ID(s) - must be valid UUIDs from existing FHIR providers
      */
     @JsonProperty("provider")
-    public Optional<AgentProvider> getProvider() {
+    public Optional<Provider> getProvider() {
         return provider;
-    }
-
-    @JsonProperty("meta")
-    public Optional<AgentFhirConfig> getMeta() {
-        return meta;
     }
 
     @java.lang.Override
@@ -152,8 +150,7 @@ public final class AgentTemplate {
                 && tools.equals(other.tools)
                 && isActive.equals(other.isActive)
                 && tags.equals(other.tags)
-                && provider.equals(other.provider)
-                && meta.equals(other.meta);
+                && provider.equals(other.provider);
     }
 
     @java.lang.Override
@@ -166,8 +163,7 @@ public final class AgentTemplate {
                 this.tools,
                 this.isActive,
                 this.tags,
-                this.provider,
-                this.meta);
+                this.provider);
     }
 
     @java.lang.Override
@@ -195,9 +191,7 @@ public final class AgentTemplate {
 
         private Optional<List<String>> tags = Optional.empty();
 
-        private Optional<AgentProvider> provider = Optional.empty();
-
-        private Optional<AgentFhirConfig> meta = Optional.empty();
+        private Optional<Provider> provider = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -213,7 +207,6 @@ public final class AgentTemplate {
             isActive(other.getIsActive());
             tags(other.getTags());
             provider(other.getProvider());
-            meta(other.getMeta());
             return this;
         }
 
@@ -316,33 +309,103 @@ public final class AgentTemplate {
         }
 
         /**
-         * <p>FHIR provider type - can be a single provider or array of providers</p>
+         * <p>FHIR provider ID(s) - must be valid UUIDs from existing FHIR providers</p>
          */
         @JsonSetter(value = "provider", nulls = Nulls.SKIP)
-        public Builder provider(Optional<AgentProvider> provider) {
+        public Builder provider(Optional<Provider> provider) {
             this.provider = provider;
             return this;
         }
 
-        public Builder provider(AgentProvider provider) {
+        public Builder provider(Provider provider) {
             this.provider = Optional.ofNullable(provider);
-            return this;
-        }
-
-        @JsonSetter(value = "meta", nulls = Nulls.SKIP)
-        public Builder meta(Optional<AgentFhirConfig> meta) {
-            this.meta = meta;
-            return this;
-        }
-
-        public Builder meta(AgentFhirConfig meta) {
-            this.meta = Optional.ofNullable(meta);
             return this;
         }
 
         public AgentTemplate build() {
             return new AgentTemplate(
-                    id, name, description, prompts, tools, isActive, tags, provider, meta, additionalProperties);
+                    id, name, description, prompts, tools, isActive, tags, provider, additionalProperties);
+        }
+    }
+
+    @JsonDeserialize(using = Provider.Deserializer.class)
+    public static final class Provider {
+        private final Object value;
+
+        private final int type;
+
+        private Provider(Object value, int type) {
+            this.value = value;
+            this.type = type;
+        }
+
+        @JsonValue
+        public Object get() {
+            return this.value;
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T> T visit(Visitor<T> visitor) {
+            if (this.type == 0) {
+                return visitor.visit((String) this.value);
+            } else if (this.type == 1) {
+                return visitor.visit((List<String>) this.value);
+            }
+            throw new IllegalStateException("Failed to visit value. This should never happen.");
+        }
+
+        @java.lang.Override
+        public boolean equals(Object other) {
+            if (this == other) return true;
+            return other instanceof Provider && equalTo((Provider) other);
+        }
+
+        private boolean equalTo(Provider other) {
+            return value.equals(other.value);
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+            return Objects.hash(this.value);
+        }
+
+        @java.lang.Override
+        public String toString() {
+            return this.value.toString();
+        }
+
+        public static Provider of(String value) {
+            return new Provider(value, 0);
+        }
+
+        public static Provider of(List<String> value) {
+            return new Provider(value, 1);
+        }
+
+        public interface Visitor<T> {
+            T visit(String value);
+
+            T visit(List<String> value);
+        }
+
+        static final class Deserializer extends StdDeserializer<Provider> {
+            Deserializer() {
+                super(Provider.class);
+            }
+
+            @java.lang.Override
+            public Provider deserialize(JsonParser p, DeserializationContext context) throws IOException {
+                Object value = p.readValueAs(Object.class);
+                try {
+                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, String.class));
+                } catch (RuntimeException e) {
+                }
+                try {
+                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<List<String>>() {}));
+                } catch (RuntimeException e) {
+                }
+                throw new JsonParseException(p, "Failed to deserialize");
+            }
         }
     }
 }

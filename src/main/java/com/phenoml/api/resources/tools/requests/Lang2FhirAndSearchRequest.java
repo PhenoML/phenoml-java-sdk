@@ -5,16 +5,13 @@ package com.phenoml.api.resources.tools.requests;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.resources.tools.types.FhirClientConfig;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,9 +29,7 @@ public final class Lang2FhirAndSearchRequest {
 
     private final Optional<Integer> count;
 
-    private final Optional<Provider> provider;
-
-    private final Optional<FhirClientConfig> meta;
+    private final Optional<String> provider;
 
     private final Map<String, Object> additionalProperties;
 
@@ -43,15 +38,13 @@ public final class Lang2FhirAndSearchRequest {
             Optional<String> patientId,
             Optional<String> practitionerId,
             Optional<Integer> count,
-            Optional<Provider> provider,
-            Optional<FhirClientConfig> meta,
+            Optional<String> provider,
             Map<String, Object> additionalProperties) {
         this.text = text;
         this.patientId = patientId;
         this.practitionerId = practitionerId;
         this.count = count;
         this.provider = provider;
-        this.meta = meta;
         this.additionalProperties = additionalProperties;
     }
 
@@ -88,16 +81,11 @@ public final class Lang2FhirAndSearchRequest {
     }
 
     /**
-     * @return FHIR provider to use for searching
+     * @return FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)
      */
     @JsonProperty("provider")
-    public Optional<Provider> getProvider() {
+    public Optional<String> getProvider() {
         return provider;
-    }
-
-    @JsonProperty("meta")
-    public Optional<FhirClientConfig> getMeta() {
-        return meta;
     }
 
     @java.lang.Override
@@ -116,13 +104,12 @@ public final class Lang2FhirAndSearchRequest {
                 && patientId.equals(other.patientId)
                 && practitionerId.equals(other.practitionerId)
                 && count.equals(other.count)
-                && provider.equals(other.provider)
-                && meta.equals(other.meta);
+                && provider.equals(other.provider);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.text, this.patientId, this.practitionerId, this.count, this.provider, this.meta);
+        return Objects.hash(this.text, this.patientId, this.practitionerId, this.count, this.provider);
     }
 
     @java.lang.Override
@@ -168,24 +155,18 @@ public final class Lang2FhirAndSearchRequest {
         _FinalStage count(Integer count);
 
         /**
-         * <p>FHIR provider to use for searching</p>
+         * <p>FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)</p>
          */
-        _FinalStage provider(Optional<Provider> provider);
+        _FinalStage provider(Optional<String> provider);
 
-        _FinalStage provider(Provider provider);
-
-        _FinalStage meta(Optional<FhirClientConfig> meta);
-
-        _FinalStage meta(FhirClientConfig meta);
+        _FinalStage provider(String provider);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder implements TextStage, _FinalStage {
         private String text;
 
-        private Optional<FhirClientConfig> meta = Optional.empty();
-
-        private Optional<Provider> provider = Optional.empty();
+        private Optional<String> provider = Optional.empty();
 
         private Optional<Integer> count = Optional.empty();
 
@@ -205,7 +186,6 @@ public final class Lang2FhirAndSearchRequest {
             practitionerId(other.getPractitionerId());
             count(other.getCount());
             provider(other.getProvider());
-            meta(other.getMeta());
             return this;
         }
 
@@ -221,35 +201,22 @@ public final class Lang2FhirAndSearchRequest {
             return this;
         }
 
-        @java.lang.Override
-        public _FinalStage meta(FhirClientConfig meta) {
-            this.meta = Optional.ofNullable(meta);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "meta", nulls = Nulls.SKIP)
-        public _FinalStage meta(Optional<FhirClientConfig> meta) {
-            this.meta = meta;
-            return this;
-        }
-
         /**
-         * <p>FHIR provider to use for searching</p>
+         * <p>FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
-        public _FinalStage provider(Provider provider) {
+        public _FinalStage provider(String provider) {
             this.provider = Optional.ofNullable(provider);
             return this;
         }
 
         /**
-         * <p>FHIR provider to use for searching</p>
+         * <p>FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)</p>
          */
         @java.lang.Override
         @JsonSetter(value = "provider", nulls = Nulls.SKIP)
-        public _FinalStage provider(Optional<Provider> provider) {
+        public _FinalStage provider(Optional<String> provider) {
             this.provider = provider;
             return this;
         }
@@ -317,102 +284,7 @@ public final class Lang2FhirAndSearchRequest {
         @java.lang.Override
         public Lang2FhirAndSearchRequest build() {
             return new Lang2FhirAndSearchRequest(
-                    text, patientId, practitionerId, count, provider, meta, additionalProperties);
-        }
-    }
-
-    public static final class Provider {
-        public static final Provider HAPI = new Provider(Value.HAPI, "hapi");
-
-        public static final Provider CANVAS = new Provider(Value.CANVAS, "canvas");
-
-        public static final Provider MEDPLUM = new Provider(Value.MEDPLUM, "medplum");
-
-        public static final Provider GOOGLE_HEALTHCARE = new Provider(Value.GOOGLE_HEALTHCARE, "google_healthcare");
-
-        private final Value value;
-
-        private final String string;
-
-        Provider(Value value, String string) {
-            this.value = value;
-            this.string = string;
-        }
-
-        public Value getEnumValue() {
-            return value;
-        }
-
-        @java.lang.Override
-        @JsonValue
-        public String toString() {
-            return this.string;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            return (this == other) || (other instanceof Provider && this.string.equals(((Provider) other).string));
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return this.string.hashCode();
-        }
-
-        public <T> T visit(Visitor<T> visitor) {
-            switch (value) {
-                case HAPI:
-                    return visitor.visitHapi();
-                case CANVAS:
-                    return visitor.visitCanvas();
-                case MEDPLUM:
-                    return visitor.visitMedplum();
-                case GOOGLE_HEALTHCARE:
-                    return visitor.visitGoogleHealthcare();
-                case UNKNOWN:
-                default:
-                    return visitor.visitUnknown(string);
-            }
-        }
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static Provider valueOf(String value) {
-            switch (value) {
-                case "hapi":
-                    return HAPI;
-                case "canvas":
-                    return CANVAS;
-                case "medplum":
-                    return MEDPLUM;
-                case "google_healthcare":
-                    return GOOGLE_HEALTHCARE;
-                default:
-                    return new Provider(Value.UNKNOWN, value);
-            }
-        }
-
-        public enum Value {
-            MEDPLUM,
-
-            GOOGLE_HEALTHCARE,
-
-            CANVAS,
-
-            HAPI,
-
-            UNKNOWN
-        }
-
-        public interface Visitor<T> {
-            T visitMedplum();
-
-            T visitGoogleHealthcare();
-
-            T visitCanvas();
-
-            T visitHapi();
-
-            T visitUnknown(String unknownType);
+                    text, patientId, practitionerId, count, provider, additionalProperties);
         }
     }
 }

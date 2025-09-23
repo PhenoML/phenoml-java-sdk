@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.resources.agent.types.ChatFhirClientConfig;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -30,8 +29,6 @@ public final class AgentChatRequest {
 
     private final String agentId;
 
-    private final Optional<ChatFhirClientConfig> meta;
-
     private final Map<String, Object> additionalProperties;
 
     private AgentChatRequest(
@@ -39,13 +36,11 @@ public final class AgentChatRequest {
             Optional<String> context,
             Optional<String> sessionId,
             String agentId,
-            Optional<ChatFhirClientConfig> meta,
             Map<String, Object> additionalProperties) {
         this.message = message;
         this.context = context;
         this.sessionId = sessionId;
         this.agentId = agentId;
-        this.meta = meta;
         this.additionalProperties = additionalProperties;
     }
 
@@ -81,14 +76,6 @@ public final class AgentChatRequest {
         return agentId;
     }
 
-    /**
-     * @return Optional user-specific FHIR configuration overrides
-     */
-    @JsonProperty("meta")
-    public Optional<ChatFhirClientConfig> getMeta() {
-        return meta;
-    }
-
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -104,13 +91,12 @@ public final class AgentChatRequest {
         return message.equals(other.message)
                 && context.equals(other.context)
                 && sessionId.equals(other.sessionId)
-                && agentId.equals(other.agentId)
-                && meta.equals(other.meta);
+                && agentId.equals(other.agentId);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.message, this.context, this.sessionId, this.agentId, this.meta);
+        return Objects.hash(this.message, this.context, this.sessionId, this.agentId);
     }
 
     @java.lang.Override
@@ -154,13 +140,6 @@ public final class AgentChatRequest {
         _FinalStage sessionId(Optional<String> sessionId);
 
         _FinalStage sessionId(String sessionId);
-
-        /**
-         * <p>Optional user-specific FHIR configuration overrides</p>
-         */
-        _FinalStage meta(Optional<ChatFhirClientConfig> meta);
-
-        _FinalStage meta(ChatFhirClientConfig meta);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -168,8 +147,6 @@ public final class AgentChatRequest {
         private String message;
 
         private String agentId;
-
-        private Optional<ChatFhirClientConfig> meta = Optional.empty();
 
         private Optional<String> sessionId = Optional.empty();
 
@@ -186,7 +163,6 @@ public final class AgentChatRequest {
             context(other.getContext());
             sessionId(other.getSessionId());
             agentId(other.getAgentId());
-            meta(other.getMeta());
             return this;
         }
 
@@ -211,26 +187,6 @@ public final class AgentChatRequest {
         @JsonSetter("agent_id")
         public _FinalStage agentId(@NotNull String agentId) {
             this.agentId = Objects.requireNonNull(agentId, "agentId must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Optional user-specific FHIR configuration overrides</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage meta(ChatFhirClientConfig meta) {
-            this.meta = Optional.ofNullable(meta);
-            return this;
-        }
-
-        /**
-         * <p>Optional user-specific FHIR configuration overrides</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "meta", nulls = Nulls.SKIP)
-        public _FinalStage meta(Optional<ChatFhirClientConfig> meta) {
-            this.meta = meta;
             return this;
         }
 
@@ -276,7 +232,7 @@ public final class AgentChatRequest {
 
         @java.lang.Override
         public AgentChatRequest build() {
-            return new AgentChatRequest(message, context, sessionId, agentId, meta, additionalProperties);
+            return new AgentChatRequest(message, context, sessionId, agentId, additionalProperties);
         }
     }
 }

@@ -9,6 +9,8 @@ import com.phenoml.api.resources.agent.AgentClient;
 import com.phenoml.api.resources.authtoken.AuthtokenClient;
 import com.phenoml.api.resources.cohort.CohortClient;
 import com.phenoml.api.resources.construe.ConstrueClient;
+import com.phenoml.api.resources.fhir.FhirClient;
+import com.phenoml.api.resources.fhirprovider.FhirProviderClient;
 import com.phenoml.api.resources.lang2fhir.Lang2FhirClient;
 import com.phenoml.api.resources.tools.ToolsClient;
 import java.util.function.Supplier;
@@ -24,6 +26,10 @@ public class PhenoML {
 
     protected final Supplier<ConstrueClient> construeClient;
 
+    protected final Supplier<FhirClient> fhirClient;
+
+    protected final Supplier<FhirProviderClient> fhirProviderClient;
+
     protected final Supplier<Lang2FhirClient> lang2FhirClient;
 
     protected final Supplier<ToolsClient> toolsClient;
@@ -34,6 +40,8 @@ public class PhenoML {
         this.authtokenClient = Suppliers.memoize(() -> new AuthtokenClient(clientOptions));
         this.cohortClient = Suppliers.memoize(() -> new CohortClient(clientOptions));
         this.construeClient = Suppliers.memoize(() -> new ConstrueClient(clientOptions));
+        this.fhirClient = Suppliers.memoize(() -> new FhirClient(clientOptions));
+        this.fhirProviderClient = Suppliers.memoize(() -> new FhirProviderClient(clientOptions));
         this.lang2FhirClient = Suppliers.memoize(() -> new Lang2FhirClient(clientOptions));
         this.toolsClient = Suppliers.memoize(() -> new ToolsClient(clientOptions));
     }
@@ -52,6 +60,14 @@ public class PhenoML {
 
     public ConstrueClient construe() {
         return this.construeClient.get();
+    }
+
+    public FhirClient fhir() {
+        return this.fhirClient.get();
+    }
+
+    public FhirProviderClient fhirProvider() {
+        return this.fhirProviderClient.get();
     }
 
     public Lang2FhirClient lang2Fhir() {
