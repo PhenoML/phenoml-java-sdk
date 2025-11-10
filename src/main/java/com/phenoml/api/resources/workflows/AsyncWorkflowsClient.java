@@ -5,26 +5,27 @@ package com.phenoml.api.resources.workflows;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.core.Suppliers;
-import com.phenoml.api.resources.workflows.mcpserver.AsyncMcpServerClient;
+import com.phenoml.api.resources.workflows.requests.CreateWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.ExecuteWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.UpdateWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.WorkflowsGetRequest;
+import com.phenoml.api.resources.workflows.requests.WorkflowsListRequest;
+import com.phenoml.api.resources.workflows.types.CreateWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.ExecuteWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.ListWorkflowsResponse;
+import com.phenoml.api.resources.workflows.types.WorkflowsDeleteResponse;
+import com.phenoml.api.resources.workflows.types.WorkflowsGetResponse;
+import com.phenoml.api.resources.workflows.types.WorkflowsUpdateResponse;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 
 public class AsyncWorkflowsClient {
     protected final ClientOptions clientOptions;
 
     private final AsyncRawWorkflowsClient rawClient;
 
-    protected final Supplier<com.phenoml.api.resources.workflows.workflows.AsyncWorkflowsClient> workflowsClient;
-
-    protected final Supplier<AsyncMcpServerClient> mcpServerClient;
-
     public AsyncWorkflowsClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.rawClient = new AsyncRawWorkflowsClient(clientOptions);
-        this.workflowsClient = Suppliers.memoize(
-                () -> new com.phenoml.api.resources.workflows.workflows.AsyncWorkflowsClient(clientOptions));
-        this.mcpServerClient = Suppliers.memoize(() -> new AsyncMcpServerClient(clientOptions));
     }
 
     /**
@@ -34,35 +35,105 @@ public class AsyncWorkflowsClient {
         return this.rawClient;
     }
 
-    public CompletableFuture<Void> createFhirResource() {
-        return this.rawClient.createFhirResource().thenApply(response -> response.body());
+    /**
+     * Retrieves all workflow definitions for the authenticated user
+     */
+    public CompletableFuture<ListWorkflowsResponse> list() {
+        return this.rawClient.list().thenApply(response -> response.body());
     }
 
-    public CompletableFuture<Void> createFhirResource(RequestOptions requestOptions) {
-        return this.rawClient.createFhirResource(requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieves all workflow definitions for the authenticated user
+     */
+    public CompletableFuture<ListWorkflowsResponse> list(WorkflowsListRequest request) {
+        return this.rawClient.list(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<Void> searchFhirResources() {
-        return this.rawClient.searchFhirResources().thenApply(response -> response.body());
+    /**
+     * Retrieves all workflow definitions for the authenticated user
+     */
+    public CompletableFuture<ListWorkflowsResponse> list(WorkflowsListRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<Void> searchFhirResources(RequestOptions requestOptions) {
-        return this.rawClient.searchFhirResources(requestOptions).thenApply(response -> response.body());
+    /**
+     * Creates a new workflow definition with graph generation from workflow instructions
+     */
+    public CompletableFuture<CreateWorkflowResponse> create(CreateWorkflowRequest request) {
+        return this.rawClient.create(request).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<Void> analyzeCohort() {
-        return this.rawClient.analyzeCohort().thenApply(response -> response.body());
+    /**
+     * Creates a new workflow definition with graph generation from workflow instructions
+     */
+    public CompletableFuture<CreateWorkflowResponse> create(
+            CreateWorkflowRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public CompletableFuture<Void> analyzeCohort(RequestOptions requestOptions) {
-        return this.rawClient.analyzeCohort(requestOptions).thenApply(response -> response.body());
+    /**
+     * Retrieves a workflow definition by its ID
+     */
+    public CompletableFuture<WorkflowsGetResponse> get(String id) {
+        return this.rawClient.get(id).thenApply(response -> response.body());
     }
 
-    public com.phenoml.api.resources.workflows.workflows.AsyncWorkflowsClient workflows() {
-        return this.workflowsClient.get();
+    /**
+     * Retrieves a workflow definition by its ID
+     */
+    public CompletableFuture<WorkflowsGetResponse> get(String id, WorkflowsGetRequest request) {
+        return this.rawClient.get(id, request).thenApply(response -> response.body());
     }
 
-    public AsyncMcpServerClient mcpServer() {
-        return this.mcpServerClient.get();
+    /**
+     * Retrieves a workflow definition by its ID
+     */
+    public CompletableFuture<WorkflowsGetResponse> get(
+            String id, WorkflowsGetRequest request, RequestOptions requestOptions) {
+        return this.rawClient.get(id, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Updates an existing workflow definition
+     */
+    public CompletableFuture<WorkflowsUpdateResponse> update(String id, UpdateWorkflowRequest request) {
+        return this.rawClient.update(id, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Updates an existing workflow definition
+     */
+    public CompletableFuture<WorkflowsUpdateResponse> update(
+            String id, UpdateWorkflowRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Deletes a workflow definition by its ID
+     */
+    public CompletableFuture<WorkflowsDeleteResponse> delete(String id) {
+        return this.rawClient.delete(id).thenApply(response -> response.body());
+    }
+
+    /**
+     * Deletes a workflow definition by its ID
+     */
+    public CompletableFuture<WorkflowsDeleteResponse> delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Executes a workflow with provided input data and returns results
+     */
+    public CompletableFuture<ExecuteWorkflowResponse> execute(String id, ExecuteWorkflowRequest request) {
+        return this.rawClient.execute(id, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Executes a workflow with provided input data and returns results
+     */
+    public CompletableFuture<ExecuteWorkflowResponse> execute(
+            String id, ExecuteWorkflowRequest request, RequestOptions requestOptions) {
+        return this.rawClient.execute(id, request, requestOptions).thenApply(response -> response.body());
     }
 }

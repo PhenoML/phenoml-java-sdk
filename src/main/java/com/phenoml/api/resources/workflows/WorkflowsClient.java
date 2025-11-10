@@ -5,25 +5,26 @@ package com.phenoml.api.resources.workflows;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.core.Suppliers;
-import com.phenoml.api.resources.workflows.mcpserver.McpServerClient;
-import java.util.function.Supplier;
+import com.phenoml.api.resources.workflows.requests.CreateWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.ExecuteWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.UpdateWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.WorkflowsGetRequest;
+import com.phenoml.api.resources.workflows.requests.WorkflowsListRequest;
+import com.phenoml.api.resources.workflows.types.CreateWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.ExecuteWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.ListWorkflowsResponse;
+import com.phenoml.api.resources.workflows.types.WorkflowsDeleteResponse;
+import com.phenoml.api.resources.workflows.types.WorkflowsGetResponse;
+import com.phenoml.api.resources.workflows.types.WorkflowsUpdateResponse;
 
 public class WorkflowsClient {
     protected final ClientOptions clientOptions;
 
     private final RawWorkflowsClient rawClient;
 
-    protected final Supplier<com.phenoml.api.resources.workflows.workflows.WorkflowsClient> workflowsClient;
-
-    protected final Supplier<McpServerClient> mcpServerClient;
-
     public WorkflowsClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.rawClient = new RawWorkflowsClient(clientOptions);
-        this.workflowsClient = Suppliers.memoize(
-                () -> new com.phenoml.api.resources.workflows.workflows.WorkflowsClient(clientOptions));
-        this.mcpServerClient = Suppliers.memoize(() -> new McpServerClient(clientOptions));
     }
 
     /**
@@ -33,35 +34,101 @@ public class WorkflowsClient {
         return this.rawClient;
     }
 
-    public void createFhirResource() {
-        this.rawClient.createFhirResource().body();
+    /**
+     * Retrieves all workflow definitions for the authenticated user
+     */
+    public ListWorkflowsResponse list() {
+        return this.rawClient.list().body();
     }
 
-    public void createFhirResource(RequestOptions requestOptions) {
-        this.rawClient.createFhirResource(requestOptions).body();
+    /**
+     * Retrieves all workflow definitions for the authenticated user
+     */
+    public ListWorkflowsResponse list(WorkflowsListRequest request) {
+        return this.rawClient.list(request).body();
     }
 
-    public void searchFhirResources() {
-        this.rawClient.searchFhirResources().body();
+    /**
+     * Retrieves all workflow definitions for the authenticated user
+     */
+    public ListWorkflowsResponse list(WorkflowsListRequest request, RequestOptions requestOptions) {
+        return this.rawClient.list(request, requestOptions).body();
     }
 
-    public void searchFhirResources(RequestOptions requestOptions) {
-        this.rawClient.searchFhirResources(requestOptions).body();
+    /**
+     * Creates a new workflow definition with graph generation from workflow instructions
+     */
+    public CreateWorkflowResponse create(CreateWorkflowRequest request) {
+        return this.rawClient.create(request).body();
     }
 
-    public void analyzeCohort() {
-        this.rawClient.analyzeCohort().body();
+    /**
+     * Creates a new workflow definition with graph generation from workflow instructions
+     */
+    public CreateWorkflowResponse create(CreateWorkflowRequest request, RequestOptions requestOptions) {
+        return this.rawClient.create(request, requestOptions).body();
     }
 
-    public void analyzeCohort(RequestOptions requestOptions) {
-        this.rawClient.analyzeCohort(requestOptions).body();
+    /**
+     * Retrieves a workflow definition by its ID
+     */
+    public WorkflowsGetResponse get(String id) {
+        return this.rawClient.get(id).body();
     }
 
-    public com.phenoml.api.resources.workflows.workflows.WorkflowsClient workflows() {
-        return this.workflowsClient.get();
+    /**
+     * Retrieves a workflow definition by its ID
+     */
+    public WorkflowsGetResponse get(String id, WorkflowsGetRequest request) {
+        return this.rawClient.get(id, request).body();
     }
 
-    public McpServerClient mcpServer() {
-        return this.mcpServerClient.get();
+    /**
+     * Retrieves a workflow definition by its ID
+     */
+    public WorkflowsGetResponse get(String id, WorkflowsGetRequest request, RequestOptions requestOptions) {
+        return this.rawClient.get(id, request, requestOptions).body();
+    }
+
+    /**
+     * Updates an existing workflow definition
+     */
+    public WorkflowsUpdateResponse update(String id, UpdateWorkflowRequest request) {
+        return this.rawClient.update(id, request).body();
+    }
+
+    /**
+     * Updates an existing workflow definition
+     */
+    public WorkflowsUpdateResponse update(String id, UpdateWorkflowRequest request, RequestOptions requestOptions) {
+        return this.rawClient.update(id, request, requestOptions).body();
+    }
+
+    /**
+     * Deletes a workflow definition by its ID
+     */
+    public WorkflowsDeleteResponse delete(String id) {
+        return this.rawClient.delete(id).body();
+    }
+
+    /**
+     * Deletes a workflow definition by its ID
+     */
+    public WorkflowsDeleteResponse delete(String id, RequestOptions requestOptions) {
+        return this.rawClient.delete(id, requestOptions).body();
+    }
+
+    /**
+     * Executes a workflow with provided input data and returns results
+     */
+    public ExecuteWorkflowResponse execute(String id, ExecuteWorkflowRequest request) {
+        return this.rawClient.execute(id, request).body();
+    }
+
+    /**
+     * Executes a workflow with provided input data and returns results
+     */
+    public ExecuteWorkflowResponse execute(String id, ExecuteWorkflowRequest request, RequestOptions requestOptions) {
+        return this.rawClient.execute(id, request, requestOptions).body();
     }
 }
