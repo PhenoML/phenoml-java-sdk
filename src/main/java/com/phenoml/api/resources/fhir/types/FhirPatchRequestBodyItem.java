@@ -62,6 +62,9 @@ public final class FhirPatchRequestBodyItem {
         return path;
     }
 
+    /**
+     * @return The value to use (required for add, replace, test operations)
+     */
     @JsonProperty("value")
     public Optional<Object> getValue() {
         return value;
@@ -123,6 +126,9 @@ public final class FhirPatchRequestBodyItem {
     public interface _FinalStage {
         FhirPatchRequestBodyItem build();
 
+        /**
+         * <p>The value to use (required for add, replace, test operations)</p>
+         */
         _FinalStage value(Optional<Object> value);
 
         _FinalStage value(Object value);
@@ -203,12 +209,19 @@ public final class FhirPatchRequestBodyItem {
             return this;
         }
 
+        /**
+         * <p>The value to use (required for add, replace, test operations)</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
         @java.lang.Override
         public _FinalStage value(Object value) {
             this.value = Optional.ofNullable(value);
             return this;
         }
 
+        /**
+         * <p>The value to use (required for add, replace, test operations)</p>
+         */
         @java.lang.Override
         @JsonSetter(value = "value", nulls = Nulls.SKIP)
         public _FinalStage value(Optional<Object> value) {
