@@ -3592,8 +3592,8 @@ client.tools().mcpServer().tools().call(
 </dl>
 </details>
 
-## Workflows Workflows
-<details><summary><code>client.workflows.workflows.list() -> ListWorkflowsResponse</code></summary>
+## Workflows
+<details><summary><code>client.workflows.list() -> ListWorkflowsResponse</code></summary>
 <dl>
 <dd>
 
@@ -3620,7 +3620,7 @@ Retrieves all workflow definitions for the authenticated user
 <dd>
 
 ```java
-client.workflows().workflows().list(
+client.workflows().list(
     WorkflowsListRequest
         .builder()
         .verbose(true)
@@ -3652,7 +3652,7 @@ client.workflows().workflows().list(
 </dl>
 </details>
 
-<details><summary><code>client.workflows.workflows.create(request) -> CreateWorkflowResponse</code></summary>
+<details><summary><code>client.workflows.create(request) -> CreateWorkflowResponse</code></summary>
 <dl>
 <dd>
 
@@ -3679,7 +3679,7 @@ Creates a new workflow definition with graph generation from workflow instructio
 <dd>
 
 ```java
-client.workflows().workflows().create(
+client.workflows().create(
     CreateWorkflowRequest
         .builder()
         .name("Patient Data Mapping Workflow")
@@ -3763,7 +3763,7 @@ client.workflows().workflows().create(
 </dl>
 </details>
 
-<details><summary><code>client.workflows.workflows.get(id) -> WorkflowsGetResponse</code></summary>
+<details><summary><code>client.workflows.get(id) -> WorkflowsGetResponse</code></summary>
 <dl>
 <dd>
 
@@ -3790,7 +3790,7 @@ Retrieves a workflow definition by its ID
 <dd>
 
 ```java
-client.workflows().workflows().get(
+client.workflows().get(
     "id",
     WorkflowsGetRequest
         .builder()
@@ -3831,7 +3831,7 @@ client.workflows().workflows().get(
 </dl>
 </details>
 
-<details><summary><code>client.workflows.workflows.update(id, request) -> WorkflowsUpdateResponse</code></summary>
+<details><summary><code>client.workflows.update(id, request) -> WorkflowsUpdateResponse</code></summary>
 <dl>
 <dd>
 
@@ -3858,7 +3858,7 @@ Updates an existing workflow definition
 <dd>
 
 ```java
-client.workflows().workflows().update(
+client.workflows().update(
     "id",
     UpdateWorkflowRequest
         .builder()
@@ -3951,7 +3951,7 @@ client.workflows().workflows().update(
 </dl>
 </details>
 
-<details><summary><code>client.workflows.workflows.delete(id) -> WorkflowsDeleteResponse</code></summary>
+<details><summary><code>client.workflows.delete(id) -> WorkflowsDeleteResponse</code></summary>
 <dl>
 <dd>
 
@@ -3978,7 +3978,7 @@ Deletes a workflow definition by its ID
 <dd>
 
 ```java
-client.workflows().workflows().delete("id");
+client.workflows().delete("id");
 ```
 </dd>
 </dl>
@@ -4005,7 +4005,7 @@ client.workflows().workflows().delete("id");
 </dl>
 </details>
 
-<details><summary><code>client.workflows.workflows.execute(id, request) -> ExecuteWorkflowResponse</code></summary>
+<details><summary><code>client.workflows.execute(id, request) -> ExecuteWorkflowResponse</code></summary>
 <dl>
 <dd>
 
@@ -4032,7 +4032,7 @@ Executes a workflow with provided input data and returns results
 <dd>
 
 ```java
-client.workflows().workflows().execute(
+client.workflows().execute(
     "id",
     ExecuteWorkflowRequest
         .builder()
@@ -4069,374 +4069,6 @@ client.workflows().workflows().execute(
 <dd>
 
 **inputData:** `Map<String, Object>` — Input data for workflow execution
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Workflows
-<details><summary><code>client.workflows.createFhirResource()</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.workflows().createFhirResource();
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.workflows.searchFhirResources()</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.workflows().searchFhirResources();
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.workflows.analyzeCohort()</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.workflows().analyzeCohort();
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Workflows McpServer
-<details><summary><code>client.workflows.mcpServer.create()</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.workflows().mcpServer().create();
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.workflows.mcpServer.list()</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.tools().mcpServer().list();
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.workflows.mcpServer.get(mcpServerId)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.tools().mcpServer().get("mcp_server_id");
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**mcpServerId:** `String` 
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.workflows.mcpServer.delete(mcpServerId)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.tools().mcpServer().delete("mcp_server_id");
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**mcpServerId:** `String` 
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Workflows McpServer Tools
-<details><summary><code>client.workflows.mcpServer.tools.list(mcpServerId)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.tools().mcpServer().tools().list("mcp_server_id");
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**mcpServerId:** `String` 
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.workflows.mcpServer.tools.get(mcpServerToolId)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.tools().mcpServer().tools().get("mcp_server_tool_id");
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**mcpServerToolId:** `String` 
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.workflows.mcpServer.tools.delete(mcpServerToolId)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.tools().mcpServer().tools().delete("mcp_server_tool_id");
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**mcpServerToolId:** `String` 
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.workflows.mcpServer.tools.call(mcpServerToolId)</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.workflows().mcpServer().tools().call("mcp_server_tool_id");
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**mcpServerToolId:** `String` 
     
 </dd>
 </dl>

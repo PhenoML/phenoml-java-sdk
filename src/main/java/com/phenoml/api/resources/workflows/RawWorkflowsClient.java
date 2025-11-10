@@ -3,13 +3,34 @@
  */
 package com.phenoml.api.resources.workflows;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.core.PhenoMLApiException;
 import com.phenoml.api.core.PhenoMLException;
 import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.resources.workflows.errors.BadRequestError;
+import com.phenoml.api.resources.workflows.errors.ForbiddenError;
+import com.phenoml.api.resources.workflows.errors.InternalServerError;
+import com.phenoml.api.resources.workflows.errors.NotFoundError;
+import com.phenoml.api.resources.workflows.errors.UnauthorizedError;
+import com.phenoml.api.resources.workflows.requests.CreateWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.ExecuteWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.UpdateWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.WorkflowsGetRequest;
+import com.phenoml.api.resources.workflows.requests.WorkflowsListRequest;
+import com.phenoml.api.resources.workflows.types.CreateWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.ExecuteWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.ListWorkflowsResponse;
+import com.phenoml.api.resources.workflows.types.WorkflowsDeleteResponse;
+import com.phenoml.api.resources.workflows.types.WorkflowsGetResponse;
+import com.phenoml.api.resources.workflows.types.WorkflowsUpdateResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -25,20 +46,38 @@ public class RawWorkflowsClient {
         this.clientOptions = clientOptions;
     }
 
-    public PhenoMLHttpResponse<Void> createFhirResource() {
-        return createFhirResource(null);
+    /**
+     * Retrieves all workflow definitions for the authenticated user
+     */
+    public PhenoMLHttpResponse<ListWorkflowsResponse> list() {
+        return list(WorkflowsListRequest.builder().build());
     }
 
-    public PhenoMLHttpResponse<Void> createFhirResource(RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+    /**
+     * Retrieves all workflow definitions for the authenticated user
+     */
+    public PhenoMLHttpResponse<ListWorkflowsResponse> list(WorkflowsListRequest request) {
+        return list(request, null);
+    }
+
+    /**
+     * Retrieves all workflow definitions for the authenticated user
+     */
+    public PhenoMLHttpResponse<ListWorkflowsResponse> list(
+            WorkflowsListRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("tools/lang2fhir-and-create")
-                .build();
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl)
-                .method("POST", RequestBody.create("", null))
+                .addPathSegments("workflows");
+        if (request.getVerbose().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "verbose", request.getVerbose().get(), false);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("GET", null)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .build();
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
         OkHttpClient client = clientOptions.httpClient();
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
@@ -46,9 +85,26 @@ public class RawWorkflowsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(null, response);
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ListWorkflowsResponse.class),
+                        response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
             throw new PhenoMLApiException(
                     "Error with status code " + response.code(),
                     response.code(),
@@ -59,20 +115,47 @@ public class RawWorkflowsClient {
         }
     }
 
-    public PhenoMLHttpResponse<Void> searchFhirResources() {
-        return searchFhirResources(null);
+    /**
+     * Creates a new workflow definition with graph generation from workflow instructions
+     */
+    public PhenoMLHttpResponse<CreateWorkflowResponse> create(CreateWorkflowRequest request) {
+        return create(request, null);
     }
 
-    public PhenoMLHttpResponse<Void> searchFhirResources(RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+    /**
+     * Creates a new workflow definition with graph generation from workflow instructions
+     */
+    public PhenoMLHttpResponse<CreateWorkflowResponse> create(
+            CreateWorkflowRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("tools/lang2fhir-and-search")
-                .build();
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl)
-                .method("POST", RequestBody.create("", null))
+                .addPathSegments("workflows");
+        if (request.getVerbose().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "verbose", request.getVerbose().get(), false);
+        }
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("name", request.getName());
+        properties.put("workflow_instructions", request.getWorkflowInstructions());
+        properties.put("sample_data", request.getSampleData());
+        properties.put("fhir_provider_id", request.getFhirProviderId());
+        if (request.getDynamicGeneration().isPresent()) {
+            properties.put("dynamic_generation", request.getDynamicGeneration());
+        }
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(properties), MediaTypes.APPLICATION_JSON);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .build();
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
         OkHttpClient client = clientOptions.httpClient();
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
@@ -80,9 +163,29 @@ public class RawWorkflowsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(null, response);
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), CreateWorkflowResponse.class),
+                        response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
             throw new PhenoMLApiException(
                     "Error with status code " + response.code(),
                     response.code(),
@@ -93,19 +196,185 @@ public class RawWorkflowsClient {
         }
     }
 
-    public PhenoMLHttpResponse<Void> analyzeCohort() {
-        return analyzeCohort(null);
+    /**
+     * Retrieves a workflow definition by its ID
+     */
+    public PhenoMLHttpResponse<WorkflowsGetResponse> get(String id) {
+        return get(id, WorkflowsGetRequest.builder().build());
     }
 
-    public PhenoMLHttpResponse<Void> analyzeCohort(RequestOptions requestOptions) {
+    /**
+     * Retrieves a workflow definition by its ID
+     */
+    public PhenoMLHttpResponse<WorkflowsGetResponse> get(String id, WorkflowsGetRequest request) {
+        return get(id, request, null);
+    }
+
+    /**
+     * Retrieves a workflow definition by its ID
+     */
+    public PhenoMLHttpResponse<WorkflowsGetResponse> get(
+            String id, WorkflowsGetRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("workflows")
+                .addPathSegment(id);
+        if (request.getVerbose().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "verbose", request.getVerbose().get(), false);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("GET", null)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), WorkflowsGetResponse.class),
+                        response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 404:
+                        throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Updates an existing workflow definition
+     */
+    public PhenoMLHttpResponse<WorkflowsUpdateResponse> update(String id, UpdateWorkflowRequest request) {
+        return update(id, request, null);
+    }
+
+    /**
+     * Updates an existing workflow definition
+     */
+    public PhenoMLHttpResponse<WorkflowsUpdateResponse> update(
+            String id, UpdateWorkflowRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("workflows")
+                .addPathSegment(id);
+        if (request.getVerbose().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "verbose", request.getVerbose().get(), false);
+        }
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("name", request.getName());
+        properties.put("workflow_instructions", request.getWorkflowInstructions());
+        properties.put("sample_data", request.getSampleData());
+        properties.put("fhir_provider_id", request.getFhirProviderId());
+        if (request.getDynamicGeneration().isPresent()) {
+            properties.put("dynamic_generation", request.getDynamicGeneration());
+        }
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(properties), MediaTypes.APPLICATION_JSON);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("PUT", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), WorkflowsUpdateResponse.class),
+                        response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 404:
+                        throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Deletes a workflow definition by its ID
+     */
+    public PhenoMLHttpResponse<WorkflowsDeleteResponse> delete(String id) {
+        return delete(id, null);
+    }
+
+    /**
+     * Deletes a workflow definition by its ID
+     */
+    public PhenoMLHttpResponse<WorkflowsDeleteResponse> delete(String id, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("tools/cohort")
+                .addPathSegments("workflows")
+                .addPathSegment(id)
                 .build();
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
-                .method("POST", RequestBody.create("", null))
+                .method("DELETE", null)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json")
                 .build();
         OkHttpClient client = clientOptions.httpClient();
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
@@ -114,9 +383,104 @@ public class RawWorkflowsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(null, response);
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), WorkflowsDeleteResponse.class),
+                        response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 404:
+                        throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Executes a workflow with provided input data and returns results
+     */
+    public PhenoMLHttpResponse<ExecuteWorkflowResponse> execute(String id, ExecuteWorkflowRequest request) {
+        return execute(id, request, null);
+    }
+
+    /**
+     * Executes a workflow with provided input data and returns results
+     */
+    public PhenoMLHttpResponse<ExecuteWorkflowResponse> execute(
+            String id, ExecuteWorkflowRequest request, RequestOptions requestOptions) {
+        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("workflows")
+                .addPathSegment(id)
+                .addPathSegments("execute")
+                .build();
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+        } catch (JsonProcessingException e) {
+            throw new PhenoMLException("Failed to serialize request", e);
+        }
+        Request okhttpRequest = new Request.Builder()
+                .url(httpUrl)
+                .method("POST", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ExecuteWorkflowResponse.class),
+                        response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 404:
+                        throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
             throw new PhenoMLApiException(
                     "Error with status code " + response.code(),
                     response.code(),
