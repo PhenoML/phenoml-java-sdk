@@ -95,6 +95,8 @@ Retrieves a list of PhenoAgents belonging to the authenticated user
 client.agent().list(
     AgentListRequest
         .builder()
+        .isActive(true)
+        .tags("tags")
         .build()
 );
 ```
@@ -513,6 +515,9 @@ client.agent().getChatMessages(
     AgentGetChatMessagesRequest
         .builder()
         .chatSessionId("chat_session_id")
+        .numMessages(1)
+        .role("role")
+        .order(AgentGetChatMessagesRequestOrder.ASC)
         .build()
 );
 ```
@@ -1469,8 +1474,8 @@ The request is proxied to the configured FHIR server with appropriate authentica
 
 ```java
 client.fhir().search(
-    "fhir_provider_id",
-    "fhir_path",
+    "550e8400-e29b-41d4-a716-446655440000",
+    "Patient",
     FhirSearchRequest
         .builder()
         .phenomlOnBehalfOf("user@example.com")
@@ -1572,8 +1577,8 @@ The request is proxied to the configured FHIR server with appropriate authentica
 
 ```java
 client.fhir().create(
-    "fhir_provider_id",
-    "fhir_path",
+    "550e8400-e29b-41d4-a716-446655440000",
+    "Patient",
     FhirCreateRequest
         .builder()
         .body(
@@ -1675,8 +1680,8 @@ The request is proxied to the configured FHIR server with appropriate authentica
 
 ```java
 client.fhir().upsert(
-    "fhir_provider_id",
-    "fhir_path",
+    "550e8400-e29b-41d4-a716-446655440000",
+    "Patient",
     FhirUpsertRequest
         .builder()
         .body(
@@ -1779,8 +1784,8 @@ The request is proxied to the configured FHIR server with appropriate authentica
 
 ```java
 client.fhir().delete(
-    "fhir_provider_id",
-    "fhir_path",
+    "550e8400-e29b-41d4-a716-446655440000",
+    "Patient",
     FhirDeleteRequest
         .builder()
         .phenomlOnBehalfOf("user@example.com")
@@ -1873,8 +1878,8 @@ The request is proxied to the configured FHIR server with appropriate authentica
 
 ```java
 client.fhir().patch(
-    "fhir_provider_id",
-    "fhir_path",
+    "550e8400-e29b-41d4-a716-446655440000",
+    "Patient",
     FhirPatchRequest
         .builder()
         .body(
@@ -1984,7 +1989,7 @@ The request is proxied to the configured FHIR server with appropriate authentica
 
 ```java
 client.fhir().executeBundle(
-    "fhir_provider_id",
+    "550e8400-e29b-41d4-a716-446655440000",
     FhirExecuteBundleRequest
         .builder()
         .body(
@@ -3576,6 +3581,862 @@ client.tools().mcpServer().tools().call(
 <dd>
 
 **arguments:** `Map<String, Object>` — Arguments to pass to the MCP server tool
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Workflows Workflows
+<details><summary><code>client.workflows.workflows.list() -> ListWorkflowsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves all workflow definitions for the authenticated user
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.workflows().workflows().list(
+    WorkflowsListRequest
+        .builder()
+        .verbose(true)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**verbose:** `Optional<Boolean>` — If true, includes full workflow implementation details in workflow_details field
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.workflows.workflows.create(request) -> CreateWorkflowResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a new workflow definition with graph generation from workflow instructions
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.workflows().workflows().create(
+    CreateWorkflowRequest
+        .builder()
+        .name("Patient Data Mapping Workflow")
+        .workflowInstructions("Given diagnosis data, find the patient and create condition record")
+        .sampleData(
+            new HashMap<String, Object>() {{
+                put("patient_last_name", "Rippin");
+                put("patient_first_name", "Clay");
+                put("diagnosis_code", "I10");
+            }}
+        )
+        .fhirProviderId(
+            CreateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
+        )
+        .verbose(true)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**verbose:** `Optional<Boolean>` — If true, includes full workflow implementation details in workflow_details field
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `String` — Human-readable name for the workflow
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**workflowInstructions:** `String` — Natural language instructions that define the workflow logic
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sampleData:** `Map<String, Object>` — Sample data to use for workflow graph generation
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fhirProviderId:** `CreateWorkflowRequestFhirProviderId` — FHIR provider ID(s) - must be valid UUID(s) from existing FHIR providers
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dynamicGeneration:** `Optional<Boolean>` — Enable dynamic lang2fhir calls instead of pre-populated templates
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.workflows.workflows.get(id) -> WorkflowsGetResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a workflow definition by its ID
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.workflows().workflows().get(
+    "id",
+    WorkflowsGetRequest
+        .builder()
+        .verbose(true)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — ID of the workflow to retrieve
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**verbose:** `Optional<Boolean>` — If true, includes full workflow implementation details in workflow_details field
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.workflows.workflows.update(id, request) -> WorkflowsUpdateResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates an existing workflow definition
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.workflows().workflows().update(
+    "id",
+    UpdateWorkflowRequest
+        .builder()
+        .name("Updated Patient Data Mapping Workflow")
+        .workflowInstructions("Given diagnosis data, find the patient and create condition record")
+        .sampleData(
+            new HashMap<String, Object>() {{
+                put("patient_last_name", "Smith");
+                put("patient_first_name", "John");
+                put("diagnosis_code", "E11");
+            }}
+        )
+        .fhirProviderId(
+            UpdateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
+        )
+        .verbose(true)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — ID of the workflow to update
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**verbose:** `Optional<Boolean>` — If true, includes full workflow implementation details in workflow_details field
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `String` — Human-readable name for the workflow
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**workflowInstructions:** `String` — Natural language instructions that define the workflow logic
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sampleData:** `Map<String, Object>` — Sample data to use for workflow graph generation
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fhirProviderId:** `UpdateWorkflowRequestFhirProviderId` — FHIR provider ID(s) - must be valid UUID(s) from existing FHIR providers
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dynamicGeneration:** `Optional<Boolean>` — Enable dynamic lang2fhir calls instead of pre-populated templates
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.workflows.workflows.delete(id) -> WorkflowsDeleteResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes a workflow definition by its ID
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.workflows().workflows().delete("id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — ID of the workflow to delete
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.workflows.workflows.execute(id, request) -> ExecuteWorkflowResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Executes a workflow with provided input data and returns results
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.workflows().workflows().execute(
+    "id",
+    ExecuteWorkflowRequest
+        .builder()
+        .inputData(
+            new HashMap<String, Object>() {{
+                put("patient_last_name", "Johnson");
+                put("patient_first_name", "Mary");
+                put("diagnosis_code", "M79.3");
+                put("encounter_date", "2024-01-15");
+            }}
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — ID of the workflow to execute
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**inputData:** `Map<String, Object>` — Input data for workflow execution
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Workflows
+<details><summary><code>client.workflows.createFhirResource()</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.workflows().createFhirResource();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.workflows.searchFhirResources()</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.workflows().searchFhirResources();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.workflows.analyzeCohort()</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.workflows().analyzeCohort();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Workflows McpServer
+<details><summary><code>client.workflows.mcpServer.create()</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.workflows().mcpServer().create();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.workflows.mcpServer.list()</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().list();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.workflows.mcpServer.get(mcpServerId)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().get("mcp_server_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**mcpServerId:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.workflows.mcpServer.delete(mcpServerId)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().delete("mcp_server_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**mcpServerId:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Workflows McpServer Tools
+<details><summary><code>client.workflows.mcpServer.tools.list(mcpServerId)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().tools().list("mcp_server_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**mcpServerId:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.workflows.mcpServer.tools.get(mcpServerToolId)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().tools().get("mcp_server_tool_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**mcpServerToolId:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.workflows.mcpServer.tools.delete(mcpServerToolId)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().mcpServer().tools().delete("mcp_server_tool_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**mcpServerToolId:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.workflows.mcpServer.tools.call(mcpServerToolId)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.workflows().mcpServer().tools().call("mcp_server_tool_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**mcpServerToolId:** `String` 
     
 </dd>
 </dl>

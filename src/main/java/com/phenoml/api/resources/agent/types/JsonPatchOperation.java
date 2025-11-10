@@ -62,6 +62,9 @@ public final class JsonPatchOperation {
         return path;
     }
 
+    /**
+     * @return The value to be used within the operations
+     */
     @JsonProperty("value")
     public Optional<Object> getValue() {
         return value;
@@ -123,6 +126,9 @@ public final class JsonPatchOperation {
     public interface _FinalStage {
         JsonPatchOperation build();
 
+        /**
+         * <p>The value to be used within the operations</p>
+         */
         _FinalStage value(Optional<Object> value);
 
         _FinalStage value(Object value);
@@ -203,12 +209,19 @@ public final class JsonPatchOperation {
             return this;
         }
 
+        /**
+         * <p>The value to be used within the operations</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
         @java.lang.Override
         public _FinalStage value(Object value) {
             this.value = Optional.ofNullable(value);
             return this;
         }
 
+        /**
+         * <p>The value to be used within the operations</p>
+         */
         @java.lang.Override
         @JsonSetter(value = "value", nulls = Nulls.SKIP)
         public _FinalStage value(Optional<Object> value) {

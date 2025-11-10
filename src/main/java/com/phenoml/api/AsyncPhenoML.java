@@ -13,6 +13,7 @@ import com.phenoml.api.resources.fhir.AsyncFhirClient;
 import com.phenoml.api.resources.fhirprovider.AsyncFhirProviderClient;
 import com.phenoml.api.resources.lang2fhir.AsyncLang2FhirClient;
 import com.phenoml.api.resources.tools.AsyncToolsClient;
+import com.phenoml.api.resources.workflows.AsyncWorkflowsClient;
 import java.util.function.Supplier;
 
 public class AsyncPhenoML {
@@ -34,6 +35,8 @@ public class AsyncPhenoML {
 
     protected final Supplier<AsyncToolsClient> toolsClient;
 
+    protected final Supplier<AsyncWorkflowsClient> workflowsClient;
+
     public AsyncPhenoML(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.agentClient = Suppliers.memoize(() -> new AsyncAgentClient(clientOptions));
@@ -44,6 +47,7 @@ public class AsyncPhenoML {
         this.fhirProviderClient = Suppliers.memoize(() -> new AsyncFhirProviderClient(clientOptions));
         this.lang2FhirClient = Suppliers.memoize(() -> new AsyncLang2FhirClient(clientOptions));
         this.toolsClient = Suppliers.memoize(() -> new AsyncToolsClient(clientOptions));
+        this.workflowsClient = Suppliers.memoize(() -> new AsyncWorkflowsClient(clientOptions));
     }
 
     public AsyncAgentClient agent() {
@@ -76,6 +80,10 @@ public class AsyncPhenoML {
 
     public AsyncToolsClient tools() {
         return this.toolsClient.get();
+    }
+
+    public AsyncWorkflowsClient workflows() {
+        return this.workflowsClient.get();
     }
 
     public static AsyncPhenoMLBuilder builder() {

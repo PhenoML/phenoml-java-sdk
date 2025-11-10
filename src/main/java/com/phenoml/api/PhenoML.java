@@ -13,6 +13,7 @@ import com.phenoml.api.resources.fhir.FhirClient;
 import com.phenoml.api.resources.fhirprovider.FhirProviderClient;
 import com.phenoml.api.resources.lang2fhir.Lang2FhirClient;
 import com.phenoml.api.resources.tools.ToolsClient;
+import com.phenoml.api.resources.workflows.WorkflowsClient;
 import java.util.function.Supplier;
 
 public class PhenoML {
@@ -34,6 +35,8 @@ public class PhenoML {
 
     protected final Supplier<ToolsClient> toolsClient;
 
+    protected final Supplier<WorkflowsClient> workflowsClient;
+
     public PhenoML(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.agentClient = Suppliers.memoize(() -> new AgentClient(clientOptions));
@@ -44,6 +47,7 @@ public class PhenoML {
         this.fhirProviderClient = Suppliers.memoize(() -> new FhirProviderClient(clientOptions));
         this.lang2FhirClient = Suppliers.memoize(() -> new Lang2FhirClient(clientOptions));
         this.toolsClient = Suppliers.memoize(() -> new ToolsClient(clientOptions));
+        this.workflowsClient = Suppliers.memoize(() -> new WorkflowsClient(clientOptions));
     }
 
     public AgentClient agent() {
@@ -76,6 +80,10 @@ public class PhenoML {
 
     public ToolsClient tools() {
         return this.toolsClient.get();
+    }
+
+    public WorkflowsClient workflows() {
+        return this.workflowsClient.get();
     }
 
     public static PhenoMLBuilder builder() {

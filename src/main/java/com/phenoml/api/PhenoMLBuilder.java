@@ -176,9 +176,6 @@ public class PhenoMLBuilder {
     protected void validateConfiguration() {}
 
     public PhenoML build() {
-        if (token == null) {
-            throw new RuntimeException("Please provide token");
-        }
         validateConfiguration();
         return new PhenoML(buildClientOptions());
     }
