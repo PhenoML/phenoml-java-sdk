@@ -32,10 +32,10 @@ public final class ClientOptions {
         this.headers.putAll(headers);
         this.headers.putAll(new HashMap<String, String>() {
             {
-                put("User-Agent", "com.phenoml.maven:phenoml-java-sdk/v0.0.34");
+                put("User-Agent", "com.phenoml.maven:phenoml-java-sdk/AUTO");
                 put("X-Fern-Language", "JAVA");
                 put("X-Fern-SDK-Name", "com.phenoml.fern:api-sdk");
-                put("X-Fern-SDK-Version", "v0.0.34");
+                put("X-Fern-SDK-Version", "v0.0.35");
             }
         });
         this.headerSuppliers = headerSuppliers;
