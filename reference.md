@@ -2905,6 +2905,455 @@ client.lang2Fhir().document(
 </dl>
 </details>
 
+## Summary
+<details><summary><code>client.summary.listTemplates() -> SummaryListTemplatesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves all summary templates for the authenticated user
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.summary().listTemplates();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.summary.createTemplate(request) -> CreateSummaryTemplateResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a summary template from an example using LLM function calling
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.summary().createTemplate(
+    CreateSummaryTemplateRequest
+        .builder()
+        .name("name")
+        .exampleSummary("Patient John Doe, age 45, presents with hypertension diagnosed on 2024-01-15.")
+        .targetResources(
+            new ArrayList<String>(
+                Arrays.asList("Patient", "Condition", "Observation")
+            )
+        )
+        .mode("mode")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**name:** `String` — Name of the template
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `Optional<String>` — Description of the template
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**exampleSummary:** `String` — Example summary note to generate template from
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targetResources:** `List<String>` — List of target FHIR resources
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**exampleFhirData:** `Optional<Map<String, Object>>` — Optional example FHIR data that corresponds to the example summary
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mode:** `String` — Template mode (stored with the template)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.summary.getTemplate(id) -> SummaryGetTemplateResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a specific summary template
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.summary().getTemplate("id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Template ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.summary.updateTemplate(id, request) -> SummaryUpdateTemplateResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates an existing summary template
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.summary().updateTemplate(
+    "id",
+    UpdateSummaryTemplateRequest
+        .builder()
+        .name("name")
+        .template("template")
+        .targetResources(
+            new ArrayList<String>(
+                Arrays.asList("target_resources")
+            )
+        )
+        .mode("mode")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Template ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**template:** `String` — Updated template with placeholders
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targetResources:** `List<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mode:** `String` — Template mode
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.summary.deleteTemplate(id) -> SummaryDeleteTemplateResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes a summary template
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.summary().deleteTemplate("id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Template ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.summary.create(request) -> CreateSummaryResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a summary from FHIR resources using one of two modes:
+- **narrative**: Uses a template to substitute FHIR data into placeholders (requires template_id)
+- **flatten**: Flattens FHIR resources into a searchable format for RAG/search (no template needed)
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.summary().create(
+    CreateSummaryRequest
+        .builder()
+        .fhirResources(
+            CreateSummaryRequestFhirResources.ofFhirResource(
+                FhirResource
+                    .builder()
+                    .resourceType("resourceType")
+                    .build()
+            )
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**mode:** `Optional<CreateSummaryRequestMode>` 
+
+Summary generation mode:
+- narrative: Substitute FHIR data into a template (requires template_id)
+- flatten: Flatten FHIR resources for RAG/search (no template needed)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**templateId:** `Optional<String>` — ID of the template to use (required for narrative mode)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fhirResources:** `CreateSummaryRequestFhirResources` — FHIR resources (single resource or Bundle)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Tools
 <details><summary><code>client.tools.createFhirResource(request) -> Lang2FhirAndCreateResponse</code></summary>
 <dl>
