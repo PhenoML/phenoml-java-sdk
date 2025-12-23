@@ -24,23 +24,39 @@ import org.jetbrains.annotations.NotNull;
 public final class FhirCreateRequest {
     private final Optional<String> phenomlOnBehalfOf;
 
+    private final Optional<String> phenomlFhirProvider;
+
     private final FhirResource body;
 
     private final Map<String, Object> additionalProperties;
 
     private FhirCreateRequest(
-            Optional<String> phenomlOnBehalfOf, FhirResource body, Map<String, Object> additionalProperties) {
+            Optional<String> phenomlOnBehalfOf,
+            Optional<String> phenomlFhirProvider,
+            FhirResource body,
+            Map<String, Object> additionalProperties) {
         this.phenomlOnBehalfOf = phenomlOnBehalfOf;
+        this.phenomlFhirProvider = phenomlFhirProvider;
         this.body = body;
         this.additionalProperties = additionalProperties;
     }
 
     /**
      * @return Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}
      */
     @JsonProperty("X-Phenoml-On-Behalf-Of")
     public Optional<String> getPhenomlOnBehalfOf() {
         return phenomlOnBehalfOf;
+    }
+
+    /**
+     * @return Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+     * Multiple FHIR provider integrations can be provided as comma-separated values.
+     */
+    @JsonProperty("X-Phenoml-Fhir-Provider")
+    public Optional<String> getPhenomlFhirProvider() {
+        return phenomlFhirProvider;
     }
 
     @JsonProperty("body")
@@ -60,12 +76,14 @@ public final class FhirCreateRequest {
     }
 
     private boolean equalTo(FhirCreateRequest other) {
-        return phenomlOnBehalfOf.equals(other.phenomlOnBehalfOf) && body.equals(other.body);
+        return phenomlOnBehalfOf.equals(other.phenomlOnBehalfOf)
+                && phenomlFhirProvider.equals(other.phenomlFhirProvider)
+                && body.equals(other.body);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.phenomlOnBehalfOf, this.body);
+        return Objects.hash(this.phenomlOnBehalfOf, this.phenomlFhirProvider, this.body);
     }
 
     @java.lang.Override
@@ -87,16 +105,27 @@ public final class FhirCreateRequest {
         FhirCreateRequest build();
 
         /**
-         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.</p>
+         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
          */
         _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf);
 
         _FinalStage phenomlOnBehalfOf(String phenomlOnBehalfOf);
+
+        /**
+         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+         */
+        _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider);
+
+        _FinalStage phenomlFhirProvider(String phenomlFhirProvider);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder implements BodyStage, _FinalStage {
         private FhirResource body;
+
+        private Optional<String> phenomlFhirProvider = Optional.empty();
 
         private Optional<String> phenomlOnBehalfOf = Optional.empty();
 
@@ -108,6 +137,7 @@ public final class FhirCreateRequest {
         @java.lang.Override
         public Builder from(FhirCreateRequest other) {
             phenomlOnBehalfOf(other.getPhenomlOnBehalfOf());
+            phenomlFhirProvider(other.getPhenomlFhirProvider());
             body(other.getBody());
             return this;
         }
@@ -120,7 +150,30 @@ public final class FhirCreateRequest {
         }
 
         /**
-         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.</p>
+         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage phenomlFhirProvider(String phenomlFhirProvider) {
+            this.phenomlFhirProvider = Optional.ofNullable(phenomlFhirProvider);
+            return this;
+        }
+
+        /**
+         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "X-Phenoml-Fhir-Provider", nulls = Nulls.SKIP)
+        public _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider) {
+            this.phenomlFhirProvider = phenomlFhirProvider;
+            return this;
+        }
+
+        /**
+         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -130,7 +183,8 @@ public final class FhirCreateRequest {
         }
 
         /**
-         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.</p>
+         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
          */
         @java.lang.Override
         @JsonSetter(value = "X-Phenoml-On-Behalf-Of", nulls = Nulls.SKIP)
@@ -141,7 +195,7 @@ public final class FhirCreateRequest {
 
         @java.lang.Override
         public FhirCreateRequest build() {
-            return new FhirCreateRequest(phenomlOnBehalfOf, body, additionalProperties);
+            return new FhirCreateRequest(phenomlOnBehalfOf, phenomlFhirProvider, body, additionalProperties);
         }
     }
 }

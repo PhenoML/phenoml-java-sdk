@@ -105,10 +105,11 @@ public class SummaryClient {
     }
 
     /**
-     * Creates a summary from FHIR resources using one of two modes:
+     * Creates a summary from FHIR resources using one of three modes:
      * <ul>
      * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
      * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
+     * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
      * </ul>
      */
     public CreateSummaryResponse create(CreateSummaryRequest request) {
@@ -116,10 +117,11 @@ public class SummaryClient {
     }
 
     /**
-     * Creates a summary from FHIR resources using one of two modes:
+     * Creates a summary from FHIR resources using one of three modes:
      * <ul>
      * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
      * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
+     * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
      * </ul>
      */
     public CreateSummaryResponse create(CreateSummaryRequest request, RequestOptions requestOptions) {

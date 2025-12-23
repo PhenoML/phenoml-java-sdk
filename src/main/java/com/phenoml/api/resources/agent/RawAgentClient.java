@@ -28,7 +28,9 @@ import com.phenoml.api.resources.agent.types.AgentListResponse;
 import com.phenoml.api.resources.agent.types.AgentResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -468,20 +470,37 @@ public class RawAgentClient {
                 .newBuilder()
                 .addPathSegments("agent/chat")
                 .build();
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("message", request.getMessage());
+        if (request.getContext().isPresent()) {
+            properties.put("context", request.getContext());
+        }
+        if (request.getSessionId().isPresent()) {
+            properties.put("session_id", request.getSessionId());
+        }
+        properties.put("agent_id", request.getAgentId());
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(properties), MediaTypes.APPLICATION_JSON);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        Request okhttpRequest = new Request.Builder()
+        Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl)
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
+                .addHeader("Accept", "application/json");
+        if (request.getPhenomlOnBehalfOf().isPresent()) {
+            _requestBuilder.addHeader(
+                    "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
+        }
+        if (request.getPhenomlFhirProvider().isPresent()) {
+            _requestBuilder.addHeader(
+                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
+        }
+        Request okhttpRequest = _requestBuilder.build();
         OkHttpClient client = clientOptions.httpClient();
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);

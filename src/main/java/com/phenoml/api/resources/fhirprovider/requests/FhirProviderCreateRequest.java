@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.fhirprovider.types.AuthMethod;
 import com.phenoml.api.resources.fhirprovider.types.Provider;
+import com.phenoml.api.resources.fhirprovider.types.Role;
 import com.phenoml.api.resources.fhirprovider.types.ServiceAccountKey;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,8 @@ public final class FhirProviderCreateRequest {
 
     private final Optional<ServiceAccountKey> serviceAccountKey;
 
+    private final Optional<Role> role;
+
     private final Optional<String> scopes;
 
     private final Map<String, Object> additionalProperties;
@@ -53,6 +56,7 @@ public final class FhirProviderCreateRequest {
             Optional<String> clientId,
             Optional<String> clientSecret,
             Optional<ServiceAccountKey> serviceAccountKey,
+            Optional<Role> role,
             Optional<String> scopes,
             Map<String, Object> additionalProperties) {
         this.name = name;
@@ -63,6 +67,7 @@ public final class FhirProviderCreateRequest {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.serviceAccountKey = serviceAccountKey;
+        this.role = role;
         this.scopes = scopes;
         this.additionalProperties = additionalProperties;
     }
@@ -122,8 +127,13 @@ public final class FhirProviderCreateRequest {
         return serviceAccountKey;
     }
 
+    @JsonProperty("role")
+    public Optional<Role> getRole() {
+        return role;
+    }
+
     /**
-     * @return OAuth scopes to request
+     * @return OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.
      */
     @JsonProperty("scopes")
     public Optional<String> getScopes() {
@@ -150,6 +160,7 @@ public final class FhirProviderCreateRequest {
                 && clientId.equals(other.clientId)
                 && clientSecret.equals(other.clientSecret)
                 && serviceAccountKey.equals(other.serviceAccountKey)
+                && role.equals(other.role)
                 && scopes.equals(other.scopes);
     }
 
@@ -164,6 +175,7 @@ public final class FhirProviderCreateRequest {
                 this.clientId,
                 this.clientSecret,
                 this.serviceAccountKey,
+                this.role,
                 this.scopes);
     }
 
@@ -228,8 +240,12 @@ public final class FhirProviderCreateRequest {
 
         _FinalStage serviceAccountKey(ServiceAccountKey serviceAccountKey);
 
+        _FinalStage role(Optional<Role> role);
+
+        _FinalStage role(Role role);
+
         /**
-         * <p>OAuth scopes to request</p>
+         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.</p>
          */
         _FinalStage scopes(Optional<String> scopes);
 
@@ -247,6 +263,8 @@ public final class FhirProviderCreateRequest {
         private String baseUrl;
 
         private Optional<String> scopes = Optional.empty();
+
+        private Optional<Role> role = Optional.empty();
 
         private Optional<ServiceAccountKey> serviceAccountKey = Optional.empty();
 
@@ -271,6 +289,7 @@ public final class FhirProviderCreateRequest {
             clientId(other.getClientId());
             clientSecret(other.getClientSecret());
             serviceAccountKey(other.getServiceAccountKey());
+            role(other.getRole());
             scopes(other.getScopes());
             return this;
         }
@@ -314,7 +333,7 @@ public final class FhirProviderCreateRequest {
         }
 
         /**
-         * <p>OAuth scopes to request</p>
+         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -324,12 +343,25 @@ public final class FhirProviderCreateRequest {
         }
 
         /**
-         * <p>OAuth scopes to request</p>
+         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "scopes", nulls = Nulls.SKIP)
         public _FinalStage scopes(Optional<String> scopes) {
             this.scopes = scopes;
+            return this;
+        }
+
+        @java.lang.Override
+        public _FinalStage role(Role role) {
+            this.role = Optional.ofNullable(role);
+            return this;
+        }
+
+        @java.lang.Override
+        @JsonSetter(value = "role", nulls = Nulls.SKIP)
+        public _FinalStage role(Optional<Role> role) {
+            this.role = role;
             return this;
         }
 
@@ -417,6 +449,7 @@ public final class FhirProviderCreateRequest {
                     clientId,
                     clientSecret,
                     serviceAccountKey,
+                    role,
                     scopes,
                     additionalProperties);
         }

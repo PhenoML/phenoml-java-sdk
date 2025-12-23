@@ -5,10 +5,8 @@ package com.phenoml.api.resources.construe;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.resources.construe.requests.ConstrueCohortRequest;
 import com.phenoml.api.resources.construe.requests.ExtractRequest;
 import com.phenoml.api.resources.construe.requests.UploadRequest;
-import com.phenoml.api.resources.construe.types.ConstrueCohortResponse;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import java.util.concurrent.CompletableFuture;
@@ -61,22 +59,5 @@ public class AsyncConstrueClient {
      */
     public CompletableFuture<ExtractCodesResult> extractCodes(ExtractRequest request, RequestOptions requestOptions) {
         return this.rawClient.extractCodes(request, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Creates a patient cohort based on a natural language description.
-     * Translates the description into FHIR search queries and optional SQL queries.
-     */
-    public CompletableFuture<ConstrueCohortResponse> cohort(ConstrueCohortRequest request) {
-        return this.rawClient.cohort(request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Creates a patient cohort based on a natural language description.
-     * Translates the description into FHIR search queries and optional SQL queries.
-     */
-    public CompletableFuture<ConstrueCohortResponse> cohort(
-            ConstrueCohortRequest request, RequestOptions requestOptions) {
-        return this.rawClient.cohort(request, requestOptions).thenApply(response -> response.body());
     }
 }

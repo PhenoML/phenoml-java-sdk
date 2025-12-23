@@ -42,6 +42,8 @@ public final class ExtractRequestSystem {
      * <li>ICD-10-CM - version 2025</li>
      * <li>ICD-10-PCS - version 2025</li>
      * <li>LOINC - version 2.78</li>
+     * <li>HPO - version 2025</li>
+     * <li>CPT - version 2025</li>
      * </ul>
      * <p>Custom systems:</p>
      * <ul>
@@ -116,6 +118,8 @@ public final class ExtractRequestSystem {
          * <li>ICD-10-CM - version 2025</li>
          * <li>ICD-10-PCS - version 2025</li>
          * <li>LOINC - version 2.78</li>
+         * <li>HPO - version 2025</li>
+         * <li>CPT - version 2025</li>
          * </ul>
          * <p>Custom systems:</p>
          * <ul>

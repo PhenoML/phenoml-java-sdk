@@ -176,6 +176,9 @@ public class AsyncPhenoMLBuilder {
     protected void validateConfiguration() {}
 
     public AsyncPhenoML build() {
+        if (token == null) {
+            throw new RuntimeException("Please provide token");
+        }
         validateConfiguration();
         return new AsyncPhenoML(buildClientOptions());
     }

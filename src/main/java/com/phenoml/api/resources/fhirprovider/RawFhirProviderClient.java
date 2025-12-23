@@ -55,7 +55,7 @@ public class RawFhirProviderClient {
             FhirProviderCreateRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("fhir-provider/create")
+                .addPathSegments("fhir-provider")
                 .build();
         RequestBody body;
         try {

@@ -28,7 +28,11 @@ public final class ExtractRequestConfig {
 
     private final Optional<Float> codeSimilarityFilter;
 
+    private final Optional<ValidationMethod> validationMethod;
+
     private final Optional<Boolean> includeRationale;
+
+    private final Optional<Boolean> includeAncestors;
 
     private final Map<String, Object> additionalProperties;
 
@@ -36,33 +40,70 @@ public final class ExtractRequestConfig {
             Optional<ChunkingMethod> chunkingMethod,
             Optional<Integer> maxCodesPerChunk,
             Optional<Float> codeSimilarityFilter,
+            Optional<ValidationMethod> validationMethod,
             Optional<Boolean> includeRationale,
+            Optional<Boolean> includeAncestors,
             Map<String, Object> additionalProperties) {
         this.chunkingMethod = chunkingMethod;
         this.maxCodesPerChunk = maxCodesPerChunk;
         this.codeSimilarityFilter = codeSimilarityFilter;
+        this.validationMethod = validationMethod;
         this.includeRationale = includeRationale;
+        this.includeAncestors = includeAncestors;
         this.additionalProperties = additionalProperties;
     }
 
+    /**
+     * @return Method for splitting input text into chunks before code extraction
+     */
     @JsonProperty("chunking_method")
     public Optional<ChunkingMethod> getChunkingMethod() {
         return chunkingMethod;
     }
 
+    /**
+     * @return Maximum number of codes to extract per chunk
+     */
     @JsonProperty("max_codes_per_chunk")
     public Optional<Integer> getMaxCodesPerChunk() {
         return maxCodesPerChunk;
     }
 
+    /**
+     * @return Threshold for filtering similar codes (0.0-1.0)
+     */
     @JsonProperty("code_similarity_filter")
     public Optional<Float> getCodeSimilarityFilter() {
         return codeSimilarityFilter;
     }
 
+    /**
+     * @return Method for validating extracted codes:
+     * <ul>
+     * <li>none - No validation, returns all candidate codes</li>
+     * <li>simple - LLM-based validation</li>
+     * <li>medication_search - LLM-based validation tailored for medication concepts</li>
+     * </ul>
+     */
+    @JsonProperty("validation_method")
+    public Optional<ValidationMethod> getValidationMethod() {
+        return validationMethod;
+    }
+
+    /**
+     * @return Whether to include explanations for why each code was extracted
+     */
     @JsonProperty("include_rationale")
     public Optional<Boolean> getIncludeRationale() {
         return includeRationale;
+    }
+
+    /**
+     * @return Whether to include ancestor/parent codes in the results
+     */
+    @JsonProperty("include_ancestors")
+    public Optional<Boolean> getIncludeAncestors() {
+        return includeAncestors;
     }
 
     @java.lang.Override
@@ -80,13 +121,20 @@ public final class ExtractRequestConfig {
         return chunkingMethod.equals(other.chunkingMethod)
                 && maxCodesPerChunk.equals(other.maxCodesPerChunk)
                 && codeSimilarityFilter.equals(other.codeSimilarityFilter)
-                && includeRationale.equals(other.includeRationale);
+                && validationMethod.equals(other.validationMethod)
+                && includeRationale.equals(other.includeRationale)
+                && includeAncestors.equals(other.includeAncestors);
     }
 
     @java.lang.Override
     public int hashCode() {
         return Objects.hash(
-                this.chunkingMethod, this.maxCodesPerChunk, this.codeSimilarityFilter, this.includeRationale);
+                this.chunkingMethod,
+                this.maxCodesPerChunk,
+                this.codeSimilarityFilter,
+                this.validationMethod,
+                this.includeRationale,
+                this.includeAncestors);
     }
 
     @java.lang.Override
@@ -106,7 +154,11 @@ public final class ExtractRequestConfig {
 
         private Optional<Float> codeSimilarityFilter = Optional.empty();
 
+        private Optional<ValidationMethod> validationMethod = Optional.empty();
+
         private Optional<Boolean> includeRationale = Optional.empty();
+
+        private Optional<Boolean> includeAncestors = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -117,10 +169,15 @@ public final class ExtractRequestConfig {
             chunkingMethod(other.getChunkingMethod());
             maxCodesPerChunk(other.getMaxCodesPerChunk());
             codeSimilarityFilter(other.getCodeSimilarityFilter());
+            validationMethod(other.getValidationMethod());
             includeRationale(other.getIncludeRationale());
+            includeAncestors(other.getIncludeAncestors());
             return this;
         }
 
+        /**
+         * <p>Method for splitting input text into chunks before code extraction</p>
+         */
         @JsonSetter(value = "chunking_method", nulls = Nulls.SKIP)
         public Builder chunkingMethod(Optional<ChunkingMethod> chunkingMethod) {
             this.chunkingMethod = chunkingMethod;
@@ -132,6 +189,9 @@ public final class ExtractRequestConfig {
             return this;
         }
 
+        /**
+         * <p>Maximum number of codes to extract per chunk</p>
+         */
         @JsonSetter(value = "max_codes_per_chunk", nulls = Nulls.SKIP)
         public Builder maxCodesPerChunk(Optional<Integer> maxCodesPerChunk) {
             this.maxCodesPerChunk = maxCodesPerChunk;
@@ -143,6 +203,9 @@ public final class ExtractRequestConfig {
             return this;
         }
 
+        /**
+         * <p>Threshold for filtering similar codes (0.0-1.0)</p>
+         */
         @JsonSetter(value = "code_similarity_filter", nulls = Nulls.SKIP)
         public Builder codeSimilarityFilter(Optional<Float> codeSimilarityFilter) {
             this.codeSimilarityFilter = codeSimilarityFilter;
@@ -154,6 +217,28 @@ public final class ExtractRequestConfig {
             return this;
         }
 
+        /**
+         * <p>Method for validating extracted codes:</p>
+         * <ul>
+         * <li>none - No validation, returns all candidate codes</li>
+         * <li>simple - LLM-based validation</li>
+         * <li>medication_search - LLM-based validation tailored for medication concepts</li>
+         * </ul>
+         */
+        @JsonSetter(value = "validation_method", nulls = Nulls.SKIP)
+        public Builder validationMethod(Optional<ValidationMethod> validationMethod) {
+            this.validationMethod = validationMethod;
+            return this;
+        }
+
+        public Builder validationMethod(ValidationMethod validationMethod) {
+            this.validationMethod = Optional.ofNullable(validationMethod);
+            return this;
+        }
+
+        /**
+         * <p>Whether to include explanations for why each code was extracted</p>
+         */
         @JsonSetter(value = "include_rationale", nulls = Nulls.SKIP)
         public Builder includeRationale(Optional<Boolean> includeRationale) {
             this.includeRationale = includeRationale;
@@ -165,20 +250,127 @@ public final class ExtractRequestConfig {
             return this;
         }
 
+        /**
+         * <p>Whether to include ancestor/parent codes in the results</p>
+         */
+        @JsonSetter(value = "include_ancestors", nulls = Nulls.SKIP)
+        public Builder includeAncestors(Optional<Boolean> includeAncestors) {
+            this.includeAncestors = includeAncestors;
+            return this;
+        }
+
+        public Builder includeAncestors(Boolean includeAncestors) {
+            this.includeAncestors = Optional.ofNullable(includeAncestors);
+            return this;
+        }
+
         public ExtractRequestConfig build() {
             return new ExtractRequestConfig(
-                    chunkingMethod, maxCodesPerChunk, codeSimilarityFilter, includeRationale, additionalProperties);
+                    chunkingMethod,
+                    maxCodesPerChunk,
+                    codeSimilarityFilter,
+                    validationMethod,
+                    includeRationale,
+                    includeAncestors,
+                    additionalProperties);
+        }
+    }
+
+    public static final class ValidationMethod {
+        public static final ValidationMethod NONE = new ValidationMethod(Value.NONE, "none");
+
+        public static final ValidationMethod SIMPLE = new ValidationMethod(Value.SIMPLE, "simple");
+
+        public static final ValidationMethod MEDICATION_SEARCH =
+                new ValidationMethod(Value.MEDICATION_SEARCH, "medication_search");
+
+        private final Value value;
+
+        private final String string;
+
+        ValidationMethod(Value value, String string) {
+            this.value = value;
+            this.string = string;
+        }
+
+        public Value getEnumValue() {
+            return value;
+        }
+
+        @java.lang.Override
+        @JsonValue
+        public String toString() {
+            return this.string;
+        }
+
+        @java.lang.Override
+        public boolean equals(Object other) {
+            return (this == other)
+                    || (other instanceof ValidationMethod && this.string.equals(((ValidationMethod) other).string));
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+            return this.string.hashCode();
+        }
+
+        public <T> T visit(Visitor<T> visitor) {
+            switch (value) {
+                case NONE:
+                    return visitor.visitNone();
+                case SIMPLE:
+                    return visitor.visitSimple();
+                case MEDICATION_SEARCH:
+                    return visitor.visitMedicationSearch();
+                case UNKNOWN:
+                default:
+                    return visitor.visitUnknown(string);
+            }
+        }
+
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        public static ValidationMethod valueOf(String value) {
+            switch (value) {
+                case "none":
+                    return NONE;
+                case "simple":
+                    return SIMPLE;
+                case "medication_search":
+                    return MEDICATION_SEARCH;
+                default:
+                    return new ValidationMethod(Value.UNKNOWN, value);
+            }
+        }
+
+        public enum Value {
+            NONE,
+
+            SIMPLE,
+
+            MEDICATION_SEARCH,
+
+            UNKNOWN
+        }
+
+        public interface Visitor<T> {
+            T visitNone();
+
+            T visitSimple();
+
+            T visitMedicationSearch();
+
+            T visitUnknown(String unknownType);
         }
     }
 
     public static final class ChunkingMethod {
         public static final ChunkingMethod TOPICS = new ChunkingMethod(Value.TOPICS, "topics");
 
-        public static final ChunkingMethod PARAGRAPH = new ChunkingMethod(Value.PARAGRAPH, "paragraph");
-
-        public static final ChunkingMethod SENTENCE = new ChunkingMethod(Value.SENTENCE, "sentence");
+        public static final ChunkingMethod PARAGRAPHS = new ChunkingMethod(Value.PARAGRAPHS, "paragraphs");
 
         public static final ChunkingMethod NONE = new ChunkingMethod(Value.NONE, "none");
+
+        public static final ChunkingMethod SENTENCES = new ChunkingMethod(Value.SENTENCES, "sentences");
 
         private final Value value;
 
@@ -214,12 +406,12 @@ public final class ExtractRequestConfig {
             switch (value) {
                 case TOPICS:
                     return visitor.visitTopics();
-                case PARAGRAPH:
-                    return visitor.visitParagraph();
-                case SENTENCE:
-                    return visitor.visitSentence();
+                case PARAGRAPHS:
+                    return visitor.visitParagraphs();
                 case NONE:
                     return visitor.visitNone();
+                case SENTENCES:
+                    return visitor.visitSentences();
                 case UNKNOWN:
                 default:
                     return visitor.visitUnknown(string);
@@ -231,12 +423,12 @@ public final class ExtractRequestConfig {
             switch (value) {
                 case "topics":
                     return TOPICS;
-                case "paragraph":
-                    return PARAGRAPH;
-                case "sentence":
-                    return SENTENCE;
+                case "paragraphs":
+                    return PARAGRAPHS;
                 case "none":
                     return NONE;
+                case "sentences":
+                    return SENTENCES;
                 default:
                     return new ChunkingMethod(Value.UNKNOWN, value);
             }
@@ -245,9 +437,9 @@ public final class ExtractRequestConfig {
         public enum Value {
             NONE,
 
-            SENTENCE,
+            SENTENCES,
 
-            PARAGRAPH,
+            PARAGRAPHS,
 
             TOPICS,
 
@@ -257,9 +449,9 @@ public final class ExtractRequestConfig {
         public interface Visitor<T> {
             T visitNone();
 
-            T visitSentence();
+            T visitSentences();
 
-            T visitParagraph();
+            T visitParagraphs();
 
             T visitTopics();
 

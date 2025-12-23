@@ -22,19 +22,35 @@ import java.util.Optional;
 public final class FhirDeleteRequest {
     private final Optional<String> phenomlOnBehalfOf;
 
+    private final Optional<String> phenomlFhirProvider;
+
     private final Map<String, Object> additionalProperties;
 
-    private FhirDeleteRequest(Optional<String> phenomlOnBehalfOf, Map<String, Object> additionalProperties) {
+    private FhirDeleteRequest(
+            Optional<String> phenomlOnBehalfOf,
+            Optional<String> phenomlFhirProvider,
+            Map<String, Object> additionalProperties) {
         this.phenomlOnBehalfOf = phenomlOnBehalfOf;
+        this.phenomlFhirProvider = phenomlFhirProvider;
         this.additionalProperties = additionalProperties;
     }
 
     /**
      * @return Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}
      */
     @JsonProperty("X-Phenoml-On-Behalf-Of")
     public Optional<String> getPhenomlOnBehalfOf() {
         return phenomlOnBehalfOf;
+    }
+
+    /**
+     * @return Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+     * Multiple FHIR provider integrations can be provided as comma-separated values.
+     */
+    @JsonProperty("X-Phenoml-Fhir-Provider")
+    public Optional<String> getPhenomlFhirProvider() {
+        return phenomlFhirProvider;
     }
 
     @java.lang.Override
@@ -49,12 +65,13 @@ public final class FhirDeleteRequest {
     }
 
     private boolean equalTo(FhirDeleteRequest other) {
-        return phenomlOnBehalfOf.equals(other.phenomlOnBehalfOf);
+        return phenomlOnBehalfOf.equals(other.phenomlOnBehalfOf)
+                && phenomlFhirProvider.equals(other.phenomlFhirProvider);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.phenomlOnBehalfOf);
+        return Objects.hash(this.phenomlOnBehalfOf, this.phenomlFhirProvider);
     }
 
     @java.lang.Override
@@ -70,6 +87,8 @@ public final class FhirDeleteRequest {
     public static final class Builder {
         private Optional<String> phenomlOnBehalfOf = Optional.empty();
 
+        private Optional<String> phenomlFhirProvider = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -77,11 +96,13 @@ public final class FhirDeleteRequest {
 
         public Builder from(FhirDeleteRequest other) {
             phenomlOnBehalfOf(other.getPhenomlOnBehalfOf());
+            phenomlFhirProvider(other.getPhenomlFhirProvider());
             return this;
         }
 
         /**
-         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.</p>
+         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
          */
         @JsonSetter(value = "X-Phenoml-On-Behalf-Of", nulls = Nulls.SKIP)
         public Builder phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf) {
@@ -94,8 +115,23 @@ public final class FhirDeleteRequest {
             return this;
         }
 
+        /**
+         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+         */
+        @JsonSetter(value = "X-Phenoml-Fhir-Provider", nulls = Nulls.SKIP)
+        public Builder phenomlFhirProvider(Optional<String> phenomlFhirProvider) {
+            this.phenomlFhirProvider = phenomlFhirProvider;
+            return this;
+        }
+
+        public Builder phenomlFhirProvider(String phenomlFhirProvider) {
+            this.phenomlFhirProvider = Optional.ofNullable(phenomlFhirProvider);
+            return this;
+        }
+
         public FhirDeleteRequest build() {
-            return new FhirDeleteRequest(phenomlOnBehalfOf, additionalProperties);
+            return new FhirDeleteRequest(phenomlOnBehalfOf, phenomlFhirProvider, additionalProperties);
         }
     }
 }

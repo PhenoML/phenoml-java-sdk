@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class AuthMethod {
+    public static final AuthMethod TOKEN_PASSTHROUGH = new AuthMethod(Value.TOKEN_PASSTHROUGH, "token_passthrough");
+
     public static final AuthMethod JWT = new AuthMethod(Value.JWT, "jwt");
 
     public static final AuthMethod NONE = new AuthMethod(Value.NONE, "none");
@@ -48,6 +50,8 @@ public final class AuthMethod {
 
     public <T> T visit(Visitor<T> visitor) {
         switch (value) {
+            case TOKEN_PASSTHROUGH:
+                return visitor.visitTokenPassthrough();
             case JWT:
                 return visitor.visitJwt();
             case NONE:
@@ -67,6 +71,8 @@ public final class AuthMethod {
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static AuthMethod valueOf(String value) {
         switch (value) {
+            case "token_passthrough":
+                return TOKEN_PASSTHROUGH;
             case "jwt":
                 return JWT;
             case "none":
@@ -91,6 +97,8 @@ public final class AuthMethod {
 
         ON_BEHALF_OF,
 
+        TOKEN_PASSTHROUGH,
+
         NONE,
 
         UNKNOWN
@@ -104,6 +112,8 @@ public final class AuthMethod {
         T visitJwt();
 
         T visitOnBehalfOf();
+
+        T visitTokenPassthrough();
 
         T visitNone();
 

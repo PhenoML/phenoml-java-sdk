@@ -54,6 +54,7 @@ public final class CreateSummaryRequest {
      * <ul>
      * <li>narrative: Substitute FHIR data into a template (requires template_id)</li>
      * <li>flatten: Flatten FHIR resources for RAG/search (no template needed)</li>
+     * <li>ips: Generate International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG</li>
      * </ul>
      */
     @JsonProperty("mode")
@@ -70,7 +71,11 @@ public final class CreateSummaryRequest {
     }
 
     /**
-     * @return FHIR resources (single resource or Bundle)
+     * @return FHIR resources (single resource or Bundle).
+     * For IPS mode, must be a Bundle containing exactly one Patient resource with at least one
+     * identifier (id, fullUrl, or identifier field). Returns an error if no Patient is found,
+     * if multiple Patients are present, or if the Patient has no identifiers. Resources are
+     * automatically filtered to only include those referencing the patient.
      */
     @JsonProperty("fhir_resources")
     public FhirResources getFhirResources() {
@@ -110,7 +115,11 @@ public final class CreateSummaryRequest {
 
     public interface FhirResourcesStage {
         /**
-         * <p>FHIR resources (single resource or Bundle)</p>
+         * <p>FHIR resources (single resource or Bundle).
+         * For IPS mode, must be a Bundle containing exactly one Patient resource with at least one
+         * identifier (id, fullUrl, or identifier field). Returns an error if no Patient is found,
+         * if multiple Patients are present, or if the Patient has no identifiers. Resources are
+         * automatically filtered to only include those referencing the patient.</p>
          */
         _FinalStage fhirResources(@NotNull FhirResources fhirResources);
 
@@ -125,6 +134,7 @@ public final class CreateSummaryRequest {
          * <ul>
          * <li>narrative: Substitute FHIR data into a template (requires template_id)</li>
          * <li>flatten: Flatten FHIR resources for RAG/search (no template needed)</li>
+         * <li>ips: Generate International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG</li>
          * </ul>
          */
         _FinalStage mode(Optional<Mode> mode);
@@ -161,8 +171,16 @@ public final class CreateSummaryRequest {
         }
 
         /**
-         * <p>FHIR resources (single resource or Bundle)</p>
-         * <p>FHIR resources (single resource or Bundle)</p>
+         * <p>FHIR resources (single resource or Bundle).
+         * For IPS mode, must be a Bundle containing exactly one Patient resource with at least one
+         * identifier (id, fullUrl, or identifier field). Returns an error if no Patient is found,
+         * if multiple Patients are present, or if the Patient has no identifiers. Resources are
+         * automatically filtered to only include those referencing the patient.</p>
+         * <p>FHIR resources (single resource or Bundle).
+         * For IPS mode, must be a Bundle containing exactly one Patient resource with at least one
+         * identifier (id, fullUrl, or identifier field). Returns an error if no Patient is found,
+         * if multiple Patients are present, or if the Patient has no identifiers. Resources are
+         * automatically filtered to only include those referencing the patient.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -197,6 +215,7 @@ public final class CreateSummaryRequest {
          * <ul>
          * <li>narrative: Substitute FHIR data into a template (requires template_id)</li>
          * <li>flatten: Flatten FHIR resources for RAG/search (no template needed)</li>
+         * <li>ips: Generate International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG</li>
          * </ul>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
@@ -211,6 +230,7 @@ public final class CreateSummaryRequest {
          * <ul>
          * <li>narrative: Substitute FHIR data into a template (requires template_id)</li>
          * <li>flatten: Flatten FHIR resources for RAG/search (no template needed)</li>
+         * <li>ips: Generate International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG</li>
          * </ul>
          */
         @java.lang.Override
@@ -230,6 +250,8 @@ public final class CreateSummaryRequest {
         public static final Mode FLATTEN = new Mode(Value.FLATTEN, "flatten");
 
         public static final Mode NARRATIVE = new Mode(Value.NARRATIVE, "narrative");
+
+        public static final Mode IPS = new Mode(Value.IPS, "ips");
 
         private final Value value;
 
@@ -266,6 +288,8 @@ public final class CreateSummaryRequest {
                     return visitor.visitFlatten();
                 case NARRATIVE:
                     return visitor.visitNarrative();
+                case IPS:
+                    return visitor.visitIps();
                 case UNKNOWN:
                 default:
                     return visitor.visitUnknown(string);
@@ -279,6 +303,8 @@ public final class CreateSummaryRequest {
                     return FLATTEN;
                 case "narrative":
                     return NARRATIVE;
+                case "ips":
+                    return IPS;
                 default:
                     return new Mode(Value.UNKNOWN, value);
             }
@@ -289,6 +315,8 @@ public final class CreateSummaryRequest {
 
             FLATTEN,
 
+            IPS,
+
             UNKNOWN
         }
 
@@ -296,6 +324,8 @@ public final class CreateSummaryRequest {
             T visitNarrative();
 
             T visitFlatten();
+
+            T visitIps();
 
             T visitUnknown(String unknownType);
         }

@@ -9,26 +9,57 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CohortRequest.Builder.class)
 public final class CohortRequest {
+    private final Optional<String> phenomlOnBehalfOf;
+
+    private final Optional<String> phenomlFhirProvider;
+
     private final String text;
 
     private final String provider;
 
     private final Map<String, Object> additionalProperties;
 
-    private CohortRequest(String text, String provider, Map<String, Object> additionalProperties) {
+    private CohortRequest(
+            Optional<String> phenomlOnBehalfOf,
+            Optional<String> phenomlFhirProvider,
+            String text,
+            String provider,
+            Map<String, Object> additionalProperties) {
+        this.phenomlOnBehalfOf = phenomlOnBehalfOf;
+        this.phenomlFhirProvider = phenomlFhirProvider;
         this.text = text;
         this.provider = provider;
         this.additionalProperties = additionalProperties;
+    }
+
+    /**
+     * @return Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}
+     */
+    @JsonProperty("X-Phenoml-On-Behalf-Of")
+    public Optional<String> getPhenomlOnBehalfOf() {
+        return phenomlOnBehalfOf;
+    }
+
+    /**
+     * @return Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+     * Multiple FHIR provider integrations can be provided as comma-separated values.
+     */
+    @JsonProperty("X-Phenoml-Fhir-Provider")
+    public Optional<String> getPhenomlFhirProvider() {
+        return phenomlFhirProvider;
     }
 
     /**
@@ -59,12 +90,15 @@ public final class CohortRequest {
     }
 
     private boolean equalTo(CohortRequest other) {
-        return text.equals(other.text) && provider.equals(other.provider);
+        return phenomlOnBehalfOf.equals(other.phenomlOnBehalfOf)
+                && phenomlFhirProvider.equals(other.phenomlFhirProvider)
+                && text.equals(other.text)
+                && provider.equals(other.provider);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.text, this.provider);
+        return Objects.hash(this.phenomlOnBehalfOf, this.phenomlFhirProvider, this.text, this.provider);
     }
 
     @java.lang.Override
@@ -94,6 +128,22 @@ public final class CohortRequest {
 
     public interface _FinalStage {
         CohortRequest build();
+
+        /**
+         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
+         */
+        _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf);
+
+        _FinalStage phenomlOnBehalfOf(String phenomlOnBehalfOf);
+
+        /**
+         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+         */
+        _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider);
+
+        _FinalStage phenomlFhirProvider(String phenomlFhirProvider);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -102,6 +152,10 @@ public final class CohortRequest {
 
         private String provider;
 
+        private Optional<String> phenomlFhirProvider = Optional.empty();
+
+        private Optional<String> phenomlOnBehalfOf = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -109,6 +163,8 @@ public final class CohortRequest {
 
         @java.lang.Override
         public Builder from(CohortRequest other) {
+            phenomlOnBehalfOf(other.getPhenomlOnBehalfOf());
+            phenomlFhirProvider(other.getPhenomlFhirProvider());
             text(other.getText());
             provider(other.getProvider());
             return this;
@@ -138,9 +194,53 @@ public final class CohortRequest {
             return this;
         }
 
+        /**
+         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage phenomlFhirProvider(String phenomlFhirProvider) {
+            this.phenomlFhirProvider = Optional.ofNullable(phenomlFhirProvider);
+            return this;
+        }
+
+        /**
+         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "X-Phenoml-Fhir-Provider", nulls = Nulls.SKIP)
+        public _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider) {
+            this.phenomlFhirProvider = phenomlFhirProvider;
+            return this;
+        }
+
+        /**
+         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage phenomlOnBehalfOf(String phenomlOnBehalfOf) {
+            this.phenomlOnBehalfOf = Optional.ofNullable(phenomlOnBehalfOf);
+            return this;
+        }
+
+        /**
+         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "X-Phenoml-On-Behalf-Of", nulls = Nulls.SKIP)
+        public _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf) {
+            this.phenomlOnBehalfOf = phenomlOnBehalfOf;
+            return this;
+        }
+
         @java.lang.Override
         public CohortRequest build() {
-            return new CohortRequest(text, provider, additionalProperties);
+            return new CohortRequest(phenomlOnBehalfOf, phenomlFhirProvider, text, provider, additionalProperties);
         }
     }
 }

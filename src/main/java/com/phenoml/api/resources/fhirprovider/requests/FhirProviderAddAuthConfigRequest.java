@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.fhirprovider.types.AuthMethod;
+import com.phenoml.api.resources.fhirprovider.types.Role;
 import com.phenoml.api.resources.fhirprovider.types.ServiceAccountKey;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
@@ -32,6 +33,8 @@ public final class FhirProviderAddAuthConfigRequest {
 
     private final Optional<OffsetDateTime> credentialExpiry;
 
+    private final Optional<Role> role;
+
     private final Optional<String> scopes;
 
     private final Map<String, Object> additionalProperties;
@@ -41,12 +44,14 @@ public final class FhirProviderAddAuthConfigRequest {
             Optional<String> clientSecret,
             Optional<ServiceAccountKey> serviceAccountKey,
             Optional<OffsetDateTime> credentialExpiry,
+            Optional<Role> role,
             Optional<String> scopes,
             Map<String, Object> additionalProperties) {
         this.authMethod = authMethod;
         this.clientSecret = clientSecret;
         this.serviceAccountKey = serviceAccountKey;
         this.credentialExpiry = credentialExpiry;
+        this.role = role;
         this.scopes = scopes;
         this.additionalProperties = additionalProperties;
     }
@@ -77,8 +82,13 @@ public final class FhirProviderAddAuthConfigRequest {
         return credentialExpiry;
     }
 
+    @JsonProperty("role")
+    public Optional<Role> getRole() {
+        return role;
+    }
+
     /**
-     * @return OAuth scopes to request
+     * @return OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.
      */
     @JsonProperty("scopes")
     public Optional<String> getScopes() {
@@ -101,13 +111,19 @@ public final class FhirProviderAddAuthConfigRequest {
                 && clientSecret.equals(other.clientSecret)
                 && serviceAccountKey.equals(other.serviceAccountKey)
                 && credentialExpiry.equals(other.credentialExpiry)
+                && role.equals(other.role)
                 && scopes.equals(other.scopes);
     }
 
     @java.lang.Override
     public int hashCode() {
         return Objects.hash(
-                this.authMethod, this.clientSecret, this.serviceAccountKey, this.credentialExpiry, this.scopes);
+                this.authMethod,
+                this.clientSecret,
+                this.serviceAccountKey,
+                this.credentialExpiry,
+                this.role,
+                this.scopes);
     }
 
     @java.lang.Override
@@ -146,8 +162,12 @@ public final class FhirProviderAddAuthConfigRequest {
 
         _FinalStage credentialExpiry(OffsetDateTime credentialExpiry);
 
+        _FinalStage role(Optional<Role> role);
+
+        _FinalStage role(Role role);
+
         /**
-         * <p>OAuth scopes to request</p>
+         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.</p>
          */
         _FinalStage scopes(Optional<String> scopes);
 
@@ -159,6 +179,8 @@ public final class FhirProviderAddAuthConfigRequest {
         private AuthMethod authMethod;
 
         private Optional<String> scopes = Optional.empty();
+
+        private Optional<Role> role = Optional.empty();
 
         private Optional<OffsetDateTime> credentialExpiry = Optional.empty();
 
@@ -177,6 +199,7 @@ public final class FhirProviderAddAuthConfigRequest {
             clientSecret(other.getClientSecret());
             serviceAccountKey(other.getServiceAccountKey());
             credentialExpiry(other.getCredentialExpiry());
+            role(other.getRole());
             scopes(other.getScopes());
             return this;
         }
@@ -189,7 +212,7 @@ public final class FhirProviderAddAuthConfigRequest {
         }
 
         /**
-         * <p>OAuth scopes to request</p>
+         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -199,12 +222,25 @@ public final class FhirProviderAddAuthConfigRequest {
         }
 
         /**
-         * <p>OAuth scopes to request</p>
+         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "scopes", nulls = Nulls.SKIP)
         public _FinalStage scopes(Optional<String> scopes) {
             this.scopes = scopes;
+            return this;
+        }
+
+        @java.lang.Override
+        public _FinalStage role(Role role) {
+            this.role = Optional.ofNullable(role);
+            return this;
+        }
+
+        @java.lang.Override
+        @JsonSetter(value = "role", nulls = Nulls.SKIP)
+        public _FinalStage role(Optional<Role> role) {
+            this.role = role;
             return this;
         }
 
@@ -264,7 +300,7 @@ public final class FhirProviderAddAuthConfigRequest {
         @java.lang.Override
         public FhirProviderAddAuthConfigRequest build() {
             return new FhirProviderAddAuthConfigRequest(
-                    authMethod, clientSecret, serviceAccountKey, credentialExpiry, scopes, additionalProperties);
+                    authMethod, clientSecret, serviceAccountKey, credentialExpiry, role, scopes, additionalProperties);
         }
     }
 }

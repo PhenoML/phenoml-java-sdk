@@ -89,6 +89,10 @@ public class AsyncRawFhirClient {
             _requestBuilder.addHeader(
                     "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
         }
+        if (request.getPhenomlFhirProvider().isPresent()) {
+            _requestBuilder.addHeader(
+                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
+        }
         Request okhttpRequest = _requestBuilder.build();
         OkHttpClient client = clientOptions.httpClient();
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
@@ -191,6 +195,10 @@ public class AsyncRawFhirClient {
             _requestBuilder.addHeader(
                     "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
         }
+        if (request.getPhenomlFhirProvider().isPresent()) {
+            _requestBuilder.addHeader(
+                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
+        }
         Request okhttpRequest = _requestBuilder.build();
         OkHttpClient client = clientOptions.httpClient();
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
@@ -288,6 +296,10 @@ public class AsyncRawFhirClient {
             _requestBuilder.addHeader(
                     "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
         }
+        if (request.getPhenomlFhirProvider().isPresent()) {
+            _requestBuilder.addHeader(
+                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
+        }
         Request okhttpRequest = _requestBuilder.build();
         OkHttpClient client = clientOptions.httpClient();
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
@@ -383,6 +395,10 @@ public class AsyncRawFhirClient {
         if (request.getPhenomlOnBehalfOf().isPresent()) {
             _requestBuilder.addHeader(
                     "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
+        }
+        if (request.getPhenomlFhirProvider().isPresent()) {
+            _requestBuilder.addHeader(
+                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
         }
         Request okhttpRequest = _requestBuilder.build();
         OkHttpClient client = clientOptions.httpClient();
@@ -499,6 +515,10 @@ public class AsyncRawFhirClient {
             _requestBuilder.addHeader(
                     "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
         }
+        if (request.getPhenomlFhirProvider().isPresent()) {
+            _requestBuilder.addHeader(
+                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
+        }
         Request okhttpRequest = _requestBuilder.build();
         OkHttpClient client = clientOptions.httpClient();
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
@@ -601,6 +621,10 @@ public class AsyncRawFhirClient {
         if (request.getPhenomlOnBehalfOf().isPresent()) {
             _requestBuilder.addHeader(
                     "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
+        }
+        if (request.getPhenomlFhirProvider().isPresent()) {
+            _requestBuilder.addHeader(
+                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
         }
         Request okhttpRequest = _requestBuilder.build();
         OkHttpClient client = clientOptions.httpClient();

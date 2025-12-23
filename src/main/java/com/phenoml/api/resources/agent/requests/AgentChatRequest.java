@@ -21,6 +21,10 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = AgentChatRequest.Builder.class)
 public final class AgentChatRequest {
+    private final Optional<String> phenomlOnBehalfOf;
+
+    private final Optional<String> phenomlFhirProvider;
+
     private final String message;
 
     private final Optional<String> context;
@@ -32,16 +36,38 @@ public final class AgentChatRequest {
     private final Map<String, Object> additionalProperties;
 
     private AgentChatRequest(
+            Optional<String> phenomlOnBehalfOf,
+            Optional<String> phenomlFhirProvider,
             String message,
             Optional<String> context,
             Optional<String> sessionId,
             String agentId,
             Map<String, Object> additionalProperties) {
+        this.phenomlOnBehalfOf = phenomlOnBehalfOf;
+        this.phenomlFhirProvider = phenomlFhirProvider;
         this.message = message;
         this.context = context;
         this.sessionId = sessionId;
         this.agentId = agentId;
         this.additionalProperties = additionalProperties;
+    }
+
+    /**
+     * @return Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}
+     */
+    @JsonProperty("X-Phenoml-On-Behalf-Of")
+    public Optional<String> getPhenomlOnBehalfOf() {
+        return phenomlOnBehalfOf;
+    }
+
+    /**
+     * @return Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+     * Multiple FHIR provider integrations can be provided as comma-separated values.
+     */
+    @JsonProperty("X-Phenoml-Fhir-Provider")
+    public Optional<String> getPhenomlFhirProvider() {
+        return phenomlFhirProvider;
     }
 
     /**
@@ -88,7 +114,9 @@ public final class AgentChatRequest {
     }
 
     private boolean equalTo(AgentChatRequest other) {
-        return message.equals(other.message)
+        return phenomlOnBehalfOf.equals(other.phenomlOnBehalfOf)
+                && phenomlFhirProvider.equals(other.phenomlFhirProvider)
+                && message.equals(other.message)
                 && context.equals(other.context)
                 && sessionId.equals(other.sessionId)
                 && agentId.equals(other.agentId);
@@ -96,7 +124,13 @@ public final class AgentChatRequest {
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.message, this.context, this.sessionId, this.agentId);
+        return Objects.hash(
+                this.phenomlOnBehalfOf,
+                this.phenomlFhirProvider,
+                this.message,
+                this.context,
+                this.sessionId,
+                this.agentId);
     }
 
     @java.lang.Override
@@ -128,6 +162,22 @@ public final class AgentChatRequest {
         AgentChatRequest build();
 
         /**
+         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
+         */
+        _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf);
+
+        _FinalStage phenomlOnBehalfOf(String phenomlOnBehalfOf);
+
+        /**
+         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+         */
+        _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider);
+
+        _FinalStage phenomlFhirProvider(String phenomlFhirProvider);
+
+        /**
          * <p>Optional context for the conversation</p>
          */
         _FinalStage context(Optional<String> context);
@@ -152,6 +202,10 @@ public final class AgentChatRequest {
 
         private Optional<String> context = Optional.empty();
 
+        private Optional<String> phenomlFhirProvider = Optional.empty();
+
+        private Optional<String> phenomlOnBehalfOf = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -159,6 +213,8 @@ public final class AgentChatRequest {
 
         @java.lang.Override
         public Builder from(AgentChatRequest other) {
+            phenomlOnBehalfOf(other.getPhenomlOnBehalfOf());
+            phenomlFhirProvider(other.getPhenomlFhirProvider());
             message(other.getMessage());
             context(other.getContext());
             sessionId(other.getSessionId());
@@ -230,9 +286,54 @@ public final class AgentChatRequest {
             return this;
         }
 
+        /**
+         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage phenomlFhirProvider(String phenomlFhirProvider) {
+            this.phenomlFhirProvider = Optional.ofNullable(phenomlFhirProvider);
+            return this;
+        }
+
+        /**
+         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "X-Phenoml-Fhir-Provider", nulls = Nulls.SKIP)
+        public _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider) {
+            this.phenomlFhirProvider = phenomlFhirProvider;
+            return this;
+        }
+
+        /**
+         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage phenomlOnBehalfOf(String phenomlOnBehalfOf) {
+            this.phenomlOnBehalfOf = Optional.ofNullable(phenomlOnBehalfOf);
+            return this;
+        }
+
+        /**
+         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "X-Phenoml-On-Behalf-Of", nulls = Nulls.SKIP)
+        public _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf) {
+            this.phenomlOnBehalfOf = phenomlOnBehalfOf;
+            return this;
+        }
+
         @java.lang.Override
         public AgentChatRequest build() {
-            return new AgentChatRequest(message, context, sessionId, agentId, additionalProperties);
+            return new AgentChatRequest(
+                    phenomlOnBehalfOf, phenomlFhirProvider, message, context, sessionId, agentId, additionalProperties);
         }
     }
 }
