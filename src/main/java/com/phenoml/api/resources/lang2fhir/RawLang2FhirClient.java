@@ -17,10 +17,12 @@ import com.phenoml.api.resources.lang2fhir.errors.FailedDependencyError;
 import com.phenoml.api.resources.lang2fhir.errors.ForbiddenError;
 import com.phenoml.api.resources.lang2fhir.errors.InternalServerError;
 import com.phenoml.api.resources.lang2fhir.errors.UnauthorizedError;
+import com.phenoml.api.resources.lang2fhir.requests.CreateMultiRequest;
 import com.phenoml.api.resources.lang2fhir.requests.CreateRequest;
 import com.phenoml.api.resources.lang2fhir.requests.DocumentRequest;
 import com.phenoml.api.resources.lang2fhir.requests.ProfileUploadRequest;
 import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
+import com.phenoml.api.resources.lang2fhir.types.CreateMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.Lang2FhirUploadProfileResponse;
 import com.phenoml.api.resources.lang2fhir.types.SearchResponse;
 import java.io.IOException;
@@ -79,6 +81,77 @@ public class RawLang2FhirClient {
                 return new PhenoMLHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(
                                 responseBody.string(), new TypeReference<Map<String, Object>>() {}),
+                        response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Analyzes natural language text and extracts multiple FHIR resources, returning them as a transaction Bundle.
+     * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
+     * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     */
+    public PhenoMLHttpResponse<CreateMultiResponse> createMulti(CreateMultiRequest request) {
+        return createMulti(request, null);
+    }
+
+    /**
+     * Analyzes natural language text and extracts multiple FHIR resources, returning them as a transaction Bundle.
+     * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
+     * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     */
+    public PhenoMLHttpResponse<CreateMultiResponse> createMulti(
+            CreateMultiRequest request, RequestOptions requestOptions) {
+        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("lang2fhir/create/multi")
+                .build();
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+        } catch (JsonProcessingException e) {
+            throw new PhenoMLException("Failed to serialize request", e);
+        }
+        Request okhttpRequest = new Request.Builder()
+                .url(httpUrl)
+                .method("POST", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), CreateMultiResponse.class),
                         response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";

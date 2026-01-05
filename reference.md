@@ -2745,6 +2745,83 @@ client.lang2Fhir().create(
 </dl>
 </details>
 
+<details><summary><code>client.lang2Fhir.createMulti(request) -> CreateMultiResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Analyzes natural language text and extracts multiple FHIR resources, returning them as a transaction Bundle.
+Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
+Resources are linked with proper references (e.g., Conditions reference the Patient).
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.lang2Fhir().createMulti(
+    CreateMultiRequest
+        .builder()
+        .text("John Smith, 45-year-old male, diagnosed with Type 2 Diabetes. Prescribed Metformin 500mg twice daily.")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**text:** `String` — Natural language text containing multiple clinical concepts to extract
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `Optional<String>` — FHIR version to use
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**provider:** `Optional<String>` — Optional FHIR provider name for provider-specific profiles
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.lang2Fhir.search(request) -> SearchResponse</code></summary>
 <dl>
 <dd>
@@ -3514,6 +3591,110 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 <dd>
 
 **provider:** `Optional<String>` — FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.tools.createFhirResourcesMulti(request) -> Lang2FhirAndCreateMultiResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Extracts multiple FHIR resources from natural language text and stores them in a FHIR server.
+Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
+Resources are linked with proper references and submitted as a transaction bundle.
+For FHIR servers that don't auto-resolve urn:uuid references, this endpoint will automatically
+resolve them via PUT requests after the initial bundle creation.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.tools().createFhirResourcesMulti(
+    Lang2FhirAndCreateMultiRequest
+        .builder()
+        .text("John Smith, 45-year-old male, diagnosed with Type 2 Diabetes. Prescribed Metformin 500mg twice daily.")
+        .provider("medplum")
+        .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
+        .phenomlFhirProvider("550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**phenomlOnBehalfOf:** `Optional<String>` 
+
+Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+Must be in the format: Patient/{uuid} or Practitioner/{uuid}
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**phenomlFhirProvider:** `Optional<String>` 
+
+Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+Multiple FHIR provider integrations can be provided as comma-separated values.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**text:** `String` — Natural language text containing multiple clinical concepts to extract
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `Optional<String>` — FHIR version to use
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**provider:** `String` — FHIR provider ID or name
     
 </dd>
 </dl>

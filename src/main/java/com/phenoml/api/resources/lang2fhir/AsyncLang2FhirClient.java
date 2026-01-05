@@ -5,10 +5,12 @@ package com.phenoml.api.resources.lang2fhir;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.resources.lang2fhir.requests.CreateMultiRequest;
 import com.phenoml.api.resources.lang2fhir.requests.CreateRequest;
 import com.phenoml.api.resources.lang2fhir.requests.DocumentRequest;
 import com.phenoml.api.resources.lang2fhir.requests.ProfileUploadRequest;
 import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
+import com.phenoml.api.resources.lang2fhir.types.CreateMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.Lang2FhirUploadProfileResponse;
 import com.phenoml.api.resources.lang2fhir.types.SearchResponse;
 import java.util.Map;
@@ -43,6 +45,25 @@ public class AsyncLang2FhirClient {
      */
     public CompletableFuture<Map<String, Object>> create(CreateRequest request, RequestOptions requestOptions) {
         return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Analyzes natural language text and extracts multiple FHIR resources, returning them as a transaction Bundle.
+     * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
+     * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     */
+    public CompletableFuture<CreateMultiResponse> createMulti(CreateMultiRequest request) {
+        return this.rawClient.createMulti(request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Analyzes natural language text and extracts multiple FHIR resources, returning them as a transaction Bundle.
+     * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
+     * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     */
+    public CompletableFuture<CreateMultiResponse> createMulti(
+            CreateMultiRequest request, RequestOptions requestOptions) {
+        return this.rawClient.createMulti(request, requestOptions).thenApply(response -> response.body());
     }
 
     /**

@@ -8,9 +8,11 @@ import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.tools.mcpserver.AsyncMcpServerClient;
 import com.phenoml.api.resources.tools.requests.CohortRequest;
+import com.phenoml.api.resources.tools.requests.Lang2FhirAndCreateMultiRequest;
 import com.phenoml.api.resources.tools.requests.Lang2FhirAndCreateRequest;
 import com.phenoml.api.resources.tools.requests.Lang2FhirAndSearchRequest;
 import com.phenoml.api.resources.tools.types.CohortResponse;
+import com.phenoml.api.resources.tools.types.Lang2FhirAndCreateMultiResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndCreateResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndSearchResponse;
 import java.util.concurrent.CompletableFuture;
@@ -49,6 +51,30 @@ public class AsyncToolsClient {
     public CompletableFuture<Lang2FhirAndCreateResponse> createFhirResource(
             Lang2FhirAndCreateRequest request, RequestOptions requestOptions) {
         return this.rawClient.createFhirResource(request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Extracts multiple FHIR resources from natural language text and stores them in a FHIR server.
+     * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
+     * Resources are linked with proper references and submitted as a transaction bundle.
+     * For FHIR servers that don't auto-resolve urn:uuid references, this endpoint will automatically
+     * resolve them via PUT requests after the initial bundle creation.
+     */
+    public CompletableFuture<Lang2FhirAndCreateMultiResponse> createFhirResourcesMulti(
+            Lang2FhirAndCreateMultiRequest request) {
+        return this.rawClient.createFhirResourcesMulti(request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Extracts multiple FHIR resources from natural language text and stores them in a FHIR server.
+     * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
+     * Resources are linked with proper references and submitted as a transaction bundle.
+     * For FHIR servers that don't auto-resolve urn:uuid references, this endpoint will automatically
+     * resolve them via PUT requests after the initial bundle creation.
+     */
+    public CompletableFuture<Lang2FhirAndCreateMultiResponse> createFhirResourcesMulti(
+            Lang2FhirAndCreateMultiRequest request, RequestOptions requestOptions) {
+        return this.rawClient.createFhirResourcesMulti(request, requestOptions).thenApply(response -> response.body());
     }
 
     /**
