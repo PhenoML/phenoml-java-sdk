@@ -25,6 +25,8 @@ public final class ExtractedCodeResult {
 
     private final String description;
 
+    private final boolean valid;
+
     private final Optional<String> longDescription;
 
     private final Optional<String> rationale;
@@ -34,11 +36,13 @@ public final class ExtractedCodeResult {
     private ExtractedCodeResult(
             String code,
             String description,
+            boolean valid,
             Optional<String> longDescription,
             Optional<String> rationale,
             Map<String, Object> additionalProperties) {
         this.code = code;
         this.description = description;
+        this.valid = valid;
         this.longDescription = longDescription;
         this.rationale = rationale;
         this.additionalProperties = additionalProperties;
@@ -58,6 +62,14 @@ public final class ExtractedCodeResult {
     @JsonProperty("description")
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * @return Whether the code passed validation. Always true unless include_invalid is set to true, in which case invalid codes will have this set to false.
+     */
+    @JsonProperty("valid")
+    public boolean getValid() {
+        return valid;
     }
 
     /**
@@ -90,13 +102,14 @@ public final class ExtractedCodeResult {
     private boolean equalTo(ExtractedCodeResult other) {
         return code.equals(other.code)
                 && description.equals(other.description)
+                && valid == other.valid
                 && longDescription.equals(other.longDescription)
                 && rationale.equals(other.rationale);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.code, this.description, this.longDescription, this.rationale);
+        return Objects.hash(this.code, this.description, this.valid, this.longDescription, this.rationale);
     }
 
     @java.lang.Override
@@ -121,7 +134,14 @@ public final class ExtractedCodeResult {
         /**
          * <p>Short description of the code</p>
          */
-        _FinalStage description(@NotNull String description);
+        ValidStage description(@NotNull String description);
+    }
+
+    public interface ValidStage {
+        /**
+         * <p>Whether the code passed validation. Always true unless include_invalid is set to true, in which case invalid codes will have this set to false.</p>
+         */
+        _FinalStage valid(boolean valid);
     }
 
     public interface _FinalStage {
@@ -143,10 +163,12 @@ public final class ExtractedCodeResult {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements CodeStage, DescriptionStage, _FinalStage {
+    public static final class Builder implements CodeStage, DescriptionStage, ValidStage, _FinalStage {
         private String code;
 
         private String description;
+
+        private boolean valid;
 
         private Optional<String> rationale = Optional.empty();
 
@@ -161,6 +183,7 @@ public final class ExtractedCodeResult {
         public Builder from(ExtractedCodeResult other) {
             code(other.getCode());
             description(other.getDescription());
+            valid(other.getValid());
             longDescription(other.getLongDescription());
             rationale(other.getRationale());
             return this;
@@ -185,8 +208,20 @@ public final class ExtractedCodeResult {
          */
         @java.lang.Override
         @JsonSetter("description")
-        public _FinalStage description(@NotNull String description) {
+        public ValidStage description(@NotNull String description) {
             this.description = Objects.requireNonNull(description, "description must not be null");
+            return this;
+        }
+
+        /**
+         * <p>Whether the code passed validation. Always true unless include_invalid is set to true, in which case invalid codes will have this set to false.</p>
+         * <p>Whether the code passed validation. Always true unless include_invalid is set to true, in which case invalid codes will have this set to false.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        @JsonSetter("valid")
+        public _FinalStage valid(boolean valid) {
+            this.valid = valid;
             return this;
         }
 
@@ -232,7 +267,7 @@ public final class ExtractedCodeResult {
 
         @java.lang.Override
         public ExtractedCodeResult build() {
-            return new ExtractedCodeResult(code, description, longDescription, rationale, additionalProperties);
+            return new ExtractedCodeResult(code, description, valid, longDescription, rationale, additionalProperties);
         }
     }
 }

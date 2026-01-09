@@ -34,6 +34,8 @@ public final class ExtractRequestConfig {
 
     private final Optional<Boolean> includeAncestors;
 
+    private final Optional<Boolean> includeInvalid;
+
     private final Map<String, Object> additionalProperties;
 
     private ExtractRequestConfig(
@@ -43,6 +45,7 @@ public final class ExtractRequestConfig {
             Optional<ValidationMethod> validationMethod,
             Optional<Boolean> includeRationale,
             Optional<Boolean> includeAncestors,
+            Optional<Boolean> includeInvalid,
             Map<String, Object> additionalProperties) {
         this.chunkingMethod = chunkingMethod;
         this.maxCodesPerChunk = maxCodesPerChunk;
@@ -50,6 +53,7 @@ public final class ExtractRequestConfig {
         this.validationMethod = validationMethod;
         this.includeRationale = includeRationale;
         this.includeAncestors = includeAncestors;
+        this.includeInvalid = includeInvalid;
         this.additionalProperties = additionalProperties;
     }
 
@@ -62,7 +66,12 @@ public final class ExtractRequestConfig {
     }
 
     /**
-     * @return Maximum number of codes to extract per chunk
+     * @return Maximum number of codes to extract per chunk. If not specified, uses system-specific defaults:
+     * <ul>
+     * <li>SNOMED: 10</li>
+     * <li>LOINC, HPO, RXNORM: 20</li>
+     * <li>All other systems: 5</li>
+     * </ul>
      */
     @JsonProperty("max_codes_per_chunk")
     public Optional<Integer> getMaxCodesPerChunk() {
@@ -106,6 +115,14 @@ public final class ExtractRequestConfig {
         return includeAncestors;
     }
 
+    /**
+     * @return Whether to include codes that failed validation in the results
+     */
+    @JsonProperty("include_invalid")
+    public Optional<Boolean> getIncludeInvalid() {
+        return includeInvalid;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -123,7 +140,8 @@ public final class ExtractRequestConfig {
                 && codeSimilarityFilter.equals(other.codeSimilarityFilter)
                 && validationMethod.equals(other.validationMethod)
                 && includeRationale.equals(other.includeRationale)
-                && includeAncestors.equals(other.includeAncestors);
+                && includeAncestors.equals(other.includeAncestors)
+                && includeInvalid.equals(other.includeInvalid);
     }
 
     @java.lang.Override
@@ -134,7 +152,8 @@ public final class ExtractRequestConfig {
                 this.codeSimilarityFilter,
                 this.validationMethod,
                 this.includeRationale,
-                this.includeAncestors);
+                this.includeAncestors,
+                this.includeInvalid);
     }
 
     @java.lang.Override
@@ -160,6 +179,8 @@ public final class ExtractRequestConfig {
 
         private Optional<Boolean> includeAncestors = Optional.empty();
 
+        private Optional<Boolean> includeInvalid = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -172,6 +193,7 @@ public final class ExtractRequestConfig {
             validationMethod(other.getValidationMethod());
             includeRationale(other.getIncludeRationale());
             includeAncestors(other.getIncludeAncestors());
+            includeInvalid(other.getIncludeInvalid());
             return this;
         }
 
@@ -190,7 +212,12 @@ public final class ExtractRequestConfig {
         }
 
         /**
-         * <p>Maximum number of codes to extract per chunk</p>
+         * <p>Maximum number of codes to extract per chunk. If not specified, uses system-specific defaults:</p>
+         * <ul>
+         * <li>SNOMED: 10</li>
+         * <li>LOINC, HPO, RXNORM: 20</li>
+         * <li>All other systems: 5</li>
+         * </ul>
          */
         @JsonSetter(value = "max_codes_per_chunk", nulls = Nulls.SKIP)
         public Builder maxCodesPerChunk(Optional<Integer> maxCodesPerChunk) {
@@ -264,6 +291,20 @@ public final class ExtractRequestConfig {
             return this;
         }
 
+        /**
+         * <p>Whether to include codes that failed validation in the results</p>
+         */
+        @JsonSetter(value = "include_invalid", nulls = Nulls.SKIP)
+        public Builder includeInvalid(Optional<Boolean> includeInvalid) {
+            this.includeInvalid = includeInvalid;
+            return this;
+        }
+
+        public Builder includeInvalid(Boolean includeInvalid) {
+            this.includeInvalid = Optional.ofNullable(includeInvalid);
+            return this;
+        }
+
         public ExtractRequestConfig build() {
             return new ExtractRequestConfig(
                     chunkingMethod,
@@ -272,6 +313,7 @@ public final class ExtractRequestConfig {
                     validationMethod,
                     includeRationale,
                     includeAncestors,
+                    includeInvalid,
                     additionalProperties);
         }
     }
