@@ -5,10 +5,12 @@ package com.phenoml.api.resources.lang2fhir.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
@@ -20,14 +22,16 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = SearchResponse.Builder.class)
 public final class SearchResponse {
-    private final Optional<String> resourceType;
+    private final Optional<ResourceType> resourceType;
 
     private final Optional<String> searchParams;
 
     private final Map<String, Object> additionalProperties;
 
     private SearchResponse(
-            Optional<String> resourceType, Optional<String> searchParams, Map<String, Object> additionalProperties) {
+            Optional<ResourceType> resourceType,
+            Optional<String> searchParams,
+            Map<String, Object> additionalProperties) {
         this.resourceType = resourceType;
         this.searchParams = searchParams;
         this.additionalProperties = additionalProperties;
@@ -37,12 +41,14 @@ public final class SearchResponse {
      * @return The FHIR resource type identified for the search
      */
     @JsonProperty("resourceType")
-    public Optional<String> getResourceType() {
+    public Optional<ResourceType> getResourceType() {
         return resourceType;
     }
 
     /**
-     * @return FHIR search parameters in standard format
+     * @return FHIR search parameters in standard query string format.
+     * Parameters are formatted according to the FHIR specification with appropriate operators.
+     * Code parameters are resolved to standard terminology codes (SNOMED CT, LOINC, RxNorm, ICD-10-CM).
      */
     @JsonProperty("searchParams")
     public Optional<String> getSearchParams() {
@@ -80,7 +86,7 @@ public final class SearchResponse {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder {
-        private Optional<String> resourceType = Optional.empty();
+        private Optional<ResourceType> resourceType = Optional.empty();
 
         private Optional<String> searchParams = Optional.empty();
 
@@ -99,18 +105,20 @@ public final class SearchResponse {
          * <p>The FHIR resource type identified for the search</p>
          */
         @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
-        public Builder resourceType(Optional<String> resourceType) {
+        public Builder resourceType(Optional<ResourceType> resourceType) {
             this.resourceType = resourceType;
             return this;
         }
 
-        public Builder resourceType(String resourceType) {
+        public Builder resourceType(ResourceType resourceType) {
             this.resourceType = Optional.ofNullable(resourceType);
             return this;
         }
 
         /**
-         * <p>FHIR search parameters in standard format</p>
+         * <p>FHIR search parameters in standard query string format.
+         * Parameters are formatted according to the FHIR specification with appropriate operators.
+         * Code parameters are resolved to standard terminology codes (SNOMED CT, LOINC, RxNorm, ICD-10-CM).</p>
          */
         @JsonSetter(value = "searchParams", nulls = Nulls.SKIP)
         public Builder searchParams(Optional<String> searchParams) {
@@ -125,6 +133,368 @@ public final class SearchResponse {
 
         public SearchResponse build() {
             return new SearchResponse(resourceType, searchParams, additionalProperties);
+        }
+    }
+
+    public static final class ResourceType {
+        public static final ResourceType DOCUMENT_REFERENCE =
+                new ResourceType(Value.DOCUMENT_REFERENCE, "DocumentReference");
+
+        public static final ResourceType PLAN_DEFINITION = new ResourceType(Value.PLAN_DEFINITION, "PlanDefinition");
+
+        public static final ResourceType IMMUNIZATION = new ResourceType(Value.IMMUNIZATION, "Immunization");
+
+        public static final ResourceType CARE_TEAM = new ResourceType(Value.CARE_TEAM, "CareTeam");
+
+        public static final ResourceType PROVENANCE = new ResourceType(Value.PROVENANCE, "Provenance");
+
+        public static final ResourceType LOCATION = new ResourceType(Value.LOCATION, "Location");
+
+        public static final ResourceType PRACTITIONER = new ResourceType(Value.PRACTITIONER, "Practitioner");
+
+        public static final ResourceType CONDITION = new ResourceType(Value.CONDITION, "Condition");
+
+        public static final ResourceType DIAGNOSTIC_REPORT =
+                new ResourceType(Value.DIAGNOSTIC_REPORT, "DiagnosticReport");
+
+        public static final ResourceType MEDICATION_REQUEST =
+                new ResourceType(Value.MEDICATION_REQUEST, "MedicationRequest");
+
+        public static final ResourceType PRACTITIONER_ROLE =
+                new ResourceType(Value.PRACTITIONER_ROLE, "PractitionerRole");
+
+        public static final ResourceType OBSERVATION = new ResourceType(Value.OBSERVATION, "Observation");
+
+        public static final ResourceType QUESTIONNAIRE_RESPONSE =
+                new ResourceType(Value.QUESTIONNAIRE_RESPONSE, "QuestionnaireResponse");
+
+        public static final ResourceType SLOT = new ResourceType(Value.SLOT, "Slot");
+
+        public static final ResourceType SPECIMEN = new ResourceType(Value.SPECIMEN, "Specimen");
+
+        public static final ResourceType ALLERGY_INTOLERANCE =
+                new ResourceType(Value.ALLERGY_INTOLERANCE, "AllergyIntolerance");
+
+        public static final ResourceType CARE_PLAN = new ResourceType(Value.CARE_PLAN, "CarePlan");
+
+        public static final ResourceType MEDICATION = new ResourceType(Value.MEDICATION, "Medication");
+
+        public static final ResourceType PROCEDURE = new ResourceType(Value.PROCEDURE, "Procedure");
+
+        public static final ResourceType DEVICE = new ResourceType(Value.DEVICE, "Device");
+
+        public static final ResourceType PATIENT = new ResourceType(Value.PATIENT, "Patient");
+
+        public static final ResourceType COVERAGE = new ResourceType(Value.COVERAGE, "Coverage");
+
+        public static final ResourceType ORGANIZATION = new ResourceType(Value.ORGANIZATION, "Organization");
+
+        public static final ResourceType ENCOUNTER = new ResourceType(Value.ENCOUNTER, "Encounter");
+
+        public static final ResourceType GOAL = new ResourceType(Value.GOAL, "Goal");
+
+        public static final ResourceType SCHEDULE = new ResourceType(Value.SCHEDULE, "Schedule");
+
+        public static final ResourceType APPOINTMENT = new ResourceType(Value.APPOINTMENT, "Appointment");
+
+        public static final ResourceType QUESTIONNAIRE = new ResourceType(Value.QUESTIONNAIRE, "Questionnaire");
+
+        public static final ResourceType RELATED_PERSON = new ResourceType(Value.RELATED_PERSON, "RelatedPerson");
+
+        public static final ResourceType SERVICE_REQUEST = new ResourceType(Value.SERVICE_REQUEST, "ServiceRequest");
+
+        private final Value value;
+
+        private final String string;
+
+        ResourceType(Value value, String string) {
+            this.value = value;
+            this.string = string;
+        }
+
+        public Value getEnumValue() {
+            return value;
+        }
+
+        @java.lang.Override
+        @JsonValue
+        public String toString() {
+            return this.string;
+        }
+
+        @java.lang.Override
+        public boolean equals(Object other) {
+            return (this == other)
+                    || (other instanceof ResourceType && this.string.equals(((ResourceType) other).string));
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+            return this.string.hashCode();
+        }
+
+        public <T> T visit(Visitor<T> visitor) {
+            switch (value) {
+                case DOCUMENT_REFERENCE:
+                    return visitor.visitDocumentReference();
+                case PLAN_DEFINITION:
+                    return visitor.visitPlanDefinition();
+                case IMMUNIZATION:
+                    return visitor.visitImmunization();
+                case CARE_TEAM:
+                    return visitor.visitCareTeam();
+                case PROVENANCE:
+                    return visitor.visitProvenance();
+                case LOCATION:
+                    return visitor.visitLocation();
+                case PRACTITIONER:
+                    return visitor.visitPractitioner();
+                case CONDITION:
+                    return visitor.visitCondition();
+                case DIAGNOSTIC_REPORT:
+                    return visitor.visitDiagnosticReport();
+                case MEDICATION_REQUEST:
+                    return visitor.visitMedicationRequest();
+                case PRACTITIONER_ROLE:
+                    return visitor.visitPractitionerRole();
+                case OBSERVATION:
+                    return visitor.visitObservation();
+                case QUESTIONNAIRE_RESPONSE:
+                    return visitor.visitQuestionnaireResponse();
+                case SLOT:
+                    return visitor.visitSlot();
+                case SPECIMEN:
+                    return visitor.visitSpecimen();
+                case ALLERGY_INTOLERANCE:
+                    return visitor.visitAllergyIntolerance();
+                case CARE_PLAN:
+                    return visitor.visitCarePlan();
+                case MEDICATION:
+                    return visitor.visitMedication();
+                case PROCEDURE:
+                    return visitor.visitProcedure();
+                case DEVICE:
+                    return visitor.visitDevice();
+                case PATIENT:
+                    return visitor.visitPatient();
+                case COVERAGE:
+                    return visitor.visitCoverage();
+                case ORGANIZATION:
+                    return visitor.visitOrganization();
+                case ENCOUNTER:
+                    return visitor.visitEncounter();
+                case GOAL:
+                    return visitor.visitGoal();
+                case SCHEDULE:
+                    return visitor.visitSchedule();
+                case APPOINTMENT:
+                    return visitor.visitAppointment();
+                case QUESTIONNAIRE:
+                    return visitor.visitQuestionnaire();
+                case RELATED_PERSON:
+                    return visitor.visitRelatedPerson();
+                case SERVICE_REQUEST:
+                    return visitor.visitServiceRequest();
+                case UNKNOWN:
+                default:
+                    return visitor.visitUnknown(string);
+            }
+        }
+
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        public static ResourceType valueOf(String value) {
+            switch (value) {
+                case "DocumentReference":
+                    return DOCUMENT_REFERENCE;
+                case "PlanDefinition":
+                    return PLAN_DEFINITION;
+                case "Immunization":
+                    return IMMUNIZATION;
+                case "CareTeam":
+                    return CARE_TEAM;
+                case "Provenance":
+                    return PROVENANCE;
+                case "Location":
+                    return LOCATION;
+                case "Practitioner":
+                    return PRACTITIONER;
+                case "Condition":
+                    return CONDITION;
+                case "DiagnosticReport":
+                    return DIAGNOSTIC_REPORT;
+                case "MedicationRequest":
+                    return MEDICATION_REQUEST;
+                case "PractitionerRole":
+                    return PRACTITIONER_ROLE;
+                case "Observation":
+                    return OBSERVATION;
+                case "QuestionnaireResponse":
+                    return QUESTIONNAIRE_RESPONSE;
+                case "Slot":
+                    return SLOT;
+                case "Specimen":
+                    return SPECIMEN;
+                case "AllergyIntolerance":
+                    return ALLERGY_INTOLERANCE;
+                case "CarePlan":
+                    return CARE_PLAN;
+                case "Medication":
+                    return MEDICATION;
+                case "Procedure":
+                    return PROCEDURE;
+                case "Device":
+                    return DEVICE;
+                case "Patient":
+                    return PATIENT;
+                case "Coverage":
+                    return COVERAGE;
+                case "Organization":
+                    return ORGANIZATION;
+                case "Encounter":
+                    return ENCOUNTER;
+                case "Goal":
+                    return GOAL;
+                case "Schedule":
+                    return SCHEDULE;
+                case "Appointment":
+                    return APPOINTMENT;
+                case "Questionnaire":
+                    return QUESTIONNAIRE;
+                case "RelatedPerson":
+                    return RELATED_PERSON;
+                case "ServiceRequest":
+                    return SERVICE_REQUEST;
+                default:
+                    return new ResourceType(Value.UNKNOWN, value);
+            }
+        }
+
+        public enum Value {
+            ALLERGY_INTOLERANCE,
+
+            APPOINTMENT,
+
+            CARE_PLAN,
+
+            CARE_TEAM,
+
+            CONDITION,
+
+            COVERAGE,
+
+            DEVICE,
+
+            DIAGNOSTIC_REPORT,
+
+            DOCUMENT_REFERENCE,
+
+            ENCOUNTER,
+
+            GOAL,
+
+            IMMUNIZATION,
+
+            LOCATION,
+
+            MEDICATION,
+
+            MEDICATION_REQUEST,
+
+            OBSERVATION,
+
+            ORGANIZATION,
+
+            PATIENT,
+
+            PLAN_DEFINITION,
+
+            PRACTITIONER,
+
+            PRACTITIONER_ROLE,
+
+            PROCEDURE,
+
+            PROVENANCE,
+
+            QUESTIONNAIRE,
+
+            QUESTIONNAIRE_RESPONSE,
+
+            RELATED_PERSON,
+
+            SCHEDULE,
+
+            SERVICE_REQUEST,
+
+            SLOT,
+
+            SPECIMEN,
+
+            UNKNOWN
+        }
+
+        public interface Visitor<T> {
+            T visitAllergyIntolerance();
+
+            T visitAppointment();
+
+            T visitCarePlan();
+
+            T visitCareTeam();
+
+            T visitCondition();
+
+            T visitCoverage();
+
+            T visitDevice();
+
+            T visitDiagnosticReport();
+
+            T visitDocumentReference();
+
+            T visitEncounter();
+
+            T visitGoal();
+
+            T visitImmunization();
+
+            T visitLocation();
+
+            T visitMedication();
+
+            T visitMedicationRequest();
+
+            T visitObservation();
+
+            T visitOrganization();
+
+            T visitPatient();
+
+            T visitPlanDefinition();
+
+            T visitPractitioner();
+
+            T visitPractitionerRole();
+
+            T visitProcedure();
+
+            T visitProvenance();
+
+            T visitQuestionnaire();
+
+            T visitQuestionnaireResponse();
+
+            T visitRelatedPerson();
+
+            T visitSchedule();
+
+            T visitServiceRequest();
+
+            T visitSlot();
+
+            T visitSpecimen();
+
+            T visitUnknown(String unknownType);
         }
     }
 }

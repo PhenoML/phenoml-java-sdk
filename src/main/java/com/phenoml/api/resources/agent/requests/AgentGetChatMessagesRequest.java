@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.agent.types.AgentGetChatMessagesRequestOrder;
+import com.phenoml.api.resources.agent.types.AgentGetChatMessagesRequestRole;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -26,7 +27,7 @@ public final class AgentGetChatMessagesRequest {
 
     private final Optional<Integer> numMessages;
 
-    private final Optional<String> role;
+    private final Optional<AgentGetChatMessagesRequestRole> role;
 
     private final Optional<AgentGetChatMessagesRequestOrder> order;
 
@@ -35,7 +36,7 @@ public final class AgentGetChatMessagesRequest {
     private AgentGetChatMessagesRequest(
             String chatSessionId,
             Optional<Integer> numMessages,
-            Optional<String> role,
+            Optional<AgentGetChatMessagesRequestRole> role,
             Optional<AgentGetChatMessagesRequestOrder> order,
             Map<String, Object> additionalProperties) {
         this.chatSessionId = chatSessionId;
@@ -62,10 +63,18 @@ public final class AgentGetChatMessagesRequest {
     }
 
     /**
-     * @return Filter by role
+     * @return Filter by one or more message roles. Multiple roles can be specified as a comma-separated string.
+     * If not specified, messages with all roles are returned.
+     * <p><strong>Available roles:</strong></p>
+     * <ul>
+     * <li><code>user</code> - Messages from the user</li>
+     * <li><code>assistant</code> - Text responses from the AI assistant</li>
+     * <li><code>model</code> - Function/tool call requests from the model</li>
+     * <li><code>function</code> - Function/tool call results</li>
+     * </ul>
      */
     @JsonProperty("role")
-    public Optional<String> getRole() {
+    public Optional<AgentGetChatMessagesRequestRole> getRole() {
         return role;
     }
 
@@ -129,11 +138,19 @@ public final class AgentGetChatMessagesRequest {
         _FinalStage numMessages(Integer numMessages);
 
         /**
-         * <p>Filter by role</p>
+         * <p>Filter by one or more message roles. Multiple roles can be specified as a comma-separated string.
+         * If not specified, messages with all roles are returned.</p>
+         * <p><strong>Available roles:</strong></p>
+         * <ul>
+         * <li><code>user</code> - Messages from the user</li>
+         * <li><code>assistant</code> - Text responses from the AI assistant</li>
+         * <li><code>model</code> - Function/tool call requests from the model</li>
+         * <li><code>function</code> - Function/tool call results</li>
+         * </ul>
          */
-        _FinalStage role(Optional<String> role);
+        _FinalStage role(Optional<AgentGetChatMessagesRequestRole> role);
 
-        _FinalStage role(String role);
+        _FinalStage role(AgentGetChatMessagesRequestRole role);
 
         /**
          * <p>Order of messages</p>
@@ -149,7 +166,7 @@ public final class AgentGetChatMessagesRequest {
 
         private Optional<AgentGetChatMessagesRequestOrder> order = Optional.empty();
 
-        private Optional<String> role = Optional.empty();
+        private Optional<AgentGetChatMessagesRequestRole> role = Optional.empty();
 
         private Optional<Integer> numMessages = Optional.empty();
 
@@ -200,21 +217,37 @@ public final class AgentGetChatMessagesRequest {
         }
 
         /**
-         * <p>Filter by role</p>
+         * <p>Filter by one or more message roles. Multiple roles can be specified as a comma-separated string.
+         * If not specified, messages with all roles are returned.</p>
+         * <p><strong>Available roles:</strong></p>
+         * <ul>
+         * <li><code>user</code> - Messages from the user</li>
+         * <li><code>assistant</code> - Text responses from the AI assistant</li>
+         * <li><code>model</code> - Function/tool call requests from the model</li>
+         * <li><code>function</code> - Function/tool call results</li>
+         * </ul>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
-        public _FinalStage role(String role) {
+        public _FinalStage role(AgentGetChatMessagesRequestRole role) {
             this.role = Optional.ofNullable(role);
             return this;
         }
 
         /**
-         * <p>Filter by role</p>
+         * <p>Filter by one or more message roles. Multiple roles can be specified as a comma-separated string.
+         * If not specified, messages with all roles are returned.</p>
+         * <p><strong>Available roles:</strong></p>
+         * <ul>
+         * <li><code>user</code> - Messages from the user</li>
+         * <li><code>assistant</code> - Text responses from the AI assistant</li>
+         * <li><code>model</code> - Function/tool call requests from the model</li>
+         * <li><code>function</code> - Function/tool call results</li>
+         * </ul>
          */
         @java.lang.Override
         @JsonSetter(value = "role", nulls = Nulls.SKIP)
-        public _FinalStage role(Optional<String> role) {
+        public _FinalStage role(Optional<AgentGetChatMessagesRequestRole> role) {
             this.role = role;
             return this;
         }

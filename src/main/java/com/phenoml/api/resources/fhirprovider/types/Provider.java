@@ -17,6 +17,8 @@ public final class Provider {
 
     public static final Provider ELATION = new Provider(Value.ELATION, "elation");
 
+    public static final Provider SANDBOX = new Provider(Value.SANDBOX, "sandbox");
+
     public static final Provider CERNER = new Provider(Value.CERNER, "cerner");
 
     public static final Provider GOOGLE_HEALTHCARE = new Provider(Value.GOOGLE_HEALTHCARE, "google_healthcare");
@@ -64,6 +66,8 @@ public final class Provider {
                 return visitor.visitCanvas();
             case ELATION:
                 return visitor.visitElation();
+            case SANDBOX:
+                return visitor.visitSandbox();
             case CERNER:
                 return visitor.visitCerner();
             case GOOGLE_HEALTHCARE:
@@ -89,6 +93,8 @@ public final class Provider {
                 return CANVAS;
             case "elation":
                 return ELATION;
+            case "sandbox":
+                return SANDBOX;
             case "cerner":
                 return CERNER;
             case "google_healthcare":
@@ -117,6 +123,8 @@ public final class Provider {
 
         MEDPLUM,
 
+        SANDBOX,
+
         UNKNOWN
     }
 
@@ -136,6 +144,8 @@ public final class Provider {
         T visitHapi();
 
         T visitMedplum();
+
+        T visitSandbox();
 
         T visitUnknown(String unknownType);
     }

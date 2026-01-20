@@ -27,6 +27,10 @@ public final class FhirProviderAuthConfig {
 
     private final Optional<Boolean> isActiveAuthConfig;
 
+    private final Optional<OffsetDateTime> createdAt;
+
+    private final Optional<OffsetDateTime> updatedAt;
+
     private final Optional<String> publicKeyCertPem;
 
     private final Optional<JsonWebKey> jsonWebKey;
@@ -34,6 +38,8 @@ public final class FhirProviderAuthConfig {
     private final Optional<OffsetDateTime> credentialExpiry;
 
     private final Optional<SmartConfiguration> smartConfiguration;
+
+    private final Optional<ServiceAccountMetadata> serviceAccountMetadata;
 
     private final Optional<String> scopes;
 
@@ -43,19 +49,25 @@ public final class FhirProviderAuthConfig {
             Optional<String> authConfigId,
             Optional<AuthMethod> authMethod,
             Optional<Boolean> isActiveAuthConfig,
+            Optional<OffsetDateTime> createdAt,
+            Optional<OffsetDateTime> updatedAt,
             Optional<String> publicKeyCertPem,
             Optional<JsonWebKey> jsonWebKey,
             Optional<OffsetDateTime> credentialExpiry,
             Optional<SmartConfiguration> smartConfiguration,
+            Optional<ServiceAccountMetadata> serviceAccountMetadata,
             Optional<String> scopes,
             Map<String, Object> additionalProperties) {
         this.authConfigId = authConfigId;
         this.authMethod = authMethod;
         this.isActiveAuthConfig = isActiveAuthConfig;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.publicKeyCertPem = publicKeyCertPem;
         this.jsonWebKey = jsonWebKey;
         this.credentialExpiry = credentialExpiry;
         this.smartConfiguration = smartConfiguration;
+        this.serviceAccountMetadata = serviceAccountMetadata;
         this.scopes = scopes;
         this.additionalProperties = additionalProperties;
     }
@@ -79,6 +91,22 @@ public final class FhirProviderAuthConfig {
     @JsonProperty("is_active_auth_config")
     public Optional<Boolean> getIsActiveAuthConfig() {
         return isActiveAuthConfig;
+    }
+
+    /**
+     * @return Timestamp when this auth configuration was created
+     */
+    @JsonProperty("created_at")
+    public Optional<OffsetDateTime> getCreatedAt() {
+        return createdAt;
+    }
+
+    /**
+     * @return Timestamp when this auth configuration was last updated
+     */
+    @JsonProperty("updated_at")
+    public Optional<OffsetDateTime> getUpdatedAt() {
+        return updatedAt;
     }
 
     /**
@@ -107,6 +135,11 @@ public final class FhirProviderAuthConfig {
         return smartConfiguration;
     }
 
+    @JsonProperty("service_account_metadata")
+    public Optional<ServiceAccountMetadata> getServiceAccountMetadata() {
+        return serviceAccountMetadata;
+    }
+
     /**
      * @return OAuth scopes
      */
@@ -130,10 +163,13 @@ public final class FhirProviderAuthConfig {
         return authConfigId.equals(other.authConfigId)
                 && authMethod.equals(other.authMethod)
                 && isActiveAuthConfig.equals(other.isActiveAuthConfig)
+                && createdAt.equals(other.createdAt)
+                && updatedAt.equals(other.updatedAt)
                 && publicKeyCertPem.equals(other.publicKeyCertPem)
                 && jsonWebKey.equals(other.jsonWebKey)
                 && credentialExpiry.equals(other.credentialExpiry)
                 && smartConfiguration.equals(other.smartConfiguration)
+                && serviceAccountMetadata.equals(other.serviceAccountMetadata)
                 && scopes.equals(other.scopes);
     }
 
@@ -143,10 +179,13 @@ public final class FhirProviderAuthConfig {
                 this.authConfigId,
                 this.authMethod,
                 this.isActiveAuthConfig,
+                this.createdAt,
+                this.updatedAt,
                 this.publicKeyCertPem,
                 this.jsonWebKey,
                 this.credentialExpiry,
                 this.smartConfiguration,
+                this.serviceAccountMetadata,
                 this.scopes);
     }
 
@@ -167,6 +206,10 @@ public final class FhirProviderAuthConfig {
 
         private Optional<Boolean> isActiveAuthConfig = Optional.empty();
 
+        private Optional<OffsetDateTime> createdAt = Optional.empty();
+
+        private Optional<OffsetDateTime> updatedAt = Optional.empty();
+
         private Optional<String> publicKeyCertPem = Optional.empty();
 
         private Optional<JsonWebKey> jsonWebKey = Optional.empty();
@@ -174,6 +217,8 @@ public final class FhirProviderAuthConfig {
         private Optional<OffsetDateTime> credentialExpiry = Optional.empty();
 
         private Optional<SmartConfiguration> smartConfiguration = Optional.empty();
+
+        private Optional<ServiceAccountMetadata> serviceAccountMetadata = Optional.empty();
 
         private Optional<String> scopes = Optional.empty();
 
@@ -186,10 +231,13 @@ public final class FhirProviderAuthConfig {
             authConfigId(other.getAuthConfigId());
             authMethod(other.getAuthMethod());
             isActiveAuthConfig(other.getIsActiveAuthConfig());
+            createdAt(other.getCreatedAt());
+            updatedAt(other.getUpdatedAt());
             publicKeyCertPem(other.getPublicKeyCertPem());
             jsonWebKey(other.getJsonWebKey());
             credentialExpiry(other.getCredentialExpiry());
             smartConfiguration(other.getSmartConfiguration());
+            serviceAccountMetadata(other.getServiceAccountMetadata());
             scopes(other.getScopes());
             return this;
         }
@@ -230,6 +278,34 @@ public final class FhirProviderAuthConfig {
 
         public Builder isActiveAuthConfig(Boolean isActiveAuthConfig) {
             this.isActiveAuthConfig = Optional.ofNullable(isActiveAuthConfig);
+            return this;
+        }
+
+        /**
+         * <p>Timestamp when this auth configuration was created</p>
+         */
+        @JsonSetter(value = "created_at", nulls = Nulls.SKIP)
+        public Builder createdAt(Optional<OffsetDateTime> createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public Builder createdAt(OffsetDateTime createdAt) {
+            this.createdAt = Optional.ofNullable(createdAt);
+            return this;
+        }
+
+        /**
+         * <p>Timestamp when this auth configuration was last updated</p>
+         */
+        @JsonSetter(value = "updated_at", nulls = Nulls.SKIP)
+        public Builder updatedAt(Optional<OffsetDateTime> updatedAt) {
+            this.updatedAt = updatedAt;
+            return this;
+        }
+
+        public Builder updatedAt(OffsetDateTime updatedAt) {
+            this.updatedAt = Optional.ofNullable(updatedAt);
             return this;
         }
 
@@ -283,6 +359,17 @@ public final class FhirProviderAuthConfig {
             return this;
         }
 
+        @JsonSetter(value = "service_account_metadata", nulls = Nulls.SKIP)
+        public Builder serviceAccountMetadata(Optional<ServiceAccountMetadata> serviceAccountMetadata) {
+            this.serviceAccountMetadata = serviceAccountMetadata;
+            return this;
+        }
+
+        public Builder serviceAccountMetadata(ServiceAccountMetadata serviceAccountMetadata) {
+            this.serviceAccountMetadata = Optional.ofNullable(serviceAccountMetadata);
+            return this;
+        }
+
         /**
          * <p>OAuth scopes</p>
          */
@@ -302,10 +389,13 @@ public final class FhirProviderAuthConfig {
                     authConfigId,
                     authMethod,
                     isActiveAuthConfig,
+                    createdAt,
+                    updatedAt,
                     publicKeyCertPem,
                     jsonWebKey,
                     credentialExpiry,
                     smartConfiguration,
+                    serviceAccountMetadata,
                     scopes,
                     additionalProperties);
         }

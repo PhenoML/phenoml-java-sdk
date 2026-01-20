@@ -24,7 +24,6 @@ import com.phenoml.api.resources.fhirprovider.types.FhirProviderDeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderListResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderRemoveAuthConfigResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderResponse;
-import com.phenoml.api.resources.fhirprovider.types.FhirProviderSetActiveAuthConfigResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -46,14 +45,16 @@ public class AsyncRawFhirProviderClient {
     }
 
     /**
-     * Creates a new FHIR provider configuration with authentication credentials
+     * Creates a new FHIR provider configuration with authentication credentials.
+     * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderResponse>> create(FhirProviderCreateRequest request) {
         return create(request, null);
     }
 
     /**
-     * Creates a new FHIR provider configuration with authentication credentials
+     * Creates a new FHIR provider configuration with authentication credentials.
+     * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderResponse>> create(
             FhirProviderCreateRequest request, RequestOptions requestOptions) {
@@ -137,14 +138,18 @@ public class AsyncRawFhirProviderClient {
     }
 
     /**
-     * Retrieves a list of all active FHIR providers for the authenticated user
+     * Retrieves a list of all active FHIR providers for the authenticated user.
+     * <p>On shared instances, only sandbox providers are returned.
+     * Sandbox providers return FhirProviderSandboxInfo.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderListResponse>> list() {
         return list(null);
     }
 
     /**
-     * Retrieves a list of all active FHIR providers for the authenticated user
+     * Retrieves a list of all active FHIR providers for the authenticated user.
+     * <p>On shared instances, only sandbox providers are returned.
+     * Sandbox providers return FhirProviderSandboxInfo.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderListResponse>> list(RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
@@ -181,11 +186,6 @@ public class AsyncRawFhirProviderClient {
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
-                            case 403:
-                                future.completeExceptionally(new ForbiddenError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
                             case 500:
                                 future.completeExceptionally(new InternalServerError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
@@ -215,14 +215,18 @@ public class AsyncRawFhirProviderClient {
     }
 
     /**
-     * Retrieves a specific FHIR provider configuration by its ID
+     * Retrieves a specific FHIR provider configuration by its ID.
+     * <p>Sandbox providers return FhirProviderSandboxInfo.
+     * On shared instances, only sandbox providers can be accessed.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderResponse>> get(String fhirProviderId) {
         return get(fhirProviderId, null);
     }
 
     /**
-     * Retrieves a specific FHIR provider configuration by its ID
+     * Retrieves a specific FHIR provider configuration by its ID.
+     * <p>Sandbox providers return FhirProviderSandboxInfo.
+     * On shared instances, only sandbox providers can be accessed.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderResponse>> get(
             String fhirProviderId, RequestOptions requestOptions) {
@@ -299,14 +303,16 @@ public class AsyncRawFhirProviderClient {
     }
 
     /**
-     * Soft deletes a FHIR provider by setting is_active to false
+     * Soft deletes a FHIR provider by setting is_active to false.
+     * <p>Note: Sandbox providers cannot be deleted.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderDeleteResponse>> delete(String fhirProviderId) {
         return delete(fhirProviderId, null);
     }
 
     /**
-     * Soft deletes a FHIR provider by setting is_active to false
+     * Soft deletes a FHIR provider by setting is_active to false.
+     * <p>Note: Sandbox providers cannot be deleted.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderDeleteResponse>> delete(
             String fhirProviderId, RequestOptions requestOptions) {
@@ -384,7 +390,9 @@ public class AsyncRawFhirProviderClient {
     }
 
     /**
-     * Adds a new authentication configuration to an existing FHIR provider. This enables key rotation and multiple auth configurations per provider.
+     * Adds a new authentication configuration to an existing FHIR provider.
+     * This enables key rotation and multiple auth configurations per provider.
+     * <p>Note: Sandbox providers cannot be modified.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderResponse>> addAuthConfig(
             String fhirProviderId, FhirProviderAddAuthConfigRequest request) {
@@ -392,7 +400,9 @@ public class AsyncRawFhirProviderClient {
     }
 
     /**
-     * Adds a new authentication configuration to an existing FHIR provider. This enables key rotation and multiple auth configurations per provider.
+     * Adds a new authentication configuration to an existing FHIR provider.
+     * This enables key rotation and multiple auth configurations per provider.
+     * <p>Note: Sandbox providers cannot be modified.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderResponse>> addAuthConfig(
             String fhirProviderId, FhirProviderAddAuthConfigRequest request, RequestOptions requestOptions) {
@@ -483,17 +493,25 @@ public class AsyncRawFhirProviderClient {
     }
 
     /**
-     * Sets which authentication configuration should be active for a FHIR provider. Only one auth config can be active at a time.
+     * Sets which authentication configuration should be active for a FHIR provider.
+     * Only one auth config can be active at a time.
+     * <p>If the specified auth config is already active, the request succeeds without
+     * making any changes and returns a message indicating the config is already active.</p>
+     * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public CompletableFuture<PhenoMLHttpResponse<FhirProviderSetActiveAuthConfigResponse>> setActiveAuthConfig(
+    public CompletableFuture<PhenoMLHttpResponse<FhirProviderResponse>> setActiveAuthConfig(
             String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request) {
         return setActiveAuthConfig(fhirProviderId, request, null);
     }
 
     /**
-     * Sets which authentication configuration should be active for a FHIR provider. Only one auth config can be active at a time.
+     * Sets which authentication configuration should be active for a FHIR provider.
+     * Only one auth config can be active at a time.
+     * <p>If the specified auth config is already active, the request succeeds without
+     * making any changes and returns a message indicating the config is already active.</p>
+     * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public CompletableFuture<PhenoMLHttpResponse<FhirProviderSetActiveAuthConfigResponse>> setActiveAuthConfig(
+    public CompletableFuture<PhenoMLHttpResponse<FhirProviderResponse>> setActiveAuthConfig(
             String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -519,16 +537,14 @@ public class AsyncRawFhirProviderClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<FhirProviderSetActiveAuthConfigResponse>> future =
-                new CompletableFuture<>();
+        CompletableFuture<PhenoMLHttpResponse<FhirProviderResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBody.string(), FhirProviderSetActiveAuthConfigResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirProviderResponse.class),
                                 response));
                         return;
                     }
@@ -584,7 +600,9 @@ public class AsyncRawFhirProviderClient {
     }
 
     /**
-     * Removes an authentication configuration from a FHIR provider. Cannot remove the currently active auth configuration.
+     * Removes an authentication configuration from a FHIR provider.
+     * Cannot remove the currently active auth configuration.
+     * <p>Note: Sandbox providers cannot be modified.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderRemoveAuthConfigResponse>> removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request) {
@@ -592,7 +610,9 @@ public class AsyncRawFhirProviderClient {
     }
 
     /**
-     * Removes an authentication configuration from a FHIR provider. Cannot remove the currently active auth configuration.
+     * Removes an authentication configuration from a FHIR provider.
+     * Cannot remove the currently active auth configuration.
+     * <p>Note: Sandbox providers cannot be modified.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderRemoveAuthConfigResponse>> removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request, RequestOptions requestOptions) {

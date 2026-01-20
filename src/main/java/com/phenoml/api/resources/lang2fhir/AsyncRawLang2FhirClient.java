@@ -224,14 +224,26 @@ public class AsyncRawLang2FhirClient {
     }
 
     /**
-     * Converts natural language text into FHIR search parameters
+     * Converts natural language text into FHIR search parameters.
+     * Automatically identifies the appropriate FHIR resource type and generates valid search query parameters.
+     * <p>Supported resource types include: AllergyIntolerance, Appointment, CarePlan, CareTeam, Condition,
+     * Coverage, Device, DiagnosticReport, DocumentReference, Encounter, Goal, Immunization, Location,
+     * Medication, MedicationRequest, Observation, Organization, Patient, PlanDefinition, Practitioner,
+     * PractitionerRole, Procedure, Provenance, Questionnaire, QuestionnaireResponse, RelatedPerson,
+     * Schedule, ServiceRequest, Slot, and Specimen.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<SearchResponse>> search(SearchRequest request) {
         return search(request, null);
     }
 
     /**
-     * Converts natural language text into FHIR search parameters
+     * Converts natural language text into FHIR search parameters.
+     * Automatically identifies the appropriate FHIR resource type and generates valid search query parameters.
+     * <p>Supported resource types include: AllergyIntolerance, Appointment, CarePlan, CareTeam, Condition,
+     * Coverage, Device, DiagnosticReport, DocumentReference, Encounter, Goal, Immunization, Location,
+     * Medication, MedicationRequest, Observation, Organization, Patient, PlanDefinition, Practitioner,
+     * PractitionerRole, Procedure, Provenance, Questionnaire, QuestionnaireResponse, RelatedPerson,
+     * Schedule, ServiceRequest, Slot, and Specimen.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<SearchResponse>> search(
             SearchRequest request, RequestOptions requestOptions) {

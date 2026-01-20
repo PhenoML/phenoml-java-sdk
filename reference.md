@@ -540,7 +540,7 @@ client.agent().getChatMessages(
         .builder()
         .chatSessionId("chat_session_id")
         .numMessages(1)
-        .role("role")
+        .role(AgentGetChatMessagesRequestRole.USER)
         .order(AgentGetChatMessagesRequestOrder.ASC)
         .build()
 );
@@ -574,7 +574,16 @@ client.agent().getChatMessages(
 <dl>
 <dd>
 
-**role:** `Optional<String>` — Filter by role
+**role:** `Optional<AgentGetChatMessagesRequestRole>` 
+
+Filter by one or more message roles. Multiple roles can be specified as a comma-separated string.
+If not specified, messages with all roles are returned.
+
+**Available roles:**
+- `user` - Messages from the user
+- `assistant` - Text responses from the AI assistant
+- `model` - Function/tool call requests from the model
+- `function` - Function/tool call results
     
 </dd>
 </dl>
@@ -1755,7 +1764,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 </dl>
 </details>
 
-<details><summary><code>client.fhir.delete(fhirProviderId, fhirPath) -> Map&lt;String, Object&gt;</code></summary>
+<details><summary><code>client.fhir.delete(fhirProviderId, fhirPath) -> Map&amp;lt;String, Object&amp;gt;</code></summary>
 <dl>
 <dd>
 
@@ -2154,7 +2163,9 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 <dl>
 <dd>
 
-Creates a new FHIR provider configuration with authentication credentials
+Creates a new FHIR provider configuration with authentication credentials.
+
+Note: The "sandbox" provider type cannot be created via this API - it is managed internally.
 </dd>
 </dl>
 </dd>
@@ -2288,7 +2299,10 @@ client.fhirProvider().create(
 <dl>
 <dd>
 
-Retrieves a list of all active FHIR providers for the authenticated user
+Retrieves a list of all active FHIR providers for the authenticated user.
+
+On shared instances, only sandbox providers are returned.
+Sandbox providers return FhirProviderSandboxInfo.
 </dd>
 </dl>
 </dd>
@@ -2327,7 +2341,10 @@ client.fhirProvider().list();
 <dl>
 <dd>
 
-Retrieves a specific FHIR provider configuration by its ID
+Retrieves a specific FHIR provider configuration by its ID.
+
+Sandbox providers return FhirProviderSandboxInfo.
+On shared instances, only sandbox providers can be accessed.
 </dd>
 </dl>
 </dd>
@@ -2381,7 +2398,9 @@ client.fhirProvider().get("fhir_provider_id");
 <dl>
 <dd>
 
-Soft deletes a FHIR provider by setting is_active to false
+Soft deletes a FHIR provider by setting is_active to false.
+
+Note: Sandbox providers cannot be deleted.
 </dd>
 </dl>
 </dd>
@@ -2435,7 +2454,10 @@ client.fhirProvider().delete("fhir_provider_id");
 <dl>
 <dd>
 
-Adds a new authentication configuration to an existing FHIR provider. This enables key rotation and multiple auth configurations per provider.
+Adds a new authentication configuration to an existing FHIR provider.
+This enables key rotation and multiple auth configurations per provider.
+
+Note: Sandbox providers cannot be modified.
 </dd>
 </dl>
 </dd>
@@ -2531,7 +2553,7 @@ client.fhirProvider().addAuthConfig(
 </dl>
 </details>
 
-<details><summary><code>client.fhirProvider.setActiveAuthConfig(fhirProviderId, request) -> FhirProviderSetActiveAuthConfigResponse</code></summary>
+<details><summary><code>client.fhirProvider.setActiveAuthConfig(fhirProviderId, request) -> FhirProviderResponse</code></summary>
 <dl>
 <dd>
 
@@ -2543,7 +2565,13 @@ client.fhirProvider().addAuthConfig(
 <dl>
 <dd>
 
-Sets which authentication configuration should be active for a FHIR provider. Only one auth config can be active at a time.
+Sets which authentication configuration should be active for a FHIR provider.
+Only one auth config can be active at a time.
+
+If the specified auth config is already active, the request succeeds without
+making any changes and returns a message indicating the config is already active.
+
+Note: Sandbox providers cannot be modified.
 </dd>
 </dl>
 </dd>
@@ -2611,7 +2639,10 @@ client.fhirProvider().setActiveAuthConfig(
 <dl>
 <dd>
 
-Removes an authentication configuration from a FHIR provider. Cannot remove the currently active auth configuration.
+Removes an authentication configuration from a FHIR provider.
+Cannot remove the currently active auth configuration.
+
+Note: Sandbox providers cannot be modified.
 </dd>
 </dl>
 </dd>
@@ -2668,7 +2699,7 @@ client.fhirProvider().removeAuthConfig(
 </details>
 
 ## Lang2Fhir
-<details><summary><code>client.lang2Fhir.create(request) -> Map&lt;String, Object&gt;</code></summary>
+<details><summary><code>client.lang2Fhir.create(request) -> Map&amp;lt;String, Object&amp;gt;</code></summary>
 <dl>
 <dd>
 
@@ -2834,7 +2865,14 @@ client.lang2Fhir().createMulti(
 <dl>
 <dd>
 
-Converts natural language text into FHIR search parameters
+Converts natural language text into FHIR search parameters.
+Automatically identifies the appropriate FHIR resource type and generates valid search query parameters.
+
+Supported resource types include: AllergyIntolerance, Appointment, CarePlan, CareTeam, Condition,
+Coverage, Device, DiagnosticReport, DocumentReference, Encounter, Goal, Immunization, Location,
+Medication, MedicationRequest, Observation, Organization, Patient, PlanDefinition, Practitioner,
+PractitionerRole, Procedure, Provenance, Questionnaire, QuestionnaireResponse, RelatedPerson,
+Schedule, ServiceRequest, Slot, and Specimen.
 </dd>
 </dl>
 </dd>
@@ -2869,7 +2907,17 @@ client.lang2Fhir().search(
 <dl>
 <dd>
 
-**text:** `String` — Natural language text to convert into FHIR search parameters
+**text:** `String` 
+
+Natural language text to convert into FHIR search parameters.
+The system will automatically identify the appropriate resource type and generate valid search parameters.
+
+Examples:
+- "Appointments between March 2-9, 2025" → Appointment search with date range
+- "Patients with diabetes" → Condition search with code parameter
+- "Active medication requests for metformin" → MedicationRequest search
+- "Lab results for creatinine" → DiagnosticReport search
+- "Dr. Smith's schedule" → Practitioner or Schedule search
     
 </dd>
 </dl>
@@ -2958,7 +3006,7 @@ client.lang2Fhir().uploadProfile(
 </dl>
 </details>
 
-<details><summary><code>client.lang2Fhir.document(request) -> Map&lt;String, Object&gt;</code></summary>
+<details><summary><code>client.lang2Fhir.document(request) -> Map&amp;lt;String, Object&amp;gt;</code></summary>
 <dl>
 <dd>
 

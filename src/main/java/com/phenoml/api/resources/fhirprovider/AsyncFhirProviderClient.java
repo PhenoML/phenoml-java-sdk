@@ -13,7 +13,6 @@ import com.phenoml.api.resources.fhirprovider.types.FhirProviderDeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderListResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderRemoveAuthConfigResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderResponse;
-import com.phenoml.api.resources.fhirprovider.types.FhirProviderSetActiveAuthConfigResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncFhirProviderClient {
@@ -34,14 +33,16 @@ public class AsyncFhirProviderClient {
     }
 
     /**
-     * Creates a new FHIR provider configuration with authentication credentials
+     * Creates a new FHIR provider configuration with authentication credentials.
+     * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
      */
     public CompletableFuture<FhirProviderResponse> create(FhirProviderCreateRequest request) {
         return this.rawClient.create(request).thenApply(response -> response.body());
     }
 
     /**
-     * Creates a new FHIR provider configuration with authentication credentials
+     * Creates a new FHIR provider configuration with authentication credentials.
+     * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
      */
     public CompletableFuture<FhirProviderResponse> create(
             FhirProviderCreateRequest request, RequestOptions requestOptions) {
@@ -49,49 +50,61 @@ public class AsyncFhirProviderClient {
     }
 
     /**
-     * Retrieves a list of all active FHIR providers for the authenticated user
+     * Retrieves a list of all active FHIR providers for the authenticated user.
+     * <p>On shared instances, only sandbox providers are returned.
+     * Sandbox providers return FhirProviderSandboxInfo.</p>
      */
     public CompletableFuture<FhirProviderListResponse> list() {
         return this.rawClient.list().thenApply(response -> response.body());
     }
 
     /**
-     * Retrieves a list of all active FHIR providers for the authenticated user
+     * Retrieves a list of all active FHIR providers for the authenticated user.
+     * <p>On shared instances, only sandbox providers are returned.
+     * Sandbox providers return FhirProviderSandboxInfo.</p>
      */
     public CompletableFuture<FhirProviderListResponse> list(RequestOptions requestOptions) {
         return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
     /**
-     * Retrieves a specific FHIR provider configuration by its ID
+     * Retrieves a specific FHIR provider configuration by its ID.
+     * <p>Sandbox providers return FhirProviderSandboxInfo.
+     * On shared instances, only sandbox providers can be accessed.</p>
      */
     public CompletableFuture<FhirProviderResponse> get(String fhirProviderId) {
         return this.rawClient.get(fhirProviderId).thenApply(response -> response.body());
     }
 
     /**
-     * Retrieves a specific FHIR provider configuration by its ID
+     * Retrieves a specific FHIR provider configuration by its ID.
+     * <p>Sandbox providers return FhirProviderSandboxInfo.
+     * On shared instances, only sandbox providers can be accessed.</p>
      */
     public CompletableFuture<FhirProviderResponse> get(String fhirProviderId, RequestOptions requestOptions) {
         return this.rawClient.get(fhirProviderId, requestOptions).thenApply(response -> response.body());
     }
 
     /**
-     * Soft deletes a FHIR provider by setting is_active to false
+     * Soft deletes a FHIR provider by setting is_active to false.
+     * <p>Note: Sandbox providers cannot be deleted.</p>
      */
     public CompletableFuture<FhirProviderDeleteResponse> delete(String fhirProviderId) {
         return this.rawClient.delete(fhirProviderId).thenApply(response -> response.body());
     }
 
     /**
-     * Soft deletes a FHIR provider by setting is_active to false
+     * Soft deletes a FHIR provider by setting is_active to false.
+     * <p>Note: Sandbox providers cannot be deleted.</p>
      */
     public CompletableFuture<FhirProviderDeleteResponse> delete(String fhirProviderId, RequestOptions requestOptions) {
         return this.rawClient.delete(fhirProviderId, requestOptions).thenApply(response -> response.body());
     }
 
     /**
-     * Adds a new authentication configuration to an existing FHIR provider. This enables key rotation and multiple auth configurations per provider.
+     * Adds a new authentication configuration to an existing FHIR provider.
+     * This enables key rotation and multiple auth configurations per provider.
+     * <p>Note: Sandbox providers cannot be modified.</p>
      */
     public CompletableFuture<FhirProviderResponse> addAuthConfig(
             String fhirProviderId, FhirProviderAddAuthConfigRequest request) {
@@ -99,7 +112,9 @@ public class AsyncFhirProviderClient {
     }
 
     /**
-     * Adds a new authentication configuration to an existing FHIR provider. This enables key rotation and multiple auth configurations per provider.
+     * Adds a new authentication configuration to an existing FHIR provider.
+     * This enables key rotation and multiple auth configurations per provider.
+     * <p>Note: Sandbox providers cannot be modified.</p>
      */
     public CompletableFuture<FhirProviderResponse> addAuthConfig(
             String fhirProviderId, FhirProviderAddAuthConfigRequest request, RequestOptions requestOptions) {
@@ -109,17 +124,25 @@ public class AsyncFhirProviderClient {
     }
 
     /**
-     * Sets which authentication configuration should be active for a FHIR provider. Only one auth config can be active at a time.
+     * Sets which authentication configuration should be active for a FHIR provider.
+     * Only one auth config can be active at a time.
+     * <p>If the specified auth config is already active, the request succeeds without
+     * making any changes and returns a message indicating the config is already active.</p>
+     * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public CompletableFuture<FhirProviderSetActiveAuthConfigResponse> setActiveAuthConfig(
+    public CompletableFuture<FhirProviderResponse> setActiveAuthConfig(
             String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request) {
         return this.rawClient.setActiveAuthConfig(fhirProviderId, request).thenApply(response -> response.body());
     }
 
     /**
-     * Sets which authentication configuration should be active for a FHIR provider. Only one auth config can be active at a time.
+     * Sets which authentication configuration should be active for a FHIR provider.
+     * Only one auth config can be active at a time.
+     * <p>If the specified auth config is already active, the request succeeds without
+     * making any changes and returns a message indicating the config is already active.</p>
+     * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public CompletableFuture<FhirProviderSetActiveAuthConfigResponse> setActiveAuthConfig(
+    public CompletableFuture<FhirProviderResponse> setActiveAuthConfig(
             String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request, RequestOptions requestOptions) {
         return this.rawClient
                 .setActiveAuthConfig(fhirProviderId, request, requestOptions)
@@ -127,7 +150,9 @@ public class AsyncFhirProviderClient {
     }
 
     /**
-     * Removes an authentication configuration from a FHIR provider. Cannot remove the currently active auth configuration.
+     * Removes an authentication configuration from a FHIR provider.
+     * Cannot remove the currently active auth configuration.
+     * <p>Note: Sandbox providers cannot be modified.</p>
      */
     public CompletableFuture<FhirProviderRemoveAuthConfigResponse> removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request) {
@@ -135,7 +160,9 @@ public class AsyncFhirProviderClient {
     }
 
     /**
-     * Removes an authentication configuration from a FHIR provider. Cannot remove the currently active auth configuration.
+     * Removes an authentication configuration from a FHIR provider.
+     * Cannot remove the currently active auth configuration.
+     * <p>Note: Sandbox providers cannot be modified.</p>
      */
     public CompletableFuture<FhirProviderRemoveAuthConfigResponse> removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request, RequestOptions requestOptions) {

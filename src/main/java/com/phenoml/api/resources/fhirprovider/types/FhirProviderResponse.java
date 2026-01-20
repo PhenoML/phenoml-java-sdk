@@ -9,9 +9,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.phenoml.api.core.ObjectMappers;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -24,14 +30,14 @@ public final class FhirProviderResponse {
 
     private final Optional<String> message;
 
-    private final Optional<FhirProviderTemplate> data;
+    private final Optional<Data> data;
 
     private final Map<String, Object> additionalProperties;
 
     private FhirProviderResponse(
             Optional<Boolean> success,
             Optional<String> message,
-            Optional<FhirProviderTemplate> data,
+            Optional<Data> data,
             Map<String, Object> additionalProperties) {
         this.success = success;
         this.message = message;
@@ -49,8 +55,11 @@ public final class FhirProviderResponse {
         return message;
     }
 
+    /**
+     * @return Provider details. Sandbox providers return FhirProviderSandboxInfo.
+     */
     @JsonProperty("data")
-    public Optional<FhirProviderTemplate> getData() {
+    public Optional<Data> getData() {
         return data;
     }
 
@@ -89,7 +98,7 @@ public final class FhirProviderResponse {
 
         private Optional<String> message = Optional.empty();
 
-        private Optional<FhirProviderTemplate> data = Optional.empty();
+        private Optional<Data> data = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -125,19 +134,103 @@ public final class FhirProviderResponse {
             return this;
         }
 
+        /**
+         * <p>Provider details. Sandbox providers return FhirProviderSandboxInfo.</p>
+         */
         @JsonSetter(value = "data", nulls = Nulls.SKIP)
-        public Builder data(Optional<FhirProviderTemplate> data) {
+        public Builder data(Optional<Data> data) {
             this.data = data;
             return this;
         }
 
-        public Builder data(FhirProviderTemplate data) {
+        public Builder data(Data data) {
             this.data = Optional.ofNullable(data);
             return this;
         }
 
         public FhirProviderResponse build() {
             return new FhirProviderResponse(success, message, data, additionalProperties);
+        }
+    }
+
+    @JsonDeserialize(using = Data.Deserializer.class)
+    public static final class Data {
+        private final Object value;
+
+        private final int type;
+
+        private Data(Object value, int type) {
+            this.value = value;
+            this.type = type;
+        }
+
+        @JsonValue
+        public Object get() {
+            return this.value;
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T> T visit(Visitor<T> visitor) {
+            if (this.type == 0) {
+                return visitor.visit((FhirProviderTemplate) this.value);
+            } else if (this.type == 1) {
+                return visitor.visit((FhirProviderSandboxInfo) this.value);
+            }
+            throw new IllegalStateException("Failed to visit value. This should never happen.");
+        }
+
+        @java.lang.Override
+        public boolean equals(Object other) {
+            if (this == other) return true;
+            return other instanceof Data && equalTo((Data) other);
+        }
+
+        private boolean equalTo(Data other) {
+            return value.equals(other.value);
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+            return Objects.hash(this.value);
+        }
+
+        @java.lang.Override
+        public String toString() {
+            return this.value.toString();
+        }
+
+        public static Data of(FhirProviderTemplate value) {
+            return new Data(value, 0);
+        }
+
+        public static Data of(FhirProviderSandboxInfo value) {
+            return new Data(value, 1);
+        }
+
+        public interface Visitor<T> {
+            T visit(FhirProviderTemplate value);
+
+            T visit(FhirProviderSandboxInfo value);
+        }
+
+        static final class Deserializer extends StdDeserializer<Data> {
+            Deserializer() {
+                super(Data.class);
+            }
+
+            @java.lang.Override
+            public Data deserialize(JsonParser p, DeserializationContext context) throws IOException {
+                Object value = p.readValueAs(Object.class);
+                try {
+                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, FhirProviderTemplate.class));
+                } catch (RuntimeException e) {
+                }
+                try {
+                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, FhirProviderSandboxInfo.class));
+                } catch (RuntimeException e) {
+                }
+                throw new JsonParseException(p, "Failed to deserialize");
+            }
         }
     }
 }

@@ -5,10 +5,12 @@ package com.phenoml.api.resources.agent.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
@@ -24,7 +26,7 @@ public final class ChatMessageTemplate {
 
     private final Optional<String> sessionId;
 
-    private final Optional<String> role;
+    private final Optional<Role> role;
 
     private final Optional<String> content;
 
@@ -47,7 +49,7 @@ public final class ChatMessageTemplate {
     private ChatMessageTemplate(
             Optional<String> id,
             Optional<String> sessionId,
-            Optional<String> role,
+            Optional<Role> role,
             Optional<String> content,
             Optional<String> created,
             Optional<String> updated,
@@ -88,10 +90,16 @@ public final class ChatMessageTemplate {
     }
 
     /**
-     * @return Message role
+     * @return Message role indicating the source/type of the message:
+     * <ul>
+     * <li><code>user</code> - Messages from the user</li>
+     * <li><code>assistant</code> - Text responses from the AI assistant</li>
+     * <li><code>model</code> - Function/tool call requests to the model</li>
+     * <li><code>function</code> - Function/tool call results</li>
+     * </ul>
      */
     @JsonProperty("role")
-    public Optional<String> getRole() {
+    public Optional<Role> getRole() {
         return role;
     }
 
@@ -215,7 +223,7 @@ public final class ChatMessageTemplate {
 
         private Optional<String> sessionId = Optional.empty();
 
-        private Optional<String> role = Optional.empty();
+        private Optional<Role> role = Optional.empty();
 
         private Optional<String> content = Optional.empty();
 
@@ -282,15 +290,21 @@ public final class ChatMessageTemplate {
         }
 
         /**
-         * <p>Message role</p>
+         * <p>Message role indicating the source/type of the message:</p>
+         * <ul>
+         * <li><code>user</code> - Messages from the user</li>
+         * <li><code>assistant</code> - Text responses from the AI assistant</li>
+         * <li><code>model</code> - Function/tool call requests to the model</li>
+         * <li><code>function</code> - Function/tool call results</li>
+         * </ul>
          */
         @JsonSetter(value = "role", nulls = Nulls.SKIP)
-        public Builder role(Optional<String> role) {
+        public Builder role(Optional<Role> role) {
             this.role = role;
             return this;
         }
 
-        public Builder role(String role) {
+        public Builder role(Role role) {
             this.role = Optional.ofNullable(role);
             return this;
         }
@@ -421,6 +435,101 @@ public final class ChatMessageTemplate {
                     functionResult,
                     messageOrder,
                     additionalProperties);
+        }
+    }
+
+    public static final class Role {
+        public static final Role FUNCTION = new Role(Value.FUNCTION, "function");
+
+        public static final Role MODEL = new Role(Value.MODEL, "model");
+
+        public static final Role ASSISTANT = new Role(Value.ASSISTANT, "assistant");
+
+        public static final Role USER = new Role(Value.USER, "user");
+
+        private final Value value;
+
+        private final String string;
+
+        Role(Value value, String string) {
+            this.value = value;
+            this.string = string;
+        }
+
+        public Value getEnumValue() {
+            return value;
+        }
+
+        @java.lang.Override
+        @JsonValue
+        public String toString() {
+            return this.string;
+        }
+
+        @java.lang.Override
+        public boolean equals(Object other) {
+            return (this == other) || (other instanceof Role && this.string.equals(((Role) other).string));
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+            return this.string.hashCode();
+        }
+
+        public <T> T visit(Visitor<T> visitor) {
+            switch (value) {
+                case FUNCTION:
+                    return visitor.visitFunction();
+                case MODEL:
+                    return visitor.visitModel();
+                case ASSISTANT:
+                    return visitor.visitAssistant();
+                case USER:
+                    return visitor.visitUser();
+                case UNKNOWN:
+                default:
+                    return visitor.visitUnknown(string);
+            }
+        }
+
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        public static Role valueOf(String value) {
+            switch (value) {
+                case "function":
+                    return FUNCTION;
+                case "model":
+                    return MODEL;
+                case "assistant":
+                    return ASSISTANT;
+                case "user":
+                    return USER;
+                default:
+                    return new Role(Value.UNKNOWN, value);
+            }
+        }
+
+        public enum Value {
+            USER,
+
+            ASSISTANT,
+
+            MODEL,
+
+            FUNCTION,
+
+            UNKNOWN
+        }
+
+        public interface Visitor<T> {
+            T visitUser();
+
+            T visitAssistant();
+
+            T visitModel();
+
+            T visitFunction();
+
+            T visitUnknown(String unknownType);
         }
     }
 }

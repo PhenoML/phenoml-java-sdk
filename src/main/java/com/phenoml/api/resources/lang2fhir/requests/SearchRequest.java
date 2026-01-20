@@ -29,7 +29,16 @@ public final class SearchRequest {
     }
 
     /**
-     * @return Natural language text to convert into FHIR search parameters
+     * @return Natural language text to convert into FHIR search parameters.
+     * The system will automatically identify the appropriate resource type and generate valid search parameters.
+     * <p>Examples:</p>
+     * <ul>
+     * <li>&quot;Appointments between March 2-9, 2025&quot; → Appointment search with date range</li>
+     * <li>&quot;Patients with diabetes&quot; → Condition search with code parameter</li>
+     * <li>&quot;Active medication requests for metformin&quot; → MedicationRequest search</li>
+     * <li>&quot;Lab results for creatinine&quot; → DiagnosticReport search</li>
+     * <li>&quot;Dr. Smith's schedule&quot; → Practitioner or Schedule search</li>
+     * </ul>
      */
     @JsonProperty("text")
     public String getText() {
@@ -67,7 +76,16 @@ public final class SearchRequest {
 
     public interface TextStage {
         /**
-         * <p>Natural language text to convert into FHIR search parameters</p>
+         * <p>Natural language text to convert into FHIR search parameters.
+         * The system will automatically identify the appropriate resource type and generate valid search parameters.</p>
+         * <p>Examples:</p>
+         * <ul>
+         * <li>&quot;Appointments between March 2-9, 2025&quot; → Appointment search with date range</li>
+         * <li>&quot;Patients with diabetes&quot; → Condition search with code parameter</li>
+         * <li>&quot;Active medication requests for metformin&quot; → MedicationRequest search</li>
+         * <li>&quot;Lab results for creatinine&quot; → DiagnosticReport search</li>
+         * <li>&quot;Dr. Smith's schedule&quot; → Practitioner or Schedule search</li>
+         * </ul>
          */
         _FinalStage text(@NotNull String text);
 
@@ -94,8 +112,26 @@ public final class SearchRequest {
         }
 
         /**
-         * <p>Natural language text to convert into FHIR search parameters</p>
-         * <p>Natural language text to convert into FHIR search parameters</p>
+         * <p>Natural language text to convert into FHIR search parameters.
+         * The system will automatically identify the appropriate resource type and generate valid search parameters.</p>
+         * <p>Examples:</p>
+         * <ul>
+         * <li>&quot;Appointments between March 2-9, 2025&quot; → Appointment search with date range</li>
+         * <li>&quot;Patients with diabetes&quot; → Condition search with code parameter</li>
+         * <li>&quot;Active medication requests for metformin&quot; → MedicationRequest search</li>
+         * <li>&quot;Lab results for creatinine&quot; → DiagnosticReport search</li>
+         * <li>&quot;Dr. Smith's schedule&quot; → Practitioner or Schedule search</li>
+         * </ul>
+         * <p>Natural language text to convert into FHIR search parameters.
+         * The system will automatically identify the appropriate resource type and generate valid search parameters.</p>
+         * <p>Examples:</p>
+         * <ul>
+         * <li>&quot;Appointments between March 2-9, 2025&quot; → Appointment search with date range</li>
+         * <li>&quot;Patients with diabetes&quot; → Condition search with code parameter</li>
+         * <li>&quot;Active medication requests for metformin&quot; → MedicationRequest search</li>
+         * <li>&quot;Lab results for creatinine&quot; → DiagnosticReport search</li>
+         * <li>&quot;Dr. Smith's schedule&quot; → Practitioner or Schedule search</li>
+         * </ul>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
