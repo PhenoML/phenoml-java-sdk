@@ -36,7 +36,6 @@ client.agent().create(
                 Arrays.asList("prompt_123", "prompt_456")
             )
         )
-        .isActive(true)
         .build()
 );
 ```
@@ -95,7 +94,6 @@ Retrieves a list of PhenoAgents belonging to the authenticated user
 client.agent().list(
     AgentListRequest
         .builder()
-        .isActive(true)
         .tags("tags")
         .build()
 );
@@ -109,14 +107,6 @@ client.agent().list(
 
 <dl>
 <dd>
-
-<dl>
-<dd>
-
-**isActive:** `Optional<Boolean>` — Filter by active status
-    
-</dd>
-</dl>
 
 <dl>
 <dd>
@@ -224,7 +214,6 @@ client.agent().update(
                 Arrays.asList("prompt_123", "prompt_456")
             )
         )
-        .isActive(true)
         .build()
 );
 ```

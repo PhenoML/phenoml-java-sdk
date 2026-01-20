@@ -20,25 +20,13 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = AgentListRequest.Builder.class)
 public final class AgentListRequest {
-    private final Optional<Boolean> isActive;
-
     private final Optional<String> tags;
 
     private final Map<String, Object> additionalProperties;
 
-    private AgentListRequest(
-            Optional<Boolean> isActive, Optional<String> tags, Map<String, Object> additionalProperties) {
-        this.isActive = isActive;
+    private AgentListRequest(Optional<String> tags, Map<String, Object> additionalProperties) {
         this.tags = tags;
         this.additionalProperties = additionalProperties;
-    }
-
-    /**
-     * @return Filter by active status
-     */
-    @JsonProperty("is_active")
-    public Optional<Boolean> getIsActive() {
-        return isActive;
     }
 
     /**
@@ -61,12 +49,12 @@ public final class AgentListRequest {
     }
 
     private boolean equalTo(AgentListRequest other) {
-        return isActive.equals(other.isActive) && tags.equals(other.tags);
+        return tags.equals(other.tags);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.isActive, this.tags);
+        return Objects.hash(this.tags);
     }
 
     @java.lang.Override
@@ -80,8 +68,6 @@ public final class AgentListRequest {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder {
-        private Optional<Boolean> isActive = Optional.empty();
-
         private Optional<String> tags = Optional.empty();
 
         @JsonAnySetter
@@ -90,22 +76,7 @@ public final class AgentListRequest {
         private Builder() {}
 
         public Builder from(AgentListRequest other) {
-            isActive(other.getIsActive());
             tags(other.getTags());
-            return this;
-        }
-
-        /**
-         * <p>Filter by active status</p>
-         */
-        @JsonSetter(value = "is_active", nulls = Nulls.SKIP)
-        public Builder isActive(Optional<Boolean> isActive) {
-            this.isActive = isActive;
-            return this;
-        }
-
-        public Builder isActive(Boolean isActive) {
-            this.isActive = Optional.ofNullable(isActive);
             return this;
         }
 
@@ -124,7 +95,7 @@ public final class AgentListRequest {
         }
 
         public AgentListRequest build() {
-            return new AgentListRequest(isActive, tags, additionalProperties);
+            return new AgentListRequest(tags, additionalProperties);
         }
     }
 }

@@ -136,10 +136,6 @@ public class RawAgentClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/list");
-        if (request.getIsActive().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "is_active", request.getIsActive().get(), false);
-        }
         if (request.getTags().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "tags", request.getTags().get(), false);

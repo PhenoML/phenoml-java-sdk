@@ -38,8 +38,6 @@ public final class AgentCreateRequest {
 
     private final Optional<List<String>> tools;
 
-    private final boolean isActive;
-
     private final Optional<List<String>> tags;
 
     private final Optional<Provider> provider;
@@ -51,7 +49,6 @@ public final class AgentCreateRequest {
             Optional<String> description,
             List<String> prompts,
             Optional<List<String>> tools,
-            boolean isActive,
             Optional<List<String>> tags,
             Optional<Provider> provider,
             Map<String, Object> additionalProperties) {
@@ -59,7 +56,6 @@ public final class AgentCreateRequest {
         this.description = description;
         this.prompts = prompts;
         this.tools = tools;
-        this.isActive = isActive;
         this.tags = tags;
         this.provider = provider;
         this.additionalProperties = additionalProperties;
@@ -98,14 +94,6 @@ public final class AgentCreateRequest {
     }
 
     /**
-     * @return Whether the agent is active
-     */
-    @JsonProperty("is_active")
-    public boolean getIsActive() {
-        return isActive;
-    }
-
-    /**
      * @return Tags for categorizing the agent
      */
     @JsonProperty("tags")
@@ -137,15 +125,13 @@ public final class AgentCreateRequest {
                 && description.equals(other.description)
                 && prompts.equals(other.prompts)
                 && tools.equals(other.tools)
-                && isActive == other.isActive
                 && tags.equals(other.tags)
                 && provider.equals(other.provider);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(
-                this.name, this.description, this.prompts, this.tools, this.isActive, this.tags, this.provider);
+        return Objects.hash(this.name, this.description, this.prompts, this.tools, this.tags, this.provider);
     }
 
     @java.lang.Override
@@ -161,16 +147,9 @@ public final class AgentCreateRequest {
         /**
          * <p>Agent name</p>
          */
-        IsActiveStage name(@NotNull String name);
+        _FinalStage name(@NotNull String name);
 
         Builder from(AgentCreateRequest other);
-    }
-
-    public interface IsActiveStage {
-        /**
-         * <p>Whether the agent is active</p>
-         */
-        _FinalStage isActive(boolean isActive);
     }
 
     public interface _FinalStage {
@@ -215,10 +194,8 @@ public final class AgentCreateRequest {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements NameStage, IsActiveStage, _FinalStage {
+    public static final class Builder implements NameStage, _FinalStage {
         private String name;
-
-        private boolean isActive;
 
         private Optional<Provider> provider = Optional.empty();
 
@@ -241,7 +218,6 @@ public final class AgentCreateRequest {
             description(other.getDescription());
             prompts(other.getPrompts());
             tools(other.getTools());
-            isActive(other.getIsActive());
             tags(other.getTags());
             provider(other.getProvider());
             return this;
@@ -254,20 +230,8 @@ public final class AgentCreateRequest {
          */
         @java.lang.Override
         @JsonSetter("name")
-        public IsActiveStage name(@NotNull String name) {
+        public _FinalStage name(@NotNull String name) {
             this.name = Objects.requireNonNull(name, "name must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Whether the agent is active</p>
-         * <p>Whether the agent is active</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("is_active")
-        public _FinalStage isActive(boolean isActive) {
-            this.isActive = isActive;
             return this;
         }
 
@@ -384,8 +348,7 @@ public final class AgentCreateRequest {
 
         @java.lang.Override
         public AgentCreateRequest build() {
-            return new AgentCreateRequest(
-                    name, description, prompts, tools, isActive, tags, provider, additionalProperties);
+            return new AgentCreateRequest(name, description, prompts, tools, tags, provider, additionalProperties);
         }
     }
 
