@@ -10,16 +10,29 @@ import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.core.PhenoMLApiException;
 import com.phenoml.api.core.PhenoMLException;
 import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.construe.errors.BadRequestError;
 import com.phenoml.api.resources.construe.errors.ConflictError;
 import com.phenoml.api.resources.construe.errors.FailedDependencyError;
 import com.phenoml.api.resources.construe.errors.InternalServerError;
+import com.phenoml.api.resources.construe.errors.NotFoundError;
+import com.phenoml.api.resources.construe.errors.NotImplementedError;
+import com.phenoml.api.resources.construe.errors.ServiceUnavailableError;
 import com.phenoml.api.resources.construe.errors.UnauthorizedError;
 import com.phenoml.api.resources.construe.requests.ExtractRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCodeIdRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
 import com.phenoml.api.resources.construe.requests.UploadRequest;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
+import com.phenoml.api.resources.construe.types.GetCodeResponse;
+import com.phenoml.api.resources.construe.types.ListCodeSystemsResponse;
+import com.phenoml.api.resources.construe.types.ListCodesResponse;
+import com.phenoml.api.resources.construe.types.SemanticSearchResponse;
+import com.phenoml.api.resources.construe.types.TextSearchResponse;
 import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -167,6 +180,430 @@ public class RawConstrueClient {
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 500:
                         throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Returns metadata about all available code systems including built-in and custom systems.
+     */
+    public PhenoMLHttpResponse<ListCodeSystemsResponse> listAvailableCodeSystems() {
+        return listAvailableCodeSystems(null);
+    }
+
+    /**
+     * Returns metadata about all available code systems including built-in and custom systems.
+     */
+    public PhenoMLHttpResponse<ListCodeSystemsResponse> listAvailableCodeSystems(RequestOptions requestOptions) {
+        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("construe/codes/systems")
+                .build();
+        Request okhttpRequest = new Request.Builder()
+                .url(httpUrl)
+                .method("GET", null)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json")
+                .build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ListCodeSystemsResponse.class),
+                        response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Returns a paginated list of all codes in the specified code system.
+     */
+    public PhenoMLHttpResponse<ListCodesResponse> listCodesInACodeSystem(String codesystem) {
+        return listCodesInACodeSystem(
+                codesystem, GetConstrueCodesCodesystemRequest.builder().build());
+    }
+
+    /**
+     * Returns a paginated list of all codes in the specified code system.
+     */
+    public PhenoMLHttpResponse<ListCodesResponse> listCodesInACodeSystem(
+            String codesystem, GetConstrueCodesCodesystemRequest request) {
+        return listCodesInACodeSystem(codesystem, request, null);
+    }
+
+    /**
+     * Returns a paginated list of all codes in the specified code system.
+     */
+    public PhenoMLHttpResponse<ListCodesResponse> listCodesInACodeSystem(
+            String codesystem, GetConstrueCodesCodesystemRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("construe/codes")
+                .addPathSegment(codesystem);
+        if (request.getVersion().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "version", request.getVersion().get(), false);
+        }
+        if (request.getCursor().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "cursor", request.getCursor().get(), false);
+        }
+        if (request.getLimit().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "limit", request.getLimit().get(), false);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("GET", null)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ListCodesResponse.class), response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 404:
+                        throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Returns details for a specific code within a code system.
+     */
+    public PhenoMLHttpResponse<GetCodeResponse> getASpecificCode(String codesystem, String codeId) {
+        return getASpecificCode(
+                codesystem,
+                codeId,
+                GetConstrueCodesCodesystemCodeIdRequest.builder().build());
+    }
+
+    /**
+     * Returns details for a specific code within a code system.
+     */
+    public PhenoMLHttpResponse<GetCodeResponse> getASpecificCode(
+            String codesystem, String codeId, GetConstrueCodesCodesystemCodeIdRequest request) {
+        return getASpecificCode(codesystem, codeId, request, null);
+    }
+
+    /**
+     * Returns details for a specific code within a code system.
+     */
+    public PhenoMLHttpResponse<GetCodeResponse> getASpecificCode(
+            String codesystem,
+            String codeId,
+            GetConstrueCodesCodesystemCodeIdRequest request,
+            RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("construe/codes")
+                .addPathSegment(codesystem)
+                .addPathSegment(codeId);
+        if (request.getVersion().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "version", request.getVersion().get(), false);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("GET", null)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), GetCodeResponse.class), response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 404:
+                        throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Performs semantic similarity search using vector embeddings.
+     * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
+     * related codes, even when different terminology is used. The search understands meaning,
+     * not just keywords.</p>
+     * <p><strong>Examples</strong>:</p>
+     * <ul>
+     * <li>Query &quot;trouble breathing at night&quot; finds codes like &quot;Sleep apnea&quot;, &quot;Orthopnea&quot;,
+     * &quot;Nocturnal dyspnea&quot; — semantically related but no exact keyword matches</li>
+     * <li>Query &quot;heart problems&quot; finds &quot;Myocardial infarction&quot;, &quot;Cardiac arrest&quot;, &quot;Arrhythmia&quot;</li>
+     * </ul>
+     * <p><strong>Trade-offs</strong>: Slower than text search (requires embedding generation), but finds
+     * conceptually similar results that keyword search would miss.</p>
+     * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
+     */
+    public PhenoMLHttpResponse<SemanticSearchResponse> semanticSearchEmbeddingBased(
+            String codesystem, GetConstrueCodesCodesystemSearchSemanticRequest request) {
+        return semanticSearchEmbeddingBased(codesystem, request, null);
+    }
+
+    /**
+     * Performs semantic similarity search using vector embeddings.
+     * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
+     * related codes, even when different terminology is used. The search understands meaning,
+     * not just keywords.</p>
+     * <p><strong>Examples</strong>:</p>
+     * <ul>
+     * <li>Query &quot;trouble breathing at night&quot; finds codes like &quot;Sleep apnea&quot;, &quot;Orthopnea&quot;,
+     * &quot;Nocturnal dyspnea&quot; — semantically related but no exact keyword matches</li>
+     * <li>Query &quot;heart problems&quot; finds &quot;Myocardial infarction&quot;, &quot;Cardiac arrest&quot;, &quot;Arrhythmia&quot;</li>
+     * </ul>
+     * <p><strong>Trade-offs</strong>: Slower than text search (requires embedding generation), but finds
+     * conceptually similar results that keyword search would miss.</p>
+     * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
+     */
+    public PhenoMLHttpResponse<SemanticSearchResponse> semanticSearchEmbeddingBased(
+            String codesystem, GetConstrueCodesCodesystemSearchSemanticRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("construe/codes")
+                .addPathSegment(codesystem)
+                .addPathSegments("search/semantic");
+        QueryStringMapper.addQueryParameter(httpUrl, "text", request.getText(), false);
+        if (request.getVersion().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "version", request.getVersion().get(), false);
+        }
+        if (request.getLimit().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "limit", request.getLimit().get(), false);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("GET", null)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), SemanticSearchResponse.class),
+                        response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 404:
+                        throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Performs fast full-text search over code IDs and descriptions.
+     * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
+     * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
+     * <p><strong>Features</strong>:</p>
+     * <ul>
+     * <li>Substring matching on code IDs (e.g., &quot;11.65&quot; finds &quot;E11.65&quot;)</li>
+     * <li>Typo tolerance on descriptions (not on code IDs)</li>
+     * <li>Fast response times (~10-50ms)</li>
+     * </ul>
+     * <p><strong>Examples</strong>:</p>
+     * <ul>
+     * <li>Query &quot;E11&quot; finds all codes starting with E11 (diabetes codes)</li>
+     * <li>Query &quot;diabtes&quot; (typo) still finds &quot;diabetes&quot; codes</li>
+     * </ul>
+     * <p><strong>Trade-offs</strong>: Faster than semantic search, but only matches keywords/substrings.
+     * Won't find conceptually related codes with different terminology.</p>
+     * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
+     */
+    public PhenoMLHttpResponse<TextSearchResponse> textSearchKeywordBased(
+            String codesystem, GetConstrueCodesCodesystemSearchTextRequest request) {
+        return textSearchKeywordBased(codesystem, request, null);
+    }
+
+    /**
+     * Performs fast full-text search over code IDs and descriptions.
+     * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
+     * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
+     * <p><strong>Features</strong>:</p>
+     * <ul>
+     * <li>Substring matching on code IDs (e.g., &quot;11.65&quot; finds &quot;E11.65&quot;)</li>
+     * <li>Typo tolerance on descriptions (not on code IDs)</li>
+     * <li>Fast response times (~10-50ms)</li>
+     * </ul>
+     * <p><strong>Examples</strong>:</p>
+     * <ul>
+     * <li>Query &quot;E11&quot; finds all codes starting with E11 (diabetes codes)</li>
+     * <li>Query &quot;diabtes&quot; (typo) still finds &quot;diabetes&quot; codes</li>
+     * </ul>
+     * <p><strong>Trade-offs</strong>: Faster than semantic search, but only matches keywords/substrings.
+     * Won't find conceptually related codes with different terminology.</p>
+     * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
+     */
+    public PhenoMLHttpResponse<TextSearchResponse> textSearchKeywordBased(
+            String codesystem, GetConstrueCodesCodesystemSearchTextRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("construe/codes")
+                .addPathSegment(codesystem)
+                .addPathSegments("search/text");
+        QueryStringMapper.addQueryParameter(httpUrl, "q", request.getQ(), false);
+        if (request.getVersion().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "version", request.getVersion().get(), false);
+        }
+        if (request.getLimit().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "limit", request.getLimit().get(), false);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("GET", null)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), TextSearchResponse.class), response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 404:
+                        throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 501:
+                        throw new NotImplementedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 503:
+                        throw new ServiceUnavailableError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                 }
             } catch (JsonProcessingException ignored) {
