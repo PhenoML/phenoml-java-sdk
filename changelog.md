@@ -1,3 +1,14 @@
+## 2.0.0 - 2026-01-21
+* refactor: remove isActive field from prompt and agent models
+* Removes the deprecated isActive field from prompt and agent models across the codebase, simplifying the API surface and removing unused functionality.
+* Key changes:
+* Remove isActive field from AgentPromptsCreateRequest and AgentPromptsUpdateRequest
+* Remove isActive field from AgentTemplate and PromptTemplate models
+* Update delete operation documentation from "soft delete" to "delete"
+* Remove isActive parameter from builder patterns and constructors
+* Update equals/hashCode methods to exclude isActive field
+* 🌿 Generated with Fern
+
 ## 1.0.1 - 2026-01-21
 * SDK regeneration
 * Unable to analyze changes with AI, incrementing PATCH version.

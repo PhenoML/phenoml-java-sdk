@@ -625,7 +625,6 @@ client.agent().prompts().create(
         .builder()
         .name("Medical Assistant System Prompt")
         .content("You are a helpful medical assistant specialized in FHIR data processing...")
-        .isActive(true)
         .build()
 );
 ```
@@ -667,14 +666,6 @@ client.agent().prompts().create(
 <dd>
 
 **isDefault:** `Optional<Boolean>` — Whether this is a default prompt
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**isActive:** `Boolean` — Whether the prompt is active
     
 </dd>
 </dl>
@@ -874,14 +865,6 @@ client.agent().prompts().update(
 <dl>
 <dd>
 
-**isActive:** `Optional<Boolean>` — Whether the prompt is active
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **tags:** `Optional<List<String>>` — Tags for categorizing the prompt
     
 </dd>
@@ -906,7 +889,7 @@ client.agent().prompts().update(
 <dl>
 <dd>
 
-Soft deletes a prompt by setting is_active to false
+Deletes a prompt
 </dd>
 </dl>
 </dd>

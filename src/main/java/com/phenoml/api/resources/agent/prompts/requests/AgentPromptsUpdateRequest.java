@@ -29,8 +29,6 @@ public final class AgentPromptsUpdateRequest {
 
     private final Optional<Boolean> isDefault;
 
-    private final Optional<Boolean> isActive;
-
     private final Optional<List<String>> tags;
 
     private final Map<String, Object> additionalProperties;
@@ -40,14 +38,12 @@ public final class AgentPromptsUpdateRequest {
             Optional<String> description,
             Optional<String> content,
             Optional<Boolean> isDefault,
-            Optional<Boolean> isActive,
             Optional<List<String>> tags,
             Map<String, Object> additionalProperties) {
         this.name = name;
         this.description = description;
         this.content = content;
         this.isDefault = isDefault;
-        this.isActive = isActive;
         this.tags = tags;
         this.additionalProperties = additionalProperties;
     }
@@ -85,14 +81,6 @@ public final class AgentPromptsUpdateRequest {
     }
 
     /**
-     * @return Whether the prompt is active
-     */
-    @JsonProperty("is_active")
-    public Optional<Boolean> getIsActive() {
-        return isActive;
-    }
-
-    /**
      * @return Tags for categorizing the prompt
      */
     @JsonProperty("tags")
@@ -116,13 +104,12 @@ public final class AgentPromptsUpdateRequest {
                 && description.equals(other.description)
                 && content.equals(other.content)
                 && isDefault.equals(other.isDefault)
-                && isActive.equals(other.isActive)
                 && tags.equals(other.tags);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.name, this.description, this.content, this.isDefault, this.isActive, this.tags);
+        return Objects.hash(this.name, this.description, this.content, this.isDefault, this.tags);
     }
 
     @java.lang.Override
@@ -144,8 +131,6 @@ public final class AgentPromptsUpdateRequest {
 
         private Optional<Boolean> isDefault = Optional.empty();
 
-        private Optional<Boolean> isActive = Optional.empty();
-
         private Optional<List<String>> tags = Optional.empty();
 
         @JsonAnySetter
@@ -158,7 +143,6 @@ public final class AgentPromptsUpdateRequest {
             description(other.getDescription());
             content(other.getContent());
             isDefault(other.getIsDefault());
-            isActive(other.getIsActive());
             tags(other.getTags());
             return this;
         }
@@ -220,20 +204,6 @@ public final class AgentPromptsUpdateRequest {
         }
 
         /**
-         * <p>Whether the prompt is active</p>
-         */
-        @JsonSetter(value = "is_active", nulls = Nulls.SKIP)
-        public Builder isActive(Optional<Boolean> isActive) {
-            this.isActive = isActive;
-            return this;
-        }
-
-        public Builder isActive(Boolean isActive) {
-            this.isActive = Optional.ofNullable(isActive);
-            return this;
-        }
-
-        /**
          * <p>Tags for categorizing the prompt</p>
          */
         @JsonSetter(value = "tags", nulls = Nulls.SKIP)
@@ -248,8 +218,7 @@ public final class AgentPromptsUpdateRequest {
         }
 
         public AgentPromptsUpdateRequest build() {
-            return new AgentPromptsUpdateRequest(
-                    name, description, content, isDefault, isActive, tags, additionalProperties);
+            return new AgentPromptsUpdateRequest(name, description, content, isDefault, tags, additionalProperties);
         }
     }
 }

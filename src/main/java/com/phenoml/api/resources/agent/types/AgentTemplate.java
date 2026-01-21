@@ -38,8 +38,6 @@ public final class AgentTemplate {
 
     private final Optional<List<String>> tools;
 
-    private final Optional<Boolean> isActive;
-
     private final Optional<List<String>> tags;
 
     private final Optional<Provider> provider;
@@ -52,7 +50,6 @@ public final class AgentTemplate {
             Optional<String> description,
             Optional<List<String>> prompts,
             Optional<List<String>> tools,
-            Optional<Boolean> isActive,
             Optional<List<String>> tags,
             Optional<Provider> provider,
             Map<String, Object> additionalProperties) {
@@ -61,7 +58,6 @@ public final class AgentTemplate {
         this.description = description;
         this.prompts = prompts;
         this.tools = tools;
-        this.isActive = isActive;
         this.tags = tags;
         this.provider = provider;
         this.additionalProperties = additionalProperties;
@@ -108,14 +104,6 @@ public final class AgentTemplate {
     }
 
     /**
-     * @return Whether the agent is active
-     */
-    @JsonProperty("is_active")
-    public Optional<Boolean> getIsActive() {
-        return isActive;
-    }
-
-    /**
      * @return Tags for categorizing the agent
      */
     @JsonProperty("tags")
@@ -148,22 +136,13 @@ public final class AgentTemplate {
                 && description.equals(other.description)
                 && prompts.equals(other.prompts)
                 && tools.equals(other.tools)
-                && isActive.equals(other.isActive)
                 && tags.equals(other.tags)
                 && provider.equals(other.provider);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(
-                this.id,
-                this.name,
-                this.description,
-                this.prompts,
-                this.tools,
-                this.isActive,
-                this.tags,
-                this.provider);
+        return Objects.hash(this.id, this.name, this.description, this.prompts, this.tools, this.tags, this.provider);
     }
 
     @java.lang.Override
@@ -187,8 +166,6 @@ public final class AgentTemplate {
 
         private Optional<List<String>> tools = Optional.empty();
 
-        private Optional<Boolean> isActive = Optional.empty();
-
         private Optional<List<String>> tags = Optional.empty();
 
         private Optional<Provider> provider = Optional.empty();
@@ -204,7 +181,6 @@ public final class AgentTemplate {
             description(other.getDescription());
             prompts(other.getPrompts());
             tools(other.getTools());
-            isActive(other.getIsActive());
             tags(other.getTags());
             provider(other.getProvider());
             return this;
@@ -281,20 +257,6 @@ public final class AgentTemplate {
         }
 
         /**
-         * <p>Whether the agent is active</p>
-         */
-        @JsonSetter(value = "is_active", nulls = Nulls.SKIP)
-        public Builder isActive(Optional<Boolean> isActive) {
-            this.isActive = isActive;
-            return this;
-        }
-
-        public Builder isActive(Boolean isActive) {
-            this.isActive = Optional.ofNullable(isActive);
-            return this;
-        }
-
-        /**
          * <p>Tags for categorizing the agent</p>
          */
         @JsonSetter(value = "tags", nulls = Nulls.SKIP)
@@ -323,8 +285,7 @@ public final class AgentTemplate {
         }
 
         public AgentTemplate build() {
-            return new AgentTemplate(
-                    id, name, description, prompts, tools, isActive, tags, provider, additionalProperties);
+            return new AgentTemplate(id, name, description, prompts, tools, tags, provider, additionalProperties);
         }
     }
 
