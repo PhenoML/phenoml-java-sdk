@@ -36,6 +36,9 @@ client.agent().create(
                 Arrays.asList("prompt_123", "prompt_456")
             )
         )
+        .provider(
+            AgentCreateRequestProvider.of("provider")
+        )
         .build()
 );
 ```
@@ -213,6 +216,9 @@ client.agent().update(
             new ArrayList<String>(
                 Arrays.asList("prompt_123", "prompt_456")
             )
+        )
+        .provider(
+            AgentCreateRequestProvider.of("provider")
         )
         .build()
 );

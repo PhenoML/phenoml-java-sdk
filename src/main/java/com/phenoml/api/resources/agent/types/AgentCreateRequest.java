@@ -40,7 +40,7 @@ public final class AgentCreateRequest {
 
     private final Optional<List<String>> tags;
 
-    private final Optional<Provider> provider;
+    private final Provider provider;
 
     private final Map<String, Object> additionalProperties;
 
@@ -50,7 +50,7 @@ public final class AgentCreateRequest {
             List<String> prompts,
             Optional<List<String>> tools,
             Optional<List<String>> tags,
-            Optional<Provider> provider,
+            Provider provider,
             Map<String, Object> additionalProperties) {
         this.name = name;
         this.description = description;
@@ -102,10 +102,11 @@ public final class AgentCreateRequest {
     }
 
     /**
-     * @return FHIR provider ID(s) - must be valid UUIDs from existing FHIR providers
+     * @return FHIR provider ID(s) for this agent. Required.
+     * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.
      */
     @JsonProperty("provider")
-    public Optional<Provider> getProvider() {
+    public Provider getProvider() {
         return provider;
     }
 
@@ -147,9 +148,17 @@ public final class AgentCreateRequest {
         /**
          * <p>Agent name</p>
          */
-        _FinalStage name(@NotNull String name);
+        ProviderStage name(@NotNull String name);
 
         Builder from(AgentCreateRequest other);
+    }
+
+    public interface ProviderStage {
+        /**
+         * <p>FHIR provider ID(s) for this agent. Required.
+         * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.</p>
+         */
+        _FinalStage provider(@NotNull Provider provider);
     }
 
     public interface _FinalStage {
@@ -184,20 +193,13 @@ public final class AgentCreateRequest {
         _FinalStage tags(Optional<List<String>> tags);
 
         _FinalStage tags(List<String> tags);
-
-        /**
-         * <p>FHIR provider ID(s) - must be valid UUIDs from existing FHIR providers</p>
-         */
-        _FinalStage provider(Optional<Provider> provider);
-
-        _FinalStage provider(Provider provider);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements NameStage, _FinalStage {
+    public static final class Builder implements NameStage, ProviderStage, _FinalStage {
         private String name;
 
-        private Optional<Provider> provider = Optional.empty();
+        private Provider provider;
 
         private Optional<List<String>> tags = Optional.empty();
 
@@ -230,28 +232,22 @@ public final class AgentCreateRequest {
          */
         @java.lang.Override
         @JsonSetter("name")
-        public _FinalStage name(@NotNull String name) {
+        public ProviderStage name(@NotNull String name) {
             this.name = Objects.requireNonNull(name, "name must not be null");
             return this;
         }
 
         /**
-         * <p>FHIR provider ID(s) - must be valid UUIDs from existing FHIR providers</p>
+         * <p>FHIR provider ID(s) for this agent. Required.
+         * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.</p>
+         * <p>FHIR provider ID(s) for this agent. Required.
+         * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
-        public _FinalStage provider(Provider provider) {
-            this.provider = Optional.ofNullable(provider);
-            return this;
-        }
-
-        /**
-         * <p>FHIR provider ID(s) - must be valid UUIDs from existing FHIR providers</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "provider", nulls = Nulls.SKIP)
-        public _FinalStage provider(Optional<Provider> provider) {
-            this.provider = provider;
+        @JsonSetter("provider")
+        public _FinalStage provider(@NotNull Provider provider) {
+            this.provider = Objects.requireNonNull(provider, "provider must not be null");
             return this;
         }
 
