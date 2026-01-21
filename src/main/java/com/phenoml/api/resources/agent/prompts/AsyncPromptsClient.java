@@ -98,14 +98,14 @@ public class AsyncPromptsClient {
     }
 
     /**
-     * Soft deletes a prompt by setting is_active to false
+     * Deletes a prompt
      */
     public CompletableFuture<PromptsDeleteResponse> delete(String id) {
         return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
     /**
-     * Soft deletes a prompt by setting is_active to false
+     * Deletes a prompt
      */
     public CompletableFuture<PromptsDeleteResponse> delete(String id, RequestOptions requestOptions) {
         return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());

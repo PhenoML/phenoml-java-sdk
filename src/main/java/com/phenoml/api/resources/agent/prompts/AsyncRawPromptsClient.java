@@ -402,14 +402,14 @@ public class AsyncRawPromptsClient {
     }
 
     /**
-     * Soft deletes a prompt by setting is_active to false
+     * Deletes a prompt
      */
     public CompletableFuture<PhenoMLHttpResponse<PromptsDeleteResponse>> delete(String id) {
         return delete(id, null);
     }
 
     /**
-     * Soft deletes a prompt by setting is_active to false
+     * Deletes a prompt
      */
     public CompletableFuture<PhenoMLHttpResponse<PromptsDeleteResponse>> delete(
             String id, RequestOptions requestOptions) {
