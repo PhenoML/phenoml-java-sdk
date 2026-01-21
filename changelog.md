@@ -1,3 +1,14 @@
+## 2.0.0 - 2026-01-21
+* feat: remove isActive field from agent prompt API
+* Deprecated the isActive field from prompt and agent models, transitioning from soft delete to hard delete functionality. This change simplifies the API surface by removing the state management complexity around active/inactive prompts.
+* Key changes:
+* Remove isActive field from AgentPromptsCreateRequest and AgentPromptsUpdateRequest
+* Remove isActive field from PromptTemplate and AgentTemplate models
+* Update delete operation documentation from "soft deletes" to "deletes"
+* Remove isActive parameter from builder patterns and method signatures
+* Update documentation to reflect hard delete behavior
+* 🌿 Generated with Fern
+
 ## 1.0.1 - 2026-01-21
 * SDK regeneration
 * Unable to analyze changes with AI, incrementing PATCH version.

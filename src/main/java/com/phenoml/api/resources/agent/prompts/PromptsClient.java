@@ -95,14 +95,14 @@ public class PromptsClient {
     }
 
     /**
-     * Soft deletes a prompt by setting is_active to false
+     * Deletes a prompt
      */
     public PromptsDeleteResponse delete(String id) {
         return this.rawClient.delete(id).body();
     }
 
     /**
-     * Soft deletes a prompt by setting is_active to false
+     * Deletes a prompt
      */
     public PromptsDeleteResponse delete(String id, RequestOptions requestOptions) {
         return this.rawClient.delete(id, requestOptions).body();

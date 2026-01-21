@@ -30,8 +30,6 @@ public final class AgentPromptsCreateRequest {
 
     private final Optional<Boolean> isDefault;
 
-    private final boolean isActive;
-
     private final Optional<List<String>> tags;
 
     private final Map<String, Object> additionalProperties;
@@ -41,14 +39,12 @@ public final class AgentPromptsCreateRequest {
             Optional<String> description,
             String content,
             Optional<Boolean> isDefault,
-            boolean isActive,
             Optional<List<String>> tags,
             Map<String, Object> additionalProperties) {
         this.name = name;
         this.description = description;
         this.content = content;
         this.isDefault = isDefault;
-        this.isActive = isActive;
         this.tags = tags;
         this.additionalProperties = additionalProperties;
     }
@@ -86,14 +82,6 @@ public final class AgentPromptsCreateRequest {
     }
 
     /**
-     * @return Whether the prompt is active
-     */
-    @JsonProperty("is_active")
-    public boolean getIsActive() {
-        return isActive;
-    }
-
-    /**
      * @return Tags for categorizing the prompt
      */
     @JsonProperty("tags")
@@ -117,13 +105,12 @@ public final class AgentPromptsCreateRequest {
                 && description.equals(other.description)
                 && content.equals(other.content)
                 && isDefault.equals(other.isDefault)
-                && isActive == other.isActive
                 && tags.equals(other.tags);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.name, this.description, this.content, this.isDefault, this.isActive, this.tags);
+        return Objects.hash(this.name, this.description, this.content, this.isDefault, this.tags);
     }
 
     @java.lang.Override
@@ -148,14 +135,7 @@ public final class AgentPromptsCreateRequest {
         /**
          * <p>Prompt content</p>
          */
-        IsActiveStage content(@NotNull String content);
-    }
-
-    public interface IsActiveStage {
-        /**
-         * <p>Whether the prompt is active</p>
-         */
-        _FinalStage isActive(boolean isActive);
+        _FinalStage content(@NotNull String content);
     }
 
     public interface _FinalStage {
@@ -184,12 +164,10 @@ public final class AgentPromptsCreateRequest {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements NameStage, ContentStage, IsActiveStage, _FinalStage {
+    public static final class Builder implements NameStage, ContentStage, _FinalStage {
         private String name;
 
         private String content;
-
-        private boolean isActive;
 
         private Optional<List<String>> tags = Optional.empty();
 
@@ -208,7 +186,6 @@ public final class AgentPromptsCreateRequest {
             description(other.getDescription());
             content(other.getContent());
             isDefault(other.getIsDefault());
-            isActive(other.getIsActive());
             tags(other.getTags());
             return this;
         }
@@ -232,20 +209,8 @@ public final class AgentPromptsCreateRequest {
          */
         @java.lang.Override
         @JsonSetter("content")
-        public IsActiveStage content(@NotNull String content) {
+        public _FinalStage content(@NotNull String content) {
             this.content = Objects.requireNonNull(content, "content must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Whether the prompt is active</p>
-         * <p>Whether the prompt is active</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("is_active")
-        public _FinalStage isActive(boolean isActive) {
-            this.isActive = isActive;
             return this;
         }
 
@@ -311,8 +276,7 @@ public final class AgentPromptsCreateRequest {
 
         @java.lang.Override
         public AgentPromptsCreateRequest build() {
-            return new AgentPromptsCreateRequest(
-                    name, description, content, isDefault, isActive, tags, additionalProperties);
+            return new AgentPromptsCreateRequest(name, description, content, isDefault, tags, additionalProperties);
         }
     }
 }

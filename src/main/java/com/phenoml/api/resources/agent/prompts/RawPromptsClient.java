@@ -313,14 +313,14 @@ public class RawPromptsClient {
     }
 
     /**
-     * Soft deletes a prompt by setting is_active to false
+     * Deletes a prompt
      */
     public PhenoMLHttpResponse<PromptsDeleteResponse> delete(String id) {
         return delete(id, null);
     }
 
     /**
-     * Soft deletes a prompt by setting is_active to false
+     * Deletes a prompt
      */
     public PhenoMLHttpResponse<PromptsDeleteResponse> delete(String id, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
