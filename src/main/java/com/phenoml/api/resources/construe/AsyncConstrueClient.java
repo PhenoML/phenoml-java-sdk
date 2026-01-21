@@ -6,9 +6,18 @@ package com.phenoml.api.resources.construe;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.construe.requests.ExtractRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCodeIdRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
 import com.phenoml.api.resources.construe.requests.UploadRequest;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
+import com.phenoml.api.resources.construe.types.GetCodeResponse;
+import com.phenoml.api.resources.construe.types.ListCodeSystemsResponse;
+import com.phenoml.api.resources.construe.types.ListCodesResponse;
+import com.phenoml.api.resources.construe.types.SemanticSearchResponse;
+import com.phenoml.api.resources.construe.types.TextSearchResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncConstrueClient {
@@ -59,5 +68,164 @@ public class AsyncConstrueClient {
      */
     public CompletableFuture<ExtractCodesResult> extractCodes(ExtractRequest request, RequestOptions requestOptions) {
         return this.rawClient.extractCodes(request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Returns metadata about all available code systems including built-in and custom systems.
+     */
+    public CompletableFuture<ListCodeSystemsResponse> listAvailableCodeSystems() {
+        return this.rawClient.listAvailableCodeSystems().thenApply(response -> response.body());
+    }
+
+    /**
+     * Returns metadata about all available code systems including built-in and custom systems.
+     */
+    public CompletableFuture<ListCodeSystemsResponse> listAvailableCodeSystems(RequestOptions requestOptions) {
+        return this.rawClient.listAvailableCodeSystems(requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Returns a paginated list of all codes in the specified code system.
+     */
+    public CompletableFuture<ListCodesResponse> listCodesInACodeSystem(String codesystem) {
+        return this.rawClient.listCodesInACodeSystem(codesystem).thenApply(response -> response.body());
+    }
+
+    /**
+     * Returns a paginated list of all codes in the specified code system.
+     */
+    public CompletableFuture<ListCodesResponse> listCodesInACodeSystem(
+            String codesystem, GetConstrueCodesCodesystemRequest request) {
+        return this.rawClient.listCodesInACodeSystem(codesystem, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Returns a paginated list of all codes in the specified code system.
+     */
+    public CompletableFuture<ListCodesResponse> listCodesInACodeSystem(
+            String codesystem, GetConstrueCodesCodesystemRequest request, RequestOptions requestOptions) {
+        return this.rawClient
+                .listCodesInACodeSystem(codesystem, request, requestOptions)
+                .thenApply(response -> response.body());
+    }
+
+    /**
+     * Returns details for a specific code within a code system.
+     */
+    public CompletableFuture<GetCodeResponse> getASpecificCode(String codesystem, String codeId) {
+        return this.rawClient.getASpecificCode(codesystem, codeId).thenApply(response -> response.body());
+    }
+
+    /**
+     * Returns details for a specific code within a code system.
+     */
+    public CompletableFuture<GetCodeResponse> getASpecificCode(
+            String codesystem, String codeId, GetConstrueCodesCodesystemCodeIdRequest request) {
+        return this.rawClient.getASpecificCode(codesystem, codeId, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Returns details for a specific code within a code system.
+     */
+    public CompletableFuture<GetCodeResponse> getASpecificCode(
+            String codesystem,
+            String codeId,
+            GetConstrueCodesCodesystemCodeIdRequest request,
+            RequestOptions requestOptions) {
+        return this.rawClient
+                .getASpecificCode(codesystem, codeId, request, requestOptions)
+                .thenApply(response -> response.body());
+    }
+
+    /**
+     * Performs semantic similarity search using vector embeddings.
+     * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
+     * related codes, even when different terminology is used. The search understands meaning,
+     * not just keywords.</p>
+     * <p><strong>Examples</strong>:</p>
+     * <ul>
+     * <li>Query &quot;trouble breathing at night&quot; finds codes like &quot;Sleep apnea&quot;, &quot;Orthopnea&quot;,
+     * &quot;Nocturnal dyspnea&quot; — semantically related but no exact keyword matches</li>
+     * <li>Query &quot;heart problems&quot; finds &quot;Myocardial infarction&quot;, &quot;Cardiac arrest&quot;, &quot;Arrhythmia&quot;</li>
+     * </ul>
+     * <p><strong>Trade-offs</strong>: Slower than text search (requires embedding generation), but finds
+     * conceptually similar results that keyword search would miss.</p>
+     * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
+     */
+    public CompletableFuture<SemanticSearchResponse> semanticSearchEmbeddingBased(
+            String codesystem, GetConstrueCodesCodesystemSearchSemanticRequest request) {
+        return this.rawClient.semanticSearchEmbeddingBased(codesystem, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Performs semantic similarity search using vector embeddings.
+     * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
+     * related codes, even when different terminology is used. The search understands meaning,
+     * not just keywords.</p>
+     * <p><strong>Examples</strong>:</p>
+     * <ul>
+     * <li>Query &quot;trouble breathing at night&quot; finds codes like &quot;Sleep apnea&quot;, &quot;Orthopnea&quot;,
+     * &quot;Nocturnal dyspnea&quot; — semantically related but no exact keyword matches</li>
+     * <li>Query &quot;heart problems&quot; finds &quot;Myocardial infarction&quot;, &quot;Cardiac arrest&quot;, &quot;Arrhythmia&quot;</li>
+     * </ul>
+     * <p><strong>Trade-offs</strong>: Slower than text search (requires embedding generation), but finds
+     * conceptually similar results that keyword search would miss.</p>
+     * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
+     */
+    public CompletableFuture<SemanticSearchResponse> semanticSearchEmbeddingBased(
+            String codesystem, GetConstrueCodesCodesystemSearchSemanticRequest request, RequestOptions requestOptions) {
+        return this.rawClient
+                .semanticSearchEmbeddingBased(codesystem, request, requestOptions)
+                .thenApply(response -> response.body());
+    }
+
+    /**
+     * Performs fast full-text search over code IDs and descriptions.
+     * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
+     * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
+     * <p><strong>Features</strong>:</p>
+     * <ul>
+     * <li>Substring matching on code IDs (e.g., &quot;11.65&quot; finds &quot;E11.65&quot;)</li>
+     * <li>Typo tolerance on descriptions (not on code IDs)</li>
+     * <li>Fast response times (~10-50ms)</li>
+     * </ul>
+     * <p><strong>Examples</strong>:</p>
+     * <ul>
+     * <li>Query &quot;E11&quot; finds all codes starting with E11 (diabetes codes)</li>
+     * <li>Query &quot;diabtes&quot; (typo) still finds &quot;diabetes&quot; codes</li>
+     * </ul>
+     * <p><strong>Trade-offs</strong>: Faster than semantic search, but only matches keywords/substrings.
+     * Won't find conceptually related codes with different terminology.</p>
+     * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
+     */
+    public CompletableFuture<TextSearchResponse> textSearchKeywordBased(
+            String codesystem, GetConstrueCodesCodesystemSearchTextRequest request) {
+        return this.rawClient.textSearchKeywordBased(codesystem, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Performs fast full-text search over code IDs and descriptions.
+     * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
+     * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
+     * <p><strong>Features</strong>:</p>
+     * <ul>
+     * <li>Substring matching on code IDs (e.g., &quot;11.65&quot; finds &quot;E11.65&quot;)</li>
+     * <li>Typo tolerance on descriptions (not on code IDs)</li>
+     * <li>Fast response times (~10-50ms)</li>
+     * </ul>
+     * <p><strong>Examples</strong>:</p>
+     * <ul>
+     * <li>Query &quot;E11&quot; finds all codes starting with E11 (diabetes codes)</li>
+     * <li>Query &quot;diabtes&quot; (typo) still finds &quot;diabetes&quot; codes</li>
+     * </ul>
+     * <p><strong>Trade-offs</strong>: Faster than semantic search, but only matches keywords/substrings.
+     * Won't find conceptually related codes with different terminology.</p>
+     * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
+     */
+    public CompletableFuture<TextSearchResponse> textSearchKeywordBased(
+            String codesystem, GetConstrueCodesCodesystemSearchTextRequest request, RequestOptions requestOptions) {
+        return this.rawClient
+                .textSearchKeywordBased(codesystem, request, requestOptions)
+                .thenApply(response -> response.body());
     }
 }
