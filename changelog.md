@@ -1,3 +1,17 @@
+## 3.0.1 - 2026-01-22
+* docs: add compliance notes and paid plan requirements
+* Update documentation and method comments to include important compliance and billing information:
+* Added CPT usage compliance notice referencing AMA requirements and Terms of Service
+* Added paid plan requirement for custom code system upload feature
+* Improved grammar and consistency in method descriptions
+* Added new BadGatewayError handling for FHIR client operations
+* Key changes:
+* Added "Requires a paid plan" note to uploadCodeSystem methods
+* Added CPT compliance disclaimers to all relevant construe operations
+* Enhanced error handling with BadGatewayError for FHIR operations
+* Updated custom system documentation to reflect upload requirements
+* 🌿 Generated with Fern
+
 ## 3.0.0 - 2026-01-21
 * feat: make provider field required in AgentCreateRequest
 * Update the AgentCreateRequest API to require the provider field instead of making it optional. This ensures that all agent creation requests must specify a provider explicitly.
