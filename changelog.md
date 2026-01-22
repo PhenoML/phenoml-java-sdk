@@ -1,3 +1,15 @@
+## 3.0.0 - 2026-01-21
+* feat: make provider field required in AgentCreateRequest
+* Update the AgentCreateRequest API to require the provider field instead of making it optional. This ensures that all agent creation requests must specify a provider explicitly.
+* The provider field is now required during agent creation, with clear documentation indicating that in shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.
+* Key changes:
+* Change provider field from Optional<Provider> to Provider (required)
+* Update builder pattern to include new ProviderStage interface
+* Modify constructor to require provider parameter
+* Update documentation to clarify provider requirement
+* Remove optional provider setter methods from builder
+* 🌿 Generated with Fern
+
 ## 2.0.0 - 2026-01-21
 * feat: remove isActive field from agent prompt API
 * Deprecated the isActive field from prompt and agent models, transitioning from soft delete to hard delete functionality. This change simplifies the API surface by removing the state management complexity around active/inactive prompts.
