@@ -1,3 +1,13 @@
+## 3.0.1 - 2026-01-22
+* docs: update API documentation with paid plan requirements and CPT usage terms
+* Update documentation across client classes and reference materials to clarify business requirements and compliance information for the construe module.
+* Key changes:
+* Add "Requires a paid plan" note for custom code system upload functionality
+* Include AMA compliance disclaimer for CPT usage across all relevant endpoints
+* Update custom system documentation to reference uploaded systems instead of self-hosted
+* Improve documentation clarity with proper punctuation and formatting
+* 🌿 Generated with Fern
+
 ## 3.0.0 - 2026-01-21
 * feat: make provider field required in AgentCreateRequest
 * Update the AgentCreateRequest API to require the provider field instead of making it optional. This ensures that all agent creation requests must specify a provider explicitly.

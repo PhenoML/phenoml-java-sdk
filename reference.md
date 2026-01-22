@@ -1203,7 +1203,7 @@ client.cohort().analyze(
 <dl>
 <dd>
 
-Upload a custom medical code system with codes and descriptions for use in code extraction.
+Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
 Upon upload, construe generates embeddings for all of the codes in the code system and stores them in the vector database so you can
 subsequently use the code system for construe/extract and lang2fhir/create (coming soon!)
 </dd>
@@ -1323,7 +1323,9 @@ client.construe().uploadCodeSystem(
 <dl>
 <dd>
 
-Converts natural language text into structured medical codes
+Converts natural language text into structured medical codes.
+
+Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
 </dd>
 </dl>
 </dd>
@@ -1438,6 +1440,8 @@ client.construe().listAvailableCodeSystems();
 <dd>
 
 Returns a paginated list of all codes in the specified code system.
+
+Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
 </dd>
 </dl>
 </dd>
@@ -1524,6 +1528,8 @@ client.construe().listCodesInACodeSystem(
 <dd>
 
 Returns details for a specific code within a code system.
+
+Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
 </dd>
 </dl>
 </dd>
@@ -1615,6 +1621,8 @@ not just keywords.
 conceptually similar results that keyword search would miss.
 
 See also: `/search/text` for faster keyword-based lookup with typo tolerance.
+
+Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
 </dd>
 </dl>
 </dd>
@@ -1718,6 +1726,8 @@ the code ID or specific keywords. Fast response times suitable for typeahead int
 Won't find conceptually related codes with different terminology.
 
 See also: `/search/semantic` for finding conceptually similar codes.
+
+Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
 </dd>
 </dl>
 </dd>

@@ -38,7 +38,7 @@ public class AsyncConstrueClient {
     }
 
     /**
-     * Upload a custom medical code system with codes and descriptions for use in code extraction.
+     * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
      * Upon upload, construe generates embeddings for all of the codes in the code system and stores them in the vector database so you can
      * subsequently use the code system for construe/extract and lang2fhir/create (coming soon!)
      */
@@ -47,7 +47,7 @@ public class AsyncConstrueClient {
     }
 
     /**
-     * Upload a custom medical code system with codes and descriptions for use in code extraction.
+     * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
      * Upon upload, construe generates embeddings for all of the codes in the code system and stores them in the vector database so you can
      * subsequently use the code system for construe/extract and lang2fhir/create (coming soon!)
      */
@@ -57,14 +57,16 @@ public class AsyncConstrueClient {
     }
 
     /**
-     * Converts natural language text into structured medical codes
+     * Converts natural language text into structured medical codes.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ExtractCodesResult> extractCodes(ExtractRequest request) {
         return this.rawClient.extractCodes(request).thenApply(response -> response.body());
     }
 
     /**
-     * Converts natural language text into structured medical codes
+     * Converts natural language text into structured medical codes.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ExtractCodesResult> extractCodes(ExtractRequest request, RequestOptions requestOptions) {
         return this.rawClient.extractCodes(request, requestOptions).thenApply(response -> response.body());
@@ -86,6 +88,7 @@ public class AsyncConstrueClient {
 
     /**
      * Returns a paginated list of all codes in the specified code system.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ListCodesResponse> listCodesInACodeSystem(String codesystem) {
         return this.rawClient.listCodesInACodeSystem(codesystem).thenApply(response -> response.body());
@@ -93,6 +96,7 @@ public class AsyncConstrueClient {
 
     /**
      * Returns a paginated list of all codes in the specified code system.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ListCodesResponse> listCodesInACodeSystem(
             String codesystem, GetConstrueCodesCodesystemRequest request) {
@@ -101,6 +105,7 @@ public class AsyncConstrueClient {
 
     /**
      * Returns a paginated list of all codes in the specified code system.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ListCodesResponse> listCodesInACodeSystem(
             String codesystem, GetConstrueCodesCodesystemRequest request, RequestOptions requestOptions) {
@@ -111,6 +116,7 @@ public class AsyncConstrueClient {
 
     /**
      * Returns details for a specific code within a code system.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<GetCodeResponse> getASpecificCode(String codesystem, String codeId) {
         return this.rawClient.getASpecificCode(codesystem, codeId).thenApply(response -> response.body());
@@ -118,6 +124,7 @@ public class AsyncConstrueClient {
 
     /**
      * Returns details for a specific code within a code system.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<GetCodeResponse> getASpecificCode(
             String codesystem, String codeId, GetConstrueCodesCodesystemCodeIdRequest request) {
@@ -126,6 +133,7 @@ public class AsyncConstrueClient {
 
     /**
      * Returns details for a specific code within a code system.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<GetCodeResponse> getASpecificCode(
             String codesystem,
@@ -151,6 +159,7 @@ public class AsyncConstrueClient {
      * <p><strong>Trade-offs</strong>: Slower than text search (requires embedding generation), but finds
      * conceptually similar results that keyword search would miss.</p>
      * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<SemanticSearchResponse> semanticSearchEmbeddingBased(
             String codesystem, GetConstrueCodesCodesystemSearchSemanticRequest request) {
@@ -171,6 +180,7 @@ public class AsyncConstrueClient {
      * <p><strong>Trade-offs</strong>: Slower than text search (requires embedding generation), but finds
      * conceptually similar results that keyword search would miss.</p>
      * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<SemanticSearchResponse> semanticSearchEmbeddingBased(
             String codesystem, GetConstrueCodesCodesystemSearchSemanticRequest request, RequestOptions requestOptions) {
@@ -197,6 +207,7 @@ public class AsyncConstrueClient {
      * <p><strong>Trade-offs</strong>: Faster than semantic search, but only matches keywords/substrings.
      * Won't find conceptually related codes with different terminology.</p>
      * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<TextSearchResponse> textSearchKeywordBased(
             String codesystem, GetConstrueCodesCodesystemSearchTextRequest request) {
@@ -221,6 +232,7 @@ public class AsyncConstrueClient {
      * <p><strong>Trade-offs</strong>: Faster than semantic search, but only matches keywords/substrings.
      * Won't find conceptually related codes with different terminology.</p>
      * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<TextSearchResponse> textSearchKeywordBased(
             String codesystem, GetConstrueCodesCodesystemSearchTextRequest request, RequestOptions requestOptions) {
