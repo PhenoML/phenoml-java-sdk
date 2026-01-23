@@ -12,6 +12,7 @@ import com.phenoml.api.core.PhenoMLException;
 import com.phenoml.api.core.PhenoMLHttpResponse;
 import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.resources.fhir.errors.BadGatewayError;
 import com.phenoml.api.resources.fhir.errors.BadRequestError;
 import com.phenoml.api.resources.fhir.errors.InternalServerError;
 import com.phenoml.api.resources.fhir.errors.NotFoundError;
@@ -22,6 +23,7 @@ import com.phenoml.api.resources.fhir.requests.FhirExecuteBundleRequest;
 import com.phenoml.api.resources.fhir.requests.FhirPatchRequest;
 import com.phenoml.api.resources.fhir.requests.FhirSearchRequest;
 import com.phenoml.api.resources.fhir.requests.FhirUpsertRequest;
+import com.phenoml.api.resources.fhir.types.ErrorResponse;
 import com.phenoml.api.resources.fhir.types.FhirBundle;
 import com.phenoml.api.resources.fhir.types.FhirResource;
 import com.phenoml.api.resources.fhir.types.FhirSearchResponse;
@@ -115,6 +117,9 @@ public class RawFhirClient {
                     case 500:
                         throw new InternalServerError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 502:
+                        throw new BadGatewayError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
                 }
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
@@ -195,6 +200,9 @@ public class RawFhirClient {
                     case 500:
                         throw new InternalServerError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 502:
+                        throw new BadGatewayError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
                 }
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
@@ -275,6 +283,9 @@ public class RawFhirClient {
                     case 500:
                         throw new InternalServerError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 502:
+                        throw new BadGatewayError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
                 }
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
@@ -360,6 +371,9 @@ public class RawFhirClient {
                     case 500:
                         throw new InternalServerError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 502:
+                        throw new BadGatewayError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
                 }
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
@@ -455,6 +469,9 @@ public class RawFhirClient {
                     case 500:
                         throw new InternalServerError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 502:
+                        throw new BadGatewayError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
                 }
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
@@ -536,6 +553,9 @@ public class RawFhirClient {
                     case 500:
                         throw new InternalServerError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 502:
+                        throw new BadGatewayError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class), response);
                 }
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
