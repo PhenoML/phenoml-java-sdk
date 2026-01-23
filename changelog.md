@@ -1,3 +1,14 @@
+## 4.0.0 - 2026-01-23
+* refactor: rename method and improve documentation with compliance notices
+* This change renames the textSearchKeywordBased method to terminologyServerTextSearch for better clarity and adds important compliance and feature documentation throughout the construe API.
+* Key changes:
+* Rename textSearchKeywordBased() to terminologyServerTextSearch() across all client classes
+* Add "Requires a paid plan" notice to custom code system upload functionality
+* Add CPT usage compliance notices referencing AMA requirements and Terms of Service
+* Improve method descriptions to be more descriptive and terminology-focused
+* Add BadGatewayError exception handling for 502 HTTP status codes in FHIR clients
+* 🌿 Generated with Fern
+
 ## 3.0.0 - 2026-01-21
 * feat: make provider field required in AgentCreateRequest
 * Update the AgentCreateRequest API to require the provider field instead of making it optional. This ensures that all agent creation requests must specify a provider explicitly.
