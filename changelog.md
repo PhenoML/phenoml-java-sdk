@@ -1,3 +1,15 @@
+## 4.0.0 - 2026-01-26
+* feat: enhance API documentation and add compliance warnings
+* This update improves the API documentation with more detailed descriptions and adds important compliance warnings for CPT terminology usage throughout the SDK.
+* Key changes:
+* Rename textSearchKeywordBased to terminologyServerTextSearch for clearer naming
+* Add "Requires a paid plan" notice to custom code system upload functionality
+* Include CPT compliance warnings with AMA requirements reference across all relevant endpoints
+* Enhance method descriptions with clearer language about terminology server operations
+* Add BadGatewayError (502) exception handling to FHIR client operations
+* Update documentation to better describe the purpose and functionality of each endpoint
+* 🌿 Generated with Fern
+
 ## 3.0.0 - 2026-01-21
 * feat: make provider field required in AgentCreateRequest
 * Update the AgentCreateRequest API to require the provider field instead of making it optional. This ensures that all agent creation requests must specify a provider explicitly.
