@@ -1,3 +1,19 @@
+## 3.1.0 - 2026-01-27
+* refactor: rename text search method and improve documentation
+* Renamed textSearchKeywordBased to terminologyServerTextSearch across all client
+* classes for better clarity. Enhanced documentation with more descriptive language
+* and added AMA compliance notices for CPT usage. Also added billing requirements
+* notice for custom code system uploads and improved error handling with new
+* BadGatewayError exception class.
+* Key changes:
+* Rename textSearchKeywordBased() to terminologyServerTextSearch() in all client classes
+* Add "Requires a paid plan" notice for custom code system upload functionality
+* Add AMA compliance disclaimers for CPT code usage across all relevant methods
+* Improve method documentation with clearer descriptions of terminology server operations
+* Add BadGatewayError exception class for 502 HTTP status code handling
+* Update reference documentation with enhanced descriptions and compliance notices
+* 🌿 Generated with Fern
+
 ## 3.0.0 - 2026-01-21
 * feat: make provider field required in AgentCreateRequest
 * Update the AgentCreateRequest API to require the provider field instead of making it optional. This ensures that all agent creation requests must specify a provider explicitly.
