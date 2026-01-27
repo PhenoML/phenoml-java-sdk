@@ -1,3 +1,15 @@
+## 3.1.0 - 2026-01-27
+* refactor: rename textSearchKeywordBased to terminologyServerTextSearch and improve documentation
+* This change improves the clarity and consistency of the terminology server API by providing more descriptive method names and enhanced documentation with licensing requirements.
+* Key changes:
+* Rename textSearchKeywordBased method to terminologyServerTextSearch across all client classes
+* Add CPT usage licensing notices to all relevant methods and types
+* Update method descriptions to be more specific about terminology server operations
+* Add "Requires a paid plan" notices for custom code system upload functionality
+* Add BadGatewayError exception handling to FHIR client operations
+* Enhance API documentation with clearer terminology and usage guidelines
+* 🌿 Generated with Fern
+
 ## 3.0.0 - 2026-01-21
 * feat: make provider field required in AgentCreateRequest
 * Update the AgentCreateRequest API to require the provider field instead of making it optional. This ensures that all agent creation requests must specify a provider explicitly.
