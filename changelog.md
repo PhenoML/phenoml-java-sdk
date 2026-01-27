@@ -1,3 +1,14 @@
+## 4.0.0 - 2026-01-27
+* feat: add AMA requirements notice and rename text search method
+* Enhance SDK documentation and method naming for better clarity around medical code usage. Update terminology server method names to be more descriptive and add comprehensive AMA compliance notices for CPT usage.
+* Key changes:
+* Rename textSearchKeywordBased() to terminologyServerTextSearch() for clarity
+* Add "Requires a paid plan" notice to custom code system upload documentation
+* Include CPT usage AMA requirements notice across all relevant methods and documentation
+* Add BadGatewayError exception handling for FHIR client operations
+* Update method descriptions to use "terminology server" language consistently
+* 🌿 Generated with Fern
+
 ## 3.0.0 - 2026-01-21
 * feat: make provider field required in AgentCreateRequest
 * Update the AgentCreateRequest API to require the provider field instead of making it optional. This ensures that all agent creation requests must specify a provider explicitly.
