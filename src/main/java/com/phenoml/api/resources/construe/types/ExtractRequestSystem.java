@@ -47,8 +47,9 @@ public final class ExtractRequestSystem {
      * </ul>
      * <p>Custom systems:</p>
      * <ul>
-     * <li>Any valid system name configured in your environment. Must have self-hosted construe module.</li>
+     * <li>Any valid system name uploaded via /construe/upload. Requires a paid plan.</li>
      * </ul>
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     @JsonProperty("name")
     public Optional<String> getName() {
@@ -123,8 +124,9 @@ public final class ExtractRequestSystem {
          * </ul>
          * <p>Custom systems:</p>
          * <ul>
-         * <li>Any valid system name configured in your environment. Must have self-hosted construe module.</li>
+         * <li>Any valid system name uploaded via /construe/upload. Requires a paid plan.</li>
          * </ul>
+         * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
          */
         @JsonSetter(value = "name", nulls = Nulls.SKIP)
         public Builder name(Optional<String> name) {

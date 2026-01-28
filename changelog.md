@@ -1,3 +1,14 @@
+## 4.0.0 - 2026-01-28
+* refactor: rename text search method and improve documentation
+* Update method naming to be more descriptive and enhance documentation with compliance notices and plan requirements for medical terminology features.
+* Key changes:
+* Rename textSearchKeywordBased to terminologyServerTextSearch for clarity
+* Add "Requires a paid plan" notice to custom code system upload documentation
+* Include CPT usage compliance warnings referencing AMA requirements
+* Add BadGatewayError (502) exception handling to FHIR client methods
+* Improve terminology server method descriptions for better clarity
+* 🌿 Generated with Fern
+
 ## 3.0.0 - 2026-01-21
 * feat: make provider field required in AgentCreateRequest
 * Update the AgentCreateRequest API to require the provider field instead of making it optional. This ensures that all agent creation requests must specify a provider explicitly.
