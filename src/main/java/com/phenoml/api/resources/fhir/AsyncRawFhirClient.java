@@ -12,6 +12,7 @@ import com.phenoml.api.core.PhenoMLException;
 import com.phenoml.api.core.PhenoMLHttpResponse;
 import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.resources.fhir.errors.BadGatewayError;
 import com.phenoml.api.resources.fhir.errors.BadRequestError;
 import com.phenoml.api.resources.fhir.errors.InternalServerError;
 import com.phenoml.api.resources.fhir.errors.NotFoundError;
@@ -22,6 +23,7 @@ import com.phenoml.api.resources.fhir.requests.FhirExecuteBundleRequest;
 import com.phenoml.api.resources.fhir.requests.FhirPatchRequest;
 import com.phenoml.api.resources.fhir.requests.FhirSearchRequest;
 import com.phenoml.api.resources.fhir.requests.FhirUpsertRequest;
+import com.phenoml.api.resources.fhir.types.ErrorResponse;
 import com.phenoml.api.resources.fhir.types.FhirBundle;
 import com.phenoml.api.resources.fhir.types.FhirResource;
 import com.phenoml.api.resources.fhir.types.FhirSearchResponse;
@@ -132,6 +134,11 @@ public class AsyncRawFhirClient {
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
+                            case 502:
+                                future.completeExceptionally(new BadGatewayError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
                         }
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
@@ -233,6 +240,11 @@ public class AsyncRawFhirClient {
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
+                            case 502:
+                                future.completeExceptionally(new BadGatewayError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
                         }
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
@@ -332,6 +344,11 @@ public class AsyncRawFhirClient {
                             case 500:
                                 future.completeExceptionally(new InternalServerError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 502:
+                                future.completeExceptionally(new BadGatewayError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
                                         response));
                                 return;
                         }
@@ -438,6 +455,11 @@ public class AsyncRawFhirClient {
                             case 500:
                                 future.completeExceptionally(new InternalServerError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 502:
+                                future.completeExceptionally(new BadGatewayError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
                                         response));
                                 return;
                         }
@@ -558,6 +580,11 @@ public class AsyncRawFhirClient {
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
+                            case 502:
+                                future.completeExceptionally(new BadGatewayError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
+                                        response));
+                                return;
                         }
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
@@ -658,6 +685,11 @@ public class AsyncRawFhirClient {
                             case 500:
                                 future.completeExceptionally(new InternalServerError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 502:
+                                future.completeExceptionally(new BadGatewayError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
                                         response));
                                 return;
                         }
