@@ -1,3 +1,15 @@
+## 3.1.0 - 2026-01-29
+* feat: rename text search method and add citations support
+* This change improves the API with better method naming and new citation capabilities for code extraction traceability.
+* Key changes:
+* Rename textSearchKeywordBased method to terminologyServerTextSearch for better clarity
+* Add citations support to extract codes with source text references and character offsets
+* Add isAncestor flag to distinguish parent codes from directly extracted codes
+* Update documentation with paid plan requirements and AMA terms notices
+* Add BadGatewayError (502) exception handling for FHIR operations
+* Improve API descriptions for better terminology server integration
+* 🌿 Generated with Fern
+
 ## 3.0.0 - 2026-01-21
 * feat: make provider field required in AgentCreateRequest
 * Update the AgentCreateRequest API to require the provider field instead of making it optional. This ensures that all agent creation requests must specify a provider explicitly.

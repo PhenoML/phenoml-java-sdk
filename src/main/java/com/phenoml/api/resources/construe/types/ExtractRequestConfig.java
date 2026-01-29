@@ -36,6 +36,8 @@ public final class ExtractRequestConfig {
 
     private final Optional<Boolean> includeInvalid;
 
+    private final Optional<Boolean> includeCitations;
+
     private final Map<String, Object> additionalProperties;
 
     private ExtractRequestConfig(
@@ -46,6 +48,7 @@ public final class ExtractRequestConfig {
             Optional<Boolean> includeRationale,
             Optional<Boolean> includeAncestors,
             Optional<Boolean> includeInvalid,
+            Optional<Boolean> includeCitations,
             Map<String, Object> additionalProperties) {
         this.chunkingMethod = chunkingMethod;
         this.maxCodesPerChunk = maxCodesPerChunk;
@@ -54,6 +57,7 @@ public final class ExtractRequestConfig {
         this.includeRationale = includeRationale;
         this.includeAncestors = includeAncestors;
         this.includeInvalid = includeInvalid;
+        this.includeCitations = includeCitations;
         this.additionalProperties = additionalProperties;
     }
 
@@ -123,6 +127,18 @@ public final class ExtractRequestConfig {
         return includeInvalid;
     }
 
+    /**
+     * @return Whether to include source text citations for each extracted code.
+     * Citations show the exact text spans (with character offsets) that led to each code.
+     * Only available when using chunking_method: &quot;sentences&quot;.
+     * The &quot;none&quot; method returns full text as one chunk (not useful for citations).
+     * LLM-based chunking (paragraphs, topics) does not support citations.
+     */
+    @JsonProperty("include_citations")
+    public Optional<Boolean> getIncludeCitations() {
+        return includeCitations;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -141,7 +157,8 @@ public final class ExtractRequestConfig {
                 && validationMethod.equals(other.validationMethod)
                 && includeRationale.equals(other.includeRationale)
                 && includeAncestors.equals(other.includeAncestors)
-                && includeInvalid.equals(other.includeInvalid);
+                && includeInvalid.equals(other.includeInvalid)
+                && includeCitations.equals(other.includeCitations);
     }
 
     @java.lang.Override
@@ -153,7 +170,8 @@ public final class ExtractRequestConfig {
                 this.validationMethod,
                 this.includeRationale,
                 this.includeAncestors,
-                this.includeInvalid);
+                this.includeInvalid,
+                this.includeCitations);
     }
 
     @java.lang.Override
@@ -181,6 +199,8 @@ public final class ExtractRequestConfig {
 
         private Optional<Boolean> includeInvalid = Optional.empty();
 
+        private Optional<Boolean> includeCitations = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -194,6 +214,7 @@ public final class ExtractRequestConfig {
             includeRationale(other.getIncludeRationale());
             includeAncestors(other.getIncludeAncestors());
             includeInvalid(other.getIncludeInvalid());
+            includeCitations(other.getIncludeCitations());
             return this;
         }
 
@@ -305,6 +326,24 @@ public final class ExtractRequestConfig {
             return this;
         }
 
+        /**
+         * <p>Whether to include source text citations for each extracted code.
+         * Citations show the exact text spans (with character offsets) that led to each code.
+         * Only available when using chunking_method: &quot;sentences&quot;.
+         * The &quot;none&quot; method returns full text as one chunk (not useful for citations).
+         * LLM-based chunking (paragraphs, topics) does not support citations.</p>
+         */
+        @JsonSetter(value = "include_citations", nulls = Nulls.SKIP)
+        public Builder includeCitations(Optional<Boolean> includeCitations) {
+            this.includeCitations = includeCitations;
+            return this;
+        }
+
+        public Builder includeCitations(Boolean includeCitations) {
+            this.includeCitations = Optional.ofNullable(includeCitations);
+            return this;
+        }
+
         public ExtractRequestConfig build() {
             return new ExtractRequestConfig(
                     chunkingMethod,
@@ -314,6 +353,7 @@ public final class ExtractRequestConfig {
                     includeRationale,
                     includeAncestors,
                     includeInvalid,
+                    includeCitations,
                     additionalProperties);
         }
     }
