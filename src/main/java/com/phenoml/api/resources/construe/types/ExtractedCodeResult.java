@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,6 +32,10 @@ public final class ExtractedCodeResult {
 
     private final Optional<String> rationale;
 
+    private final Optional<Boolean> isAncestor;
+
+    private final Optional<List<Citation>> citations;
+
     private final Map<String, Object> additionalProperties;
 
     private ExtractedCodeResult(
@@ -39,12 +44,16 @@ public final class ExtractedCodeResult {
             boolean valid,
             Optional<String> longDescription,
             Optional<String> rationale,
+            Optional<Boolean> isAncestor,
+            Optional<List<Citation>> citations,
             Map<String, Object> additionalProperties) {
         this.code = code;
         this.description = description;
         this.valid = valid;
         this.longDescription = longDescription;
         this.rationale = rationale;
+        this.isAncestor = isAncestor;
+        this.citations = citations;
         this.additionalProperties = additionalProperties;
     }
 
@@ -88,6 +97,25 @@ public final class ExtractedCodeResult {
         return rationale;
     }
 
+    /**
+     * @return Whether this code is an ancestor (parent) of an extracted code rather than directly extracted.
+     * Only present when include_ancestors is true.
+     */
+    @JsonProperty("is_ancestor")
+    public Optional<Boolean> getIsAncestor() {
+        return isAncestor;
+    }
+
+    /**
+     * @return Source text references showing where this code was found in the input.
+     * Only present when include_citations is true and chunking method supports it.
+     * Ancestor codes do not receive citations.
+     */
+    @JsonProperty("citations")
+    public Optional<List<Citation>> getCitations() {
+        return citations;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -104,12 +132,21 @@ public final class ExtractedCodeResult {
                 && description.equals(other.description)
                 && valid == other.valid
                 && longDescription.equals(other.longDescription)
-                && rationale.equals(other.rationale);
+                && rationale.equals(other.rationale)
+                && isAncestor.equals(other.isAncestor)
+                && citations.equals(other.citations);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.code, this.description, this.valid, this.longDescription, this.rationale);
+        return Objects.hash(
+                this.code,
+                this.description,
+                this.valid,
+                this.longDescription,
+                this.rationale,
+                this.isAncestor,
+                this.citations);
     }
 
     @java.lang.Override
@@ -160,6 +197,23 @@ public final class ExtractedCodeResult {
         _FinalStage rationale(Optional<String> rationale);
 
         _FinalStage rationale(String rationale);
+
+        /**
+         * <p>Whether this code is an ancestor (parent) of an extracted code rather than directly extracted.
+         * Only present when include_ancestors is true.</p>
+         */
+        _FinalStage isAncestor(Optional<Boolean> isAncestor);
+
+        _FinalStage isAncestor(Boolean isAncestor);
+
+        /**
+         * <p>Source text references showing where this code was found in the input.
+         * Only present when include_citations is true and chunking method supports it.
+         * Ancestor codes do not receive citations.</p>
+         */
+        _FinalStage citations(Optional<List<Citation>> citations);
+
+        _FinalStage citations(List<Citation> citations);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -169,6 +223,10 @@ public final class ExtractedCodeResult {
         private String description;
 
         private boolean valid;
+
+        private Optional<List<Citation>> citations = Optional.empty();
+
+        private Optional<Boolean> isAncestor = Optional.empty();
 
         private Optional<String> rationale = Optional.empty();
 
@@ -186,6 +244,8 @@ public final class ExtractedCodeResult {
             valid(other.getValid());
             longDescription(other.getLongDescription());
             rationale(other.getRationale());
+            isAncestor(other.getIsAncestor());
+            citations(other.getCitations());
             return this;
         }
 
@@ -222,6 +282,52 @@ public final class ExtractedCodeResult {
         @JsonSetter("valid")
         public _FinalStage valid(boolean valid) {
             this.valid = valid;
+            return this;
+        }
+
+        /**
+         * <p>Source text references showing where this code was found in the input.
+         * Only present when include_citations is true and chunking method supports it.
+         * Ancestor codes do not receive citations.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage citations(List<Citation> citations) {
+            this.citations = Optional.ofNullable(citations);
+            return this;
+        }
+
+        /**
+         * <p>Source text references showing where this code was found in the input.
+         * Only present when include_citations is true and chunking method supports it.
+         * Ancestor codes do not receive citations.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "citations", nulls = Nulls.SKIP)
+        public _FinalStage citations(Optional<List<Citation>> citations) {
+            this.citations = citations;
+            return this;
+        }
+
+        /**
+         * <p>Whether this code is an ancestor (parent) of an extracted code rather than directly extracted.
+         * Only present when include_ancestors is true.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage isAncestor(Boolean isAncestor) {
+            this.isAncestor = Optional.ofNullable(isAncestor);
+            return this;
+        }
+
+        /**
+         * <p>Whether this code is an ancestor (parent) of an extracted code rather than directly extracted.
+         * Only present when include_ancestors is true.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "is_ancestor", nulls = Nulls.SKIP)
+        public _FinalStage isAncestor(Optional<Boolean> isAncestor) {
+            this.isAncestor = isAncestor;
             return this;
         }
 
@@ -267,7 +373,8 @@ public final class ExtractedCodeResult {
 
         @java.lang.Override
         public ExtractedCodeResult build() {
-            return new ExtractedCodeResult(code, description, valid, longDescription, rationale, additionalProperties);
+            return new ExtractedCodeResult(
+                    code, description, valid, longDescription, rationale, isAncestor, citations, additionalProperties);
         }
     }
 }
