@@ -27,20 +27,13 @@ public final class DocumentRequest {
 
     private final String content;
 
-    private final FileType fileType;
-
     private final Map<String, Object> additionalProperties;
 
     private DocumentRequest(
-            String version,
-            Resource resource,
-            String content,
-            FileType fileType,
-            Map<String, Object> additionalProperties) {
+            String version, Resource resource, String content, Map<String, Object> additionalProperties) {
         this.version = version;
         this.resource = resource;
         this.content = content;
-        this.fileType = fileType;
         this.additionalProperties = additionalProperties;
     }
 
@@ -61,19 +54,13 @@ public final class DocumentRequest {
     }
 
     /**
-     * @return Base64 encoded file content
+     * @return Base64 encoded file content.
+     * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg).
+     * File type is auto-detected from content magic bytes.
      */
     @JsonProperty("content")
     public String getContent() {
         return content;
-    }
-
-    /**
-     * @return MIME type of the file
-     */
-    @JsonProperty("fileType")
-    public FileType getFileType() {
-        return fileType;
     }
 
     @java.lang.Override
@@ -88,15 +75,12 @@ public final class DocumentRequest {
     }
 
     private boolean equalTo(DocumentRequest other) {
-        return version.equals(other.version)
-                && resource.equals(other.resource)
-                && content.equals(other.content)
-                && fileType.equals(other.fileType);
+        return version.equals(other.version) && resource.equals(other.resource) && content.equals(other.content);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.version, this.resource, this.content, this.fileType);
+        return Objects.hash(this.version, this.resource, this.content);
     }
 
     @java.lang.Override
@@ -126,16 +110,11 @@ public final class DocumentRequest {
 
     public interface ContentStage {
         /**
-         * <p>Base64 encoded file content</p>
+         * <p>Base64 encoded file content.
+         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg).
+         * File type is auto-detected from content magic bytes.</p>
          */
-        FileTypeStage content(@NotNull String content);
-    }
-
-    public interface FileTypeStage {
-        /**
-         * <p>MIME type of the file</p>
-         */
-        _FinalStage fileType(@NotNull FileType fileType);
+        _FinalStage content(@NotNull String content);
     }
 
     public interface _FinalStage {
@@ -143,14 +122,12 @@ public final class DocumentRequest {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements VersionStage, ResourceStage, ContentStage, FileTypeStage, _FinalStage {
+    public static final class Builder implements VersionStage, ResourceStage, ContentStage, _FinalStage {
         private String version;
 
         private Resource resource;
 
         private String content;
-
-        private FileType fileType;
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -162,7 +139,6 @@ public final class DocumentRequest {
             version(other.getVersion());
             resource(other.getResource());
             content(other.getContent());
-            fileType(other.getFileType());
             return this;
         }
 
@@ -191,32 +167,24 @@ public final class DocumentRequest {
         }
 
         /**
-         * <p>Base64 encoded file content</p>
-         * <p>Base64 encoded file content</p>
+         * <p>Base64 encoded file content.
+         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg).
+         * File type is auto-detected from content magic bytes.</p>
+         * <p>Base64 encoded file content.
+         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg).
+         * File type is auto-detected from content magic bytes.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
         @JsonSetter("content")
-        public FileTypeStage content(@NotNull String content) {
+        public _FinalStage content(@NotNull String content) {
             this.content = Objects.requireNonNull(content, "content must not be null");
-            return this;
-        }
-
-        /**
-         * <p>MIME type of the file</p>
-         * <p>MIME type of the file</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("fileType")
-        public _FinalStage fileType(@NotNull FileType fileType) {
-            this.fileType = Objects.requireNonNull(fileType, "fileType must not be null");
             return this;
         }
 
         @java.lang.Override
         public DocumentRequest build() {
-            return new DocumentRequest(version, resource, content, fileType, additionalProperties);
+            return new DocumentRequest(version, resource, content, additionalProperties);
         }
     }
 
@@ -291,101 +259,6 @@ public final class DocumentRequest {
             T visitQuestionnaire();
 
             T visitQuestionnaireresponse();
-
-            T visitUnknown(String unknownType);
-        }
-    }
-
-    public static final class FileType {
-        public static final FileType IMAGE_JPG = new FileType(Value.IMAGE_JPG, "image/jpg");
-
-        public static final FileType APPLICATION_PDF = new FileType(Value.APPLICATION_PDF, "application/pdf");
-
-        public static final FileType IMAGE_JPEG = new FileType(Value.IMAGE_JPEG, "image/jpeg");
-
-        public static final FileType IMAGE_PNG = new FileType(Value.IMAGE_PNG, "image/png");
-
-        private final Value value;
-
-        private final String string;
-
-        FileType(Value value, String string) {
-            this.value = value;
-            this.string = string;
-        }
-
-        public Value getEnumValue() {
-            return value;
-        }
-
-        @java.lang.Override
-        @JsonValue
-        public String toString() {
-            return this.string;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            return (this == other) || (other instanceof FileType && this.string.equals(((FileType) other).string));
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return this.string.hashCode();
-        }
-
-        public <T> T visit(Visitor<T> visitor) {
-            switch (value) {
-                case IMAGE_JPG:
-                    return visitor.visitImageJpg();
-                case APPLICATION_PDF:
-                    return visitor.visitApplicationPdf();
-                case IMAGE_JPEG:
-                    return visitor.visitImageJpeg();
-                case IMAGE_PNG:
-                    return visitor.visitImagePng();
-                case UNKNOWN:
-                default:
-                    return visitor.visitUnknown(string);
-            }
-        }
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static FileType valueOf(String value) {
-            switch (value) {
-                case "image/jpg":
-                    return IMAGE_JPG;
-                case "application/pdf":
-                    return APPLICATION_PDF;
-                case "image/jpeg":
-                    return IMAGE_JPEG;
-                case "image/png":
-                    return IMAGE_PNG;
-                default:
-                    return new FileType(Value.UNKNOWN, value);
-            }
-        }
-
-        public enum Value {
-            APPLICATION_PDF,
-
-            IMAGE_PNG,
-
-            IMAGE_JPEG,
-
-            IMAGE_JPG,
-
-            UNKNOWN
-        }
-
-        public interface Visitor<T> {
-            T visitApplicationPdf();
-
-            T visitImagePng();
-
-            T visitImageJpeg();
-
-            T visitImageJpg();
 
             T visitUnknown(String unknownType);
         }

@@ -1,3 +1,17 @@
+## 4.0.0 - 2026-02-03
+* feat: add automatic file type detection for DocumentRequest
+* Simplify the DocumentRequest API by removing the explicit fileType parameter
+* and implementing automatic file type detection from base64 content magic bytes.
+* This improves developer experience by eliminating the need to specify file
+* types when uploading documents.
+* Key changes:
+* Remove fileType parameter from DocumentRequest constructor and builder
+* Delete FileType enum class and related visitor pattern implementation
+* Update content field documentation to specify supported formats and auto-detection
+* Simplify builder pattern by removing FileTypeStage interface
+* Update hashCode and equals methods to reflect parameter removal
+* 🌿 Generated with Fern
+
 ## 3.1.0 - 2026-01-29
 * feat: rename text search method and add citations support
 * This change improves the API with better method naming and new citation capabilities for code extraction traceability.
