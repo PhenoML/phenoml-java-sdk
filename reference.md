@@ -3432,7 +3432,6 @@ client.lang2Fhir().document(
         .version("R4")
         .resource(DocumentRequestResource.QUESTIONNAIRE)
         .content("content")
-        .fileType(DocumentRequestFileType.APPLICATION_PDF)
         .build()
 );
 ```
@@ -3465,15 +3464,11 @@ client.lang2Fhir().document(
 <dl>
 <dd>
 
-**content:** `String` — Base64 encoded file content
-    
-</dd>
-</dl>
+**content:** `String` 
 
-<dl>
-<dd>
-
-**fileType:** `DocumentRequestFileType` — MIME type of the file
+Base64 encoded file content.
+Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg).
+File type is auto-detected from content magic bytes.
     
 </dd>
 </dl>
