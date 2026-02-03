@@ -1,3 +1,14 @@
+## 4.0.0 - 2026-02-03
+* refactor: simplify DocumentRequest by auto-detecting file types
+* Remove explicit fileType parameter from DocumentRequest and replace with automatic file type detection based on content magic bytes. This streamlines the API by eliminating the need for users to specify MIME types manually.
+* Key changes:
+* Remove fileType parameter from DocumentRequest constructor and builder
+* Remove FileType enum class and all its associated methods
+* Update documentation to clarify that file type is auto-detected from content
+* Maintain support for PDF, PNG, and JPEG formats through automatic detection
+* Simplify builder pattern by removing FileTypeStage interface
+* 🌿 Generated with Fern
+
 ## 3.1.0 - 2026-01-29
 * feat: rename text search method and add citations support
 * This change improves the API with better method naming and new citation capabilities for code extraction traceability.
