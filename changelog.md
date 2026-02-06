@@ -1,3 +1,14 @@
+## 5.0.0 - 2026-02-06
+* feat: simplify profile upload API to auto-derive metadata from StructureDefinition
+* Updated the profile upload endpoint to automatically extract all metadata (id, resource type, version, url) from the FHIR StructureDefinition JSON itself, eliminating the need for separate parameters. This streamlines the API interface while ensuring consistency between the uploaded profile and its metadata.
+* Key changes:
+* Remove version and resource parameters from ProfileUploadRequest - metadata now derived from StructureDefinition
+* Update response type field from "resource" to "type" for clarity
+* Add comprehensive documentation explaining metadata derivation and usage
+* Include validation rules for duplicate profiles and built-in conflicts
+* Simplify builder pattern by removing intermediate stages for removed parameters
+* 🌿 Generated with Fern
+
 ## 4.0.0 - 2026-02-03
 * feat: add automatic file type detection for DocumentRequest
 * Simplify the DocumentRequest API by removing the explicit fileType parameter

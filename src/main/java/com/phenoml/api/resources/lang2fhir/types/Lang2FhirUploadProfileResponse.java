@@ -24,9 +24,7 @@ public final class Lang2FhirUploadProfileResponse {
 
     private final Optional<String> id;
 
-    private final Optional<String> resource;
-
-    private final Optional<String> version;
+    private final Optional<String> type;
 
     private final Optional<String> url;
 
@@ -35,14 +33,12 @@ public final class Lang2FhirUploadProfileResponse {
     private Lang2FhirUploadProfileResponse(
             Optional<String> message,
             Optional<String> id,
-            Optional<String> resource,
-            Optional<String> version,
+            Optional<String> type,
             Optional<String> url,
             Map<String, Object> additionalProperties) {
         this.message = message;
         this.id = id;
-        this.resource = resource;
-        this.version = version;
+        this.type = type;
         this.url = url;
         this.additionalProperties = additionalProperties;
     }
@@ -52,21 +48,25 @@ public final class Lang2FhirUploadProfileResponse {
         return message;
     }
 
+    /**
+     * @return The lowercase StructureDefinition id, used as the profile's unique identifier and lookup key. Pass this value as the <code>resource</code> parameter to <code>/lang2fhir/create</code> or <code>/lang2fhir/profile/json/:version/:resource</code> to use this profile.
+     */
     @JsonProperty("id")
     public Optional<String> getId() {
         return id;
     }
 
-    @JsonProperty("resource")
-    public Optional<String> getResource() {
-        return resource;
+    /**
+     * @return The FHIR resource type from the StructureDefinition
+     */
+    @JsonProperty("type")
+    public Optional<String> getType() {
+        return type;
     }
 
-    @JsonProperty("version")
-    public Optional<String> getVersion() {
-        return version;
-    }
-
+    /**
+     * @return The canonical URL from the StructureDefinition
+     */
     @JsonProperty("url")
     public Optional<String> getUrl() {
         return url;
@@ -84,16 +84,12 @@ public final class Lang2FhirUploadProfileResponse {
     }
 
     private boolean equalTo(Lang2FhirUploadProfileResponse other) {
-        return message.equals(other.message)
-                && id.equals(other.id)
-                && resource.equals(other.resource)
-                && version.equals(other.version)
-                && url.equals(other.url);
+        return message.equals(other.message) && id.equals(other.id) && type.equals(other.type) && url.equals(other.url);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.message, this.id, this.resource, this.version, this.url);
+        return Objects.hash(this.message, this.id, this.type, this.url);
     }
 
     @java.lang.Override
@@ -111,9 +107,7 @@ public final class Lang2FhirUploadProfileResponse {
 
         private Optional<String> id = Optional.empty();
 
-        private Optional<String> resource = Optional.empty();
-
-        private Optional<String> version = Optional.empty();
+        private Optional<String> type = Optional.empty();
 
         private Optional<String> url = Optional.empty();
 
@@ -125,8 +119,7 @@ public final class Lang2FhirUploadProfileResponse {
         public Builder from(Lang2FhirUploadProfileResponse other) {
             message(other.getMessage());
             id(other.getId());
-            resource(other.getResource());
-            version(other.getVersion());
+            type(other.getType());
             url(other.getUrl());
             return this;
         }
@@ -142,6 +135,9 @@ public final class Lang2FhirUploadProfileResponse {
             return this;
         }
 
+        /**
+         * <p>The lowercase StructureDefinition id, used as the profile's unique identifier and lookup key. Pass this value as the <code>resource</code> parameter to <code>/lang2fhir/create</code> or <code>/lang2fhir/profile/json/:version/:resource</code> to use this profile.</p>
+         */
         @JsonSetter(value = "id", nulls = Nulls.SKIP)
         public Builder id(Optional<String> id) {
             this.id = id;
@@ -153,28 +149,23 @@ public final class Lang2FhirUploadProfileResponse {
             return this;
         }
 
-        @JsonSetter(value = "resource", nulls = Nulls.SKIP)
-        public Builder resource(Optional<String> resource) {
-            this.resource = resource;
+        /**
+         * <p>The FHIR resource type from the StructureDefinition</p>
+         */
+        @JsonSetter(value = "type", nulls = Nulls.SKIP)
+        public Builder type(Optional<String> type) {
+            this.type = type;
             return this;
         }
 
-        public Builder resource(String resource) {
-            this.resource = Optional.ofNullable(resource);
+        public Builder type(String type) {
+            this.type = Optional.ofNullable(type);
             return this;
         }
 
-        @JsonSetter(value = "version", nulls = Nulls.SKIP)
-        public Builder version(Optional<String> version) {
-            this.version = version;
-            return this;
-        }
-
-        public Builder version(String version) {
-            this.version = Optional.ofNullable(version);
-            return this;
-        }
-
+        /**
+         * <p>The canonical URL from the StructureDefinition</p>
+         */
         @JsonSetter(value = "url", nulls = Nulls.SKIP)
         public Builder url(Optional<String> url) {
             this.url = url;
@@ -187,7 +178,7 @@ public final class Lang2FhirUploadProfileResponse {
         }
 
         public Lang2FhirUploadProfileResponse build() {
-            return new Lang2FhirUploadProfileResponse(message, id, resource, version, url, additionalProperties);
+            return new Lang2FhirUploadProfileResponse(message, id, type, url, additionalProperties);
         }
     }
 }
