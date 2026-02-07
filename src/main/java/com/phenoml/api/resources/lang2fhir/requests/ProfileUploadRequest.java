@@ -19,40 +19,17 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ProfileUploadRequest.Builder.class)
 public final class ProfileUploadRequest {
-    private final String version;
-
-    private final String resource;
-
     private final String profile;
 
     private final Map<String, Object> additionalProperties;
 
-    private ProfileUploadRequest(
-            String version, String resource, String profile, Map<String, Object> additionalProperties) {
-        this.version = version;
-        this.resource = resource;
+    private ProfileUploadRequest(String profile, Map<String, Object> additionalProperties) {
         this.profile = profile;
         this.additionalProperties = additionalProperties;
     }
 
     /**
-     * @return FHIR version that this profile implements
-     */
-    @JsonProperty("version")
-    public String getVersion() {
-        return version;
-    }
-
-    /**
-     * @return Name for the custom resource profile (will be converted to lowercase)
-     */
-    @JsonProperty("resource")
-    public String getResource() {
-        return resource;
-    }
-
-    /**
-     * @return Base64 encoded JSON string of the FHIR StructureDefinition profile
+     * @return Base64 encoded JSON string of a FHIR StructureDefinition. The profile must include id, url, type, and a snapshot with elements. All metadata (version, resource type, identifier) is derived from the StructureDefinition itself. The lowercase id from the StructureDefinition becomes the profile's lookup key.
      */
     @JsonProperty("profile")
     public String getProfile() {
@@ -71,12 +48,12 @@ public final class ProfileUploadRequest {
     }
 
     private boolean equalTo(ProfileUploadRequest other) {
-        return version.equals(other.version) && resource.equals(other.resource) && profile.equals(other.profile);
+        return profile.equals(other.profile);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.version, this.resource, this.profile);
+        return Objects.hash(this.profile);
     }
 
     @java.lang.Override
@@ -84,31 +61,17 @@ public final class ProfileUploadRequest {
         return ObjectMappers.stringify(this);
     }
 
-    public static VersionStage builder() {
+    public static ProfileStage builder() {
         return new Builder();
-    }
-
-    public interface VersionStage {
-        /**
-         * <p>FHIR version that this profile implements</p>
-         */
-        ResourceStage version(@NotNull String version);
-
-        Builder from(ProfileUploadRequest other);
-    }
-
-    public interface ResourceStage {
-        /**
-         * <p>Name for the custom resource profile (will be converted to lowercase)</p>
-         */
-        ProfileStage resource(@NotNull String resource);
     }
 
     public interface ProfileStage {
         /**
-         * <p>Base64 encoded JSON string of the FHIR StructureDefinition profile</p>
+         * <p>Base64 encoded JSON string of a FHIR StructureDefinition. The profile must include id, url, type, and a snapshot with elements. All metadata (version, resource type, identifier) is derived from the StructureDefinition itself. The lowercase id from the StructureDefinition becomes the profile's lookup key.</p>
          */
         _FinalStage profile(@NotNull String profile);
+
+        Builder from(ProfileUploadRequest other);
     }
 
     public interface _FinalStage {
@@ -116,11 +79,7 @@ public final class ProfileUploadRequest {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements VersionStage, ResourceStage, ProfileStage, _FinalStage {
-        private String version;
-
-        private String resource;
-
+    public static final class Builder implements ProfileStage, _FinalStage {
         private String profile;
 
         @JsonAnySetter
@@ -130,39 +89,13 @@ public final class ProfileUploadRequest {
 
         @java.lang.Override
         public Builder from(ProfileUploadRequest other) {
-            version(other.getVersion());
-            resource(other.getResource());
             profile(other.getProfile());
             return this;
         }
 
         /**
-         * <p>FHIR version that this profile implements</p>
-         * <p>FHIR version that this profile implements</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("version")
-        public ResourceStage version(@NotNull String version) {
-            this.version = Objects.requireNonNull(version, "version must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Name for the custom resource profile (will be converted to lowercase)</p>
-         * <p>Name for the custom resource profile (will be converted to lowercase)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("resource")
-        public ProfileStage resource(@NotNull String resource) {
-            this.resource = Objects.requireNonNull(resource, "resource must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Base64 encoded JSON string of the FHIR StructureDefinition profile</p>
-         * <p>Base64 encoded JSON string of the FHIR StructureDefinition profile</p>
+         * <p>Base64 encoded JSON string of a FHIR StructureDefinition. The profile must include id, url, type, and a snapshot with elements. All metadata (version, resource type, identifier) is derived from the StructureDefinition itself. The lowercase id from the StructureDefinition becomes the profile's lookup key.</p>
+         * <p>Base64 encoded JSON string of a FHIR StructureDefinition. The profile must include id, url, type, and a snapshot with elements. All metadata (version, resource type, identifier) is derived from the StructureDefinition itself. The lowercase id from the StructureDefinition becomes the profile's lookup key.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -174,7 +107,7 @@ public final class ProfileUploadRequest {
 
         @java.lang.Override
         public ProfileUploadRequest build() {
-            return new ProfileUploadRequest(version, resource, profile, additionalProperties);
+            return new ProfileUploadRequest(profile, additionalProperties);
         }
     }
 }
