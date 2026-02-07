@@ -91,14 +91,32 @@ public class Lang2FhirClient {
     }
 
     /**
-     * Upload a custom FHIR StructureDefinition profile for use with the lang2fhir service
+     * Upload a custom FHIR StructureDefinition profile for use with the lang2fhir service.
+     * <p>All metadata is derived from the StructureDefinition JSON itself. The lowercase <code>id</code> field
+     * from the StructureDefinition is used as the profile's unique identifier and lookup key.
+     * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
+     * <p>Uploads will be rejected if:</p>
+     * <ul>
+     * <li>A built-in US Core or R4 base profile already exists with the same id</li>
+     * <li>A custom profile with the same id has already been uploaded</li>
+     * <li>A custom profile with the same url has already been uploaded</li>
+     * </ul>
      */
     public Lang2FhirUploadProfileResponse uploadProfile(ProfileUploadRequest request) {
         return this.rawClient.uploadProfile(request).body();
     }
 
     /**
-     * Upload a custom FHIR StructureDefinition profile for use with the lang2fhir service
+     * Upload a custom FHIR StructureDefinition profile for use with the lang2fhir service.
+     * <p>All metadata is derived from the StructureDefinition JSON itself. The lowercase <code>id</code> field
+     * from the StructureDefinition is used as the profile's unique identifier and lookup key.
+     * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
+     * <p>Uploads will be rejected if:</p>
+     * <ul>
+     * <li>A built-in US Core or R4 base profile already exists with the same id</li>
+     * <li>A custom profile with the same id has already been uploaded</li>
+     * <li>A custom profile with the same url has already been uploaded</li>
+     * </ul>
      */
     public Lang2FhirUploadProfileResponse uploadProfile(ProfileUploadRequest request, RequestOptions requestOptions) {
         return this.rawClient.uploadProfile(request, requestOptions).body();

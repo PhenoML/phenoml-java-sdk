@@ -1,3 +1,16 @@
+## 4.1.0 - 2026-02-07
+* feat: add workflows field to agents and simplify FHIR profile upload
+* Enhanced agent capabilities by adding support for workflow integration and streamlined
+* FHIR profile upload process by deriving metadata from StructureDefinition JSON.
+* Key changes:
+* Add optional `workflows` field to AgentCreateRequest and AgentTemplate for exposing workflows as tools
+* Simplify ProfileUploadRequest by removing `version` and `resource` parameters
+* Update FHIR profile upload to derive metadata from StructureDefinition JSON itself
+* Use lowercase `id` from StructureDefinition as unique identifier and lookup key
+* Add comprehensive validation rules for profile uploads (duplicate id/url checks)
+* Update response model to include `type` field instead of separate resource/version fields
+* 🌿 Generated with Fern
+
 ## 4.0.0 - 2026-02-03
 * feat: add automatic file type detection for DocumentRequest
 * Simplify the DocumentRequest API by removing the explicit fileType parameter

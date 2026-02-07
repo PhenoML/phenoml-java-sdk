@@ -38,6 +38,8 @@ public final class AgentCreateRequest {
 
     private final Optional<List<String>> tools;
 
+    private final Optional<List<String>> workflows;
+
     private final Optional<List<String>> tags;
 
     private final Provider provider;
@@ -49,6 +51,7 @@ public final class AgentCreateRequest {
             Optional<String> description,
             List<String> prompts,
             Optional<List<String>> tools,
+            Optional<List<String>> workflows,
             Optional<List<String>> tags,
             Provider provider,
             Map<String, Object> additionalProperties) {
@@ -56,6 +59,7 @@ public final class AgentCreateRequest {
         this.description = description;
         this.prompts = prompts;
         this.tools = tools;
+        this.workflows = workflows;
         this.tags = tags;
         this.provider = provider;
         this.additionalProperties = additionalProperties;
@@ -94,6 +98,14 @@ public final class AgentCreateRequest {
     }
 
     /**
+     * @return Array of workflow IDs to expose as tools for this agent
+     */
+    @JsonProperty("workflows")
+    public Optional<List<String>> getWorkflows() {
+        return workflows;
+    }
+
+    /**
      * @return Tags for categorizing the agent
      */
     @JsonProperty("tags")
@@ -126,13 +138,15 @@ public final class AgentCreateRequest {
                 && description.equals(other.description)
                 && prompts.equals(other.prompts)
                 && tools.equals(other.tools)
+                && workflows.equals(other.workflows)
                 && tags.equals(other.tags)
                 && provider.equals(other.provider);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.name, this.description, this.prompts, this.tools, this.tags, this.provider);
+        return Objects.hash(
+                this.name, this.description, this.prompts, this.tools, this.workflows, this.tags, this.provider);
     }
 
     @java.lang.Override
@@ -188,6 +202,13 @@ public final class AgentCreateRequest {
         _FinalStage tools(List<String> tools);
 
         /**
+         * <p>Array of workflow IDs to expose as tools for this agent</p>
+         */
+        _FinalStage workflows(Optional<List<String>> workflows);
+
+        _FinalStage workflows(List<String> workflows);
+
+        /**
          * <p>Tags for categorizing the agent</p>
          */
         _FinalStage tags(Optional<List<String>> tags);
@@ -202,6 +223,8 @@ public final class AgentCreateRequest {
         private Provider provider;
 
         private Optional<List<String>> tags = Optional.empty();
+
+        private Optional<List<String>> workflows = Optional.empty();
 
         private Optional<List<String>> tools = Optional.empty();
 
@@ -220,6 +243,7 @@ public final class AgentCreateRequest {
             description(other.getDescription());
             prompts(other.getPrompts());
             tools(other.getTools());
+            workflows(other.getWorkflows());
             tags(other.getTags());
             provider(other.getProvider());
             return this;
@@ -268,6 +292,26 @@ public final class AgentCreateRequest {
         @JsonSetter(value = "tags", nulls = Nulls.SKIP)
         public _FinalStage tags(Optional<List<String>> tags) {
             this.tags = tags;
+            return this;
+        }
+
+        /**
+         * <p>Array of workflow IDs to expose as tools for this agent</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage workflows(List<String> workflows) {
+            this.workflows = Optional.ofNullable(workflows);
+            return this;
+        }
+
+        /**
+         * <p>Array of workflow IDs to expose as tools for this agent</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "workflows", nulls = Nulls.SKIP)
+        public _FinalStage workflows(Optional<List<String>> workflows) {
+            this.workflows = workflows;
             return this;
         }
 
@@ -344,7 +388,8 @@ public final class AgentCreateRequest {
 
         @java.lang.Override
         public AgentCreateRequest build() {
-            return new AgentCreateRequest(name, description, prompts, tools, tags, provider, additionalProperties);
+            return new AgentCreateRequest(
+                    name, description, prompts, tools, workflows, tags, provider, additionalProperties);
         }
     }
 

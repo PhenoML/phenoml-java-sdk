@@ -38,6 +38,8 @@ public final class AgentTemplate {
 
     private final Optional<List<String>> tools;
 
+    private final Optional<List<String>> workflows;
+
     private final Optional<List<String>> tags;
 
     private final Optional<Provider> provider;
@@ -50,6 +52,7 @@ public final class AgentTemplate {
             Optional<String> description,
             Optional<List<String>> prompts,
             Optional<List<String>> tools,
+            Optional<List<String>> workflows,
             Optional<List<String>> tags,
             Optional<Provider> provider,
             Map<String, Object> additionalProperties) {
@@ -58,6 +61,7 @@ public final class AgentTemplate {
         this.description = description;
         this.prompts = prompts;
         this.tools = tools;
+        this.workflows = workflows;
         this.tags = tags;
         this.provider = provider;
         this.additionalProperties = additionalProperties;
@@ -104,6 +108,14 @@ public final class AgentTemplate {
     }
 
     /**
+     * @return Array of workflow IDs exposed as tools by this agent
+     */
+    @JsonProperty("workflows")
+    public Optional<List<String>> getWorkflows() {
+        return workflows;
+    }
+
+    /**
      * @return Tags for categorizing the agent
      */
     @JsonProperty("tags")
@@ -136,13 +148,22 @@ public final class AgentTemplate {
                 && description.equals(other.description)
                 && prompts.equals(other.prompts)
                 && tools.equals(other.tools)
+                && workflows.equals(other.workflows)
                 && tags.equals(other.tags)
                 && provider.equals(other.provider);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.id, this.name, this.description, this.prompts, this.tools, this.tags, this.provider);
+        return Objects.hash(
+                this.id,
+                this.name,
+                this.description,
+                this.prompts,
+                this.tools,
+                this.workflows,
+                this.tags,
+                this.provider);
     }
 
     @java.lang.Override
@@ -166,6 +187,8 @@ public final class AgentTemplate {
 
         private Optional<List<String>> tools = Optional.empty();
 
+        private Optional<List<String>> workflows = Optional.empty();
+
         private Optional<List<String>> tags = Optional.empty();
 
         private Optional<Provider> provider = Optional.empty();
@@ -181,6 +204,7 @@ public final class AgentTemplate {
             description(other.getDescription());
             prompts(other.getPrompts());
             tools(other.getTools());
+            workflows(other.getWorkflows());
             tags(other.getTags());
             provider(other.getProvider());
             return this;
@@ -257,6 +281,20 @@ public final class AgentTemplate {
         }
 
         /**
+         * <p>Array of workflow IDs exposed as tools by this agent</p>
+         */
+        @JsonSetter(value = "workflows", nulls = Nulls.SKIP)
+        public Builder workflows(Optional<List<String>> workflows) {
+            this.workflows = workflows;
+            return this;
+        }
+
+        public Builder workflows(List<String> workflows) {
+            this.workflows = Optional.ofNullable(workflows);
+            return this;
+        }
+
+        /**
          * <p>Tags for categorizing the agent</p>
          */
         @JsonSetter(value = "tags", nulls = Nulls.SKIP)
@@ -285,7 +323,8 @@ public final class AgentTemplate {
         }
 
         public AgentTemplate build() {
-            return new AgentTemplate(id, name, description, prompts, tools, tags, provider, additionalProperties);
+            return new AgentTemplate(
+                    id, name, description, prompts, tools, workflows, tags, provider, additionalProperties);
         }
     }
 
