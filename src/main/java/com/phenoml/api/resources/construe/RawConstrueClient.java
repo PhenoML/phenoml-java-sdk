@@ -15,20 +15,25 @@ import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.construe.errors.BadRequestError;
 import com.phenoml.api.resources.construe.errors.ConflictError;
 import com.phenoml.api.resources.construe.errors.FailedDependencyError;
+import com.phenoml.api.resources.construe.errors.ForbiddenError;
 import com.phenoml.api.resources.construe.errors.InternalServerError;
 import com.phenoml.api.resources.construe.errors.NotFoundError;
 import com.phenoml.api.resources.construe.errors.NotImplementedError;
 import com.phenoml.api.resources.construe.errors.ServiceUnavailableError;
 import com.phenoml.api.resources.construe.errors.UnauthorizedError;
+import com.phenoml.api.resources.construe.requests.DeleteConstrueCodesSystemsCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.ExtractRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCodeIdRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.UploadRequest;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
+import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import com.phenoml.api.resources.construe.types.GetCodeResponse;
+import com.phenoml.api.resources.construe.types.GetCodeSystemDetailResponse;
 import com.phenoml.api.resources.construe.types.ListCodeSystemsResponse;
 import com.phenoml.api.resources.construe.types.ListCodesResponse;
 import com.phenoml.api.resources.construe.types.SemanticSearchResponse;
@@ -103,6 +108,9 @@ public class RawConstrueClient {
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 401:
                         throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 409:
                         throw new ConflictError(
@@ -234,6 +242,163 @@ public class RawConstrueClient {
                 switch (response.code()) {
                     case 401:
                         throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Returns full metadata for a single code system, including timestamps and builtin status.
+     */
+    public PhenoMLHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(String codesystem) {
+        return getCodeSystemDetail(
+                codesystem, GetConstrueCodesSystemsCodesystemRequest.builder().build());
+    }
+
+    /**
+     * Returns full metadata for a single code system, including timestamps and builtin status.
+     */
+    public PhenoMLHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(
+            String codesystem, GetConstrueCodesSystemsCodesystemRequest request) {
+        return getCodeSystemDetail(codesystem, request, null);
+    }
+
+    /**
+     * Returns full metadata for a single code system, including timestamps and builtin status.
+     */
+    public PhenoMLHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(
+            String codesystem, GetConstrueCodesSystemsCodesystemRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("construe/codes/systems")
+                .addPathSegment(codesystem);
+        if (request.getVersion().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "version", request.getVersion().get(), false);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("GET", null)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), GetCodeSystemDetailResponse.class),
+                        response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 404:
+                        throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+     * Only available on dedicated instances. Large systems may take up to a minute to delete.
+     */
+    public PhenoMLHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(String codesystem) {
+        return deleteCustomCodeSystem(
+                codesystem,
+                DeleteConstrueCodesSystemsCodesystemRequest.builder().build());
+    }
+
+    /**
+     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+     * Only available on dedicated instances. Large systems may take up to a minute to delete.
+     */
+    public PhenoMLHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(
+            String codesystem, DeleteConstrueCodesSystemsCodesystemRequest request) {
+        return deleteCustomCodeSystem(codesystem, request, null);
+    }
+
+    /**
+     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+     * Only available on dedicated instances. Large systems may take up to a minute to delete.
+     */
+    public PhenoMLHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(
+            String codesystem, DeleteConstrueCodesSystemsCodesystemRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("construe/codes/systems")
+                .addPathSegment(codesystem);
+        if (request.getVersion().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "version", request.getVersion().get(), false);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("DELETE", null)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), DeleteCodeSystemResponse.class),
+                        response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 404:
+                        throw new NotFoundError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 500:
                         throw new InternalServerError(
@@ -422,6 +587,7 @@ public class RawConstrueClient {
 
     /**
      * Performs semantic similarity search using vector embeddings.
+     * <p><strong>Availability</strong>: This endpoint works for both <strong>built-in and custom</strong> code systems.</p>
      * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
      * related codes, even when different terminology is used. The search understands meaning,
      * not just keywords.</p>
@@ -443,6 +609,7 @@ public class RawConstrueClient {
 
     /**
      * Performs semantic similarity search using vector embeddings.
+     * <p><strong>Availability</strong>: This endpoint works for both <strong>built-in and custom</strong> code systems.</p>
      * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
      * related codes, even when different terminology is used. The search understands meaning,
      * not just keywords.</p>
@@ -521,6 +688,9 @@ public class RawConstrueClient {
 
     /**
      * Performs fast full-text search over code IDs and descriptions.
+     * <p><strong>Availability</strong>: This endpoint is only available for <strong>built-in code systems</strong>.
+     * Custom code systems uploaded via <code>/construe/upload</code> are not indexed for full-text search
+     * and will return empty results. Use <code>/search/semantic</code> to search custom code systems.</p>
      * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
      * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
      * <p><strong>Features</strong>:</p>
@@ -546,6 +716,9 @@ public class RawConstrueClient {
 
     /**
      * Performs fast full-text search over code IDs and descriptions.
+     * <p><strong>Availability</strong>: This endpoint is only available for <strong>built-in code systems</strong>.
+     * Custom code systems uploaded via <code>/construe/upload</code> are not indexed for full-text search
+     * and will return empty results. Use <code>/search/semantic</code> to search custom code systems.</p>
      * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
      * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
      * <p><strong>Features</strong>:</p>

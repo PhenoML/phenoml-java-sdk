@@ -5,15 +5,19 @@ package com.phenoml.api.resources.construe;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.resources.construe.requests.DeleteConstrueCodesSystemsCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.ExtractRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCodeIdRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.UploadRequest;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
+import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import com.phenoml.api.resources.construe.types.GetCodeResponse;
+import com.phenoml.api.resources.construe.types.GetCodeSystemDetailResponse;
 import com.phenoml.api.resources.construe.types.ListCodeSystemsResponse;
 import com.phenoml.api.resources.construe.types.ListCodesResponse;
 import com.phenoml.api.resources.construe.types.SemanticSearchResponse;
@@ -87,6 +91,59 @@ public class AsyncConstrueClient {
     }
 
     /**
+     * Returns full metadata for a single code system, including timestamps and builtin status.
+     */
+    public CompletableFuture<GetCodeSystemDetailResponse> getCodeSystemDetail(String codesystem) {
+        return this.rawClient.getCodeSystemDetail(codesystem).thenApply(response -> response.body());
+    }
+
+    /**
+     * Returns full metadata for a single code system, including timestamps and builtin status.
+     */
+    public CompletableFuture<GetCodeSystemDetailResponse> getCodeSystemDetail(
+            String codesystem, GetConstrueCodesSystemsCodesystemRequest request) {
+        return this.rawClient.getCodeSystemDetail(codesystem, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Returns full metadata for a single code system, including timestamps and builtin status.
+     */
+    public CompletableFuture<GetCodeSystemDetailResponse> getCodeSystemDetail(
+            String codesystem, GetConstrueCodesSystemsCodesystemRequest request, RequestOptions requestOptions) {
+        return this.rawClient
+                .getCodeSystemDetail(codesystem, request, requestOptions)
+                .thenApply(response -> response.body());
+    }
+
+    /**
+     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+     * Only available on dedicated instances. Large systems may take up to a minute to delete.
+     */
+    public CompletableFuture<DeleteCodeSystemResponse> deleteCustomCodeSystem(String codesystem) {
+        return this.rawClient.deleteCustomCodeSystem(codesystem).thenApply(response -> response.body());
+    }
+
+    /**
+     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+     * Only available on dedicated instances. Large systems may take up to a minute to delete.
+     */
+    public CompletableFuture<DeleteCodeSystemResponse> deleteCustomCodeSystem(
+            String codesystem, DeleteConstrueCodesSystemsCodesystemRequest request) {
+        return this.rawClient.deleteCustomCodeSystem(codesystem, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+     * Only available on dedicated instances. Large systems may take up to a minute to delete.
+     */
+    public CompletableFuture<DeleteCodeSystemResponse> deleteCustomCodeSystem(
+            String codesystem, DeleteConstrueCodesSystemsCodesystemRequest request, RequestOptions requestOptions) {
+        return this.rawClient
+                .deleteCustomCodeSystem(codesystem, request, requestOptions)
+                .thenApply(response -> response.body());
+    }
+
+    /**
      * Returns a paginated list of all codes in the specified code system from the terminology server.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
@@ -147,6 +204,7 @@ public class AsyncConstrueClient {
 
     /**
      * Performs semantic similarity search using vector embeddings.
+     * <p><strong>Availability</strong>: This endpoint works for both <strong>built-in and custom</strong> code systems.</p>
      * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
      * related codes, even when different terminology is used. The search understands meaning,
      * not just keywords.</p>
@@ -168,6 +226,7 @@ public class AsyncConstrueClient {
 
     /**
      * Performs semantic similarity search using vector embeddings.
+     * <p><strong>Availability</strong>: This endpoint works for both <strong>built-in and custom</strong> code systems.</p>
      * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
      * related codes, even when different terminology is used. The search understands meaning,
      * not just keywords.</p>
@@ -191,6 +250,9 @@ public class AsyncConstrueClient {
 
     /**
      * Performs fast full-text search over code IDs and descriptions.
+     * <p><strong>Availability</strong>: This endpoint is only available for <strong>built-in code systems</strong>.
+     * Custom code systems uploaded via <code>/construe/upload</code> are not indexed for full-text search
+     * and will return empty results. Use <code>/search/semantic</code> to search custom code systems.</p>
      * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
      * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
      * <p><strong>Features</strong>:</p>
@@ -216,6 +278,9 @@ public class AsyncConstrueClient {
 
     /**
      * Performs fast full-text search over code IDs and descriptions.
+     * <p><strong>Availability</strong>: This endpoint is only available for <strong>built-in code systems</strong>.
+     * Custom code systems uploaded via <code>/construe/upload</code> are not indexed for full-text search
+     * and will return empty results. Use <code>/search/semantic</code> to search custom code systems.</p>
      * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
      * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
      * <p><strong>Features</strong>:</p>

@@ -1243,7 +1243,11 @@ client.construe().uploadCodeSystem(
 <dl>
 <dd>
 
-**name:** `String` — Name of the code system
+**name:** `String` 
+
+Name of the code system. Names are case-insensitive and stored uppercase.
+Builtin system names (e.g. ICD-10-CM, SNOMED_CT_US_LITE, LOINC, CPT, etc.) are
+reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidden.
     
 </dd>
 </dl>
@@ -1300,6 +1304,18 @@ client.construe().uploadCodeSystem(
 <dd>
 
 **defnCol:** `Optional<String>` — Optional column name containing long definitions (for CSV format)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**replace:** `Optional<Boolean>` 
+
+If true, replaces an existing code system with the same name and version.
+Builtin systems cannot be replaced; attempts to do so return HTTP 403 Forbidden.
+When false (default), uploading a duplicate returns 409 Conflict.
     
 </dd>
 </dl>
@@ -1417,6 +1433,143 @@ Returns the terminology server's catalog of available code systems, including bo
 ```java
 client.construe().listAvailableCodeSystems();
 ```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.construe.getCodeSystemDetail(codesystem) -> GetCodeSystemDetailResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns full metadata for a single code system, including timestamps and builtin status.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.construe().getCodeSystemDetail(
+    "ICD-10-CM",
+    GetConstrueCodesSystemsCodesystemRequest
+        .builder()
+        .version("2025")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**codesystem:** `String` — Code system name (e.g., "ICD-10-CM", "SNOMED_CT_US_LITE")
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `Optional<String>` — Specific version of the code system. Required if multiple versions exist.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.construe.deleteCustomCodeSystem(codesystem) -> DeleteCodeSystemResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+Only available on dedicated instances. Large systems may take up to a minute to delete.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.construe().deleteCustomCodeSystem(
+    "CUSTOM_CODES",
+    DeleteConstrueCodesSystemsCodesystemRequest
+        .builder()
+        .version("version")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**codesystem:** `String` — Code system name
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `Optional<String>` — Specific version of the code system. Required if multiple versions exist.
+    
 </dd>
 </dl>
 </dd>
@@ -1608,6 +1761,8 @@ client.construe().getASpecificCode(
 
 Performs semantic similarity search using vector embeddings.
 
+**Availability**: This endpoint works for both **built-in and custom** code systems.
+
 **When to use**: Best for natural language queries where you want to find conceptually
 related codes, even when different terminology is used. The search understands meaning,
 not just keywords.
@@ -1709,6 +1864,10 @@ client.construe().semanticSearchEmbeddingBased(
 <dd>
 
 Performs fast full-text search over code IDs and descriptions.
+
+**Availability**: This endpoint is only available for **built-in code systems**.
+Custom code systems uploaded via `/construe/upload` are not indexed for full-text search
+and will return empty results. Use `/search/semantic` to search custom code systems.
 
 **When to use**: Best for autocomplete UIs, code lookup, or when users know part of
 the code ID or specific keywords. Fast response times suitable for typeahead interfaces.

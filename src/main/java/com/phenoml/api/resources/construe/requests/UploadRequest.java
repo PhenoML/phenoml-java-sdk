@@ -39,6 +39,8 @@ public final class UploadRequest {
 
     private final Optional<String> defnCol;
 
+    private final Optional<Boolean> replace;
+
     private final Map<String, Object> additionalProperties;
 
     private UploadRequest(
@@ -50,6 +52,7 @@ public final class UploadRequest {
             Optional<String> codeCol,
             Optional<String> descCol,
             Optional<String> defnCol,
+            Optional<Boolean> replace,
             Map<String, Object> additionalProperties) {
         this.name = name;
         this.version = version;
@@ -59,11 +62,14 @@ public final class UploadRequest {
         this.codeCol = codeCol;
         this.descCol = descCol;
         this.defnCol = defnCol;
+        this.replace = replace;
         this.additionalProperties = additionalProperties;
     }
 
     /**
-     * @return Name of the code system
+     * @return Name of the code system. Names are case-insensitive and stored uppercase.
+     * Builtin system names (e.g. ICD-10-CM, SNOMED_CT_US_LITE, LOINC, CPT, etc.) are
+     * reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidden.
      */
     @JsonProperty("name")
     public String getName() {
@@ -126,6 +132,16 @@ public final class UploadRequest {
         return defnCol;
     }
 
+    /**
+     * @return If true, replaces an existing code system with the same name and version.
+     * Builtin systems cannot be replaced; attempts to do so return HTTP 403 Forbidden.
+     * When false (default), uploading a duplicate returns 409 Conflict.
+     */
+    @JsonProperty("replace")
+    public Optional<Boolean> getReplace() {
+        return replace;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -145,7 +161,8 @@ public final class UploadRequest {
                 && file.equals(other.file)
                 && codeCol.equals(other.codeCol)
                 && descCol.equals(other.descCol)
-                && defnCol.equals(other.defnCol);
+                && defnCol.equals(other.defnCol)
+                && replace.equals(other.replace);
     }
 
     @java.lang.Override
@@ -158,7 +175,8 @@ public final class UploadRequest {
                 this.file,
                 this.codeCol,
                 this.descCol,
-                this.defnCol);
+                this.defnCol,
+                this.replace);
     }
 
     @java.lang.Override
@@ -172,7 +190,9 @@ public final class UploadRequest {
 
     public interface NameStage {
         /**
-         * <p>Name of the code system</p>
+         * <p>Name of the code system. Names are case-insensitive and stored uppercase.
+         * Builtin system names (e.g. ICD-10-CM, SNOMED_CT_US_LITE, LOINC, CPT, etc.) are
+         * reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidden.</p>
          */
         VersionStage name(@NotNull String name);
 
@@ -230,6 +250,15 @@ public final class UploadRequest {
         _FinalStage defnCol(Optional<String> defnCol);
 
         _FinalStage defnCol(String defnCol);
+
+        /**
+         * <p>If true, replaces an existing code system with the same name and version.
+         * Builtin systems cannot be replaced; attempts to do so return HTTP 403 Forbidden.
+         * When false (default), uploading a duplicate returns 409 Conflict.</p>
+         */
+        _FinalStage replace(Optional<Boolean> replace);
+
+        _FinalStage replace(Boolean replace);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -241,6 +270,8 @@ public final class UploadRequest {
         private Format format;
 
         private String file;
+
+        private Optional<Boolean> replace = Optional.empty();
 
         private Optional<String> defnCol = Optional.empty();
 
@@ -265,12 +296,17 @@ public final class UploadRequest {
             codeCol(other.getCodeCol());
             descCol(other.getDescCol());
             defnCol(other.getDefnCol());
+            replace(other.getReplace());
             return this;
         }
 
         /**
-         * <p>Name of the code system</p>
-         * <p>Name of the code system</p>
+         * <p>Name of the code system. Names are case-insensitive and stored uppercase.
+         * Builtin system names (e.g. ICD-10-CM, SNOMED_CT_US_LITE, LOINC, CPT, etc.) are
+         * reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidden.</p>
+         * <p>Name of the code system. Names are case-insensitive and stored uppercase.
+         * Builtin system names (e.g. ICD-10-CM, SNOMED_CT_US_LITE, LOINC, CPT, etc.) are
+         * reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidden.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -313,6 +349,30 @@ public final class UploadRequest {
         @JsonSetter("file")
         public _FinalStage file(@NotNull String file) {
             this.file = Objects.requireNonNull(file, "file must not be null");
+            return this;
+        }
+
+        /**
+         * <p>If true, replaces an existing code system with the same name and version.
+         * Builtin systems cannot be replaced; attempts to do so return HTTP 403 Forbidden.
+         * When false (default), uploading a duplicate returns 409 Conflict.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage replace(Boolean replace) {
+            this.replace = Optional.ofNullable(replace);
+            return this;
+        }
+
+        /**
+         * <p>If true, replaces an existing code system with the same name and version.
+         * Builtin systems cannot be replaced; attempts to do so return HTTP 403 Forbidden.
+         * When false (default), uploading a duplicate returns 409 Conflict.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "replace", nulls = Nulls.SKIP)
+        public _FinalStage replace(Optional<Boolean> replace) {
+            this.replace = replace;
             return this;
         }
 
@@ -399,7 +459,7 @@ public final class UploadRequest {
         @java.lang.Override
         public UploadRequest build() {
             return new UploadRequest(
-                    name, version, revision, format, file, codeCol, descCol, defnCol, additionalProperties);
+                    name, version, revision, format, file, codeCol, descCol, defnCol, replace, additionalProperties);
         }
     }
 
