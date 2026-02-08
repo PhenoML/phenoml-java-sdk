@@ -1,3 +1,14 @@
+## 5.0.0 - 2026-02-08
+* refactor: restructure UploadRequest as discriminated union
+* Refactored the UploadRequest type from a single class to a discriminated union that separates CSV and JSON upload formats. This change improves type safety by making format-specific fields required only for the appropriate format.
+* Key changes:
+* Move UploadRequest from requests package to types package as discriminated union
+* Create new UploadRequestCsv class with required codeCol and descCol fields
+* Update client imports to use new types package location
+* Simplify documentation examples to use format-specific builders
+* Remove optional annotations from CSV-required fields
+* 🌿 Generated with Fern
+
 ## 4.2.0 - 2026-02-08
 * feat: add code system management and improve search documentation
 * Add comprehensive code system management capabilities with new endpoints for detailed metadata retrieval and custom system deletion. Enhance API documentation with clear availability notes for different endpoint types.
