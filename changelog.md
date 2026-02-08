@@ -1,3 +1,19 @@
+## 5.0.0 - 2026-02-08
+* feat: refactor code system upload API with improved type system and async support
+* This major update significantly restructures the code system upload API to use a more
+* type-safe union type approach with separate CSV and JSON upload request types. The
+* refactoring moves from a single generic UploadRequest to specialized request types
+* that better represent the different upload formats and their specific requirements.
+* Key changes:
+* Replace single UploadRequest with union type supporting UploadRequestCsv and UploadRequestJson
+* Move UploadRequest from requests package to types package for better organization
+* Add async processing support with new async parameter and status enum (processing, ready, failed)
+* Make codeCol and descCol required fields for CSV uploads (previously optional)
+* Update documentation to clarify usage patterns and async processing workflow
+* Enhance GetCodeSystemDetailResponse with comprehensive status tracking
+* Restructure client imports to use types package for UploadRequest
+* 🌿 Generated with Fern
+
 ## 4.2.0 - 2026-02-08
 * feat: add code system management and improve search documentation
 * Add comprehensive code system management capabilities with new endpoints for detailed metadata retrieval and custom system deletion. Enhance API documentation with clear availability notes for different endpoint types.
