@@ -1,3 +1,15 @@
+## 4.2.0 - 2026-02-08
+* feat: add code system management and improve search documentation
+* Add comprehensive code system management capabilities with new endpoints for detailed metadata retrieval and custom system deletion. Enhance API documentation with clear availability notes for different endpoint types.
+* Key changes:
+* Add getCodeSystemDetail endpoint to retrieve full metadata including timestamps and builtin status
+* Add deleteCustomCodeSystem endpoint for removing custom (non-builtin) code systems
+* Add replace parameter to upload request for overwriting existing systems
+* Add ForbiddenError handling for restricted operations on builtin systems
+* Update search endpoint documentation to clarify built-in vs custom system availability
+* Improve parameter descriptions with validation rules and reserved name restrictions
+* 🌿 Generated with Fern
+
 ## 4.1.0 - 2026-02-07
 * feat: add workflows field to agents and simplify FHIR profile upload
 * Enhanced agent capabilities by adding support for workflow integration and streamlined
