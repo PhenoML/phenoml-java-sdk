@@ -1,3 +1,16 @@
+## 4.3.0 - 2026-02-09
+* refactor: restructure code system upload API with union types and async processing
+* This refactor reorganizes the code system upload functionality to use a union type pattern for different upload formats (CSV and JSON) and adds asynchronous processing capabilities with status tracking.
+* Key changes:
+* Replace single UploadRequest with union type supporting CSV and JSON formats
+* Move UploadRequest from requests to types package and split into UploadRequestCsv/UploadRequestJson
+* Add async processing option with status tracking ("processing", "ready", "failed")
+* Update GetCodeSystemDetailResponse to include Status enum for tracking upload progress
+* Remove 403 error handling from FHIR provider endpoints
+* Update documentation to reflect CSV-specific requirements and async workflow
+* Simplify upload API interface while maintaining backward compatibility
+* 🌿 Generated with Fern
+
 ## 4.2.0 - 2026-02-08
 * feat: add code system management and improve search documentation
 * Add comprehensive code system management capabilities with new endpoints for detailed metadata retrieval and custom system deletion. Enhance API documentation with clear availability notes for different endpoint types.
