@@ -1,3 +1,19 @@
+## 5.0.0 - 2026-02-09
+* refactor: migrate upload request structure to union type
+* This change refactors the code system upload API to use a discriminated union
+* pattern, replacing the generic UploadRequest with format-specific variants.
+* The changes modernize the API structure and improve type safety by making
+* CSV and JSON upload requirements explicit.
+* Key changes:
+* Migrate UploadRequest from requests package to types as union type
+* Split into UploadRequestCsv and UploadRequestJson specific types
+* Make CSV column names (codeCol, descCol) required parameters
+* Add async upload support with background processing
+* Enhance status tracking with processing/ready/failed states
+* Update documentation example to use new CSV variant syntax
+* Remove 403 error handling from FHIR provider client methods
+* 🌿 Generated with Fern
+
 ## 4.2.0 - 2026-02-08
 * feat: add code system management and improve search documentation
 * Add comprehensive code system management capabilities with new endpoints for detailed metadata retrieval and custom system deletion. Enhance API documentation with clear availability notes for different endpoint types.
