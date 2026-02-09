@@ -12,7 +12,6 @@ import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemReq
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
-import com.phenoml.api.resources.construe.requests.UploadRequest;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
@@ -22,6 +21,7 @@ import com.phenoml.api.resources.construe.types.ListCodeSystemsResponse;
 import com.phenoml.api.resources.construe.types.ListCodesResponse;
 import com.phenoml.api.resources.construe.types.SemanticSearchResponse;
 import com.phenoml.api.resources.construe.types.TextSearchResponse;
+import com.phenoml.api.resources.construe.types.UploadRequest;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncConstrueClient {

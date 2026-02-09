@@ -1,3 +1,16 @@
+## 5.0.0 - 2026-02-09
+* feat: refactor upload request structure with union types and async support
+* Refactor the code system upload functionality to use union types and enhance async processing capabilities. This change improves the API structure by separating CSV and JSON upload formats into distinct types while adding new async processing features.
+* Key changes:
+* Restructure UploadRequest as a union type supporting CSV and JSON formats
+* Move UploadRequest from requests package to types package for better organization
+* Add async upload support with background processing capabilities
+* Enhance status tracking with processing/ready/failed states for code systems
+* Simplify CSV upload by making codeCol and descCol required fields
+* Add direct JSON array support to avoid base64 encoding overhead
+* Remove 403 error handling from FHIR provider client for streamlined error flow
+* 🌿 Generated with Fern
+
 ## 4.2.0 - 2026-02-08
 * feat: add code system management and improve search documentation
 * Add comprehensive code system management capabilities with new endpoints for detailed metadata retrieval and custom system deletion. Enhance API documentation with clear availability notes for different endpoint types.
