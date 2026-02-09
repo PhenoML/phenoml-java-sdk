@@ -27,10 +27,12 @@ import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCod
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemExportRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.UploadRequest;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
+import com.phenoml.api.resources.construe.types.ExportCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import com.phenoml.api.resources.construe.types.GetCodeResponse;
 import com.phenoml.api.resources.construe.types.GetCodeSystemDetailResponse;
@@ -75,10 +77,14 @@ public class AsyncRawConstrueClient {
      */
     public CompletableFuture<PhenoMLHttpResponse<ConstrueUploadCodeSystemResponse>> uploadCodeSystem(
             UploadRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("construe/upload")
-                .build();
+                .addPathSegments("construe/upload");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
@@ -87,7 +93,7 @@ public class AsyncRawConstrueClient {
             throw new PhenoMLException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json")
@@ -102,14 +108,14 @@ public class AsyncRawConstrueClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBody.string(), ConstrueUploadCodeSystemResponse.class),
+                                        responseBodyString, ConstrueUploadCodeSystemResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -146,11 +152,9 @@ public class AsyncRawConstrueClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -179,10 +183,14 @@ public class AsyncRawConstrueClient {
      */
     public CompletableFuture<PhenoMLHttpResponse<ExtractCodesResult>> extractCodes(
             ExtractRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("construe/extract")
-                .build();
+                .addPathSegments("construe/extract");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
@@ -191,7 +199,7 @@ public class AsyncRawConstrueClient {
             throw new PhenoMLException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json")
@@ -206,13 +214,13 @@ public class AsyncRawConstrueClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ExtractCodesResult.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ExtractCodesResult.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -239,11 +247,9 @@ public class AsyncRawConstrueClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -270,12 +276,16 @@ public class AsyncRawConstrueClient {
      */
     public CompletableFuture<PhenoMLHttpResponse<ListCodeSystemsResponse>> listAvailableCodeSystems(
             RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("construe/codes/systems")
-                .build();
+                .addPathSegments("construe/codes/systems");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request okhttpRequest = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("GET", null)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Accept", "application/json")
@@ -289,14 +299,13 @@ public class AsyncRawConstrueClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBody.string(), ListCodeSystemsResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ListCodeSystemsResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 401:
@@ -313,11 +322,9 @@ public class AsyncRawConstrueClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -344,6 +351,15 @@ public class AsyncRawConstrueClient {
      * Returns full metadata for a single code system, including timestamps and builtin status.
      */
     public CompletableFuture<PhenoMLHttpResponse<GetCodeSystemDetailResponse>> getCodeSystemDetail(
+            String codesystem, RequestOptions requestOptions) {
+        return getCodeSystemDetail(
+                codesystem, GetConstrueCodesSystemsCodesystemRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Returns full metadata for a single code system, including timestamps and builtin status.
+     */
+    public CompletableFuture<PhenoMLHttpResponse<GetCodeSystemDetailResponse>> getCodeSystemDetail(
             String codesystem, GetConstrueCodesSystemsCodesystemRequest request) {
         return getCodeSystemDetail(codesystem, request, null);
     }
@@ -361,6 +377,11 @@ public class AsyncRawConstrueClient {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "version", request.getVersion().get(), false);
         }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
                 .method("GET", null)
@@ -376,14 +397,14 @@ public class AsyncRawConstrueClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBody.string(), GetCodeSystemDetailResponse.class),
+                                        responseBodyString, GetCodeSystemDetailResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -410,11 +431,9 @@ public class AsyncRawConstrueClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -444,6 +463,18 @@ public class AsyncRawConstrueClient {
      * Only available on dedicated instances. Large systems may take up to a minute to delete.
      */
     public CompletableFuture<PhenoMLHttpResponse<DeleteCodeSystemResponse>> deleteCustomCodeSystem(
+            String codesystem, RequestOptions requestOptions) {
+        return deleteCustomCodeSystem(
+                codesystem,
+                DeleteConstrueCodesSystemsCodesystemRequest.builder().build(),
+                requestOptions);
+    }
+
+    /**
+     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+     * Only available on dedicated instances. Large systems may take up to a minute to delete.
+     */
+    public CompletableFuture<PhenoMLHttpResponse<DeleteCodeSystemResponse>> deleteCustomCodeSystem(
             String codesystem, DeleteConstrueCodesSystemsCodesystemRequest request) {
         return deleteCustomCodeSystem(codesystem, request, null);
     }
@@ -462,6 +493,11 @@ public class AsyncRawConstrueClient {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "version", request.getVersion().get(), false);
         }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
                 .method("DELETE", null)
@@ -477,14 +513,13 @@ public class AsyncRawConstrueClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBody.string(), DeleteCodeSystemResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteCodeSystemResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -516,11 +551,144 @@ public class AsyncRawConstrueClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
+                    return;
+                } catch (IOException e) {
+                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+            }
+        });
+        return future;
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public CompletableFuture<PhenoMLHttpResponse<ExportCodeSystemResponse>> exportCustomCodeSystem(String codesystem) {
+        return exportCustomCodeSystem(
+                codesystem,
+                GetConstrueCodesSystemsCodesystemExportRequest.builder().build());
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public CompletableFuture<PhenoMLHttpResponse<ExportCodeSystemResponse>> exportCustomCodeSystem(
+            String codesystem, RequestOptions requestOptions) {
+        return exportCustomCodeSystem(
+                codesystem,
+                GetConstrueCodesSystemsCodesystemExportRequest.builder().build(),
+                requestOptions);
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public CompletableFuture<PhenoMLHttpResponse<ExportCodeSystemResponse>> exportCustomCodeSystem(
+            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request) {
+        return exportCustomCodeSystem(codesystem, request, null);
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public CompletableFuture<PhenoMLHttpResponse<ExportCodeSystemResponse>> exportCustomCodeSystem(
+            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("construe/codes/systems")
+                .addPathSegment(codesystem)
+                .addPathSegments("export");
+        if (request.getVersion().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "version", request.getVersion().get(), false);
+        }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("GET", null)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        CompletableFuture<PhenoMLHttpResponse<ExportCodeSystemResponse>> future = new CompletableFuture<>();
+        client.newCall(okhttpRequest).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+                    if (response.isSuccessful()) {
+                        future.complete(new PhenoMLHttpResponse<>(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ExportCodeSystemResponse.class),
+                                response));
+                        return;
+                    }
+                    try {
+                        switch (response.code()) {
+                            case 400:
+                                future.completeExceptionally(new BadRequestError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 401:
+                                future.completeExceptionally(new UnauthorizedError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 403:
+                                future.completeExceptionally(new ForbiddenError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 404:
+                                future.completeExceptionally(new NotFoundError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 409:
+                                future.completeExceptionally(new ConflictError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 424:
+                                future.completeExceptionally(new FailedDependencyError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 500:
+                                future.completeExceptionally(new InternalServerError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                        }
+                    } catch (JsonProcessingException ignored) {
+                        // unable to map error response, throwing generic error
+                    }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+                    future.completeExceptionally(new PhenoMLApiException(
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -542,6 +710,16 @@ public class AsyncRawConstrueClient {
     public CompletableFuture<PhenoMLHttpResponse<ListCodesResponse>> listCodesInACodeSystem(String codesystem) {
         return listCodesInACodeSystem(
                 codesystem, GetConstrueCodesCodesystemRequest.builder().build());
+    }
+
+    /**
+     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+     */
+    public CompletableFuture<PhenoMLHttpResponse<ListCodesResponse>> listCodesInACodeSystem(
+            String codesystem, RequestOptions requestOptions) {
+        return listCodesInACodeSystem(
+                codesystem, GetConstrueCodesCodesystemRequest.builder().build(), requestOptions);
     }
 
     /**
@@ -575,6 +753,11 @@ public class AsyncRawConstrueClient {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
                 .method("GET", null)
@@ -590,13 +773,13 @@ public class AsyncRawConstrueClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ListCodesResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ListCodesResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -623,11 +806,9 @@ public class AsyncRawConstrueClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -658,6 +839,19 @@ public class AsyncRawConstrueClient {
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<GetCodeResponse>> getASpecificCode(
+            String codesystem, String codeId, RequestOptions requestOptions) {
+        return getASpecificCode(
+                codesystem,
+                codeId,
+                GetConstrueCodesCodesystemCodeIdRequest.builder().build(),
+                requestOptions);
+    }
+
+    /**
+     * Looks up a specific code in the terminology server and returns its details.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+     */
+    public CompletableFuture<PhenoMLHttpResponse<GetCodeResponse>> getASpecificCode(
             String codesystem, String codeId, GetConstrueCodesCodesystemCodeIdRequest request) {
         return getASpecificCode(codesystem, codeId, request, null);
     }
@@ -680,6 +874,11 @@ public class AsyncRawConstrueClient {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "version", request.getVersion().get(), false);
         }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
                 .method("GET", null)
@@ -695,13 +894,13 @@ public class AsyncRawConstrueClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), GetCodeResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetCodeResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -728,11 +927,9 @@ public class AsyncRawConstrueClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -792,7 +989,8 @@ public class AsyncRawConstrueClient {
                 .newBuilder()
                 .addPathSegments("construe/codes")
                 .addPathSegment(codesystem)
-                .addPathSegments("search/semantic");
+                .addPathSegments("search")
+                .addPathSegments("semantic");
         QueryStringMapper.addQueryParameter(httpUrl, "text", request.getText(), false);
         if (request.getVersion().isPresent()) {
             QueryStringMapper.addQueryParameter(
@@ -801,6 +999,11 @@ public class AsyncRawConstrueClient {
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
+        }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -817,14 +1020,13 @@ public class AsyncRawConstrueClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBody.string(), SemanticSearchResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SemanticSearchResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -851,11 +1053,9 @@ public class AsyncRawConstrueClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -927,7 +1127,8 @@ public class AsyncRawConstrueClient {
                 .newBuilder()
                 .addPathSegments("construe/codes")
                 .addPathSegment(codesystem)
-                .addPathSegments("search/text");
+                .addPathSegments("search")
+                .addPathSegments("text");
         QueryStringMapper.addQueryParameter(httpUrl, "q", request.getQ(), false);
         if (request.getVersion().isPresent()) {
             QueryStringMapper.addQueryParameter(
@@ -936,6 +1137,11 @@ public class AsyncRawConstrueClient {
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
+        }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -952,13 +1158,13 @@ public class AsyncRawConstrueClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), TextSearchResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TextSearchResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -995,11 +1201,9 @@ public class AsyncRawConstrueClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));

@@ -86,12 +86,16 @@ public final class McpServerToolCallRequest {
         @JsonSetter(value = "arguments", nulls = Nulls.SKIP)
         public Builder arguments(Map<String, Object> arguments) {
             this.arguments.clear();
-            this.arguments.putAll(arguments);
+            if (arguments != null) {
+                this.arguments.putAll(arguments);
+            }
             return this;
         }
 
         public Builder putAllArguments(Map<String, Object> arguments) {
-            this.arguments.putAll(arguments);
+            if (arguments != null) {
+                this.arguments.putAll(arguments);
+            }
             return this;
         }
 

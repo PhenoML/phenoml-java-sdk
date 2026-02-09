@@ -5,6 +5,7 @@ package com.phenoml.api.resources.fhir.requests;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -43,7 +44,7 @@ public final class FhirSearchRequest {
      * @return Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
      * Must be in the format: Patient/{uuid} or Practitioner/{uuid}
      */
-    @JsonProperty("X-Phenoml-On-Behalf-Of")
+    @JsonIgnore
     public Optional<String> getPhenomlOnBehalfOf() {
         return phenomlOnBehalfOf;
     }
@@ -52,7 +53,7 @@ public final class FhirSearchRequest {
      * @return Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
      * Multiple FHIR provider integrations can be provided as comma-separated values.
      */
-    @JsonProperty("X-Phenoml-Fhir-Provider")
+    @JsonIgnore
     public Optional<String> getPhenomlFhirProvider() {
         return phenomlFhirProvider;
     }
@@ -126,7 +127,6 @@ public final class FhirSearchRequest {
          * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
          * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
          */
-        @JsonSetter(value = "X-Phenoml-On-Behalf-Of", nulls = Nulls.SKIP)
         public Builder phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf) {
             this.phenomlOnBehalfOf = phenomlOnBehalfOf;
             return this;
@@ -141,7 +141,6 @@ public final class FhirSearchRequest {
          * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
          * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
          */
-        @JsonSetter(value = "X-Phenoml-Fhir-Provider", nulls = Nulls.SKIP)
         public Builder phenomlFhirProvider(Optional<String> phenomlFhirProvider) {
             this.phenomlFhirProvider = phenomlFhirProvider;
             return this;

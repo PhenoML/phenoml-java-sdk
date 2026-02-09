@@ -25,9 +25,11 @@ import com.phenoml.api.resources.fhir.requests.FhirSearchRequest;
 import com.phenoml.api.resources.fhir.requests.FhirUpsertRequest;
 import com.phenoml.api.resources.fhir.types.ErrorResponse;
 import com.phenoml.api.resources.fhir.types.FhirBundle;
+import com.phenoml.api.resources.fhir.types.FhirPatchRequestBodyItem;
 import com.phenoml.api.resources.fhir.types.FhirResource;
 import com.phenoml.api.resources.fhir.types.FhirSearchResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -62,6 +64,15 @@ public class AsyncRawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirSearchResponse>> search(
+            String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
+        return search(fhirProviderId, fhirPath, FhirSearchRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
+     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+     */
+    public CompletableFuture<PhenoMLHttpResponse<FhirSearchResponse>> search(
             String fhirProviderId, String fhirPath, FhirSearchRequest request) {
         return search(fhirProviderId, fhirPath, request, null);
     }
@@ -81,6 +92,11 @@ public class AsyncRawFhirClient {
         if (request.getQueryParameters().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "query_parameters", request.getQueryParameters().get(), false);
+        }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -105,13 +121,13 @@ public class AsyncRawFhirClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirSearchResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirSearchResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -143,11 +159,9 @@ public class AsyncRawFhirClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -167,6 +181,26 @@ public class AsyncRawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirResource>> create(
+            String fhirProviderId, String fhirPath, FhirResource body) {
+        return create(
+                fhirProviderId, fhirPath, FhirCreateRequest.builder().body(body).build());
+    }
+
+    /**
+     * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
+     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+     */
+    public CompletableFuture<PhenoMLHttpResponse<FhirResource>> create(
+            String fhirProviderId, String fhirPath, FhirResource body, RequestOptions requestOptions) {
+        return create(
+                fhirProviderId, fhirPath, FhirCreateRequest.builder().body(body).build(), requestOptions);
+    }
+
+    /**
+     * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
+     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+     */
+    public CompletableFuture<PhenoMLHttpResponse<FhirResource>> create(
             String fhirProviderId, String fhirPath, FhirCreateRequest request) {
         return create(fhirProviderId, fhirPath, request, null);
     }
@@ -177,13 +211,17 @@ public class AsyncRawFhirClient {
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirResource>> create(
             String fhirProviderId, String fhirPath, FhirCreateRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
                 .addPathSegment(fhirProviderId)
                 .addPathSegments("fhir")
-                .addPathSegment(fhirPath)
-                .build();
+                .addPathSegment(fhirPath);
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
@@ -193,7 +231,7 @@ public class AsyncRawFhirClient {
             throw new RuntimeException(e);
         }
         Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/fhir+json")
@@ -216,13 +254,12 @@ public class AsyncRawFhirClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirResource.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirResource.class), response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -249,11 +286,9 @@ public class AsyncRawFhirClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -273,6 +308,26 @@ public class AsyncRawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirResource>> upsert(
+            String fhirProviderId, String fhirPath, FhirResource body) {
+        return upsert(
+                fhirProviderId, fhirPath, FhirUpsertRequest.builder().body(body).build());
+    }
+
+    /**
+     * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
+     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+     */
+    public CompletableFuture<PhenoMLHttpResponse<FhirResource>> upsert(
+            String fhirProviderId, String fhirPath, FhirResource body, RequestOptions requestOptions) {
+        return upsert(
+                fhirProviderId, fhirPath, FhirUpsertRequest.builder().body(body).build(), requestOptions);
+    }
+
+    /**
+     * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
+     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+     */
+    public CompletableFuture<PhenoMLHttpResponse<FhirResource>> upsert(
             String fhirProviderId, String fhirPath, FhirUpsertRequest request) {
         return upsert(fhirProviderId, fhirPath, request, null);
     }
@@ -283,13 +338,17 @@ public class AsyncRawFhirClient {
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirResource>> upsert(
             String fhirProviderId, String fhirPath, FhirUpsertRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
                 .addPathSegment(fhirProviderId)
                 .addPathSegments("fhir")
-                .addPathSegment(fhirPath)
-                .build();
+                .addPathSegment(fhirPath);
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
@@ -299,7 +358,7 @@ public class AsyncRawFhirClient {
             throw new RuntimeException(e);
         }
         Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("PUT", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/fhir+json")
@@ -322,13 +381,12 @@ public class AsyncRawFhirClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirResource.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirResource.class), response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -355,11 +413,9 @@ public class AsyncRawFhirClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -387,6 +443,15 @@ public class AsyncRawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<Map<String, Object>>> delete(
+            String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
+        return delete(fhirProviderId, fhirPath, FhirDeleteRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Deletes a FHIR resource from the specified provider.
+     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+     */
+    public CompletableFuture<PhenoMLHttpResponse<Map<String, Object>>> delete(
             String fhirProviderId, String fhirPath, FhirDeleteRequest request) {
         return delete(fhirProviderId, fhirPath, request, null);
     }
@@ -397,15 +462,19 @@ public class AsyncRawFhirClient {
      */
     public CompletableFuture<PhenoMLHttpResponse<Map<String, Object>>> delete(
             String fhirProviderId, String fhirPath, FhirDeleteRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
                 .addPathSegment(fhirProviderId)
                 .addPathSegments("fhir")
-                .addPathSegment(fhirPath)
-                .build();
+                .addPathSegment(fhirPath);
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("DELETE", null)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Accept", "application/json");
@@ -427,14 +496,14 @@ public class AsyncRawFhirClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBody.string(), new TypeReference<Map<String, Object>>() {}),
+                                        responseBodyString, new TypeReference<Map<String, Object>>() {}),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -466,11 +535,9 @@ public class AsyncRawFhirClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -483,6 +550,41 @@ public class AsyncRawFhirClient {
             }
         });
         return future;
+    }
+
+    /**
+     * Partially updates a FHIR resource on the specified provider using JSON Patch operations as defined in RFC 6902.
+     * <p>The request body should contain an array of JSON Patch operations. Each operation specifies:</p>
+     * <ul>
+     * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
+     * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
+     * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
+     * </ul>
+     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+     */
+    public CompletableFuture<PhenoMLHttpResponse<FhirResource>> patch(
+            String fhirProviderId, String fhirPath, List<FhirPatchRequestBodyItem> body) {
+        return patch(
+                fhirProviderId, fhirPath, FhirPatchRequest.builder().body(body).build());
+    }
+
+    /**
+     * Partially updates a FHIR resource on the specified provider using JSON Patch operations as defined in RFC 6902.
+     * <p>The request body should contain an array of JSON Patch operations. Each operation specifies:</p>
+     * <ul>
+     * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
+     * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
+     * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
+     * </ul>
+     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+     */
+    public CompletableFuture<PhenoMLHttpResponse<FhirResource>> patch(
+            String fhirProviderId,
+            String fhirPath,
+            List<FhirPatchRequestBodyItem> body,
+            RequestOptions requestOptions) {
+        return patch(
+                fhirProviderId, fhirPath, FhirPatchRequest.builder().body(body).build(), requestOptions);
     }
 
     /**
@@ -512,13 +614,17 @@ public class AsyncRawFhirClient {
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirResource>> patch(
             String fhirProviderId, String fhirPath, FhirPatchRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
                 .addPathSegment(fhirProviderId)
                 .addPathSegments("fhir")
-                .addPathSegment(fhirPath)
-                .build();
+                .addPathSegment(fhirPath);
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
@@ -528,7 +634,7 @@ public class AsyncRawFhirClient {
             throw new RuntimeException(e);
         }
         Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("PATCH", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json-patch+json")
@@ -551,13 +657,12 @@ public class AsyncRawFhirClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirResource.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirResource.class), response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -589,11 +694,9 @@ public class AsyncRawFhirClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -613,6 +716,27 @@ public class AsyncRawFhirClient {
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
+    public CompletableFuture<PhenoMLHttpResponse<FhirBundle>> executeBundle(String fhirProviderId, FhirBundle body) {
+        return executeBundle(
+                fhirProviderId, FhirExecuteBundleRequest.builder().body(body).build());
+    }
+
+    /**
+     * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
+     * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+     */
+    public CompletableFuture<PhenoMLHttpResponse<FhirBundle>> executeBundle(
+            String fhirProviderId, FhirBundle body, RequestOptions requestOptions) {
+        return executeBundle(
+                fhirProviderId, FhirExecuteBundleRequest.builder().body(body).build(), requestOptions);
+    }
+
+    /**
+     * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
+     * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+     */
     public CompletableFuture<PhenoMLHttpResponse<FhirBundle>> executeBundle(
             String fhirProviderId, FhirExecuteBundleRequest request) {
         return executeBundle(fhirProviderId, request, null);
@@ -625,12 +749,16 @@ public class AsyncRawFhirClient {
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirBundle>> executeBundle(
             String fhirProviderId, FhirExecuteBundleRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
                 .addPathSegment(fhirProviderId)
-                .addPathSegments("fhir")
-                .build();
+                .addPathSegments("fhir");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
@@ -640,7 +768,7 @@ public class AsyncRawFhirClient {
             throw new RuntimeException(e);
         }
         Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/fhir+json")
@@ -663,13 +791,12 @@ public class AsyncRawFhirClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirBundle.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirBundle.class), response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -696,11 +823,9 @@ public class AsyncRawFhirClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));

@@ -44,6 +44,13 @@ public class WorkflowsClient {
     /**
      * Retrieves all workflow definitions for the authenticated user
      */
+    public ListWorkflowsResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
+    }
+
+    /**
+     * Retrieves all workflow definitions for the authenticated user
+     */
     public ListWorkflowsResponse list(WorkflowsListRequest request) {
         return this.rawClient.list(request).body();
     }
@@ -74,6 +81,13 @@ public class WorkflowsClient {
      */
     public WorkflowsGetResponse get(String id) {
         return this.rawClient.get(id).body();
+    }
+
+    /**
+     * Retrieves a workflow definition by its ID
+     */
+    public WorkflowsGetResponse get(String id, RequestOptions requestOptions) {
+        return this.rawClient.get(id, requestOptions).body();
     }
 
     /**

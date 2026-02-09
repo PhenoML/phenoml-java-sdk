@@ -86,12 +86,16 @@ public final class ExecuteWorkflowRequest {
         @JsonSetter(value = "input_data", nulls = Nulls.SKIP)
         public Builder inputData(Map<String, Object> inputData) {
             this.inputData.clear();
-            this.inputData.putAll(inputData);
+            if (inputData != null) {
+                this.inputData.putAll(inputData);
+            }
             return this;
         }
 
         public Builder putAllInputData(Map<String, Object> inputData) {
-            this.inputData.putAll(inputData);
+            if (inputData != null) {
+                this.inputData.putAll(inputData);
+            }
             return this;
         }
 

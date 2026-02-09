@@ -284,7 +284,9 @@ public final class CreateSummaryTemplateRequest {
          */
         @java.lang.Override
         public _FinalStage addAllTargetResources(List<String> targetResources) {
-            this.targetResources.addAll(targetResources);
+            if (targetResources != null) {
+                this.targetResources.addAll(targetResources);
+            }
             return this;
         }
 
@@ -305,7 +307,9 @@ public final class CreateSummaryTemplateRequest {
         @JsonSetter(value = "target_resources", nulls = Nulls.SKIP)
         public _FinalStage targetResources(List<String> targetResources) {
             this.targetResources.clear();
-            this.targetResources.addAll(targetResources);
+            if (targetResources != null) {
+                this.targetResources.addAll(targetResources);
+            }
             return this;
         }
 

@@ -85,6 +85,13 @@ public class AsyncPromptsClient {
     /**
      * Updates an existing prompt
      */
+    public CompletableFuture<AgentPromptsResponse> update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Updates an existing prompt
+     */
     public CompletableFuture<AgentPromptsResponse> update(String id, AgentPromptsUpdateRequest request) {
         return this.rawClient.update(id, request).thenApply(response -> response.body());
     }

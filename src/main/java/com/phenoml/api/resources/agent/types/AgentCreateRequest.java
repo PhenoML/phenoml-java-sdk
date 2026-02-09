@@ -341,7 +341,9 @@ public final class AgentCreateRequest {
          */
         @java.lang.Override
         public _FinalStage addAllPrompts(List<String> prompts) {
-            this.prompts.addAll(prompts);
+            if (prompts != null) {
+                this.prompts.addAll(prompts);
+            }
             return this;
         }
 
@@ -362,7 +364,9 @@ public final class AgentCreateRequest {
         @JsonSetter(value = "prompts", nulls = Nulls.SKIP)
         public _FinalStage prompts(List<String> prompts) {
             this.prompts.clear();
-            this.prompts.addAll(prompts);
+            if (prompts != null) {
+                this.prompts.addAll(prompts);
+            }
             return this;
         }
 

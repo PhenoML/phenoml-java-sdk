@@ -117,7 +117,9 @@ public final class ExtractCodesResult {
 
         @java.lang.Override
         public _FinalStage addAllCodes(List<ExtractedCodeResult> codes) {
-            this.codes.addAll(codes);
+            if (codes != null) {
+                this.codes.addAll(codes);
+            }
             return this;
         }
 
@@ -131,7 +133,9 @@ public final class ExtractCodesResult {
         @JsonSetter(value = "codes", nulls = Nulls.SKIP)
         public _FinalStage codes(List<ExtractedCodeResult> codes) {
             this.codes.clear();
-            this.codes.addAll(codes);
+            if (codes != null) {
+                this.codes.addAll(codes);
+            }
             return this;
         }
 

@@ -199,7 +199,9 @@ public final class ListCodesResponse {
 
         @java.lang.Override
         public _FinalStage addAllCodes(List<CodeResponse> codes) {
-            this.codes.addAll(codes);
+            if (codes != null) {
+                this.codes.addAll(codes);
+            }
             return this;
         }
 
@@ -213,7 +215,9 @@ public final class ListCodesResponse {
         @JsonSetter(value = "codes", nulls = Nulls.SKIP)
         public _FinalStage codes(List<CodeResponse> codes) {
             this.codes.clear();
-            this.codes.addAll(codes);
+            if (codes != null) {
+                this.codes.addAll(codes);
+            }
             return this;
         }
 

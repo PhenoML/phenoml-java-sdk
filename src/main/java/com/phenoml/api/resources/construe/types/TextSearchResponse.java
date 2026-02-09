@@ -163,7 +163,9 @@ public final class TextSearchResponse {
          */
         @java.lang.Override
         public _FinalStage addAllResults(List<TextSearchResult> results) {
-            this.results.addAll(results);
+            if (results != null) {
+                this.results.addAll(results);
+            }
             return this;
         }
 
@@ -184,7 +186,9 @@ public final class TextSearchResponse {
         @JsonSetter(value = "results", nulls = Nulls.SKIP)
         public _FinalStage results(List<TextSearchResult> results) {
             this.results.clear();
-            this.results.addAll(results);
+            if (results != null) {
+                this.results.addAll(results);
+            }
             return this;
         }
 

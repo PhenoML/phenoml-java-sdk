@@ -29,8 +29,6 @@ import com.phenoml.api.resources.workflows.types.WorkflowsDeleteResponse;
 import com.phenoml.api.resources.workflows.types.WorkflowsGetResponse;
 import com.phenoml.api.resources.workflows.types.WorkflowsUpdateResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -60,6 +58,13 @@ public class AsyncRawWorkflowsClient {
     /**
      * Retrieves all workflow definitions for the authenticated user
      */
+    public CompletableFuture<PhenoMLHttpResponse<ListWorkflowsResponse>> list(RequestOptions requestOptions) {
+        return list(WorkflowsListRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Retrieves all workflow definitions for the authenticated user
+     */
     public CompletableFuture<PhenoMLHttpResponse<ListWorkflowsResponse>> list(WorkflowsListRequest request) {
         return list(request, null);
     }
@@ -76,6 +81,11 @@ public class AsyncRawWorkflowsClient {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "verbose", request.getVerbose().get(), false);
         }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
                 .method("GET", null)
@@ -91,13 +101,13 @@ public class AsyncRawWorkflowsClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ListWorkflowsResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ListWorkflowsResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 401:
@@ -119,11 +129,9 @@ public class AsyncRawWorkflowsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -157,18 +165,15 @@ public class AsyncRawWorkflowsClient {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "verbose", request.getVerbose().get(), false);
         }
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("name", request.getName());
-        properties.put("workflow_instructions", request.getWorkflowInstructions());
-        properties.put("sample_data", request.getSampleData());
-        properties.put("fhir_provider_id", request.getFhirProviderId());
-        if (request.getDynamicGeneration().isPresent()) {
-            properties.put("dynamic_generation", request.getDynamicGeneration());
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
         }
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(properties), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -188,14 +193,13 @@ public class AsyncRawWorkflowsClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBody.string(), CreateWorkflowResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, CreateWorkflowResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -222,11 +226,9 @@ public class AsyncRawWorkflowsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -251,6 +253,13 @@ public class AsyncRawWorkflowsClient {
     /**
      * Retrieves a workflow definition by its ID
      */
+    public CompletableFuture<PhenoMLHttpResponse<WorkflowsGetResponse>> get(String id, RequestOptions requestOptions) {
+        return get(id, WorkflowsGetRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Retrieves a workflow definition by its ID
+     */
     public CompletableFuture<PhenoMLHttpResponse<WorkflowsGetResponse>> get(String id, WorkflowsGetRequest request) {
         return get(id, request, null);
     }
@@ -268,6 +277,11 @@ public class AsyncRawWorkflowsClient {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "verbose", request.getVerbose().get(), false);
         }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
                 .method("GET", null)
@@ -283,13 +297,13 @@ public class AsyncRawWorkflowsClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), WorkflowsGetResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, WorkflowsGetResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 401:
@@ -316,11 +330,9 @@ public class AsyncRawWorkflowsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -356,18 +368,15 @@ public class AsyncRawWorkflowsClient {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "verbose", request.getVerbose().get(), false);
         }
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("name", request.getName());
-        properties.put("workflow_instructions", request.getWorkflowInstructions());
-        properties.put("sample_data", request.getSampleData());
-        properties.put("fhir_provider_id", request.getFhirProviderId());
-        if (request.getDynamicGeneration().isPresent()) {
-            properties.put("dynamic_generation", request.getDynamicGeneration());
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
         }
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(properties), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -387,14 +396,13 @@ public class AsyncRawWorkflowsClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBody.string(), WorkflowsUpdateResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, WorkflowsUpdateResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -426,11 +434,9 @@ public class AsyncRawWorkflowsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -457,13 +463,17 @@ public class AsyncRawWorkflowsClient {
      */
     public CompletableFuture<PhenoMLHttpResponse<WorkflowsDeleteResponse>> delete(
             String id, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("workflows")
-                .addPathSegment(id)
-                .build();
+                .addPathSegment(id);
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request okhttpRequest = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("DELETE", null)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Accept", "application/json")
@@ -477,14 +487,13 @@ public class AsyncRawWorkflowsClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBody.string(), WorkflowsDeleteResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, WorkflowsDeleteResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 401:
@@ -511,11 +520,9 @@ public class AsyncRawWorkflowsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
@@ -543,12 +550,16 @@ public class AsyncRawWorkflowsClient {
      */
     public CompletableFuture<PhenoMLHttpResponse<ExecuteWorkflowResponse>> execute(
             String id, ExecuteWorkflowRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("workflows")
                 .addPathSegment(id)
-                .addPathSegments("execute")
-                .build();
+                .addPathSegments("execute");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
@@ -557,7 +568,7 @@ public class AsyncRawWorkflowsClient {
             throw new PhenoMLException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json")
@@ -572,14 +583,13 @@ public class AsyncRawWorkflowsClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBody.string(), ExecuteWorkflowResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ExecuteWorkflowResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -611,11 +621,9 @@ public class AsyncRawWorkflowsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenoMLApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));

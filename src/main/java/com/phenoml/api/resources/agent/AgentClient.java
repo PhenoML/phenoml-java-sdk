@@ -64,6 +64,13 @@ public class AgentClient {
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
+    public AgentListResponse list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).body();
+    }
+
+    /**
+     * Retrieves a list of PhenoAgents belonging to the authenticated user
+     */
     public AgentListResponse list(AgentListRequest request) {
         return this.rawClient.list(request).body();
     }

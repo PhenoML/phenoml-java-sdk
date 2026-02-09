@@ -65,6 +65,13 @@ public class AsyncAgentClient {
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
+    public CompletableFuture<AgentListResponse> list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieves a list of PhenoAgents belonging to the authenticated user
+     */
     public CompletableFuture<AgentListResponse> list(AgentListRequest request) {
         return this.rawClient.list(request).thenApply(response -> response.body());
     }

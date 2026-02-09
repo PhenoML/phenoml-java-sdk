@@ -45,6 +45,13 @@ public class AsyncWorkflowsClient {
     /**
      * Retrieves all workflow definitions for the authenticated user
      */
+    public CompletableFuture<ListWorkflowsResponse> list(RequestOptions requestOptions) {
+        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieves all workflow definitions for the authenticated user
+     */
     public CompletableFuture<ListWorkflowsResponse> list(WorkflowsListRequest request) {
         return this.rawClient.list(request).thenApply(response -> response.body());
     }
@@ -76,6 +83,13 @@ public class AsyncWorkflowsClient {
      */
     public CompletableFuture<WorkflowsGetResponse> get(String id) {
         return this.rawClient.get(id).thenApply(response -> response.body());
+    }
+
+    /**
+     * Retrieves a workflow definition by its ID
+     */
+    public CompletableFuture<WorkflowsGetResponse> get(String id, RequestOptions requestOptions) {
+        return this.rawClient.get(id, requestOptions).thenApply(response -> response.body());
     }
 
     /**

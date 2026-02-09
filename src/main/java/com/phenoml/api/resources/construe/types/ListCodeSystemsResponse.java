@@ -81,7 +81,9 @@ public final class ListCodeSystemsResponse {
         @JsonSetter(value = "systems", nulls = Nulls.SKIP)
         public Builder systems(List<CodeSystemDetails> systems) {
             this.systems.clear();
-            this.systems.addAll(systems);
+            if (systems != null) {
+                this.systems.addAll(systems);
+            }
             return this;
         }
 
@@ -91,7 +93,9 @@ public final class ListCodeSystemsResponse {
         }
 
         public Builder addAllSystems(List<CodeSystemDetails> systems) {
-            this.systems.addAll(systems);
+            if (systems != null) {
+                this.systems.addAll(systems);
+            }
             return this;
         }
 

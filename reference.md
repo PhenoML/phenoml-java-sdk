@@ -31,13 +31,11 @@ client.agent().create(
     AgentCreateRequest
         .builder()
         .name("name")
-        .prompts(
-            new ArrayList<String>(
-                Arrays.asList("prompt_123", "prompt_456")
-            )
-        )
         .provider(
             AgentCreateRequestProvider.of("provider")
+        )
+        .prompts(
+            Arrays.asList("prompt_123", "prompt_456")
         )
         .build()
 );
@@ -212,13 +210,11 @@ client.agent().update(
     AgentCreateRequest
         .builder()
         .name("name")
-        .prompts(
-            new ArrayList<String>(
-                Arrays.asList("prompt_123", "prompt_456")
-            )
-        )
         .provider(
             AgentCreateRequestProvider.of("provider")
+        )
+        .prompts(
+            Arrays.asList("prompt_123", "prompt_456")
         )
         .build()
 );
@@ -339,26 +335,24 @@ Patches an existing agent's configuration
 ```java
 client.agent().patch(
     "id",
-    new ArrayList<JsonPatchOperation>(
-        Arrays.asList(
-            JsonPatchOperation
-                .builder()
-                .op(JsonPatchOperationOp.REPLACE)
-                .path("/name")
-                .value("Updated Agent Name")
-                .build(),
-            JsonPatchOperation
-                .builder()
-                .op(JsonPatchOperationOp.ADD)
-                .path("/tags/-")
-                .value("new-tag")
-                .build(),
-            JsonPatchOperation
-                .builder()
-                .op(JsonPatchOperationOp.REMOVE)
-                .path("/description")
-                .build()
-        )
+    Arrays.asList(
+        JsonPatchOperation
+            .builder()
+            .op(JsonPatchOperationOp.REPLACE)
+            .path("/name")
+            .value("Updated Agent Name")
+            .build(),
+        JsonPatchOperation
+            .builder()
+            .op(JsonPatchOperationOp.ADD)
+            .path("/tags/-")
+            .value("new-tag")
+            .build(),
+        JsonPatchOperation
+            .builder()
+            .op(JsonPatchOperationOp.REMOVE)
+            .path("/description")
+            .build()
     )
 );
 ```
@@ -966,26 +960,24 @@ Patches an existing prompt
 ```java
 client.agent().prompts().patch(
     "id",
-    new ArrayList<JsonPatchOperation>(
-        Arrays.asList(
-            JsonPatchOperation
-                .builder()
-                .op(JsonPatchOperationOp.REPLACE)
-                .path("/name")
-                .value("Updated Agent Name")
-                .build(),
-            JsonPatchOperation
-                .builder()
-                .op(JsonPatchOperationOp.ADD)
-                .path("/tags/-")
-                .value("new-tag")
-                .build(),
-            JsonPatchOperation
-                .builder()
-                .op(JsonPatchOperationOp.REMOVE)
-                .path("/description")
-                .build()
-        )
+    Arrays.asList(
+        JsonPatchOperation
+            .builder()
+            .op(JsonPatchOperationOp.REPLACE)
+            .path("/name")
+            .value("Updated Agent Name")
+            .build(),
+        JsonPatchOperation
+            .builder()
+            .op(JsonPatchOperationOp.ADD)
+            .path("/tags/-")
+            .value("new-tag")
+            .build(),
+        JsonPatchOperation
+            .builder()
+            .op(JsonPatchOperationOp.REMOVE)
+            .path("/description")
+            .build()
     )
 );
 ```
@@ -1225,8 +1217,7 @@ client.construe().uploadCodeSystem(
         .builder()
         .name("CUSTOM_CODES")
         .version("1.0")
-        .format(UploadRequestFormat.JSON)
-        .file("file")
+        .format(UploadRequestFormat.CSV)
         .build()
 );
 ```
@@ -1263,7 +1254,7 @@ reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidd
 <dl>
 <dd>
 
-**revision:** `Optional<Float>` — Optional revision number
+**revision:** `Optional<Double>` — Optional revision number
     
 </dd>
 </dl>
@@ -1271,7 +1262,7 @@ reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidd
 <dl>
 <dd>
 
-**format:** `UploadRequestFormat` — Format of the uploaded file
+**format:** `UploadRequestFormat` — Upload format
     
 </dd>
 </dl>
@@ -1279,7 +1270,11 @@ reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidd
 <dl>
 <dd>
 
-**file:** `String` — The file contents as a base64-encoded string
+**file:** `Optional<String>` 
+
+The file contents as a base64-encoded string.
+For CSV format, this is the CSV file contents.
+For JSON format, this is a base64-encoded JSON array; prefer using 'codes' instead.
     
 </dd>
 </dl>
@@ -1311,11 +1306,35 @@ reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidd
 <dl>
 <dd>
 
+**codes:** `Optional<List<CodeResponse>>` 
+
+The codes to upload as a JSON array (JSON format only).
+This is the preferred way to upload JSON codes, as it avoids unnecessary base64 encoding.
+If both 'codes' and 'file' are provided, 'codes' takes precedence.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **replace:** `Optional<Boolean>` 
 
 If true, replaces an existing code system with the same name and version.
 Builtin systems cannot be replaced; attempts to do so return HTTP 403 Forbidden.
 When false (default), uploading a duplicate returns 409 Conflict.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**async:** `Optional<Boolean>` 
+
+If true, returns 202 Accepted immediately after validation and starts processing
+in the background. Poll GET /construe/codes/systems/{name}?version={version} to
+check when status transitions from "processing" to "ready" or "failed".
     
 </dd>
 </dl>
@@ -1542,6 +1561,76 @@ Only available on dedicated instances. Large systems may take up to a minute to 
 client.construe().deleteCustomCodeSystem(
     "CUSTOM_CODES",
     DeleteConstrueCodesSystemsCodesystemRequest
+        .builder()
+        .version("version")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**codesystem:** `String` — Code system name
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `Optional<String>` — Specific version of the code system. Required if multiple versions exist.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.construe.exportCustomCodeSystem(codesystem) -> ExportCodeSystemResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+The exported file can be re-uploaded directly via POST /construe/upload with format "json".
+Only available on dedicated instances. Builtin systems cannot be exported.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.construe().exportCustomCodeSystem(
+    "CUSTOM_CODES",
+    GetConstrueCodesSystemsCodesystemExportRequest
         .builder()
         .version("version")
         .build()
@@ -2460,15 +2549,13 @@ client.fhir().patch(
     FhirPatchRequest
         .builder()
         .body(
-            new ArrayList<FhirPatchRequestBodyItem>(
-                Arrays.asList(
-                    FhirPatchRequestBodyItem
-                        .builder()
-                        .op(FhirPatchRequestBodyItemOp.REPLACE)
-                        .path("/name/0/family")
-                        .value("NewFamilyName")
-                        .build()
-                )
+            Arrays.asList(
+                FhirPatchRequestBodyItem
+                    .builder()
+                    .op(FhirPatchRequestBodyItemOp.REPLACE)
+                    .path("/name/0/family")
+                    .value("NewFamilyName")
+                    .build()
             )
         )
         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
@@ -2587,53 +2674,46 @@ client.fhir().executeBundle(
         .body(
             FhirBundle
                 .builder()
-                .resourceType("Bundle")
                 .entry(
-                    new ArrayList<FhirBundleEntryItem>(
-                        Arrays.asList(
-                            FhirBundleEntryItem
-                                .builder()
-                                .resource(
-                                    new HashMap<String, Object>() {{
-                                        put("resourceType", "Patient");
-                                        put("name", new
-                                        ArrayList<Object>() {Arrays.asList(new 
-                                            HashMap<String, Object>() {{put("family", "Doe");
-                                                put("given", new
-                                                ArrayList<Object>() {Arrays.asList("John")
-                                                });
-                                            }})
-                                        });
-                                    }}
-                                )
-                                .request(
-                                    FhirBundleEntryItemRequest
-                                        .builder()
-                                        .method(FhirBundleEntryItemRequestMethod.POST)
-                                        .url("Patient")
-                                        .build()
-                                )
-                                .build(),
-                            FhirBundleEntryItem
-                                .builder()
-                                .resource(
-                                    new HashMap<String, Object>() {{
-                                        put("resourceType", "Observation");
-                                        put("status", "final");
-                                        put("subject", new 
-                                        HashMap<String, Object>() {{put("reference", "Patient/123");
-                                        }});
-                                    }}
-                                )
-                                .request(
-                                    FhirBundleEntryItemRequest
-                                        .builder()
-                                        .method(FhirBundleEntryItemRequestMethod.POST)
-                                        .url("Observation")
-                                        .build()
-                                )
-                                .build()
-                        )
+                    Arrays.asList(
+                        FhirBundleEntryItem
+                            .builder()
+                            .resource(
+                                new HashMap<String, Object>() {{
+                                    put("resourceType", "Patient");
+                                    put("name", new ArrayList<Object>(Arrays.asList(new 
+                                    HashMap<String, Object>() {{put("family", "Doe");
+                                        put("given", new ArrayList<Object>(Arrays.asList("John")));
+                                    }})));
+                                }}
+                            )
+                            .request(
+                                FhirBundleEntryItemRequest
+                                    .builder()
+                                    .method(FhirBundleEntryItemRequestMethod.POST)
+                                    .url("Patient")
+                                    .build()
+                            )
+                            .build(),
+                        FhirBundleEntryItem
+                            .builder()
+                            .resource(
+                                new HashMap<String, Object>() {{
+                                    put("resourceType", "Observation");
+                                    put("status", "final");
+                                    put("subject", new 
+                                    HashMap<String, Object>() {{put("reference", "Patient/123");
+                                    }});
+                                }}
+                            )
+                            .request(
+                                FhirBundleEntryItemRequest
+                                    .builder()
+                                    .method(FhirBundleEntryItemRequestMethod.POST)
+                                    .url("Observation")
+                                    .build()
+                            )
+                            .build()
                     )
                 )
                 .build()
@@ -3702,12 +3782,10 @@ client.summary().createTemplate(
         .builder()
         .name("name")
         .exampleSummary("Patient John Doe, age 45, presents with hypertension diagnosed on 2024-01-15.")
-        .targetResources(
-            new ArrayList<String>(
-                Arrays.asList("Patient", "Condition", "Observation")
-            )
-        )
         .mode("mode")
+        .targetResources(
+            Arrays.asList("Patient", "Condition", "Observation")
+        )
         .build()
 );
 ```
@@ -3863,12 +3941,10 @@ client.summary().updateTemplate(
         .builder()
         .name("name")
         .template("template")
-        .targetResources(
-            new ArrayList<String>(
-                Arrays.asList("target_resources")
-            )
-        )
         .mode("mode")
+        .targetResources(
+            Arrays.asList("target_resources")
+        )
         .build()
 );
 ```
@@ -4025,7 +4101,7 @@ client.summary().create(
     CreateSummaryRequest
         .builder()
         .fhirResources(
-            CreateSummaryRequestFhirResources.ofFhirResource(
+            CreateSummaryRequestFhirResources.of(
                 FhirResource
                     .builder()
                     .resourceType("resourceType")
@@ -5042,6 +5118,10 @@ client.workflows().create(
         .builder()
         .name("Patient Data Mapping Workflow")
         .workflowInstructions("Given diagnosis data, find the patient and create condition record")
+        .fhirProviderId(
+            CreateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
+        )
+        .verbose(true)
         .sampleData(
             new HashMap<String, Object>() {{
                 put("patient_last_name", "Rippin");
@@ -5049,10 +5129,6 @@ client.workflows().create(
                 put("diagnosis_code", "I10");
             }}
         )
-        .fhirProviderId(
-            CreateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
-        )
-        .verbose(true)
         .build()
 );
 ```
@@ -5222,6 +5298,10 @@ client.workflows().update(
         .builder()
         .name("Updated Patient Data Mapping Workflow")
         .workflowInstructions("Given diagnosis data, find the patient and create condition record")
+        .fhirProviderId(
+            UpdateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
+        )
+        .verbose(true)
         .sampleData(
             new HashMap<String, Object>() {{
                 put("patient_last_name", "Smith");
@@ -5229,10 +5309,6 @@ client.workflows().update(
                 put("diagnosis_code", "E11");
             }}
         )
-        .fhirProviderId(
-            UpdateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
-        )
-        .verbose(true)
         .build()
 );
 ```

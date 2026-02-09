@@ -127,7 +127,9 @@ public final class SemanticSearchResponse {
          */
         @java.lang.Override
         public _FinalStage addAllResults(List<SemanticSearchResult> results) {
-            this.results.addAll(results);
+            if (results != null) {
+                this.results.addAll(results);
+            }
             return this;
         }
 
@@ -148,7 +150,9 @@ public final class SemanticSearchResponse {
         @JsonSetter(value = "results", nulls = Nulls.SKIP)
         public _FinalStage results(List<SemanticSearchResult> results) {
             this.results.clear();
-            this.results.addAll(results);
+            if (results != null) {
+                this.results.addAll(results);
+            }
             return this;
         }
 

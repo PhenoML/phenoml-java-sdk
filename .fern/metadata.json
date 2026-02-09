@@ -1,0 +1,13 @@
+{
+  "cliVersion": "3.70.0",
+  "generatorName": "fernapi/fern-java-sdk",
+  "generatorVersion": "3.34.8",
+  "generatorConfig": {
+    "enable-inline-types": true,
+    "client-class-name": "PhenoML",
+    "inline-path-parameters": true,
+    "enable-forward-compatible-enums": true,
+    "publish-to": "central"
+  },
+  "sdkVersion": "4.2.1"
+}

@@ -87,7 +87,9 @@ public final class FhirBundle {
         @JsonSetter(value = "entry", nulls = Nulls.SKIP)
         public Builder entry(List<EntryItem> entry) {
             this.entry.clear();
-            this.entry.addAll(entry);
+            if (entry != null) {
+                this.entry.addAll(entry);
+            }
             return this;
         }
 
@@ -97,7 +99,9 @@ public final class FhirBundle {
         }
 
         public Builder addAllEntry(List<EntryItem> entry) {
-            this.entry.addAll(entry);
+            if (entry != null) {
+                this.entry.addAll(entry);
+            }
             return this;
         }
 

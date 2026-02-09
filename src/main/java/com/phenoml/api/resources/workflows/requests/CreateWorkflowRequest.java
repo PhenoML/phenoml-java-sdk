@@ -303,7 +303,9 @@ public final class CreateWorkflowRequest {
          */
         @java.lang.Override
         public _FinalStage putAllSampleData(Map<String, Object> sampleData) {
-            this.sampleData.putAll(sampleData);
+            if (sampleData != null) {
+                this.sampleData.putAll(sampleData);
+            }
             return this;
         }
 
@@ -314,7 +316,9 @@ public final class CreateWorkflowRequest {
         @JsonSetter(value = "sample_data", nulls = Nulls.SKIP)
         public _FinalStage sampleData(Map<String, Object> sampleData) {
             this.sampleData.clear();
-            this.sampleData.putAll(sampleData);
+            if (sampleData != null) {
+                this.sampleData.putAll(sampleData);
+            }
             return this;
         }
 

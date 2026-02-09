@@ -11,10 +11,12 @@ import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCod
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemExportRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.UploadRequest;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
+import com.phenoml.api.resources.construe.types.ExportCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import com.phenoml.api.resources.construe.types.GetCodeResponse;
 import com.phenoml.api.resources.construe.types.GetCodeSystemDetailResponse;
@@ -101,6 +103,14 @@ public class AsyncConstrueClient {
      * Returns full metadata for a single code system, including timestamps and builtin status.
      */
     public CompletableFuture<GetCodeSystemDetailResponse> getCodeSystemDetail(
+            String codesystem, RequestOptions requestOptions) {
+        return this.rawClient.getCodeSystemDetail(codesystem, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Returns full metadata for a single code system, including timestamps and builtin status.
+     */
+    public CompletableFuture<GetCodeSystemDetailResponse> getCodeSystemDetail(
             String codesystem, GetConstrueCodesSystemsCodesystemRequest request) {
         return this.rawClient.getCodeSystemDetail(codesystem, request).thenApply(response -> response.body());
     }
@@ -128,6 +138,15 @@ public class AsyncConstrueClient {
      * Only available on dedicated instances. Large systems may take up to a minute to delete.
      */
     public CompletableFuture<DeleteCodeSystemResponse> deleteCustomCodeSystem(
+            String codesystem, RequestOptions requestOptions) {
+        return this.rawClient.deleteCustomCodeSystem(codesystem, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+     * Only available on dedicated instances. Large systems may take up to a minute to delete.
+     */
+    public CompletableFuture<DeleteCodeSystemResponse> deleteCustomCodeSystem(
             String codesystem, DeleteConstrueCodesSystemsCodesystemRequest request) {
         return this.rawClient.deleteCustomCodeSystem(codesystem, request).thenApply(response -> response.body());
     }
@@ -144,11 +163,61 @@ public class AsyncConstrueClient {
     }
 
     /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public CompletableFuture<ExportCodeSystemResponse> exportCustomCodeSystem(String codesystem) {
+        return this.rawClient.exportCustomCodeSystem(codesystem).thenApply(response -> response.body());
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public CompletableFuture<ExportCodeSystemResponse> exportCustomCodeSystem(
+            String codesystem, RequestOptions requestOptions) {
+        return this.rawClient.exportCustomCodeSystem(codesystem, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public CompletableFuture<ExportCodeSystemResponse> exportCustomCodeSystem(
+            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request) {
+        return this.rawClient.exportCustomCodeSystem(codesystem, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public CompletableFuture<ExportCodeSystemResponse> exportCustomCodeSystem(
+            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request, RequestOptions requestOptions) {
+        return this.rawClient
+                .exportCustomCodeSystem(codesystem, request, requestOptions)
+                .thenApply(response -> response.body());
+    }
+
+    /**
      * Returns a paginated list of all codes in the specified code system from the terminology server.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ListCodesResponse> listCodesInACodeSystem(String codesystem) {
         return this.rawClient.listCodesInACodeSystem(codesystem).thenApply(response -> response.body());
+    }
+
+    /**
+     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+     */
+    public CompletableFuture<ListCodesResponse> listCodesInACodeSystem(
+            String codesystem, RequestOptions requestOptions) {
+        return this.rawClient.listCodesInACodeSystem(codesystem, requestOptions).thenApply(response -> response.body());
     }
 
     /**
@@ -177,6 +246,17 @@ public class AsyncConstrueClient {
      */
     public CompletableFuture<GetCodeResponse> getASpecificCode(String codesystem, String codeId) {
         return this.rawClient.getASpecificCode(codesystem, codeId).thenApply(response -> response.body());
+    }
+
+    /**
+     * Looks up a specific code in the terminology server and returns its details.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+     */
+    public CompletableFuture<GetCodeResponse> getASpecificCode(
+            String codesystem, String codeId, RequestOptions requestOptions) {
+        return this.rawClient
+                .getASpecificCode(codesystem, codeId, requestOptions)
+                .thenApply(response -> response.body());
     }
 
     /**
