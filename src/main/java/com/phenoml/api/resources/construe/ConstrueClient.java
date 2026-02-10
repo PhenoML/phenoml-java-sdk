@@ -11,10 +11,12 @@ import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCod
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemExportRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.UploadRequest;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
+import com.phenoml.api.resources.construe.types.ExportCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import com.phenoml.api.resources.construe.types.GetCodeResponse;
 import com.phenoml.api.resources.construe.types.GetCodeSystemDetailResponse;
@@ -42,8 +44,9 @@ public class ConstrueClient {
 
     /**
      * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
-     * Upon upload, construe generates embeddings for all of the codes in the code system and stores them in the vector database so you can
-     * subsequently use the code system for construe/extract and lang2fhir/create (coming soon!)
+     * Returns 202 immediately; embedding generation runs asynchronously. Poll
+     * GET /construe/codes/systems/{codesystem}?version={version} to check when status
+     * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
     public ConstrueUploadCodeSystemResponse uploadCodeSystem(UploadRequest request) {
         return this.rawClient.uploadCodeSystem(request).body();
@@ -51,8 +54,9 @@ public class ConstrueClient {
 
     /**
      * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
-     * Upon upload, construe generates embeddings for all of the codes in the code system and stores them in the vector database so you can
-     * subsequently use the code system for construe/extract and lang2fhir/create (coming soon!)
+     * Returns 202 immediately; embedding generation runs asynchronously. Poll
+     * GET /construe/codes/systems/{codesystem}?version={version} to check when status
+     * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
     public ConstrueUploadCodeSystemResponse uploadCodeSystem(UploadRequest request, RequestOptions requestOptions) {
         return this.rawClient.uploadCodeSystem(request, requestOptions).body();
@@ -138,6 +142,37 @@ public class ConstrueClient {
             String codesystem, DeleteConstrueCodesSystemsCodesystemRequest request, RequestOptions requestOptions) {
         return this.rawClient
                 .deleteCustomCodeSystem(codesystem, request, requestOptions)
+                .body();
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public ExportCodeSystemResponse exportCustomCodeSystem(String codesystem) {
+        return this.rawClient.exportCustomCodeSystem(codesystem).body();
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public ExportCodeSystemResponse exportCustomCodeSystem(
+            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request) {
+        return this.rawClient.exportCustomCodeSystem(codesystem, request).body();
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public ExportCodeSystemResponse exportCustomCodeSystem(
+            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request, RequestOptions requestOptions) {
+        return this.rawClient
+                .exportCustomCodeSystem(codesystem, request, requestOptions)
                 .body();
     }
 
