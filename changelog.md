@@ -1,3 +1,19 @@
+## 5.0.0 - 2026-02-09
+* Breaking changes:
+* Rename client classes: `PhenoML`/`AsyncPhenoML` replaced by `PhenomlApiClient`/`AsyncPhenomlApiClient`, builders renamed accordingly
+* Remove `Client`, `AsyncClient`, `PhenoMLClient` (wrapper) classes — use `PhenomlApiClient.builder()` directly
+* Remove `user_id` field from `ChatMessageTemplate`, `ChatSessionTemplate`, `FhirProviderTemplate`, `SummaryTemplate`, `McpServerResponseData`, `McpServerToolResponseData`, `WorkflowDefinition`, `WorkflowResponse`
+* Extract inline enums to standalone types (e.g. `ChatMessageTemplate.Role` is now `ChatMessageTemplateRole`, `UploadRequest.Format` is now `UploadRequestFormat`, etc.)
+* `UploadRequest.file` changed from required to optional (can now upload via `codes` field instead)
+* Remove `User-Agent` from default request headers
+* New features:
+* Add `exportCustomCodeSystem()` method to construe client for exporting code systems as JSON
+* Add `codes` field to `UploadRequest` for direct JSON upload without base64 encoding
+* Add `async` field to `UploadRequest` for asynchronous upload processing
+* Add `GetCodeSystemDetailResponseStatus` enum (`PROCESSING`, `READY`, `FAILED`) for two-phase upload status tracking
+* Add typed response models: `WorkflowResponseGraph`, `ExecuteWorkflowResponseResults`, `FhirBundleEntryItem`, `FhirResourceMeta`, and others
+* Add `ExportCodeSystemResponse` and `GetConstrueCodesSystemsCodesystemExportRequest` types
+
 ## 4.2.0 - 2026-02-08
 * feat: add code system management and improve search documentation
 * Add comprehensive code system management capabilities with new endpoints for detailed metadata retrieval and custom system deletion. Enhance API documentation with clear availability notes for different endpoint types.
