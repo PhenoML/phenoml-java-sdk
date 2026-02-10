@@ -24,8 +24,6 @@ import java.util.Optional;
 public final class SummaryTemplate {
     private final Optional<String> id;
 
-    private final Optional<String> userId;
-
     private final Optional<String> name;
 
     private final Optional<String> description;
@@ -46,7 +44,6 @@ public final class SummaryTemplate {
 
     private SummaryTemplate(
             Optional<String> id,
-            Optional<String> userId,
             Optional<String> name,
             Optional<String> description,
             Optional<String> template,
@@ -57,7 +54,6 @@ public final class SummaryTemplate {
             Optional<OffsetDateTime> updatedAt,
             Map<String, Object> additionalProperties) {
         this.id = id;
-        this.userId = userId;
         this.name = name;
         this.description = description;
         this.template = template;
@@ -72,11 +68,6 @@ public final class SummaryTemplate {
     @JsonProperty("id")
     public Optional<String> getId() {
         return id;
-    }
-
-    @JsonProperty("user_id")
-    public Optional<String> getUserId() {
-        return userId;
     }
 
     @JsonProperty("name")
@@ -141,7 +132,6 @@ public final class SummaryTemplate {
 
     private boolean equalTo(SummaryTemplate other) {
         return id.equals(other.id)
-                && userId.equals(other.userId)
                 && name.equals(other.name)
                 && description.equals(other.description)
                 && template.equals(other.template)
@@ -156,7 +146,6 @@ public final class SummaryTemplate {
     public int hashCode() {
         return Objects.hash(
                 this.id,
-                this.userId,
                 this.name,
                 this.description,
                 this.template,
@@ -179,8 +168,6 @@ public final class SummaryTemplate {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder {
         private Optional<String> id = Optional.empty();
-
-        private Optional<String> userId = Optional.empty();
 
         private Optional<String> name = Optional.empty();
 
@@ -205,7 +192,6 @@ public final class SummaryTemplate {
 
         public Builder from(SummaryTemplate other) {
             id(other.getId());
-            userId(other.getUserId());
             name(other.getName());
             description(other.getDescription());
             template(other.getTemplate());
@@ -225,17 +211,6 @@ public final class SummaryTemplate {
 
         public Builder id(String id) {
             this.id = Optional.ofNullable(id);
-            return this;
-        }
-
-        @JsonSetter(value = "user_id", nulls = Nulls.SKIP)
-        public Builder userId(Optional<String> userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public Builder userId(String userId) {
-            this.userId = Optional.ofNullable(userId);
             return this;
         }
 
@@ -339,7 +314,6 @@ public final class SummaryTemplate {
         public SummaryTemplate build() {
             return new SummaryTemplate(
                     id,
-                    userId,
                     name,
                     description,
                     template,

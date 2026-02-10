@@ -1204,8 +1204,9 @@ client.cohort().analyze(
 <dd>
 
 Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
-Upon upload, construe generates embeddings for all of the codes in the code system and stores them in the vector database so you can
-subsequently use the code system for construe/extract and lang2fhir/create (coming soon!)
+Returns 202 immediately; embedding generation runs asynchronously. Poll
+GET /construe/codes/systems/{codesystem}?version={version} to check when status
+transitions from "processing" to "ready" or "failed".
 </dd>
 </dl>
 </dd>
@@ -1225,8 +1226,7 @@ client.construe().uploadCodeSystem(
         .builder()
         .name("CUSTOM_CODES")
         .version("1.0")
-        .format(UploadRequestFormat.JSON)
-        .file("file")
+        .format(UploadRequestFormat.CSV)
         .build()
 );
 ```
@@ -1271,7 +1271,7 @@ reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidd
 <dl>
 <dd>
 
-**format:** `UploadRequestFormat` — Format of the uploaded file
+**format:** `UploadRequestFormat` — Upload format
     
 </dd>
 </dl>
@@ -1279,7 +1279,11 @@ reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidd
 <dl>
 <dd>
 
-**file:** `String` — The file contents as a base64-encoded string
+**file:** `Optional<String>` 
+
+The file contents as a base64-encoded string.
+For CSV format, this is the CSV file contents.
+For JSON format, this is a base64-encoded JSON array; prefer using 'codes' instead.
     
 </dd>
 </dl>
@@ -1304,6 +1308,18 @@ reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidd
 <dd>
 
 **defnCol:** `Optional<String>` — Optional column name containing long definitions (for CSV format)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**codes:** `Optional<List<CodeResponse>>` 
+
+The codes to upload as a JSON array (JSON format only).
+This is the preferred way to upload JSON codes, as it avoids unnecessary base64 encoding.
+If both 'codes' and 'file' are provided, 'codes' takes precedence.
     
 </dd>
 </dl>
@@ -1542,6 +1558,76 @@ Only available on dedicated instances. Large systems may take up to a minute to 
 client.construe().deleteCustomCodeSystem(
     "CUSTOM_CODES",
     DeleteConstrueCodesSystemsCodesystemRequest
+        .builder()
+        .version("version")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**codesystem:** `String` — Code system name
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `Optional<String>` — Specific version of the code system. Required if multiple versions exist.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.construe.exportCustomCodeSystem(codesystem) -> ExportCodeSystemResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+The exported file can be re-uploaded directly via POST /construe/upload with format "json".
+Only available on dedicated instances. Builtin systems cannot be exported.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.construe().exportCustomCodeSystem(
+    "CUSTOM_CODES",
+    GetConstrueCodesSystemsCodesystemExportRequest
         .builder()
         .version("version")
         .build()
