@@ -5,10 +5,12 @@ package com.phenoml.api.resources.construe.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import java.time.OffsetDateTime;
@@ -28,6 +30,8 @@ public final class GetCodeSystemDetailResponse {
 
     private final boolean builtin;
 
+    private final Status status;
+
     private final OffsetDateTime createdAt;
 
     private final OffsetDateTime updatedAt;
@@ -39,6 +43,7 @@ public final class GetCodeSystemDetailResponse {
             String version,
             int codeCount,
             boolean builtin,
+            Status status,
             OffsetDateTime createdAt,
             OffsetDateTime updatedAt,
             Map<String, Object> additionalProperties) {
@@ -46,6 +51,7 @@ public final class GetCodeSystemDetailResponse {
         this.version = version;
         this.codeCount = codeCount;
         this.builtin = builtin;
+        this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.additionalProperties = additionalProperties;
@@ -84,11 +90,16 @@ public final class GetCodeSystemDetailResponse {
     }
 
     /**
-     * @return Processing status of the code system. Currently always &quot;ready&quot;.
+     * @return Processing status of the code system.
+     * <ul>
+     * <li>&quot;processing&quot;: embeddings are being generated</li>
+     * <li>&quot;ready&quot;: code system is ready for use</li>
+     * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
+     * </ul>
      */
     @JsonProperty("status")
-    public String getStatus() {
-        return "ready";
+    public Status getStatus() {
+        return status;
     }
 
     /**
@@ -123,13 +134,15 @@ public final class GetCodeSystemDetailResponse {
                 && version.equals(other.version)
                 && codeCount == other.codeCount
                 && builtin == other.builtin
+                && status.equals(other.status)
                 && createdAt.equals(other.createdAt)
                 && updatedAt.equals(other.updatedAt);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.name, this.version, this.codeCount, this.builtin, this.createdAt, this.updatedAt);
+        return Objects.hash(
+                this.name, this.version, this.codeCount, this.builtin, this.status, this.createdAt, this.updatedAt);
     }
 
     @java.lang.Override
@@ -168,7 +181,19 @@ public final class GetCodeSystemDetailResponse {
         /**
          * <p>Whether this is a built-in system (vs custom uploaded)</p>
          */
-        CreatedAtStage builtin(boolean builtin);
+        StatusStage builtin(boolean builtin);
+    }
+
+    public interface StatusStage {
+        /**
+         * <p>Processing status of the code system.</p>
+         * <ul>
+         * <li>&quot;processing&quot;: embeddings are being generated</li>
+         * <li>&quot;ready&quot;: code system is ready for use</li>
+         * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
+         * </ul>
+         */
+        CreatedAtStage status(@NotNull Status status);
     }
 
     public interface CreatedAtStage {
@@ -195,6 +220,7 @@ public final class GetCodeSystemDetailResponse {
                     VersionStage,
                     CodeCountStage,
                     BuiltinStage,
+                    StatusStage,
                     CreatedAtStage,
                     UpdatedAtStage,
                     _FinalStage {
@@ -205,6 +231,8 @@ public final class GetCodeSystemDetailResponse {
         private int codeCount;
 
         private boolean builtin;
+
+        private Status status;
 
         private OffsetDateTime createdAt;
 
@@ -221,6 +249,7 @@ public final class GetCodeSystemDetailResponse {
             version(other.getVersion());
             codeCount(other.getCodeCount());
             builtin(other.getBuiltin());
+            status(other.getStatus());
             createdAt(other.getCreatedAt());
             updatedAt(other.getUpdatedAt());
             return this;
@@ -269,8 +298,30 @@ public final class GetCodeSystemDetailResponse {
          */
         @java.lang.Override
         @JsonSetter("builtin")
-        public CreatedAtStage builtin(boolean builtin) {
+        public StatusStage builtin(boolean builtin) {
             this.builtin = builtin;
+            return this;
+        }
+
+        /**
+         * <p>Processing status of the code system.</p>
+         * <ul>
+         * <li>&quot;processing&quot;: embeddings are being generated</li>
+         * <li>&quot;ready&quot;: code system is ready for use</li>
+         * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
+         * </ul>
+         * <p>Processing status of the code system.</p>
+         * <ul>
+         * <li>&quot;processing&quot;: embeddings are being generated</li>
+         * <li>&quot;ready&quot;: code system is ready for use</li>
+         * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
+         * </ul>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        @JsonSetter("status")
+        public CreatedAtStage status(@NotNull Status status) {
+            this.status = Objects.requireNonNull(status, "status must not be null");
             return this;
         }
 
@@ -301,7 +352,92 @@ public final class GetCodeSystemDetailResponse {
         @java.lang.Override
         public GetCodeSystemDetailResponse build() {
             return new GetCodeSystemDetailResponse(
-                    name, version, codeCount, builtin, createdAt, updatedAt, additionalProperties);
+                    name, version, codeCount, builtin, status, createdAt, updatedAt, additionalProperties);
+        }
+    }
+
+    public static final class Status {
+        public static final Status FAILED = new Status(Value.FAILED, "failed");
+
+        public static final Status PROCESSING = new Status(Value.PROCESSING, "processing");
+
+        public static final Status READY = new Status(Value.READY, "ready");
+
+        private final Value value;
+
+        private final String string;
+
+        Status(Value value, String string) {
+            this.value = value;
+            this.string = string;
+        }
+
+        public Value getEnumValue() {
+            return value;
+        }
+
+        @java.lang.Override
+        @JsonValue
+        public String toString() {
+            return this.string;
+        }
+
+        @java.lang.Override
+        public boolean equals(Object other) {
+            return (this == other) || (other instanceof Status && this.string.equals(((Status) other).string));
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+            return this.string.hashCode();
+        }
+
+        public <T> T visit(Visitor<T> visitor) {
+            switch (value) {
+                case FAILED:
+                    return visitor.visitFailed();
+                case PROCESSING:
+                    return visitor.visitProcessing();
+                case READY:
+                    return visitor.visitReady();
+                case UNKNOWN:
+                default:
+                    return visitor.visitUnknown(string);
+            }
+        }
+
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        public static Status valueOf(String value) {
+            switch (value) {
+                case "failed":
+                    return FAILED;
+                case "processing":
+                    return PROCESSING;
+                case "ready":
+                    return READY;
+                default:
+                    return new Status(Value.UNKNOWN, value);
+            }
+        }
+
+        public enum Value {
+            PROCESSING,
+
+            READY,
+
+            FAILED,
+
+            UNKNOWN
+        }
+
+        public interface Visitor<T> {
+            T visitProcessing();
+
+            T visitReady();
+
+            T visitFailed();
+
+            T visitUnknown(String unknownType);
         }
     }
 }

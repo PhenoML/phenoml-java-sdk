@@ -22,8 +22,6 @@ import java.util.Optional;
 public final class ChatSessionTemplate {
     private final Optional<String> id;
 
-    private final Optional<String> userId;
-
     private final Optional<String> sessionId;
 
     private final Optional<String> status;
@@ -44,7 +42,6 @@ public final class ChatSessionTemplate {
 
     private ChatSessionTemplate(
             Optional<String> id,
-            Optional<String> userId,
             Optional<String> sessionId,
             Optional<String> status,
             Optional<String> systemPrompt,
@@ -55,7 +52,6 @@ public final class ChatSessionTemplate {
             Optional<String> updated,
             Map<String, Object> additionalProperties) {
         this.id = id;
-        this.userId = userId;
         this.sessionId = sessionId;
         this.status = status;
         this.systemPrompt = systemPrompt;
@@ -73,14 +69,6 @@ public final class ChatSessionTemplate {
     @JsonProperty("id")
     public Optional<String> getId() {
         return id;
-    }
-
-    /**
-     * @return User ID
-     */
-    @JsonProperty("user_id")
-    public Optional<String> getUserId() {
-        return userId;
     }
 
     /**
@@ -160,7 +148,6 @@ public final class ChatSessionTemplate {
 
     private boolean equalTo(ChatSessionTemplate other) {
         return id.equals(other.id)
-                && userId.equals(other.userId)
                 && sessionId.equals(other.sessionId)
                 && status.equals(other.status)
                 && systemPrompt.equals(other.systemPrompt)
@@ -175,7 +162,6 @@ public final class ChatSessionTemplate {
     public int hashCode() {
         return Objects.hash(
                 this.id,
-                this.userId,
                 this.sessionId,
                 this.status,
                 this.systemPrompt,
@@ -198,8 +184,6 @@ public final class ChatSessionTemplate {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder {
         private Optional<String> id = Optional.empty();
-
-        private Optional<String> userId = Optional.empty();
 
         private Optional<String> sessionId = Optional.empty();
 
@@ -224,7 +208,6 @@ public final class ChatSessionTemplate {
 
         public Builder from(ChatSessionTemplate other) {
             id(other.getId());
-            userId(other.getUserId());
             sessionId(other.getSessionId());
             status(other.getStatus());
             systemPrompt(other.getSystemPrompt());
@@ -247,20 +230,6 @@ public final class ChatSessionTemplate {
 
         public Builder id(String id) {
             this.id = Optional.ofNullable(id);
-            return this;
-        }
-
-        /**
-         * <p>User ID</p>
-         */
-        @JsonSetter(value = "user_id", nulls = Nulls.SKIP)
-        public Builder userId(Optional<String> userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public Builder userId(String userId) {
-            this.userId = Optional.ofNullable(userId);
             return this;
         }
 
@@ -379,7 +348,6 @@ public final class ChatSessionTemplate {
         public ChatSessionTemplate build() {
             return new ChatSessionTemplate(
                     id,
-                    userId,
                     sessionId,
                     status,
                     systemPrompt,
