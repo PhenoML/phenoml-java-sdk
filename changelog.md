@@ -1,3 +1,24 @@
+## 5.0.0 - 2026-02-09
+* feat: SDK generator upgrade with inline type extraction, new endpoints, and enhanced retry/SSE
+* Major SDK regeneration with upgraded Fern Java SDK generator (v3.34.8). Extracts all inner types to
+* standalone top-level classes, adds new export endpoint, and includes significant core infrastructure improvements.
+* Breaking changes:
+* Extract all inner enum/type classes to standalone top-level classes (e.g. ExtractRequestConfig.ChunkingMethod -> ExtractRequestConfigChunkingMethod, FhirBundle.EntryItem -> FhirBundleEntryItem, etc.)
+* UploadRequest.Format enum replaced by standalone UploadRequestFormat enum
+* AgentCreateRequest.Provider / AgentTemplate.Provider changed from String to union type (String | List<String>) as standalone AgentCreateRequestProvider / AgentTemplateProvider
+* CreateWorkflowRequest/UpdateWorkflowRequest fhirProviderId changed from String to union type (String | List<String>)
+* GetCodeSystemDetailResponse now requires status field (processing/ready/failed)
+* New features:
+* Add exportCustomCodeSystem endpoint to ConstrueClient for exporting custom code systems as JSON
+* Add ExportCodeSystemResponse, GetConstrueCodesSystemsCodesystemExportRequest types
+* Add codes field to UploadRequest for direct JSON code array upload
+* Add async, replace, revision, defnCol fields to UploadRequest for enhanced upload control
+* Infrastructure improvements:
+* RetryInterceptor: header-based delay (Retry-After, X-RateLimit-Reset), configurable jitter, 1s initial / 60s max delay
+* Stream SSE parsing: proper multi-line data buffering, event/id/retry field support per SSE spec
+* ObjectMappers: new parseErrorBody() for structured error response parsing
+* RequestOptions: new queryParameters and queryParameterSuppliers support
+
 ## 4.2.0 - 2026-02-08
 * feat: add code system management and improve search documentation
 * Add comprehensive code system management capabilities with new endpoints for detailed metadata retrieval and custom system deletion. Enhance API documentation with clear availability notes for different endpoint types.
