@@ -14,7 +14,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.resources.construe.types.CodeResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,13 +33,15 @@ public final class UploadRequest {
 
     private final Format format;
 
-    private final String file;
+    private final Optional<String> file;
 
     private final Optional<String> codeCol;
 
     private final Optional<String> descCol;
 
     private final Optional<String> defnCol;
+
+    private final Optional<List<CodeResponse>> codes;
 
     private final Optional<Boolean> replace;
 
@@ -48,10 +52,11 @@ public final class UploadRequest {
             String version,
             Optional<Double> revision,
             Format format,
-            String file,
+            Optional<String> file,
             Optional<String> codeCol,
             Optional<String> descCol,
             Optional<String> defnCol,
+            Optional<List<CodeResponse>> codes,
             Optional<Boolean> replace,
             Map<String, Object> additionalProperties) {
         this.name = name;
@@ -62,6 +67,7 @@ public final class UploadRequest {
         this.codeCol = codeCol;
         this.descCol = descCol;
         this.defnCol = defnCol;
+        this.codes = codes;
         this.replace = replace;
         this.additionalProperties = additionalProperties;
     }
@@ -93,7 +99,7 @@ public final class UploadRequest {
     }
 
     /**
-     * @return Format of the uploaded file
+     * @return Upload format
      */
     @JsonProperty("format")
     public Format getFormat() {
@@ -101,10 +107,12 @@ public final class UploadRequest {
     }
 
     /**
-     * @return The file contents as a base64-encoded string
+     * @return The file contents as a base64-encoded string.
+     * For CSV format, this is the CSV file contents.
+     * For JSON format, this is a base64-encoded JSON array; prefer using 'codes' instead.
      */
     @JsonProperty("file")
-    public String getFile() {
+    public Optional<String> getFile() {
         return file;
     }
 
@@ -130,6 +138,16 @@ public final class UploadRequest {
     @JsonProperty("defn_col")
     public Optional<String> getDefnCol() {
         return defnCol;
+    }
+
+    /**
+     * @return The codes to upload as a JSON array (JSON format only).
+     * This is the preferred way to upload JSON codes, as it avoids unnecessary base64 encoding.
+     * If both 'codes' and 'file' are provided, 'codes' takes precedence.
+     */
+    @JsonProperty("codes")
+    public Optional<List<CodeResponse>> getCodes() {
+        return codes;
     }
 
     /**
@@ -162,6 +180,7 @@ public final class UploadRequest {
                 && codeCol.equals(other.codeCol)
                 && descCol.equals(other.descCol)
                 && defnCol.equals(other.defnCol)
+                && codes.equals(other.codes)
                 && replace.equals(other.replace);
     }
 
@@ -176,6 +195,7 @@ public final class UploadRequest {
                 this.codeCol,
                 this.descCol,
                 this.defnCol,
+                this.codes,
                 this.replace);
     }
 
@@ -208,16 +228,9 @@ public final class UploadRequest {
 
     public interface FormatStage {
         /**
-         * <p>Format of the uploaded file</p>
+         * <p>Upload format</p>
          */
-        FileStage format(@NotNull Format format);
-    }
-
-    public interface FileStage {
-        /**
-         * <p>The file contents as a base64-encoded string</p>
-         */
-        _FinalStage file(@NotNull String file);
+        _FinalStage format(@NotNull Format format);
     }
 
     public interface _FinalStage {
@@ -229,6 +242,15 @@ public final class UploadRequest {
         _FinalStage revision(Optional<Double> revision);
 
         _FinalStage revision(Double revision);
+
+        /**
+         * <p>The file contents as a base64-encoded string.
+         * For CSV format, this is the CSV file contents.
+         * For JSON format, this is a base64-encoded JSON array; prefer using 'codes' instead.</p>
+         */
+        _FinalStage file(Optional<String> file);
+
+        _FinalStage file(String file);
 
         /**
          * <p>Column name containing codes (required for CSV format)</p>
@@ -252,6 +274,15 @@ public final class UploadRequest {
         _FinalStage defnCol(String defnCol);
 
         /**
+         * <p>The codes to upload as a JSON array (JSON format only).
+         * This is the preferred way to upload JSON codes, as it avoids unnecessary base64 encoding.
+         * If both 'codes' and 'file' are provided, 'codes' takes precedence.</p>
+         */
+        _FinalStage codes(Optional<List<CodeResponse>> codes);
+
+        _FinalStage codes(List<CodeResponse> codes);
+
+        /**
          * <p>If true, replaces an existing code system with the same name and version.
          * Builtin systems cannot be replaced; attempts to do so return HTTP 403 Forbidden.
          * When false (default), uploading a duplicate returns 409 Conflict.</p>
@@ -262,22 +293,24 @@ public final class UploadRequest {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements NameStage, VersionStage, FormatStage, FileStage, _FinalStage {
+    public static final class Builder implements NameStage, VersionStage, FormatStage, _FinalStage {
         private String name;
 
         private String version;
 
         private Format format;
 
-        private String file;
-
         private Optional<Boolean> replace = Optional.empty();
+
+        private Optional<List<CodeResponse>> codes = Optional.empty();
 
         private Optional<String> defnCol = Optional.empty();
 
         private Optional<String> descCol = Optional.empty();
 
         private Optional<String> codeCol = Optional.empty();
+
+        private Optional<String> file = Optional.empty();
 
         private Optional<Double> revision = Optional.empty();
 
@@ -296,6 +329,7 @@ public final class UploadRequest {
             codeCol(other.getCodeCol());
             descCol(other.getDescCol());
             defnCol(other.getDefnCol());
+            codes(other.getCodes());
             replace(other.getReplace());
             return this;
         }
@@ -329,26 +363,14 @@ public final class UploadRequest {
         }
 
         /**
-         * <p>Format of the uploaded file</p>
-         * <p>Format of the uploaded file</p>
+         * <p>Upload format</p>
+         * <p>Upload format</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
         @JsonSetter("format")
-        public FileStage format(@NotNull Format format) {
+        public _FinalStage format(@NotNull Format format) {
             this.format = Objects.requireNonNull(format, "format must not be null");
-            return this;
-        }
-
-        /**
-         * <p>The file contents as a base64-encoded string</p>
-         * <p>The file contents as a base64-encoded string</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("file")
-        public _FinalStage file(@NotNull String file) {
-            this.file = Objects.requireNonNull(file, "file must not be null");
             return this;
         }
 
@@ -373,6 +395,30 @@ public final class UploadRequest {
         @JsonSetter(value = "replace", nulls = Nulls.SKIP)
         public _FinalStage replace(Optional<Boolean> replace) {
             this.replace = replace;
+            return this;
+        }
+
+        /**
+         * <p>The codes to upload as a JSON array (JSON format only).
+         * This is the preferred way to upload JSON codes, as it avoids unnecessary base64 encoding.
+         * If both 'codes' and 'file' are provided, 'codes' takes precedence.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage codes(List<CodeResponse> codes) {
+            this.codes = Optional.ofNullable(codes);
+            return this;
+        }
+
+        /**
+         * <p>The codes to upload as a JSON array (JSON format only).
+         * This is the preferred way to upload JSON codes, as it avoids unnecessary base64 encoding.
+         * If both 'codes' and 'file' are provided, 'codes' takes precedence.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "codes", nulls = Nulls.SKIP)
+        public _FinalStage codes(Optional<List<CodeResponse>> codes) {
+            this.codes = codes;
             return this;
         }
 
@@ -437,6 +483,30 @@ public final class UploadRequest {
         }
 
         /**
+         * <p>The file contents as a base64-encoded string.
+         * For CSV format, this is the CSV file contents.
+         * For JSON format, this is a base64-encoded JSON array; prefer using 'codes' instead.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage file(String file) {
+            this.file = Optional.ofNullable(file);
+            return this;
+        }
+
+        /**
+         * <p>The file contents as a base64-encoded string.
+         * For CSV format, this is the CSV file contents.
+         * For JSON format, this is a base64-encoded JSON array; prefer using 'codes' instead.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "file", nulls = Nulls.SKIP)
+        public _FinalStage file(Optional<String> file) {
+            this.file = file;
+            return this;
+        }
+
+        /**
          * <p>Optional revision number</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
@@ -459,7 +529,17 @@ public final class UploadRequest {
         @java.lang.Override
         public UploadRequest build() {
             return new UploadRequest(
-                    name, version, revision, format, file, codeCol, descCol, defnCol, replace, additionalProperties);
+                    name,
+                    version,
+                    revision,
+                    format,
+                    file,
+                    codeCol,
+                    descCol,
+                    defnCol,
+                    codes,
+                    replace,
+                    additionalProperties);
         }
     }
 
@@ -522,17 +602,17 @@ public final class UploadRequest {
         }
 
         public enum Value {
-            JSON,
-
             CSV,
+
+            JSON,
 
             UNKNOWN
         }
 
         public interface Visitor<T> {
-            T visitJson();
-
             T visitCsv();
+
+            T visitJson();
 
             T visitUnknown(String unknownType);
         }
