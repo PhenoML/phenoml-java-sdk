@@ -164,8 +164,6 @@ public final class McpServerResponse {
     public static final class Data {
         private final Optional<String> id;
 
-        private final Optional<String> userId;
-
         private final Optional<String> name;
 
         private final Optional<String> description;
@@ -178,14 +176,12 @@ public final class McpServerResponse {
 
         private Data(
                 Optional<String> id,
-                Optional<String> userId,
                 Optional<String> name,
                 Optional<String> description,
                 Optional<String> mcpServerUrl,
                 Optional<Boolean> isActive,
                 Map<String, Object> additionalProperties) {
             this.id = id;
-            this.userId = userId;
             this.name = name;
             this.description = description;
             this.mcpServerUrl = mcpServerUrl;
@@ -199,14 +195,6 @@ public final class McpServerResponse {
         @JsonProperty("id")
         public Optional<String> getId() {
             return id;
-        }
-
-        /**
-         * @return ID of the user who created the MCP server
-         */
-        @JsonProperty("user_id")
-        public Optional<String> getUserId() {
-            return userId;
         }
 
         /**
@@ -254,7 +242,6 @@ public final class McpServerResponse {
 
         private boolean equalTo(Data other) {
             return id.equals(other.id)
-                    && userId.equals(other.userId)
                     && name.equals(other.name)
                     && description.equals(other.description)
                     && mcpServerUrl.equals(other.mcpServerUrl)
@@ -263,7 +250,7 @@ public final class McpServerResponse {
 
         @java.lang.Override
         public int hashCode() {
-            return Objects.hash(this.id, this.userId, this.name, this.description, this.mcpServerUrl, this.isActive);
+            return Objects.hash(this.id, this.name, this.description, this.mcpServerUrl, this.isActive);
         }
 
         @java.lang.Override
@@ -278,8 +265,6 @@ public final class McpServerResponse {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static final class Builder {
             private Optional<String> id = Optional.empty();
-
-            private Optional<String> userId = Optional.empty();
 
             private Optional<String> name = Optional.empty();
 
@@ -296,7 +281,6 @@ public final class McpServerResponse {
 
             public Builder from(Data other) {
                 id(other.getId());
-                userId(other.getUserId());
                 name(other.getName());
                 description(other.getDescription());
                 mcpServerUrl(other.getMcpServerUrl());
@@ -315,20 +299,6 @@ public final class McpServerResponse {
 
             public Builder id(String id) {
                 this.id = Optional.ofNullable(id);
-                return this;
-            }
-
-            /**
-             * <p>ID of the user who created the MCP server</p>
-             */
-            @JsonSetter(value = "user_id", nulls = Nulls.SKIP)
-            public Builder userId(Optional<String> userId) {
-                this.userId = userId;
-                return this;
-            }
-
-            public Builder userId(String userId) {
-                this.userId = Optional.ofNullable(userId);
                 return this;
             }
 
@@ -389,7 +359,7 @@ public final class McpServerResponse {
             }
 
             public Data build() {
-                return new Data(id, userId, name, description, mcpServerUrl, isActive, additionalProperties);
+                return new Data(id, name, description, mcpServerUrl, isActive, additionalProperties);
             }
         }
     }

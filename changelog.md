@@ -1,3 +1,15 @@
+## 4.3.0 - 2026-02-10
+* feat: add code system export API and improve upload functionality
+* Add new export API for custom code systems and enhance upload capabilities with better format support and async processing.
+* Key changes:
+* Add exportCustomCodeSystem endpoint for downloading custom code systems as JSON
+* Support both file upload and direct codes array in UploadRequest for JSON format
+* Add async processing support with status tracking (processing/ready/failed)
+* Remove userId field from multiple template classes for cleaner API
+* Update upload request format enum to prioritize CSV over JSON
+* Add codes parameter to UploadRequest as preferred method for JSON uploads
+* 🌿 Generated with Fern
+
 ## 4.2.0 - 2026-02-08
 * feat: add code system management and improve search documentation
 * Add comprehensive code system management capabilities with new endpoints for detailed metadata retrieval and custom system deletion. Enhance API documentation with clear availability notes for different endpoint types.
