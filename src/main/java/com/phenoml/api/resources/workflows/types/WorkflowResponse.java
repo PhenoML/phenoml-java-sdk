@@ -24,8 +24,6 @@ import java.util.Optional;
 public final class WorkflowResponse {
     private final Optional<String> id;
 
-    private final Optional<String> userId;
-
     private final Optional<String> name;
 
     private final Optional<String> workflowInstructions;
@@ -44,7 +42,6 @@ public final class WorkflowResponse {
 
     private WorkflowResponse(
             Optional<String> id,
-            Optional<String> userId,
             Optional<String> name,
             Optional<String> workflowInstructions,
             Optional<Map<String, Object>> sampleData,
@@ -54,7 +51,6 @@ public final class WorkflowResponse {
             Optional<OffsetDateTime> updatedAt,
             Map<String, Object> additionalProperties) {
         this.id = id;
-        this.userId = userId;
         this.name = name;
         this.workflowInstructions = workflowInstructions;
         this.sampleData = sampleData;
@@ -71,14 +67,6 @@ public final class WorkflowResponse {
     @JsonProperty("id")
     public Optional<String> getId() {
         return id;
-    }
-
-    /**
-     * @return ID of the user who created the workflow
-     */
-    @JsonProperty("user_id")
-    public Optional<String> getUserId() {
-        return userId;
     }
 
     /**
@@ -144,7 +132,6 @@ public final class WorkflowResponse {
 
     private boolean equalTo(WorkflowResponse other) {
         return id.equals(other.id)
-                && userId.equals(other.userId)
                 && name.equals(other.name)
                 && workflowInstructions.equals(other.workflowInstructions)
                 && sampleData.equals(other.sampleData)
@@ -158,7 +145,6 @@ public final class WorkflowResponse {
     public int hashCode() {
         return Objects.hash(
                 this.id,
-                this.userId,
                 this.name,
                 this.workflowInstructions,
                 this.sampleData,
@@ -181,8 +167,6 @@ public final class WorkflowResponse {
     public static final class Builder {
         private Optional<String> id = Optional.empty();
 
-        private Optional<String> userId = Optional.empty();
-
         private Optional<String> name = Optional.empty();
 
         private Optional<String> workflowInstructions = Optional.empty();
@@ -204,7 +188,6 @@ public final class WorkflowResponse {
 
         public Builder from(WorkflowResponse other) {
             id(other.getId());
-            userId(other.getUserId());
             name(other.getName());
             workflowInstructions(other.getWorkflowInstructions());
             sampleData(other.getSampleData());
@@ -226,20 +209,6 @@ public final class WorkflowResponse {
 
         public Builder id(String id) {
             this.id = Optional.ofNullable(id);
-            return this;
-        }
-
-        /**
-         * <p>ID of the user who created the workflow</p>
-         */
-        @JsonSetter(value = "user_id", nulls = Nulls.SKIP)
-        public Builder userId(Optional<String> userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public Builder userId(String userId) {
-            this.userId = Optional.ofNullable(userId);
             return this;
         }
 
@@ -338,7 +307,6 @@ public final class WorkflowResponse {
         public WorkflowResponse build() {
             return new WorkflowResponse(
                     id,
-                    userId,
                     name,
                     workflowInstructions,
                     sampleData,
