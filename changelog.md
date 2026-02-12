@@ -1,3 +1,7 @@
+## 4.2.1 - 2026-02-12
+* SDK regeneration
+* Unable to analyze changes with AI, incrementing PATCH version.
+
 ## 4.2.0 - 2026-02-08
 * feat: add code system management and improve search documentation
 * Add comprehensive code system management capabilities with new endpoints for detailed metadata retrieval and custom system deletion. Enhance API documentation with clear availability notes for different endpoint types.

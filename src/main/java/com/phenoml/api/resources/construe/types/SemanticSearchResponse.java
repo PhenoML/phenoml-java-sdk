@@ -127,7 +127,9 @@ public final class SemanticSearchResponse {
          */
         @java.lang.Override
         public _FinalStage addAllResults(List<SemanticSearchResult> results) {
-            this.results.addAll(results);
+            if (results != null) {
+                this.results.addAll(results);
+            }
             return this;
         }
 

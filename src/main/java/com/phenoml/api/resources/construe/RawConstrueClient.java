@@ -16,6 +16,7 @@ import com.phenoml.api.resources.construe.errors.BadRequestError;
 import com.phenoml.api.resources.construe.errors.ConflictError;
 import com.phenoml.api.resources.construe.errors.FailedDependencyError;
 import com.phenoml.api.resources.construe.errors.ForbiddenError;
+import com.phenoml.api.resources.construe.errors.GatewayTimeoutError;
 import com.phenoml.api.resources.construe.errors.InternalServerError;
 import com.phenoml.api.resources.construe.errors.NotFoundError;
 import com.phenoml.api.resources.construe.errors.NotImplementedError;
@@ -27,10 +28,12 @@ import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCod
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemExportRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.UploadRequest;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
+import com.phenoml.api.resources.construe.types.ExportCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import com.phenoml.api.resources.construe.types.GetCodeResponse;
 import com.phenoml.api.resources.construe.types.GetCodeSystemDetailResponse;
@@ -56,8 +59,9 @@ public class RawConstrueClient {
 
     /**
      * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
-     * Upon upload, construe generates embeddings for all of the codes in the code system and stores them in the vector database so you can
-     * subsequently use the code system for construe/extract and lang2fhir/create (coming soon!)
+     * Returns 202 immediately; embedding generation runs asynchronously. Poll
+     * GET /construe/codes/systems/{codesystem}?version={version} to check when status
+     * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
     public PhenoMLHttpResponse<ConstrueUploadCodeSystemResponse> uploadCodeSystem(UploadRequest request) {
         return uploadCodeSystem(request, null);
@@ -65,8 +69,9 @@ public class RawConstrueClient {
 
     /**
      * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
-     * Upon upload, construe generates embeddings for all of the codes in the code system and stores them in the vector database so you can
-     * subsequently use the code system for construe/extract and lang2fhir/create (coming soon!)
+     * Returns 202 immediately; embedding generation runs asynchronously. Poll
+     * GET /construe/codes/systems/{codesystem}?version={version} to check when status
+     * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
     public PhenoMLHttpResponse<ConstrueUploadCodeSystemResponse> uploadCodeSystem(
             UploadRequest request, RequestOptions requestOptions) {
@@ -185,11 +190,17 @@ public class RawConstrueClient {
                     case 401:
                         throw new UnauthorizedError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 424:
-                        throw new FailedDependencyError(
+                    case 404:
+                        throw new NotFoundError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 500:
                         throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 503:
+                        throw new ServiceUnavailableError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 504:
+                        throw new GatewayTimeoutError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                 }
             } catch (JsonProcessingException ignored) {
@@ -399,6 +410,98 @@ public class RawConstrueClient {
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 404:
                         throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public PhenoMLHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(String codesystem) {
+        return exportCustomCodeSystem(
+                codesystem,
+                GetConstrueCodesSystemsCodesystemExportRequest.builder().build());
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public PhenoMLHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(
+            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request) {
+        return exportCustomCodeSystem(codesystem, request, null);
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public PhenoMLHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(
+            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("construe/codes/systems")
+                .addPathSegment(codesystem)
+                .addPathSegments("export");
+        if (request.getVersion().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "version", request.getVersion().get(), false);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("GET", null)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ExportCodeSystemResponse.class),
+                        response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 404:
+                        throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 409:
+                        throw new ConflictError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 424:
+                        throw new FailedDependencyError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 500:
                         throw new InternalServerError(
@@ -786,9 +889,6 @@ public class RawConstrueClient {
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 501:
                         throw new NotImplementedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 503:
-                        throw new ServiceUnavailableError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                 }
             } catch (JsonProcessingException ignored) {
