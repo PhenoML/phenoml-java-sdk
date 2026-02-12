@@ -16,6 +16,7 @@ import com.phenoml.api.resources.construe.errors.BadRequestError;
 import com.phenoml.api.resources.construe.errors.ConflictError;
 import com.phenoml.api.resources.construe.errors.FailedDependencyError;
 import com.phenoml.api.resources.construe.errors.ForbiddenError;
+import com.phenoml.api.resources.construe.errors.GatewayTimeoutError;
 import com.phenoml.api.resources.construe.errors.InternalServerError;
 import com.phenoml.api.resources.construe.errors.NotFoundError;
 import com.phenoml.api.resources.construe.errors.NotImplementedError;
@@ -27,10 +28,12 @@ import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCod
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemExportRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.UploadRequest;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
+import com.phenoml.api.resources.construe.types.ExportCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import com.phenoml.api.resources.construe.types.GetCodeResponse;
 import com.phenoml.api.resources.construe.types.GetCodeSystemDetailResponse;
@@ -60,8 +63,9 @@ public class AsyncRawConstrueClient {
 
     /**
      * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
-     * Upon upload, construe generates embeddings for all of the codes in the code system and stores them in the vector database so you can
-     * subsequently use the code system for construe/extract and lang2fhir/create (coming soon!)
+     * Returns 202 immediately; embedding generation runs asynchronously. Poll
+     * GET /construe/codes/systems/{codesystem}?version={version} to check when status
+     * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
     public CompletableFuture<PhenoMLHttpResponse<ConstrueUploadCodeSystemResponse>> uploadCodeSystem(
             UploadRequest request) {
@@ -70,8 +74,9 @@ public class AsyncRawConstrueClient {
 
     /**
      * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
-     * Upon upload, construe generates embeddings for all of the codes in the code system and stores them in the vector database so you can
-     * subsequently use the code system for construe/extract and lang2fhir/create (coming soon!)
+     * Returns 202 immediately; embedding generation runs asynchronously. Poll
+     * GET /construe/codes/systems/{codesystem}?version={version} to check when status
+     * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
     public CompletableFuture<PhenoMLHttpResponse<ConstrueUploadCodeSystemResponse>> uploadCodeSystem(
             UploadRequest request, RequestOptions requestOptions) {
@@ -225,13 +230,23 @@ public class AsyncRawConstrueClient {
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
-                            case 424:
-                                future.completeExceptionally(new FailedDependencyError(
+                            case 404:
+                                future.completeExceptionally(new NotFoundError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
                             case 500:
                                 future.completeExceptionally(new InternalServerError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 503:
+                                future.completeExceptionally(new ServiceUnavailableError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 504:
+                                future.completeExceptionally(new GatewayTimeoutError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
@@ -504,6 +519,126 @@ public class AsyncRawConstrueClient {
                                 return;
                             case 404:
                                 future.completeExceptionally(new NotFoundError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 500:
+                                future.completeExceptionally(new InternalServerError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                        }
+                    } catch (JsonProcessingException ignored) {
+                        // unable to map error response, throwing generic error
+                    }
+                    future.completeExceptionally(new PhenoMLApiException(
+                            "Error with status code " + response.code(),
+                            response.code(),
+                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                            response));
+                    return;
+                } catch (IOException e) {
+                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+            }
+        });
+        return future;
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public CompletableFuture<PhenoMLHttpResponse<ExportCodeSystemResponse>> exportCustomCodeSystem(String codesystem) {
+        return exportCustomCodeSystem(
+                codesystem,
+                GetConstrueCodesSystemsCodesystemExportRequest.builder().build());
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public CompletableFuture<PhenoMLHttpResponse<ExportCodeSystemResponse>> exportCustomCodeSystem(
+            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request) {
+        return exportCustomCodeSystem(codesystem, request, null);
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public CompletableFuture<PhenoMLHttpResponse<ExportCodeSystemResponse>> exportCustomCodeSystem(
+            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("construe/codes/systems")
+                .addPathSegment(codesystem)
+                .addPathSegments("export");
+        if (request.getVersion().isPresent()) {
+            QueryStringMapper.addQueryParameter(
+                    httpUrl, "version", request.getVersion().get(), false);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("GET", null)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        CompletableFuture<PhenoMLHttpResponse<ExportCodeSystemResponse>> future = new CompletableFuture<>();
+        client.newCall(okhttpRequest).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    if (response.isSuccessful()) {
+                        future.complete(new PhenoMLHttpResponse<>(
+                                ObjectMappers.JSON_MAPPER.readValue(
+                                        responseBody.string(), ExportCodeSystemResponse.class),
+                                response));
+                        return;
+                    }
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+                    try {
+                        switch (response.code()) {
+                            case 400:
+                                future.completeExceptionally(new BadRequestError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 401:
+                                future.completeExceptionally(new UnauthorizedError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 403:
+                                future.completeExceptionally(new ForbiddenError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 404:
+                                future.completeExceptionally(new NotFoundError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 409:
+                                future.completeExceptionally(new ConflictError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 424:
+                                future.completeExceptionally(new FailedDependencyError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
@@ -983,11 +1118,6 @@ public class AsyncRawConstrueClient {
                                 return;
                             case 501:
                                 future.completeExceptionally(new NotImplementedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 503:
-                                future.completeExceptionally(new ServiceUnavailableError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
