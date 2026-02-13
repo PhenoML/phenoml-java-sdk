@@ -22,16 +22,36 @@ import java.util.Optional;
 public final class ConstrueUploadCodeSystemResponse {
     private final Optional<String> status;
 
+    private final Optional<String> name;
+
+    private final Optional<String> version;
+
     private final Map<String, Object> additionalProperties;
 
-    private ConstrueUploadCodeSystemResponse(Optional<String> status, Map<String, Object> additionalProperties) {
+    private ConstrueUploadCodeSystemResponse(
+            Optional<String> status,
+            Optional<String> name,
+            Optional<String> version,
+            Map<String, Object> additionalProperties) {
         this.status = status;
+        this.name = name;
+        this.version = version;
         this.additionalProperties = additionalProperties;
     }
 
     @JsonProperty("status")
     public Optional<String> getStatus() {
         return status;
+    }
+
+    @JsonProperty("name")
+    public Optional<String> getName() {
+        return name;
+    }
+
+    @JsonProperty("version")
+    public Optional<String> getVersion() {
+        return version;
     }
 
     @java.lang.Override
@@ -46,12 +66,12 @@ public final class ConstrueUploadCodeSystemResponse {
     }
 
     private boolean equalTo(ConstrueUploadCodeSystemResponse other) {
-        return status.equals(other.status);
+        return status.equals(other.status) && name.equals(other.name) && version.equals(other.version);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.status);
+        return Objects.hash(this.status, this.name, this.version);
     }
 
     @java.lang.Override
@@ -67,6 +87,10 @@ public final class ConstrueUploadCodeSystemResponse {
     public static final class Builder {
         private Optional<String> status = Optional.empty();
 
+        private Optional<String> name = Optional.empty();
+
+        private Optional<String> version = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -74,6 +98,8 @@ public final class ConstrueUploadCodeSystemResponse {
 
         public Builder from(ConstrueUploadCodeSystemResponse other) {
             status(other.getStatus());
+            name(other.getName());
+            version(other.getVersion());
             return this;
         }
 
@@ -88,8 +114,30 @@ public final class ConstrueUploadCodeSystemResponse {
             return this;
         }
 
+        @JsonSetter(value = "name", nulls = Nulls.SKIP)
+        public Builder name(Optional<String> name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = Optional.ofNullable(name);
+            return this;
+        }
+
+        @JsonSetter(value = "version", nulls = Nulls.SKIP)
+        public Builder version(Optional<String> version) {
+            this.version = version;
+            return this;
+        }
+
+        public Builder version(String version) {
+            this.version = Optional.ofNullable(version);
+            return this;
+        }
+
         public ConstrueUploadCodeSystemResponse build() {
-            return new ConstrueUploadCodeSystemResponse(status, additionalProperties);
+            return new ConstrueUploadCodeSystemResponse(status, name, version, additionalProperties);
         }
     }
 }

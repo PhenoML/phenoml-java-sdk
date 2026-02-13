@@ -1,3 +1,19 @@
+## 5.1.0 - 2026-02-13
+* refactor: restructure UploadRequest API to support multiple formats
+* Refactors the code system upload API from a discriminated union to a single
+* unified request class. The new structure better supports both CSV and JSON
+* upload formats while simplifying the client interface. Returns 202 immediately
+* and processes uploads asynchronously with polling for status updates.
+* Key changes:
+* Move UploadRequestJson to UploadRequest in requests package
+* Add format enum (CSV/JSON) to specify upload type
+* Add CSV-specific fields: codeCol, descCol, defnCol for column mapping
+* Replace longDescription and rationale fields with reason in ExtractedCodeResult
+* Add GatewayTimeoutError for 504 responses
+* Update documentation to reflect asynchronous processing
+* Remove async parameter - all uploads now process asynchronously
+* 🌿 Generated with Fern
+
 ## 5.0.0 - 2026-02-13
 * refactor: remove userId field from template classes
 * This change removes the userId field and related methods from multiple template classes across the codebase. The change affects classes in agent, fhirprovider, summary, tools, and workflows modules.
