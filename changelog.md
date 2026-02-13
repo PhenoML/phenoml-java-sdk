@@ -1,3 +1,15 @@
+## 4.3.0 - 2026-02-13
+* feat: add code system export and async upload support
+* Add new functionality to export custom code systems and support asynchronous code system uploads with improved upload request handling.
+* Key changes:
+* Add exportCustomCodeSystem API with optional version parameter for exporting custom code systems as JSON
+* Restructure UploadRequest to use discriminated union pattern with UploadRequestCsv and UploadRequestJson
+* Add async upload support with processing status tracking (processing/ready/failed)
+* Update GetCodeSystemDetailResponse to include processing status field
+* Remove 403 error handling from FHIR provider endpoints
+* Update documentation with new CSV-specific examples and export endpoint details
+* 🌿 Generated with Fern
+
 ## 4.2.0 - 2026-02-08
 * feat: add code system management and improve search documentation
 * Add comprehensive code system management capabilities with new endpoints for detailed metadata retrieval and custom system deletion. Enhance API documentation with clear availability notes for different endpoint types.

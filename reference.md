@@ -1221,13 +1221,16 @@ subsequently use the code system for construe/extract and lang2fhir/create (comi
 
 ```java
 client.construe().uploadCodeSystem(
-    UploadRequest
-        .builder()
-        .name("CUSTOM_CODES")
-        .version("1.0")
-        .format(UploadRequestFormat.JSON)
-        .file("file")
-        .build()
+    UploadRequest.csv(
+        UploadRequestCsv
+            .builder()
+            .name("CUSTOM_CODES")
+            .version("1.0")
+            .file("file")
+            .codeCol("code")
+            .descCol("description")
+            .build()
+    )
 );
 ```
 </dd>
@@ -1243,79 +1246,7 @@ client.construe().uploadCodeSystem(
 <dl>
 <dd>
 
-**name:** `String` 
-
-Name of the code system. Names are case-insensitive and stored uppercase.
-Builtin system names (e.g. ICD-10-CM, SNOMED_CT_US_LITE, LOINC, CPT, etc.) are
-reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidden.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**version:** `String` — Version of the code system
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**revision:** `Optional<Float>` — Optional revision number
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**format:** `UploadRequestFormat` — Format of the uploaded file
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**file:** `String` — The file contents as a base64-encoded string
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**codeCol:** `Optional<String>` — Column name containing codes (required for CSV format)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**descCol:** `Optional<String>` — Column name containing descriptions (required for CSV format)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**defnCol:** `Optional<String>` — Optional column name containing long definitions (for CSV format)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**replace:** `Optional<Boolean>` 
-
-If true, replaces an existing code system with the same name and version.
-Builtin systems cannot be replaced; attempts to do so return HTTP 403 Forbidden.
-When false (default), uploading a duplicate returns 409 Conflict.
+**request:** `UploadRequest` 
     
 </dd>
 </dl>
@@ -1542,6 +1473,76 @@ Only available on dedicated instances. Large systems may take up to a minute to 
 client.construe().deleteCustomCodeSystem(
     "CUSTOM_CODES",
     DeleteConstrueCodesSystemsCodesystemRequest
+        .builder()
+        .version("version")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**codesystem:** `String` — Code system name
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `Optional<String>` — Specific version of the code system. Required if multiple versions exist.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.construe.exportCustomCodeSystem(codesystem) -> ExportCodeSystemResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+The exported file can be re-uploaded directly via POST /construe/upload with format "json".
+Only available on dedicated instances. Builtin systems cannot be exported.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.construe().exportCustomCodeSystem(
+    "CUSTOM_CODES",
+    GetConstrueCodesSystemsCodesystemExportRequest
         .builder()
         .version("version")
         .build()
