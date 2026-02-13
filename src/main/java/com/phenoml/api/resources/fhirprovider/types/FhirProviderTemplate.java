@@ -23,8 +23,6 @@ import java.util.Optional;
 public final class FhirProviderTemplate {
     private final Optional<String> id;
 
-    private final Optional<String> userId;
-
     private final Optional<String> name;
 
     private final Optional<String> description;
@@ -45,7 +43,6 @@ public final class FhirProviderTemplate {
 
     private FhirProviderTemplate(
             Optional<String> id,
-            Optional<String> userId,
             Optional<String> name,
             Optional<String> description,
             Optional<Provider> provider,
@@ -56,7 +53,6 @@ public final class FhirProviderTemplate {
             Optional<OffsetDateTime> lastUpdated,
             Map<String, Object> additionalProperties) {
         this.id = id;
-        this.userId = userId;
         this.name = name;
         this.description = description;
         this.provider = provider;
@@ -74,14 +70,6 @@ public final class FhirProviderTemplate {
     @JsonProperty("id")
     public Optional<String> getId() {
         return id;
-    }
-
-    /**
-     * @return ID of the user who owns this FHIR provider
-     */
-    @JsonProperty("user_id")
-    public Optional<String> getUserId() {
-        return userId;
     }
 
     /**
@@ -158,7 +146,6 @@ public final class FhirProviderTemplate {
 
     private boolean equalTo(FhirProviderTemplate other) {
         return id.equals(other.id)
-                && userId.equals(other.userId)
                 && name.equals(other.name)
                 && description.equals(other.description)
                 && provider.equals(other.provider)
@@ -173,7 +160,6 @@ public final class FhirProviderTemplate {
     public int hashCode() {
         return Objects.hash(
                 this.id,
-                this.userId,
                 this.name,
                 this.description,
                 this.provider,
@@ -196,8 +182,6 @@ public final class FhirProviderTemplate {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder {
         private Optional<String> id = Optional.empty();
-
-        private Optional<String> userId = Optional.empty();
 
         private Optional<String> name = Optional.empty();
 
@@ -222,7 +206,6 @@ public final class FhirProviderTemplate {
 
         public Builder from(FhirProviderTemplate other) {
             id(other.getId());
-            userId(other.getUserId());
             name(other.getName());
             description(other.getDescription());
             provider(other.getProvider());
@@ -245,20 +228,6 @@ public final class FhirProviderTemplate {
 
         public Builder id(String id) {
             this.id = Optional.ofNullable(id);
-            return this;
-        }
-
-        /**
-         * <p>ID of the user who owns this FHIR provider</p>
-         */
-        @JsonSetter(value = "user_id", nulls = Nulls.SKIP)
-        public Builder userId(Optional<String> userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public Builder userId(String userId) {
-            this.userId = Optional.ofNullable(userId);
             return this;
         }
 
@@ -374,7 +343,6 @@ public final class FhirProviderTemplate {
         public FhirProviderTemplate build() {
             return new FhirProviderTemplate(
                     id,
-                    userId,
                     name,
                     description,
                     provider,

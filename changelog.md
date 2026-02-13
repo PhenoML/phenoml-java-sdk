@@ -1,3 +1,15 @@
+## 5.0.0 - 2026-02-13
+* refactor: remove userId field from template classes
+* This change removes the userId field and related methods from multiple template classes across the codebase. The change affects classes in agent, fhirprovider, summary, tools, and workflows modules.
+* Key changes:
+* Remove userId field from ChatMessageTemplate, ChatSessionTemplate, FhirProviderTemplate, SummaryTemplate, McpServerResponse.Data, McpServerToolResponse.Data, WorkflowDefinition, and WorkflowResponse classes
+* Remove getUserId() methods and associated JsonProperty annotations
+* Remove userId parameter from constructors and builder methods
+* Remove userId-related getter/setter methods from builder classes
+* Update equals(), hashCode(), and from() methods to exclude userId comparisons
+* Remove userId from constructor parameter lists in build() methods
+* 🌿 Generated with Fern
+
 ## 4.3.0 - 2026-02-13
 * feat: add code system export and async upload support
 * Add new functionality to export custom code systems and support asynchronous code system uploads with improved upload request handling.
