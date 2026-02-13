@@ -1,3 +1,7 @@
+## 4.3.1 - 2026-02-13
+* SDK regeneration
+* Unable to analyze changes with AI, incrementing PATCH version.
+
 ## 4.3.0 - 2026-02-13
 * feat: add code system export and async upload support
 * Add new functionality to export custom code systems and support asynchronous code system uploads with improved upload request handling.

@@ -35,7 +35,7 @@ public final class ClientOptions {
                 put("User-Agent", "com.phenoml.maven:phenoml-java-sdk/auto");
                 put("X-Fern-Language", "JAVA");
                 put("X-Fern-SDK-Name", "com.phenoml.fern:api-sdk");
-                put("X-Fern-SDK-Version", "4.3.0");
+                put("X-Fern-SDK-Version", "4.3.1");
             }
         });
         this.headerSuppliers = headerSuppliers;

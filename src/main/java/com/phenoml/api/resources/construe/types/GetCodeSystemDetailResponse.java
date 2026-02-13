@@ -92,9 +92,9 @@ public final class GetCodeSystemDetailResponse {
     /**
      * @return Processing status of the code system.
      * <ul>
-     * <li>&quot;processing&quot;: embeddings are being generated (async upload in progress)</li>
+     * <li>&quot;processing&quot;: embeddings are being generated</li>
      * <li>&quot;ready&quot;: code system is ready for use</li>
-     * <li>&quot;failed&quot;: async processing failed (re-upload with replace=true to retry)</li>
+     * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
      * </ul>
      */
     @JsonProperty("status")
@@ -188,9 +188,9 @@ public final class GetCodeSystemDetailResponse {
         /**
          * <p>Processing status of the code system.</p>
          * <ul>
-         * <li>&quot;processing&quot;: embeddings are being generated (async upload in progress)</li>
+         * <li>&quot;processing&quot;: embeddings are being generated</li>
          * <li>&quot;ready&quot;: code system is ready for use</li>
-         * <li>&quot;failed&quot;: async processing failed (re-upload with replace=true to retry)</li>
+         * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
          * </ul>
          */
         CreatedAtStage status(@NotNull Status status);
@@ -306,15 +306,15 @@ public final class GetCodeSystemDetailResponse {
         /**
          * <p>Processing status of the code system.</p>
          * <ul>
-         * <li>&quot;processing&quot;: embeddings are being generated (async upload in progress)</li>
+         * <li>&quot;processing&quot;: embeddings are being generated</li>
          * <li>&quot;ready&quot;: code system is ready for use</li>
-         * <li>&quot;failed&quot;: async processing failed (re-upload with replace=true to retry)</li>
+         * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
          * </ul>
          * <p>Processing status of the code system.</p>
          * <ul>
-         * <li>&quot;processing&quot;: embeddings are being generated (async upload in progress)</li>
+         * <li>&quot;processing&quot;: embeddings are being generated</li>
          * <li>&quot;ready&quot;: code system is ready for use</li>
-         * <li>&quot;failed&quot;: async processing failed (re-upload with replace=true to retry)</li>
+         * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
          * </ul>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

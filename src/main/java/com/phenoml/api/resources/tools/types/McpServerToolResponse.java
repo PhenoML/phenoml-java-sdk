@@ -164,8 +164,6 @@ public final class McpServerToolResponse {
     public static final class Data {
         private final Optional<String> id;
 
-        private final Optional<String> userId;
-
         private final Optional<String> name;
 
         private final Optional<String> description;
@@ -182,7 +180,6 @@ public final class McpServerToolResponse {
 
         private Data(
                 Optional<String> id,
-                Optional<String> userId,
                 Optional<String> name,
                 Optional<String> description,
                 Optional<Map<String, Object>> inputSchema,
@@ -191,7 +188,6 @@ public final class McpServerToolResponse {
                 Optional<Boolean> isActive,
                 Map<String, Object> additionalProperties) {
             this.id = id;
-            this.userId = userId;
             this.name = name;
             this.description = description;
             this.inputSchema = inputSchema;
@@ -207,14 +203,6 @@ public final class McpServerToolResponse {
         @JsonProperty("id")
         public Optional<String> getId() {
             return id;
-        }
-
-        /**
-         * @return ID of the user who created the MCP server tool
-         */
-        @JsonProperty("user_id")
-        public Optional<String> getUserId() {
-            return userId;
         }
 
         /**
@@ -278,7 +266,6 @@ public final class McpServerToolResponse {
 
         private boolean equalTo(Data other) {
             return id.equals(other.id)
-                    && userId.equals(other.userId)
                     && name.equals(other.name)
                     && description.equals(other.description)
                     && inputSchema.equals(other.inputSchema)
@@ -291,7 +278,6 @@ public final class McpServerToolResponse {
         public int hashCode() {
             return Objects.hash(
                     this.id,
-                    this.userId,
                     this.name,
                     this.description,
                     this.inputSchema,
@@ -313,8 +299,6 @@ public final class McpServerToolResponse {
         public static final class Builder {
             private Optional<String> id = Optional.empty();
 
-            private Optional<String> userId = Optional.empty();
-
             private Optional<String> name = Optional.empty();
 
             private Optional<String> description = Optional.empty();
@@ -334,7 +318,6 @@ public final class McpServerToolResponse {
 
             public Builder from(Data other) {
                 id(other.getId());
-                userId(other.getUserId());
                 name(other.getName());
                 description(other.getDescription());
                 inputSchema(other.getInputSchema());
@@ -355,20 +338,6 @@ public final class McpServerToolResponse {
 
             public Builder id(String id) {
                 this.id = Optional.ofNullable(id);
-                return this;
-            }
-
-            /**
-             * <p>ID of the user who created the MCP server tool</p>
-             */
-            @JsonSetter(value = "user_id", nulls = Nulls.SKIP)
-            public Builder userId(Optional<String> userId) {
-                this.userId = userId;
-                return this;
-            }
-
-            public Builder userId(String userId) {
-                this.userId = Optional.ofNullable(userId);
                 return this;
             }
 
@@ -458,15 +427,7 @@ public final class McpServerToolResponse {
 
             public Data build() {
                 return new Data(
-                        id,
-                        userId,
-                        name,
-                        description,
-                        inputSchema,
-                        mcpServerId,
-                        mcpServerUrl,
-                        isActive,
-                        additionalProperties);
+                        id, name, description, inputSchema, mcpServerId, mcpServerUrl, isActive, additionalProperties);
             }
         }
     }
