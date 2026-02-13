@@ -11,10 +11,11 @@ import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCod
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemExportRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
-import com.phenoml.api.resources.construe.requests.UploadRequest;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
+import com.phenoml.api.resources.construe.types.ExportCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import com.phenoml.api.resources.construe.types.GetCodeResponse;
 import com.phenoml.api.resources.construe.types.GetCodeSystemDetailResponse;
@@ -22,6 +23,7 @@ import com.phenoml.api.resources.construe.types.ListCodeSystemsResponse;
 import com.phenoml.api.resources.construe.types.ListCodesResponse;
 import com.phenoml.api.resources.construe.types.SemanticSearchResponse;
 import com.phenoml.api.resources.construe.types.TextSearchResponse;
+import com.phenoml.api.resources.construe.types.UploadRequest;
 
 public class ConstrueClient {
     protected final ClientOptions clientOptions;
@@ -138,6 +140,37 @@ public class ConstrueClient {
             String codesystem, DeleteConstrueCodesSystemsCodesystemRequest request, RequestOptions requestOptions) {
         return this.rawClient
                 .deleteCustomCodeSystem(codesystem, request, requestOptions)
+                .body();
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public ExportCodeSystemResponse exportCustomCodeSystem(String codesystem) {
+        return this.rawClient.exportCustomCodeSystem(codesystem).body();
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public ExportCodeSystemResponse exportCustomCodeSystem(
+            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request) {
+        return this.rawClient.exportCustomCodeSystem(codesystem, request).body();
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public ExportCodeSystemResponse exportCustomCodeSystem(
+            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request, RequestOptions requestOptions) {
+        return this.rawClient
+                .exportCustomCodeSystem(codesystem, request, requestOptions)
                 .body();
     }
 
