@@ -13,6 +13,7 @@ import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSea
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemExportRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
+import com.phenoml.api.resources.construe.requests.UploadRequest;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExportCodeSystemResponse;
@@ -23,7 +24,6 @@ import com.phenoml.api.resources.construe.types.ListCodeSystemsResponse;
 import com.phenoml.api.resources.construe.types.ListCodesResponse;
 import com.phenoml.api.resources.construe.types.SemanticSearchResponse;
 import com.phenoml.api.resources.construe.types.TextSearchResponse;
-import com.phenoml.api.resources.construe.types.UploadRequest;
 
 public class ConstrueClient {
     protected final ClientOptions clientOptions;
@@ -44,8 +44,9 @@ public class ConstrueClient {
 
     /**
      * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
-     * Upon upload, construe generates embeddings for all of the codes in the code system and stores them in the vector database so you can
-     * subsequently use the code system for construe/extract and lang2fhir/create (coming soon!)
+     * Returns 202 immediately; embedding generation runs asynchronously. Poll
+     * GET /construe/codes/systems/{codesystem}?version={version} to check when status
+     * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
     public ConstrueUploadCodeSystemResponse uploadCodeSystem(UploadRequest request) {
         return this.rawClient.uploadCodeSystem(request).body();
@@ -53,8 +54,9 @@ public class ConstrueClient {
 
     /**
      * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
-     * Upon upload, construe generates embeddings for all of the codes in the code system and stores them in the vector database so you can
-     * subsequently use the code system for construe/extract and lang2fhir/create (coming soon!)
+     * Returns 202 immediately; embedding generation runs asynchronously. Poll
+     * GET /construe/codes/systems/{codesystem}?version={version} to check when status
+     * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
     public ConstrueUploadCodeSystemResponse uploadCodeSystem(UploadRequest request, RequestOptions requestOptions) {
         return this.rawClient.uploadCodeSystem(request, requestOptions).body();
