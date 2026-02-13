@@ -34,8 +34,6 @@ public final class ChatMessageTemplate {
 
     private final Optional<String> updated;
 
-    private final Optional<String> userId;
-
     private final Optional<String> functionName;
 
     private final Optional<Map<String, Object>> functionArgs;
@@ -53,7 +51,6 @@ public final class ChatMessageTemplate {
             Optional<String> content,
             Optional<String> created,
             Optional<String> updated,
-            Optional<String> userId,
             Optional<String> functionName,
             Optional<Map<String, Object>> functionArgs,
             Optional<Map<String, Object>> functionResult,
@@ -65,7 +62,6 @@ public final class ChatMessageTemplate {
         this.content = content;
         this.created = created;
         this.updated = updated;
-        this.userId = userId;
         this.functionName = functionName;
         this.functionArgs = functionArgs;
         this.functionResult = functionResult;
@@ -128,14 +124,6 @@ public final class ChatMessageTemplate {
     }
 
     /**
-     * @return User ID
-     */
-    @JsonProperty("user_id")
-    public Optional<String> getUserId() {
-        return userId;
-    }
-
-    /**
      * @return Function name
      */
     @JsonProperty("function_name")
@@ -185,7 +173,6 @@ public final class ChatMessageTemplate {
                 && content.equals(other.content)
                 && created.equals(other.created)
                 && updated.equals(other.updated)
-                && userId.equals(other.userId)
                 && functionName.equals(other.functionName)
                 && functionArgs.equals(other.functionArgs)
                 && functionResult.equals(other.functionResult)
@@ -201,7 +188,6 @@ public final class ChatMessageTemplate {
                 this.content,
                 this.created,
                 this.updated,
-                this.userId,
                 this.functionName,
                 this.functionArgs,
                 this.functionResult,
@@ -231,8 +217,6 @@ public final class ChatMessageTemplate {
 
         private Optional<String> updated = Optional.empty();
 
-        private Optional<String> userId = Optional.empty();
-
         private Optional<String> functionName = Optional.empty();
 
         private Optional<Map<String, Object>> functionArgs = Optional.empty();
@@ -253,7 +237,6 @@ public final class ChatMessageTemplate {
             content(other.getContent());
             created(other.getCreated());
             updated(other.getUpdated());
-            userId(other.getUserId());
             functionName(other.getFunctionName());
             functionArgs(other.getFunctionArgs());
             functionResult(other.getFunctionResult());
@@ -352,20 +335,6 @@ public final class ChatMessageTemplate {
         }
 
         /**
-         * <p>User ID</p>
-         */
-        @JsonSetter(value = "user_id", nulls = Nulls.SKIP)
-        public Builder userId(Optional<String> userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public Builder userId(String userId) {
-            this.userId = Optional.ofNullable(userId);
-            return this;
-        }
-
-        /**
          * <p>Function name</p>
          */
         @JsonSetter(value = "function_name", nulls = Nulls.SKIP)
@@ -429,7 +398,6 @@ public final class ChatMessageTemplate {
                     content,
                     created,
                     updated,
-                    userId,
                     functionName,
                     functionArgs,
                     functionResult,
