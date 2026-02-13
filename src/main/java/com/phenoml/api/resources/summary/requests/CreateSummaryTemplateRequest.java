@@ -284,7 +284,9 @@ public final class CreateSummaryTemplateRequest {
          */
         @java.lang.Override
         public _FinalStage addAllTargetResources(List<String> targetResources) {
-            this.targetResources.addAll(targetResources);
+            if (targetResources != null) {
+                this.targetResources.addAll(targetResources);
+            }
             return this;
         }
 
