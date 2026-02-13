@@ -165,7 +165,9 @@ public final class FhirPatchRequest {
         }
 
         public Builder addAllBody(List<FhirPatchRequestBodyItem> body) {
-            this.body.addAll(body);
+            if (body != null) {
+                this.body.addAll(body);
+            }
             return this;
         }
 

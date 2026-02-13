@@ -303,7 +303,9 @@ public final class UpdateWorkflowRequest {
          */
         @java.lang.Override
         public _FinalStage putAllSampleData(Map<String, Object> sampleData) {
-            this.sampleData.putAll(sampleData);
+            if (sampleData != null) {
+                this.sampleData.putAll(sampleData);
+            }
             return this;
         }
 
