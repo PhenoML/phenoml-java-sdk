@@ -28,9 +28,7 @@ public final class ExtractedCodeResult {
 
     private final boolean valid;
 
-    private final Optional<String> longDescription;
-
-    private final Optional<String> rationale;
+    private final Optional<String> reason;
 
     private final Optional<Boolean> isAncestor;
 
@@ -42,16 +40,14 @@ public final class ExtractedCodeResult {
             String code,
             String description,
             boolean valid,
-            Optional<String> longDescription,
-            Optional<String> rationale,
+            Optional<String> reason,
             Optional<Boolean> isAncestor,
             Optional<List<Citation>> citations,
             Map<String, Object> additionalProperties) {
         this.code = code;
         this.description = description;
         this.valid = valid;
-        this.longDescription = longDescription;
-        this.rationale = rationale;
+        this.reason = reason;
         this.isAncestor = isAncestor;
         this.citations = citations;
         this.additionalProperties = additionalProperties;
@@ -82,19 +78,11 @@ public final class ExtractedCodeResult {
     }
 
     /**
-     * @return Long description of the code
-     */
-    @JsonProperty("longDescription")
-    public Optional<String> getLongDescription() {
-        return longDescription;
-    }
-
-    /**
      * @return Explanation for why this code was extracted (if include_rationale is true)
      */
-    @JsonProperty("rationale")
-    public Optional<String> getRationale() {
-        return rationale;
+    @JsonProperty("reason")
+    public Optional<String> getReason() {
+        return reason;
     }
 
     /**
@@ -131,22 +119,14 @@ public final class ExtractedCodeResult {
         return code.equals(other.code)
                 && description.equals(other.description)
                 && valid == other.valid
-                && longDescription.equals(other.longDescription)
-                && rationale.equals(other.rationale)
+                && reason.equals(other.reason)
                 && isAncestor.equals(other.isAncestor)
                 && citations.equals(other.citations);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(
-                this.code,
-                this.description,
-                this.valid,
-                this.longDescription,
-                this.rationale,
-                this.isAncestor,
-                this.citations);
+        return Objects.hash(this.code, this.description, this.valid, this.reason, this.isAncestor, this.citations);
     }
 
     @java.lang.Override
@@ -185,18 +165,11 @@ public final class ExtractedCodeResult {
         ExtractedCodeResult build();
 
         /**
-         * <p>Long description of the code</p>
-         */
-        _FinalStage longDescription(Optional<String> longDescription);
-
-        _FinalStage longDescription(String longDescription);
-
-        /**
          * <p>Explanation for why this code was extracted (if include_rationale is true)</p>
          */
-        _FinalStage rationale(Optional<String> rationale);
+        _FinalStage reason(Optional<String> reason);
 
-        _FinalStage rationale(String rationale);
+        _FinalStage reason(String reason);
 
         /**
          * <p>Whether this code is an ancestor (parent) of an extracted code rather than directly extracted.
@@ -228,9 +201,7 @@ public final class ExtractedCodeResult {
 
         private Optional<Boolean> isAncestor = Optional.empty();
 
-        private Optional<String> rationale = Optional.empty();
-
-        private Optional<String> longDescription = Optional.empty();
+        private Optional<String> reason = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -242,8 +213,7 @@ public final class ExtractedCodeResult {
             code(other.getCode());
             description(other.getDescription());
             valid(other.getValid());
-            longDescription(other.getLongDescription());
-            rationale(other.getRationale());
+            reason(other.getReason());
             isAncestor(other.getIsAncestor());
             citations(other.getCitations());
             return this;
@@ -336,8 +306,8 @@ public final class ExtractedCodeResult {
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
-        public _FinalStage rationale(String rationale) {
-            this.rationale = Optional.ofNullable(rationale);
+        public _FinalStage reason(String reason) {
+            this.reason = Optional.ofNullable(reason);
             return this;
         }
 
@@ -345,36 +315,16 @@ public final class ExtractedCodeResult {
          * <p>Explanation for why this code was extracted (if include_rationale is true)</p>
          */
         @java.lang.Override
-        @JsonSetter(value = "rationale", nulls = Nulls.SKIP)
-        public _FinalStage rationale(Optional<String> rationale) {
-            this.rationale = rationale;
-            return this;
-        }
-
-        /**
-         * <p>Long description of the code</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage longDescription(String longDescription) {
-            this.longDescription = Optional.ofNullable(longDescription);
-            return this;
-        }
-
-        /**
-         * <p>Long description of the code</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "longDescription", nulls = Nulls.SKIP)
-        public _FinalStage longDescription(Optional<String> longDescription) {
-            this.longDescription = longDescription;
+        @JsonSetter(value = "reason", nulls = Nulls.SKIP)
+        public _FinalStage reason(Optional<String> reason) {
+            this.reason = reason;
             return this;
         }
 
         @java.lang.Override
         public ExtractedCodeResult build() {
             return new ExtractedCodeResult(
-                    code, description, valid, longDescription, rationale, isAncestor, citations, additionalProperties);
+                    code, description, valid, reason, isAncestor, citations, additionalProperties);
         }
     }
 }
