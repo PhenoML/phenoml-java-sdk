@@ -91,7 +91,9 @@ public final class ExecuteWorkflowRequest {
         }
 
         public Builder putAllInputData(Map<String, Object> inputData) {
-            this.inputData.putAll(inputData);
+            if (inputData != null) {
+                this.inputData.putAll(inputData);
+            }
             return this;
         }
 

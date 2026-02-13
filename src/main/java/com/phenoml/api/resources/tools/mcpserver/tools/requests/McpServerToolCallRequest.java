@@ -91,7 +91,9 @@ public final class McpServerToolCallRequest {
         }
 
         public Builder putAllArguments(Map<String, Object> arguments) {
-            this.arguments.putAll(arguments);
+            if (arguments != null) {
+                this.arguments.putAll(arguments);
+            }
             return this;
         }
 

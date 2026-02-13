@@ -341,7 +341,9 @@ public final class AgentCreateRequest {
          */
         @java.lang.Override
         public _FinalStage addAllPrompts(List<String> prompts) {
-            this.prompts.addAll(prompts);
+            if (prompts != null) {
+                this.prompts.addAll(prompts);
+            }
             return this;
         }
 

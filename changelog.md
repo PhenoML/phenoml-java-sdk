@@ -1,3 +1,14 @@
+## 5.2.0 - 2026-02-13
+* feat: add custom header support and improve null safety
+* Add the ability to set custom headers on SDK clients and improve null safety throughout builder pattern implementations. The SDK builders now support adding custom headers that will be included with all requests, providing more flexibility for authentication and request customization.
+* Key changes:
+* Add addHeader() method to PhenoMLBuilder and AsyncPhenoMLBuilder for custom header support
+* Remove hardcoded User-Agent header from ClientOptions in favor of dynamic header configuration
+* Fix Maven signing configuration to properly handle separate key ID and secret key environment variables
+* Add null checks to all addAll() and putAll() methods in builder classes to prevent NullPointerException
+* Import HashMap and Map classes in builder files to support new header functionality
+* 🌿 Generated with Fern
+
 ## 5.1.0 - 2026-02-13
 * refactor: restructure UploadRequest API to support multiple formats
 * Refactors the code system upload API from a discriminated union to a single
