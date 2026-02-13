@@ -163,7 +163,9 @@ public final class TextSearchResponse {
          */
         @java.lang.Override
         public _FinalStage addAllResults(List<TextSearchResult> results) {
-            this.results.addAll(results);
+            if (results != null) {
+                this.results.addAll(results);
+            }
             return this;
         }
 

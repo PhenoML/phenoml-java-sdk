@@ -179,7 +179,9 @@ public final class ExportCodeSystemResponse {
          */
         @java.lang.Override
         public _FinalStage addAllCodes(List<CodeResponse> codes) {
-            this.codes.addAll(codes);
+            if (codes != null) {
+                this.codes.addAll(codes);
+            }
             return this;
         }
 

@@ -91,7 +91,9 @@ public final class ListCodeSystemsResponse {
         }
 
         public Builder addAllSystems(List<CodeSystemDetails> systems) {
-            this.systems.addAll(systems);
+            if (systems != null) {
+                this.systems.addAll(systems);
+            }
             return this;
         }
 
