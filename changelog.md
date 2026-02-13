@@ -1,3 +1,13 @@
+## 5.1.1 - 2026-02-13
+* fix: improve null safety and fix signing configuration
+* Enhance builder pattern robustness and correct Maven signing setup to prevent potential NullPointerExceptions and fix build configuration issues.
+* Key changes:
+* Add null checks to addAll() and putAll() operations in builder classes
+* Fix Maven signing configuration to use separate key ID and secret key parameters
+* Add custom header support to PhenoML and AsyncPhenoML builders
+* Remove hardcoded User-Agent header from default headers
+* 🌿 Generated with Fern
+
 ## 5.1.0 - 2026-02-13
 * refactor: restructure UploadRequest API to support multiple formats
 * Refactors the code system upload API from a discriminated union to a single
