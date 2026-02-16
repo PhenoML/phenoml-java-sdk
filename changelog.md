@@ -1,3 +1,12 @@
+## 5.1.2 - 2026-02-16
+* chore: update SDK version identifier in User-Agent header
+* Update the hardcoded version number in the User-Agent header to use a dynamic "auto" identifier. This change allows for more flexible version management during the build process.
+* Key changes:
+* Replace hardcoded version "5.1.1" with "auto" in User-Agent header
+* Maintain consistent SDK identification format
+* Enable dynamic version resolution at build time
+* 🌿 Generated with Fern
+
 ## 5.1.1 - 2026-02-13
 * fix: improve null safety and fix signing configuration
 * Enhance builder pattern robustness and correct Maven signing setup to prevent potential NullPointerExceptions and fix build configuration issues.
