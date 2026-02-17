@@ -495,6 +495,14 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**enhancedReasoning:** `Optional<Boolean>` — Enable enhanced reasoning capabilities, will increase latency but will also improve response quality and reliability.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 

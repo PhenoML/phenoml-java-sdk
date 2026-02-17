@@ -616,6 +616,9 @@ public class AsyncRawAgentClient {
             properties.put("session_id", request.getSessionId());
         }
         properties.put("agent_id", request.getAgentId());
+        if (request.getEnhancedReasoning().isPresent()) {
+            properties.put("enhanced_reasoning", request.getEnhancedReasoning());
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
