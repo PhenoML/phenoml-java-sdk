@@ -33,6 +33,8 @@ public final class AgentChatRequest {
 
     private final String agentId;
 
+    private final Optional<Boolean> enhancedReasoning;
+
     private final Map<String, Object> additionalProperties;
 
     private AgentChatRequest(
@@ -42,6 +44,7 @@ public final class AgentChatRequest {
             Optional<String> context,
             Optional<String> sessionId,
             String agentId,
+            Optional<Boolean> enhancedReasoning,
             Map<String, Object> additionalProperties) {
         this.phenomlOnBehalfOf = phenomlOnBehalfOf;
         this.phenomlFhirProvider = phenomlFhirProvider;
@@ -49,6 +52,7 @@ public final class AgentChatRequest {
         this.context = context;
         this.sessionId = sessionId;
         this.agentId = agentId;
+        this.enhancedReasoning = enhancedReasoning;
         this.additionalProperties = additionalProperties;
     }
 
@@ -102,6 +106,14 @@ public final class AgentChatRequest {
         return agentId;
     }
 
+    /**
+     * @return Enable enhanced reasoning capabilities, will increase latency but will also improve response quality and reliability.
+     */
+    @JsonProperty("enhanced_reasoning")
+    public Optional<Boolean> getEnhancedReasoning() {
+        return enhancedReasoning;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -119,7 +131,8 @@ public final class AgentChatRequest {
                 && message.equals(other.message)
                 && context.equals(other.context)
                 && sessionId.equals(other.sessionId)
-                && agentId.equals(other.agentId);
+                && agentId.equals(other.agentId)
+                && enhancedReasoning.equals(other.enhancedReasoning);
     }
 
     @java.lang.Override
@@ -130,7 +143,8 @@ public final class AgentChatRequest {
                 this.message,
                 this.context,
                 this.sessionId,
-                this.agentId);
+                this.agentId,
+                this.enhancedReasoning);
     }
 
     @java.lang.Override
@@ -190,6 +204,13 @@ public final class AgentChatRequest {
         _FinalStage sessionId(Optional<String> sessionId);
 
         _FinalStage sessionId(String sessionId);
+
+        /**
+         * <p>Enable enhanced reasoning capabilities, will increase latency but will also improve response quality and reliability.</p>
+         */
+        _FinalStage enhancedReasoning(Optional<Boolean> enhancedReasoning);
+
+        _FinalStage enhancedReasoning(Boolean enhancedReasoning);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -197,6 +218,8 @@ public final class AgentChatRequest {
         private String message;
 
         private String agentId;
+
+        private Optional<Boolean> enhancedReasoning = Optional.empty();
 
         private Optional<String> sessionId = Optional.empty();
 
@@ -219,6 +242,7 @@ public final class AgentChatRequest {
             context(other.getContext());
             sessionId(other.getSessionId());
             agentId(other.getAgentId());
+            enhancedReasoning(other.getEnhancedReasoning());
             return this;
         }
 
@@ -243,6 +267,26 @@ public final class AgentChatRequest {
         @JsonSetter("agent_id")
         public _FinalStage agentId(@NotNull String agentId) {
             this.agentId = Objects.requireNonNull(agentId, "agentId must not be null");
+            return this;
+        }
+
+        /**
+         * <p>Enable enhanced reasoning capabilities, will increase latency but will also improve response quality and reliability.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage enhancedReasoning(Boolean enhancedReasoning) {
+            this.enhancedReasoning = Optional.ofNullable(enhancedReasoning);
+            return this;
+        }
+
+        /**
+         * <p>Enable enhanced reasoning capabilities, will increase latency but will also improve response quality and reliability.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "enhanced_reasoning", nulls = Nulls.SKIP)
+        public _FinalStage enhancedReasoning(Optional<Boolean> enhancedReasoning) {
+            this.enhancedReasoning = enhancedReasoning;
             return this;
         }
 
@@ -333,7 +377,14 @@ public final class AgentChatRequest {
         @java.lang.Override
         public AgentChatRequest build() {
             return new AgentChatRequest(
-                    phenomlOnBehalfOf, phenomlFhirProvider, message, context, sessionId, agentId, additionalProperties);
+                    phenomlOnBehalfOf,
+                    phenomlFhirProvider,
+                    message,
+                    context,
+                    sessionId,
+                    agentId,
+                    enhancedReasoning,
+                    additionalProperties);
         }
     }
 }

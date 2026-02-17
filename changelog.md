@@ -1,3 +1,13 @@
+## 5.2.0 - 2026-02-17
+* feat: add enhanced reasoning option to AgentChatRequest
+* Add support for enhanced reasoning capabilities in agent chat requests. This optional parameter enables improved response quality and reliability at the cost of increased latency, giving users control over the performance vs quality tradeoff.
+* Key changes:
+* Add enhancedReasoning optional boolean field to AgentChatRequest class
+* Update request builders to include enhanced reasoning parameter setting
+* Add documentation explaining latency vs quality tradeoff
+* Integrate enhanced reasoning parameter into both sync and async client request handling
+* 🌿 Generated with Fern
+
 ## 5.1.1 - 2026-02-13
 * fix: improve null safety and fix signing configuration
 * Enhance builder pattern robustness and correct Maven signing setup to prevent potential NullPointerExceptions and fix build configuration issues.
