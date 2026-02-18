@@ -1,6 +1,8 @@
 name: ci
 
-on: [push]
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   compile:
@@ -36,9 +38,42 @@ jobs:
 
       - name: Test
         run: ./gradlew test
-  publish:
+  tag:
     needs: [ compile, test ]
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      should_publish: ${{ steps.check.outputs.should_publish }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version and check tag
+        id: check
+        run: |
+          VERSION=$(grep "^version = " build.gradle | sed "s/version = '\(.*\)'/\1/")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if git ls-remote --tags origin | grep -q "refs/tags/$VERSION"; then
+            echo "Tag $VERSION already exists, skipping"
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create and push tag
+        if: steps.check.outputs.should_publish == 'true'
+        run: |
+          git tag "${{ steps.check.outputs.version }}"
+          git push origin "${{ steps.check.outputs.version }}"
+
+  publish:
+    needs: [ compile, test, tag ]
+    if: needs.tag.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
 
     steps:
