@@ -38,20 +38,20 @@ jobs:
         run: ./gradlew test
   tag:
     needs: [ compile, test ]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || contains(github.ref, 'refs/tags/'))
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
       should_publish: ${{ steps.check.outputs.should_publish }}
 
     steps:
       - name: Checkout repo
-        if: github.ref == 'refs/heads/main'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Extract version and check tag
-        if: github.ref == 'refs/heads/main'
         id: check
         run: |
           VERSION=$(grep "^version = " build.gradle | sed "s/version = '\(.*\)'/\1/")
@@ -71,7 +71,7 @@ jobs:
 
   publish:
     needs: [ compile, test, tag ]
-    if: contains(github.ref, 'refs/tags/') || needs.tag.outputs.should_publish == 'true'
+    if: needs.tag.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
 
     steps:
