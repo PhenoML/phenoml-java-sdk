@@ -71,6 +71,15 @@ jobs:
           git tag "${{ steps.check.outputs.version }}"
           git push origin "${{ steps.check.outputs.version }}"
 
+      - name: Create GitHub release
+        if: steps.check.outputs.should_publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.check.outputs.version }}" \
+            --title "${{ steps.check.outputs.version }}" \
+            --generate-notes
+
   publish:
     needs: [ compile, test, tag ]
     if: needs.tag.outputs.should_publish == 'true'
@@ -89,8 +98,11 @@ jobs:
 
       - name: Publish to maven
         run: |
-          ./gradlew publish
+          ./gradlew sonatypeCentralUpload
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-          MAVEN_PUBLISH_REGISTRY_URL: "https://s01.oss.sonatype.org/content/repositories/releases/"
+          MAVEN_PUBLISH_REGISTRY_URL: "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+          MAVEN_SIGNATURE_KID: ${{ secrets.MAVEN_SIGNATURE_KID }}
+          MAVEN_SIGNATURE_SECRET_KEY: ${{ secrets.MAVEN_SIGNATURE_SECRET_KEY }}
+          MAVEN_SIGNATURE_PASSWORD: ${{ secrets.MAVEN_SIGNATURE_PASSWORD }}
