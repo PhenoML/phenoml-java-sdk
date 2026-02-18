@@ -8,9 +8,6 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven {
-        url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-    }
 }
 
 dependencies {
@@ -47,7 +44,7 @@ java {
 
 group = 'com.phenoml.maven'
 
-version = '5.2.1'
+version = '5.2.2'
 
 jar {
     dependsOn(":generatePomFileForMavenPublication")
@@ -78,7 +75,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.phenoml.maven'
             artifactId = 'phenoml-java-sdk'
-            version = '5.2.1'
+            version = '5.2.2'
             from components.java
             pom {
                 name = 'phenoml'
@@ -107,8 +104,8 @@ publishing {
 }
 
 sonatypeCentralUpload {
-    username = "$System.env.MAVEN_USERNAME"
-    password = "$System.env.MAVEN_PASSWORD"
+    username = System.getenv("MAVEN_USERNAME") ?: ""
+    password = System.getenv("MAVEN_PASSWORD") ?: ""
 
     archives = files(
         "$buildDir/libs/phenoml-java-sdk-" + version + ".jar",
@@ -117,14 +114,14 @@ sonatypeCentralUpload {
     )
 
     pom = file("$buildDir/publications/maven/pom-default.xml")
-    signingKey = "$System.env.MAVEN_SIGNATURE_SECRET_KEY"
-    signingKeyPassphrase = "$System.env.MAVEN_SIGNATURE_PASSWORD"
+    signingKey = System.getenv("MAVEN_SIGNATURE_SECRET_KEY") ?: ""
+    signingKeyPassphrase = System.getenv("MAVEN_SIGNATURE_PASSWORD") ?: ""
 }
 
 signing {
-    def signingKeyId = "$System.env.MAVEN_SIGNATURE_KID"
-    def signingKey = "$System.env.MAVEN_SIGNATURE_SECRET_KEY"
-    def signingPassword = "$System.env.MAVEN_SIGNATURE_PASSWORD"
+    def signingKeyId = System.getenv("MAVEN_SIGNATURE_KID") ?: ""
+    def signingKey = System.getenv("MAVEN_SIGNATURE_SECRET_KEY") ?: ""
+    def signingPassword = System.getenv("MAVEN_SIGNATURE_PASSWORD") ?: ""
     useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
     sign publishing.publications.maven
 }
