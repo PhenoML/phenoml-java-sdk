@@ -771,7 +771,7 @@ public class AsyncRawAgentClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<Iterable<AgentChatStreamEvent>>> future = new CompletableFuture<>();
+        CompletableFuture<PhenoMLHttpResponse<Stream<AgentChatStreamEvent>>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
