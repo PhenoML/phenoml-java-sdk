@@ -1,3 +1,15 @@
+## 5.3.0 - 2026-02-20
+* feat: add streaming chat endpoint and refactor CI/build pipeline
+* This change introduces a new streaming chat capability for agent interactions and simplifies the deployment pipeline. The streaming endpoint allows real-time communication with agents via Server-Sent Events (SSE) while maintaining backward compatibility with the existing chat API.
+* Key changes:
+* Add new streamChat method with AgentStreamChatRequest and AgentChatStreamEvent types
+* Add support for Server-Sent Events (SSE) streaming in agent responses
+* Add "phenostore" as a new FHIR provider option
+* Simplify CI workflow by removing automatic tagging and switching to tag-based publishing
+* Update build configuration to use standard gradle publish task
+* Refactor environment variable handling in build.gradle for better reliability
+* 🌿 Generated with Fern
+
 ## 5.2.0 - 2026-02-17
 * feat: add enhanced reasoning option to AgentChatRequest
 * Add support for enhanced reasoning capabilities in agent chat requests. This optional parameter enables improved response quality and reliability at the cost of increased latency, giving users control over the performance vs quality tradeoff.
