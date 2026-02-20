@@ -710,8 +710,11 @@ public class AsyncRawAgentClient {
      * Send a message to an agent and receive the response as a Server-Sent Events
      * (SSE) stream. Events include message_start, content_delta, tool_use,
      * tool_result, message_end, and error.
+     * <p>
+     * The returned Stream implements Closeable and must be closed after use to release
+     * HTTP connections. Use try-with-resources or call close() explicitly.
      */
-    public CompletableFuture<PhenoMLHttpResponse<Iterable<AgentChatStreamEvent>>> streamChat(
+    public CompletableFuture<PhenoMLHttpResponse<Stream<AgentChatStreamEvent>>> streamChat(
             AgentStreamChatRequest request) {
         return streamChat(request, null);
     }
@@ -720,8 +723,11 @@ public class AsyncRawAgentClient {
      * Send a message to an agent and receive the response as a Server-Sent Events
      * (SSE) stream. Events include message_start, content_delta, tool_use,
      * tool_result, message_end, and error.
+     * <p>
+     * The returned Stream implements Closeable and must be closed after use to release
+     * HTTP connections. Use try-with-resources or call close() explicitly.
      */
-    public CompletableFuture<PhenoMLHttpResponse<Iterable<AgentChatStreamEvent>>> streamChat(
+    public CompletableFuture<PhenoMLHttpResponse<Stream<AgentChatStreamEvent>>> streamChat(
             AgentStreamChatRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -765,7 +771,7 @@ public class AsyncRawAgentClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<Iterable<AgentChatStreamEvent>>> future = new CompletableFuture<>();
+        CompletableFuture<PhenoMLHttpResponse<Stream<AgentChatStreamEvent>>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {

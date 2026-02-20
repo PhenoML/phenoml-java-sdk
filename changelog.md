@@ -1,13 +1,14 @@
 ## 5.3.0 - 2026-02-20
-* feat: add streaming chat endpoint and refactor CI/build pipeline
-* This change introduces a new streaming chat capability for agent interactions and simplifies the deployment pipeline. The streaming endpoint allows real-time communication with agents via Server-Sent Events (SSE) while maintaining backward compatibility with the existing chat API.
+* feat: add streaming chat capability and simplify CI workflow
+* Add streaming chat functionality to the agent API, allowing real-time Server-Sent Events (SSE) responses for better user experience. Streamline the CI/CD pipeline by removing automated tagging and simplifying publish workflow.
 * Key changes:
-* Add new streamChat method with AgentStreamChatRequest and AgentChatStreamEvent types
-* Add support for Server-Sent Events (SSE) streaming in agent responses
-* Add "phenostore" as a new FHIR provider option
-* Simplify CI workflow by removing automatic tagging and switching to tag-based publishing
-* Update build configuration to use standard gradle publish task
-* Refactor environment variable handling in build.gradle for better reliability
+* Add streamChat endpoint with SSE support for real-time agent responses
+* Include AgentStreamChatRequest and AgentChatStreamEvent types for streaming
+* Simplify GitHub Actions workflow by removing automatic tag creation job
+* Update publish job to trigger on manual tags instead of automatic ones
+* Change from sonatypeCentralUpload to standard publish gradle task
+* Add Sonatype staging repository configuration
+* Update documentation with streaming chat examples and usage
 * 🌿 Generated with Fern
 
 ## 5.2.0 - 2026-02-17

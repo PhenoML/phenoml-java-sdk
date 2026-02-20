@@ -11,6 +11,7 @@ import com.phenoml.api.resources.agent.requests.AgentChatRequest;
 import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
 import com.phenoml.api.resources.agent.requests.AgentListRequest;
 import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
+import com.phenoml.api.core.Stream;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
 import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
 import com.phenoml.api.resources.agent.types.AgentCreateRequest;
@@ -154,8 +155,11 @@ public class AsyncAgentClient {
      * Send a message to an agent and receive the response as a Server-Sent Events
      * (SSE) stream. Events include message_start, content_delta, tool_use,
      * tool_result, message_end, and error.
+     * <p>
+     * The returned Stream implements Closeable and must be closed after use to release
+     * HTTP connections. Use try-with-resources or call close() explicitly.
      */
-    public CompletableFuture<Iterable<AgentChatStreamEvent>> streamChat(AgentStreamChatRequest request) {
+    public CompletableFuture<Stream<AgentChatStreamEvent>> streamChat(AgentStreamChatRequest request) {
         return this.rawClient.streamChat(request).thenApply(response -> response.body());
     }
 
@@ -163,8 +167,11 @@ public class AsyncAgentClient {
      * Send a message to an agent and receive the response as a Server-Sent Events
      * (SSE) stream. Events include message_start, content_delta, tool_use,
      * tool_result, message_end, and error.
+     * <p>
+     * The returned Stream implements Closeable and must be closed after use to release
+     * HTTP connections. Use try-with-resources or call close() explicitly.
      */
-    public CompletableFuture<Iterable<AgentChatStreamEvent>> streamChat(
+    public CompletableFuture<Stream<AgentChatStreamEvent>> streamChat(
             AgentStreamChatRequest request, RequestOptions requestOptions) {
         return this.rawClient.streamChat(request, requestOptions).thenApply(response -> response.body());
     }
