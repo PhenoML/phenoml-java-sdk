@@ -20,6 +20,7 @@ import com.phenoml.api.resources.agent.errors.UnauthorizedError;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
 import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
 import com.phenoml.api.resources.agent.requests.AgentListRequest;
+import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
 import com.phenoml.api.resources.agent.types.AgentCreateRequest;
 import com.phenoml.api.resources.agent.types.AgentDeleteResponse;
@@ -452,14 +453,14 @@ public class RawAgentClient {
     }
 
     /**
-     * Send a message to an agent and receive a response
+     * Send a message to an agent and receive a JSON response.
      */
     public PhenoMLHttpResponse<AgentChatResponse> chat(AgentChatRequest request) {
         return chat(request, null);
     }
 
     /**
-     * Send a message to an agent and receive a response
+     * Send a message to an agent and receive a JSON response.
      */
     public PhenoMLHttpResponse<AgentChatResponse> chat(AgentChatRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
@@ -509,6 +510,97 @@ public class RawAgentClient {
             if (response.isSuccessful()) {
                 return new PhenoMLHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentChatResponse.class), response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            throw new PhenoMLApiException(
+                    "Error with status code " + response.code(),
+                    response.code(),
+                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                    response);
+        } catch (IOException e) {
+            throw new PhenoMLException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Send a message to an agent and receive the response as a Server-Sent Events
+     * (SSE) stream. Events include message_start, content_delta, tool_use,
+     * tool_result, message_end, and error.
+     */
+    public PhenoMLHttpResponse<Void> streamChat(AgentStreamChatRequest request) {
+        return streamChat(request, null);
+    }
+
+    /**
+     * Send a message to an agent and receive the response as a Server-Sent Events
+     * (SSE) stream. Events include message_start, content_delta, tool_use,
+     * tool_result, message_end, and error.
+     */
+    public PhenoMLHttpResponse<Void> streamChat(AgentStreamChatRequest request, RequestOptions requestOptions) {
+        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("agent/stream-chat")
+                .build();
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("message", request.getMessage());
+        if (request.getContext().isPresent()) {
+            properties.put("context", request.getContext());
+        }
+        if (request.getSessionId().isPresent()) {
+            properties.put("session_id", request.getSessionId());
+        }
+        properties.put("agent_id", request.getAgentId());
+        if (request.getEnhancedReasoning().isPresent()) {
+            properties.put("enhanced_reasoning", request.getEnhancedReasoning());
+        }
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(properties), MediaTypes.APPLICATION_JSON);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl)
+                .method("POST", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json");
+        if (request.getPhenomlOnBehalfOf().isPresent()) {
+            _requestBuilder.addHeader(
+                    "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
+        }
+        if (request.getPhenomlFhirProvider().isPresent()) {
+            _requestBuilder.addHeader(
+                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
+        }
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenoMLHttpResponse<>(null, response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {

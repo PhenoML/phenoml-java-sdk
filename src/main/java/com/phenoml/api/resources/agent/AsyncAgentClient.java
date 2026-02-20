@@ -10,6 +10,7 @@ import com.phenoml.api.resources.agent.prompts.AsyncPromptsClient;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
 import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
 import com.phenoml.api.resources.agent.requests.AgentListRequest;
+import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
 import com.phenoml.api.resources.agent.types.AgentCreateRequest;
 import com.phenoml.api.resources.agent.types.AgentDeleteResponse;
@@ -135,17 +136,35 @@ public class AsyncAgentClient {
     }
 
     /**
-     * Send a message to an agent and receive a response
+     * Send a message to an agent and receive a JSON response.
      */
     public CompletableFuture<AgentChatResponse> chat(AgentChatRequest request) {
         return this.rawClient.chat(request).thenApply(response -> response.body());
     }
 
     /**
-     * Send a message to an agent and receive a response
+     * Send a message to an agent and receive a JSON response.
      */
     public CompletableFuture<AgentChatResponse> chat(AgentChatRequest request, RequestOptions requestOptions) {
         return this.rawClient.chat(request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Send a message to an agent and receive the response as a Server-Sent Events
+     * (SSE) stream. Events include message_start, content_delta, tool_use,
+     * tool_result, message_end, and error.
+     */
+    public CompletableFuture<Void> streamChat(AgentStreamChatRequest request) {
+        return this.rawClient.streamChat(request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Send a message to an agent and receive the response as a Server-Sent Events
+     * (SSE) stream. Events include message_start, content_delta, tool_use,
+     * tool_result, message_end, and error.
+     */
+    public CompletableFuture<Void> streamChat(AgentStreamChatRequest request, RequestOptions requestOptions) {
+        return this.rawClient.streamChat(request, requestOptions).thenApply(response -> response.body());
     }
 
     /**

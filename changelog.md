@@ -1,3 +1,17 @@
+## 5.3.0 - 2026-02-20
+* feat: add streaming chat endpoint and simplify CI/CD workflow
+* Add new streaming chat capability to the agent client that supports Server-Sent Events (SSE) for real-time communication. The streaming endpoint enables incremental message delivery with events including message_start, content_delta, tool_use, tool_result, message_end, and error.
+* Streamline CI/CD pipeline by removing manual tagging workflow and simplifying publishing process. The workflow now triggers on tag pushes and uses standard Gradle publishing instead of Sonatype Central Upload.
+* Key changes:
+* Add streamChat() methods to AgentClient, AsyncAgentClient, and raw client implementations
+* Create AgentStreamChatRequest class with full builder pattern support
+* Add AgentChatStreamEvent type with comprehensive event handling
+* Remove complex CI tagging workflow in favor of tag-based publishing
+* Switch from sonatypeCentralUpload to standard Gradle publish task
+* Update Maven repository configuration for Sonatype staging
+* Improve existing chat endpoint documentation clarity
+* 🌿 Generated with Fern
+
 ## 5.2.0 - 2026-02-17
 * feat: add enhanced reasoning option to AgentChatRequest
 * Add support for enhanced reasoning capabilities in agent chat requests. This optional parameter enables improved response quality and reliability at the cost of increased latency, giving users control over the performance vs quality tradeoff.
