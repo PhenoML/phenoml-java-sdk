@@ -407,7 +407,7 @@ client.agent().patch(
 <dl>
 <dd>
 
-Send a message to an agent and receive a response
+Send a message to an agent and receive a JSON response.
 </dd>
 </dl>
 </dd>
@@ -424,6 +424,124 @@ Send a message to an agent and receive a response
 ```java
 client.agent().chat(
     AgentChatRequest
+        .builder()
+        .message("What is the patient's current condition?")
+        .agentId("agent-123")
+        .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
+        .phenomlFhirProvider("550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**phenomlOnBehalfOf:** `Optional<String>` 
+
+Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+Must be in the format: Patient/{uuid} or Practitioner/{uuid}
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**phenomlFhirProvider:** `Optional<String>` 
+
+Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+Multiple FHIR provider integrations can be provided as comma-separated values.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**message:** `String` — The message to send to the agent
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**context:** `Optional<String>` — Optional context for the conversation
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sessionId:** `Optional<String>` — Optional session ID for conversation continuity
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**agentId:** `String` — The ID of the agent to chat with
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**enhancedReasoning:** `Optional<Boolean>` — Enable enhanced reasoning capabilities, will increase latency but will also improve response quality and reliability.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.streamChat(request) -> Optional&amp;lt;AgentChatStreamEvent&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Send a message to an agent and receive the response as a Server-Sent Events
+(SSE) stream. Events include message_start, content_delta, tool_use,
+tool_result, message_end, and error.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.agent().streamChat(
+    AgentStreamChatRequest
         .builder()
         .message("What is the patient's current condition?")
         .agentId("agent-123")

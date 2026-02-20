@@ -1,4 +1,5 @@
 # Specify files that shouldn't be modified by Fern
+.github/workflows/ci.yml
 src/main/java/com/phenoml/api/wrapper/
 src/main/java/com/phenoml/api/Client.java
 src/main/java/com/phenoml/api/AsyncClient.java

@@ -12,6 +12,8 @@ import com.phenoml.api.core.PhenoMLException;
 import com.phenoml.api.core.PhenoMLHttpResponse;
 import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.core.ResponseBodyReader;
+import com.phenoml.api.core.Stream;
 import com.phenoml.api.resources.agent.errors.BadRequestError;
 import com.phenoml.api.resources.agent.errors.ForbiddenError;
 import com.phenoml.api.resources.agent.errors.InternalServerError;
@@ -20,7 +22,9 @@ import com.phenoml.api.resources.agent.errors.UnauthorizedError;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
 import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
 import com.phenoml.api.resources.agent.requests.AgentListRequest;
+import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
+import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
 import com.phenoml.api.resources.agent.types.AgentCreateRequest;
 import com.phenoml.api.resources.agent.types.AgentDeleteResponse;
 import com.phenoml.api.resources.agent.types.AgentGetChatMessagesResponse;
@@ -592,14 +596,14 @@ public class AsyncRawAgentClient {
     }
 
     /**
-     * Send a message to an agent and receive a response
+     * Send a message to an agent and receive a JSON response.
      */
     public CompletableFuture<PhenoMLHttpResponse<AgentChatResponse>> chat(AgentChatRequest request) {
         return chat(request, null);
     }
 
     /**
-     * Send a message to an agent and receive a response
+     * Send a message to an agent and receive a JSON response.
      */
     public CompletableFuture<PhenoMLHttpResponse<AgentChatResponse>> chat(
             AgentChatRequest request, RequestOptions requestOptions) {
@@ -653,6 +657,129 @@ public class AsyncRawAgentClient {
                     if (response.isSuccessful()) {
                         future.complete(new PhenoMLHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentChatResponse.class),
+                                response));
+                        return;
+                    }
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+                    try {
+                        switch (response.code()) {
+                            case 400:
+                                future.completeExceptionally(new BadRequestError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 401:
+                                future.completeExceptionally(new UnauthorizedError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 403:
+                                future.completeExceptionally(new ForbiddenError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 500:
+                                future.completeExceptionally(new InternalServerError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                        }
+                    } catch (JsonProcessingException ignored) {
+                        // unable to map error response, throwing generic error
+                    }
+                    future.completeExceptionally(new PhenoMLApiException(
+                            "Error with status code " + response.code(),
+                            response.code(),
+                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                            response));
+                    return;
+                } catch (IOException e) {
+                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+            }
+        });
+        return future;
+    }
+
+    /**
+     * Send a message to an agent and receive the response as a Server-Sent Events
+     * (SSE) stream. Events include message_start, content_delta, tool_use,
+     * tool_result, message_end, and error.
+     * <p>
+     * The returned Stream implements Closeable and must be closed after use to release
+     * HTTP connections. Use try-with-resources or call close() explicitly.
+     */
+    public CompletableFuture<PhenoMLHttpResponse<Stream<AgentChatStreamEvent>>> streamChat(
+            AgentStreamChatRequest request) {
+        return streamChat(request, null);
+    }
+
+    /**
+     * Send a message to an agent and receive the response as a Server-Sent Events
+     * (SSE) stream. Events include message_start, content_delta, tool_use,
+     * tool_result, message_end, and error.
+     * <p>
+     * The returned Stream implements Closeable and must be closed after use to release
+     * HTTP connections. Use try-with-resources or call close() explicitly.
+     */
+    public CompletableFuture<PhenoMLHttpResponse<Stream<AgentChatStreamEvent>>> streamChat(
+            AgentStreamChatRequest request, RequestOptions requestOptions) {
+        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("agent/stream-chat")
+                .build();
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("message", request.getMessage());
+        if (request.getContext().isPresent()) {
+            properties.put("context", request.getContext());
+        }
+        if (request.getSessionId().isPresent()) {
+            properties.put("session_id", request.getSessionId());
+        }
+        properties.put("agent_id", request.getAgentId());
+        if (request.getEnhancedReasoning().isPresent()) {
+            properties.put("enhanced_reasoning", request.getEnhancedReasoning());
+        }
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(properties), MediaTypes.APPLICATION_JSON);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl)
+                .method("POST", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json");
+        if (request.getPhenomlOnBehalfOf().isPresent()) {
+            _requestBuilder.addHeader(
+                    "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
+        }
+        if (request.getPhenomlFhirProvider().isPresent()) {
+            _requestBuilder.addHeader(
+                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
+        }
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        CompletableFuture<PhenoMLHttpResponse<Stream<AgentChatStreamEvent>>> future = new CompletableFuture<>();
+        client.newCall(okhttpRequest).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                try {
+                    ResponseBody responseBody = response.body();
+                    if (response.isSuccessful()) {
+                        future.complete(new PhenoMLHttpResponse<>(
+                                Stream.fromSse(AgentChatStreamEvent.class, new ResponseBodyReader(response)),
                                 response));
                         return;
                     }

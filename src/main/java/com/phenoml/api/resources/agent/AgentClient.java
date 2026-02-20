@@ -10,7 +10,10 @@ import com.phenoml.api.resources.agent.prompts.PromptsClient;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
 import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
 import com.phenoml.api.resources.agent.requests.AgentListRequest;
+import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
+import com.phenoml.api.core.Stream;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
+import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
 import com.phenoml.api.resources.agent.types.AgentCreateRequest;
 import com.phenoml.api.resources.agent.types.AgentDeleteResponse;
 import com.phenoml.api.resources.agent.types.AgentGetChatMessagesResponse;
@@ -132,17 +135,41 @@ public class AgentClient {
     }
 
     /**
-     * Send a message to an agent and receive a response
+     * Send a message to an agent and receive a JSON response.
      */
     public AgentChatResponse chat(AgentChatRequest request) {
         return this.rawClient.chat(request).body();
     }
 
     /**
-     * Send a message to an agent and receive a response
+     * Send a message to an agent and receive a JSON response.
      */
     public AgentChatResponse chat(AgentChatRequest request, RequestOptions requestOptions) {
         return this.rawClient.chat(request, requestOptions).body();
+    }
+
+    /**
+     * Send a message to an agent and receive the response as a Server-Sent Events
+     * (SSE) stream. Events include message_start, content_delta, tool_use,
+     * tool_result, message_end, and error.
+     * <p>
+     * The returned Stream implements Closeable and must be closed after use to release
+     * HTTP connections. Use try-with-resources or call close() explicitly.
+     */
+    public Stream<AgentChatStreamEvent> streamChat(AgentStreamChatRequest request) {
+        return this.rawClient.streamChat(request).body();
+    }
+
+    /**
+     * Send a message to an agent and receive the response as a Server-Sent Events
+     * (SSE) stream. Events include message_start, content_delta, tool_use,
+     * tool_result, message_end, and error.
+     * <p>
+     * The returned Stream implements Closeable and must be closed after use to release
+     * HTTP connections. Use try-with-resources or call close() explicitly.
+     */
+    public Stream<AgentChatStreamEvent> streamChat(AgentStreamChatRequest request, RequestOptions requestOptions) {
+        return this.rawClient.streamChat(request, requestOptions).body();
     }
 
     /**

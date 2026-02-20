@@ -1,3 +1,16 @@
+## 5.3.0 - 2026-02-20
+* feat: add streaming chat capability and simplify CI workflow
+* Add streaming chat functionality to the agent API, allowing real-time Server-Sent Events (SSE) responses for better user experience. Streamline the CI/CD pipeline by removing automated tagging and simplifying publish workflow.
+* Key changes:
+* Add streamChat endpoint with SSE support for real-time agent responses
+* Include AgentStreamChatRequest and AgentChatStreamEvent types for streaming
+* Simplify GitHub Actions workflow by removing automatic tag creation job
+* Update publish job to trigger on manual tags instead of automatic ones
+* Change from sonatypeCentralUpload to standard publish gradle task
+* Add Sonatype staging repository configuration
+* Update documentation with streaming chat examples and usage
+* 🌿 Generated with Fern
+
 ## 5.2.0 - 2026-02-17
 * feat: add enhanced reasoning option to AgentChatRequest
 * Add support for enhanced reasoning capabilities in agent chat requests. This optional parameter enables improved response quality and reliability at the cost of increased latency, giving users control over the performance vs quality tradeoff.
