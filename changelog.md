@@ -1,3 +1,11 @@
+## 5.4.0 - 2026-02-20
+* feat: add "phenostore" FHIR provider and improve binary compatibility
+* Add phenostore as a new FHIR provider option and fix Provider.Visitor interface to preserve binary compatibility with existing implementations.
+* Key changes:
+* Add "phenostore" as a new FHIR provider option in Provider enum
+* Add default visitPhenostore() method to Provider.Visitor to avoid breaking existing implementations
+* 🌿 Generated with Fern
+
 ## 5.3.0 - 2026-02-20
 * feat: add streaming chat capability and simplify CI workflow
 * Add streaming chat functionality to the agent API, allowing real-time Server-Sent Events (SSE) responses for better user experience. Streamline the CI/CD pipeline by removing automated tagging and simplifying publish workflow.
