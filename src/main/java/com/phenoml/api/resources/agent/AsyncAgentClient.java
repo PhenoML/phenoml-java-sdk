@@ -5,13 +5,13 @@ package com.phenoml.api.resources.agent;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.core.Stream;
 import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.agent.prompts.AsyncPromptsClient;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
 import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
 import com.phenoml.api.resources.agent.requests.AgentListRequest;
 import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
-import com.phenoml.api.core.Stream;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
 import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
 import com.phenoml.api.resources.agent.types.AgentCreateRequest;
