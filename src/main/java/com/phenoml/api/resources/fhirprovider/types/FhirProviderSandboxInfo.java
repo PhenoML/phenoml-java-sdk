@@ -28,8 +28,6 @@ public final class FhirProviderSandboxInfo {
 
     private final Optional<String> provider;
 
-    private final Optional<Boolean> isActive;
-
     private final Map<String, Object> additionalProperties;
 
     private FhirProviderSandboxInfo(
@@ -37,13 +35,11 @@ public final class FhirProviderSandboxInfo {
             Optional<String> name,
             Optional<String> description,
             Optional<String> provider,
-            Optional<Boolean> isActive,
             Map<String, Object> additionalProperties) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.provider = provider;
-        this.isActive = isActive;
         this.additionalProperties = additionalProperties;
     }
 
@@ -79,14 +75,6 @@ public final class FhirProviderSandboxInfo {
         return provider;
     }
 
-    /**
-     * @return Whether the FHIR provider is active
-     */
-    @JsonProperty("is_active")
-    public Optional<Boolean> getIsActive() {
-        return isActive;
-    }
-
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -102,13 +90,12 @@ public final class FhirProviderSandboxInfo {
         return id.equals(other.id)
                 && name.equals(other.name)
                 && description.equals(other.description)
-                && provider.equals(other.provider)
-                && isActive.equals(other.isActive);
+                && provider.equals(other.provider);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.id, this.name, this.description, this.provider, this.isActive);
+        return Objects.hash(this.id, this.name, this.description, this.provider);
     }
 
     @java.lang.Override
@@ -130,8 +117,6 @@ public final class FhirProviderSandboxInfo {
 
         private Optional<String> provider = Optional.empty();
 
-        private Optional<Boolean> isActive = Optional.empty();
-
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -142,7 +127,6 @@ public final class FhirProviderSandboxInfo {
             name(other.getName());
             description(other.getDescription());
             provider(other.getProvider());
-            isActive(other.getIsActive());
             return this;
         }
 
@@ -202,22 +186,8 @@ public final class FhirProviderSandboxInfo {
             return this;
         }
 
-        /**
-         * <p>Whether the FHIR provider is active</p>
-         */
-        @JsonSetter(value = "is_active", nulls = Nulls.SKIP)
-        public Builder isActive(Optional<Boolean> isActive) {
-            this.isActive = isActive;
-            return this;
-        }
-
-        public Builder isActive(Boolean isActive) {
-            this.isActive = Optional.ofNullable(isActive);
-            return this;
-        }
-
         public FhirProviderSandboxInfo build() {
-            return new FhirProviderSandboxInfo(id, name, description, provider, isActive, additionalProperties);
+            return new FhirProviderSandboxInfo(id, name, description, provider, additionalProperties);
         }
     }
 }

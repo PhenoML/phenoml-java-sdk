@@ -170,8 +170,6 @@ public final class McpServerResponse {
 
         private final Optional<String> mcpServerUrl;
 
-        private final Optional<Boolean> isActive;
-
         private final Map<String, Object> additionalProperties;
 
         private Data(
@@ -179,13 +177,11 @@ public final class McpServerResponse {
                 Optional<String> name,
                 Optional<String> description,
                 Optional<String> mcpServerUrl,
-                Optional<Boolean> isActive,
                 Map<String, Object> additionalProperties) {
             this.id = id;
             this.name = name;
             this.description = description;
             this.mcpServerUrl = mcpServerUrl;
-            this.isActive = isActive;
             this.additionalProperties = additionalProperties;
         }
 
@@ -221,14 +217,6 @@ public final class McpServerResponse {
             return mcpServerUrl;
         }
 
-        /**
-         * @return Whether the MCP server is active
-         */
-        @JsonProperty("is_active")
-        public Optional<Boolean> getIsActive() {
-            return isActive;
-        }
-
         @java.lang.Override
         public boolean equals(Object other) {
             if (this == other) return true;
@@ -244,13 +232,12 @@ public final class McpServerResponse {
             return id.equals(other.id)
                     && name.equals(other.name)
                     && description.equals(other.description)
-                    && mcpServerUrl.equals(other.mcpServerUrl)
-                    && isActive.equals(other.isActive);
+                    && mcpServerUrl.equals(other.mcpServerUrl);
         }
 
         @java.lang.Override
         public int hashCode() {
-            return Objects.hash(this.id, this.name, this.description, this.mcpServerUrl, this.isActive);
+            return Objects.hash(this.id, this.name, this.description, this.mcpServerUrl);
         }
 
         @java.lang.Override
@@ -272,8 +259,6 @@ public final class McpServerResponse {
 
             private Optional<String> mcpServerUrl = Optional.empty();
 
-            private Optional<Boolean> isActive = Optional.empty();
-
             @JsonAnySetter
             private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -284,7 +269,6 @@ public final class McpServerResponse {
                 name(other.getName());
                 description(other.getDescription());
                 mcpServerUrl(other.getMcpServerUrl());
-                isActive(other.getIsActive());
                 return this;
             }
 
@@ -344,22 +328,8 @@ public final class McpServerResponse {
                 return this;
             }
 
-            /**
-             * <p>Whether the MCP server is active</p>
-             */
-            @JsonSetter(value = "is_active", nulls = Nulls.SKIP)
-            public Builder isActive(Optional<Boolean> isActive) {
-                this.isActive = isActive;
-                return this;
-            }
-
-            public Builder isActive(Boolean isActive) {
-                this.isActive = Optional.ofNullable(isActive);
-                return this;
-            }
-
             public Data build() {
-                return new Data(id, name, description, mcpServerUrl, isActive, additionalProperties);
+                return new Data(id, name, description, mcpServerUrl, additionalProperties);
             }
         }
     }

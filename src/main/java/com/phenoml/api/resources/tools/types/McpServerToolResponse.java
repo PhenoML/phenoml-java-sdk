@@ -174,8 +174,6 @@ public final class McpServerToolResponse {
 
         private final Optional<String> mcpServerUrl;
 
-        private final Optional<Boolean> isActive;
-
         private final Map<String, Object> additionalProperties;
 
         private Data(
@@ -185,7 +183,6 @@ public final class McpServerToolResponse {
                 Optional<Map<String, Object>> inputSchema,
                 Optional<String> mcpServerId,
                 Optional<String> mcpServerUrl,
-                Optional<Boolean> isActive,
                 Map<String, Object> additionalProperties) {
             this.id = id;
             this.name = name;
@@ -193,7 +190,6 @@ public final class McpServerToolResponse {
             this.inputSchema = inputSchema;
             this.mcpServerId = mcpServerId;
             this.mcpServerUrl = mcpServerUrl;
-            this.isActive = isActive;
             this.additionalProperties = additionalProperties;
         }
 
@@ -245,14 +241,6 @@ public final class McpServerToolResponse {
             return mcpServerUrl;
         }
 
-        /**
-         * @return Whether the MCP server tool is active
-         */
-        @JsonProperty("is_active")
-        public Optional<Boolean> getIsActive() {
-            return isActive;
-        }
-
         @java.lang.Override
         public boolean equals(Object other) {
             if (this == other) return true;
@@ -270,20 +258,13 @@ public final class McpServerToolResponse {
                     && description.equals(other.description)
                     && inputSchema.equals(other.inputSchema)
                     && mcpServerId.equals(other.mcpServerId)
-                    && mcpServerUrl.equals(other.mcpServerUrl)
-                    && isActive.equals(other.isActive);
+                    && mcpServerUrl.equals(other.mcpServerUrl);
         }
 
         @java.lang.Override
         public int hashCode() {
             return Objects.hash(
-                    this.id,
-                    this.name,
-                    this.description,
-                    this.inputSchema,
-                    this.mcpServerId,
-                    this.mcpServerUrl,
-                    this.isActive);
+                    this.id, this.name, this.description, this.inputSchema, this.mcpServerId, this.mcpServerUrl);
         }
 
         @java.lang.Override
@@ -309,8 +290,6 @@ public final class McpServerToolResponse {
 
             private Optional<String> mcpServerUrl = Optional.empty();
 
-            private Optional<Boolean> isActive = Optional.empty();
-
             @JsonAnySetter
             private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -323,7 +302,6 @@ public final class McpServerToolResponse {
                 inputSchema(other.getInputSchema());
                 mcpServerId(other.getMcpServerId());
                 mcpServerUrl(other.getMcpServerUrl());
-                isActive(other.getIsActive());
                 return this;
             }
 
@@ -411,23 +389,8 @@ public final class McpServerToolResponse {
                 return this;
             }
 
-            /**
-             * <p>Whether the MCP server tool is active</p>
-             */
-            @JsonSetter(value = "is_active", nulls = Nulls.SKIP)
-            public Builder isActive(Optional<Boolean> isActive) {
-                this.isActive = isActive;
-                return this;
-            }
-
-            public Builder isActive(Boolean isActive) {
-                this.isActive = Optional.ofNullable(isActive);
-                return this;
-            }
-
             public Data build() {
-                return new Data(
-                        id, name, description, inputSchema, mcpServerId, mcpServerUrl, isActive, additionalProperties);
+                return new Data(id, name, description, inputSchema, mcpServerId, mcpServerUrl, additionalProperties);
             }
         }
     }

@@ -3170,7 +3170,7 @@ client.fhirProvider().get("fhir_provider_id");
 <dl>
 <dd>
 
-Soft deletes a FHIR provider by setting is_active to false.
+Deletes a FHIR provider.
 
 Note: Sandbox providers cannot be deleted.
 </dd>

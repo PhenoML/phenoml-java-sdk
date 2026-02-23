@@ -35,8 +35,6 @@ public final class FhirProviderTemplate {
 
     private final Optional<Map<String, FhirProviderAuthConfig>> authConfigs;
 
-    private final Optional<Boolean> isActive;
-
     private final Optional<OffsetDateTime> lastUpdated;
 
     private final Map<String, Object> additionalProperties;
@@ -49,7 +47,6 @@ public final class FhirProviderTemplate {
             Optional<String> baseUrl,
             Optional<String> clientId,
             Optional<Map<String, FhirProviderAuthConfig>> authConfigs,
-            Optional<Boolean> isActive,
             Optional<OffsetDateTime> lastUpdated,
             Map<String, Object> additionalProperties) {
         this.id = id;
@@ -59,7 +56,6 @@ public final class FhirProviderTemplate {
         this.baseUrl = baseUrl;
         this.clientId = clientId;
         this.authConfigs = authConfigs;
-        this.isActive = isActive;
         this.lastUpdated = lastUpdated;
         this.additionalProperties = additionalProperties;
     }
@@ -118,14 +114,6 @@ public final class FhirProviderTemplate {
     }
 
     /**
-     * @return Whether the FHIR provider is active
-     */
-    @JsonProperty("is_active")
-    public Optional<Boolean> getIsActive() {
-        return isActive;
-    }
-
-    /**
      * @return Timestamp when the provider was last updated
      */
     @JsonProperty("last_updated")
@@ -152,7 +140,6 @@ public final class FhirProviderTemplate {
                 && baseUrl.equals(other.baseUrl)
                 && clientId.equals(other.clientId)
                 && authConfigs.equals(other.authConfigs)
-                && isActive.equals(other.isActive)
                 && lastUpdated.equals(other.lastUpdated);
     }
 
@@ -166,7 +153,6 @@ public final class FhirProviderTemplate {
                 this.baseUrl,
                 this.clientId,
                 this.authConfigs,
-                this.isActive,
                 this.lastUpdated);
     }
 
@@ -195,8 +181,6 @@ public final class FhirProviderTemplate {
 
         private Optional<Map<String, FhirProviderAuthConfig>> authConfigs = Optional.empty();
 
-        private Optional<Boolean> isActive = Optional.empty();
-
         private Optional<OffsetDateTime> lastUpdated = Optional.empty();
 
         @JsonAnySetter
@@ -212,7 +196,6 @@ public final class FhirProviderTemplate {
             baseUrl(other.getBaseUrl());
             clientId(other.getClientId());
             authConfigs(other.getAuthConfigs());
-            isActive(other.getIsActive());
             lastUpdated(other.getLastUpdated());
             return this;
         }
@@ -313,20 +296,6 @@ public final class FhirProviderTemplate {
         }
 
         /**
-         * <p>Whether the FHIR provider is active</p>
-         */
-        @JsonSetter(value = "is_active", nulls = Nulls.SKIP)
-        public Builder isActive(Optional<Boolean> isActive) {
-            this.isActive = isActive;
-            return this;
-        }
-
-        public Builder isActive(Boolean isActive) {
-            this.isActive = Optional.ofNullable(isActive);
-            return this;
-        }
-
-        /**
          * <p>Timestamp when the provider was last updated</p>
          */
         @JsonSetter(value = "last_updated", nulls = Nulls.SKIP)
@@ -342,16 +311,7 @@ public final class FhirProviderTemplate {
 
         public FhirProviderTemplate build() {
             return new FhirProviderTemplate(
-                    id,
-                    name,
-                    description,
-                    provider,
-                    baseUrl,
-                    clientId,
-                    authConfigs,
-                    isActive,
-                    lastUpdated,
-                    additionalProperties);
+                    id, name, description, provider, baseUrl, clientId, authConfigs, lastUpdated, additionalProperties);
         }
     }
 }

@@ -235,7 +235,7 @@ public class RawFhirProviderClient {
     }
 
     /**
-     * Soft deletes a FHIR provider by setting is_active to false.
+     * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
     public PhenoMLHttpResponse<FhirProviderDeleteResponse> delete(String fhirProviderId) {
@@ -243,7 +243,7 @@ public class RawFhirProviderClient {
     }
 
     /**
-     * Soft deletes a FHIR provider by setting is_active to false.
+     * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
     public PhenoMLHttpResponse<FhirProviderDeleteResponse> delete(
