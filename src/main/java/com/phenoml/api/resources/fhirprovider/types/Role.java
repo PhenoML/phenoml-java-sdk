@@ -7,41 +7,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class Role {
-    public static final Role CERNER_SMART_V_2_ADMIN = new Role(Value.CERNER_SMART_V_2_ADMIN, "CernerSmartV2Admin");
+    public static final Role WRITE = new Role(Value.WRITE, "write");
 
-    public static final Role USCDI_SMART_V_2_READ = new Role(Value.USCDI_SMART_V_2_READ, "USCDISmartV2Read");
+    public static final Role ADMIN = new Role(Value.ADMIN, "admin");
 
-    public static final Role SMART_V_1_READ = new Role(Value.SMART_V_1_READ, "SmartV1Read");
-
-    public static final Role USCDI_SMART_V_1_WRITE = new Role(Value.USCDI_SMART_V_1_WRITE, "USCDISmartV1Write");
-
-    public static final Role SMART_V_1_WRITE = new Role(Value.SMART_V_1_WRITE, "SmartV1Write");
-
-    public static final Role CERNER_SMART_V_1_READ = new Role(Value.CERNER_SMART_V_1_READ, "CernerSmartV1Read");
-
-    public static final Role USCDI_SMART_V_1_ADMIN = new Role(Value.USCDI_SMART_V_1_ADMIN, "USCDISmartV1Admin");
-
-    public static final Role SMART_V_1_ADMIN = new Role(Value.SMART_V_1_ADMIN, "SmartV1Admin");
-
-    public static final Role USCDI_SMART_V_1_READ = new Role(Value.USCDI_SMART_V_1_READ, "USCDISmartV1Read");
-
-    public static final Role CERNER_SMART_V_1_WRITE = new Role(Value.CERNER_SMART_V_1_WRITE, "CernerSmartV1Write");
-
-    public static final Role CERNER_SMART_V_1_ADMIN = new Role(Value.CERNER_SMART_V_1_ADMIN, "CernerSmartV1Admin");
-
-    public static final Role USCDI_SMART_V_2_WRITE = new Role(Value.USCDI_SMART_V_2_WRITE, "USCDISmartV2Write");
-
-    public static final Role SMART_V_2_WRITE = new Role(Value.SMART_V_2_WRITE, "SmartV2Write");
-
-    public static final Role USCDI_SMART_V_2_ADMIN = new Role(Value.USCDI_SMART_V_2_ADMIN, "USCDISmartV2Admin");
-
-    public static final Role SMART_V_2_ADMIN = new Role(Value.SMART_V_2_ADMIN, "SmartV2Admin");
-
-    public static final Role SMART_V_2_READ = new Role(Value.SMART_V_2_READ, "SmartV2Read");
-
-    public static final Role CERNER_SMART_V_2_READ = new Role(Value.CERNER_SMART_V_2_READ, "CernerSmartV2Read");
-
-    public static final Role CERNER_SMART_V_2_WRITE = new Role(Value.CERNER_SMART_V_2_WRITE, "CernerSmartV2Write");
+    public static final Role READ = new Role(Value.READ, "read");
 
     private final Value value;
 
@@ -74,42 +44,12 @@ public final class Role {
 
     public <T> T visit(Visitor<T> visitor) {
         switch (value) {
-            case CERNER_SMART_V_2_ADMIN:
-                return visitor.visitCernerSmartV2Admin();
-            case USCDI_SMART_V_2_READ:
-                return visitor.visitUscdiSmartV2Read();
-            case SMART_V_1_READ:
-                return visitor.visitSmartV1Read();
-            case USCDI_SMART_V_1_WRITE:
-                return visitor.visitUscdiSmartV1Write();
-            case SMART_V_1_WRITE:
-                return visitor.visitSmartV1Write();
-            case CERNER_SMART_V_1_READ:
-                return visitor.visitCernerSmartV1Read();
-            case USCDI_SMART_V_1_ADMIN:
-                return visitor.visitUscdiSmartV1Admin();
-            case SMART_V_1_ADMIN:
-                return visitor.visitSmartV1Admin();
-            case USCDI_SMART_V_1_READ:
-                return visitor.visitUscdiSmartV1Read();
-            case CERNER_SMART_V_1_WRITE:
-                return visitor.visitCernerSmartV1Write();
-            case CERNER_SMART_V_1_ADMIN:
-                return visitor.visitCernerSmartV1Admin();
-            case USCDI_SMART_V_2_WRITE:
-                return visitor.visitUscdiSmartV2Write();
-            case SMART_V_2_WRITE:
-                return visitor.visitSmartV2Write();
-            case USCDI_SMART_V_2_ADMIN:
-                return visitor.visitUscdiSmartV2Admin();
-            case SMART_V_2_ADMIN:
-                return visitor.visitSmartV2Admin();
-            case SMART_V_2_READ:
-                return visitor.visitSmartV2Read();
-            case CERNER_SMART_V_2_READ:
-                return visitor.visitCernerSmartV2Read();
-            case CERNER_SMART_V_2_WRITE:
-                return visitor.visitCernerSmartV2Write();
+            case WRITE:
+                return visitor.visitWrite();
+            case ADMIN:
+                return visitor.visitAdmin();
+            case READ:
+                return visitor.visitRead();
             case UNKNOWN:
             default:
                 return visitor.visitUnknown(string);
@@ -119,123 +59,33 @@ public final class Role {
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static Role valueOf(String value) {
         switch (value) {
-            case "CernerSmartV2Admin":
-                return CERNER_SMART_V_2_ADMIN;
-            case "USCDISmartV2Read":
-                return USCDI_SMART_V_2_READ;
-            case "SmartV1Read":
-                return SMART_V_1_READ;
-            case "USCDISmartV1Write":
-                return USCDI_SMART_V_1_WRITE;
-            case "SmartV1Write":
-                return SMART_V_1_WRITE;
-            case "CernerSmartV1Read":
-                return CERNER_SMART_V_1_READ;
-            case "USCDISmartV1Admin":
-                return USCDI_SMART_V_1_ADMIN;
-            case "SmartV1Admin":
-                return SMART_V_1_ADMIN;
-            case "USCDISmartV1Read":
-                return USCDI_SMART_V_1_READ;
-            case "CernerSmartV1Write":
-                return CERNER_SMART_V_1_WRITE;
-            case "CernerSmartV1Admin":
-                return CERNER_SMART_V_1_ADMIN;
-            case "USCDISmartV2Write":
-                return USCDI_SMART_V_2_WRITE;
-            case "SmartV2Write":
-                return SMART_V_2_WRITE;
-            case "USCDISmartV2Admin":
-                return USCDI_SMART_V_2_ADMIN;
-            case "SmartV2Admin":
-                return SMART_V_2_ADMIN;
-            case "SmartV2Read":
-                return SMART_V_2_READ;
-            case "CernerSmartV2Read":
-                return CERNER_SMART_V_2_READ;
-            case "CernerSmartV2Write":
-                return CERNER_SMART_V_2_WRITE;
+            case "write":
+                return WRITE;
+            case "admin":
+                return ADMIN;
+            case "read":
+                return READ;
             default:
                 return new Role(Value.UNKNOWN, value);
         }
     }
 
     public enum Value {
-        SMART_V_1_ADMIN,
+        ADMIN,
 
-        SMART_V_1_READ,
+        READ,
 
-        SMART_V_1_WRITE,
-
-        SMART_V_2_ADMIN,
-
-        SMART_V_2_READ,
-
-        SMART_V_2_WRITE,
-
-        USCDI_SMART_V_1_ADMIN,
-
-        USCDI_SMART_V_1_READ,
-
-        USCDI_SMART_V_1_WRITE,
-
-        USCDI_SMART_V_2_ADMIN,
-
-        USCDI_SMART_V_2_READ,
-
-        USCDI_SMART_V_2_WRITE,
-
-        CERNER_SMART_V_1_ADMIN,
-
-        CERNER_SMART_V_1_READ,
-
-        CERNER_SMART_V_1_WRITE,
-
-        CERNER_SMART_V_2_ADMIN,
-
-        CERNER_SMART_V_2_READ,
-
-        CERNER_SMART_V_2_WRITE,
+        WRITE,
 
         UNKNOWN
     }
 
     public interface Visitor<T> {
-        T visitSmartV1Admin();
+        T visitAdmin();
 
-        T visitSmartV1Read();
+        T visitRead();
 
-        T visitSmartV1Write();
-
-        T visitSmartV2Admin();
-
-        T visitSmartV2Read();
-
-        T visitSmartV2Write();
-
-        T visitUscdiSmartV1Admin();
-
-        T visitUscdiSmartV1Read();
-
-        T visitUscdiSmartV1Write();
-
-        T visitUscdiSmartV2Admin();
-
-        T visitUscdiSmartV2Read();
-
-        T visitUscdiSmartV2Write();
-
-        T visitCernerSmartV1Admin();
-
-        T visitCernerSmartV1Read();
-
-        T visitCernerSmartV1Write();
-
-        T visitCernerSmartV2Admin();
-
-        T visitCernerSmartV2Read();
-
-        T visitCernerSmartV2Write();
+        T visitWrite();
 
         T visitUnknown(String unknownType);
     }

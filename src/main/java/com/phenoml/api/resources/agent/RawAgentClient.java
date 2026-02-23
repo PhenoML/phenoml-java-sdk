@@ -547,11 +547,8 @@ public class RawAgentClient {
      * Send a message to an agent and receive the response as a Server-Sent Events
      * (SSE) stream. Events include message_start, content_delta, tool_use,
      * tool_result, message_end, and error.
-     * <p>
-     * The returned Stream implements Closeable and must be closed after use to release
-     * HTTP connections. Use try-with-resources or call close() explicitly.
      */
-    public PhenoMLHttpResponse<Stream<AgentChatStreamEvent>> streamChat(AgentStreamChatRequest request) {
+    public PhenoMLHttpResponse<Iterable<AgentChatStreamEvent>> streamChat(AgentStreamChatRequest request) {
         return streamChat(request, null);
     }
 
@@ -559,11 +556,8 @@ public class RawAgentClient {
      * Send a message to an agent and receive the response as a Server-Sent Events
      * (SSE) stream. Events include message_start, content_delta, tool_use,
      * tool_result, message_end, and error.
-     * <p>
-     * The returned Stream implements Closeable and must be closed after use to release
-     * HTTP connections. Use try-with-resources or call close() explicitly.
      */
-    public PhenoMLHttpResponse<Stream<AgentChatStreamEvent>> streamChat(
+    public PhenoMLHttpResponse<Iterable<AgentChatStreamEvent>> streamChat(
             AgentStreamChatRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()

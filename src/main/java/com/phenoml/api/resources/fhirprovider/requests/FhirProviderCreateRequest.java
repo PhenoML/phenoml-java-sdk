@@ -16,6 +16,7 @@ import com.phenoml.api.resources.fhirprovider.types.AuthMethod;
 import com.phenoml.api.resources.fhirprovider.types.Provider;
 import com.phenoml.api.resources.fhirprovider.types.Role;
 import com.phenoml.api.resources.fhirprovider.types.ServiceAccountKey;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -41,6 +42,8 @@ public final class FhirProviderCreateRequest {
 
     private final Optional<ServiceAccountKey> serviceAccountKey;
 
+    private final Optional<OffsetDateTime> credentialExpiry;
+
     private final Optional<Role> role;
 
     private final Optional<String> scopes;
@@ -56,6 +59,7 @@ public final class FhirProviderCreateRequest {
             Optional<String> clientId,
             Optional<String> clientSecret,
             Optional<ServiceAccountKey> serviceAccountKey,
+            Optional<OffsetDateTime> credentialExpiry,
             Optional<Role> role,
             Optional<String> scopes,
             Map<String, Object> additionalProperties) {
@@ -67,6 +71,7 @@ public final class FhirProviderCreateRequest {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.serviceAccountKey = serviceAccountKey;
+        this.credentialExpiry = credentialExpiry;
         this.role = role;
         this.scopes = scopes;
         this.additionalProperties = additionalProperties;
@@ -107,7 +112,7 @@ public final class FhirProviderCreateRequest {
     }
 
     /**
-     * @return OAuth client ID (required for most auth methods)
+     * @return OAuth client ID (required for jwt, client_secret, and on_behalf_of auth methods)
      */
     @JsonProperty("client_id")
     public Optional<String> getClientId() {
@@ -127,13 +132,21 @@ public final class FhirProviderCreateRequest {
         return serviceAccountKey;
     }
 
+    /**
+     * @return Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.
+     */
+    @JsonProperty("credential_expiry")
+    public Optional<OffsetDateTime> getCredentialExpiry() {
+        return credentialExpiry;
+    }
+
     @JsonProperty("role")
     public Optional<Role> getRole() {
         return role;
     }
 
     /**
-     * @return OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.
+     * @return OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to <code>client_secret</code>, <code>jwt</code>, and <code>on_behalf_of</code> auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.
      */
     @JsonProperty("scopes")
     public Optional<String> getScopes() {
@@ -160,6 +173,7 @@ public final class FhirProviderCreateRequest {
                 && clientId.equals(other.clientId)
                 && clientSecret.equals(other.clientSecret)
                 && serviceAccountKey.equals(other.serviceAccountKey)
+                && credentialExpiry.equals(other.credentialExpiry)
                 && role.equals(other.role)
                 && scopes.equals(other.scopes);
     }
@@ -175,6 +189,7 @@ public final class FhirProviderCreateRequest {
                 this.clientId,
                 this.clientSecret,
                 this.serviceAccountKey,
+                this.credentialExpiry,
                 this.role,
                 this.scopes);
     }
@@ -223,7 +238,7 @@ public final class FhirProviderCreateRequest {
         _FinalStage description(String description);
 
         /**
-         * <p>OAuth client ID (required for most auth methods)</p>
+         * <p>OAuth client ID (required for jwt, client_secret, and on_behalf_of auth methods)</p>
          */
         _FinalStage clientId(Optional<String> clientId);
 
@@ -240,12 +255,19 @@ public final class FhirProviderCreateRequest {
 
         _FinalStage serviceAccountKey(ServiceAccountKey serviceAccountKey);
 
+        /**
+         * <p>Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.</p>
+         */
+        _FinalStage credentialExpiry(Optional<OffsetDateTime> credentialExpiry);
+
+        _FinalStage credentialExpiry(OffsetDateTime credentialExpiry);
+
         _FinalStage role(Optional<Role> role);
 
         _FinalStage role(Role role);
 
         /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.</p>
+         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to <code>client_secret</code>, <code>jwt</code>, and <code>on_behalf_of</code> auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.</p>
          */
         _FinalStage scopes(Optional<String> scopes);
 
@@ -265,6 +287,8 @@ public final class FhirProviderCreateRequest {
         private Optional<String> scopes = Optional.empty();
 
         private Optional<Role> role = Optional.empty();
+
+        private Optional<OffsetDateTime> credentialExpiry = Optional.empty();
 
         private Optional<ServiceAccountKey> serviceAccountKey = Optional.empty();
 
@@ -289,6 +313,7 @@ public final class FhirProviderCreateRequest {
             clientId(other.getClientId());
             clientSecret(other.getClientSecret());
             serviceAccountKey(other.getServiceAccountKey());
+            credentialExpiry(other.getCredentialExpiry());
             role(other.getRole());
             scopes(other.getScopes());
             return this;
@@ -333,7 +358,7 @@ public final class FhirProviderCreateRequest {
         }
 
         /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.</p>
+         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to <code>client_secret</code>, <code>jwt</code>, and <code>on_behalf_of</code> auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -343,7 +368,7 @@ public final class FhirProviderCreateRequest {
         }
 
         /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.</p>
+         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to <code>client_secret</code>, <code>jwt</code>, and <code>on_behalf_of</code> auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "scopes", nulls = Nulls.SKIP)
@@ -362,6 +387,26 @@ public final class FhirProviderCreateRequest {
         @JsonSetter(value = "role", nulls = Nulls.SKIP)
         public _FinalStage role(Optional<Role> role) {
             this.role = role;
+            return this;
+        }
+
+        /**
+         * <p>Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage credentialExpiry(OffsetDateTime credentialExpiry) {
+            this.credentialExpiry = Optional.ofNullable(credentialExpiry);
+            return this;
+        }
+
+        /**
+         * <p>Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "credential_expiry", nulls = Nulls.SKIP)
+        public _FinalStage credentialExpiry(Optional<OffsetDateTime> credentialExpiry) {
+            this.credentialExpiry = credentialExpiry;
             return this;
         }
 
@@ -399,7 +444,7 @@ public final class FhirProviderCreateRequest {
         }
 
         /**
-         * <p>OAuth client ID (required for most auth methods)</p>
+         * <p>OAuth client ID (required for jwt, client_secret, and on_behalf_of auth methods)</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -409,7 +454,7 @@ public final class FhirProviderCreateRequest {
         }
 
         /**
-         * <p>OAuth client ID (required for most auth methods)</p>
+         * <p>OAuth client ID (required for jwt, client_secret, and on_behalf_of auth methods)</p>
          */
         @java.lang.Override
         @JsonSetter(value = "client_id", nulls = Nulls.SKIP)
@@ -449,6 +494,7 @@ public final class FhirProviderCreateRequest {
                     clientId,
                     clientSecret,
                     serviceAccountKey,
+                    credentialExpiry,
                     role,
                     scopes,
                     additionalProperties);
