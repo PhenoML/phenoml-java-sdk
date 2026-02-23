@@ -153,9 +153,7 @@ public final class Provider {
 
         T visitMedplum();
 
-        default T visitPhenostore() {
-            return visitUnknown("phenostore");
-        }
+        T visitPhenostore();
 
         T visitSandbox();
 

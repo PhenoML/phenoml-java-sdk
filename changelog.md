@@ -1,3 +1,17 @@
+## 5.5.0 - 2026-02-23
+* feat: update streaming methods and add new provider role types
+* This update modernizes the agent streaming API by changing return types from Stream to Iterable across all client implementations. Additionally, it enhances FHIR provider authentication configuration with more specific role support for different provider types and improved documentation for auth method requirements.
+* Key changes:
+* Update streamChat methods to return Iterable<AgentChatStreamEvent> instead of Stream
+* Remove Stream-related imports and Closeable documentation references
+* Add provider-specific role types (AthenaHealthRole, CernerRole, ElationRole, EpicRole, MedplumRole, PhenostoreRole)
+* Refactor Role enum to use union type pattern with visitor support
+* Add credentialExpiry field to FhirProviderCreateRequest
+* Update clientId documentation to specify required auth methods (jwt, client_secret, on_behalf_of)
+* Enhance scopes field documentation with auth method compatibility details
+* Improve credentialExpiry documentation to mention default expiry behavior
+* 🌿 Generated with Fern
+
 ## 5.4.0 - 2026-02-20
 * feat: add "phenostore" FHIR provider and improve binary compatibility
 * Add phenostore as a new FHIR provider option and fix Provider.Visitor interface to preserve binary compatibility with existing implementations.

@@ -3,240 +3,141 @@
  */
 package com.phenoml.api.resources.fhirprovider.types;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.phenoml.api.core.ObjectMappers;
+import java.io.IOException;
+import java.util.Objects;
 
+@JsonDeserialize(using = Role.Deserializer.class)
 public final class Role {
-    public static final Role CERNER_SMART_V_2_ADMIN = new Role(Value.CERNER_SMART_V_2_ADMIN, "CernerSmartV2Admin");
+    private final Object value;
 
-    public static final Role USCDI_SMART_V_2_READ = new Role(Value.USCDI_SMART_V_2_READ, "USCDISmartV2Read");
+    private final int type;
 
-    public static final Role SMART_V_1_READ = new Role(Value.SMART_V_1_READ, "SmartV1Read");
-
-    public static final Role USCDI_SMART_V_1_WRITE = new Role(Value.USCDI_SMART_V_1_WRITE, "USCDISmartV1Write");
-
-    public static final Role SMART_V_1_WRITE = new Role(Value.SMART_V_1_WRITE, "SmartV1Write");
-
-    public static final Role CERNER_SMART_V_1_READ = new Role(Value.CERNER_SMART_V_1_READ, "CernerSmartV1Read");
-
-    public static final Role USCDI_SMART_V_1_ADMIN = new Role(Value.USCDI_SMART_V_1_ADMIN, "USCDISmartV1Admin");
-
-    public static final Role SMART_V_1_ADMIN = new Role(Value.SMART_V_1_ADMIN, "SmartV1Admin");
-
-    public static final Role USCDI_SMART_V_1_READ = new Role(Value.USCDI_SMART_V_1_READ, "USCDISmartV1Read");
-
-    public static final Role CERNER_SMART_V_1_WRITE = new Role(Value.CERNER_SMART_V_1_WRITE, "CernerSmartV1Write");
-
-    public static final Role CERNER_SMART_V_1_ADMIN = new Role(Value.CERNER_SMART_V_1_ADMIN, "CernerSmartV1Admin");
-
-    public static final Role USCDI_SMART_V_2_WRITE = new Role(Value.USCDI_SMART_V_2_WRITE, "USCDISmartV2Write");
-
-    public static final Role SMART_V_2_WRITE = new Role(Value.SMART_V_2_WRITE, "SmartV2Write");
-
-    public static final Role USCDI_SMART_V_2_ADMIN = new Role(Value.USCDI_SMART_V_2_ADMIN, "USCDISmartV2Admin");
-
-    public static final Role SMART_V_2_ADMIN = new Role(Value.SMART_V_2_ADMIN, "SmartV2Admin");
-
-    public static final Role SMART_V_2_READ = new Role(Value.SMART_V_2_READ, "SmartV2Read");
-
-    public static final Role CERNER_SMART_V_2_READ = new Role(Value.CERNER_SMART_V_2_READ, "CernerSmartV2Read");
-
-    public static final Role CERNER_SMART_V_2_WRITE = new Role(Value.CERNER_SMART_V_2_WRITE, "CernerSmartV2Write");
-
-    private final Value value;
-
-    private final String string;
-
-    Role(Value value, String string) {
+    private Role(Object value, int type) {
         this.value = value;
-        this.string = string;
+        this.type = type;
     }
 
-    public Value getEnumValue() {
-        return value;
-    }
-
-    @java.lang.Override
     @JsonValue
-    public String toString() {
-        return this.string;
+    public Object get() {
+        return this.value;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T visit(Visitor<T> visitor) {
+        if (this.type == 0) {
+            return visitor.visit((EpicRole) this.value);
+        } else if (this.type == 1) {
+            return visitor.visit((CernerRole) this.value);
+        } else if (this.type == 2) {
+            return visitor.visit((AthenaHealthRole) this.value);
+        } else if (this.type == 3) {
+            return visitor.visit((MedplumRole) this.value);
+        } else if (this.type == 4) {
+            return visitor.visit((ElationRole) this.value);
+        } else if (this.type == 5) {
+            return visitor.visit((PhenostoreRole) this.value);
+        }
+        throw new IllegalStateException("Failed to visit value. This should never happen.");
     }
 
     @java.lang.Override
     public boolean equals(Object other) {
-        return (this == other) || (other instanceof Role && this.string.equals(((Role) other).string));
+        if (this == other) return true;
+        return other instanceof Role && equalTo((Role) other);
+    }
+
+    private boolean equalTo(Role other) {
+        return value.equals(other.value);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return this.string.hashCode();
+        return Objects.hash(this.value);
     }
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case CERNER_SMART_V_2_ADMIN:
-                return visitor.visitCernerSmartV2Admin();
-            case USCDI_SMART_V_2_READ:
-                return visitor.visitUscdiSmartV2Read();
-            case SMART_V_1_READ:
-                return visitor.visitSmartV1Read();
-            case USCDI_SMART_V_1_WRITE:
-                return visitor.visitUscdiSmartV1Write();
-            case SMART_V_1_WRITE:
-                return visitor.visitSmartV1Write();
-            case CERNER_SMART_V_1_READ:
-                return visitor.visitCernerSmartV1Read();
-            case USCDI_SMART_V_1_ADMIN:
-                return visitor.visitUscdiSmartV1Admin();
-            case SMART_V_1_ADMIN:
-                return visitor.visitSmartV1Admin();
-            case USCDI_SMART_V_1_READ:
-                return visitor.visitUscdiSmartV1Read();
-            case CERNER_SMART_V_1_WRITE:
-                return visitor.visitCernerSmartV1Write();
-            case CERNER_SMART_V_1_ADMIN:
-                return visitor.visitCernerSmartV1Admin();
-            case USCDI_SMART_V_2_WRITE:
-                return visitor.visitUscdiSmartV2Write();
-            case SMART_V_2_WRITE:
-                return visitor.visitSmartV2Write();
-            case USCDI_SMART_V_2_ADMIN:
-                return visitor.visitUscdiSmartV2Admin();
-            case SMART_V_2_ADMIN:
-                return visitor.visitSmartV2Admin();
-            case SMART_V_2_READ:
-                return visitor.visitSmartV2Read();
-            case CERNER_SMART_V_2_READ:
-                return visitor.visitCernerSmartV2Read();
-            case CERNER_SMART_V_2_WRITE:
-                return visitor.visitCernerSmartV2Write();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
+    @java.lang.Override
+    public String toString() {
+        return this.value.toString();
     }
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static Role valueOf(String value) {
-        switch (value) {
-            case "CernerSmartV2Admin":
-                return CERNER_SMART_V_2_ADMIN;
-            case "USCDISmartV2Read":
-                return USCDI_SMART_V_2_READ;
-            case "SmartV1Read":
-                return SMART_V_1_READ;
-            case "USCDISmartV1Write":
-                return USCDI_SMART_V_1_WRITE;
-            case "SmartV1Write":
-                return SMART_V_1_WRITE;
-            case "CernerSmartV1Read":
-                return CERNER_SMART_V_1_READ;
-            case "USCDISmartV1Admin":
-                return USCDI_SMART_V_1_ADMIN;
-            case "SmartV1Admin":
-                return SMART_V_1_ADMIN;
-            case "USCDISmartV1Read":
-                return USCDI_SMART_V_1_READ;
-            case "CernerSmartV1Write":
-                return CERNER_SMART_V_1_WRITE;
-            case "CernerSmartV1Admin":
-                return CERNER_SMART_V_1_ADMIN;
-            case "USCDISmartV2Write":
-                return USCDI_SMART_V_2_WRITE;
-            case "SmartV2Write":
-                return SMART_V_2_WRITE;
-            case "USCDISmartV2Admin":
-                return USCDI_SMART_V_2_ADMIN;
-            case "SmartV2Admin":
-                return SMART_V_2_ADMIN;
-            case "SmartV2Read":
-                return SMART_V_2_READ;
-            case "CernerSmartV2Read":
-                return CERNER_SMART_V_2_READ;
-            case "CernerSmartV2Write":
-                return CERNER_SMART_V_2_WRITE;
-            default:
-                return new Role(Value.UNKNOWN, value);
-        }
+    public static Role of(EpicRole value) {
+        return new Role(value, 0);
     }
 
-    public enum Value {
-        SMART_V_1_ADMIN,
+    public static Role of(CernerRole value) {
+        return new Role(value, 1);
+    }
 
-        SMART_V_1_READ,
+    public static Role of(AthenaHealthRole value) {
+        return new Role(value, 2);
+    }
 
-        SMART_V_1_WRITE,
+    public static Role of(MedplumRole value) {
+        return new Role(value, 3);
+    }
 
-        SMART_V_2_ADMIN,
+    public static Role of(ElationRole value) {
+        return new Role(value, 4);
+    }
 
-        SMART_V_2_READ,
-
-        SMART_V_2_WRITE,
-
-        USCDI_SMART_V_1_ADMIN,
-
-        USCDI_SMART_V_1_READ,
-
-        USCDI_SMART_V_1_WRITE,
-
-        USCDI_SMART_V_2_ADMIN,
-
-        USCDI_SMART_V_2_READ,
-
-        USCDI_SMART_V_2_WRITE,
-
-        CERNER_SMART_V_1_ADMIN,
-
-        CERNER_SMART_V_1_READ,
-
-        CERNER_SMART_V_1_WRITE,
-
-        CERNER_SMART_V_2_ADMIN,
-
-        CERNER_SMART_V_2_READ,
-
-        CERNER_SMART_V_2_WRITE,
-
-        UNKNOWN
+    public static Role of(PhenostoreRole value) {
+        return new Role(value, 5);
     }
 
     public interface Visitor<T> {
-        T visitSmartV1Admin();
+        T visit(EpicRole value);
 
-        T visitSmartV1Read();
+        T visit(CernerRole value);
 
-        T visitSmartV1Write();
+        T visit(AthenaHealthRole value);
 
-        T visitSmartV2Admin();
+        T visit(MedplumRole value);
 
-        T visitSmartV2Read();
+        T visit(ElationRole value);
 
-        T visitSmartV2Write();
+        T visit(PhenostoreRole value);
+    }
 
-        T visitUscdiSmartV1Admin();
+    static final class Deserializer extends StdDeserializer<Role> {
+        Deserializer() {
+            super(Role.class);
+        }
 
-        T visitUscdiSmartV1Read();
-
-        T visitUscdiSmartV1Write();
-
-        T visitUscdiSmartV2Admin();
-
-        T visitUscdiSmartV2Read();
-
-        T visitUscdiSmartV2Write();
-
-        T visitCernerSmartV1Admin();
-
-        T visitCernerSmartV1Read();
-
-        T visitCernerSmartV1Write();
-
-        T visitCernerSmartV2Admin();
-
-        T visitCernerSmartV2Read();
-
-        T visitCernerSmartV2Write();
-
-        T visitUnknown(String unknownType);
+        @java.lang.Override
+        public Role deserialize(JsonParser p, DeserializationContext context) throws IOException {
+            Object value = p.readValueAs(Object.class);
+            try {
+                return of(ObjectMappers.JSON_MAPPER.convertValue(value, EpicRole.class));
+            } catch (RuntimeException e) {
+            }
+            try {
+                return of(ObjectMappers.JSON_MAPPER.convertValue(value, CernerRole.class));
+            } catch (RuntimeException e) {
+            }
+            try {
+                return of(ObjectMappers.JSON_MAPPER.convertValue(value, AthenaHealthRole.class));
+            } catch (RuntimeException e) {
+            }
+            try {
+                return of(ObjectMappers.JSON_MAPPER.convertValue(value, MedplumRole.class));
+            } catch (RuntimeException e) {
+            }
+            try {
+                return of(ObjectMappers.JSON_MAPPER.convertValue(value, ElationRole.class));
+            } catch (RuntimeException e) {
+            }
+            try {
+                return of(ObjectMappers.JSON_MAPPER.convertValue(value, PhenostoreRole.class));
+            } catch (RuntimeException e) {
+            }
+            throw new JsonParseException(p, "Failed to deserialize");
+        }
     }
 }
