@@ -298,7 +298,7 @@ public class AsyncRawFhirProviderClient {
     }
 
     /**
-     * Soft deletes a FHIR provider by setting is_active to false.
+     * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderDeleteResponse>> delete(String fhirProviderId) {
@@ -306,7 +306,7 @@ public class AsyncRawFhirProviderClient {
     }
 
     /**
-     * Soft deletes a FHIR provider by setting is_active to false.
+     * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
     public CompletableFuture<PhenoMLHttpResponse<FhirProviderDeleteResponse>> delete(

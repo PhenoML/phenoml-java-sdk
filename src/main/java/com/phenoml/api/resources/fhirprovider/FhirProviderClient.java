@@ -84,7 +84,7 @@ public class FhirProviderClient {
     }
 
     /**
-     * Soft deletes a FHIR provider by setting is_active to false.
+     * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
     public FhirProviderDeleteResponse delete(String fhirProviderId) {
@@ -92,7 +92,7 @@ public class FhirProviderClient {
     }
 
     /**
-     * Soft deletes a FHIR provider by setting is_active to false.
+     * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
     public FhirProviderDeleteResponse delete(String fhirProviderId, RequestOptions requestOptions) {

@@ -1,3 +1,16 @@
+## 7.0.0 - 2026-02-23
+* docs: update FHIR provider delete documentation and remove isActive field
+* Update documentation across all FHIR provider client classes to reflect that the delete operation now performs a hard delete instead of a soft delete. The documentation previously stated that deletion would only set is_active to false, but now accurately reflects that it deletes the FHIR provider entirely.
+* Additionally, remove the deprecated isActive field from multiple data classes including FhirProviderSandboxInfo, FhirProviderTemplate, McpServerResponse.Data, and McpServerToolResponse.Data. This field removal indicates a shift from soft deletion patterns to hard deletion.
+* Key changes:
+* Update delete method documentation in all FHIR provider client classes
+* Remove isActive field and related methods from FhirProviderSandboxInfo
+* Remove isActive field and related methods from FhirProviderTemplate
+* Remove isActive field and related methods from McpServerResponse.Data
+* Remove isActive field and related methods from McpServerToolResponse.Data
+* Update constructor signatures and builder patterns to exclude isActive
+* 🌿 Generated with Fern
+
 ## 6.0.0 - 2026-02-23
 * refactor: simplify streaming API and update auth documentation
 * This major refactor simplifies the streaming API by replacing Stream<T> with Iterable<T>
