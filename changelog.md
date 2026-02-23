@@ -1,3 +1,19 @@
+## 6.0.0 - 2026-02-23
+* refactor: simplify streaming API and update auth documentation
+* This major refactor simplifies the streaming API by replacing Stream<T> with Iterable<T>
+* return types across agent client methods, removing the need for manual resource management.
+* Additionally, updates FHIR provider authentication documentation to provide clearer guidance
+* on auth method requirements and parameter usage.
+* Key changes:
+* Change streamChat methods from Stream<AgentChatStreamEvent> to Iterable<AgentChatStreamEvent>
+* Remove Stream import and resource management documentation from agent clients
+* Add credentialExpiry parameter to FHIR provider creation requests
+* Update clientId documentation to specify required auth methods (jwt, client_secret, on_behalf_of)
+* Clarify scopes parameter usage and applicable auth methods
+* Simplify Role enum from provider-specific values to generic read/write/admin permissions
+* Update Provider visitor to include visitPhenostore method
+* 🌿 Generated with Fern
+
 ## 5.4.0 - 2026-02-20
 * feat: add "phenostore" FHIR provider and improve binary compatibility
 * Add phenostore as a new FHIR provider option and fix Provider.Visitor interface to preserve binary compatibility with existing implementations.

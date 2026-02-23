@@ -5,7 +5,6 @@ package com.phenoml.api.resources.agent;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.core.Stream;
 import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.agent.prompts.AsyncPromptsClient;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
@@ -155,11 +154,8 @@ public class AsyncAgentClient {
      * Send a message to an agent and receive the response as a Server-Sent Events
      * (SSE) stream. Events include message_start, content_delta, tool_use,
      * tool_result, message_end, and error.
-     * <p>
-     * The returned Stream implements Closeable and must be closed after use to release
-     * HTTP connections. Use try-with-resources or call close() explicitly.
      */
-    public CompletableFuture<Stream<AgentChatStreamEvent>> streamChat(AgentStreamChatRequest request) {
+    public CompletableFuture<Iterable<AgentChatStreamEvent>> streamChat(AgentStreamChatRequest request) {
         return this.rawClient.streamChat(request).thenApply(response -> response.body());
     }
 
@@ -167,11 +163,8 @@ public class AsyncAgentClient {
      * Send a message to an agent and receive the response as a Server-Sent Events
      * (SSE) stream. Events include message_start, content_delta, tool_use,
      * tool_result, message_end, and error.
-     * <p>
-     * The returned Stream implements Closeable and must be closed after use to release
-     * HTTP connections. Use try-with-resources or call close() explicitly.
      */
-    public CompletableFuture<Stream<AgentChatStreamEvent>> streamChat(
+    public CompletableFuture<Iterable<AgentChatStreamEvent>> streamChat(
             AgentStreamChatRequest request, RequestOptions requestOptions) {
         return this.rawClient.streamChat(request, requestOptions).thenApply(response -> response.body());
     }

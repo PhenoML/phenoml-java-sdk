@@ -75,7 +75,7 @@ public final class FhirProviderAddAuthConfigRequest {
     }
 
     /**
-     * @return Expiry time for JWT credentials (only applicable for JWT auth method)
+     * @return Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.
      */
     @JsonProperty("credential_expiry")
     public Optional<OffsetDateTime> getCredentialExpiry() {
@@ -88,7 +88,7 @@ public final class FhirProviderAddAuthConfigRequest {
     }
 
     /**
-     * @return OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.
+     * @return OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to <code>client_secret</code>, <code>jwt</code>, and <code>on_behalf_of</code> auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.
      */
     @JsonProperty("scopes")
     public Optional<String> getScopes() {
@@ -156,7 +156,7 @@ public final class FhirProviderAddAuthConfigRequest {
         _FinalStage serviceAccountKey(ServiceAccountKey serviceAccountKey);
 
         /**
-         * <p>Expiry time for JWT credentials (only applicable for JWT auth method)</p>
+         * <p>Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.</p>
          */
         _FinalStage credentialExpiry(Optional<OffsetDateTime> credentialExpiry);
 
@@ -167,7 +167,7 @@ public final class FhirProviderAddAuthConfigRequest {
         _FinalStage role(Role role);
 
         /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.</p>
+         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to <code>client_secret</code>, <code>jwt</code>, and <code>on_behalf_of</code> auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.</p>
          */
         _FinalStage scopes(Optional<String> scopes);
 
@@ -212,7 +212,7 @@ public final class FhirProviderAddAuthConfigRequest {
         }
 
         /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.</p>
+         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to <code>client_secret</code>, <code>jwt</code>, and <code>on_behalf_of</code> auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -222,7 +222,7 @@ public final class FhirProviderAddAuthConfigRequest {
         }
 
         /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. You are solely responsible for ensuring the scopes are valid options for the provider being created or updated.</p>
+         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to <code>client_secret</code>, <code>jwt</code>, and <code>on_behalf_of</code> auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "scopes", nulls = Nulls.SKIP)
@@ -245,7 +245,7 @@ public final class FhirProviderAddAuthConfigRequest {
         }
 
         /**
-         * <p>Expiry time for JWT credentials (only applicable for JWT auth method)</p>
+         * <p>Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -255,7 +255,7 @@ public final class FhirProviderAddAuthConfigRequest {
         }
 
         /**
-         * <p>Expiry time for JWT credentials (only applicable for JWT auth method)</p>
+         * <p>Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "credential_expiry", nulls = Nulls.SKIP)
