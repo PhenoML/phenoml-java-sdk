@@ -98,7 +98,7 @@ public final class FhirProviderTemplate {
     }
 
     /**
-     * @return OAuth client ID
+     * @return OAuth client ID. Deprecated: use client_id on FhirProviderAuthConfig instead. Retained for backward compatibility with existing providers.
      */
     @JsonProperty("client_id")
     public Optional<String> getClientId() {
@@ -268,7 +268,7 @@ public final class FhirProviderTemplate {
         }
 
         /**
-         * <p>OAuth client ID</p>
+         * <p>OAuth client ID. Deprecated: use client_id on FhirProviderAuthConfig instead. Retained for backward compatibility with existing providers.</p>
          */
         @JsonSetter(value = "client_id", nulls = Nulls.SKIP)
         public Builder clientId(Optional<String> clientId) {

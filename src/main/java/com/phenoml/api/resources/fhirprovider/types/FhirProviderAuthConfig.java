@@ -43,6 +43,8 @@ public final class FhirProviderAuthConfig {
 
     private final Optional<String> scopes;
 
+    private final Optional<String> clientId;
+
     private final Map<String, Object> additionalProperties;
 
     private FhirProviderAuthConfig(
@@ -57,6 +59,7 @@ public final class FhirProviderAuthConfig {
             Optional<SmartConfiguration> smartConfiguration,
             Optional<ServiceAccountMetadata> serviceAccountMetadata,
             Optional<String> scopes,
+            Optional<String> clientId,
             Map<String, Object> additionalProperties) {
         this.authConfigId = authConfigId;
         this.authMethod = authMethod;
@@ -69,6 +72,7 @@ public final class FhirProviderAuthConfig {
         this.smartConfiguration = smartConfiguration;
         this.serviceAccountMetadata = serviceAccountMetadata;
         this.scopes = scopes;
+        this.clientId = clientId;
         this.additionalProperties = additionalProperties;
     }
 
@@ -148,6 +152,14 @@ public final class FhirProviderAuthConfig {
         return scopes;
     }
 
+    /**
+     * @return OAuth client ID for this auth configuration. When set, takes precedence over the provider-level client_id.
+     */
+    @JsonProperty("client_id")
+    public Optional<String> getClientId() {
+        return clientId;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -170,7 +182,8 @@ public final class FhirProviderAuthConfig {
                 && credentialExpiry.equals(other.credentialExpiry)
                 && smartConfiguration.equals(other.smartConfiguration)
                 && serviceAccountMetadata.equals(other.serviceAccountMetadata)
-                && scopes.equals(other.scopes);
+                && scopes.equals(other.scopes)
+                && clientId.equals(other.clientId);
     }
 
     @java.lang.Override
@@ -186,7 +199,8 @@ public final class FhirProviderAuthConfig {
                 this.credentialExpiry,
                 this.smartConfiguration,
                 this.serviceAccountMetadata,
-                this.scopes);
+                this.scopes,
+                this.clientId);
     }
 
     @java.lang.Override
@@ -222,6 +236,8 @@ public final class FhirProviderAuthConfig {
 
         private Optional<String> scopes = Optional.empty();
 
+        private Optional<String> clientId = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -239,6 +255,7 @@ public final class FhirProviderAuthConfig {
             smartConfiguration(other.getSmartConfiguration());
             serviceAccountMetadata(other.getServiceAccountMetadata());
             scopes(other.getScopes());
+            clientId(other.getClientId());
             return this;
         }
 
@@ -384,6 +401,20 @@ public final class FhirProviderAuthConfig {
             return this;
         }
 
+        /**
+         * <p>OAuth client ID for this auth configuration. When set, takes precedence over the provider-level client_id.</p>
+         */
+        @JsonSetter(value = "client_id", nulls = Nulls.SKIP)
+        public Builder clientId(Optional<String> clientId) {
+            this.clientId = clientId;
+            return this;
+        }
+
+        public Builder clientId(String clientId) {
+            this.clientId = Optional.ofNullable(clientId);
+            return this;
+        }
+
         public FhirProviderAuthConfig build() {
             return new FhirProviderAuthConfig(
                     authConfigId,
@@ -397,6 +428,7 @@ public final class FhirProviderAuthConfig {
                     smartConfiguration,
                     serviceAccountMetadata,
                     scopes,
+                    clientId,
                     additionalProperties);
         }
     }

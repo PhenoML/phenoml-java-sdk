@@ -3281,6 +3281,14 @@ client.fhirProvider().addAuthConfig(
 <dl>
 <dd>
 
+**clientId:** `Optional<String>` — OAuth client ID for this auth configuration. Required for jwt, client_secret, and on_behalf_of auth methods if the provider does not already have a client_id set.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **clientSecret:** `Optional<String>` — OAuth client secret (required for client_secret and on_behalf_of auth methods)
     
 </dd>

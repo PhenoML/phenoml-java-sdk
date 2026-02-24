@@ -1,3 +1,18 @@
+## 7.1.0 - 2026-02-24
+* feat: add clientId parameter to FHIR provider auth configuration
+* Add clientId as an optional parameter to FhirProviderAddAuthConfigRequest and
+* FhirProviderAuthConfig classes to enable OAuth client ID configuration at the
+* auth config level. This enhancement provides better flexibility for OAuth
+* authentication by allowing per-configuration client IDs that take precedence
+* over provider-level settings.
+* Key changes:
+* Add clientId optional field to FhirProviderAddAuthConfigRequest with getter, setter, and builder methods
+* Add clientId optional field to FhirProviderAuthConfig with appropriate JSON serialization
+* Update constructors, equals, hashCode, and builder patterns in both classes
+* Add documentation specifying clientId is required for jwt, client_secret, and on_behalf_of auth methods
+* Deprecate provider-level client_id in FhirProviderTemplate in favor of auth config level setting
+* 🌿 Generated with Fern
+
 ## 7.0.0 - 2026-02-23
 * docs: update FHIR provider delete documentation and remove isActive field
 * Update documentation across all FHIR provider client classes to reflect that the delete operation now performs a hard delete instead of a soft delete. The documentation previously stated that deletion would only set is_active to false, but now accurately reflects that it deletes the FHIR provider entirely.
