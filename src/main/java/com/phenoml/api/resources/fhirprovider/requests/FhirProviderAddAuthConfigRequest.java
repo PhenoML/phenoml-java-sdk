@@ -27,6 +27,8 @@ import org.jetbrains.annotations.NotNull;
 public final class FhirProviderAddAuthConfigRequest {
     private final AuthMethod authMethod;
 
+    private final Optional<String> clientId;
+
     private final Optional<String> clientSecret;
 
     private final Optional<ServiceAccountKey> serviceAccountKey;
@@ -41,6 +43,7 @@ public final class FhirProviderAddAuthConfigRequest {
 
     private FhirProviderAddAuthConfigRequest(
             AuthMethod authMethod,
+            Optional<String> clientId,
             Optional<String> clientSecret,
             Optional<ServiceAccountKey> serviceAccountKey,
             Optional<OffsetDateTime> credentialExpiry,
@@ -48,6 +51,7 @@ public final class FhirProviderAddAuthConfigRequest {
             Optional<String> scopes,
             Map<String, Object> additionalProperties) {
         this.authMethod = authMethod;
+        this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.serviceAccountKey = serviceAccountKey;
         this.credentialExpiry = credentialExpiry;
@@ -59,6 +63,14 @@ public final class FhirProviderAddAuthConfigRequest {
     @JsonProperty("auth_method")
     public AuthMethod getAuthMethod() {
         return authMethod;
+    }
+
+    /**
+     * @return OAuth client ID for this auth configuration. Required for jwt, client_secret, and on_behalf_of auth methods if the provider does not already have a client_id set.
+     */
+    @JsonProperty("client_id")
+    public Optional<String> getClientId() {
+        return clientId;
     }
 
     /**
@@ -108,6 +120,7 @@ public final class FhirProviderAddAuthConfigRequest {
 
     private boolean equalTo(FhirProviderAddAuthConfigRequest other) {
         return authMethod.equals(other.authMethod)
+                && clientId.equals(other.clientId)
                 && clientSecret.equals(other.clientSecret)
                 && serviceAccountKey.equals(other.serviceAccountKey)
                 && credentialExpiry.equals(other.credentialExpiry)
@@ -119,6 +132,7 @@ public final class FhirProviderAddAuthConfigRequest {
     public int hashCode() {
         return Objects.hash(
                 this.authMethod,
+                this.clientId,
                 this.clientSecret,
                 this.serviceAccountKey,
                 this.credentialExpiry,
@@ -143,6 +157,13 @@ public final class FhirProviderAddAuthConfigRequest {
 
     public interface _FinalStage {
         FhirProviderAddAuthConfigRequest build();
+
+        /**
+         * <p>OAuth client ID for this auth configuration. Required for jwt, client_secret, and on_behalf_of auth methods if the provider does not already have a client_id set.</p>
+         */
+        _FinalStage clientId(Optional<String> clientId);
+
+        _FinalStage clientId(String clientId);
 
         /**
          * <p>OAuth client secret (required for client_secret and on_behalf_of auth methods)</p>
@@ -188,6 +209,8 @@ public final class FhirProviderAddAuthConfigRequest {
 
         private Optional<String> clientSecret = Optional.empty();
 
+        private Optional<String> clientId = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -196,6 +219,7 @@ public final class FhirProviderAddAuthConfigRequest {
         @java.lang.Override
         public Builder from(FhirProviderAddAuthConfigRequest other) {
             authMethod(other.getAuthMethod());
+            clientId(other.getClientId());
             clientSecret(other.getClientSecret());
             serviceAccountKey(other.getServiceAccountKey());
             credentialExpiry(other.getCredentialExpiry());
@@ -297,10 +321,37 @@ public final class FhirProviderAddAuthConfigRequest {
             return this;
         }
 
+        /**
+         * <p>OAuth client ID for this auth configuration. Required for jwt, client_secret, and on_behalf_of auth methods if the provider does not already have a client_id set.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage clientId(String clientId) {
+            this.clientId = Optional.ofNullable(clientId);
+            return this;
+        }
+
+        /**
+         * <p>OAuth client ID for this auth configuration. Required for jwt, client_secret, and on_behalf_of auth methods if the provider does not already have a client_id set.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "client_id", nulls = Nulls.SKIP)
+        public _FinalStage clientId(Optional<String> clientId) {
+            this.clientId = clientId;
+            return this;
+        }
+
         @java.lang.Override
         public FhirProviderAddAuthConfigRequest build() {
             return new FhirProviderAddAuthConfigRequest(
-                    authMethod, clientSecret, serviceAccountKey, credentialExpiry, role, scopes, additionalProperties);
+                    authMethod,
+                    clientId,
+                    clientSecret,
+                    serviceAccountKey,
+                    credentialExpiry,
+                    role,
+                    scopes,
+                    additionalProperties);
         }
     }
 }
