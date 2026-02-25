@@ -321,6 +321,8 @@ public final class Lang2FhirAndCreateRequest {
         public static final Resource CONDITION_ENCOUNTER_DIAGNOSIS =
                 new Resource(Value.CONDITION_ENCOUNTER_DIAGNOSIS, "condition-encounter-diagnosis");
 
+        public static final Resource SERVICEREQUEST = new Resource(Value.SERVICEREQUEST, "servicerequest");
+
         public static final Resource PATIENT = new Resource(Value.PATIENT, "patient");
 
         public static final Resource APPOINTMENT = new Resource(Value.APPOINTMENT, "appointment");
@@ -384,6 +386,8 @@ public final class Lang2FhirAndCreateRequest {
                     return visitor.visitAuto();
                 case CONDITION_ENCOUNTER_DIAGNOSIS:
                     return visitor.visitConditionEncounterDiagnosis();
+                case SERVICEREQUEST:
+                    return visitor.visitServicerequest();
                 case PATIENT:
                     return visitor.visitPatient();
                 case APPOINTMENT:
@@ -425,6 +429,8 @@ public final class Lang2FhirAndCreateRequest {
                     return AUTO;
                 case "condition-encounter-diagnosis":
                     return CONDITION_ENCOUNTER_DIAGNOSIS;
+                case "servicerequest":
+                    return SERVICEREQUEST;
                 case "patient":
                     return PATIENT;
                 case "appointment":
@@ -465,6 +471,8 @@ public final class Lang2FhirAndCreateRequest {
 
             QUESTIONNAIRERESPONSE,
 
+            SERVICEREQUEST,
+
             SIMPLE_OBSERVATION,
 
             VITAL_SIGNS,
@@ -500,6 +508,8 @@ public final class Lang2FhirAndCreateRequest {
             T visitQuestionnaire();
 
             T visitQuestionnaireresponse();
+
+            T visitServicerequest();
 
             T visitSimpleObservation();
 
