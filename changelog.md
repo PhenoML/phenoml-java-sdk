@@ -1,3 +1,13 @@
+## 7.2.0 - 2026-02-25
+* feat: add ServiceRequest resource support to CreateRequest
+* This update extends the CreateRequest API to support FHIR ServiceRequest resources, expanding the available resource types for language-to-FHIR conversions.
+* Key changes:
+* Add SERVICEREQUEST constant to Resource enum with value mapping
+* Implement visitServicerequest() method in visitor pattern
+* Add SERVICEREQUEST to Value enum for type safety
+* Update resource type parsing to handle "servicerequest" string values
+* 🌿 Generated with Fern
+
 ## 7.1.0 - 2026-02-24
 * feat: add clientId parameter to FHIR provider auth configuration
 * Add clientId as an optional parameter to FhirProviderAddAuthConfigRequest and
