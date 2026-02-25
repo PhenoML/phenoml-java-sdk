@@ -1,3 +1,14 @@
+## 7.2.0 - 2026-02-25
+* feat: add SERVICEREQUEST resource support to API
+* This change extends the API's resource handling capabilities by introducing support for SERVICEREQUEST resources in both CreateRequest and Lang2FhirAndCreateRequest classes. This enhancement allows clients to create and manage service request resources through the phenoML API.
+* Key changes:
+* Added SERVICEREQUEST static field to Resource enum in CreateRequest class
+* Added SERVICEREQUEST case handling in switch statements and parsing logic
+* Included SERVICEREQUEST in Value enum and Visitor interface
+* Extended Lang2FhirAndCreateRequest with identical SERVICEREQUEST support
+* Added visitServicerequest() method to visitor pattern interfaces
+* 🌿 Generated with Fern
+
 ## 7.1.0 - 2026-02-24
 * feat: add clientId parameter to FHIR provider auth configuration
 * Add clientId as an optional parameter to FhirProviderAddAuthConfigRequest and
