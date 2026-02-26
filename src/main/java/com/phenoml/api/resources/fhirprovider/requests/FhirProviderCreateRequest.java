@@ -12,11 +12,8 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.resources.fhirprovider.types.AuthMethod;
+import com.phenoml.api.resources.fhirprovider.types.FhirProviderCreateRequestAuth;
 import com.phenoml.api.resources.fhirprovider.types.Provider;
-import com.phenoml.api.resources.fhirprovider.types.Role;
-import com.phenoml.api.resources.fhirprovider.types.ServiceAccountKey;
-import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,21 +29,9 @@ public final class FhirProviderCreateRequest {
 
     private final Provider provider;
 
-    private final AuthMethod authMethod;
-
     private final String baseUrl;
 
-    private final Optional<String> clientId;
-
-    private final Optional<String> clientSecret;
-
-    private final Optional<ServiceAccountKey> serviceAccountKey;
-
-    private final Optional<OffsetDateTime> credentialExpiry;
-
-    private final Optional<Role> role;
-
-    private final Optional<String> scopes;
+    private final FhirProviderCreateRequestAuth auth;
 
     private final Map<String, Object> additionalProperties;
 
@@ -54,26 +39,14 @@ public final class FhirProviderCreateRequest {
             String name,
             Optional<String> description,
             Provider provider,
-            AuthMethod authMethod,
             String baseUrl,
-            Optional<String> clientId,
-            Optional<String> clientSecret,
-            Optional<ServiceAccountKey> serviceAccountKey,
-            Optional<OffsetDateTime> credentialExpiry,
-            Optional<Role> role,
-            Optional<String> scopes,
+            FhirProviderCreateRequestAuth auth,
             Map<String, Object> additionalProperties) {
         this.name = name;
         this.description = description;
         this.provider = provider;
-        this.authMethod = authMethod;
         this.baseUrl = baseUrl;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.serviceAccountKey = serviceAccountKey;
-        this.credentialExpiry = credentialExpiry;
-        this.role = role;
-        this.scopes = scopes;
+        this.auth = auth;
         this.additionalProperties = additionalProperties;
     }
 
@@ -98,11 +71,6 @@ public final class FhirProviderCreateRequest {
         return provider;
     }
 
-    @JsonProperty("auth_method")
-    public AuthMethod getAuthMethod() {
-        return authMethod;
-    }
-
     /**
      * @return Base URL of the FHIR server
      */
@@ -111,46 +79,9 @@ public final class FhirProviderCreateRequest {
         return baseUrl;
     }
 
-    /**
-     * @return OAuth client ID (required for jwt, client_secret, and on_behalf_of auth methods)
-     */
-    @JsonProperty("client_id")
-    public Optional<String> getClientId() {
-        return clientId;
-    }
-
-    /**
-     * @return OAuth client secret (required for client_secret and on_behalf_of auth methods)
-     */
-    @JsonProperty("client_secret")
-    public Optional<String> getClientSecret() {
-        return clientSecret;
-    }
-
-    @JsonProperty("service_account_key")
-    public Optional<ServiceAccountKey> getServiceAccountKey() {
-        return serviceAccountKey;
-    }
-
-    /**
-     * @return Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.
-     */
-    @JsonProperty("credential_expiry")
-    public Optional<OffsetDateTime> getCredentialExpiry() {
-        return credentialExpiry;
-    }
-
-    @JsonProperty("role")
-    public Optional<Role> getRole() {
-        return role;
-    }
-
-    /**
-     * @return OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to <code>client_secret</code>, <code>jwt</code>, and <code>on_behalf_of</code> auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.
-     */
-    @JsonProperty("scopes")
-    public Optional<String> getScopes() {
-        return scopes;
+    @JsonProperty("auth")
+    public FhirProviderCreateRequestAuth getAuth() {
+        return auth;
     }
 
     @java.lang.Override
@@ -168,30 +99,13 @@ public final class FhirProviderCreateRequest {
         return name.equals(other.name)
                 && description.equals(other.description)
                 && provider.equals(other.provider)
-                && authMethod.equals(other.authMethod)
                 && baseUrl.equals(other.baseUrl)
-                && clientId.equals(other.clientId)
-                && clientSecret.equals(other.clientSecret)
-                && serviceAccountKey.equals(other.serviceAccountKey)
-                && credentialExpiry.equals(other.credentialExpiry)
-                && role.equals(other.role)
-                && scopes.equals(other.scopes);
+                && auth.equals(other.auth);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(
-                this.name,
-                this.description,
-                this.provider,
-                this.authMethod,
-                this.baseUrl,
-                this.clientId,
-                this.clientSecret,
-                this.serviceAccountKey,
-                this.credentialExpiry,
-                this.role,
-                this.scopes);
+        return Objects.hash(this.name, this.description, this.provider, this.baseUrl, this.auth);
     }
 
     @java.lang.Override
@@ -213,18 +127,18 @@ public final class FhirProviderCreateRequest {
     }
 
     public interface ProviderStage {
-        AuthMethodStage provider(@NotNull Provider provider);
-    }
-
-    public interface AuthMethodStage {
-        BaseUrlStage authMethod(@NotNull AuthMethod authMethod);
+        BaseUrlStage provider(@NotNull Provider provider);
     }
 
     public interface BaseUrlStage {
         /**
          * <p>Base URL of the FHIR server</p>
          */
-        _FinalStage baseUrl(@NotNull String baseUrl);
+        AuthStage baseUrl(@NotNull String baseUrl);
+    }
+
+    public interface AuthStage {
+        _FinalStage auth(@NotNull FhirProviderCreateRequestAuth auth);
     }
 
     public interface _FinalStage {
@@ -236,65 +150,17 @@ public final class FhirProviderCreateRequest {
         _FinalStage description(Optional<String> description);
 
         _FinalStage description(String description);
-
-        /**
-         * <p>OAuth client ID (required for jwt, client_secret, and on_behalf_of auth methods)</p>
-         */
-        _FinalStage clientId(Optional<String> clientId);
-
-        _FinalStage clientId(String clientId);
-
-        /**
-         * <p>OAuth client secret (required for client_secret and on_behalf_of auth methods)</p>
-         */
-        _FinalStage clientSecret(Optional<String> clientSecret);
-
-        _FinalStage clientSecret(String clientSecret);
-
-        _FinalStage serviceAccountKey(Optional<ServiceAccountKey> serviceAccountKey);
-
-        _FinalStage serviceAccountKey(ServiceAccountKey serviceAccountKey);
-
-        /**
-         * <p>Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.</p>
-         */
-        _FinalStage credentialExpiry(Optional<OffsetDateTime> credentialExpiry);
-
-        _FinalStage credentialExpiry(OffsetDateTime credentialExpiry);
-
-        _FinalStage role(Optional<Role> role);
-
-        _FinalStage role(Role role);
-
-        /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to <code>client_secret</code>, <code>jwt</code>, and <code>on_behalf_of</code> auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.</p>
-         */
-        _FinalStage scopes(Optional<String> scopes);
-
-        _FinalStage scopes(String scopes);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements NameStage, ProviderStage, AuthMethodStage, BaseUrlStage, _FinalStage {
+    public static final class Builder implements NameStage, ProviderStage, BaseUrlStage, AuthStage, _FinalStage {
         private String name;
 
         private Provider provider;
 
-        private AuthMethod authMethod;
-
         private String baseUrl;
 
-        private Optional<String> scopes = Optional.empty();
-
-        private Optional<Role> role = Optional.empty();
-
-        private Optional<OffsetDateTime> credentialExpiry = Optional.empty();
-
-        private Optional<ServiceAccountKey> serviceAccountKey = Optional.empty();
-
-        private Optional<String> clientSecret = Optional.empty();
-
-        private Optional<String> clientId = Optional.empty();
+        private FhirProviderCreateRequestAuth auth;
 
         private Optional<String> description = Optional.empty();
 
@@ -308,14 +174,8 @@ public final class FhirProviderCreateRequest {
             name(other.getName());
             description(other.getDescription());
             provider(other.getProvider());
-            authMethod(other.getAuthMethod());
             baseUrl(other.getBaseUrl());
-            clientId(other.getClientId());
-            clientSecret(other.getClientSecret());
-            serviceAccountKey(other.getServiceAccountKey());
-            credentialExpiry(other.getCredentialExpiry());
-            role(other.getRole());
-            scopes(other.getScopes());
+            auth(other.getAuth());
             return this;
         }
 
@@ -333,15 +193,8 @@ public final class FhirProviderCreateRequest {
 
         @java.lang.Override
         @JsonSetter("provider")
-        public AuthMethodStage provider(@NotNull Provider provider) {
+        public BaseUrlStage provider(@NotNull Provider provider) {
             this.provider = Objects.requireNonNull(provider, "provider must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("auth_method")
-        public BaseUrlStage authMethod(@NotNull AuthMethod authMethod) {
-            this.authMethod = Objects.requireNonNull(authMethod, "authMethod must not be null");
             return this;
         }
 
@@ -352,114 +205,15 @@ public final class FhirProviderCreateRequest {
          */
         @java.lang.Override
         @JsonSetter("base_url")
-        public _FinalStage baseUrl(@NotNull String baseUrl) {
+        public AuthStage baseUrl(@NotNull String baseUrl) {
             this.baseUrl = Objects.requireNonNull(baseUrl, "baseUrl must not be null");
             return this;
         }
 
-        /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to <code>client_secret</code>, <code>jwt</code>, and <code>on_behalf_of</code> auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
         @java.lang.Override
-        public _FinalStage scopes(String scopes) {
-            this.scopes = Optional.ofNullable(scopes);
-            return this;
-        }
-
-        /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to <code>client_secret</code>, <code>jwt</code>, and <code>on_behalf_of</code> auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "scopes", nulls = Nulls.SKIP)
-        public _FinalStage scopes(Optional<String> scopes) {
-            this.scopes = scopes;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage role(Role role) {
-            this.role = Optional.ofNullable(role);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "role", nulls = Nulls.SKIP)
-        public _FinalStage role(Optional<Role> role) {
-            this.role = role;
-            return this;
-        }
-
-        /**
-         * <p>Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage credentialExpiry(OffsetDateTime credentialExpiry) {
-            this.credentialExpiry = Optional.ofNullable(credentialExpiry);
-            return this;
-        }
-
-        /**
-         * <p>Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "credential_expiry", nulls = Nulls.SKIP)
-        public _FinalStage credentialExpiry(Optional<OffsetDateTime> credentialExpiry) {
-            this.credentialExpiry = credentialExpiry;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage serviceAccountKey(ServiceAccountKey serviceAccountKey) {
-            this.serviceAccountKey = Optional.ofNullable(serviceAccountKey);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "service_account_key", nulls = Nulls.SKIP)
-        public _FinalStage serviceAccountKey(Optional<ServiceAccountKey> serviceAccountKey) {
-            this.serviceAccountKey = serviceAccountKey;
-            return this;
-        }
-
-        /**
-         * <p>OAuth client secret (required for client_secret and on_behalf_of auth methods)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage clientSecret(String clientSecret) {
-            this.clientSecret = Optional.ofNullable(clientSecret);
-            return this;
-        }
-
-        /**
-         * <p>OAuth client secret (required for client_secret and on_behalf_of auth methods)</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "client_secret", nulls = Nulls.SKIP)
-        public _FinalStage clientSecret(Optional<String> clientSecret) {
-            this.clientSecret = clientSecret;
-            return this;
-        }
-
-        /**
-         * <p>OAuth client ID (required for jwt, client_secret, and on_behalf_of auth methods)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage clientId(String clientId) {
-            this.clientId = Optional.ofNullable(clientId);
-            return this;
-        }
-
-        /**
-         * <p>OAuth client ID (required for jwt, client_secret, and on_behalf_of auth methods)</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "client_id", nulls = Nulls.SKIP)
-        public _FinalStage clientId(Optional<String> clientId) {
-            this.clientId = clientId;
+        @JsonSetter("auth")
+        public _FinalStage auth(@NotNull FhirProviderCreateRequestAuth auth) {
+            this.auth = Objects.requireNonNull(auth, "auth must not be null");
             return this;
         }
 
@@ -485,19 +239,7 @@ public final class FhirProviderCreateRequest {
 
         @java.lang.Override
         public FhirProviderCreateRequest build() {
-            return new FhirProviderCreateRequest(
-                    name,
-                    description,
-                    provider,
-                    authMethod,
-                    baseUrl,
-                    clientId,
-                    clientSecret,
-                    serviceAccountKey,
-                    credentialExpiry,
-                    role,
-                    scopes,
-                    additionalProperties);
+            return new FhirProviderCreateRequest(name, description, provider, baseUrl, auth, additionalProperties);
         }
     }
 }
