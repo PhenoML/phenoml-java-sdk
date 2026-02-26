@@ -1,6 +1,9 @@
-## 7.1.1 - 2026-02-26
-* SDK regeneration
-* Unable to analyze changes with AI, incrementing PATCH version.
+## 8.0.0 - 2026-02-26
+* **BREAKING**: Refactor FHIR provider auth to use discriminated unions
+* `FhirProviderCreateRequest` now uses a typed `auth` union (`FhirProviderCreateRequestAuth`) instead of flat `auth_method` + optional credential fields
+* `addAuthConfig` now takes a new union type `FhirProviderAddAuthConfigRequest` with discriminated auth variants
+* New concrete auth types: `JwtAuth`, `ClientSecretAuth`, `OnBehalfOfAuth`, `GoogleHealthcareAuth`, `TokenPassthroughAuth`, `NoAuth`
+* Add `SERVICEREQUEST` to lang2fhir resource enums in `CreateRequest` and `Lang2FhirAndCreateRequest`
 
 ## 7.1.0 - 2026-02-24
 * feat: add clientId parameter to FHIR provider auth configuration
