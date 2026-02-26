@@ -5,10 +5,10 @@ package com.phenoml.api.resources.fhirprovider;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.resources.fhirprovider.requests.FhirProviderAddAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderCreateRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderRemoveAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderSetActiveAuthConfigRequest;
+import com.phenoml.api.resources.fhirprovider.types.FhirProviderAddAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderDeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderListResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderRemoveAuthConfigResponse;

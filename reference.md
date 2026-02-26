@@ -2949,8 +2949,15 @@ client.fhirProvider().create(
         .builder()
         .name("Epic Sandbox")
         .provider(Provider.ATHENAHEALTH)
-        .authMethod(AuthMethod.CLIENT_SECRET)
         .baseUrl("https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4")
+        .auth(
+            FhirProviderCreateRequestAuth.jwt(
+                JwtAuth
+                    .builder()
+                    .clientId("your-client-id")
+                    .build()
+            )
+        )
         .build()
 );
 ```
@@ -2991,14 +2998,6 @@ client.fhirProvider().create(
 <dl>
 <dd>
 
-**authMethod:** `AuthMethod` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **baseUrl:** `String` — Base URL of the FHIR server
     
 </dd>
@@ -3007,47 +3006,7 @@ client.fhirProvider().create(
 <dl>
 <dd>
 
-**clientId:** `Optional<String>` — OAuth client ID (required for jwt, client_secret, and on_behalf_of auth methods)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**clientSecret:** `Optional<String>` — OAuth client secret (required for client_secret and on_behalf_of auth methods)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**serviceAccountKey:** `Optional<ServiceAccountKey>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**credentialExpiry:** `Optional<OffsetDateTime>` — Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**role:** `Optional<Role>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**scopes:** `Optional<String>` — OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to `client_secret`, `jwt`, and `on_behalf_of` auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.
+**auth:** `FhirProviderCreateRequestAuth` 
     
 </dd>
 </dl>
@@ -3246,10 +3205,12 @@ Note: Sandbox providers cannot be modified.
 ```java
 client.fhirProvider().addAuthConfig(
     "1716d214-de93-43a4-aa6b-a878d864e2ad",
-    FhirProviderAddAuthConfigRequest
-        .builder()
-        .authMethod(AuthMethod.CLIENT_SECRET)
-        .build()
+    FhirProviderAddAuthConfigRequest.jwt(
+        JwtAuth
+            .builder()
+            .clientId("your-client-id")
+            .build()
+    )
 );
 ```
 </dd>
@@ -3273,55 +3234,7 @@ client.fhirProvider().addAuthConfig(
 <dl>
 <dd>
 
-**authMethod:** `AuthMethod` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**clientId:** `Optional<String>` — OAuth client ID for this auth configuration. Required for jwt, client_secret, and on_behalf_of auth methods if the provider does not already have a client_id set.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**clientSecret:** `Optional<String>` — OAuth client secret (required for client_secret and on_behalf_of auth methods)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**serviceAccountKey:** `Optional<ServiceAccountKey>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**credentialExpiry:** `Optional<OffsetDateTime>` — Expiry time for JWT credentials (only applicable for JWT auth method). If omitted, a default expiry is used.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**role:** `Optional<Role>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**scopes:** `Optional<String>` — OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used. Only applicable to `client_secret`, `jwt`, and `on_behalf_of` auth methods; specifying scopes for other auth methods will return an error. Make sure the scopes you specify are appropriate for the auth config and provider you are using.
+**request:** `FhirProviderAddAuthConfigRequest` 
     
 </dd>
 </dl>
