@@ -1,3 +1,7 @@
+## 7.1.1 - 2026-02-26
+* SDK regeneration
+* Unable to analyze changes with AI, incrementing PATCH version.
+
 ## 7.1.0 - 2026-02-24
 * feat: add clientId parameter to FHIR provider auth configuration
 * Add clientId as an optional parameter to FhirProviderAddAuthConfigRequest and
