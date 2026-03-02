@@ -5,12 +5,10 @@ package com.phenoml.api.resources.lang2fhir.requests;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import java.util.HashMap;
@@ -23,14 +21,13 @@ import org.jetbrains.annotations.NotNull;
 public final class DocumentRequest {
     private final String version;
 
-    private final Resource resource;
+    private final String resource;
 
     private final String content;
 
     private final Map<String, Object> additionalProperties;
 
-    private DocumentRequest(
-            String version, Resource resource, String content, Map<String, Object> additionalProperties) {
+    private DocumentRequest(String version, String resource, String content, Map<String, Object> additionalProperties) {
         this.version = version;
         this.resource = resource;
         this.content = content;
@@ -46,10 +43,10 @@ public final class DocumentRequest {
     }
 
     /**
-     * @return Type of FHIR resource to create (questionnaire and US Core questionnaireresponse profiles currently supported)
+     * @return Type of FHIR resource to create. Accepts any FHIR resource type or US Core profile name.
      */
     @JsonProperty("resource")
-    public Resource getResource() {
+    public String getResource() {
         return resource;
     }
 
@@ -103,9 +100,9 @@ public final class DocumentRequest {
 
     public interface ResourceStage {
         /**
-         * <p>Type of FHIR resource to create (questionnaire and US Core questionnaireresponse profiles currently supported)</p>
+         * <p>Type of FHIR resource to create. Accepts any FHIR resource type or US Core profile name.</p>
          */
-        ContentStage resource(@NotNull Resource resource);
+        ContentStage resource(@NotNull String resource);
     }
 
     public interface ContentStage {
@@ -125,7 +122,7 @@ public final class DocumentRequest {
     public static final class Builder implements VersionStage, ResourceStage, ContentStage, _FinalStage {
         private String version;
 
-        private Resource resource;
+        private String resource;
 
         private String content;
 
@@ -155,13 +152,13 @@ public final class DocumentRequest {
         }
 
         /**
-         * <p>Type of FHIR resource to create (questionnaire and US Core questionnaireresponse profiles currently supported)</p>
-         * <p>Type of FHIR resource to create (questionnaire and US Core questionnaireresponse profiles currently supported)</p>
+         * <p>Type of FHIR resource to create. Accepts any FHIR resource type or US Core profile name.</p>
+         * <p>Type of FHIR resource to create. Accepts any FHIR resource type or US Core profile name.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
         @JsonSetter("resource")
-        public ContentStage resource(@NotNull Resource resource) {
+        public ContentStage resource(@NotNull String resource) {
             this.resource = Objects.requireNonNull(resource, "resource must not be null");
             return this;
         }
@@ -185,82 +182,6 @@ public final class DocumentRequest {
         @java.lang.Override
         public DocumentRequest build() {
             return new DocumentRequest(version, resource, content, additionalProperties);
-        }
-    }
-
-    public static final class Resource {
-        public static final Resource QUESTIONNAIRERESPONSE =
-                new Resource(Value.QUESTIONNAIRERESPONSE, "questionnaireresponse");
-
-        public static final Resource QUESTIONNAIRE = new Resource(Value.QUESTIONNAIRE, "questionnaire");
-
-        private final Value value;
-
-        private final String string;
-
-        Resource(Value value, String string) {
-            this.value = value;
-            this.string = string;
-        }
-
-        public Value getEnumValue() {
-            return value;
-        }
-
-        @java.lang.Override
-        @JsonValue
-        public String toString() {
-            return this.string;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            return (this == other) || (other instanceof Resource && this.string.equals(((Resource) other).string));
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return this.string.hashCode();
-        }
-
-        public <T> T visit(Visitor<T> visitor) {
-            switch (value) {
-                case QUESTIONNAIRERESPONSE:
-                    return visitor.visitQuestionnaireresponse();
-                case QUESTIONNAIRE:
-                    return visitor.visitQuestionnaire();
-                case UNKNOWN:
-                default:
-                    return visitor.visitUnknown(string);
-            }
-        }
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static Resource valueOf(String value) {
-            switch (value) {
-                case "questionnaireresponse":
-                    return QUESTIONNAIRERESPONSE;
-                case "questionnaire":
-                    return QUESTIONNAIRE;
-                default:
-                    return new Resource(Value.UNKNOWN, value);
-            }
-        }
-
-        public enum Value {
-            QUESTIONNAIRE,
-
-            QUESTIONNAIRERESPONSE,
-
-            UNKNOWN
-        }
-
-        public interface Visitor<T> {
-            T visitQuestionnaire();
-
-            T visitQuestionnaireresponse();
-
-            T visitUnknown(String unknownType);
         }
     }
 }

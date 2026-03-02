@@ -3721,7 +3721,7 @@ client.lang2Fhir().document(
     DocumentRequest
         .builder()
         .version("R4")
-        .resource(DocumentRequestResource.QUESTIONNAIRE)
+        .resource("questionnaire")
         .content("content")
         .build()
 );
@@ -3747,7 +3747,7 @@ client.lang2Fhir().document(
 <dl>
 <dd>
 
-**resource:** `DocumentRequestResource` — Type of FHIR resource to create (questionnaire and US Core questionnaireresponse profiles currently supported)
+**resource:** `String` — Type of FHIR resource to create. Accepts any FHIR resource type or US Core profile name.
     
 </dd>
 </dl>

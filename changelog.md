@@ -1,3 +1,16 @@
+## 8.1.0 - 2026-03-02
+* feat: change resource parameter from enum to string in DocumentRequest
+* Replace the strongly-typed Resource enum with a flexible String parameter to support
+* any FHIR resource type or US Core profile name. This change makes the API more
+* extensible and allows developers to specify any valid FHIR resource without being
+* limited to predefined options.
+* Key changes:
+* Replace DocumentRequestResource enum with String type for resource parameter
+* Remove Resource inner class and its associated visitor pattern implementation
+* Update documentation to reflect support for any FHIR resource type
+* Simplify usage from .resource(DocumentRequestResource.QUESTIONNAIRE) to .resource("questionnaire")
+* 🌿 Generated with Fern
+
 ## 8.0.0 - 2026-02-26
 * **BREAKING**: Refactor FHIR provider auth to use discriminated unions
 * `FhirProviderCreateRequest` now uses a typed `auth` union (`FhirProviderCreateRequestAuth`) instead of flat `auth_method` + optional credential fields
