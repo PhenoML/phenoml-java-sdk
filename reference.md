@@ -3899,6 +3899,89 @@ File type is auto-detected from content magic bytes.
 </dl>
 </details>
 
+<details><summary><code>client.lang2Fhir.extractMultipleFhirResourcesFromADocument(request) -> CreateMultiResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Extracts text from a document (PDF or image) and converts it into multiple FHIR resources,
+returned as a transaction Bundle. Combines document text extraction with multi-resource detection.
+Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
+Resources are linked with proper references (e.g., Conditions reference the Patient).
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.lang2Fhir().extractMultipleFhirResourcesFromADocument(
+    DocumentMultiRequest
+        .builder()
+        .version("R4")
+        .content("content")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**version:** `String` — FHIR version to use
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**content:** `String` 
+
+Base64 encoded file content.
+Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg).
+File type is auto-detected from content magic bytes.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**provider:** `Optional<String>` — Optional FHIR provider name for provider-specific profiles
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Summary
 <details><summary><code>client.summary.listTemplates() -> SummaryListTemplatesResponse</code></summary>
 <dl>

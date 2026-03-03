@@ -1,3 +1,17 @@
+## 8.3.0 - 2026-03-03
+* feat: add document multi-resource extraction endpoint
+* Add a new endpoint for extracting multiple FHIR resources from documents (PDF/images).
+* This endpoint combines document text extraction with multi-resource detection,
+* automatically identifying Patient, Condition, MedicationRequest, Observation, and
+* other resource types, with proper resource references (e.g., Conditions reference the Patient).
+* Key changes:
+* Add extractMultipleFhirResourcesFromADocument method to sync and async clients
+* Add DocumentMultiRequest class for request parameters
+* Add UnprocessableEntityError (422) exception handling
+* Add documentation and usage examples for new endpoint
+* Support both PDF and image formats with automatic content type detection
+* 🌿 Generated with Fern
+
 ## 8.2.0 - 2026-03-03
 * feat: add feedback submission endpoint for construe extraction results
 * Add new `submitFeedbackOnExtractionResults` endpoint that allows users to submit feedback on the results from the Construe extraction API. The endpoint accepts the original text, the received extraction results, expected results, and optional feedback details to help improve extraction accuracy.

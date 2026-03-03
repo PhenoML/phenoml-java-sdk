@@ -7,6 +7,7 @@ import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.lang2fhir.requests.CreateMultiRequest;
 import com.phenoml.api.resources.lang2fhir.requests.CreateRequest;
+import com.phenoml.api.resources.lang2fhir.requests.DocumentMultiRequest;
 import com.phenoml.api.resources.lang2fhir.requests.DocumentRequest;
 import com.phenoml.api.resources.lang2fhir.requests.ProfileUploadRequest;
 import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
@@ -137,5 +138,29 @@ public class AsyncLang2FhirClient {
      */
     public CompletableFuture<Map<String, Object>> document(DocumentRequest request, RequestOptions requestOptions) {
         return this.rawClient.document(request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Extracts text from a document (PDF or image) and converts it into multiple FHIR resources,
+     * returned as a transaction Bundle. Combines document text extraction with multi-resource detection.
+     * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
+     * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     */
+    public CompletableFuture<CreateMultiResponse> extractMultipleFhirResourcesFromADocument(
+            DocumentMultiRequest request) {
+        return this.rawClient.extractMultipleFhirResourcesFromADocument(request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Extracts text from a document (PDF or image) and converts it into multiple FHIR resources,
+     * returned as a transaction Bundle. Combines document text extraction with multi-resource detection.
+     * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
+     * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     */
+    public CompletableFuture<CreateMultiResponse> extractMultipleFhirResourcesFromADocument(
+            DocumentMultiRequest request, RequestOptions requestOptions) {
+        return this.rawClient
+                .extractMultipleFhirResourcesFromADocument(request, requestOptions)
+                .thenApply(response -> response.body());
     }
 }
