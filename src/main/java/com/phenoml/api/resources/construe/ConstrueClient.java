@@ -7,6 +7,7 @@ import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.construe.requests.DeleteConstrueCodesSystemsCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.ExtractRequest;
+import com.phenoml.api.resources.construe.requests.FeedbackRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCodeIdRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
@@ -18,6 +19,7 @@ import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse
 import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExportCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
+import com.phenoml.api.resources.construe.types.FeedbackResponse;
 import com.phenoml.api.resources.construe.types.GetCodeResponse;
 import com.phenoml.api.resources.construe.types.GetCodeSystemDetailResponse;
 import com.phenoml.api.resources.construe.types.ListCodeSystemsResponse;
@@ -277,6 +279,24 @@ public class ConstrueClient {
             String codesystem, GetConstrueCodesCodesystemSearchSemanticRequest request, RequestOptions requestOptions) {
         return this.rawClient
                 .semanticSearchEmbeddingBased(codesystem, request, requestOptions)
+                .body();
+    }
+
+    /**
+     * Submits user feedback on results from the Construe extraction endpoint.
+     * Feedback includes the full extraction result received and the result the user expected.
+     */
+    public FeedbackResponse submitFeedbackOnExtractionResults(FeedbackRequest request) {
+        return this.rawClient.submitFeedbackOnExtractionResults(request).body();
+    }
+
+    /**
+     * Submits user feedback on results from the Construe extraction endpoint.
+     * Feedback includes the full extraction result received and the result the user expected.
+     */
+    public FeedbackResponse submitFeedbackOnExtractionResults(FeedbackRequest request, RequestOptions requestOptions) {
+        return this.rawClient
+                .submitFeedbackOnExtractionResults(request, requestOptions)
                 .body();
     }
 

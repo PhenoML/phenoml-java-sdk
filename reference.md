@@ -2063,6 +2063,134 @@ client.construe().semanticSearchEmbeddingBased(
 </dl>
 </details>
 
+<details><summary><code>client.construe.submitFeedbackOnExtractionResults(request) -> FeedbackResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Submits user feedback on results from the Construe extraction endpoint.
+Feedback includes the full extraction result received and the result the user expected.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.construe().submitFeedbackOnExtractionResults(
+    FeedbackRequest
+        .builder()
+        .text("Patient has type 2 diabetes with hyperglycemia")
+        .receivedResult(
+            ExtractCodesResult
+                .builder()
+                .system(
+                    ExtractRequestSystem
+                        .builder()
+                        .build()
+                )
+                .codes(
+                    new ArrayList<ExtractedCodeResult>(
+                        Arrays.asList(
+                            ExtractedCodeResult
+                                .builder()
+                                .code("195967001")
+                                .description("Asthma")
+                                .valid(true)
+                                .build()
+                        )
+                    )
+                )
+                .build()
+        )
+        .expectedResult(
+            ExtractCodesResult
+                .builder()
+                .system(
+                    ExtractRequestSystem
+                        .builder()
+                        .build()
+                )
+                .codes(
+                    new ArrayList<ExtractedCodeResult>(
+                        Arrays.asList(
+                            ExtractedCodeResult
+                                .builder()
+                                .code("195967001")
+                                .description("Asthma")
+                                .valid(true)
+                                .build()
+                        )
+                    )
+                )
+                .build()
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**text:** `String` — The natural language text that was used for code extraction
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**receivedResult:** `ExtractCodesResult` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expectedResult:** `ExtractCodesResult` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**detail:** `Optional<String>` — Optional details explaining the feedback
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.construe.terminologyServerTextSearch(codesystem) -> TextSearchResponse</code></summary>
 <dl>
 <dd>
