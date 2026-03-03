@@ -1,3 +1,13 @@
+## 8.2.0 - 2026-03-03
+* feat: add feedback submission endpoint for construe extraction results
+* Add new `submitFeedbackOnExtractionResults` endpoint that allows users to submit feedback on the results from the Construe extraction API. The endpoint accepts the original text, the received extraction results, expected results, and optional feedback details to help improve extraction accuracy.
+* Key changes:
+* Add FeedbackRequest and FeedbackResponse types for the feedback API
+* Implement submitFeedbackOnExtractionResults method in sync/async client classes
+* Add comprehensive error handling for 400, 401, 500, and 503 status codes
+* Include documentation with usage examples and parameter descriptions
+* 🌿 Generated with Fern
+
 ## 8.1.0 - 2026-03-02
 * feat: change resource parameter from enum to string in DocumentRequest
 * Replace the strongly-typed Resource enum with a flexible String parameter to support
