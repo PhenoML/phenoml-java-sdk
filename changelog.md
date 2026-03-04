@@ -1,6 +1,22 @@
-## 8.3.1 - 2026-03-04
-* SDK regeneration
-* Unable to analyze changes with AI, incrementing PATCH version.
+## 9.0.0 - 2026-03-04
+
+### Breaking Changes
+
+- **Authentication**: Migrated from token-based auth to OAuth 2.0 client credentials flow. Builders now accept `clientId()` and `clientSecret()` (defaulting to `PHENOML_CLIENT_ID` and `PHENOML_CLIENT_SECRET` environment variables) instead of `token()`. Tokens are automatically obtained and refreshed via the `/v2/auth/token` endpoint.
+- **Client renamed**: `PhenoML` → `PhenoMLClient`, `AsyncPhenoML` → `AsyncPhenoMLClient`.
+- **Builder renamed**: `PhenoMLBuilder` → `PhenoMLClientBuilder`, `AsyncPhenoMLBuilder` → `AsyncPhenoMLClientBuilder`.
+- **Wrapper clients removed**: `Client.java` and `AsyncClient.java` convenience wrappers have been removed. Use `PhenoMLClient` / `AsyncPhenoMLClient` directly.
+
+### Added
+
+- New `/v2/auth/token` OAuth 2.0 client credentials endpoint with `ClientCredentialsRequest`, `TokenResponse`, and `OAuthError` types.
+- `OAuthTokenSupplier` for automatic token acquisition and caching.
+- `InternalServerError` error type for authtoken module.
+
+### Internal
+
+- Upgraded Fern Java SDK generator and CLI.
+- Error classes now include structured response bodies.
 
 ## 8.3.0 - 2026-03-03
 * feat: add document multi-resource extraction endpoint
