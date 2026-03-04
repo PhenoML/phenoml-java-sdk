@@ -7,6 +7,38 @@
 - **Builder renamed**: `PhenoMLBuilder` → `PhenomlClientBuilder`, `AsyncPhenoMLBuilder` → `AsyncPhenomlClientBuilder`.
 - **Wrapper clients removed**: `Client.java` and `AsyncClient.java` convenience wrappers have been removed. Use `PhenomlClient` / `AsyncPhenomlClient` directly.
 
+### Migration Guide
+
+**Authentication** — replace token-based auth with client credentials:
+
+```java
+// Before
+PhenoMLClient client = PhenoMLClient.withCredentials("user", "pass", "https://api.phenoml.com");
+// or
+PhenoMLClient client = PhenoMLClient.withToken("YOUR_TOKEN", "https://api.phenoml.com");
+
+// After (option 1: env vars PHENOML_CLIENT_ID and PHENOML_CLIENT_SECRET)
+PhenomlClient client = PhenomlClient.builder().build();
+
+// After (option 2: explicit credentials)
+PhenomlClient client = PhenomlClient.builder()
+    .clientId("YOUR_CLIENT_ID")
+    .clientSecret("YOUR_CLIENT_SECRET")
+    .build();
+```
+
+**Import updates:**
+
+```java
+// Before
+import com.phenoml.api.Client;
+// or
+import com.phenoml.api.wrapper.PhenoMLClient;
+
+// After
+import com.phenoml.api.PhenomlClient;
+```
+
 ### Added
 
 - New `/v2/auth/token` OAuth 2.0 client credentials endpoint with `ClientCredentialsRequest`, `TokenResponse`, and `OAuthError` types.
