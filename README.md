@@ -11,29 +11,29 @@ Instantiate and use the client with the following:
 ```java
 package com.example.usage;
 
-import com.phenoml.api.Client;
-import com.phenoml.api.resources.agent.requests.AgentCreateRequest;
+import com.phenoml.api.PhenomlClient;
+import com.phenoml.api.resources.agent.types.AgentCreateRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Example {
     public static void main(String[] args) {
-        // Use client with automatic authentication
-        Client client = Client.withCredentials("your-username", "your-password", "https://api.example.com");
-
-        // Or use with existing token
-        // Client client = Client.withToken("your-token", "https://api.example.com");
+        PhenomlClient client = PhenomlClient.builder()
+            .clientId("YOUR_CLIENT_ID")
+            .clientSecret("YOUR_CLIENT_SECRET")
+            .url("https://yourinstance.app.pheno.ml")
+            .build();
 
         client.agent().create(
             AgentCreateRequest
                 .builder()
                 .name("name")
+                .provider(AgentCreateRequest.Provider.of("provider_id"))
                 .prompts(
                     new ArrayList<String>(
                         Arrays.asList("prompt_123", "prompt_456")
                     )
                 )
-                .isActive(true)
                 .build()
         );
     }
@@ -45,10 +45,10 @@ public class Example {
 This SDK allows you to configure different environments for API requests.
 
 ```java
-import com.phenoml.api.PhenoML;
+import com.phenoml.api.PhenomlClient;
 import com.phenoml.api.core.Environment;
 
-PhenoML client = PhenoML
+PhenomlClient client = PhenomlClient
     .builder()
     .environment(Environment.Default)
     .build();
@@ -59,11 +59,11 @@ PhenoML client = PhenoML
 You can set a custom base URL when constructing the client.
 
 ```java
-import com.phenoml.api.PhenoML;
+import com.phenoml.api.PhenomlClient;
 
-PhenoML client = PhenoML
+PhenomlClient client = PhenomlClient
     .builder()
-    .url("https://example.com")
+    .url("https://yourinstance.app.pheno.ml")
     .build();
 ```
 
@@ -72,11 +72,11 @@ PhenoML client = PhenoML
 When the API returns a non-success status code (4xx or 5xx response), an API exception will be thrown.
 
 ```java
-import com.phenoml.api.core.PhenomlApiApiException;
+import com.phenoml.api.core.PhenomlClientApiException;
 
 try {
     client.agent().create(...);
-} catch (PhenomlApiApiException e) {
+} catch (PhenomlClientApiException e) {
     // Do something with the API exception...
 }
 ```
@@ -89,12 +89,12 @@ This SDK is built to work with any instance of `OkHttpClient`. By default, if no
 However, you can pass your own client like so:
 
 ```java
-import com.phenoml.api.PhenoML;
+import com.phenoml.api.PhenomlClient;
 import okhttp3.OkHttpClient;
 
 OkHttpClient customClient = ...;
 
-PhenoML client = PhenoML
+PhenomlClient client = PhenomlClient
     .builder()
     .httpClient(customClient)
     .build();
@@ -115,9 +115,9 @@ A request is deemed retryable when any of the following HTTP status codes is ret
 Use the `maxRetries` client option to configure this behavior.
 
 ```java
-import com.phenoml.api.PhenoML;
+import com.phenoml.api.PhenomlClient;
 
-PhenoML client = PhenoML
+PhenomlClient client = PhenomlClient
     .builder()
     .maxRetries(1)
     .build();
@@ -128,11 +128,11 @@ PhenoML client = PhenoML
 The SDK defaults to a 60 second timeout. You can configure this with a timeout option at the client or request level.
 
 ```java
-import com.phenoml.api.PhenoML;
+import com.phenoml.api.PhenomlClient;
 import com.phenoml.api.core.RequestOptions;
 
 // Client level
-PhenoML client = PhenoML
+PhenomlClient client = PhenomlClient
     .builder()
     .timeout(10)
     .build();
