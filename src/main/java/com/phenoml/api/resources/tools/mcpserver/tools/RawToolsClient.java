@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.core.PhenoMLApiException;
-import com.phenoml.api.core.PhenoMLException;
-import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.PhenoMLClientApiException;
+import com.phenoml.api.core.PhenoMLClientException;
+import com.phenoml.api.core.PhenoMLClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.tools.errors.BadRequestError;
 import com.phenoml.api.resources.tools.errors.ForbiddenError;
@@ -37,14 +37,14 @@ public class RawToolsClient {
     /**
      * Lists all MCP server tools for a specific MCP server
      */
-    public PhenoMLHttpResponse<McpServerToolResponse> list(String mcpServerId) {
+    public PhenoMLClientHttpResponse<McpServerToolResponse> list(String mcpServerId) {
         return list(mcpServerId, null);
     }
 
     /**
      * Lists all MCP server tools for a specific MCP server
      */
-    public PhenoMLHttpResponse<McpServerToolResponse> list(String mcpServerId, RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<McpServerToolResponse> list(String mcpServerId, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tools/mcp-server")
@@ -64,7 +64,7 @@ public class RawToolsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), McpServerToolResponse.class),
                         response);
             }
@@ -84,27 +84,27 @@ public class RawToolsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Gets a MCP server tool by ID
      */
-    public PhenoMLHttpResponse<McpServerToolResponse> get(String mcpServerToolId) {
+    public PhenoMLClientHttpResponse<McpServerToolResponse> get(String mcpServerToolId) {
         return get(mcpServerToolId, null);
     }
 
     /**
      * Gets a MCP server tool by ID
      */
-    public PhenoMLHttpResponse<McpServerToolResponse> get(String mcpServerToolId, RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<McpServerToolResponse> get(String mcpServerToolId, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tools/mcp-server/tool")
@@ -123,7 +123,7 @@ public class RawToolsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), McpServerToolResponse.class),
                         response);
             }
@@ -143,27 +143,28 @@ public class RawToolsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Deletes a MCP server tool by ID
      */
-    public PhenoMLHttpResponse<McpServerToolResponse> delete(String mcpServerToolId) {
+    public PhenoMLClientHttpResponse<McpServerToolResponse> delete(String mcpServerToolId) {
         return delete(mcpServerToolId, null);
     }
 
     /**
      * Deletes a MCP server tool by ID
      */
-    public PhenoMLHttpResponse<McpServerToolResponse> delete(String mcpServerToolId, RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<McpServerToolResponse> delete(
+            String mcpServerToolId, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tools/mcp-server/tool")
@@ -182,7 +183,7 @@ public class RawToolsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), McpServerToolResponse.class),
                         response);
             }
@@ -202,20 +203,20 @@ public class RawToolsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Calls a MCP server tool
      */
-    public PhenoMLHttpResponse<McpServerToolCallResponse> call(
+    public PhenoMLClientHttpResponse<McpServerToolCallResponse> call(
             String mcpServerToolId, McpServerToolCallRequest request) {
         return call(mcpServerToolId, request, null);
     }
@@ -223,7 +224,7 @@ public class RawToolsClient {
     /**
      * Calls a MCP server tool
      */
-    public PhenoMLHttpResponse<McpServerToolCallResponse> call(
+    public PhenoMLClientHttpResponse<McpServerToolCallResponse> call(
             String mcpServerToolId, McpServerToolCallRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -236,7 +237,7 @@ public class RawToolsClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenoMLClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -252,7 +253,7 @@ public class RawToolsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), McpServerToolCallResponse.class),
                         response);
             }
@@ -275,13 +276,13 @@ public class RawToolsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 }

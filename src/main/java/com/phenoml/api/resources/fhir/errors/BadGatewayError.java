@@ -3,11 +3,11 @@
  */
 package com.phenoml.api.resources.fhir.errors;
 
-import com.phenoml.api.core.PhenoMLApiException;
+import com.phenoml.api.core.PhenoMLClientApiException;
 import com.phenoml.api.resources.fhir.types.ErrorResponse;
 import okhttp3.Response;
 
-public final class BadGatewayError extends PhenoMLApiException {
+public final class BadGatewayError extends PhenoMLClientApiException {
     /**
      * The body of the response that triggered the exception.
      */

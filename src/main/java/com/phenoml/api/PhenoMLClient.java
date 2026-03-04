@@ -17,7 +17,7 @@ import com.phenoml.api.resources.tools.ToolsClient;
 import com.phenoml.api.resources.workflows.WorkflowsClient;
 import java.util.function.Supplier;
 
-public class PhenoML {
+public class PhenoMLClient {
     protected final ClientOptions clientOptions;
 
     protected final Supplier<AgentClient> agentClient;
@@ -40,7 +40,7 @@ public class PhenoML {
 
     protected final Supplier<WorkflowsClient> workflowsClient;
 
-    public PhenoML(ClientOptions clientOptions) {
+    public PhenoMLClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.agentClient = Suppliers.memoize(() -> new AgentClient(clientOptions));
         this.authtokenClient = Suppliers.memoize(() -> new AuthtokenClient(clientOptions));
@@ -94,7 +94,7 @@ public class PhenoML {
         return this.workflowsClient.get();
     }
 
-    public static PhenoMLBuilder builder() {
-        return new PhenoMLBuilder();
+    public static PhenoMLClientBuilder builder() {
+        return new PhenoMLClientBuilder();
     }
 }

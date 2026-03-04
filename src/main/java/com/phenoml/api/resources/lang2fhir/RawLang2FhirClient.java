@@ -8,9 +8,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.core.PhenoMLApiException;
-import com.phenoml.api.core.PhenoMLException;
-import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.PhenoMLClientApiException;
+import com.phenoml.api.core.PhenoMLClientException;
+import com.phenoml.api.core.PhenoMLClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.lang2fhir.errors.BadRequestError;
 import com.phenoml.api.resources.lang2fhir.errors.FailedDependencyError;
@@ -47,14 +47,14 @@ public class RawLang2FhirClient {
     /**
      * Converts natural language text into a structured FHIR resource
      */
-    public PhenoMLHttpResponse<Map<String, Object>> create(CreateRequest request) {
+    public PhenoMLClientHttpResponse<Map<String, Object>> create(CreateRequest request) {
         return create(request, null);
     }
 
     /**
      * Converts natural language text into a structured FHIR resource
      */
-    public PhenoMLHttpResponse<Map<String, Object>> create(CreateRequest request, RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<Map<String, Object>> create(CreateRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/create")
@@ -64,7 +64,7 @@ public class RawLang2FhirClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenoMLClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -80,7 +80,7 @@ public class RawLang2FhirClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(
                                 responseBody.string(), new TypeReference<Map<String, Object>>() {}),
                         response);
@@ -101,13 +101,13 @@ public class RawLang2FhirClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -116,7 +116,7 @@ public class RawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public PhenoMLHttpResponse<CreateMultiResponse> createMulti(CreateMultiRequest request) {
+    public PhenoMLClientHttpResponse<CreateMultiResponse> createMulti(CreateMultiRequest request) {
         return createMulti(request, null);
     }
 
@@ -125,7 +125,7 @@ public class RawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public PhenoMLHttpResponse<CreateMultiResponse> createMulti(
+    public PhenoMLClientHttpResponse<CreateMultiResponse> createMulti(
             CreateMultiRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -136,7 +136,7 @@ public class RawLang2FhirClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenoMLClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -152,7 +152,7 @@ public class RawLang2FhirClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), CreateMultiResponse.class),
                         response);
             }
@@ -172,13 +172,13 @@ public class RawLang2FhirClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -191,7 +191,7 @@ public class RawLang2FhirClient {
      * PractitionerRole, Procedure, Provenance, Questionnaire, QuestionnaireResponse, RelatedPerson,
      * Schedule, ServiceRequest, Slot, and Specimen.</p>
      */
-    public PhenoMLHttpResponse<SearchResponse> search(SearchRequest request) {
+    public PhenoMLClientHttpResponse<SearchResponse> search(SearchRequest request) {
         return search(request, null);
     }
 
@@ -204,7 +204,7 @@ public class RawLang2FhirClient {
      * PractitionerRole, Procedure, Provenance, Questionnaire, QuestionnaireResponse, RelatedPerson,
      * Schedule, ServiceRequest, Slot, and Specimen.</p>
      */
-    public PhenoMLHttpResponse<SearchResponse> search(SearchRequest request, RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<SearchResponse> search(SearchRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/search")
@@ -214,7 +214,7 @@ public class RawLang2FhirClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenoMLClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -230,7 +230,7 @@ public class RawLang2FhirClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), SearchResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -252,13 +252,13 @@ public class RawLang2FhirClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -274,7 +274,7 @@ public class RawLang2FhirClient {
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
      */
-    public PhenoMLHttpResponse<Lang2FhirUploadProfileResponse> uploadProfile(ProfileUploadRequest request) {
+    public PhenoMLClientHttpResponse<Lang2FhirUploadProfileResponse> uploadProfile(ProfileUploadRequest request) {
         return uploadProfile(request, null);
     }
 
@@ -290,7 +290,7 @@ public class RawLang2FhirClient {
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
      */
-    public PhenoMLHttpResponse<Lang2FhirUploadProfileResponse> uploadProfile(
+    public PhenoMLClientHttpResponse<Lang2FhirUploadProfileResponse> uploadProfile(
             ProfileUploadRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -301,7 +301,7 @@ public class RawLang2FhirClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenoMLClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -317,7 +317,7 @@ public class RawLang2FhirClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(
                                 responseBody.string(), Lang2FhirUploadProfileResponse.class),
                         response);
@@ -341,27 +341,28 @@ public class RawLang2FhirClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Extracts text from a document (PDF or image) and converts it into a structured FHIR resource
      */
-    public PhenoMLHttpResponse<Map<String, Object>> document(DocumentRequest request) {
+    public PhenoMLClientHttpResponse<Map<String, Object>> document(DocumentRequest request) {
         return document(request, null);
     }
 
     /**
      * Extracts text from a document (PDF or image) and converts it into a structured FHIR resource
      */
-    public PhenoMLHttpResponse<Map<String, Object>> document(DocumentRequest request, RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<Map<String, Object>> document(
+            DocumentRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/document")
@@ -371,7 +372,7 @@ public class RawLang2FhirClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenoMLClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -387,7 +388,7 @@ public class RawLang2FhirClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(
                                 responseBody.string(), new TypeReference<Map<String, Object>>() {}),
                         response);
@@ -408,13 +409,13 @@ public class RawLang2FhirClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -424,7 +425,7 @@ public class RawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public PhenoMLHttpResponse<CreateMultiResponse> extractMultipleFhirResourcesFromADocument(
+    public PhenoMLClientHttpResponse<CreateMultiResponse> extractMultipleFhirResourcesFromADocument(
             DocumentMultiRequest request) {
         return extractMultipleFhirResourcesFromADocument(request, null);
     }
@@ -435,7 +436,7 @@ public class RawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public PhenoMLHttpResponse<CreateMultiResponse> extractMultipleFhirResourcesFromADocument(
+    public PhenoMLClientHttpResponse<CreateMultiResponse> extractMultipleFhirResourcesFromADocument(
             DocumentMultiRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -446,7 +447,7 @@ public class RawLang2FhirClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenoMLClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -462,7 +463,7 @@ public class RawLang2FhirClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), CreateMultiResponse.class),
                         response);
             }
@@ -485,13 +486,13 @@ public class RawLang2FhirClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 }

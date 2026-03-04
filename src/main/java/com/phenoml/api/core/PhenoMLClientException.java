@@ -6,12 +6,12 @@ package com.phenoml.api.core;
 /**
  * This class serves as the base exception for all errors in the SDK.
  */
-public class PhenoMLException extends RuntimeException {
-    public PhenoMLException(String message) {
+public class PhenoMLClientException extends RuntimeException {
+    public PhenoMLClientException(String message) {
         super(message);
     }
 
-    public PhenoMLException(String message, Exception e) {
+    public PhenoMLClientException(String message, Exception e) {
         super(message, e);
     }
 }

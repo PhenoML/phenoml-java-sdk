@@ -17,7 +17,7 @@ import com.phenoml.api.resources.tools.AsyncToolsClient;
 import com.phenoml.api.resources.workflows.AsyncWorkflowsClient;
 import java.util.function.Supplier;
 
-public class AsyncPhenoML {
+public class AsyncPhenoMLClient {
     protected final ClientOptions clientOptions;
 
     protected final Supplier<AsyncAgentClient> agentClient;
@@ -40,7 +40,7 @@ public class AsyncPhenoML {
 
     protected final Supplier<AsyncWorkflowsClient> workflowsClient;
 
-    public AsyncPhenoML(ClientOptions clientOptions) {
+    public AsyncPhenoMLClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.agentClient = Suppliers.memoize(() -> new AsyncAgentClient(clientOptions));
         this.authtokenClient = Suppliers.memoize(() -> new AsyncAuthtokenClient(clientOptions));
@@ -94,7 +94,7 @@ public class AsyncPhenoML {
         return this.workflowsClient.get();
     }
 
-    public static AsyncPhenoMLBuilder builder() {
-        return new AsyncPhenoMLBuilder();
+    public static AsyncPhenoMLClientBuilder builder() {
+        return new AsyncPhenoMLClientBuilder();
     }
 }
