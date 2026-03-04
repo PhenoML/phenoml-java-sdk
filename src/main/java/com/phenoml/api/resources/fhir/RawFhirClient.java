@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.core.PhenoMLApiException;
-import com.phenoml.api.core.PhenoMLException;
-import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.PhenoMLClientApiException;
+import com.phenoml.api.core.PhenoMLClientException;
+import com.phenoml.api.core.PhenoMLClientHttpResponse;
 import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.fhir.errors.BadGatewayError;
@@ -49,7 +49,7 @@ public class RawFhirClient {
      * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<FhirSearchResponse> search(String fhirProviderId, String fhirPath) {
+    public PhenoMLClientHttpResponse<FhirSearchResponse> search(String fhirProviderId, String fhirPath) {
         return search(fhirProviderId, fhirPath, FhirSearchRequest.builder().build());
     }
 
@@ -57,7 +57,7 @@ public class RawFhirClient {
      * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<FhirSearchResponse> search(
+    public PhenoMLClientHttpResponse<FhirSearchResponse> search(
             String fhirProviderId, String fhirPath, FhirSearchRequest request) {
         return search(fhirProviderId, fhirPath, request, null);
     }
@@ -66,7 +66,7 @@ public class RawFhirClient {
      * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<FhirSearchResponse> search(
+    public PhenoMLClientHttpResponse<FhirSearchResponse> search(
             String fhirProviderId, String fhirPath, FhirSearchRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -99,7 +99,7 @@ public class RawFhirClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirSearchResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -124,13 +124,13 @@ public class RawFhirClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -138,7 +138,8 @@ public class RawFhirClient {
      * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<FhirResource> create(String fhirProviderId, String fhirPath, FhirCreateRequest request) {
+    public PhenoMLClientHttpResponse<FhirResource> create(
+            String fhirProviderId, String fhirPath, FhirCreateRequest request) {
         return create(fhirProviderId, fhirPath, request, null);
     }
 
@@ -146,7 +147,7 @@ public class RawFhirClient {
      * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<FhirResource> create(
+    public PhenoMLClientHttpResponse<FhirResource> create(
             String fhirProviderId, String fhirPath, FhirCreateRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -185,7 +186,7 @@ public class RawFhirClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirResource.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -207,13 +208,13 @@ public class RawFhirClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -221,7 +222,8 @@ public class RawFhirClient {
      * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<FhirResource> upsert(String fhirProviderId, String fhirPath, FhirUpsertRequest request) {
+    public PhenoMLClientHttpResponse<FhirResource> upsert(
+            String fhirProviderId, String fhirPath, FhirUpsertRequest request) {
         return upsert(fhirProviderId, fhirPath, request, null);
     }
 
@@ -229,7 +231,7 @@ public class RawFhirClient {
      * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<FhirResource> upsert(
+    public PhenoMLClientHttpResponse<FhirResource> upsert(
             String fhirProviderId, String fhirPath, FhirUpsertRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -268,7 +270,7 @@ public class RawFhirClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirResource.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -290,13 +292,13 @@ public class RawFhirClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -304,7 +306,7 @@ public class RawFhirClient {
      * Deletes a FHIR resource from the specified provider.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<Map<String, Object>> delete(String fhirProviderId, String fhirPath) {
+    public PhenoMLClientHttpResponse<Map<String, Object>> delete(String fhirProviderId, String fhirPath) {
         return delete(fhirProviderId, fhirPath, FhirDeleteRequest.builder().build());
     }
 
@@ -312,7 +314,7 @@ public class RawFhirClient {
      * Deletes a FHIR resource from the specified provider.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<Map<String, Object>> delete(
+    public PhenoMLClientHttpResponse<Map<String, Object>> delete(
             String fhirProviderId, String fhirPath, FhirDeleteRequest request) {
         return delete(fhirProviderId, fhirPath, request, null);
     }
@@ -321,7 +323,7 @@ public class RawFhirClient {
      * Deletes a FHIR resource from the specified provider.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<Map<String, Object>> delete(
+    public PhenoMLClientHttpResponse<Map<String, Object>> delete(
             String fhirProviderId, String fhirPath, FhirDeleteRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -351,7 +353,7 @@ public class RawFhirClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(
                                 responseBody.string(), new TypeReference<Map<String, Object>>() {}),
                         response);
@@ -378,13 +380,13 @@ public class RawFhirClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -398,7 +400,8 @@ public class RawFhirClient {
      * </ul>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<FhirResource> patch(String fhirProviderId, String fhirPath, FhirPatchRequest request) {
+    public PhenoMLClientHttpResponse<FhirResource> patch(
+            String fhirProviderId, String fhirPath, FhirPatchRequest request) {
         return patch(fhirProviderId, fhirPath, request, null);
     }
 
@@ -412,7 +415,7 @@ public class RawFhirClient {
      * </ul>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<FhirResource> patch(
+    public PhenoMLClientHttpResponse<FhirResource> patch(
             String fhirProviderId, String fhirPath, FhirPatchRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -451,7 +454,7 @@ public class RawFhirClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirResource.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -476,13 +479,13 @@ public class RawFhirClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -491,7 +494,8 @@ public class RawFhirClient {
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<FhirBundle> executeBundle(String fhirProviderId, FhirExecuteBundleRequest request) {
+    public PhenoMLClientHttpResponse<FhirBundle> executeBundle(
+            String fhirProviderId, FhirExecuteBundleRequest request) {
         return executeBundle(fhirProviderId, request, null);
     }
 
@@ -500,7 +504,7 @@ public class RawFhirClient {
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenoMLHttpResponse<FhirBundle> executeBundle(
+    public PhenoMLClientHttpResponse<FhirBundle> executeBundle(
             String fhirProviderId, FhirExecuteBundleRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -538,7 +542,7 @@ public class RawFhirClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirBundle.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -560,13 +564,13 @@ public class RawFhirClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 }

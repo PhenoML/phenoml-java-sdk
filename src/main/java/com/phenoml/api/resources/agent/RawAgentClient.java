@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.core.PhenoMLApiException;
-import com.phenoml.api.core.PhenoMLException;
-import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.PhenoMLClientApiException;
+import com.phenoml.api.core.PhenoMLClientException;
+import com.phenoml.api.core.PhenoMLClientHttpResponse;
 import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.ResponseBodyReader;
@@ -54,14 +54,14 @@ public class RawAgentClient {
     /**
      * Creates a new PhenoAgent with specified configuration
      */
-    public PhenoMLHttpResponse<AgentResponse> create(AgentCreateRequest request) {
+    public PhenoMLClientHttpResponse<AgentResponse> create(AgentCreateRequest request) {
         return create(request, null);
     }
 
     /**
      * Creates a new PhenoAgent with specified configuration
      */
-    public PhenoMLHttpResponse<AgentResponse> create(AgentCreateRequest request, RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<AgentResponse> create(AgentCreateRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/create")
@@ -71,7 +71,7 @@ public class RawAgentClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenoMLClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -87,7 +87,7 @@ public class RawAgentClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -109,34 +109,34 @@ public class RawAgentClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public PhenoMLHttpResponse<AgentListResponse> list() {
+    public PhenoMLClientHttpResponse<AgentListResponse> list() {
         return list(AgentListRequest.builder().build());
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public PhenoMLHttpResponse<AgentListResponse> list(AgentListRequest request) {
+    public PhenoMLClientHttpResponse<AgentListResponse> list(AgentListRequest request) {
         return list(request, null);
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public PhenoMLHttpResponse<AgentListResponse> list(AgentListRequest request, RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<AgentListResponse> list(AgentListRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/list");
@@ -157,7 +157,7 @@ public class RawAgentClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentListResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -176,27 +176,27 @@ public class RawAgentClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Retrieves a specific agent by its ID
      */
-    public PhenoMLHttpResponse<AgentResponse> get(String id) {
+    public PhenoMLClientHttpResponse<AgentResponse> get(String id) {
         return get(id, null);
     }
 
     /**
      * Retrieves a specific agent by its ID
      */
-    public PhenoMLHttpResponse<AgentResponse> get(String id, RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<AgentResponse> get(String id, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent")
@@ -215,7 +215,7 @@ public class RawAgentClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -237,27 +237,27 @@ public class RawAgentClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Updates an existing agent's configuration
      */
-    public PhenoMLHttpResponse<AgentResponse> update(String id, AgentCreateRequest request) {
+    public PhenoMLClientHttpResponse<AgentResponse> update(String id, AgentCreateRequest request) {
         return update(id, request, null);
     }
 
     /**
      * Updates an existing agent's configuration
      */
-    public PhenoMLHttpResponse<AgentResponse> update(
+    public PhenoMLClientHttpResponse<AgentResponse> update(
             String id, AgentCreateRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -269,7 +269,7 @@ public class RawAgentClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenoMLClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -285,7 +285,7 @@ public class RawAgentClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -310,27 +310,27 @@ public class RawAgentClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Deletes an existing agent
      */
-    public PhenoMLHttpResponse<AgentDeleteResponse> delete(String id) {
+    public PhenoMLClientHttpResponse<AgentDeleteResponse> delete(String id) {
         return delete(id, null);
     }
 
     /**
      * Deletes an existing agent
      */
-    public PhenoMLHttpResponse<AgentDeleteResponse> delete(String id, RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<AgentDeleteResponse> delete(String id, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent")
@@ -349,7 +349,7 @@ public class RawAgentClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentDeleteResponse.class),
                         response);
             }
@@ -372,27 +372,27 @@ public class RawAgentClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Patches an existing agent's configuration
      */
-    public PhenoMLHttpResponse<AgentResponse> patch(String id, List<JsonPatchOperation> request) {
+    public PhenoMLClientHttpResponse<AgentResponse> patch(String id, List<JsonPatchOperation> request) {
         return patch(id, request, null);
     }
 
     /**
      * Patches an existing agent's configuration
      */
-    public PhenoMLHttpResponse<AgentResponse> patch(
+    public PhenoMLClientHttpResponse<AgentResponse> patch(
             String id, List<JsonPatchOperation> request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -404,7 +404,7 @@ public class RawAgentClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaType.parse("application/json+patch"));
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenoMLClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -420,7 +420,7 @@ public class RawAgentClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -445,27 +445,27 @@ public class RawAgentClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Send a message to an agent and receive a JSON response.
      */
-    public PhenoMLHttpResponse<AgentChatResponse> chat(AgentChatRequest request) {
+    public PhenoMLClientHttpResponse<AgentChatResponse> chat(AgentChatRequest request) {
         return chat(request, null);
     }
 
     /**
      * Send a message to an agent and receive a JSON response.
      */
-    public PhenoMLHttpResponse<AgentChatResponse> chat(AgentChatRequest request, RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<AgentChatResponse> chat(AgentChatRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/chat")
@@ -511,7 +511,7 @@ public class RawAgentClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentChatResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -533,13 +533,13 @@ public class RawAgentClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -548,7 +548,7 @@ public class RawAgentClient {
      * (SSE) stream. Events include message_start, content_delta, tool_use,
      * tool_result, message_end, and error.
      */
-    public PhenoMLHttpResponse<Iterable<AgentChatStreamEvent>> streamChat(AgentStreamChatRequest request) {
+    public PhenoMLClientHttpResponse<Iterable<AgentChatStreamEvent>> streamChat(AgentStreamChatRequest request) {
         return streamChat(request, null);
     }
 
@@ -557,7 +557,7 @@ public class RawAgentClient {
      * (SSE) stream. Events include message_start, content_delta, tool_use,
      * tool_result, message_end, and error.
      */
-    public PhenoMLHttpResponse<Iterable<AgentChatStreamEvent>> streamChat(
+    public PhenoMLClientHttpResponse<Iterable<AgentChatStreamEvent>> streamChat(
             AgentStreamChatRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -605,7 +605,7 @@ public class RawAgentClient {
             Response response = client.newCall(okhttpRequest).execute();
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         Stream.fromSse(AgentChatStreamEvent.class, new ResponseBodyReader(response)), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -627,27 +627,28 @@ public class RawAgentClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Retrieves a list of chat messages for a given chat session
      */
-    public PhenoMLHttpResponse<AgentGetChatMessagesResponse> getChatMessages(AgentGetChatMessagesRequest request) {
+    public PhenoMLClientHttpResponse<AgentGetChatMessagesResponse> getChatMessages(
+            AgentGetChatMessagesRequest request) {
         return getChatMessages(request, null);
     }
 
     /**
      * Retrieves a list of chat messages for a given chat session
      */
-    public PhenoMLHttpResponse<AgentGetChatMessagesResponse> getChatMessages(
+    public PhenoMLClientHttpResponse<AgentGetChatMessagesResponse> getChatMessages(
             AgentGetChatMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -678,7 +679,7 @@ public class RawAgentClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentGetChatMessagesResponse.class),
                         response);
             }
@@ -698,13 +699,13 @@ public class RawAgentClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 }

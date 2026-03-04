@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.core.PhenoMLApiException;
-import com.phenoml.api.core.PhenoMLException;
-import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.PhenoMLClientApiException;
+import com.phenoml.api.core.PhenoMLClientException;
+import com.phenoml.api.core.PhenoMLClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.tools.errors.BadRequestError;
 import com.phenoml.api.resources.tools.errors.FailedDependencyError;
@@ -45,14 +45,14 @@ public class RawToolsClient {
     /**
      * Converts natural language to FHIR resource and optionally stores it in a FHIR server
      */
-    public PhenoMLHttpResponse<Lang2FhirAndCreateResponse> createFhirResource(Lang2FhirAndCreateRequest request) {
+    public PhenoMLClientHttpResponse<Lang2FhirAndCreateResponse> createFhirResource(Lang2FhirAndCreateRequest request) {
         return createFhirResource(request, null);
     }
 
     /**
      * Converts natural language to FHIR resource and optionally stores it in a FHIR server
      */
-    public PhenoMLHttpResponse<Lang2FhirAndCreateResponse> createFhirResource(
+    public PhenoMLClientHttpResponse<Lang2FhirAndCreateResponse> createFhirResource(
             Lang2FhirAndCreateRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -93,7 +93,7 @@ public class RawToolsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), Lang2FhirAndCreateResponse.class),
                         response);
             }
@@ -119,13 +119,13 @@ public class RawToolsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -136,7 +136,7 @@ public class RawToolsClient {
      * For FHIR servers that don't auto-resolve urn:uuid references, this endpoint will automatically
      * resolve them via PUT requests after the initial bundle creation.
      */
-    public PhenoMLHttpResponse<Lang2FhirAndCreateMultiResponse> createFhirResourcesMulti(
+    public PhenoMLClientHttpResponse<Lang2FhirAndCreateMultiResponse> createFhirResourcesMulti(
             Lang2FhirAndCreateMultiRequest request) {
         return createFhirResourcesMulti(request, null);
     }
@@ -148,7 +148,7 @@ public class RawToolsClient {
      * For FHIR servers that don't auto-resolve urn:uuid references, this endpoint will automatically
      * resolve them via PUT requests after the initial bundle creation.
      */
-    public PhenoMLHttpResponse<Lang2FhirAndCreateMultiResponse> createFhirResourcesMulti(
+    public PhenoMLClientHttpResponse<Lang2FhirAndCreateMultiResponse> createFhirResourcesMulti(
             Lang2FhirAndCreateMultiRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -189,7 +189,7 @@ public class RawToolsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(
                                 responseBody.string(), Lang2FhirAndCreateMultiResponse.class),
                         response);
@@ -216,27 +216,28 @@ public class RawToolsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Converts natural language to FHIR search parameters and executes search in FHIR server
      */
-    public PhenoMLHttpResponse<Lang2FhirAndSearchResponse> searchFhirResources(Lang2FhirAndSearchRequest request) {
+    public PhenoMLClientHttpResponse<Lang2FhirAndSearchResponse> searchFhirResources(
+            Lang2FhirAndSearchRequest request) {
         return searchFhirResources(request, null);
     }
 
     /**
      * Converts natural language to FHIR search parameters and executes search in FHIR server
      */
-    public PhenoMLHttpResponse<Lang2FhirAndSearchResponse> searchFhirResources(
+    public PhenoMLClientHttpResponse<Lang2FhirAndSearchResponse> searchFhirResources(
             Lang2FhirAndSearchRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -285,7 +286,7 @@ public class RawToolsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), Lang2FhirAndSearchResponse.class),
                         response);
             }
@@ -311,27 +312,28 @@ public class RawToolsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Uses LLM to extract search concepts from natural language and builds patient cohorts with inclusion/exclusion criteria
      */
-    public PhenoMLHttpResponse<CohortResponse> analyzeCohort(CohortRequest request) {
+    public PhenoMLClientHttpResponse<CohortResponse> analyzeCohort(CohortRequest request) {
         return analyzeCohort(request, null);
     }
 
     /**
      * Uses LLM to extract search concepts from natural language and builds patient cohorts with inclusion/exclusion criteria
      */
-    public PhenoMLHttpResponse<CohortResponse> analyzeCohort(CohortRequest request, RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<CohortResponse> analyzeCohort(
+            CohortRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tools/cohort")
@@ -368,7 +370,7 @@ public class RawToolsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), CohortResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -390,13 +392,13 @@ public class RawToolsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 }

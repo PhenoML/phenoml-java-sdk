@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.core.PhenoMLApiException;
-import com.phenoml.api.core.PhenoMLException;
-import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.PhenoMLClientApiException;
+import com.phenoml.api.core.PhenoMLClientException;
+import com.phenoml.api.core.PhenoMLClientHttpResponse;
 import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.construe.errors.BadRequestError;
@@ -65,7 +65,7 @@ public class RawConstrueClient {
      * GET /construe/codes/systems/{codesystem}?version={version} to check when status
      * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
-    public PhenoMLHttpResponse<ConstrueUploadCodeSystemResponse> uploadCodeSystem(UploadRequest request) {
+    public PhenoMLClientHttpResponse<ConstrueUploadCodeSystemResponse> uploadCodeSystem(UploadRequest request) {
         return uploadCodeSystem(request, null);
     }
 
@@ -75,7 +75,7 @@ public class RawConstrueClient {
      * GET /construe/codes/systems/{codesystem}?version={version} to check when status
      * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
-    public PhenoMLHttpResponse<ConstrueUploadCodeSystemResponse> uploadCodeSystem(
+    public PhenoMLClientHttpResponse<ConstrueUploadCodeSystemResponse> uploadCodeSystem(
             UploadRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -86,7 +86,7 @@ public class RawConstrueClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenoMLClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -102,7 +102,7 @@ public class RawConstrueClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(
                                 responseBody.string(), ConstrueUploadCodeSystemResponse.class),
                         response);
@@ -132,13 +132,13 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -146,7 +146,7 @@ public class RawConstrueClient {
      * Converts natural language text into structured medical codes.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenoMLHttpResponse<ExtractCodesResult> extractCodes(ExtractRequest request) {
+    public PhenoMLClientHttpResponse<ExtractCodesResult> extractCodes(ExtractRequest request) {
         return extractCodes(request, null);
     }
 
@@ -154,7 +154,8 @@ public class RawConstrueClient {
      * Converts natural language text into structured medical codes.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenoMLHttpResponse<ExtractCodesResult> extractCodes(ExtractRequest request, RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<ExtractCodesResult> extractCodes(
+            ExtractRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/extract")
@@ -164,7 +165,7 @@ public class RawConstrueClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenoMLClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -180,7 +181,7 @@ public class RawConstrueClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ExtractCodesResult.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -208,27 +209,27 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
-    public PhenoMLHttpResponse<ListCodeSystemsResponse> listAvailableCodeSystems() {
+    public PhenoMLClientHttpResponse<ListCodeSystemsResponse> listAvailableCodeSystems() {
         return listAvailableCodeSystems(null);
     }
 
     /**
      * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
-    public PhenoMLHttpResponse<ListCodeSystemsResponse> listAvailableCodeSystems(RequestOptions requestOptions) {
+    public PhenoMLClientHttpResponse<ListCodeSystemsResponse> listAvailableCodeSystems(RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/codes/systems")
@@ -246,7 +247,7 @@ public class RawConstrueClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ListCodeSystemsResponse.class),
                         response);
             }
@@ -263,20 +264,20 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Returns full metadata for a single code system, including timestamps and builtin status.
      */
-    public PhenoMLHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(String codesystem) {
+    public PhenoMLClientHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(String codesystem) {
         return getCodeSystemDetail(
                 codesystem, GetConstrueCodesSystemsCodesystemRequest.builder().build());
     }
@@ -284,7 +285,7 @@ public class RawConstrueClient {
     /**
      * Returns full metadata for a single code system, including timestamps and builtin status.
      */
-    public PhenoMLHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(
+    public PhenoMLClientHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(
             String codesystem, GetConstrueCodesSystemsCodesystemRequest request) {
         return getCodeSystemDetail(codesystem, request, null);
     }
@@ -292,7 +293,7 @@ public class RawConstrueClient {
     /**
      * Returns full metadata for a single code system, including timestamps and builtin status.
      */
-    public PhenoMLHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(
+    public PhenoMLClientHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(
             String codesystem, GetConstrueCodesSystemsCodesystemRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -315,7 +316,7 @@ public class RawConstrueClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), GetCodeSystemDetailResponse.class),
                         response);
             }
@@ -338,13 +339,13 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -352,7 +353,7 @@ public class RawConstrueClient {
      * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
      * Only available on dedicated instances. Large systems may take up to a minute to delete.
      */
-    public PhenoMLHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(String codesystem) {
+    public PhenoMLClientHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(String codesystem) {
         return deleteCustomCodeSystem(
                 codesystem,
                 DeleteConstrueCodesSystemsCodesystemRequest.builder().build());
@@ -362,7 +363,7 @@ public class RawConstrueClient {
      * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
      * Only available on dedicated instances. Large systems may take up to a minute to delete.
      */
-    public PhenoMLHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(
+    public PhenoMLClientHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(
             String codesystem, DeleteConstrueCodesSystemsCodesystemRequest request) {
         return deleteCustomCodeSystem(codesystem, request, null);
     }
@@ -371,7 +372,7 @@ public class RawConstrueClient {
      * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
      * Only available on dedicated instances. Large systems may take up to a minute to delete.
      */
-    public PhenoMLHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(
+    public PhenoMLClientHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(
             String codesystem, DeleteConstrueCodesSystemsCodesystemRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -394,7 +395,7 @@ public class RawConstrueClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), DeleteCodeSystemResponse.class),
                         response);
             }
@@ -420,13 +421,13 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -435,7 +436,7 @@ public class RawConstrueClient {
      * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
      * Only available on dedicated instances. Builtin systems cannot be exported.
      */
-    public PhenoMLHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(String codesystem) {
+    public PhenoMLClientHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(String codesystem) {
         return exportCustomCodeSystem(
                 codesystem,
                 GetConstrueCodesSystemsCodesystemExportRequest.builder().build());
@@ -446,7 +447,7 @@ public class RawConstrueClient {
      * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
      * Only available on dedicated instances. Builtin systems cannot be exported.
      */
-    public PhenoMLHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(
+    public PhenoMLClientHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(
             String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request) {
         return exportCustomCodeSystem(codesystem, request, null);
     }
@@ -456,7 +457,7 @@ public class RawConstrueClient {
      * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
      * Only available on dedicated instances. Builtin systems cannot be exported.
      */
-    public PhenoMLHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(
+    public PhenoMLClientHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(
             String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -480,7 +481,7 @@ public class RawConstrueClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ExportCodeSystemResponse.class),
                         response);
             }
@@ -512,13 +513,13 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -526,7 +527,7 @@ public class RawConstrueClient {
      * Returns a paginated list of all codes in the specified code system from the terminology server.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenoMLHttpResponse<ListCodesResponse> listCodesInACodeSystem(String codesystem) {
+    public PhenoMLClientHttpResponse<ListCodesResponse> listCodesInACodeSystem(String codesystem) {
         return listCodesInACodeSystem(
                 codesystem, GetConstrueCodesCodesystemRequest.builder().build());
     }
@@ -535,7 +536,7 @@ public class RawConstrueClient {
      * Returns a paginated list of all codes in the specified code system from the terminology server.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenoMLHttpResponse<ListCodesResponse> listCodesInACodeSystem(
+    public PhenoMLClientHttpResponse<ListCodesResponse> listCodesInACodeSystem(
             String codesystem, GetConstrueCodesCodesystemRequest request) {
         return listCodesInACodeSystem(codesystem, request, null);
     }
@@ -544,7 +545,7 @@ public class RawConstrueClient {
      * Returns a paginated list of all codes in the specified code system from the terminology server.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenoMLHttpResponse<ListCodesResponse> listCodesInACodeSystem(
+    public PhenoMLClientHttpResponse<ListCodesResponse> listCodesInACodeSystem(
             String codesystem, GetConstrueCodesCodesystemRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -575,7 +576,7 @@ public class RawConstrueClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ListCodesResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -597,13 +598,13 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -611,7 +612,7 @@ public class RawConstrueClient {
      * Looks up a specific code in the terminology server and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenoMLHttpResponse<GetCodeResponse> getASpecificCode(String codesystem, String codeId) {
+    public PhenoMLClientHttpResponse<GetCodeResponse> getASpecificCode(String codesystem, String codeId) {
         return getASpecificCode(
                 codesystem,
                 codeId,
@@ -622,7 +623,7 @@ public class RawConstrueClient {
      * Looks up a specific code in the terminology server and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenoMLHttpResponse<GetCodeResponse> getASpecificCode(
+    public PhenoMLClientHttpResponse<GetCodeResponse> getASpecificCode(
             String codesystem, String codeId, GetConstrueCodesCodesystemCodeIdRequest request) {
         return getASpecificCode(codesystem, codeId, request, null);
     }
@@ -631,7 +632,7 @@ public class RawConstrueClient {
      * Looks up a specific code in the terminology server and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenoMLHttpResponse<GetCodeResponse> getASpecificCode(
+    public PhenoMLClientHttpResponse<GetCodeResponse> getASpecificCode(
             String codesystem,
             String codeId,
             GetConstrueCodesCodesystemCodeIdRequest request,
@@ -658,7 +659,7 @@ public class RawConstrueClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), GetCodeResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -680,13 +681,13 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -707,7 +708,7 @@ public class RawConstrueClient {
      * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenoMLHttpResponse<SemanticSearchResponse> semanticSearchEmbeddingBased(
+    public PhenoMLClientHttpResponse<SemanticSearchResponse> semanticSearchEmbeddingBased(
             String codesystem, GetConstrueCodesCodesystemSearchSemanticRequest request) {
         return semanticSearchEmbeddingBased(codesystem, request, null);
     }
@@ -729,7 +730,7 @@ public class RawConstrueClient {
      * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenoMLHttpResponse<SemanticSearchResponse> semanticSearchEmbeddingBased(
+    public PhenoMLClientHttpResponse<SemanticSearchResponse> semanticSearchEmbeddingBased(
             String codesystem, GetConstrueCodesCodesystemSearchSemanticRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -758,7 +759,7 @@ public class RawConstrueClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), SemanticSearchResponse.class),
                         response);
             }
@@ -781,13 +782,13 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -795,7 +796,7 @@ public class RawConstrueClient {
      * Submits user feedback on results from the Construe extraction endpoint.
      * Feedback includes the full extraction result received and the result the user expected.
      */
-    public PhenoMLHttpResponse<FeedbackResponse> submitFeedbackOnExtractionResults(FeedbackRequest request) {
+    public PhenoMLClientHttpResponse<FeedbackResponse> submitFeedbackOnExtractionResults(FeedbackRequest request) {
         return submitFeedbackOnExtractionResults(request, null);
     }
 
@@ -803,7 +804,7 @@ public class RawConstrueClient {
      * Submits user feedback on results from the Construe extraction endpoint.
      * Feedback includes the full extraction result received and the result the user expected.
      */
-    public PhenoMLHttpResponse<FeedbackResponse> submitFeedbackOnExtractionResults(
+    public PhenoMLClientHttpResponse<FeedbackResponse> submitFeedbackOnExtractionResults(
             FeedbackRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -814,7 +815,7 @@ public class RawConstrueClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenoMLClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -830,7 +831,7 @@ public class RawConstrueClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FeedbackResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -852,13 +853,13 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -885,7 +886,7 @@ public class RawConstrueClient {
      * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenoMLHttpResponse<TextSearchResponse> terminologyServerTextSearch(
+    public PhenoMLClientHttpResponse<TextSearchResponse> terminologyServerTextSearch(
             String codesystem, GetConstrueCodesCodesystemSearchTextRequest request) {
         return terminologyServerTextSearch(codesystem, request, null);
     }
@@ -913,7 +914,7 @@ public class RawConstrueClient {
      * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenoMLHttpResponse<TextSearchResponse> terminologyServerTextSearch(
+    public PhenoMLClientHttpResponse<TextSearchResponse> terminologyServerTextSearch(
             String codesystem, GetConstrueCodesCodesystemSearchTextRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -942,7 +943,7 @@ public class RawConstrueClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenoMLClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), TextSearchResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -967,13 +968,13 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenoMLClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenoMLClientException("Network error executing HTTP request", e);
         }
     }
 }

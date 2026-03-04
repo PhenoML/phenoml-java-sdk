@@ -3,10 +3,10 @@
  */
 package com.phenoml.api.resources.agent.errors;
 
-import com.phenoml.api.core.PhenoMLApiException;
+import com.phenoml.api.core.PhenoMLClientApiException;
 import okhttp3.Response;
 
-public final class BadRequestError extends PhenoMLApiException {
+public final class BadRequestError extends PhenoMLClientApiException {
     /**
      * The body of the response that triggered the exception.
      */

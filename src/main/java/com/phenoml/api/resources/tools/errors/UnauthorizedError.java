@@ -3,10 +3,10 @@
  */
 package com.phenoml.api.resources.tools.errors;
 
-import com.phenoml.api.core.PhenoMLApiException;
+import com.phenoml.api.core.PhenoMLClientApiException;
 import okhttp3.Response;
 
-public final class UnauthorizedError extends PhenoMLApiException {
+public final class UnauthorizedError extends PhenoMLClientApiException {
     /**
      * The body of the response that triggered the exception.
      */
