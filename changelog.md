@@ -1,3 +1,14 @@
+## 9.0.0 - 2026-03-04
+* feat: implement OAuth 2.0 client credentials authentication
+* Replace manual token authentication with automated OAuth 2.0 client credentials flow. This change improves security by handling token refresh automatically and eliminates the need for users to manually manage access tokens.
+* Key changes:
+* Add OAuth 2.0 client credentials endpoint with automatic token refresh
+* Replace manual token configuration with client ID/secret environment variables
+* Add OAuthTokenSupplier for automatic Bearer token management with expiration handling
+* Remove token parameter from RequestOptions and client builders
+* Add comprehensive OAuth error handling and token response types
+* 🌿 Generated with Fern
+
 ## 8.3.0 - 2026-03-03
 * feat: add document multi-resource extraction endpoint
 * Add a new endpoint for extracting multiple FHIR resources from documents (PDF/images).

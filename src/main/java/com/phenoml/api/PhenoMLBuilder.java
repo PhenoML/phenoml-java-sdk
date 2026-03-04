@@ -5,6 +5,8 @@ package com.phenoml.api;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.Environment;
+import com.phenoml.api.core.OAuthTokenSupplier;
+import com.phenoml.api.resources.authtoken.auth.AuthClient;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -17,17 +19,29 @@ public class PhenoMLBuilder {
 
     private final Map<String, String> customHeaders = new HashMap<>();
 
-    private String token = null;
+    private String clientId = System.getenv("PHENOML_CLIENT_ID");
+
+    private String clientSecret = System.getenv("PHENOML_CLIENT_SECRET");
 
     private Environment environment = Environment.DEFAULT;
 
     private OkHttpClient httpClient;
 
     /**
-     * Sets token
+     * Sets clientId.
+     * Defaults to the PHENOML_CLIENT_ID environment variable.
      */
-    public PhenoMLBuilder token(String token) {
-        this.token = token;
+    public PhenoMLBuilder clientId(String clientId) {
+        this.clientId = clientId;
+        return this;
+    }
+
+    /**
+     * Sets clientSecret.
+     * Defaults to the PHENOML_CLIENT_SECRET environment variable.
+     */
+    public PhenoMLBuilder clientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
         return this;
     }
 
@@ -118,8 +132,12 @@ public class PhenoMLBuilder {
      * }</pre>
      */
     protected void setAuthentication(ClientOptions.Builder builder) {
-        if (this.token != null) {
-            builder.addHeader("Authorization", "Bearer " + this.token);
+        if (this.clientId != null && this.clientSecret != null) {
+            AuthClient authClient = new AuthClient(
+                    ClientOptions.builder().environment(this.environment).build());
+            OAuthTokenSupplier oAuthTokenSupplier =
+                    new OAuthTokenSupplier(this.clientId, this.clientSecret, authClient);
+            builder.addHeader("Authorization", oAuthTokenSupplier);
         }
     }
 
@@ -196,9 +214,6 @@ public class PhenoMLBuilder {
     protected void validateConfiguration() {}
 
     public PhenoML build() {
-        if (token == null) {
-            throw new RuntimeException("Please provide token");
-        }
         validateConfiguration();
         return new PhenoML(buildClientOptions());
     }

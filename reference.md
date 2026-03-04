@@ -1256,6 +1256,83 @@ client.authtoken().auth().generateToken(
 </dl>
 </details>
 
+<details><summary><code>client.authtoken.auth.getToken(request) -> TokenResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
+Accepts client_id and client_secret in the request body (JSON or
+form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
+returns an access token with expiration information.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.authtoken().auth().getToken(
+    ClientCredentialsRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**grantType:** `Optional<String>` — Must be "client_credentials" if provided
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**clientId:** `Optional<String>` — The client ID (credential username)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**clientSecret:** `Optional<String>` — The client secret (credential password)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Cohort
 <details><summary><code>client.cohort.analyze(request) -> CohortResponse</code></summary>
 <dl>

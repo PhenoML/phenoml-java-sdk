@@ -6,7 +6,9 @@ package com.phenoml.api.resources.authtoken.auth;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.authtoken.auth.requests.AuthGenerateTokenRequest;
+import com.phenoml.api.resources.authtoken.auth.requests.ClientCredentialsRequest;
 import com.phenoml.api.resources.authtoken.auth.types.AuthGenerateTokenResponse;
+import com.phenoml.api.resources.authtoken.types.TokenResponse;
 
 public class AuthClient {
     protected final ClientOptions clientOptions;
@@ -37,5 +39,35 @@ public class AuthClient {
      */
     public AuthGenerateTokenResponse generateToken(AuthGenerateTokenRequest request, RequestOptions requestOptions) {
         return this.rawClient.generateToken(request, requestOptions).body();
+    }
+
+    /**
+     * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
+     * Accepts client_id and client_secret in the request body (JSON or
+     * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
+     * returns an access token with expiration information.
+     */
+    public TokenResponse getToken() {
+        return this.rawClient.getToken().body();
+    }
+
+    /**
+     * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
+     * Accepts client_id and client_secret in the request body (JSON or
+     * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
+     * returns an access token with expiration information.
+     */
+    public TokenResponse getToken(ClientCredentialsRequest request) {
+        return this.rawClient.getToken(request).body();
+    }
+
+    /**
+     * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
+     * Accepts client_id and client_secret in the request body (JSON or
+     * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
+     * returns an access token with expiration information.
+     */
+    public TokenResponse getToken(ClientCredentialsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.getToken(request, requestOptions).body();
     }
 }
