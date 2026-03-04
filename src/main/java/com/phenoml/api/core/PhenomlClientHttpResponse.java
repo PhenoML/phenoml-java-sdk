@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 import okhttp3.Response;
 
-public final class PhenoMLHttpResponse<T> {
+public final class PhenomlClientHttpResponse<T> {
 
     private final T body;
 
     private final Map<String, List<String>> headers;
 
-    public PhenoMLHttpResponse(T body, Response rawResponse) {
+    public PhenomlClientHttpResponse(T body, Response rawResponse) {
         this.body = body;
 
         Map<String, List<String>> headers = new HashMap<>();

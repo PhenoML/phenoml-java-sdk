@@ -8,9 +8,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.core.PhenoMLApiException;
-import com.phenoml.api.core.PhenoMLException;
-import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.PhenomlClientApiException;
+import com.phenoml.api.core.PhenomlClientException;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.lang2fhir.errors.BadRequestError;
 import com.phenoml.api.resources.lang2fhir.errors.FailedDependencyError;
@@ -51,14 +51,14 @@ public class AsyncRawLang2FhirClient {
     /**
      * Converts natural language text into a structured FHIR resource
      */
-    public CompletableFuture<PhenoMLHttpResponse<Map<String, Object>>> create(CreateRequest request) {
+    public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> create(CreateRequest request) {
         return create(request, null);
     }
 
     /**
      * Converts natural language text into a structured FHIR resource
      */
-    public CompletableFuture<PhenoMLHttpResponse<Map<String, Object>>> create(
+    public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> create(
             CreateRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -69,7 +69,7 @@ public class AsyncRawLang2FhirClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -82,13 +82,13 @@ public class AsyncRawLang2FhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<Map<String, Object>>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
                                         responseBody.string(), new TypeReference<Map<String, Object>>() {}),
                                 response));
@@ -116,20 +116,20 @@ public class AsyncRawLang2FhirClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -140,7 +140,7 @@ public class AsyncRawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public CompletableFuture<PhenoMLHttpResponse<CreateMultiResponse>> createMulti(CreateMultiRequest request) {
+    public CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> createMulti(CreateMultiRequest request) {
         return createMulti(request, null);
     }
 
@@ -149,7 +149,7 @@ public class AsyncRawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public CompletableFuture<PhenoMLHttpResponse<CreateMultiResponse>> createMulti(
+    public CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> createMulti(
             CreateMultiRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -160,7 +160,7 @@ public class AsyncRawLang2FhirClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -173,13 +173,13 @@ public class AsyncRawLang2FhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<CreateMultiResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), CreateMultiResponse.class),
                                 response));
                         return;
@@ -206,20 +206,20 @@ public class AsyncRawLang2FhirClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -234,7 +234,7 @@ public class AsyncRawLang2FhirClient {
      * PractitionerRole, Procedure, Provenance, Questionnaire, QuestionnaireResponse, RelatedPerson,
      * Schedule, ServiceRequest, Slot, and Specimen.</p>
      */
-    public CompletableFuture<PhenoMLHttpResponse<SearchResponse>> search(SearchRequest request) {
+    public CompletableFuture<PhenomlClientHttpResponse<SearchResponse>> search(SearchRequest request) {
         return search(request, null);
     }
 
@@ -247,7 +247,7 @@ public class AsyncRawLang2FhirClient {
      * PractitionerRole, Procedure, Provenance, Questionnaire, QuestionnaireResponse, RelatedPerson,
      * Schedule, ServiceRequest, Slot, and Specimen.</p>
      */
-    public CompletableFuture<PhenoMLHttpResponse<SearchResponse>> search(
+    public CompletableFuture<PhenomlClientHttpResponse<SearchResponse>> search(
             SearchRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -258,7 +258,7 @@ public class AsyncRawLang2FhirClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -271,13 +271,13 @@ public class AsyncRawLang2FhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<SearchResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<SearchResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), SearchResponse.class),
                                 response));
                         return;
@@ -309,20 +309,20 @@ public class AsyncRawLang2FhirClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -340,7 +340,7 @@ public class AsyncRawLang2FhirClient {
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
      */
-    public CompletableFuture<PhenoMLHttpResponse<Lang2FhirUploadProfileResponse>> uploadProfile(
+    public CompletableFuture<PhenomlClientHttpResponse<Lang2FhirUploadProfileResponse>> uploadProfile(
             ProfileUploadRequest request) {
         return uploadProfile(request, null);
     }
@@ -357,7 +357,7 @@ public class AsyncRawLang2FhirClient {
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
      */
-    public CompletableFuture<PhenoMLHttpResponse<Lang2FhirUploadProfileResponse>> uploadProfile(
+    public CompletableFuture<PhenomlClientHttpResponse<Lang2FhirUploadProfileResponse>> uploadProfile(
             ProfileUploadRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -368,7 +368,7 @@ public class AsyncRawLang2FhirClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -381,13 +381,13 @@ public class AsyncRawLang2FhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<Lang2FhirUploadProfileResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<Lang2FhirUploadProfileResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
                                         responseBody.string(), Lang2FhirUploadProfileResponse.class),
                                 response));
@@ -420,20 +420,20 @@ public class AsyncRawLang2FhirClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -442,14 +442,14 @@ public class AsyncRawLang2FhirClient {
     /**
      * Extracts text from a document (PDF or image) and converts it into a structured FHIR resource
      */
-    public CompletableFuture<PhenoMLHttpResponse<Map<String, Object>>> document(DocumentRequest request) {
+    public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> document(DocumentRequest request) {
         return document(request, null);
     }
 
     /**
      * Extracts text from a document (PDF or image) and converts it into a structured FHIR resource
      */
-    public CompletableFuture<PhenoMLHttpResponse<Map<String, Object>>> document(
+    public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> document(
             DocumentRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -460,7 +460,7 @@ public class AsyncRawLang2FhirClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -473,13 +473,13 @@ public class AsyncRawLang2FhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<Map<String, Object>>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
                                         responseBody.string(), new TypeReference<Map<String, Object>>() {}),
                                 response));
@@ -507,20 +507,20 @@ public class AsyncRawLang2FhirClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -532,7 +532,7 @@ public class AsyncRawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public CompletableFuture<PhenoMLHttpResponse<CreateMultiResponse>> extractMultipleFhirResourcesFromADocument(
+    public CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> extractMultipleFhirResourcesFromADocument(
             DocumentMultiRequest request) {
         return extractMultipleFhirResourcesFromADocument(request, null);
     }
@@ -543,7 +543,7 @@ public class AsyncRawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public CompletableFuture<PhenoMLHttpResponse<CreateMultiResponse>> extractMultipleFhirResourcesFromADocument(
+    public CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> extractMultipleFhirResourcesFromADocument(
             DocumentMultiRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -554,7 +554,7 @@ public class AsyncRawLang2FhirClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -567,13 +567,13 @@ public class AsyncRawLang2FhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<CreateMultiResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), CreateMultiResponse.class),
                                 response));
                         return;
@@ -605,20 +605,20 @@ public class AsyncRawLang2FhirClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;

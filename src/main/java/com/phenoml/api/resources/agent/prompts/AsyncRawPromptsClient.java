@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.core.PhenoMLApiException;
-import com.phenoml.api.core.PhenoMLException;
-import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.PhenomlClientApiException;
+import com.phenoml.api.core.PhenomlClientException;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.agent.errors.BadRequestError;
 import com.phenoml.api.resources.agent.errors.ForbiddenError;
@@ -48,14 +48,15 @@ public class AsyncRawPromptsClient {
     /**
      * Creates a new agent prompt
      */
-    public CompletableFuture<PhenoMLHttpResponse<AgentPromptsResponse>> create(AgentPromptsCreateRequest request) {
+    public CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> create(
+            AgentPromptsCreateRequest request) {
         return create(request, null);
     }
 
     /**
      * Creates a new agent prompt
      */
-    public CompletableFuture<PhenoMLHttpResponse<AgentPromptsResponse>> create(
+    public CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> create(
             AgentPromptsCreateRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -66,7 +67,7 @@ public class AsyncRawPromptsClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -79,13 +80,13 @@ public class AsyncRawPromptsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<AgentPromptsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentPromptsResponse.class),
                                 response));
                         return;
@@ -117,20 +118,20 @@ public class AsyncRawPromptsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -139,14 +140,14 @@ public class AsyncRawPromptsClient {
     /**
      * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public CompletableFuture<PhenoMLHttpResponse<PromptsListResponse>> list() {
+    public CompletableFuture<PhenomlClientHttpResponse<PromptsListResponse>> list() {
         return list(null);
     }
 
     /**
      * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public CompletableFuture<PhenoMLHttpResponse<PromptsListResponse>> list(RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<PromptsListResponse>> list(RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/prompts/list")
@@ -161,13 +162,13 @@ public class AsyncRawPromptsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<PromptsListResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<PromptsListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), PromptsListResponse.class),
                                 response));
                         return;
@@ -194,20 +195,20 @@ public class AsyncRawPromptsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -216,14 +217,15 @@ public class AsyncRawPromptsClient {
     /**
      * Retrieves a specific prompt by its ID
      */
-    public CompletableFuture<PhenoMLHttpResponse<AgentPromptsResponse>> get(String id) {
+    public CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> get(String id) {
         return get(id, null);
     }
 
     /**
      * Retrieves a specific prompt by its ID
      */
-    public CompletableFuture<PhenoMLHttpResponse<AgentPromptsResponse>> get(String id, RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> get(
+            String id, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/prompts")
@@ -239,13 +241,13 @@ public class AsyncRawPromptsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<AgentPromptsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentPromptsResponse.class),
                                 response));
                         return;
@@ -277,20 +279,20 @@ public class AsyncRawPromptsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -299,14 +301,14 @@ public class AsyncRawPromptsClient {
     /**
      * Updates an existing prompt
      */
-    public CompletableFuture<PhenoMLHttpResponse<AgentPromptsResponse>> update(String id) {
+    public CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> update(String id) {
         return update(id, AgentPromptsUpdateRequest.builder().build());
     }
 
     /**
      * Updates an existing prompt
      */
-    public CompletableFuture<PhenoMLHttpResponse<AgentPromptsResponse>> update(
+    public CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> update(
             String id, AgentPromptsUpdateRequest request) {
         return update(id, request, null);
     }
@@ -314,7 +316,7 @@ public class AsyncRawPromptsClient {
     /**
      * Updates an existing prompt
      */
-    public CompletableFuture<PhenoMLHttpResponse<AgentPromptsResponse>> update(
+    public CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> update(
             String id, AgentPromptsUpdateRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -326,7 +328,7 @@ public class AsyncRawPromptsClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -339,13 +341,13 @@ public class AsyncRawPromptsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<AgentPromptsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentPromptsResponse.class),
                                 response));
                         return;
@@ -382,20 +384,20 @@ public class AsyncRawPromptsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -404,14 +406,14 @@ public class AsyncRawPromptsClient {
     /**
      * Deletes a prompt
      */
-    public CompletableFuture<PhenoMLHttpResponse<PromptsDeleteResponse>> delete(String id) {
+    public CompletableFuture<PhenomlClientHttpResponse<PromptsDeleteResponse>> delete(String id) {
         return delete(id, null);
     }
 
     /**
      * Deletes a prompt
      */
-    public CompletableFuture<PhenoMLHttpResponse<PromptsDeleteResponse>> delete(
+    public CompletableFuture<PhenomlClientHttpResponse<PromptsDeleteResponse>> delete(
             String id, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -428,13 +430,13 @@ public class AsyncRawPromptsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<PromptsDeleteResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<PromptsDeleteResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), PromptsDeleteResponse.class),
                                 response));
                         return;
@@ -466,20 +468,20 @@ public class AsyncRawPromptsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -488,7 +490,7 @@ public class AsyncRawPromptsClient {
     /**
      * Patches an existing prompt
      */
-    public CompletableFuture<PhenoMLHttpResponse<AgentPromptsResponse>> patch(
+    public CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> patch(
             String id, List<JsonPatchOperation> request) {
         return patch(id, request, null);
     }
@@ -496,7 +498,7 @@ public class AsyncRawPromptsClient {
     /**
      * Patches an existing prompt
      */
-    public CompletableFuture<PhenoMLHttpResponse<AgentPromptsResponse>> patch(
+    public CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> patch(
             String id, List<JsonPatchOperation> request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -508,7 +510,7 @@ public class AsyncRawPromptsClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaType.parse("application/json+patch"));
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -521,13 +523,13 @@ public class AsyncRawPromptsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<AgentPromptsResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), AgentPromptsResponse.class),
                                 response));
                         return;
@@ -564,20 +566,20 @@ public class AsyncRawPromptsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -586,14 +588,14 @@ public class AsyncRawPromptsClient {
     /**
      * Loads default agent prompts for the authenticated user
      */
-    public CompletableFuture<PhenoMLHttpResponse<SuccessResponse>> loadDefaults() {
+    public CompletableFuture<PhenomlClientHttpResponse<SuccessResponse>> loadDefaults() {
         return loadDefaults(null);
     }
 
     /**
      * Loads default agent prompts for the authenticated user
      */
-    public CompletableFuture<PhenoMLHttpResponse<SuccessResponse>> loadDefaults(RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<SuccessResponse>> loadDefaults(RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/prompts/load-defaults")
@@ -608,13 +610,13 @@ public class AsyncRawPromptsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<SuccessResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), SuccessResponse.class),
                                 response));
                         return;
@@ -641,20 +643,20 @@ public class AsyncRawPromptsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;

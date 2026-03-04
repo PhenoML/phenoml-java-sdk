@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.core.PhenoMLApiException;
-import com.phenoml.api.core.PhenoMLException;
-import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.PhenomlClientApiException;
+import com.phenoml.api.core.PhenomlClientException;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.summary.errors.BadRequestError;
 import com.phenoml.api.resources.summary.errors.ForbiddenError;
@@ -44,14 +44,14 @@ public class RawSummaryClient {
     /**
      * Retrieves all summary templates for the authenticated user
      */
-    public PhenoMLHttpResponse<SummaryListTemplatesResponse> listTemplates() {
+    public PhenomlClientHttpResponse<SummaryListTemplatesResponse> listTemplates() {
         return listTemplates(null);
     }
 
     /**
      * Retrieves all summary templates for the authenticated user
      */
-    public PhenoMLHttpResponse<SummaryListTemplatesResponse> listTemplates(RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<SummaryListTemplatesResponse> listTemplates(RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir2summary/templates")
@@ -69,7 +69,7 @@ public class RawSummaryClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), SummaryListTemplatesResponse.class),
                         response);
             }
@@ -86,27 +86,28 @@ public class RawSummaryClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Creates a summary template from an example using LLM function calling
      */
-    public PhenoMLHttpResponse<CreateSummaryTemplateResponse> createTemplate(CreateSummaryTemplateRequest request) {
+    public PhenomlClientHttpResponse<CreateSummaryTemplateResponse> createTemplate(
+            CreateSummaryTemplateRequest request) {
         return createTemplate(request, null);
     }
 
     /**
      * Creates a summary template from an example using LLM function calling
      */
-    public PhenoMLHttpResponse<CreateSummaryTemplateResponse> createTemplate(
+    public PhenomlClientHttpResponse<CreateSummaryTemplateResponse> createTemplate(
             CreateSummaryTemplateRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -117,7 +118,7 @@ public class RawSummaryClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -133,7 +134,7 @@ public class RawSummaryClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), CreateSummaryTemplateResponse.class),
                         response);
             }
@@ -153,27 +154,27 @@ public class RawSummaryClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Retrieves a specific summary template
      */
-    public PhenoMLHttpResponse<SummaryGetTemplateResponse> getTemplate(String id) {
+    public PhenomlClientHttpResponse<SummaryGetTemplateResponse> getTemplate(String id) {
         return getTemplate(id, null);
     }
 
     /**
      * Retrieves a specific summary template
      */
-    public PhenoMLHttpResponse<SummaryGetTemplateResponse> getTemplate(String id, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<SummaryGetTemplateResponse> getTemplate(String id, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir2summary/template")
@@ -192,7 +193,7 @@ public class RawSummaryClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), SummaryGetTemplateResponse.class),
                         response);
             }
@@ -215,20 +216,20 @@ public class RawSummaryClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Updates an existing summary template
      */
-    public PhenoMLHttpResponse<SummaryUpdateTemplateResponse> updateTemplate(
+    public PhenomlClientHttpResponse<SummaryUpdateTemplateResponse> updateTemplate(
             String id, UpdateSummaryTemplateRequest request) {
         return updateTemplate(id, request, null);
     }
@@ -236,7 +237,7 @@ public class RawSummaryClient {
     /**
      * Updates an existing summary template
      */
-    public PhenoMLHttpResponse<SummaryUpdateTemplateResponse> updateTemplate(
+    public PhenomlClientHttpResponse<SummaryUpdateTemplateResponse> updateTemplate(
             String id, UpdateSummaryTemplateRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -248,7 +249,7 @@ public class RawSummaryClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -264,7 +265,7 @@ public class RawSummaryClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), SummaryUpdateTemplateResponse.class),
                         response);
             }
@@ -290,27 +291,28 @@ public class RawSummaryClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Deletes a summary template
      */
-    public PhenoMLHttpResponse<SummaryDeleteTemplateResponse> deleteTemplate(String id) {
+    public PhenomlClientHttpResponse<SummaryDeleteTemplateResponse> deleteTemplate(String id) {
         return deleteTemplate(id, null);
     }
 
     /**
      * Deletes a summary template
      */
-    public PhenoMLHttpResponse<SummaryDeleteTemplateResponse> deleteTemplate(String id, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<SummaryDeleteTemplateResponse> deleteTemplate(
+            String id, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir2summary/template")
@@ -329,7 +331,7 @@ public class RawSummaryClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), SummaryDeleteTemplateResponse.class),
                         response);
             }
@@ -352,13 +354,13 @@ public class RawSummaryClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -370,7 +372,7 @@ public class RawSummaryClient {
      * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
      * </ul>
      */
-    public PhenoMLHttpResponse<CreateSummaryResponse> create(CreateSummaryRequest request) {
+    public PhenomlClientHttpResponse<CreateSummaryResponse> create(CreateSummaryRequest request) {
         return create(request, null);
     }
 
@@ -382,7 +384,7 @@ public class RawSummaryClient {
      * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
      * </ul>
      */
-    public PhenoMLHttpResponse<CreateSummaryResponse> create(
+    public PhenomlClientHttpResponse<CreateSummaryResponse> create(
             CreateSummaryRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -393,7 +395,7 @@ public class RawSummaryClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -409,7 +411,7 @@ public class RawSummaryClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), CreateSummaryResponse.class),
                         response);
             }
@@ -435,13 +437,13 @@ public class RawSummaryClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 }

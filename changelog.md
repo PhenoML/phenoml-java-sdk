@@ -1,3 +1,52 @@
+## 9.0.0 - 2026-03-04
+
+### Breaking Changes
+
+- **Authentication**: Replaced username/password authentication with OAuth 2.0 client credentials. Builders now accept `clientId()` and `clientSecret()` (defaulting to `PHENOML_CLIENT_ID` and `PHENOML_CLIENT_SECRET` environment variables). Tokens are automatically obtained and refreshed via the `/v2/auth/token` endpoint.
+- **Client renamed**: `PhenoML` → `PhenomlClient`, `AsyncPhenoML` → `AsyncPhenomlClient`.
+- **Builder renamed**: `PhenoMLBuilder` → `PhenomlClientBuilder`, `AsyncPhenoMLBuilder` → `AsyncPhenomlClientBuilder`.
+- **Wrapper clients removed**: `Client.java` and `AsyncClient.java` convenience wrappers have been removed. Use `PhenomlClient` / `AsyncPhenomlClient` directly.
+
+### Migration Guide
+
+**Authentication** — replace username/password with client credentials:
+
+```java
+// Before
+PhenoMLClient client = PhenoMLClient.withCredentials(
+    "user", "pass", "https://yourinstance.app.pheno.ml");
+
+// After (option 1: env vars PHENOML_CLIENT_ID and PHENOML_CLIENT_SECRET)
+PhenomlClient client = PhenomlClient.builder()
+    .url("https://yourinstance.app.pheno.ml")
+    .build();
+
+// After (option 2: explicit credentials)
+PhenomlClient client = PhenomlClient.builder()
+    .clientId("YOUR_CLIENT_ID")
+    .clientSecret("YOUR_CLIENT_SECRET")
+    .url("https://yourinstance.app.pheno.ml")
+    .build();
+```
+
+**Import updates:**
+
+```java
+// Before
+import com.phenoml.api.Client;
+// or
+import com.phenoml.api.wrapper.PhenoMLClient;
+
+// After
+import com.phenoml.api.PhenomlClient;
+```
+
+### Added
+
+- New `/v2/auth/token` OAuth 2.0 client credentials endpoint with `ClientCredentialsRequest`, `TokenResponse`, and `OAuthError` types.
+- `OAuthTokenSupplier` for automatic token acquisition and caching.
+- `InternalServerError` error type for authtoken module.
+
 ## 8.3.0 - 2026-03-03
 * feat: add document multi-resource extraction endpoint
 * Add a new endpoint for extracting multiple FHIR resources from documents (PDF/images).

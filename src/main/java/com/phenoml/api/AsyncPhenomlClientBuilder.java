@@ -5,38 +5,52 @@ package com.phenoml.api;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.Environment;
+import com.phenoml.api.core.OAuthTokenSupplier;
+import com.phenoml.api.resources.authtoken.auth.AuthClient;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import okhttp3.OkHttpClient;
 
-public class AsyncPhenoMLBuilder {
+public class AsyncPhenomlClientBuilder {
     private Optional<Integer> timeout = Optional.empty();
 
     private Optional<Integer> maxRetries = Optional.empty();
 
     private final Map<String, String> customHeaders = new HashMap<>();
 
-    private String token = null;
+    private String clientId = System.getenv("PHENOML_CLIENT_ID");
+
+    private String clientSecret = System.getenv("PHENOML_CLIENT_SECRET");
 
     private Environment environment = Environment.DEFAULT;
 
     private OkHttpClient httpClient;
 
     /**
-     * Sets token
+     * Sets clientId.
+     * Defaults to the PHENOML_CLIENT_ID environment variable.
      */
-    public AsyncPhenoMLBuilder token(String token) {
-        this.token = token;
+    public AsyncPhenomlClientBuilder clientId(String clientId) {
+        this.clientId = clientId;
         return this;
     }
 
-    public AsyncPhenoMLBuilder environment(Environment environment) {
+    /**
+     * Sets clientSecret.
+     * Defaults to the PHENOML_CLIENT_SECRET environment variable.
+     */
+    public AsyncPhenomlClientBuilder clientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+        return this;
+    }
+
+    public AsyncPhenomlClientBuilder environment(Environment environment) {
         this.environment = environment;
         return this;
     }
 
-    public AsyncPhenoMLBuilder url(String url) {
+    public AsyncPhenomlClientBuilder url(String url) {
         this.environment = Environment.custom(url);
         return this;
     }
@@ -44,7 +58,7 @@ public class AsyncPhenoMLBuilder {
     /**
      * Sets the timeout (in seconds) for the client. Defaults to 60 seconds.
      */
-    public AsyncPhenoMLBuilder timeout(int timeout) {
+    public AsyncPhenomlClientBuilder timeout(int timeout) {
         this.timeout = Optional.of(timeout);
         return this;
     }
@@ -52,7 +66,7 @@ public class AsyncPhenoMLBuilder {
     /**
      * Sets the maximum number of retries for the client. Defaults to 2 retries.
      */
-    public AsyncPhenoMLBuilder maxRetries(int maxRetries) {
+    public AsyncPhenomlClientBuilder maxRetries(int maxRetries) {
         this.maxRetries = Optional.of(maxRetries);
         return this;
     }
@@ -60,7 +74,7 @@ public class AsyncPhenoMLBuilder {
     /**
      * Sets the underlying OkHttp client
      */
-    public AsyncPhenoMLBuilder httpClient(OkHttpClient httpClient) {
+    public AsyncPhenomlClientBuilder httpClient(OkHttpClient httpClient) {
         this.httpClient = httpClient;
         return this;
     }
@@ -73,7 +87,7 @@ public class AsyncPhenoMLBuilder {
      * @param value The header value
      * @return This builder for method chaining
      */
-    public AsyncPhenoMLBuilder addHeader(String name, String value) {
+    public AsyncPhenomlClientBuilder addHeader(String name, String value) {
         this.customHeaders.put(name, value);
         return this;
     }
@@ -118,8 +132,12 @@ public class AsyncPhenoMLBuilder {
      * }</pre>
      */
     protected void setAuthentication(ClientOptions.Builder builder) {
-        if (this.token != null) {
-            builder.addHeader("Authorization", "Bearer " + this.token);
+        if (this.clientId != null && this.clientSecret != null) {
+            AuthClient authClient = new AuthClient(
+                    ClientOptions.builder().environment(this.environment).build());
+            OAuthTokenSupplier oAuthTokenSupplier =
+                    new OAuthTokenSupplier(this.clientId, this.clientSecret, authClient);
+            builder.addHeader("Authorization", oAuthTokenSupplier);
         }
     }
 
@@ -195,11 +213,8 @@ public class AsyncPhenoMLBuilder {
      */
     protected void validateConfiguration() {}
 
-    public AsyncPhenoML build() {
-        if (token == null) {
-            throw new RuntimeException("Please provide token");
-        }
+    public AsyncPhenomlClient build() {
         validateConfiguration();
-        return new AsyncPhenoML(buildClientOptions());
+        return new AsyncPhenomlClient(buildClientOptions());
     }
 }

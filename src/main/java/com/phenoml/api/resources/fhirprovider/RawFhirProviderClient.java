@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.core.PhenoMLApiException;
-import com.phenoml.api.core.PhenoMLException;
-import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.PhenomlClientApiException;
+import com.phenoml.api.core.PhenomlClientException;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.fhirprovider.errors.BadRequestError;
 import com.phenoml.api.resources.fhirprovider.errors.ForbiddenError;
@@ -44,7 +44,7 @@ public class RawFhirProviderClient {
      * Creates a new FHIR provider configuration with authentication credentials.
      * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderResponse> create(FhirProviderCreateRequest request) {
+    public PhenomlClientHttpResponse<FhirProviderResponse> create(FhirProviderCreateRequest request) {
         return create(request, null);
     }
 
@@ -52,7 +52,7 @@ public class RawFhirProviderClient {
      * Creates a new FHIR provider configuration with authentication credentials.
      * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderResponse> create(
+    public PhenomlClientHttpResponse<FhirProviderResponse> create(
             FhirProviderCreateRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -63,7 +63,7 @@ public class RawFhirProviderClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -79,7 +79,7 @@ public class RawFhirProviderClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirProviderResponse.class),
                         response);
             }
@@ -102,13 +102,13 @@ public class RawFhirProviderClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -117,7 +117,7 @@ public class RawFhirProviderClient {
      * <p>On shared instances, only sandbox providers are returned.
      * Sandbox providers return FhirProviderSandboxInfo.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderListResponse> list() {
+    public PhenomlClientHttpResponse<FhirProviderListResponse> list() {
         return list(null);
     }
 
@@ -126,7 +126,7 @@ public class RawFhirProviderClient {
      * <p>On shared instances, only sandbox providers are returned.
      * Sandbox providers return FhirProviderSandboxInfo.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderListResponse> list(RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<FhirProviderListResponse> list(RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider/list")
@@ -144,7 +144,7 @@ public class RawFhirProviderClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirProviderListResponse.class),
                         response);
             }
@@ -161,13 +161,13 @@ public class RawFhirProviderClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -176,7 +176,7 @@ public class RawFhirProviderClient {
      * <p>Sandbox providers return FhirProviderSandboxInfo.
      * On shared instances, only sandbox providers can be accessed.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderResponse> get(String fhirProviderId) {
+    public PhenomlClientHttpResponse<FhirProviderResponse> get(String fhirProviderId) {
         return get(fhirProviderId, null);
     }
 
@@ -185,7 +185,7 @@ public class RawFhirProviderClient {
      * <p>Sandbox providers return FhirProviderSandboxInfo.
      * On shared instances, only sandbox providers can be accessed.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderResponse> get(String fhirProviderId, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<FhirProviderResponse> get(String fhirProviderId, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
@@ -204,7 +204,7 @@ public class RawFhirProviderClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirProviderResponse.class),
                         response);
             }
@@ -224,13 +224,13 @@ public class RawFhirProviderClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -238,7 +238,7 @@ public class RawFhirProviderClient {
      * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderDeleteResponse> delete(String fhirProviderId) {
+    public PhenomlClientHttpResponse<FhirProviderDeleteResponse> delete(String fhirProviderId) {
         return delete(fhirProviderId, null);
     }
 
@@ -246,7 +246,7 @@ public class RawFhirProviderClient {
      * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderDeleteResponse> delete(
+    public PhenomlClientHttpResponse<FhirProviderDeleteResponse> delete(
             String fhirProviderId, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -266,7 +266,7 @@ public class RawFhirProviderClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirProviderDeleteResponse.class),
                         response);
             }
@@ -289,13 +289,13 @@ public class RawFhirProviderClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -304,7 +304,7 @@ public class RawFhirProviderClient {
      * This enables key rotation and multiple auth configurations per provider.
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderResponse> addAuthConfig(
+    public PhenomlClientHttpResponse<FhirProviderResponse> addAuthConfig(
             String fhirProviderId, FhirProviderAddAuthConfigRequest request) {
         return addAuthConfig(fhirProviderId, request, null);
     }
@@ -314,7 +314,7 @@ public class RawFhirProviderClient {
      * This enables key rotation and multiple auth configurations per provider.
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderResponse> addAuthConfig(
+    public PhenomlClientHttpResponse<FhirProviderResponse> addAuthConfig(
             String fhirProviderId, FhirProviderAddAuthConfigRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -327,7 +327,7 @@ public class RawFhirProviderClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -343,7 +343,7 @@ public class RawFhirProviderClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirProviderResponse.class),
                         response);
             }
@@ -369,13 +369,13 @@ public class RawFhirProviderClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -386,7 +386,7 @@ public class RawFhirProviderClient {
      * making any changes and returns a message indicating the config is already active.</p>
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderResponse> setActiveAuthConfig(
+    public PhenomlClientHttpResponse<FhirProviderResponse> setActiveAuthConfig(
             String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request) {
         return setActiveAuthConfig(fhirProviderId, request, null);
     }
@@ -398,7 +398,7 @@ public class RawFhirProviderClient {
      * making any changes and returns a message indicating the config is already active.</p>
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderResponse> setActiveAuthConfig(
+    public PhenomlClientHttpResponse<FhirProviderResponse> setActiveAuthConfig(
             String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -411,7 +411,7 @@ public class RawFhirProviderClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -427,7 +427,7 @@ public class RawFhirProviderClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FhirProviderResponse.class),
                         response);
             }
@@ -453,13 +453,13 @@ public class RawFhirProviderClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
@@ -468,7 +468,7 @@ public class RawFhirProviderClient {
      * Cannot remove the currently active auth configuration.
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderRemoveAuthConfigResponse> removeAuthConfig(
+    public PhenomlClientHttpResponse<FhirProviderRemoveAuthConfigResponse> removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request) {
         return removeAuthConfig(fhirProviderId, request, null);
     }
@@ -478,7 +478,7 @@ public class RawFhirProviderClient {
      * Cannot remove the currently active auth configuration.
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public PhenoMLHttpResponse<FhirProviderRemoveAuthConfigResponse> removeAuthConfig(
+    public PhenomlClientHttpResponse<FhirProviderRemoveAuthConfigResponse> removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -491,7 +491,7 @@ public class RawFhirProviderClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -507,7 +507,7 @@ public class RawFhirProviderClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(
                                 responseBody.string(), FhirProviderRemoveAuthConfigResponse.class),
                         response);
@@ -534,13 +534,13 @@ public class RawFhirProviderClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 }

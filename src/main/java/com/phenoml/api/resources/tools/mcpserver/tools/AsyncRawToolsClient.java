@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.core.PhenoMLApiException;
-import com.phenoml.api.core.PhenoMLException;
-import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.PhenomlClientApiException;
+import com.phenoml.api.core.PhenomlClientException;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.tools.errors.BadRequestError;
 import com.phenoml.api.resources.tools.errors.ForbiddenError;
@@ -41,14 +41,14 @@ public class AsyncRawToolsClient {
     /**
      * Lists all MCP server tools for a specific MCP server
      */
-    public CompletableFuture<PhenoMLHttpResponse<McpServerToolResponse>> list(String mcpServerId) {
+    public CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> list(String mcpServerId) {
         return list(mcpServerId, null);
     }
 
     /**
      * Lists all MCP server tools for a specific MCP server
      */
-    public CompletableFuture<PhenoMLHttpResponse<McpServerToolResponse>> list(
+    public CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> list(
             String mcpServerId, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -66,13 +66,13 @@ public class AsyncRawToolsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<McpServerToolResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), McpServerToolResponse.class),
                                 response));
                         return;
@@ -99,20 +99,20 @@ public class AsyncRawToolsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -121,14 +121,14 @@ public class AsyncRawToolsClient {
     /**
      * Gets a MCP server tool by ID
      */
-    public CompletableFuture<PhenoMLHttpResponse<McpServerToolResponse>> get(String mcpServerToolId) {
+    public CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> get(String mcpServerToolId) {
         return get(mcpServerToolId, null);
     }
 
     /**
      * Gets a MCP server tool by ID
      */
-    public CompletableFuture<PhenoMLHttpResponse<McpServerToolResponse>> get(
+    public CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> get(
             String mcpServerToolId, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -145,13 +145,13 @@ public class AsyncRawToolsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<McpServerToolResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), McpServerToolResponse.class),
                                 response));
                         return;
@@ -178,20 +178,20 @@ public class AsyncRawToolsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -200,14 +200,14 @@ public class AsyncRawToolsClient {
     /**
      * Deletes a MCP server tool by ID
      */
-    public CompletableFuture<PhenoMLHttpResponse<McpServerToolResponse>> delete(String mcpServerToolId) {
+    public CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> delete(String mcpServerToolId) {
         return delete(mcpServerToolId, null);
     }
 
     /**
      * Deletes a MCP server tool by ID
      */
-    public CompletableFuture<PhenoMLHttpResponse<McpServerToolResponse>> delete(
+    public CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> delete(
             String mcpServerToolId, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -224,13 +224,13 @@ public class AsyncRawToolsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<McpServerToolResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), McpServerToolResponse.class),
                                 response));
                         return;
@@ -257,20 +257,20 @@ public class AsyncRawToolsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
@@ -279,7 +279,7 @@ public class AsyncRawToolsClient {
     /**
      * Calls a MCP server tool
      */
-    public CompletableFuture<PhenoMLHttpResponse<McpServerToolCallResponse>> call(
+    public CompletableFuture<PhenomlClientHttpResponse<McpServerToolCallResponse>> call(
             String mcpServerToolId, McpServerToolCallRequest request) {
         return call(mcpServerToolId, request, null);
     }
@@ -287,7 +287,7 @@ public class AsyncRawToolsClient {
     /**
      * Calls a MCP server tool
      */
-    public CompletableFuture<PhenoMLHttpResponse<McpServerToolCallResponse>> call(
+    public CompletableFuture<PhenomlClientHttpResponse<McpServerToolCallResponse>> call(
             String mcpServerToolId, McpServerToolCallRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -300,7 +300,7 @@ public class AsyncRawToolsClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -313,13 +313,13 @@ public class AsyncRawToolsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenoMLHttpResponse<McpServerToolCallResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<McpServerToolCallResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        future.complete(new PhenoMLHttpResponse<>(
+                        future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
                                         responseBody.string(), McpServerToolCallResponse.class),
                                 response));
@@ -352,20 +352,20 @@ public class AsyncRawToolsClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
-                    future.completeExceptionally(new PhenoMLApiException(
+                    future.completeExceptionally(new PhenomlClientApiException(
                             "Error with status code " + response.code(),
                             response.code(),
                             ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                             response));
                     return;
                 } catch (IOException e) {
-                    future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenoMLException("Network error executing HTTP request", e));
+                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
         return future;
