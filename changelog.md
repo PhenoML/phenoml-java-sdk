@@ -45,11 +45,6 @@ import com.phenoml.api.PhenomlClient;
 - `OAuthTokenSupplier` for automatic token acquisition and caching.
 - `InternalServerError` error type for authtoken module.
 
-### Internal
-
-- Upgraded Fern Java SDK generator and CLI.
-- Error classes now include structured response bodies.
-
 ## 8.3.0 - 2026-03-03
 * feat: add document multi-resource extraction endpoint
 * Add a new endpoint for extracting multiple FHIR resources from documents (PDF/images).
