@@ -13,9 +13,9 @@
 
 ```java
 // Before
-PhenoMLClient client = PhenoMLClient.withCredentials("user", "pass", "https://api.phenoml.com");
+PhenoMLClient client = PhenoMLClient.withCredentials("user", "pass", "https://yourinstance.app.pheno.ml");
 // or
-PhenoMLClient client = PhenoMLClient.withToken("YOUR_TOKEN", "https://api.phenoml.com");
+PhenoMLClient client = PhenoMLClient.withToken("YOUR_TOKEN", "https://yourinstance.app.pheno.ml");
 
 // After (option 1: env vars PHENOML_CLIENT_ID and PHENOML_CLIENT_SECRET)
 PhenomlClient client = PhenomlClient.builder().build();
