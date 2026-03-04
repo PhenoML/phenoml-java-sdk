@@ -3,10 +3,10 @@
  */
 package com.phenoml.api.resources.construe.errors;
 
-import com.phenoml.api.core.PhenoMLApiException;
+import com.phenoml.api.core.PhenomlClientApiException;
 import okhttp3.Response;
 
-public final class GatewayTimeoutError extends PhenoMLApiException {
+public final class GatewayTimeoutError extends PhenomlClientApiException {
     /**
      * The body of the response that triggered the exception.
      */

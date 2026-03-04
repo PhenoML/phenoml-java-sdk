@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.core.PhenoMLApiException;
-import com.phenoml.api.core.PhenoMLException;
-import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.PhenomlClientApiException;
+import com.phenoml.api.core.PhenomlClientException;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.workflows.errors.BadRequestError;
@@ -49,21 +49,21 @@ public class RawWorkflowsClient {
     /**
      * Retrieves all workflow definitions for the authenticated user
      */
-    public PhenoMLHttpResponse<ListWorkflowsResponse> list() {
+    public PhenomlClientHttpResponse<ListWorkflowsResponse> list() {
         return list(WorkflowsListRequest.builder().build());
     }
 
     /**
      * Retrieves all workflow definitions for the authenticated user
      */
-    public PhenoMLHttpResponse<ListWorkflowsResponse> list(WorkflowsListRequest request) {
+    public PhenomlClientHttpResponse<ListWorkflowsResponse> list(WorkflowsListRequest request) {
         return list(request, null);
     }
 
     /**
      * Retrieves all workflow definitions for the authenticated user
      */
-    public PhenoMLHttpResponse<ListWorkflowsResponse> list(
+    public PhenomlClientHttpResponse<ListWorkflowsResponse> list(
             WorkflowsListRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -85,7 +85,7 @@ public class RawWorkflowsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ListWorkflowsResponse.class),
                         response);
             }
@@ -105,27 +105,27 @@ public class RawWorkflowsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Creates a new workflow definition with graph generation from workflow instructions
      */
-    public PhenoMLHttpResponse<CreateWorkflowResponse> create(CreateWorkflowRequest request) {
+    public PhenomlClientHttpResponse<CreateWorkflowResponse> create(CreateWorkflowRequest request) {
         return create(request, null);
     }
 
     /**
      * Creates a new workflow definition with graph generation from workflow instructions
      */
-    public PhenoMLHttpResponse<CreateWorkflowResponse> create(
+    public PhenomlClientHttpResponse<CreateWorkflowResponse> create(
             CreateWorkflowRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -163,7 +163,7 @@ public class RawWorkflowsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), CreateWorkflowResponse.class),
                         response);
             }
@@ -186,34 +186,34 @@ public class RawWorkflowsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Retrieves a workflow definition by its ID
      */
-    public PhenoMLHttpResponse<WorkflowsGetResponse> get(String id) {
+    public PhenomlClientHttpResponse<WorkflowsGetResponse> get(String id) {
         return get(id, WorkflowsGetRequest.builder().build());
     }
 
     /**
      * Retrieves a workflow definition by its ID
      */
-    public PhenoMLHttpResponse<WorkflowsGetResponse> get(String id, WorkflowsGetRequest request) {
+    public PhenomlClientHttpResponse<WorkflowsGetResponse> get(String id, WorkflowsGetRequest request) {
         return get(id, request, null);
     }
 
     /**
      * Retrieves a workflow definition by its ID
      */
-    public PhenoMLHttpResponse<WorkflowsGetResponse> get(
+    public PhenomlClientHttpResponse<WorkflowsGetResponse> get(
             String id, WorkflowsGetRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -236,7 +236,7 @@ public class RawWorkflowsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), WorkflowsGetResponse.class),
                         response);
             }
@@ -259,27 +259,27 @@ public class RawWorkflowsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Updates an existing workflow definition
      */
-    public PhenoMLHttpResponse<WorkflowsUpdateResponse> update(String id, UpdateWorkflowRequest request) {
+    public PhenomlClientHttpResponse<WorkflowsUpdateResponse> update(String id, UpdateWorkflowRequest request) {
         return update(id, request, null);
     }
 
     /**
      * Updates an existing workflow definition
      */
-    public PhenoMLHttpResponse<WorkflowsUpdateResponse> update(
+    public PhenomlClientHttpResponse<WorkflowsUpdateResponse> update(
             String id, UpdateWorkflowRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -318,7 +318,7 @@ public class RawWorkflowsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), WorkflowsUpdateResponse.class),
                         response);
             }
@@ -344,27 +344,27 @@ public class RawWorkflowsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Deletes a workflow definition by its ID
      */
-    public PhenoMLHttpResponse<WorkflowsDeleteResponse> delete(String id) {
+    public PhenomlClientHttpResponse<WorkflowsDeleteResponse> delete(String id) {
         return delete(id, null);
     }
 
     /**
      * Deletes a workflow definition by its ID
      */
-    public PhenoMLHttpResponse<WorkflowsDeleteResponse> delete(String id, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<WorkflowsDeleteResponse> delete(String id, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("workflows")
@@ -383,7 +383,7 @@ public class RawWorkflowsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), WorkflowsDeleteResponse.class),
                         response);
             }
@@ -406,27 +406,27 @@ public class RawWorkflowsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 
     /**
      * Executes a workflow with provided input data and returns results
      */
-    public PhenoMLHttpResponse<ExecuteWorkflowResponse> execute(String id, ExecuteWorkflowRequest request) {
+    public PhenomlClientHttpResponse<ExecuteWorkflowResponse> execute(String id, ExecuteWorkflowRequest request) {
         return execute(id, request, null);
     }
 
     /**
      * Executes a workflow with provided input data and returns results
      */
-    public PhenoMLHttpResponse<ExecuteWorkflowResponse> execute(
+    public PhenomlClientHttpResponse<ExecuteWorkflowResponse> execute(
             String id, ExecuteWorkflowRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -439,7 +439,7 @@ public class RawWorkflowsClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -455,7 +455,7 @@ public class RawWorkflowsClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ExecuteWorkflowResponse.class),
                         response);
             }
@@ -481,13 +481,13 @@ public class RawWorkflowsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 }

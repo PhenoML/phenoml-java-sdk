@@ -6,7 +6,9 @@ package com.phenoml.api.resources.authtoken.auth;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.authtoken.auth.requests.AuthGenerateTokenRequest;
+import com.phenoml.api.resources.authtoken.auth.requests.ClientCredentialsRequest;
 import com.phenoml.api.resources.authtoken.auth.types.AuthGenerateTokenResponse;
+import com.phenoml.api.resources.authtoken.types.TokenResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncAuthClient {
@@ -39,5 +41,35 @@ public class AsyncAuthClient {
     public CompletableFuture<AuthGenerateTokenResponse> generateToken(
             AuthGenerateTokenRequest request, RequestOptions requestOptions) {
         return this.rawClient.generateToken(request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
+     * Accepts client_id and client_secret in the request body (JSON or
+     * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
+     * returns an access token with expiration information.
+     */
+    public CompletableFuture<TokenResponse> getToken() {
+        return this.rawClient.getToken().thenApply(response -> response.body());
+    }
+
+    /**
+     * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
+     * Accepts client_id and client_secret in the request body (JSON or
+     * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
+     * returns an access token with expiration information.
+     */
+    public CompletableFuture<TokenResponse> getToken(ClientCredentialsRequest request) {
+        return this.rawClient.getToken(request).thenApply(response -> response.body());
+    }
+
+    /**
+     * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
+     * Accepts client_id and client_secret in the request body (JSON or
+     * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
+     * returns an access token with expiration information.
+     */
+    public CompletableFuture<TokenResponse> getToken(ClientCredentialsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.getToken(request, requestOptions).thenApply(response -> response.body());
     }
 }

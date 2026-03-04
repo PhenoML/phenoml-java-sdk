@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.core.PhenoMLApiException;
-import com.phenoml.api.core.PhenoMLException;
-import com.phenoml.api.core.PhenoMLHttpResponse;
+import com.phenoml.api.core.PhenomlClientApiException;
+import com.phenoml.api.core.PhenomlClientException;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.cohort.errors.BadRequestError;
 import com.phenoml.api.resources.cohort.errors.InternalServerError;
@@ -35,14 +35,14 @@ public class RawCohortClient {
     /**
      * Converts natural language text into structured FHIR search queries for patient cohort analysis
      */
-    public PhenoMLHttpResponse<CohortResponse> analyze(CohortRequest request) {
+    public PhenomlClientHttpResponse<CohortResponse> analyze(CohortRequest request) {
         return analyze(request, null);
     }
 
     /**
      * Converts natural language text into structured FHIR search queries for patient cohort analysis
      */
-    public PhenoMLHttpResponse<CohortResponse> analyze(CohortRequest request, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<CohortResponse> analyze(CohortRequest request, RequestOptions requestOptions) {
         HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("cohort")
@@ -52,7 +52,7 @@ public class RawCohortClient {
             body = RequestBody.create(
                     ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
-            throw new PhenoMLException("Failed to serialize request", e);
+            throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl)
@@ -68,7 +68,7 @@ public class RawCohortClient {
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             if (response.isSuccessful()) {
-                return new PhenoMLHttpResponse<>(
+                return new PhenomlClientHttpResponse<>(
                         ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), CohortResponse.class), response);
             }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -87,13 +87,13 @@ public class RawCohortClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
-            throw new PhenoMLApiException(
+            throw new PhenomlClientApiException(
                     "Error with status code " + response.code(),
                     response.code(),
                     ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                     response);
         } catch (IOException e) {
-            throw new PhenoMLException("Network error executing HTTP request", e);
+            throw new PhenomlClientException("Network error executing HTTP request", e);
         }
     }
 }
