@@ -13,17 +13,19 @@
 
 ```java
 // Before
-PhenoMLClient client = PhenoMLClient.withCredentials("user", "pass", "https://yourinstance.app.pheno.ml");
-// or
-PhenoMLClient client = PhenoMLClient.withToken("YOUR_TOKEN", "https://yourinstance.app.pheno.ml");
+PhenoMLClient client = PhenoMLClient.withCredentials(
+    "user", "pass", "https://yourinstance.app.pheno.ml");
 
 // After (option 1: env vars PHENOML_CLIENT_ID and PHENOML_CLIENT_SECRET)
-PhenomlClient client = PhenomlClient.builder().build();
+PhenomlClient client = PhenomlClient.builder()
+    .url("https://yourinstance.app.pheno.ml")
+    .build();
 
 // After (option 2: explicit credentials)
 PhenomlClient client = PhenomlClient.builder()
     .clientId("YOUR_CLIENT_ID")
     .clientSecret("YOUR_CLIENT_SECRET")
+    .url("https://yourinstance.app.pheno.ml")
     .build();
 ```
 
