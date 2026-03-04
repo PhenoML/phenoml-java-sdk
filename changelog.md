@@ -2,14 +2,14 @@
 
 ### Breaking Changes
 
-- **Authentication**: Migrated from token-based auth to OAuth 2.0 client credentials flow. Builders now accept `clientId()` and `clientSecret()` (defaulting to `PHENOML_CLIENT_ID` and `PHENOML_CLIENT_SECRET` environment variables) instead of `token()`. Tokens are automatically obtained and refreshed via the `/v2/auth/token` endpoint.
+- **Authentication**: Replaced username/password authentication with OAuth 2.0 client credentials. Builders now accept `clientId()` and `clientSecret()` (defaulting to `PHENOML_CLIENT_ID` and `PHENOML_CLIENT_SECRET` environment variables). Tokens are automatically obtained and refreshed via the `/v2/auth/token` endpoint.
 - **Client renamed**: `PhenoML` → `PhenomlClient`, `AsyncPhenoML` → `AsyncPhenomlClient`.
 - **Builder renamed**: `PhenoMLBuilder` → `PhenomlClientBuilder`, `AsyncPhenoMLBuilder` → `AsyncPhenomlClientBuilder`.
 - **Wrapper clients removed**: `Client.java` and `AsyncClient.java` convenience wrappers have been removed. Use `PhenomlClient` / `AsyncPhenomlClient` directly.
 
 ### Migration Guide
 
-**Authentication** — replace token-based auth with client credentials:
+**Authentication** — replace username/password with client credentials:
 
 ```java
 // Before
