@@ -12,7 +12,7 @@ Instantiate and use the client with the following:
 package com.example.usage;
 
 import com.phenoml.api.PhenomlClient;
-import com.phenoml.api.resources.agent.requests.AgentCreateRequest;
+import com.phenoml.api.resources.agent.types.AgentCreateRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -28,12 +28,12 @@ public class Example {
             AgentCreateRequest
                 .builder()
                 .name("name")
+                .provider(AgentCreateRequest.Provider.of("provider_id"))
                 .prompts(
                     new ArrayList<String>(
                         Arrays.asList("prompt_123", "prompt_456")
                     )
                 )
-                .isActive(true)
                 .build()
         );
     }
