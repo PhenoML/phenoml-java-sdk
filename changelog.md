@@ -1,3 +1,13 @@
+## 9.1.0 - 2026-03-09
+* feat: add HTTP 429 and 503 error handling to FHIR client
+* Enhance the FHIR client with comprehensive error handling for rate limiting (429) and service unavailability (503) scenarios. This improves the SDK's resilience and provides better error feedback to developers.
+* Key changes:
+* Add TooManyRequestsError for HTTP 429 responses with structured error handling
+* Add ServiceUnavailableError for HTTP 503 responses with generic error handling
+* Update both synchronous and asynchronous FHIR clients with new error cases
+* Import new error classes in client implementations
+* 🌿 Generated with Fern
+
 ## 9.0.0 - 2026-03-04
 
 ### Breaking Changes
