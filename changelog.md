@@ -1,3 +1,6 @@
+## 10.0.0 - 2026-03-10
+* The `ErrorResponse` class has been removed from `com.phenoml.api.resources.summary.types`. Applications that imported or used this class should migrate to the standardized error handling mechanisms provided by the core SDK client.
+
 ## 9.1.0 - 2026-03-09
 * feat: add HTTP 429 and 503 error handling to FHIR client
 * Enhance the FHIR client with comprehensive error handling for rate limiting (429) and service unavailability (503) scenarios. This improves the SDK's resilience and provides better error feedback to developers.
