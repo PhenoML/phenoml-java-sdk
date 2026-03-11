@@ -16,16 +16,21 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ExecuteWorkflowRequest.Builder.class)
 public final class ExecuteWorkflowRequest {
     private final Map<String, Object> inputData;
 
+    private final Optional<Boolean> preview;
+
     private final Map<String, Object> additionalProperties;
 
-    private ExecuteWorkflowRequest(Map<String, Object> inputData, Map<String, Object> additionalProperties) {
+    private ExecuteWorkflowRequest(
+            Map<String, Object> inputData, Optional<Boolean> preview, Map<String, Object> additionalProperties) {
         this.inputData = inputData;
+        this.preview = preview;
         this.additionalProperties = additionalProperties;
     }
 
@@ -35,6 +40,14 @@ public final class ExecuteWorkflowRequest {
     @JsonProperty("input_data")
     public Map<String, Object> getInputData() {
         return inputData;
+    }
+
+    /**
+     * @return If true, create operations return mock resources instead of persisting to the FHIR server
+     */
+    @JsonProperty("preview")
+    public Optional<Boolean> getPreview() {
+        return preview;
     }
 
     @java.lang.Override
@@ -49,12 +62,12 @@ public final class ExecuteWorkflowRequest {
     }
 
     private boolean equalTo(ExecuteWorkflowRequest other) {
-        return inputData.equals(other.inputData);
+        return inputData.equals(other.inputData) && preview.equals(other.preview);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.inputData);
+        return Objects.hash(this.inputData, this.preview);
     }
 
     @java.lang.Override
@@ -70,6 +83,8 @@ public final class ExecuteWorkflowRequest {
     public static final class Builder {
         private Map<String, Object> inputData = new LinkedHashMap<>();
 
+        private Optional<Boolean> preview = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -77,6 +92,7 @@ public final class ExecuteWorkflowRequest {
 
         public Builder from(ExecuteWorkflowRequest other) {
             inputData(other.getInputData());
+            preview(other.getPreview());
             return this;
         }
 
@@ -102,8 +118,22 @@ public final class ExecuteWorkflowRequest {
             return this;
         }
 
+        /**
+         * <p>If true, create operations return mock resources instead of persisting to the FHIR server</p>
+         */
+        @JsonSetter(value = "preview", nulls = Nulls.SKIP)
+        public Builder preview(Optional<Boolean> preview) {
+            this.preview = preview;
+            return this;
+        }
+
+        public Builder preview(Boolean preview) {
+            this.preview = Optional.ofNullable(preview);
+            return this;
+        }
+
         public ExecuteWorkflowRequest build() {
-            return new ExecuteWorkflowRequest(inputData, additionalProperties);
+            return new ExecuteWorkflowRequest(inputData, preview, additionalProperties);
         }
     }
 }
