@@ -17,6 +17,7 @@ jobs:
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
         with:
           java-version: "11"
+          distribution: "zulu"
           architecture: x64
 
       - name: Compile
@@ -34,6 +35,7 @@ jobs:
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
         with:
           java-version: "11"
+          distribution: "zulu"
           architecture: x64
 
       - name: Test
@@ -89,6 +91,7 @@ jobs:
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
         with:
           java-version: "11"
+          distribution: "zulu"
           architecture: x64
 
       - name: Publish to maven
