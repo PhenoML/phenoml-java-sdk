@@ -26,16 +26,20 @@ public final class ExecuteWorkflowResponse {
 
     private final Optional<Results> results;
 
+    private final Optional<Boolean> preview;
+
     private final Map<String, Object> additionalProperties;
 
     private ExecuteWorkflowResponse(
             Optional<Boolean> success,
             Optional<String> message,
             Optional<Results> results,
+            Optional<Boolean> preview,
             Map<String, Object> additionalProperties) {
         this.success = success;
         this.message = message;
         this.results = results;
+        this.preview = preview;
         this.additionalProperties = additionalProperties;
     }
 
@@ -60,6 +64,14 @@ public final class ExecuteWorkflowResponse {
         return results;
     }
 
+    /**
+     * @return Whether the workflow was executed in preview mode
+     */
+    @JsonProperty("preview")
+    public Optional<Boolean> getPreview() {
+        return preview;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -72,12 +84,15 @@ public final class ExecuteWorkflowResponse {
     }
 
     private boolean equalTo(ExecuteWorkflowResponse other) {
-        return success.equals(other.success) && message.equals(other.message) && results.equals(other.results);
+        return success.equals(other.success)
+                && message.equals(other.message)
+                && results.equals(other.results)
+                && preview.equals(other.preview);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.success, this.message, this.results);
+        return Objects.hash(this.success, this.message, this.results, this.preview);
     }
 
     @java.lang.Override
@@ -97,6 +112,8 @@ public final class ExecuteWorkflowResponse {
 
         private Optional<Results> results = Optional.empty();
 
+        private Optional<Boolean> preview = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -106,6 +123,7 @@ public final class ExecuteWorkflowResponse {
             success(other.getSuccess());
             message(other.getMessage());
             results(other.getResults());
+            preview(other.getPreview());
             return this;
         }
 
@@ -148,8 +166,22 @@ public final class ExecuteWorkflowResponse {
             return this;
         }
 
+        /**
+         * <p>Whether the workflow was executed in preview mode</p>
+         */
+        @JsonSetter(value = "preview", nulls = Nulls.SKIP)
+        public Builder preview(Optional<Boolean> preview) {
+            this.preview = preview;
+            return this;
+        }
+
+        public Builder preview(Boolean preview) {
+            this.preview = Optional.ofNullable(preview);
+            return this;
+        }
+
         public ExecuteWorkflowResponse build() {
-            return new ExecuteWorkflowResponse(success, message, results, additionalProperties);
+            return new ExecuteWorkflowResponse(success, message, results, preview, additionalProperties);
         }
     }
 
