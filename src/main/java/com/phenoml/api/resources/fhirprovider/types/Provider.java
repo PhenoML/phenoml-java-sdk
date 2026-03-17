@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class Provider {
+    public static final Provider MEDITECH = new Provider(Value.MEDITECH, "meditech");
+
     public static final Provider PHENOSTORE = new Provider(Value.PHENOSTORE, "phenostore");
 
     public static final Provider HAPI = new Provider(Value.HAPI, "hapi");
@@ -58,6 +60,8 @@ public final class Provider {
 
     public <T> T visit(Visitor<T> visitor) {
         switch (value) {
+            case MEDITECH:
+                return visitor.visitMeditech();
             case PHENOSTORE:
                 return visitor.visitPhenostore();
             case HAPI:
@@ -87,6 +91,8 @@ public final class Provider {
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static Provider valueOf(String value) {
         switch (value) {
+            case "meditech":
+                return MEDITECH;
             case "phenostore":
                 return PHENOSTORE;
             case "hapi":
@@ -127,6 +133,8 @@ public final class Provider {
 
         HAPI,
 
+        MEDITECH,
+
         MEDPLUM,
 
         PHENOSTORE,
@@ -150,6 +158,8 @@ public final class Provider {
         T visitGoogleHealthcare();
 
         T visitHapi();
+
+        T visitMeditech();
 
         T visitMedplum();
 
