@@ -1236,7 +1236,7 @@ client.authtoken().auth().generateToken(
 <dl>
 <dd>
 
-**username:** `String` — The user's username or email
+**username:** `String` — The API credential client ID
     
 </dd>
 </dl>
@@ -1244,7 +1244,7 @@ client.authtoken().auth().generateToken(
 <dl>
 <dd>
 
-**password:** `String` — The user's password
+**password:** `String` — The API credential client secret
     
 </dd>
 </dl>
