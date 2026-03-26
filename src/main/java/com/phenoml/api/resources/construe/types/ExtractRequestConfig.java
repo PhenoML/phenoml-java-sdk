@@ -38,6 +38,10 @@ public final class ExtractRequestConfig {
 
     private final Optional<Boolean> includeCitations;
 
+    private final Optional<String> extractionContext;
+
+    private final Optional<Double> minContextRelevance;
+
     private final Map<String, Object> additionalProperties;
 
     private ExtractRequestConfig(
@@ -49,6 +53,8 @@ public final class ExtractRequestConfig {
             Optional<Boolean> includeAncestors,
             Optional<Boolean> includeInvalid,
             Optional<Boolean> includeCitations,
+            Optional<String> extractionContext,
+            Optional<Double> minContextRelevance,
             Map<String, Object> additionalProperties) {
         this.chunkingMethod = chunkingMethod;
         this.maxCodesPerChunk = maxCodesPerChunk;
@@ -58,6 +64,8 @@ public final class ExtractRequestConfig {
         this.includeAncestors = includeAncestors;
         this.includeInvalid = includeInvalid;
         this.includeCitations = includeCitations;
+        this.extractionContext = extractionContext;
+        this.minContextRelevance = minContextRelevance;
         this.additionalProperties = additionalProperties;
     }
 
@@ -132,11 +140,32 @@ public final class ExtractRequestConfig {
      * Citations show the exact text spans (with character offsets) that led to each code.
      * Only available when using chunking_method: &quot;sentences&quot;.
      * The &quot;none&quot; method returns full text as one chunk (not useful for citations).
-     * LLM-based chunking (paragraphs, topics) does not support citations.
+     * LLM-based chunking (paragraphs, topics, soap_note) does not support citations.
      */
     @JsonProperty("include_citations")
     public Optional<Boolean> getIncludeCitations() {
         return includeCitations;
+    }
+
+    /**
+     * @return Optional context describing the goal of the extraction.
+     * Required when min_context_relevance is greater than 0.
+     */
+    @JsonProperty("extraction_context")
+    public Optional<String> getExtractionContext() {
+        return extractionContext;
+    }
+
+    /**
+     * @return Minimum relevance score (0.0–1.0) a chunk must reach to proceed to code extraction.
+     * Chunks are scored by an LLM against the extraction_context goal. Chunks below this
+     * threshold are dropped, reducing noise and extraction cost.
+     * Set to 0 (the default) to disable relevance filtering and extract from all chunks.
+     * Requires the &quot;extraction_context&quot; field when set above 0.
+     */
+    @JsonProperty("min_context_relevance")
+    public Optional<Double> getMinContextRelevance() {
+        return minContextRelevance;
     }
 
     @java.lang.Override
@@ -158,7 +187,9 @@ public final class ExtractRequestConfig {
                 && includeRationale.equals(other.includeRationale)
                 && includeAncestors.equals(other.includeAncestors)
                 && includeInvalid.equals(other.includeInvalid)
-                && includeCitations.equals(other.includeCitations);
+                && includeCitations.equals(other.includeCitations)
+                && extractionContext.equals(other.extractionContext)
+                && minContextRelevance.equals(other.minContextRelevance);
     }
 
     @java.lang.Override
@@ -171,7 +202,9 @@ public final class ExtractRequestConfig {
                 this.includeRationale,
                 this.includeAncestors,
                 this.includeInvalid,
-                this.includeCitations);
+                this.includeCitations,
+                this.extractionContext,
+                this.minContextRelevance);
     }
 
     @java.lang.Override
@@ -201,6 +234,10 @@ public final class ExtractRequestConfig {
 
         private Optional<Boolean> includeCitations = Optional.empty();
 
+        private Optional<String> extractionContext = Optional.empty();
+
+        private Optional<Double> minContextRelevance = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -215,6 +252,8 @@ public final class ExtractRequestConfig {
             includeAncestors(other.getIncludeAncestors());
             includeInvalid(other.getIncludeInvalid());
             includeCitations(other.getIncludeCitations());
+            extractionContext(other.getExtractionContext());
+            minContextRelevance(other.getMinContextRelevance());
             return this;
         }
 
@@ -331,7 +370,7 @@ public final class ExtractRequestConfig {
          * Citations show the exact text spans (with character offsets) that led to each code.
          * Only available when using chunking_method: &quot;sentences&quot;.
          * The &quot;none&quot; method returns full text as one chunk (not useful for citations).
-         * LLM-based chunking (paragraphs, topics) does not support citations.</p>
+         * LLM-based chunking (paragraphs, topics, soap_note) does not support citations.</p>
          */
         @JsonSetter(value = "include_citations", nulls = Nulls.SKIP)
         public Builder includeCitations(Optional<Boolean> includeCitations) {
@@ -341,6 +380,39 @@ public final class ExtractRequestConfig {
 
         public Builder includeCitations(Boolean includeCitations) {
             this.includeCitations = Optional.ofNullable(includeCitations);
+            return this;
+        }
+
+        /**
+         * <p>Optional context describing the goal of the extraction.
+         * Required when min_context_relevance is greater than 0.</p>
+         */
+        @JsonSetter(value = "extraction_context", nulls = Nulls.SKIP)
+        public Builder extractionContext(Optional<String> extractionContext) {
+            this.extractionContext = extractionContext;
+            return this;
+        }
+
+        public Builder extractionContext(String extractionContext) {
+            this.extractionContext = Optional.ofNullable(extractionContext);
+            return this;
+        }
+
+        /**
+         * <p>Minimum relevance score (0.0–1.0) a chunk must reach to proceed to code extraction.
+         * Chunks are scored by an LLM against the extraction_context goal. Chunks below this
+         * threshold are dropped, reducing noise and extraction cost.
+         * Set to 0 (the default) to disable relevance filtering and extract from all chunks.
+         * Requires the &quot;extraction_context&quot; field when set above 0.</p>
+         */
+        @JsonSetter(value = "min_context_relevance", nulls = Nulls.SKIP)
+        public Builder minContextRelevance(Optional<Double> minContextRelevance) {
+            this.minContextRelevance = minContextRelevance;
+            return this;
+        }
+
+        public Builder minContextRelevance(Double minContextRelevance) {
+            this.minContextRelevance = Optional.ofNullable(minContextRelevance);
             return this;
         }
 
@@ -354,6 +426,8 @@ public final class ExtractRequestConfig {
                     includeAncestors,
                     includeInvalid,
                     includeCitations,
+                    extractionContext,
+                    minContextRelevance,
                     additionalProperties);
         }
     }
@@ -446,6 +520,8 @@ public final class ExtractRequestConfig {
     }
 
     public static final class ChunkingMethod {
+        public static final ChunkingMethod SOAP_NOTE = new ChunkingMethod(Value.SOAP_NOTE, "soap_note");
+
         public static final ChunkingMethod TOPICS = new ChunkingMethod(Value.TOPICS, "topics");
 
         public static final ChunkingMethod PARAGRAPHS = new ChunkingMethod(Value.PARAGRAPHS, "paragraphs");
@@ -486,6 +562,8 @@ public final class ExtractRequestConfig {
 
         public <T> T visit(Visitor<T> visitor) {
             switch (value) {
+                case SOAP_NOTE:
+                    return visitor.visitSoapNote();
                 case TOPICS:
                     return visitor.visitTopics();
                 case PARAGRAPHS:
@@ -503,6 +581,8 @@ public final class ExtractRequestConfig {
         @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
         public static ChunkingMethod valueOf(String value) {
             switch (value) {
+                case "soap_note":
+                    return SOAP_NOTE;
                 case "topics":
                     return TOPICS;
                 case "paragraphs":
@@ -525,6 +605,8 @@ public final class ExtractRequestConfig {
 
             TOPICS,
 
+            SOAP_NOTE,
+
             UNKNOWN
         }
 
@@ -536,6 +618,8 @@ public final class ExtractRequestConfig {
             T visitParagraphs();
 
             T visitTopics();
+
+            T visitSoapNote();
 
             T visitUnknown(String unknownType);
         }

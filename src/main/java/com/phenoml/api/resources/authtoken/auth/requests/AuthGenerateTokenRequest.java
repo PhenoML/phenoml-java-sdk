@@ -32,7 +32,7 @@ public final class AuthGenerateTokenRequest {
     }
 
     /**
-     * @return The user's username or email
+     * @return The API credential client ID
      */
     @JsonProperty("username")
     public String getUsername() {
@@ -40,7 +40,7 @@ public final class AuthGenerateTokenRequest {
     }
 
     /**
-     * @return The user's password
+     * @return The API credential client secret
      */
     @JsonProperty("password")
     public String getPassword() {
@@ -78,7 +78,7 @@ public final class AuthGenerateTokenRequest {
 
     public interface UsernameStage {
         /**
-         * <p>The user's username or email</p>
+         * <p>The API credential client ID</p>
          */
         PasswordStage username(@NotNull String username);
 
@@ -87,7 +87,7 @@ public final class AuthGenerateTokenRequest {
 
     public interface PasswordStage {
         /**
-         * <p>The user's password</p>
+         * <p>The API credential client secret</p>
          */
         _FinalStage password(@NotNull String password);
     }
@@ -115,8 +115,8 @@ public final class AuthGenerateTokenRequest {
         }
 
         /**
-         * <p>The user's username or email</p>
-         * <p>The user's username or email</p>
+         * <p>The API credential client ID</p>
+         * <p>The API credential client ID</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -127,8 +127,8 @@ public final class AuthGenerateTokenRequest {
         }
 
         /**
-         * <p>The user's password</p>
-         * <p>The user's password</p>
+         * <p>The API credential client secret</p>
+         * <p>The API credential client secret</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
