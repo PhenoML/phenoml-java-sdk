@@ -132,7 +132,7 @@ public final class ExtractRequestConfig {
      * Citations show the exact text spans (with character offsets) that led to each code.
      * Only available when using chunking_method: &quot;sentences&quot;.
      * The &quot;none&quot; method returns full text as one chunk (not useful for citations).
-     * LLM-based chunking (paragraphs, topics) does not support citations.
+     * LLM-based chunking (paragraphs, topics, soap_note) does not support citations.
      */
     @JsonProperty("include_citations")
     public Optional<Boolean> getIncludeCitations() {
@@ -331,7 +331,7 @@ public final class ExtractRequestConfig {
          * Citations show the exact text spans (with character offsets) that led to each code.
          * Only available when using chunking_method: &quot;sentences&quot;.
          * The &quot;none&quot; method returns full text as one chunk (not useful for citations).
-         * LLM-based chunking (paragraphs, topics) does not support citations.</p>
+         * LLM-based chunking (paragraphs, topics, soap_note) does not support citations.</p>
          */
         @JsonSetter(value = "include_citations", nulls = Nulls.SKIP)
         public Builder includeCitations(Optional<Boolean> includeCitations) {
@@ -446,6 +446,8 @@ public final class ExtractRequestConfig {
     }
 
     public static final class ChunkingMethod {
+        public static final ChunkingMethod SOAP_NOTE = new ChunkingMethod(Value.SOAP_NOTE, "soap_note");
+
         public static final ChunkingMethod TOPICS = new ChunkingMethod(Value.TOPICS, "topics");
 
         public static final ChunkingMethod PARAGRAPHS = new ChunkingMethod(Value.PARAGRAPHS, "paragraphs");
@@ -486,6 +488,8 @@ public final class ExtractRequestConfig {
 
         public <T> T visit(Visitor<T> visitor) {
             switch (value) {
+                case SOAP_NOTE:
+                    return visitor.visitSoapNote();
                 case TOPICS:
                     return visitor.visitTopics();
                 case PARAGRAPHS:
@@ -503,6 +507,8 @@ public final class ExtractRequestConfig {
         @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
         public static ChunkingMethod valueOf(String value) {
             switch (value) {
+                case "soap_note":
+                    return SOAP_NOTE;
                 case "topics":
                     return TOPICS;
                 case "paragraphs":
@@ -525,6 +531,8 @@ public final class ExtractRequestConfig {
 
             TOPICS,
 
+            SOAP_NOTE,
+
             UNKNOWN
         }
 
@@ -536,6 +544,8 @@ public final class ExtractRequestConfig {
             T visitParagraphs();
 
             T visitTopics();
+
+            T visitSoapNote();
 
             T visitUnknown(String unknownType);
         }

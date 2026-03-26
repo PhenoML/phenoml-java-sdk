@@ -1,3 +1,6 @@
+## 10.3.0 - 2026-03-26
+* The SDK now supports `SOAP_NOTE` as a new chunking method option in `ExtractRequestConfig`. This method enables specialized processing of SOAP note structured medical documents. Note that SOAP note chunking does not support citations, similar to other LLM-based chunking methods.
+
 ## 10.2.0 - 2026-03-17
 * The SDK now supports MEDITECH as a new FHIR provider option. Use `Provider.MEDITECH` to configure MEDITECH provider integrations.
 
