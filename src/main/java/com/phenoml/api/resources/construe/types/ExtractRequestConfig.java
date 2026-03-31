@@ -42,6 +42,8 @@ public final class ExtractRequestConfig {
 
     private final Optional<Double> minContextRelevance;
 
+    private final Optional<ConsistencyEffort> consistencyEffort;
+
     private final Map<String, Object> additionalProperties;
 
     private ExtractRequestConfig(
@@ -55,6 +57,7 @@ public final class ExtractRequestConfig {
             Optional<Boolean> includeCitations,
             Optional<String> extractionContext,
             Optional<Double> minContextRelevance,
+            Optional<ConsistencyEffort> consistencyEffort,
             Map<String, Object> additionalProperties) {
         this.chunkingMethod = chunkingMethod;
         this.maxCodesPerChunk = maxCodesPerChunk;
@@ -66,6 +69,7 @@ public final class ExtractRequestConfig {
         this.includeCitations = includeCitations;
         this.extractionContext = extractionContext;
         this.minContextRelevance = minContextRelevance;
+        this.consistencyEffort = consistencyEffort;
         this.additionalProperties = additionalProperties;
     }
 
@@ -168,6 +172,16 @@ public final class ExtractRequestConfig {
         return minContextRelevance;
     }
 
+    /**
+     * @return How much effort to spend ensuring consistent results across repeated requests.
+     * Higher levels apply stricter filtering to remove borderline codes that may
+     * vary between calls, improving determinism at the cost of additional latency.
+     */
+    @JsonProperty("consistency_effort")
+    public Optional<ConsistencyEffort> getConsistencyEffort() {
+        return consistencyEffort;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -189,7 +203,8 @@ public final class ExtractRequestConfig {
                 && includeInvalid.equals(other.includeInvalid)
                 && includeCitations.equals(other.includeCitations)
                 && extractionContext.equals(other.extractionContext)
-                && minContextRelevance.equals(other.minContextRelevance);
+                && minContextRelevance.equals(other.minContextRelevance)
+                && consistencyEffort.equals(other.consistencyEffort);
     }
 
     @java.lang.Override
@@ -204,7 +219,8 @@ public final class ExtractRequestConfig {
                 this.includeInvalid,
                 this.includeCitations,
                 this.extractionContext,
-                this.minContextRelevance);
+                this.minContextRelevance,
+                this.consistencyEffort);
     }
 
     @java.lang.Override
@@ -238,6 +254,8 @@ public final class ExtractRequestConfig {
 
         private Optional<Double> minContextRelevance = Optional.empty();
 
+        private Optional<ConsistencyEffort> consistencyEffort = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -254,6 +272,7 @@ public final class ExtractRequestConfig {
             includeCitations(other.getIncludeCitations());
             extractionContext(other.getExtractionContext());
             minContextRelevance(other.getMinContextRelevance());
+            consistencyEffort(other.getConsistencyEffort());
             return this;
         }
 
@@ -416,6 +435,22 @@ public final class ExtractRequestConfig {
             return this;
         }
 
+        /**
+         * <p>How much effort to spend ensuring consistent results across repeated requests.
+         * Higher levels apply stricter filtering to remove borderline codes that may
+         * vary between calls, improving determinism at the cost of additional latency.</p>
+         */
+        @JsonSetter(value = "consistency_effort", nulls = Nulls.SKIP)
+        public Builder consistencyEffort(Optional<ConsistencyEffort> consistencyEffort) {
+            this.consistencyEffort = consistencyEffort;
+            return this;
+        }
+
+        public Builder consistencyEffort(ConsistencyEffort consistencyEffort) {
+            this.consistencyEffort = Optional.ofNullable(consistencyEffort);
+            return this;
+        }
+
         public ExtractRequestConfig build() {
             return new ExtractRequestConfig(
                     chunkingMethod,
@@ -428,6 +463,7 @@ public final class ExtractRequestConfig {
                     includeCitations,
                     extractionContext,
                     minContextRelevance,
+                    consistencyEffort,
                     additionalProperties);
         }
     }
@@ -514,6 +550,102 @@ public final class ExtractRequestConfig {
             T visitSimple();
 
             T visitMedicationSearch();
+
+            T visitUnknown(String unknownType);
+        }
+    }
+
+    public static final class ConsistencyEffort {
+        public static final ConsistencyEffort MEDIUM = new ConsistencyEffort(Value.MEDIUM, "medium");
+
+        public static final ConsistencyEffort LOW = new ConsistencyEffort(Value.LOW, "low");
+
+        public static final ConsistencyEffort NONE = new ConsistencyEffort(Value.NONE, "none");
+
+        public static final ConsistencyEffort HIGH = new ConsistencyEffort(Value.HIGH, "high");
+
+        private final Value value;
+
+        private final String string;
+
+        ConsistencyEffort(Value value, String string) {
+            this.value = value;
+            this.string = string;
+        }
+
+        public Value getEnumValue() {
+            return value;
+        }
+
+        @java.lang.Override
+        @JsonValue
+        public String toString() {
+            return this.string;
+        }
+
+        @java.lang.Override
+        public boolean equals(Object other) {
+            return (this == other)
+                    || (other instanceof ConsistencyEffort && this.string.equals(((ConsistencyEffort) other).string));
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+            return this.string.hashCode();
+        }
+
+        public <T> T visit(Visitor<T> visitor) {
+            switch (value) {
+                case MEDIUM:
+                    return visitor.visitMedium();
+                case LOW:
+                    return visitor.visitLow();
+                case NONE:
+                    return visitor.visitNone();
+                case HIGH:
+                    return visitor.visitHigh();
+                case UNKNOWN:
+                default:
+                    return visitor.visitUnknown(string);
+            }
+        }
+
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        public static ConsistencyEffort valueOf(String value) {
+            switch (value) {
+                case "medium":
+                    return MEDIUM;
+                case "low":
+                    return LOW;
+                case "none":
+                    return NONE;
+                case "high":
+                    return HIGH;
+                default:
+                    return new ConsistencyEffort(Value.UNKNOWN, value);
+            }
+        }
+
+        public enum Value {
+            NONE,
+
+            LOW,
+
+            MEDIUM,
+
+            HIGH,
+
+            UNKNOWN
+        }
+
+        public interface Visitor<T> {
+            T visitNone();
+
+            T visitLow();
+
+            T visitMedium();
+
+            T visitHigh();
 
             T visitUnknown(String unknownType);
         }
