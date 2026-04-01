@@ -53,12 +53,12 @@ public class SummaryWireTest {
                 .builder()
                 .name("name")
                 .exampleSummary("Patient John Doe, age 45, presents with hypertension diagnosed on 2024-01-15.")
+                .mode("mode")
                 .targetResources(
                     new ArrayList<String>(
                         Arrays.asList("Patient", "Condition", "Observation")
                     )
                 )
-                .mode("mode")
                 .build()
         );;
         RecordedRequest request = server.takeRequest();
@@ -86,12 +86,12 @@ public class SummaryWireTest {
                 .builder()
                 .name("name")
                 .template("template")
+                .mode("mode")
                 .targetResources(
                     new ArrayList<String>(
                         Arrays.asList("target_resources")
                     )
                 )
-                .mode("mode")
                 .build()
         );;
         RecordedRequest request = server.takeRequest();
@@ -117,7 +117,7 @@ public class SummaryWireTest {
             CreateSummaryRequest
                 .builder()
                 .fhirResources(
-                    CreateSummaryRequest.FhirResources.ofFhirResource(
+                    CreateSummaryRequest.FhirResources.of(
                         FhirResource
                             .builder()
                             .resourceType("resourceType")

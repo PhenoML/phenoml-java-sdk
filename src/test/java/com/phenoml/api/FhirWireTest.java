@@ -166,7 +166,6 @@ public class FhirWireTest {
                 .body(
                     FhirBundle
                         .builder()
-                        .resourceType("Bundle")
                         .entry(
                             new ArrayList<FhirBundle.EntryItem>(
                                 Arrays.asList(

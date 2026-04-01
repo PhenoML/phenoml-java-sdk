@@ -46,13 +46,13 @@ public class AgentWireTest {
             AgentCreateRequest
                 .builder()
                 .name("name")
+                .provider(
+                    AgentCreateRequest.Provider.of("provider")
+                )
                 .prompts(
                     new ArrayList<String>(
                         Arrays.asList("prompt_123", "prompt_456")
                     )
-                )
-                .provider(
-                    AgentCreateRequest.Provider.of("provider")
                 )
                 .build()
         );;
@@ -95,13 +95,13 @@ public class AgentWireTest {
             AgentCreateRequest
                 .builder()
                 .name("name")
+                .provider(
+                    AgentCreateRequest.Provider.of("provider")
+                )
                 .prompts(
                     new ArrayList<String>(
                         Arrays.asList("prompt_123", "prompt_456")
                     )
-                )
-                .provider(
-                    AgentCreateRequest.Provider.of("provider")
                 )
                 .build()
         );;

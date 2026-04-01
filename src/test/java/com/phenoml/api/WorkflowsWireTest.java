@@ -58,15 +58,15 @@ public class WorkflowsWireTest {
                 .builder()
                 .name("Patient Data Mapping Workflow")
                 .workflowInstructions("Given diagnosis data, find the patient and create condition record")
+                .fhirProviderId(
+                    CreateWorkflowRequest.FhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
+                )
                 .sampleData(
                     new HashMap<String, Object>() {{
                         put("patient_last_name", "Rippin");
                         put("patient_first_name", "Clay");
                         put("diagnosis_code", "I10");
                     }}
-                )
-                .fhirProviderId(
-                    CreateWorkflowRequest.FhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
                 )
                 .verbose(true)
                 .build()
@@ -102,15 +102,15 @@ public class WorkflowsWireTest {
                 .builder()
                 .name("Updated Patient Data Mapping Workflow")
                 .workflowInstructions("Given diagnosis data, find the patient and create condition record")
+                .fhirProviderId(
+                    UpdateWorkflowRequest.FhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
+                )
                 .sampleData(
                     new HashMap<String, Object>() {{
                         put("patient_last_name", "Smith");
                         put("patient_first_name", "John");
                         put("diagnosis_code", "E11");
                     }}
-                )
-                .fhirProviderId(
-                    UpdateWorkflowRequest.FhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
                 )
                 .verbose(true)
                 .build()
