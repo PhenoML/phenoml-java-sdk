@@ -163,13 +163,14 @@ public class FhirWireTest {
                                             new HashMap<String, Object>() {{
                                                 put("resourceType", "Patient");
                                                 put("name", new
-                                                ArrayList<Object>() {Arrays.asList(new 
-                                                    HashMap<String, Object>() {{put("family", "Doe");
+                                                ArrayList<Object>(Arrays.asList(new
+                                                    HashMap<String, Object>() {{
+                                                        put("family", "Doe");
                                                         put("given", new
-                                                        ArrayList<Object>() {Arrays.asList("John")
-                                                        });
-                                                    }})
-                                                });
+                                                        ArrayList<Object>(Arrays.asList("John")
+                                                        ));
+                                                    }}
+                                                )));
                                             }}
                                         )
                                         .request(
