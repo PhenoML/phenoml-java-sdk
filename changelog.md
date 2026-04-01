@@ -1,3 +1,13 @@
+## 10.4.1 - 2026-04-01
+* chore: add mockwebserver test dependency
+* Add OkHttp MockWebServer as a test dependency to support HTTP-level
+* unit testing within the SDK test suite. This is an internal build
+* configuration change with no impact on public API surface or runtime
+* behavior.
+* Key changes:
+* Add `com.squareup.okhttp3:mockwebserver:4.12.0` as a testImplementation dependency
+* 🌿 Generated with Fern
+
 ## 10.4.0 - 2026-03-31
 * The `ExtractRequestConfig` now supports an optional `consistencyEffort` parameter to control result consistency across repeated extraction requests. Higher levels apply stricter filtering to remove borderline codes that may vary between calls, improving determinism at the cost of additional latency.
 
