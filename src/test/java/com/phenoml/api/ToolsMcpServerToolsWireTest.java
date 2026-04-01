@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.phenoml.api.resources.tools.mcpserver.tools.requests.McpServerToolCallRequest;
+import java.util.HashMap;
+
 public class ToolsMcpServerToolsWireTest {
     private MockWebServer server;
     private PhenomlClient client;
@@ -19,7 +22,7 @@ public class ToolsMcpServerToolsWireTest {
         server.start();
         client = PhenomlClient.builder()
             .url(server.url("/").toString())
-            .token("test-token")
+            .addHeader("Authorization", "Bearer test-token")
             .build();
     }
     @AfterEach

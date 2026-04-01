@@ -9,6 +9,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.phenoml.api.resources.lang2fhir.requests.CreateMultiRequest;
+import com.phenoml.api.resources.lang2fhir.requests.CreateRequest;
+import com.phenoml.api.resources.lang2fhir.requests.DocumentMultiRequest;
+import com.phenoml.api.resources.lang2fhir.requests.DocumentRequest;
+import com.phenoml.api.resources.lang2fhir.requests.ProfileUploadRequest;
+import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
+
 public class Lang2FhirWireTest {
     private MockWebServer server;
     private PhenomlClient client;
@@ -19,7 +26,7 @@ public class Lang2FhirWireTest {
         server.start();
         client = PhenomlClient.builder()
             .url(server.url("/").toString())
-            .token("test-token")
+            .addHeader("Authorization", "Bearer test-token")
             .build();
     }
     @AfterEach
@@ -35,7 +42,7 @@ public class Lang2FhirWireTest {
             CreateRequest
                 .builder()
                 .version("R4")
-                .resource(CreateRequestResource.AUTO)
+                .resource(CreateRequest.Resource.AUTO)
                 .text("Patient has severe asthma with acute exacerbation")
                 .build()
         );;

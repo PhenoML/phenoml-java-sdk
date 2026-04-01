@@ -9,6 +9,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.phenoml.api.resources.agent.prompts.requests.AgentPromptsCreateRequest;
+import com.phenoml.api.resources.agent.prompts.requests.AgentPromptsUpdateRequest;
+import com.phenoml.api.resources.agent.types.JsonPatchOperation;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class AgentPromptsWireTest {
     private MockWebServer server;
     private PhenomlClient client;
@@ -19,7 +25,7 @@ public class AgentPromptsWireTest {
         server.start();
         client = PhenomlClient.builder()
             .url(server.url("/").toString())
-            .token("test-token")
+            .addHeader("Authorization", "Bearer test-token")
             .build();
     }
     @AfterEach
@@ -98,19 +104,19 @@ public class AgentPromptsWireTest {
                 Arrays.asList(
                     JsonPatchOperation
                         .builder()
-                        .op(JsonPatchOperationOp.REPLACE)
+                        .op(JsonPatchOperation.Op.REPLACE)
                         .path("/name")
                         .value("Updated Agent Name")
                         .build(),
                     JsonPatchOperation
                         .builder()
-                        .op(JsonPatchOperationOp.ADD)
+                        .op(JsonPatchOperation.Op.ADD)
                         .path("/tags/-")
                         .value("new-tag")
                         .build(),
                     JsonPatchOperation
                         .builder()
-                        .op(JsonPatchOperationOp.REMOVE)
+                        .op(JsonPatchOperation.Op.REMOVE)
                         .path("/description")
                         .build()
                 )

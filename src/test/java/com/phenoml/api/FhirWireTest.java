@@ -9,6 +9,19 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.phenoml.api.resources.fhir.requests.FhirCreateRequest;
+import com.phenoml.api.resources.fhir.requests.FhirDeleteRequest;
+import com.phenoml.api.resources.fhir.requests.FhirExecuteBundleRequest;
+import com.phenoml.api.resources.fhir.requests.FhirPatchRequest;
+import com.phenoml.api.resources.fhir.requests.FhirSearchRequest;
+import com.phenoml.api.resources.fhir.requests.FhirUpsertRequest;
+import com.phenoml.api.resources.fhir.types.FhirBundle;
+import com.phenoml.api.resources.fhir.types.FhirPatchRequestBodyItem;
+import com.phenoml.api.resources.fhir.types.FhirResource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 public class FhirWireTest {
     private MockWebServer server;
     private PhenomlClient client;
@@ -19,7 +32,7 @@ public class FhirWireTest {
         server.start();
         client = PhenomlClient.builder()
             .url(server.url("/").toString())
-            .token("test-token")
+            .addHeader("Authorization", "Bearer test-token")
             .build();
     }
     @AfterEach
@@ -126,7 +139,7 @@ public class FhirWireTest {
                         Arrays.asList(
                             FhirPatchRequestBodyItem
                                 .builder()
-                                .op(FhirPatchRequestBodyItemOp.REPLACE)
+                                .op(FhirPatchRequestBodyItem.Op.REPLACE)
                                 .path("/name/0/family")
                                 .value("NewFamilyName")
                                 .build()
@@ -155,9 +168,9 @@ public class FhirWireTest {
                         .builder()
                         .resourceType("Bundle")
                         .entry(
-                            new ArrayList<FhirBundleEntryItem>(
+                            new ArrayList<FhirBundle.EntryItem>(
                                 Arrays.asList(
-                                    FhirBundleEntryItem
+                                    FhirBundle.EntryItem
                                         .builder()
                                         .resource(
                                             new HashMap<String, Object>() {{
@@ -174,14 +187,14 @@ public class FhirWireTest {
                                             }}
                                         )
                                         .request(
-                                            FhirBundleEntryItemRequest
+                                            FhirBundle.EntryItem.Request
                                                 .builder()
-                                                .method(FhirBundleEntryItemRequestMethod.POST)
+                                                .method(FhirBundle.EntryItem.Request.Method.POST)
                                                 .url("Patient")
                                                 .build()
                                         )
                                         .build(),
-                                    FhirBundleEntryItem
+                                    FhirBundle.EntryItem
                                         .builder()
                                         .resource(
                                             new HashMap<String, Object>() {{
@@ -193,9 +206,9 @@ public class FhirWireTest {
                                             }}
                                         )
                                         .request(
-                                            FhirBundleEntryItemRequest
+                                            FhirBundle.EntryItem.Request
                                                 .builder()
-                                                .method(FhirBundleEntryItemRequestMethod.POST)
+                                                .method(FhirBundle.EntryItem.Request.Method.POST)
                                                 .url("Observation")
                                                 .build()
                                         )

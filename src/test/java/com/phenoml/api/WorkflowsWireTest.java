@@ -9,6 +9,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.phenoml.api.resources.workflows.requests.CreateWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.ExecuteWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.UpdateWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.WorkflowsGetRequest;
+import com.phenoml.api.resources.workflows.requests.WorkflowsListRequest;
+import java.util.HashMap;
+
 public class WorkflowsWireTest {
     private MockWebServer server;
     private PhenomlClient client;
@@ -19,7 +26,7 @@ public class WorkflowsWireTest {
         server.start();
         client = PhenomlClient.builder()
             .url(server.url("/").toString())
-            .token("test-token")
+            .addHeader("Authorization", "Bearer test-token")
             .build();
     }
     @AfterEach
@@ -59,7 +66,7 @@ public class WorkflowsWireTest {
                     }}
                 )
                 .fhirProviderId(
-                    CreateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
+                    CreateWorkflowRequest.FhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
                 )
                 .verbose(true)
                 .build()
@@ -103,7 +110,7 @@ public class WorkflowsWireTest {
                     }}
                 )
                 .fhirProviderId(
-                    UpdateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
+                    UpdateWorkflowRequest.FhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
                 )
                 .verbose(true)
                 .build()

@@ -9,6 +9,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.phenoml.api.resources.fhirprovider.requests.FhirProviderCreateRequest;
+import com.phenoml.api.resources.fhirprovider.requests.FhirProviderRemoveAuthConfigRequest;
+import com.phenoml.api.resources.fhirprovider.requests.FhirProviderSetActiveAuthConfigRequest;
+import com.phenoml.api.resources.fhirprovider.types.FhirProviderAddAuthConfigRequest;
+import com.phenoml.api.resources.fhirprovider.types.FhirProviderCreateRequestAuth;
+import com.phenoml.api.resources.fhirprovider.types.JwtAuth;
+import com.phenoml.api.resources.fhirprovider.types.Provider;
+
 public class FhirProviderWireTest {
     private MockWebServer server;
     private PhenomlClient client;
@@ -19,7 +27,7 @@ public class FhirProviderWireTest {
         server.start();
         client = PhenomlClient.builder()
             .url(server.url("/").toString())
-            .token("test-token")
+            .addHeader("Authorization", "Bearer test-token")
             .build();
     }
     @AfterEach

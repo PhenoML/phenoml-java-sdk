@@ -9,6 +9,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.phenoml.api.resources.summary.requests.CreateSummaryRequest;
+import com.phenoml.api.resources.summary.requests.CreateSummaryTemplateRequest;
+import com.phenoml.api.resources.summary.requests.UpdateSummaryTemplateRequest;
+import com.phenoml.api.resources.summary.types.FhirResource;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class SummaryWireTest {
     private MockWebServer server;
     private PhenomlClient client;
@@ -19,7 +26,7 @@ public class SummaryWireTest {
         server.start();
         client = PhenomlClient.builder()
             .url(server.url("/").toString())
-            .token("test-token")
+            .addHeader("Authorization", "Bearer test-token")
             .build();
     }
     @AfterEach
@@ -110,7 +117,7 @@ public class SummaryWireTest {
             CreateSummaryRequest
                 .builder()
                 .fhirResources(
-                    CreateSummaryRequestFhirResources.ofFhirResource(
+                    CreateSummaryRequest.FhirResources.ofFhirResource(
                         FhirResource
                             .builder()
                             .resourceType("resourceType")

@@ -9,6 +9,22 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.phenoml.api.resources.construe.requests.DeleteConstrueCodesSystemsCodesystemRequest;
+import com.phenoml.api.resources.construe.requests.ExtractRequest;
+import com.phenoml.api.resources.construe.requests.FeedbackRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCodeIdRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemExportRequest;
+import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
+import com.phenoml.api.resources.construe.requests.UploadRequest;
+import com.phenoml.api.resources.construe.types.ExtractCodesResult;
+import com.phenoml.api.resources.construe.types.ExtractRequestSystem;
+import com.phenoml.api.resources.construe.types.ExtractedCodeResult;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class ConstrueWireTest {
     private MockWebServer server;
     private PhenomlClient client;
@@ -19,7 +35,7 @@ public class ConstrueWireTest {
         server.start();
         client = PhenomlClient.builder()
             .url(server.url("/").toString())
-            .token("test-token")
+            .addHeader("Authorization", "Bearer test-token")
             .build();
     }
     @AfterEach
@@ -36,7 +52,7 @@ public class ConstrueWireTest {
                 .builder()
                 .name("CUSTOM_CODES")
                 .version("1.0")
-                .format(UploadRequestFormat.CSV)
+                .format(UploadRequest.Format.CSV)
                 .build()
         );;
         RecordedRequest request = server.takeRequest();

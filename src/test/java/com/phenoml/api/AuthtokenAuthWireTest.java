@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.phenoml.api.resources.authtoken.auth.requests.AuthGenerateTokenRequest;
+import com.phenoml.api.resources.authtoken.auth.requests.ClientCredentialsRequest;
+
 public class AuthtokenAuthWireTest {
     private MockWebServer server;
     private PhenomlClient client;
@@ -19,7 +22,7 @@ public class AuthtokenAuthWireTest {
         server.start();
         client = PhenomlClient.builder()
             .url(server.url("/").toString())
-            .token("test-token")
+            .addHeader("Authorization", "Bearer test-token")
             .build();
     }
     @AfterEach

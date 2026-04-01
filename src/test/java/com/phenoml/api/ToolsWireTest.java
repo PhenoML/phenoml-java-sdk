@@ -9,6 +9,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.phenoml.api.resources.tools.requests.CohortRequest;
+import com.phenoml.api.resources.tools.requests.Lang2FhirAndCreateMultiRequest;
+import com.phenoml.api.resources.tools.requests.Lang2FhirAndCreateRequest;
+import com.phenoml.api.resources.tools.requests.Lang2FhirAndSearchRequest;
+
 public class ToolsWireTest {
     private MockWebServer server;
     private PhenomlClient client;
@@ -19,7 +24,7 @@ public class ToolsWireTest {
         server.start();
         client = PhenomlClient.builder()
             .url(server.url("/").toString())
-            .token("test-token")
+            .addHeader("Authorization", "Bearer test-token")
             .build();
     }
     @AfterEach
@@ -34,7 +39,7 @@ public class ToolsWireTest {
         client.tools().createFhirResource(
             Lang2FhirAndCreateRequest
                 .builder()
-                .resource(Lang2FhirAndCreateRequestResource.AUTO)
+                .resource(Lang2FhirAndCreateRequest.Resource.AUTO)
                 .text("Patient John Doe has severe asthma with acute exacerbation")
                 .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
                 .phenomlFhirProvider("550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
