@@ -105,6 +105,10 @@ public final class CreateMultiRequest {
     public interface _FinalStage {
         CreateMultiRequest build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>FHIR version to use</p>
          */
@@ -196,6 +200,18 @@ public final class CreateMultiRequest {
         @java.lang.Override
         public CreateMultiRequest build() {
             return new CreateMultiRequest(text, version, provider, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

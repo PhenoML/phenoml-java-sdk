@@ -117,5 +117,15 @@ public final class SummaryListTemplatesResponse {
         public SummaryListTemplatesResponse build() {
             return new SummaryListTemplatesResponse(success, templates, additionalProperties);
         }
+
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
+        }
     }
 }

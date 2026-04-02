@@ -5,12 +5,10 @@ package com.phenoml.api.resources.agent.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
@@ -22,7 +20,7 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = AgentChatStreamEvent.Builder.class)
 public final class AgentChatStreamEvent {
-    private final Optional<Type> type;
+    private final Optional<AgentChatStreamEventType> type;
 
     private final Optional<String> sessionId;
 
@@ -41,7 +39,7 @@ public final class AgentChatStreamEvent {
     private final Map<String, Object> additionalProperties;
 
     private AgentChatStreamEvent(
-            Optional<Type> type,
+            Optional<AgentChatStreamEventType> type,
             Optional<String> sessionId,
             Optional<String> content,
             Optional<Boolean> success,
@@ -65,7 +63,7 @@ public final class AgentChatStreamEvent {
      * @return The event type
      */
     @JsonProperty("type")
-    public Optional<Type> getType() {
+    public Optional<AgentChatStreamEventType> getType() {
         return type;
     }
 
@@ -171,7 +169,7 @@ public final class AgentChatStreamEvent {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder {
-        private Optional<Type> type = Optional.empty();
+        private Optional<AgentChatStreamEventType> type = Optional.empty();
 
         private Optional<String> sessionId = Optional.empty();
 
@@ -208,12 +206,12 @@ public final class AgentChatStreamEvent {
          * <p>The event type</p>
          */
         @JsonSetter(value = "type", nulls = Nulls.SKIP)
-        public Builder type(Optional<Type> type) {
+        public Builder type(Optional<AgentChatStreamEventType> type) {
             this.type = type;
             return this;
         }
 
-        public Builder type(Type type) {
+        public Builder type(AgentChatStreamEventType type) {
             this.type = Optional.ofNullable(type);
             return this;
         }
@@ -328,120 +326,15 @@ public final class AgentChatStreamEvent {
                     functionResult,
                     additionalProperties);
         }
-    }
 
-    public static final class Type {
-        public static final Type MESSAGE_START = new Type(Value.MESSAGE_START, "message_start");
-
-        public static final Type CONTENT_DELTA = new Type(Value.CONTENT_DELTA, "content_delta");
-
-        public static final Type MESSAGE_END = new Type(Value.MESSAGE_END, "message_end");
-
-        public static final Type ERROR = new Type(Value.ERROR, "error");
-
-        public static final Type TOOL_USE = new Type(Value.TOOL_USE, "tool_use");
-
-        public static final Type TOOL_RESULT = new Type(Value.TOOL_RESULT, "tool_result");
-
-        private final Value value;
-
-        private final String string;
-
-        Type(Value value, String string) {
-            this.value = value;
-            this.string = string;
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
-        public Value getEnumValue() {
-            return value;
-        }
-
-        @java.lang.Override
-        @JsonValue
-        public String toString() {
-            return this.string;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            return (this == other) || (other instanceof Type && this.string.equals(((Type) other).string));
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return this.string.hashCode();
-        }
-
-        public <T> T visit(Visitor<T> visitor) {
-            switch (value) {
-                case MESSAGE_START:
-                    return visitor.visitMessageStart();
-                case CONTENT_DELTA:
-                    return visitor.visitContentDelta();
-                case MESSAGE_END:
-                    return visitor.visitMessageEnd();
-                case ERROR:
-                    return visitor.visitError();
-                case TOOL_USE:
-                    return visitor.visitToolUse();
-                case TOOL_RESULT:
-                    return visitor.visitToolResult();
-                case UNKNOWN:
-                default:
-                    return visitor.visitUnknown(string);
-            }
-        }
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static Type valueOf(String value) {
-            switch (value) {
-                case "message_start":
-                    return MESSAGE_START;
-                case "content_delta":
-                    return CONTENT_DELTA;
-                case "message_end":
-                    return MESSAGE_END;
-                case "error":
-                    return ERROR;
-                case "tool_use":
-                    return TOOL_USE;
-                case "tool_result":
-                    return TOOL_RESULT;
-                default:
-                    return new Type(Value.UNKNOWN, value);
-            }
-        }
-
-        public enum Value {
-            MESSAGE_START,
-
-            CONTENT_DELTA,
-
-            TOOL_USE,
-
-            TOOL_RESULT,
-
-            MESSAGE_END,
-
-            ERROR,
-
-            UNKNOWN
-        }
-
-        public interface Visitor<T> {
-            T visitMessageStart();
-
-            T visitContentDelta();
-
-            T visitToolUse();
-
-            T visitToolResult();
-
-            T visitMessageEnd();
-
-            T visitError();
-
-            T visitUnknown(String unknownType);
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

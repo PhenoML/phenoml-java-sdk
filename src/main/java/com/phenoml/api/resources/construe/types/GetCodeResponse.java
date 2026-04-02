@@ -128,6 +128,10 @@ public final class GetCodeResponse {
     public interface _FinalStage {
         GetCodeResponse build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>Extended definition of the code (if available)</p>
          */
@@ -214,6 +218,18 @@ public final class GetCodeResponse {
         @java.lang.Override
         public GetCodeResponse build() {
             return new GetCodeResponse(system, code, description, definition, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

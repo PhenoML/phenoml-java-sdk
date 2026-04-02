@@ -65,9 +65,9 @@ public class PhenomlClientApiException extends PhenomlClientException {
         return this.headers;
     }
 
-    @java.lang.Override
+    @Override
     public String toString() {
         return "PhenomlClientApiException{" + "message: " + getMessage() + ", statusCode: " + statusCode + ", body: "
-                + body + "}";
+                + ObjectMappers.stringify(body) + "}";
     }
 }

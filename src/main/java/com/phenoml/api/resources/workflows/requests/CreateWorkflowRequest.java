@@ -5,23 +5,17 @@ package com.phenoml.api.resources.workflows.requests;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.phenoml.api.core.ObjectMappers;
-import java.io.IOException;
+import com.phenoml.api.resources.workflows.types.CreateWorkflowRequestFhirProviderId;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,7 +32,7 @@ public final class CreateWorkflowRequest {
 
     private final Map<String, Object> sampleData;
 
-    private final FhirProviderId fhirProviderId;
+    private final CreateWorkflowRequestFhirProviderId fhirProviderId;
 
     private final Optional<Boolean> dynamicGeneration;
 
@@ -49,7 +43,7 @@ public final class CreateWorkflowRequest {
             String name,
             String workflowInstructions,
             Map<String, Object> sampleData,
-            FhirProviderId fhirProviderId,
+            CreateWorkflowRequestFhirProviderId fhirProviderId,
             Optional<Boolean> dynamicGeneration,
             Map<String, Object> additionalProperties) {
         this.verbose = verbose;
@@ -64,7 +58,7 @@ public final class CreateWorkflowRequest {
     /**
      * @return If true, includes full workflow implementation details in workflow_details field
      */
-    @JsonProperty("verbose")
+    @JsonIgnore
     public Optional<Boolean> getVerbose() {
         return verbose;
     }
@@ -97,7 +91,7 @@ public final class CreateWorkflowRequest {
      * @return FHIR provider ID(s) - must be valid UUID(s) from existing FHIR providers
      */
     @JsonProperty("fhir_provider_id")
-    public FhirProviderId getFhirProviderId() {
+    public CreateWorkflowRequestFhirProviderId getFhirProviderId() {
         return fhirProviderId;
     }
 
@@ -169,11 +163,15 @@ public final class CreateWorkflowRequest {
         /**
          * <p>FHIR provider ID(s) - must be valid UUID(s) from existing FHIR providers</p>
          */
-        _FinalStage fhirProviderId(@NotNull FhirProviderId fhirProviderId);
+        _FinalStage fhirProviderId(@NotNull CreateWorkflowRequestFhirProviderId fhirProviderId);
     }
 
     public interface _FinalStage {
         CreateWorkflowRequest build();
+
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
         /**
          * <p>If true, includes full workflow implementation details in workflow_details field</p>
@@ -206,7 +204,7 @@ public final class CreateWorkflowRequest {
 
         private String workflowInstructions;
 
-        private FhirProviderId fhirProviderId;
+        private CreateWorkflowRequestFhirProviderId fhirProviderId;
 
         private Optional<Boolean> dynamicGeneration = Optional.empty();
 
@@ -262,7 +260,7 @@ public final class CreateWorkflowRequest {
          */
         @java.lang.Override
         @JsonSetter("fhir_provider_id")
-        public _FinalStage fhirProviderId(@NotNull FhirProviderId fhirProviderId) {
+        public _FinalStage fhirProviderId(@NotNull CreateWorkflowRequestFhirProviderId fhirProviderId) {
             this.fhirProviderId = Objects.requireNonNull(fhirProviderId, "fhirProviderId must not be null");
             return this;
         }
@@ -316,7 +314,9 @@ public final class CreateWorkflowRequest {
         @JsonSetter(value = "sample_data", nulls = Nulls.SKIP)
         public _FinalStage sampleData(Map<String, Object> sampleData) {
             this.sampleData.clear();
-            this.sampleData.putAll(sampleData);
+            if (sampleData != null) {
+                this.sampleData.putAll(sampleData);
+            }
             return this;
         }
 
@@ -351,86 +351,17 @@ public final class CreateWorkflowRequest {
                     dynamicGeneration,
                     additionalProperties);
         }
-    }
 
-    @JsonDeserialize(using = FhirProviderId.Deserializer.class)
-    public static final class FhirProviderId {
-        private final Object value;
-
-        private final int type;
-
-        private FhirProviderId(Object value, int type) {
-            this.value = value;
-            this.type = type;
-        }
-
-        @JsonValue
-        public Object get() {
-            return this.value;
-        }
-
-        @SuppressWarnings("unchecked")
-        public <T> T visit(Visitor<T> visitor) {
-            if (this.type == 0) {
-                return visitor.visit((String) this.value);
-            } else if (this.type == 1) {
-                return visitor.visit((List<String>) this.value);
-            }
-            throw new IllegalStateException("Failed to visit value. This should never happen.");
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
         @java.lang.Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-            return other instanceof FhirProviderId && equalTo((FhirProviderId) other);
-        }
-
-        private boolean equalTo(FhirProviderId other) {
-            return value.equals(other.value);
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return Objects.hash(this.value);
-        }
-
-        @java.lang.Override
-        public String toString() {
-            return this.value.toString();
-        }
-
-        public static FhirProviderId of(String value) {
-            return new FhirProviderId(value, 0);
-        }
-
-        public static FhirProviderId of(List<String> value) {
-            return new FhirProviderId(value, 1);
-        }
-
-        public interface Visitor<T> {
-            T visit(String value);
-
-            T visit(List<String> value);
-        }
-
-        static final class Deserializer extends StdDeserializer<FhirProviderId> {
-            Deserializer() {
-                super(FhirProviderId.class);
-            }
-
-            @java.lang.Override
-            public FhirProviderId deserialize(JsonParser p, DeserializationContext context) throws IOException {
-                Object value = p.readValueAs(Object.class);
-                try {
-                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, String.class));
-                } catch (RuntimeException e) {
-                }
-                try {
-                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<List<String>>() {}));
-                } catch (RuntimeException e) {
-                }
-                throw new JsonParseException(p, "Failed to deserialize");
-            }
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

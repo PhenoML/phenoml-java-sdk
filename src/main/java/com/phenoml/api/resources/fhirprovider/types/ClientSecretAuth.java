@@ -124,6 +124,10 @@ public final class ClientSecretAuth {
     public interface _FinalStage {
         ClientSecretAuth build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         _FinalStage role(Optional<Role> role);
 
         _FinalStage role(Role role);
@@ -220,6 +224,18 @@ public final class ClientSecretAuth {
         @java.lang.Override
         public ClientSecretAuth build() {
             return new ClientSecretAuth(clientId, clientSecret, role, scopes, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

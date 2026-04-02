@@ -9,15 +9,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.phenoml.api.core.ObjectMappers;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,14 +25,14 @@ public final class FhirProviderListResponse {
 
     private final Optional<String> message;
 
-    private final Optional<List<FhirProvidersItem>> fhirProviders;
+    private final Optional<List<FhirProviderListResponseFhirProvidersItem>> fhirProviders;
 
     private final Map<String, Object> additionalProperties;
 
     private FhirProviderListResponse(
             Optional<Boolean> success,
             Optional<String> message,
-            Optional<List<FhirProvidersItem>> fhirProviders,
+            Optional<List<FhirProviderListResponseFhirProvidersItem>> fhirProviders,
             Map<String, Object> additionalProperties) {
         this.success = success;
         this.message = message;
@@ -61,7 +55,7 @@ public final class FhirProviderListResponse {
      * other providers return FhirProviderTemplate.
      */
     @JsonProperty("fhir_providers")
-    public Optional<List<FhirProvidersItem>> getFhirProviders() {
+    public Optional<List<FhirProviderListResponseFhirProvidersItem>> getFhirProviders() {
         return fhirProviders;
     }
 
@@ -102,7 +96,7 @@ public final class FhirProviderListResponse {
 
         private Optional<String> message = Optional.empty();
 
-        private Optional<List<FhirProvidersItem>> fhirProviders = Optional.empty();
+        private Optional<List<FhirProviderListResponseFhirProvidersItem>> fhirProviders = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -143,12 +137,12 @@ public final class FhirProviderListResponse {
          * other providers return FhirProviderTemplate.</p>
          */
         @JsonSetter(value = "fhir_providers", nulls = Nulls.SKIP)
-        public Builder fhirProviders(Optional<List<FhirProvidersItem>> fhirProviders) {
+        public Builder fhirProviders(Optional<List<FhirProviderListResponseFhirProvidersItem>> fhirProviders) {
             this.fhirProviders = fhirProviders;
             return this;
         }
 
-        public Builder fhirProviders(List<FhirProvidersItem> fhirProviders) {
+        public Builder fhirProviders(List<FhirProviderListResponseFhirProvidersItem> fhirProviders) {
             this.fhirProviders = Optional.ofNullable(fhirProviders);
             return this;
         }
@@ -156,86 +150,15 @@ public final class FhirProviderListResponse {
         public FhirProviderListResponse build() {
             return new FhirProviderListResponse(success, message, fhirProviders, additionalProperties);
         }
-    }
 
-    @JsonDeserialize(using = FhirProvidersItem.Deserializer.class)
-    public static final class FhirProvidersItem {
-        private final Object value;
-
-        private final int type;
-
-        private FhirProvidersItem(Object value, int type) {
-            this.value = value;
-            this.type = type;
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
-        @JsonValue
-        public Object get() {
-            return this.value;
-        }
-
-        @SuppressWarnings("unchecked")
-        public <T> T visit(Visitor<T> visitor) {
-            if (this.type == 0) {
-                return visitor.visit((FhirProviderTemplate) this.value);
-            } else if (this.type == 1) {
-                return visitor.visit((FhirProviderSandboxInfo) this.value);
-            }
-            throw new IllegalStateException("Failed to visit value. This should never happen.");
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-            return other instanceof FhirProvidersItem && equalTo((FhirProvidersItem) other);
-        }
-
-        private boolean equalTo(FhirProvidersItem other) {
-            return value.equals(other.value);
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return Objects.hash(this.value);
-        }
-
-        @java.lang.Override
-        public String toString() {
-            return this.value.toString();
-        }
-
-        public static FhirProvidersItem of(FhirProviderTemplate value) {
-            return new FhirProvidersItem(value, 0);
-        }
-
-        public static FhirProvidersItem of(FhirProviderSandboxInfo value) {
-            return new FhirProvidersItem(value, 1);
-        }
-
-        public interface Visitor<T> {
-            T visit(FhirProviderTemplate value);
-
-            T visit(FhirProviderSandboxInfo value);
-        }
-
-        static final class Deserializer extends StdDeserializer<FhirProvidersItem> {
-            Deserializer() {
-                super(FhirProvidersItem.class);
-            }
-
-            @java.lang.Override
-            public FhirProvidersItem deserialize(JsonParser p, DeserializationContext context) throws IOException {
-                Object value = p.readValueAs(Object.class);
-                try {
-                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, FhirProviderTemplate.class));
-                } catch (RuntimeException e) {
-                }
-                try {
-                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, FhirProviderSandboxInfo.class));
-                } catch (RuntimeException e) {
-                }
-                throw new JsonParseException(p, "Failed to deserialize");
-            }
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

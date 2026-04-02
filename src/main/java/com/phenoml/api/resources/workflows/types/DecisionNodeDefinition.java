@@ -159,5 +159,15 @@ public final class DecisionNodeDefinition {
         public DecisionNodeDefinition build() {
             return new DecisionNodeDefinition(expression, paths, runtimePlaceholders, additionalProperties);
         }
+
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
+        }
     }
 }

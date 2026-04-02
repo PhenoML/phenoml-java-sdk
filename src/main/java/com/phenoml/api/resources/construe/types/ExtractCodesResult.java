@@ -83,6 +83,10 @@ public final class ExtractCodesResult {
     public interface _FinalStage {
         ExtractCodesResult build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         _FinalStage codes(List<ExtractedCodeResult> codes);
 
         _FinalStage addCodes(ExtractedCodeResult codes);
@@ -133,13 +137,27 @@ public final class ExtractCodesResult {
         @JsonSetter(value = "codes", nulls = Nulls.SKIP)
         public _FinalStage codes(List<ExtractedCodeResult> codes) {
             this.codes.clear();
-            this.codes.addAll(codes);
+            if (codes != null) {
+                this.codes.addAll(codes);
+            }
             return this;
         }
 
         @java.lang.Override
         public ExtractCodesResult build() {
             return new ExtractCodesResult(system, codes, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

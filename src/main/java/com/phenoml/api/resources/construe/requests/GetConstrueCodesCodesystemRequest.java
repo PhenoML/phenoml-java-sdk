@@ -5,9 +5,9 @@ package com.phenoml.api.resources.construe.requests;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -42,7 +42,7 @@ public final class GetConstrueCodesCodesystemRequest {
     /**
      * @return Specific version of the code system. Required if multiple versions exist.
      */
-    @JsonProperty("version")
+    @JsonIgnore
     public Optional<String> getVersion() {
         return version;
     }
@@ -50,7 +50,7 @@ public final class GetConstrueCodesCodesystemRequest {
     /**
      * @return Pagination cursor from previous response
      */
-    @JsonProperty("cursor")
+    @JsonIgnore
     public Optional<String> getCursor() {
         return cursor;
     }
@@ -58,7 +58,7 @@ public final class GetConstrueCodesCodesystemRequest {
     /**
      * @return Maximum number of codes to return (default 20)
      */
-    @JsonProperty("limit")
+    @JsonIgnore
     public Optional<Integer> getLimit() {
         return limit;
     }
@@ -156,6 +156,16 @@ public final class GetConstrueCodesCodesystemRequest {
 
         public GetConstrueCodesCodesystemRequest build() {
             return new GetConstrueCodesCodesystemRequest(version, cursor, limit, additionalProperties);
+        }
+
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

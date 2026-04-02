@@ -86,6 +86,10 @@ public final class SemanticSearchResponse {
     public interface _FinalStage {
         SemanticSearchResponse build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>Codes ordered by semantic similarity (most similar first)</p>
          */
@@ -150,13 +154,27 @@ public final class SemanticSearchResponse {
         @JsonSetter(value = "results", nulls = Nulls.SKIP)
         public _FinalStage results(List<SemanticSearchResult> results) {
             this.results.clear();
-            this.results.addAll(results);
+            if (results != null) {
+                this.results.addAll(results);
+            }
             return this;
         }
 
         @java.lang.Override
         public SemanticSearchResponse build() {
             return new SemanticSearchResponse(system, results, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

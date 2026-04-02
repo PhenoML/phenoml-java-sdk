@@ -9,16 +9,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.phenoml.api.core.ObjectMappers;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -33,7 +26,7 @@ public final class FhirQueryResponse {
 
     private final Optional<String> message;
 
-    private final Optional<Data> data;
+    private final Optional<FhirQueryResponseData> data;
 
     private final Map<String, Object> additionalProperties;
 
@@ -41,7 +34,7 @@ public final class FhirQueryResponse {
             Optional<Boolean> success,
             Optional<Integer> status,
             Optional<String> message,
-            Optional<Data> data,
+            Optional<FhirQueryResponseData> data,
             Map<String, Object> additionalProperties) {
         this.success = success;
         this.status = status;
@@ -69,7 +62,7 @@ public final class FhirQueryResponse {
     }
 
     @JsonProperty("data")
-    public Optional<Data> getData() {
+    public Optional<FhirQueryResponseData> getData() {
         return data;
     }
 
@@ -113,7 +106,7 @@ public final class FhirQueryResponse {
 
         private Optional<String> message = Optional.empty();
 
-        private Optional<Data> data = Optional.empty();
+        private Optional<FhirQueryResponseData> data = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -165,12 +158,12 @@ public final class FhirQueryResponse {
         }
 
         @JsonSetter(value = "data", nulls = Nulls.SKIP)
-        public Builder data(Optional<Data> data) {
+        public Builder data(Optional<FhirQueryResponseData> data) {
             this.data = data;
             return this;
         }
 
-        public Builder data(Data data) {
+        public Builder data(FhirQueryResponseData data) {
             this.data = Optional.ofNullable(data);
             return this;
         }
@@ -178,87 +171,15 @@ public final class FhirQueryResponse {
         public FhirQueryResponse build() {
             return new FhirQueryResponse(success, status, message, data, additionalProperties);
         }
-    }
 
-    @JsonDeserialize(using = Data.Deserializer.class)
-    public static final class Data {
-        private final Object value;
-
-        private final int type;
-
-        private Data(Object value, int type) {
-            this.value = value;
-            this.type = type;
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
-        @JsonValue
-        public Object get() {
-            return this.value;
-        }
-
-        @SuppressWarnings("unchecked")
-        public <T> T visit(Visitor<T> visitor) {
-            if (this.type == 0) {
-                return visitor.visit((Map<String, Object>) this.value);
-            } else if (this.type == 1) {
-                return visitor.visit((String) this.value);
-            }
-            throw new IllegalStateException("Failed to visit value. This should never happen.");
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-            return other instanceof Data && equalTo((Data) other);
-        }
-
-        private boolean equalTo(Data other) {
-            return value.equals(other.value);
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return Objects.hash(this.value);
-        }
-
-        @java.lang.Override
-        public String toString() {
-            return this.value.toString();
-        }
-
-        public static Data of(Map<String, Object> value) {
-            return new Data(value, 0);
-        }
-
-        public static Data of(String value) {
-            return new Data(value, 1);
-        }
-
-        public interface Visitor<T> {
-            T visit(Map<String, Object> value);
-
-            T visit(String value);
-        }
-
-        static final class Deserializer extends StdDeserializer<Data> {
-            Deserializer() {
-                super(Data.class);
-            }
-
-            @java.lang.Override
-            public Data deserialize(JsonParser p, DeserializationContext context) throws IOException {
-                Object value = p.readValueAs(Object.class);
-                try {
-                    return of(
-                            ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<Map<String, Object>>() {}));
-                } catch (RuntimeException e) {
-                }
-                try {
-                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, String.class));
-                } catch (RuntimeException e) {
-                }
-                throw new JsonParseException(p, "Failed to deserialize");
-            }
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }
