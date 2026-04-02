@@ -221,6 +221,16 @@ public final class WorkflowStepSummary {
         public WorkflowStepSummary build() {
             return new WorkflowStepSummary(id, name, description, type, providerId, additionalProperties);
         }
+
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
+        }
     }
 
     public static final class Type {

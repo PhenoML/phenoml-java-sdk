@@ -87,7 +87,9 @@ public final class FhirBundle {
         @JsonSetter(value = "entry", nulls = Nulls.SKIP)
         public Builder entry(List<EntryItem> entry) {
             this.entry.clear();
-            this.entry.addAll(entry);
+            if (entry != null) {
+                this.entry.addAll(entry);
+            }
             return this;
         }
 
@@ -105,6 +107,16 @@ public final class FhirBundle {
 
         public FhirBundle build() {
             return new FhirBundle(entry, additionalProperties);
+        }
+
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 
@@ -181,6 +193,16 @@ public final class FhirBundle {
 
             public EntryItem build() {
                 return new EntryItem(resource, additionalProperties);
+            }
+
+            public Builder additionalProperty(String key, Object value) {
+                this.additionalProperties.put(key, value);
+                return this;
+            }
+
+            public Builder additionalProperties(Map<String, Object> additionalProperties) {
+                this.additionalProperties.putAll(additionalProperties);
+                return this;
             }
         }
     }

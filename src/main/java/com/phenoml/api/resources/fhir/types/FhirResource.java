@@ -104,6 +104,10 @@ public final class FhirResource {
     public interface _FinalStage {
         FhirResource build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>Logical ID of the resource</p>
          */
@@ -195,6 +199,18 @@ public final class FhirResource {
         @java.lang.Override
         public FhirResource build() {
             return new FhirResource(resourceType, id, meta, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 
@@ -321,6 +337,16 @@ public final class FhirResource {
 
             public Meta build() {
                 return new Meta(versionId, lastUpdated, profile, additionalProperties);
+            }
+
+            public Builder additionalProperty(String key, Object value) {
+                this.additionalProperties.put(key, value);
+                return this;
+            }
+
+            public Builder additionalProperties(Map<String, Object> additionalProperties) {
+                this.additionalProperties.putAll(additionalProperties);
+                return this;
             }
         }
     }

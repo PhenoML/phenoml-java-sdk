@@ -191,6 +191,16 @@ public final class Lang2FhirAndCreateMultiResponse {
             return new Lang2FhirAndCreateMultiResponse(
                     success, message, responseBundle, resourceInfo, additionalProperties);
         }
+
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
+        }
     }
 
     @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -314,6 +324,16 @@ public final class Lang2FhirAndCreateMultiResponse {
 
             public ResponseBundle build() {
                 return new ResponseBundle(resourceType, type, entry, additionalProperties);
+            }
+
+            public Builder additionalProperty(String key, Object value) {
+                this.additionalProperties.put(key, value);
+                return this;
+            }
+
+            public Builder additionalProperties(Map<String, Object> additionalProperties) {
+                this.additionalProperties.putAll(additionalProperties);
+                return this;
             }
         }
     }
@@ -459,6 +479,16 @@ public final class Lang2FhirAndCreateMultiResponse {
 
             public ResourceInfoItem build() {
                 return new ResourceInfoItem(tempId, resourceType, description, additionalProperties);
+            }
+
+            public Builder additionalProperty(String key, Object value) {
+                this.additionalProperties.put(key, value);
+                return this;
+            }
+
+            public Builder additionalProperties(Map<String, Object> additionalProperties) {
+                this.additionalProperties.putAll(additionalProperties);
+                return this;
             }
         }
     }

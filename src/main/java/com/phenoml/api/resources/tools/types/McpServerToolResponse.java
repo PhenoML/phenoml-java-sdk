@@ -157,6 +157,16 @@ public final class McpServerToolResponse {
         public McpServerToolResponse build() {
             return new McpServerToolResponse(success, message, data, additionalProperties);
         }
+
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
+        }
     }
 
     @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -391,6 +401,16 @@ public final class McpServerToolResponse {
 
             public Data build() {
                 return new Data(id, name, description, inputSchema, mcpServerId, mcpServerUrl, additionalProperties);
+            }
+
+            public Builder additionalProperty(String key, Object value) {
+                this.additionalProperties.put(key, value);
+                return this;
+            }
+
+            public Builder additionalProperties(Map<String, Object> additionalProperties) {
+                this.additionalProperties.putAll(additionalProperties);
+                return this;
             }
         }
     }

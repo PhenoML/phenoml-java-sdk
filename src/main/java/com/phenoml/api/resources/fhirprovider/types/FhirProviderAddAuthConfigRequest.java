@@ -127,6 +127,23 @@ public final class FhirProviderAddAuthConfigRequest {
         return Optional.empty();
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        return other instanceof FhirProviderAddAuthConfigRequest
+                && value.equals(((FhirProviderAddAuthConfigRequest) other).value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
+    public String toString() {
+        return value.toString();
+    }
+
     @JsonValue
     private Value getValue() {
         return this.value;
@@ -170,6 +187,7 @@ public final class FhirProviderAddAuthConfigRequest {
     @JsonIgnoreProperties("auth_method")
     private static final class JwtValue implements Value {
         @JsonUnwrapped
+        @JsonIgnoreProperties(value = "auth_method", allowSetters = true)
         private JwtAuth value;
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
@@ -209,6 +227,7 @@ public final class FhirProviderAddAuthConfigRequest {
     @JsonIgnoreProperties("auth_method")
     private static final class ClientSecretValue implements Value {
         @JsonUnwrapped
+        @JsonIgnoreProperties(value = "auth_method", allowSetters = true)
         private ClientSecretAuth value;
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
@@ -248,6 +267,7 @@ public final class FhirProviderAddAuthConfigRequest {
     @JsonIgnoreProperties("auth_method")
     private static final class OnBehalfOfValue implements Value {
         @JsonUnwrapped
+        @JsonIgnoreProperties(value = "auth_method", allowSetters = true)
         private OnBehalfOfAuth value;
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
@@ -287,6 +307,7 @@ public final class FhirProviderAddAuthConfigRequest {
     @JsonIgnoreProperties("auth_method")
     private static final class GoogleHealthcareValue implements Value {
         @JsonUnwrapped
+        @JsonIgnoreProperties(value = "auth_method", allowSetters = true)
         private GoogleHealthcareAuth value;
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
@@ -326,6 +347,7 @@ public final class FhirProviderAddAuthConfigRequest {
     @JsonIgnoreProperties("auth_method")
     private static final class TokenPassthroughValue implements Value {
         @JsonUnwrapped
+        @JsonIgnoreProperties(value = "auth_method", allowSetters = true)
         private TokenPassthroughAuth value;
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
@@ -365,6 +387,7 @@ public final class FhirProviderAddAuthConfigRequest {
     @JsonIgnoreProperties("auth_method")
     private static final class NoneValue implements Value {
         @JsonUnwrapped
+        @JsonIgnoreProperties(value = "auth_method", allowSetters = true)
         private NoAuth value;
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)

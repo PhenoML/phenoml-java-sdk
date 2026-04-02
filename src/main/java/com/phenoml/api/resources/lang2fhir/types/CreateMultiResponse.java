@@ -190,6 +190,16 @@ public final class CreateMultiResponse {
         public CreateMultiResponse build() {
             return new CreateMultiResponse(success, message, bundle, resources, additionalProperties);
         }
+
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
+        }
     }
 
     @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -313,6 +323,16 @@ public final class CreateMultiResponse {
 
             public Bundle build() {
                 return new Bundle(resourceType, type, entry, additionalProperties);
+            }
+
+            public Builder additionalProperty(String key, Object value) {
+                this.additionalProperties.put(key, value);
+                return this;
+            }
+
+            public Builder additionalProperties(Map<String, Object> additionalProperties) {
+                this.additionalProperties.putAll(additionalProperties);
+                return this;
             }
         }
 
@@ -440,6 +460,16 @@ public final class CreateMultiResponse {
                 public EntryItem build() {
                     return new EntryItem(fullUrl, resource, request, additionalProperties);
                 }
+
+                public Builder additionalProperty(String key, Object value) {
+                    this.additionalProperties.put(key, value);
+                    return this;
+                }
+
+                public Builder additionalProperties(Map<String, Object> additionalProperties) {
+                    this.additionalProperties.putAll(additionalProperties);
+                    return this;
+                }
             }
 
             @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -538,6 +568,16 @@ public final class CreateMultiResponse {
 
                     public Request build() {
                         return new Request(method, url, additionalProperties);
+                    }
+
+                    public Builder additionalProperty(String key, Object value) {
+                        this.additionalProperties.put(key, value);
+                        return this;
+                    }
+
+                    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+                        this.additionalProperties.putAll(additionalProperties);
+                        return this;
                     }
                 }
             }
@@ -685,6 +725,16 @@ public final class CreateMultiResponse {
 
             public ResourcesItem build() {
                 return new ResourcesItem(tempId, resourceType, description, additionalProperties);
+            }
+
+            public Builder additionalProperty(String key, Object value) {
+                this.additionalProperties.put(key, value);
+                return this;
+            }
+
+            public Builder additionalProperties(Map<String, Object> additionalProperties) {
+                this.additionalProperties.putAll(additionalProperties);
+                return this;
             }
         }
     }

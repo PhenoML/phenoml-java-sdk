@@ -126,6 +126,10 @@ public final class JsonPatchOperation {
     public interface _FinalStage {
         JsonPatchOperation build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>The value to be used within the operations</p>
          */
@@ -232,6 +236,18 @@ public final class JsonPatchOperation {
         @java.lang.Override
         public JsonPatchOperation build() {
             return new JsonPatchOperation(op, path, value, from, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 

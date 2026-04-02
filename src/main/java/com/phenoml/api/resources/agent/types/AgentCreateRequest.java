@@ -178,6 +178,10 @@ public final class AgentCreateRequest {
     public interface _FinalStage {
         AgentCreateRequest build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>Agent description</p>
          */
@@ -364,7 +368,9 @@ public final class AgentCreateRequest {
         @JsonSetter(value = "prompts", nulls = Nulls.SKIP)
         public _FinalStage prompts(List<String> prompts) {
             this.prompts.clear();
-            this.prompts.addAll(prompts);
+            if (prompts != null) {
+                this.prompts.addAll(prompts);
+            }
             return this;
         }
 
@@ -392,6 +398,18 @@ public final class AgentCreateRequest {
         public AgentCreateRequest build() {
             return new AgentCreateRequest(
                     name, description, prompts, tools, workflows, tags, provider, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 

@@ -31,13 +31,11 @@ client.agent().create(
     AgentCreateRequest
         .builder()
         .name("name")
-        .prompts(
-            new ArrayList<String>(
-                Arrays.asList("prompt_123", "prompt_456")
-            )
-        )
         .provider(
             AgentCreateRequestProvider.of("provider")
+        )
+        .prompts(
+            Arrays.asList("prompt_123", "prompt_456")
         )
         .build()
 );
@@ -212,13 +210,11 @@ client.agent().update(
     AgentCreateRequest
         .builder()
         .name("name")
-        .prompts(
-            new ArrayList<String>(
-                Arrays.asList("prompt_123", "prompt_456")
-            )
-        )
         .provider(
             AgentCreateRequestProvider.of("provider")
+        )
+        .prompts(
+            Arrays.asList("prompt_123", "prompt_456")
         )
         .build()
 );
@@ -339,26 +335,24 @@ Patches an existing agent's configuration
 ```java
 client.agent().patch(
     "id",
-    new ArrayList<JsonPatchOperation>(
-        Arrays.asList(
-            JsonPatchOperation
-                .builder()
-                .op(JsonPatchOperationOp.REPLACE)
-                .path("/name")
-                .value("Updated Agent Name")
-                .build(),
-            JsonPatchOperation
-                .builder()
-                .op(JsonPatchOperationOp.ADD)
-                .path("/tags/-")
-                .value("new-tag")
-                .build(),
-            JsonPatchOperation
-                .builder()
-                .op(JsonPatchOperationOp.REMOVE)
-                .path("/description")
-                .build()
-        )
+    Arrays.asList(
+        JsonPatchOperation
+            .builder()
+            .op(JsonPatchOperationOp.REPLACE)
+            .path("/name")
+            .value("Updated Agent Name")
+            .build(),
+        JsonPatchOperation
+            .builder()
+            .op(JsonPatchOperationOp.ADD)
+            .path("/tags/-")
+            .value("new-tag")
+            .build(),
+        JsonPatchOperation
+            .builder()
+            .op(JsonPatchOperationOp.REMOVE)
+            .path("/description")
+            .build()
     )
 );
 ```
@@ -511,7 +505,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 </dl>
 </details>
 
-<details><summary><code>client.agent.streamChat(request) -> Optional&amp;lt;AgentChatStreamEvent&amp;gt;</code></summary>
+<details><summary><code>client.agent.streamChat(request) -> Iterable&amp;lt;AgentChatStreamEvent&amp;gt;</code></summary>
 <dl>
 <dd>
 
@@ -1092,26 +1086,24 @@ Patches an existing prompt
 ```java
 client.agent().prompts().patch(
     "id",
-    new ArrayList<JsonPatchOperation>(
-        Arrays.asList(
-            JsonPatchOperation
-                .builder()
-                .op(JsonPatchOperationOp.REPLACE)
-                .path("/name")
-                .value("Updated Agent Name")
-                .build(),
-            JsonPatchOperation
-                .builder()
-                .op(JsonPatchOperationOp.ADD)
-                .path("/tags/-")
-                .value("new-tag")
-                .build(),
-            JsonPatchOperation
-                .builder()
-                .op(JsonPatchOperationOp.REMOVE)
-                .path("/description")
-                .build()
-        )
+    Arrays.asList(
+        JsonPatchOperation
+            .builder()
+            .op(JsonPatchOperationOp.REPLACE)
+            .path("/name")
+            .value("Updated Agent Name")
+            .build(),
+        JsonPatchOperation
+            .builder()
+            .op(JsonPatchOperationOp.ADD)
+            .path("/tags/-")
+            .value("new-tag")
+            .build(),
+        JsonPatchOperation
+            .builder()
+            .op(JsonPatchOperationOp.REMOVE)
+            .path("/description")
+            .build()
     )
 );
 ```
@@ -1466,7 +1458,7 @@ reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidd
 <dl>
 <dd>
 
-**revision:** `Optional<Float>` — Optional revision number
+**revision:** `Optional<Double>` — Optional revision number
     
 </dd>
 </dl>
@@ -2181,15 +2173,13 @@ client.construe().submitFeedbackOnExtractionResults(
                         .build()
                 )
                 .codes(
-                    new ArrayList<ExtractedCodeResult>(
-                        Arrays.asList(
-                            ExtractedCodeResult
-                                .builder()
-                                .code("195967001")
-                                .description("Asthma")
-                                .valid(true)
-                                .build()
-                        )
+                    Arrays.asList(
+                        ExtractedCodeResult
+                            .builder()
+                            .code("195967001")
+                            .description("Asthma")
+                            .valid(true)
+                            .build()
                     )
                 )
                 .build()
@@ -2203,15 +2193,13 @@ client.construe().submitFeedbackOnExtractionResults(
                         .build()
                 )
                 .codes(
-                    new ArrayList<ExtractedCodeResult>(
-                        Arrays.asList(
-                            ExtractedCodeResult
-                                .builder()
-                                .code("195967001")
-                                .description("Asthma")
-                                .valid(true)
-                                .build()
-                        )
+                    Arrays.asList(
+                        ExtractedCodeResult
+                            .builder()
+                            .code("195967001")
+                            .description("Asthma")
+                            .valid(true)
+                            .build()
                     )
                 )
                 .build()
@@ -2877,15 +2865,13 @@ client.fhir().patch(
     FhirPatchRequest
         .builder()
         .body(
-            new ArrayList<FhirPatchRequestBodyItem>(
-                Arrays.asList(
-                    FhirPatchRequestBodyItem
-                        .builder()
-                        .op(FhirPatchRequestBodyItemOp.REPLACE)
-                        .path("/name/0/family")
-                        .value("NewFamilyName")
-                        .build()
-                )
+            Arrays.asList(
+                FhirPatchRequestBodyItem
+                    .builder()
+                    .op(FhirPatchRequestBodyItemOp.REPLACE)
+                    .path("/name/0/family")
+                    .value("NewFamilyName")
+                    .build()
             )
         )
         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
@@ -3004,53 +2990,46 @@ client.fhir().executeBundle(
         .body(
             FhirBundle
                 .builder()
-                .resourceType("Bundle")
                 .entry(
-                    new ArrayList<FhirBundleEntryItem>(
-                        Arrays.asList(
-                            FhirBundleEntryItem
-                                .builder()
-                                .resource(
-                                    new HashMap<String, Object>() {{
-                                        put("resourceType", "Patient");
-                                        put("name", new
-                                        ArrayList<Object>() {Arrays.asList(new 
-                                            HashMap<String, Object>() {{put("family", "Doe");
-                                                put("given", new
-                                                ArrayList<Object>() {Arrays.asList("John")
-                                                });
-                                            }})
-                                        });
-                                    }}
-                                )
-                                .request(
-                                    FhirBundleEntryItemRequest
-                                        .builder()
-                                        .method(FhirBundleEntryItemRequestMethod.POST)
-                                        .url("Patient")
-                                        .build()
-                                )
-                                .build(),
-                            FhirBundleEntryItem
-                                .builder()
-                                .resource(
-                                    new HashMap<String, Object>() {{
-                                        put("resourceType", "Observation");
-                                        put("status", "final");
-                                        put("subject", new 
-                                        HashMap<String, Object>() {{put("reference", "Patient/123");
-                                        }});
-                                    }}
-                                )
-                                .request(
-                                    FhirBundleEntryItemRequest
-                                        .builder()
-                                        .method(FhirBundleEntryItemRequestMethod.POST)
-                                        .url("Observation")
-                                        .build()
-                                )
-                                .build()
-                        )
+                    Arrays.asList(
+                        FhirBundleEntryItem
+                            .builder()
+                            .resource(
+                                new HashMap<String, Object>() {{
+                                    put("resourceType", "Patient");
+                                    put("name", new ArrayList<Object>(Arrays.asList(new 
+                                    HashMap<String, Object>() {{put("family", "Doe");
+                                        put("given", new ArrayList<Object>(Arrays.asList("John")));
+                                    }})));
+                                }}
+                            )
+                            .request(
+                                FhirBundleEntryItemRequest
+                                    .builder()
+                                    .method(FhirBundleEntryItemRequestMethod.POST)
+                                    .url("Patient")
+                                    .build()
+                            )
+                            .build(),
+                        FhirBundleEntryItem
+                            .builder()
+                            .resource(
+                                new HashMap<String, Object>() {{
+                                    put("resourceType", "Observation");
+                                    put("status", "final");
+                                    put("subject", new 
+                                    HashMap<String, Object>() {{put("reference", "Patient/123");
+                                    }});
+                                }}
+                            )
+                            .request(
+                                FhirBundleEntryItemRequest
+                                    .builder()
+                                    .method(FhirBundleEntryItemRequestMethod.POST)
+                                    .url("Observation")
+                                    .build()
+                            )
+                            .build()
                     )
                 )
                 .build()
@@ -4131,12 +4110,10 @@ client.summary().createTemplate(
         .builder()
         .name("name")
         .exampleSummary("Patient John Doe, age 45, presents with hypertension diagnosed on 2024-01-15.")
-        .targetResources(
-            new ArrayList<String>(
-                Arrays.asList("Patient", "Condition", "Observation")
-            )
-        )
         .mode("mode")
+        .targetResources(
+            Arrays.asList("Patient", "Condition", "Observation")
+        )
         .build()
 );
 ```
@@ -4292,12 +4269,10 @@ client.summary().updateTemplate(
         .builder()
         .name("name")
         .template("template")
-        .targetResources(
-            new ArrayList<String>(
-                Arrays.asList("target_resources")
-            )
-        )
         .mode("mode")
+        .targetResources(
+            Arrays.asList("target_resources")
+        )
         .build()
 );
 ```
@@ -4454,7 +4429,7 @@ client.summary().create(
     CreateSummaryRequest
         .builder()
         .fhirResources(
-            CreateSummaryRequestFhirResources.ofFhirResource(
+            CreateSummaryRequestFhirResources.of(
                 FhirResource
                     .builder()
                     .resourceType("resourceType")
@@ -5471,6 +5446,10 @@ client.workflows().create(
         .builder()
         .name("Patient Data Mapping Workflow")
         .workflowInstructions("Given diagnosis data, find the patient and create condition record")
+        .fhirProviderId(
+            CreateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
+        )
+        .verbose(true)
         .sampleData(
             new HashMap<String, Object>() {{
                 put("patient_last_name", "Rippin");
@@ -5478,10 +5457,6 @@ client.workflows().create(
                 put("diagnosis_code", "I10");
             }}
         )
-        .fhirProviderId(
-            CreateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
-        )
-        .verbose(true)
         .build()
 );
 ```
@@ -5651,6 +5626,10 @@ client.workflows().update(
         .builder()
         .name("Updated Patient Data Mapping Workflow")
         .workflowInstructions("Given diagnosis data, find the patient and create condition record")
+        .fhirProviderId(
+            UpdateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
+        )
+        .verbose(true)
         .sampleData(
             new HashMap<String, Object>() {{
                 put("patient_last_name", "Smith");
@@ -5658,10 +5637,6 @@ client.workflows().update(
                 put("diagnosis_code", "E11");
             }}
         )
-        .fhirProviderId(
-            UpdateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
-        )
-        .verbose(true)
         .build()
 );
 ```
@@ -5874,3 +5849,4 @@ client.workflows().execute(
 </dd>
 </dl>
 </details>
+

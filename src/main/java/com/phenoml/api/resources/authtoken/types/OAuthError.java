@@ -92,6 +92,10 @@ public final class OAuthError {
     public interface _FinalStage {
         OAuthError build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>Human-readable error description</p>
          */
@@ -153,6 +157,18 @@ public final class OAuthError {
         @java.lang.Override
         public OAuthError build() {
             return new OAuthError(error, errorDescription, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 

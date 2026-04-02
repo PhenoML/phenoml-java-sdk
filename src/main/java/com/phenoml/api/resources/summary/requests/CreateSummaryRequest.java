@@ -129,6 +129,10 @@ public final class CreateSummaryRequest {
     public interface _FinalStage {
         CreateSummaryRequest build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>Summary generation mode:</p>
          * <ul>
@@ -243,6 +247,18 @@ public final class CreateSummaryRequest {
         @java.lang.Override
         public CreateSummaryRequest build() {
             return new CreateSummaryRequest(mode, templateId, fhirResources, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 

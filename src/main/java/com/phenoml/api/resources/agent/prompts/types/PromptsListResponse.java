@@ -141,5 +141,15 @@ public final class PromptsListResponse {
         public PromptsListResponse build() {
             return new PromptsListResponse(success, message, prompts, additionalProperties);
         }
+
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
+        }
     }
 }

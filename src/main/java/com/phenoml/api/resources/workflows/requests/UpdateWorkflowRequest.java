@@ -5,6 +5,7 @@ package com.phenoml.api.resources.workflows.requests;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -64,7 +65,7 @@ public final class UpdateWorkflowRequest {
     /**
      * @return If true, includes full workflow implementation details in workflow_details field
      */
-    @JsonProperty("verbose")
+    @JsonIgnore
     public Optional<Boolean> getVerbose() {
         return verbose;
     }
@@ -174,6 +175,10 @@ public final class UpdateWorkflowRequest {
 
     public interface _FinalStage {
         UpdateWorkflowRequest build();
+
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
         /**
          * <p>If true, includes full workflow implementation details in workflow_details field</p>
@@ -316,7 +321,9 @@ public final class UpdateWorkflowRequest {
         @JsonSetter(value = "sample_data", nulls = Nulls.SKIP)
         public _FinalStage sampleData(Map<String, Object> sampleData) {
             this.sampleData.clear();
-            this.sampleData.putAll(sampleData);
+            if (sampleData != null) {
+                this.sampleData.putAll(sampleData);
+            }
             return this;
         }
 
@@ -350,6 +357,18 @@ public final class UpdateWorkflowRequest {
                     fhirProviderId,
                     dynamicGeneration,
                     additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 

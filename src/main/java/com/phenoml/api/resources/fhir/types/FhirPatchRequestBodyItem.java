@@ -126,6 +126,10 @@ public final class FhirPatchRequestBodyItem {
     public interface _FinalStage {
         FhirPatchRequestBodyItem build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>The value to use (required for add, replace, test operations)</p>
          */
@@ -232,6 +236,18 @@ public final class FhirPatchRequestBodyItem {
         @java.lang.Override
         public FhirPatchRequestBodyItem build() {
             return new FhirPatchRequestBodyItem(op, path, value, from, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 

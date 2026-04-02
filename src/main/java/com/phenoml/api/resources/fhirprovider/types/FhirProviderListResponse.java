@@ -156,6 +156,16 @@ public final class FhirProviderListResponse {
         public FhirProviderListResponse build() {
             return new FhirProviderListResponse(success, message, fhirProviders, additionalProperties);
         }
+
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
+        }
     }
 
     @JsonDeserialize(using = FhirProvidersItem.Deserializer.class)

@@ -81,7 +81,9 @@ public final class ListCodeSystemsResponse {
         @JsonSetter(value = "systems", nulls = Nulls.SKIP)
         public Builder systems(List<CodeSystemDetails> systems) {
             this.systems.clear();
-            this.systems.addAll(systems);
+            if (systems != null) {
+                this.systems.addAll(systems);
+            }
             return this;
         }
 
@@ -99,6 +101,16 @@ public final class ListCodeSystemsResponse {
 
         public ListCodeSystemsResponse build() {
             return new ListCodeSystemsResponse(systems, additionalProperties);
+        }
+
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }
