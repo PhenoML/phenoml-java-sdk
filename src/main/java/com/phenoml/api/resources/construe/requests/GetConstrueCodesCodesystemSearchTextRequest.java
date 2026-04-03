@@ -5,9 +5,9 @@ package com.phenoml.api.resources.construe.requests;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -40,7 +40,7 @@ public final class GetConstrueCodesCodesystemSearchTextRequest {
     /**
      * @return Search query (searches code IDs and descriptions)
      */
-    @JsonProperty("q")
+    @JsonIgnore
     public String getQ() {
         return q;
     }
@@ -48,7 +48,7 @@ public final class GetConstrueCodesCodesystemSearchTextRequest {
     /**
      * @return Specific version of the code system
      */
-    @JsonProperty("version")
+    @JsonIgnore
     public Optional<String> getVersion() {
         return version;
     }
@@ -56,7 +56,7 @@ public final class GetConstrueCodesCodesystemSearchTextRequest {
     /**
      * @return Maximum number of results (default 20, max 100)
      */
-    @JsonProperty("limit")
+    @JsonIgnore
     public Optional<Integer> getLimit() {
         return limit;
     }
@@ -102,6 +102,10 @@ public final class GetConstrueCodesCodesystemSearchTextRequest {
 
     public interface _FinalStage {
         GetConstrueCodesCodesystemSearchTextRequest build();
+
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
         /**
          * <p>Specific version of the code system</p>
@@ -194,6 +198,18 @@ public final class GetConstrueCodesCodesystemSearchTextRequest {
         @java.lang.Override
         public GetConstrueCodesCodesystemSearchTextRequest build() {
             return new GetConstrueCodesCodesystemSearchTextRequest(q, version, limit, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

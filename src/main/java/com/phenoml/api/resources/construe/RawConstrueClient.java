@@ -77,10 +77,14 @@ public class RawConstrueClient {
      */
     public PhenomlClientHttpResponse<ConstrueUploadCodeSystemResponse> uploadCodeSystem(
             UploadRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("construe/upload")
-                .build();
+                .addPathSegments("construe/upload");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
@@ -89,7 +93,7 @@ public class RawConstrueClient {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json")
@@ -101,13 +105,12 @@ public class RawConstrueClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBody.string(), ConstrueUploadCodeSystemResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ConstrueUploadCodeSystemResponse.class),
                         response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -132,11 +135,9 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }
@@ -156,10 +157,14 @@ public class RawConstrueClient {
      */
     public PhenomlClientHttpResponse<ExtractCodesResult> extractCodes(
             ExtractRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("construe/extract")
-                .build();
+                .addPathSegments("construe/extract");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
@@ -168,7 +173,7 @@ public class RawConstrueClient {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json")
@@ -180,11 +185,11 @@ public class RawConstrueClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ExtractCodesResult.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ExtractCodesResult.class), response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -209,11 +214,9 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }
@@ -230,12 +233,16 @@ public class RawConstrueClient {
      * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
     public PhenomlClientHttpResponse<ListCodeSystemsResponse> listAvailableCodeSystems(RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("construe/codes/systems")
-                .build();
+                .addPathSegments("construe/codes/systems");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request okhttpRequest = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("GET", null)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Accept", "application/json")
@@ -246,12 +253,12 @@ public class RawConstrueClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ListCodeSystemsResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ListCodeSystemsResponse.class),
                         response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 401:
@@ -264,11 +271,9 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }
@@ -280,6 +285,15 @@ public class RawConstrueClient {
     public PhenomlClientHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(String codesystem) {
         return getCodeSystemDetail(
                 codesystem, GetConstrueCodesSystemsCodesystemRequest.builder().build());
+    }
+
+    /**
+     * Returns full metadata for a single code system, including timestamps and builtin status.
+     */
+    public PhenomlClientHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(
+            String codesystem, RequestOptions requestOptions) {
+        return getCodeSystemDetail(
+                codesystem, GetConstrueCodesSystemsCodesystemRequest.builder().build(), requestOptions);
     }
 
     /**
@@ -303,6 +317,11 @@ public class RawConstrueClient {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "version", request.getVersion().get(), false);
         }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
                 .method("GET", null)
@@ -315,12 +334,12 @@ public class RawConstrueClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), GetCodeSystemDetailResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetCodeSystemDetailResponse.class),
                         response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -339,11 +358,9 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }
@@ -357,6 +374,18 @@ public class RawConstrueClient {
         return deleteCustomCodeSystem(
                 codesystem,
                 DeleteConstrueCodesSystemsCodesystemRequest.builder().build());
+    }
+
+    /**
+     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+     * Only available on dedicated instances. Large systems may take up to a minute to delete.
+     */
+    public PhenomlClientHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(
+            String codesystem, RequestOptions requestOptions) {
+        return deleteCustomCodeSystem(
+                codesystem,
+                DeleteConstrueCodesSystemsCodesystemRequest.builder().build(),
+                requestOptions);
     }
 
     /**
@@ -382,6 +411,11 @@ public class RawConstrueClient {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "version", request.getVersion().get(), false);
         }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
                 .method("DELETE", null)
@@ -394,12 +428,12 @@ public class RawConstrueClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), DeleteCodeSystemResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteCodeSystemResponse.class),
                         response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -421,11 +455,9 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }
@@ -440,6 +472,19 @@ public class RawConstrueClient {
         return exportCustomCodeSystem(
                 codesystem,
                 GetConstrueCodesSystemsCodesystemExportRequest.builder().build());
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
+    public PhenomlClientHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(
+            String codesystem, RequestOptions requestOptions) {
+        return exportCustomCodeSystem(
+                codesystem,
+                GetConstrueCodesSystemsCodesystemExportRequest.builder().build(),
+                requestOptions);
     }
 
     /**
@@ -468,6 +513,11 @@ public class RawConstrueClient {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "version", request.getVersion().get(), false);
         }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
                 .method("GET", null)
@@ -480,12 +530,12 @@ public class RawConstrueClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ExportCodeSystemResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ExportCodeSystemResponse.class),
                         response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -513,11 +563,9 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }
@@ -530,6 +578,16 @@ public class RawConstrueClient {
     public PhenomlClientHttpResponse<ListCodesResponse> listCodesInACodeSystem(String codesystem) {
         return listCodesInACodeSystem(
                 codesystem, GetConstrueCodesCodesystemRequest.builder().build());
+    }
+
+    /**
+     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+     */
+    public PhenomlClientHttpResponse<ListCodesResponse> listCodesInACodeSystem(
+            String codesystem, RequestOptions requestOptions) {
+        return listCodesInACodeSystem(
+                codesystem, GetConstrueCodesCodesystemRequest.builder().build(), requestOptions);
     }
 
     /**
@@ -563,6 +621,11 @@ public class RawConstrueClient {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
         }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
                 .method("GET", null)
@@ -575,11 +638,11 @@ public class RawConstrueClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), ListCodesResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ListCodesResponse.class), response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -598,11 +661,9 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }
@@ -617,6 +678,19 @@ public class RawConstrueClient {
                 codesystem,
                 codeId,
                 GetConstrueCodesCodesystemCodeIdRequest.builder().build());
+    }
+
+    /**
+     * Looks up a specific code in the terminology server and returns its details.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+     */
+    public PhenomlClientHttpResponse<GetCodeResponse> getASpecificCode(
+            String codesystem, String codeId, RequestOptions requestOptions) {
+        return getASpecificCode(
+                codesystem,
+                codeId,
+                GetConstrueCodesCodesystemCodeIdRequest.builder().build(),
+                requestOptions);
     }
 
     /**
@@ -646,6 +720,11 @@ public class RawConstrueClient {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "version", request.getVersion().get(), false);
         }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
                 .method("GET", null)
@@ -658,11 +737,11 @@ public class RawConstrueClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), GetCodeResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetCodeResponse.class), response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -681,11 +760,9 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }
@@ -736,7 +813,8 @@ public class RawConstrueClient {
                 .newBuilder()
                 .addPathSegments("construe/codes")
                 .addPathSegment(codesystem)
-                .addPathSegments("search/semantic");
+                .addPathSegments("search")
+                .addPathSegments("semantic");
         QueryStringMapper.addQueryParameter(httpUrl, "text", request.getText(), false);
         if (request.getVersion().isPresent()) {
             QueryStringMapper.addQueryParameter(
@@ -745,6 +823,11 @@ public class RawConstrueClient {
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
+        }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -758,12 +841,12 @@ public class RawConstrueClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), SemanticSearchResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SemanticSearchResponse.class),
                         response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -782,11 +865,9 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }
@@ -806,10 +887,14 @@ public class RawConstrueClient {
      */
     public PhenomlClientHttpResponse<FeedbackResponse> submitFeedbackOnExtractionResults(
             FeedbackRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("construe/feedback")
-                .build();
+                .addPathSegments("construe/feedback");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
@@ -818,7 +903,7 @@ public class RawConstrueClient {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json")
@@ -830,11 +915,11 @@ public class RawConstrueClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), FeedbackResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FeedbackResponse.class), response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -853,11 +938,9 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }
@@ -920,7 +1003,8 @@ public class RawConstrueClient {
                 .newBuilder()
                 .addPathSegments("construe/codes")
                 .addPathSegment(codesystem)
-                .addPathSegments("search/text");
+                .addPathSegments("search")
+                .addPathSegments("text");
         QueryStringMapper.addQueryParameter(httpUrl, "q", request.getQ(), false);
         if (request.getVersion().isPresent()) {
             QueryStringMapper.addQueryParameter(
@@ -929,6 +1013,11 @@ public class RawConstrueClient {
         if (request.getLimit().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "limit", request.getLimit().get(), false);
+        }
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
@@ -942,11 +1031,11 @@ public class RawConstrueClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), TextSearchResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TextSearchResponse.class), response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -968,11 +1057,9 @@ public class RawConstrueClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }

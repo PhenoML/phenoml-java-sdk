@@ -51,10 +51,14 @@ public class AsyncRawAuthClient {
      */
     public CompletableFuture<PhenomlClientHttpResponse<AuthGenerateTokenResponse>> generateToken(
             AuthGenerateTokenRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("auth/token")
-                .build();
+                .addPathSegments("auth/token");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
@@ -63,7 +67,7 @@ public class AsyncRawAuthClient {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json")
@@ -78,14 +82,14 @@ public class AsyncRawAuthClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
                                 ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBody.string(), AuthGenerateTokenResponse.class),
+                                        responseBodyString, AuthGenerateTokenResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -102,11 +106,9 @@ public class AsyncRawAuthClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenomlClientApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
@@ -137,6 +139,16 @@ public class AsyncRawAuthClient {
      * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
      * returns an access token with expiration information.
      */
+    public CompletableFuture<PhenomlClientHttpResponse<TokenResponse>> getToken(RequestOptions requestOptions) {
+        return getToken(ClientCredentialsRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
+     * Accepts client_id and client_secret in the request body (JSON or
+     * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
+     * returns an access token with expiration information.
+     */
     public CompletableFuture<PhenomlClientHttpResponse<TokenResponse>> getToken(ClientCredentialsRequest request) {
         return getToken(request, null);
     }
@@ -149,10 +161,14 @@ public class AsyncRawAuthClient {
      */
     public CompletableFuture<PhenomlClientHttpResponse<TokenResponse>> getToken(
             ClientCredentialsRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("v2/auth/token")
-                .build();
+                .addPathSegments("v2/auth/token");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
@@ -161,7 +177,7 @@ public class AsyncRawAuthClient {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
         Request okhttpRequest = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json")
@@ -176,13 +192,13 @@ public class AsyncRawAuthClient {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), TokenResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TokenResponse.class),
                                 response));
                         return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                         switch (response.code()) {
                             case 400:
@@ -204,11 +220,9 @@ public class AsyncRawAuthClient {
                     } catch (JsonProcessingException ignored) {
                         // unable to map error response, throwing generic error
                     }
+                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenomlClientApiException(
-                            "Error with status code " + response.code(),
-                            response.code(),
-                            ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                            response));
+                            "Error with status code " + response.code(), response.code(), errorBody, response));
                     return;
                 } catch (IOException e) {
                     future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
