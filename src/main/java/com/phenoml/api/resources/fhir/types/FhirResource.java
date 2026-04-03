@@ -12,9 +12,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
-import java.time.OffsetDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,12 +25,15 @@ public final class FhirResource {
 
     private final Optional<String> id;
 
-    private final Optional<Meta> meta;
+    private final Optional<FhirResourceMeta> meta;
 
     private final Map<String, Object> additionalProperties;
 
     private FhirResource(
-            String resourceType, Optional<String> id, Optional<Meta> meta, Map<String, Object> additionalProperties) {
+            String resourceType,
+            Optional<String> id,
+            Optional<FhirResourceMeta> meta,
+            Map<String, Object> additionalProperties) {
         this.resourceType = resourceType;
         this.id = id;
         this.meta = meta;
@@ -59,7 +60,7 @@ public final class FhirResource {
      * @return Metadata about the resource
      */
     @JsonProperty("meta")
-    public Optional<Meta> getMeta() {
+    public Optional<FhirResourceMeta> getMeta() {
         return meta;
     }
 
@@ -104,6 +105,10 @@ public final class FhirResource {
     public interface _FinalStage {
         FhirResource build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>Logical ID of the resource</p>
          */
@@ -114,16 +119,16 @@ public final class FhirResource {
         /**
          * <p>Metadata about the resource</p>
          */
-        _FinalStage meta(Optional<Meta> meta);
+        _FinalStage meta(Optional<FhirResourceMeta> meta);
 
-        _FinalStage meta(Meta meta);
+        _FinalStage meta(FhirResourceMeta meta);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder implements ResourceTypeStage, _FinalStage {
         private String resourceType;
 
-        private Optional<Meta> meta = Optional.empty();
+        private Optional<FhirResourceMeta> meta = Optional.empty();
 
         private Optional<String> id = Optional.empty();
 
@@ -157,7 +162,7 @@ public final class FhirResource {
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
-        public _FinalStage meta(Meta meta) {
+        public _FinalStage meta(FhirResourceMeta meta) {
             this.meta = Optional.ofNullable(meta);
             return this;
         }
@@ -167,7 +172,7 @@ public final class FhirResource {
          */
         @java.lang.Override
         @JsonSetter(value = "meta", nulls = Nulls.SKIP)
-        public _FinalStage meta(Optional<Meta> meta) {
+        public _FinalStage meta(Optional<FhirResourceMeta> meta) {
             this.meta = meta;
             return this;
         }
@@ -196,132 +201,17 @@ public final class FhirResource {
         public FhirResource build() {
             return new FhirResource(resourceType, id, meta, additionalProperties);
         }
-    }
 
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)
-    @JsonDeserialize(builder = Meta.Builder.class)
-    public static final class Meta {
-        private final Optional<String> versionId;
-
-        private final Optional<OffsetDateTime> lastUpdated;
-
-        private final Optional<List<String>> profile;
-
-        private final Map<String, Object> additionalProperties;
-
-        private Meta(
-                Optional<String> versionId,
-                Optional<OffsetDateTime> lastUpdated,
-                Optional<List<String>> profile,
-                Map<String, Object> additionalProperties) {
-            this.versionId = versionId;
-            this.lastUpdated = lastUpdated;
-            this.profile = profile;
-            this.additionalProperties = additionalProperties;
-        }
-
-        @JsonProperty("versionId")
-        public Optional<String> getVersionId() {
-            return versionId;
-        }
-
-        @JsonProperty("lastUpdated")
-        public Optional<OffsetDateTime> getLastUpdated() {
-            return lastUpdated;
-        }
-
-        @JsonProperty("profile")
-        public Optional<List<String>> getProfile() {
-            return profile;
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
         @java.lang.Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-            return other instanceof Meta && equalTo((Meta) other);
-        }
-
-        @JsonAnyGetter
-        public Map<String, Object> getAdditionalProperties() {
-            return this.additionalProperties;
-        }
-
-        private boolean equalTo(Meta other) {
-            return versionId.equals(other.versionId)
-                    && lastUpdated.equals(other.lastUpdated)
-                    && profile.equals(other.profile);
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return Objects.hash(this.versionId, this.lastUpdated, this.profile);
-        }
-
-        @java.lang.Override
-        public String toString() {
-            return ObjectMappers.stringify(this);
-        }
-
-        public static Builder builder() {
-            return new Builder();
-        }
-
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static final class Builder {
-            private Optional<String> versionId = Optional.empty();
-
-            private Optional<OffsetDateTime> lastUpdated = Optional.empty();
-
-            private Optional<List<String>> profile = Optional.empty();
-
-            @JsonAnySetter
-            private Map<String, Object> additionalProperties = new HashMap<>();
-
-            private Builder() {}
-
-            public Builder from(Meta other) {
-                versionId(other.getVersionId());
-                lastUpdated(other.getLastUpdated());
-                profile(other.getProfile());
-                return this;
-            }
-
-            @JsonSetter(value = "versionId", nulls = Nulls.SKIP)
-            public Builder versionId(Optional<String> versionId) {
-                this.versionId = versionId;
-                return this;
-            }
-
-            public Builder versionId(String versionId) {
-                this.versionId = Optional.ofNullable(versionId);
-                return this;
-            }
-
-            @JsonSetter(value = "lastUpdated", nulls = Nulls.SKIP)
-            public Builder lastUpdated(Optional<OffsetDateTime> lastUpdated) {
-                this.lastUpdated = lastUpdated;
-                return this;
-            }
-
-            public Builder lastUpdated(OffsetDateTime lastUpdated) {
-                this.lastUpdated = Optional.ofNullable(lastUpdated);
-                return this;
-            }
-
-            @JsonSetter(value = "profile", nulls = Nulls.SKIP)
-            public Builder profile(Optional<List<String>> profile) {
-                this.profile = profile;
-                return this;
-            }
-
-            public Builder profile(List<String> profile) {
-                this.profile = Optional.ofNullable(profile);
-                return this;
-            }
-
-            public Meta build() {
-                return new Meta(versionId, lastUpdated, profile, additionalProperties);
-            }
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

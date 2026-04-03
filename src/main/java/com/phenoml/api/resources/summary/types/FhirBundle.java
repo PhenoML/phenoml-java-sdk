@@ -17,16 +17,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = FhirBundle.Builder.class)
 public final class FhirBundle {
-    private final List<EntryItem> entry;
+    private final List<FhirBundleEntryItem> entry;
 
     private final Map<String, Object> additionalProperties;
 
-    private FhirBundle(List<EntryItem> entry, Map<String, Object> additionalProperties) {
+    private FhirBundle(List<FhirBundleEntryItem> entry, Map<String, Object> additionalProperties) {
         this.entry = entry;
         this.additionalProperties = additionalProperties;
     }
@@ -37,7 +36,7 @@ public final class FhirBundle {
     }
 
     @JsonProperty("entry")
-    public List<EntryItem> getEntry() {
+    public List<FhirBundleEntryItem> getEntry() {
         return entry;
     }
 
@@ -72,7 +71,7 @@ public final class FhirBundle {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder {
-        private List<EntryItem> entry = new ArrayList<>();
+        private List<FhirBundleEntryItem> entry = new ArrayList<>();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -85,18 +84,20 @@ public final class FhirBundle {
         }
 
         @JsonSetter(value = "entry", nulls = Nulls.SKIP)
-        public Builder entry(List<EntryItem> entry) {
+        public Builder entry(List<FhirBundleEntryItem> entry) {
             this.entry.clear();
-            this.entry.addAll(entry);
+            if (entry != null) {
+                this.entry.addAll(entry);
+            }
             return this;
         }
 
-        public Builder addEntry(EntryItem entry) {
+        public Builder addEntry(FhirBundleEntryItem entry) {
             this.entry.add(entry);
             return this;
         }
 
-        public Builder addAllEntry(List<EntryItem> entry) {
+        public Builder addAllEntry(List<FhirBundleEntryItem> entry) {
             if (entry != null) {
                 this.entry.addAll(entry);
             }
@@ -106,82 +107,15 @@ public final class FhirBundle {
         public FhirBundle build() {
             return new FhirBundle(entry, additionalProperties);
         }
-    }
 
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)
-    @JsonDeserialize(builder = EntryItem.Builder.class)
-    public static final class EntryItem {
-        private final Optional<FhirResource> resource;
-
-        private final Map<String, Object> additionalProperties;
-
-        private EntryItem(Optional<FhirResource> resource, Map<String, Object> additionalProperties) {
-            this.resource = resource;
-            this.additionalProperties = additionalProperties;
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
-        @JsonProperty("resource")
-        public Optional<FhirResource> getResource() {
-            return resource;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-            return other instanceof EntryItem && equalTo((EntryItem) other);
-        }
-
-        @JsonAnyGetter
-        public Map<String, Object> getAdditionalProperties() {
-            return this.additionalProperties;
-        }
-
-        private boolean equalTo(EntryItem other) {
-            return resource.equals(other.resource);
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return Objects.hash(this.resource);
-        }
-
-        @java.lang.Override
-        public String toString() {
-            return ObjectMappers.stringify(this);
-        }
-
-        public static Builder builder() {
-            return new Builder();
-        }
-
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static final class Builder {
-            private Optional<FhirResource> resource = Optional.empty();
-
-            @JsonAnySetter
-            private Map<String, Object> additionalProperties = new HashMap<>();
-
-            private Builder() {}
-
-            public Builder from(EntryItem other) {
-                resource(other.getResource());
-                return this;
-            }
-
-            @JsonSetter(value = "resource", nulls = Nulls.SKIP)
-            public Builder resource(Optional<FhirResource> resource) {
-                this.resource = resource;
-                return this;
-            }
-
-            public Builder resource(FhirResource resource) {
-                this.resource = Optional.ofNullable(resource);
-                return this;
-            }
-
-            public EntryItem build() {
-                return new EntryItem(resource, additionalProperties);
-            }
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

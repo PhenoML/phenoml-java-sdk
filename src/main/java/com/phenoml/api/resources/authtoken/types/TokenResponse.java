@@ -115,6 +115,10 @@ public final class TokenResponse {
 
     public interface _FinalStage {
         TokenResponse build();
+
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -177,6 +181,18 @@ public final class TokenResponse {
         @java.lang.Override
         public TokenResponse build() {
             return new TokenResponse(accessToken, tokenType, expiresIn, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

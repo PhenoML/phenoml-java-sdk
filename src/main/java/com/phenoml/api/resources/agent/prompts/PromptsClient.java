@@ -83,6 +83,13 @@ public class PromptsClient {
     /**
      * Updates an existing prompt
      */
+    public AgentPromptsResponse update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).body();
+    }
+
+    /**
+     * Updates an existing prompt
+     */
     public AgentPromptsResponse update(String id, AgentPromptsUpdateRequest request) {
         return this.rawClient.update(id, request).body();
     }

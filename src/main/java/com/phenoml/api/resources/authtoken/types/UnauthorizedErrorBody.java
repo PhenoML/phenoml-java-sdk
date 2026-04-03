@@ -139,5 +139,15 @@ public final class UnauthorizedErrorBody {
         public UnauthorizedErrorBody build() {
             return new UnauthorizedErrorBody(code, message, data, additionalProperties);
         }
+
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
+        }
     }
 }
