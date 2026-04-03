@@ -5,9 +5,7 @@ package com.phenoml.api.resources.authtoken.auth;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.resources.authtoken.auth.requests.AuthGenerateTokenRequest;
 import com.phenoml.api.resources.authtoken.auth.requests.ClientCredentialsRequest;
-import com.phenoml.api.resources.authtoken.auth.types.AuthGenerateTokenResponse;
 import com.phenoml.api.resources.authtoken.types.TokenResponse;
 
 public class AuthClient {
@@ -25,20 +23,6 @@ public class AuthClient {
      */
     public RawAuthClient withRawResponse() {
         return this.rawClient;
-    }
-
-    /**
-     * Obtain an access token using client credentials
-     */
-    public AuthGenerateTokenResponse generateToken(AuthGenerateTokenRequest request) {
-        return this.rawClient.generateToken(request).body();
-    }
-
-    /**
-     * Obtain an access token using client credentials
-     */
-    public AuthGenerateTokenResponse generateToken(AuthGenerateTokenRequest request, RequestOptions requestOptions) {
-        return this.rawClient.generateToken(request, requestOptions).body();
     }
 
     /**
