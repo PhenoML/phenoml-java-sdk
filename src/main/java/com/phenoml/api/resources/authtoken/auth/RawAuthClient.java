@@ -11,9 +11,7 @@ import com.phenoml.api.core.PhenomlClientApiException;
 import com.phenoml.api.core.PhenomlClientException;
 import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.resources.authtoken.auth.requests.AuthGenerateTokenRequest;
 import com.phenoml.api.resources.authtoken.auth.requests.ClientCredentialsRequest;
-import com.phenoml.api.resources.authtoken.auth.types.AuthGenerateTokenResponse;
 import com.phenoml.api.resources.authtoken.errors.BadRequestError;
 import com.phenoml.api.resources.authtoken.errors.InternalServerError;
 import com.phenoml.api.resources.authtoken.errors.UnauthorizedError;
@@ -32,72 +30,6 @@ public class RawAuthClient {
 
     public RawAuthClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
-    }
-
-    /**
-     * Obtain an access token using client credentials
-     */
-    public PhenomlClientHttpResponse<AuthGenerateTokenResponse> generateToken(AuthGenerateTokenRequest request) {
-        return generateToken(request, null);
-    }
-
-    /**
-     * Obtain an access token using client credentials
-     */
-    public PhenomlClientHttpResponse<AuthGenerateTokenResponse> generateToken(
-            AuthGenerateTokenRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("auth/token");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AuthGenerateTokenResponse.class),
-                        response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
     }
 
     /**
