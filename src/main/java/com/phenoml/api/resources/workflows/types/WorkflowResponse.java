@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,7 +31,7 @@ public final class WorkflowResponse {
 
     private final Optional<WorkflowConfig> config;
 
-    private final Optional<Graph> graph;
+    private final Optional<WorkflowResponseGraph> graph;
 
     private final Optional<OffsetDateTime> createdAt;
 
@@ -46,7 +45,7 @@ public final class WorkflowResponse {
             Optional<String> workflowInstructions,
             Optional<Map<String, Object>> sampleData,
             Optional<WorkflowConfig> config,
-            Optional<Graph> graph,
+            Optional<WorkflowResponseGraph> graph,
             Optional<OffsetDateTime> createdAt,
             Optional<OffsetDateTime> updatedAt,
             Map<String, Object> additionalProperties) {
@@ -99,7 +98,7 @@ public final class WorkflowResponse {
     }
 
     @JsonProperty("graph")
-    public Optional<Graph> getGraph() {
+    public Optional<WorkflowResponseGraph> getGraph() {
         return graph;
     }
 
@@ -175,7 +174,7 @@ public final class WorkflowResponse {
 
         private Optional<WorkflowConfig> config = Optional.empty();
 
-        private Optional<Graph> graph = Optional.empty();
+        private Optional<WorkflowResponseGraph> graph = Optional.empty();
 
         private Optional<OffsetDateTime> createdAt = Optional.empty();
 
@@ -266,12 +265,12 @@ public final class WorkflowResponse {
         }
 
         @JsonSetter(value = "graph", nulls = Nulls.SKIP)
-        public Builder graph(Optional<Graph> graph) {
+        public Builder graph(Optional<WorkflowResponseGraph> graph) {
             this.graph = graph;
             return this;
         }
 
-        public Builder graph(Graph graph) {
+        public Builder graph(WorkflowResponseGraph graph) {
             this.graph = Optional.ofNullable(graph);
             return this;
         }
@@ -316,88 +315,15 @@ public final class WorkflowResponse {
                     updatedAt,
                     additionalProperties);
         }
-    }
 
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)
-    @JsonDeserialize(builder = Graph.Builder.class)
-    public static final class Graph {
-        private final Optional<List<WorkflowStepSummary>> steps;
-
-        private final Map<String, Object> additionalProperties;
-
-        private Graph(Optional<List<WorkflowStepSummary>> steps, Map<String, Object> additionalProperties) {
-            this.steps = steps;
-            this.additionalProperties = additionalProperties;
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
-        /**
-         * @return Simplified list of workflow steps without operation details
-         */
-        @JsonProperty("steps")
-        public Optional<List<WorkflowStepSummary>> getSteps() {
-            return steps;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-            return other instanceof Graph && equalTo((Graph) other);
-        }
-
-        @JsonAnyGetter
-        public Map<String, Object> getAdditionalProperties() {
-            return this.additionalProperties;
-        }
-
-        private boolean equalTo(Graph other) {
-            return steps.equals(other.steps);
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return Objects.hash(this.steps);
-        }
-
-        @java.lang.Override
-        public String toString() {
-            return ObjectMappers.stringify(this);
-        }
-
-        public static Builder builder() {
-            return new Builder();
-        }
-
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static final class Builder {
-            private Optional<List<WorkflowStepSummary>> steps = Optional.empty();
-
-            @JsonAnySetter
-            private Map<String, Object> additionalProperties = new HashMap<>();
-
-            private Builder() {}
-
-            public Builder from(Graph other) {
-                steps(other.getSteps());
-                return this;
-            }
-
-            /**
-             * <p>Simplified list of workflow steps without operation details</p>
-             */
-            @JsonSetter(value = "steps", nulls = Nulls.SKIP)
-            public Builder steps(Optional<List<WorkflowStepSummary>> steps) {
-                this.steps = steps;
-                return this;
-            }
-
-            public Builder steps(List<WorkflowStepSummary> steps) {
-                this.steps = Optional.ofNullable(steps);
-                return this;
-            }
-
-            public Graph build() {
-                return new Graph(steps, additionalProperties);
-            }
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

@@ -144,6 +144,10 @@ public final class FhirProviderCreateRequest {
     public interface _FinalStage {
         FhirProviderCreateRequest build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>Optional description of the FHIR provider</p>
          */
@@ -240,6 +244,18 @@ public final class FhirProviderCreateRequest {
         @java.lang.Override
         public FhirProviderCreateRequest build() {
             return new FhirProviderCreateRequest(name, description, provider, baseUrl, auth, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

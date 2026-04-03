@@ -5,14 +5,13 @@ package com.phenoml.api.resources.lang2fhir.requests;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.resources.lang2fhir.types.CreateRequestResource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -23,13 +22,14 @@ import org.jetbrains.annotations.NotNull;
 public final class CreateRequest {
     private final String version;
 
-    private final Resource resource;
+    private final CreateRequestResource resource;
 
     private final String text;
 
     private final Map<String, Object> additionalProperties;
 
-    private CreateRequest(String version, Resource resource, String text, Map<String, Object> additionalProperties) {
+    private CreateRequest(
+            String version, CreateRequestResource resource, String text, Map<String, Object> additionalProperties) {
         this.version = version;
         this.resource = resource;
         this.text = text;
@@ -48,7 +48,7 @@ public final class CreateRequest {
      * @return Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported US Core profile. Recommended to use the supported US Core Profiles for validated results but you can also use any custom profile you've uploaded (if you're a develop or launch customer)
      */
     @JsonProperty("resource")
-    public Resource getResource() {
+    public CreateRequestResource getResource() {
         return resource;
     }
 
@@ -102,7 +102,7 @@ public final class CreateRequest {
         /**
          * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported US Core profile. Recommended to use the supported US Core Profiles for validated results but you can also use any custom profile you've uploaded (if you're a develop or launch customer)</p>
          */
-        TextStage resource(@NotNull Resource resource);
+        TextStage resource(@NotNull CreateRequestResource resource);
     }
 
     public interface TextStage {
@@ -114,13 +114,17 @@ public final class CreateRequest {
 
     public interface _FinalStage {
         CreateRequest build();
+
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder implements VersionStage, ResourceStage, TextStage, _FinalStage {
         private String version;
 
-        private Resource resource;
+        private CreateRequestResource resource;
 
         private String text;
 
@@ -156,7 +160,7 @@ public final class CreateRequest {
          */
         @java.lang.Override
         @JsonSetter("resource")
-        public TextStage resource(@NotNull Resource resource) {
+        public TextStage resource(@NotNull CreateRequestResource resource) {
             this.resource = Objects.requireNonNull(resource, "resource must not be null");
             return this;
         }
@@ -177,234 +181,17 @@ public final class CreateRequest {
         public CreateRequest build() {
             return new CreateRequest(version, resource, text, additionalProperties);
         }
-    }
 
-    public static final class Resource {
-        public static final Resource MEDICATIONREQUEST = new Resource(Value.MEDICATIONREQUEST, "medicationrequest");
-
-        public static final Resource OBSERVATION_LAB = new Resource(Value.OBSERVATION_LAB, "observation-lab");
-
-        public static final Resource QUESTIONNAIRERESPONSE =
-                new Resource(Value.QUESTIONNAIRERESPONSE, "questionnaireresponse");
-
-        public static final Resource VITAL_SIGNS = new Resource(Value.VITAL_SIGNS, "vital-signs");
-
-        public static final Resource QUESTIONNAIRE = new Resource(Value.QUESTIONNAIRE, "questionnaire");
-
-        public static final Resource CONDITION_PROBLEMS_HEALTH_CONCERNS =
-                new Resource(Value.CONDITION_PROBLEMS_HEALTH_CONCERNS, "condition-problems-health-concerns");
-
-        public static final Resource ENCOUNTER = new Resource(Value.ENCOUNTER, "encounter");
-
-        public static final Resource SIMPLE_OBSERVATION = new Resource(Value.SIMPLE_OBSERVATION, "simple-observation");
-
-        public static final Resource OBSERVATION_CLINICAL_RESULT =
-                new Resource(Value.OBSERVATION_CLINICAL_RESULT, "observation-clinical-result");
-
-        public static final Resource CAREPLAN = new Resource(Value.CAREPLAN, "careplan");
-
-        public static final Resource COVERAGE = new Resource(Value.COVERAGE, "coverage");
-
-        public static final Resource AUTO = new Resource(Value.AUTO, "auto");
-
-        public static final Resource CONDITION_ENCOUNTER_DIAGNOSIS =
-                new Resource(Value.CONDITION_ENCOUNTER_DIAGNOSIS, "condition-encounter-diagnosis");
-
-        public static final Resource SERVICEREQUEST = new Resource(Value.SERVICEREQUEST, "servicerequest");
-
-        public static final Resource PATIENT = new Resource(Value.PATIENT, "patient");
-
-        public static final Resource APPOINTMENT = new Resource(Value.APPOINTMENT, "appointment");
-
-        public static final Resource PROCEDURE = new Resource(Value.PROCEDURE, "procedure");
-
-        private final Value value;
-
-        private final String string;
-
-        Resource(Value value, String string) {
-            this.value = value;
-            this.string = string;
-        }
-
-        public Value getEnumValue() {
-            return value;
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
         @java.lang.Override
-        @JsonValue
-        public String toString() {
-            return this.string;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            return (this == other) || (other instanceof Resource && this.string.equals(((Resource) other).string));
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return this.string.hashCode();
-        }
-
-        public <T> T visit(Visitor<T> visitor) {
-            switch (value) {
-                case MEDICATIONREQUEST:
-                    return visitor.visitMedicationrequest();
-                case OBSERVATION_LAB:
-                    return visitor.visitObservationLab();
-                case QUESTIONNAIRERESPONSE:
-                    return visitor.visitQuestionnaireresponse();
-                case VITAL_SIGNS:
-                    return visitor.visitVitalSigns();
-                case QUESTIONNAIRE:
-                    return visitor.visitQuestionnaire();
-                case CONDITION_PROBLEMS_HEALTH_CONCERNS:
-                    return visitor.visitConditionProblemsHealthConcerns();
-                case ENCOUNTER:
-                    return visitor.visitEncounter();
-                case SIMPLE_OBSERVATION:
-                    return visitor.visitSimpleObservation();
-                case OBSERVATION_CLINICAL_RESULT:
-                    return visitor.visitObservationClinicalResult();
-                case CAREPLAN:
-                    return visitor.visitCareplan();
-                case COVERAGE:
-                    return visitor.visitCoverage();
-                case AUTO:
-                    return visitor.visitAuto();
-                case CONDITION_ENCOUNTER_DIAGNOSIS:
-                    return visitor.visitConditionEncounterDiagnosis();
-                case SERVICEREQUEST:
-                    return visitor.visitServicerequest();
-                case PATIENT:
-                    return visitor.visitPatient();
-                case APPOINTMENT:
-                    return visitor.visitAppointment();
-                case PROCEDURE:
-                    return visitor.visitProcedure();
-                case UNKNOWN:
-                default:
-                    return visitor.visitUnknown(string);
-            }
-        }
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static Resource valueOf(String value) {
-            switch (value) {
-                case "medicationrequest":
-                    return MEDICATIONREQUEST;
-                case "observation-lab":
-                    return OBSERVATION_LAB;
-                case "questionnaireresponse":
-                    return QUESTIONNAIRERESPONSE;
-                case "vital-signs":
-                    return VITAL_SIGNS;
-                case "questionnaire":
-                    return QUESTIONNAIRE;
-                case "condition-problems-health-concerns":
-                    return CONDITION_PROBLEMS_HEALTH_CONCERNS;
-                case "encounter":
-                    return ENCOUNTER;
-                case "simple-observation":
-                    return SIMPLE_OBSERVATION;
-                case "observation-clinical-result":
-                    return OBSERVATION_CLINICAL_RESULT;
-                case "careplan":
-                    return CAREPLAN;
-                case "coverage":
-                    return COVERAGE;
-                case "auto":
-                    return AUTO;
-                case "condition-encounter-diagnosis":
-                    return CONDITION_ENCOUNTER_DIAGNOSIS;
-                case "servicerequest":
-                    return SERVICEREQUEST;
-                case "patient":
-                    return PATIENT;
-                case "appointment":
-                    return APPOINTMENT;
-                case "procedure":
-                    return PROCEDURE;
-                default:
-                    return new Resource(Value.UNKNOWN, value);
-            }
-        }
-
-        public enum Value {
-            AUTO,
-
-            APPOINTMENT,
-
-            CONDITION_ENCOUNTER_DIAGNOSIS,
-
-            MEDICATIONREQUEST,
-
-            CAREPLAN,
-
-            CONDITION_PROBLEMS_HEALTH_CONCERNS,
-
-            COVERAGE,
-
-            ENCOUNTER,
-
-            OBSERVATION_CLINICAL_RESULT,
-
-            OBSERVATION_LAB,
-
-            PATIENT,
-
-            PROCEDURE,
-
-            QUESTIONNAIRE,
-
-            QUESTIONNAIRERESPONSE,
-
-            SERVICEREQUEST,
-
-            SIMPLE_OBSERVATION,
-
-            VITAL_SIGNS,
-
-            UNKNOWN
-        }
-
-        public interface Visitor<T> {
-            T visitAuto();
-
-            T visitAppointment();
-
-            T visitConditionEncounterDiagnosis();
-
-            T visitMedicationrequest();
-
-            T visitCareplan();
-
-            T visitConditionProblemsHealthConcerns();
-
-            T visitCoverage();
-
-            T visitEncounter();
-
-            T visitObservationClinicalResult();
-
-            T visitObservationLab();
-
-            T visitPatient();
-
-            T visitProcedure();
-
-            T visitQuestionnaire();
-
-            T visitQuestionnaireresponse();
-
-            T visitServicerequest();
-
-            T visitSimpleObservation();
-
-            T visitVitalSigns();
-
-            T visitUnknown(String unknownType);
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

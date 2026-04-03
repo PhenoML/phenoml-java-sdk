@@ -25,17 +25,17 @@ public final class CreateMultiResponse {
 
     private final Optional<String> message;
 
-    private final Optional<Bundle> bundle;
+    private final Optional<CreateMultiResponseBundle> bundle;
 
-    private final Optional<List<ResourcesItem>> resources;
+    private final Optional<List<CreateMultiResponseResourcesItem>> resources;
 
     private final Map<String, Object> additionalProperties;
 
     private CreateMultiResponse(
             Optional<Boolean> success,
             Optional<String> message,
-            Optional<Bundle> bundle,
-            Optional<List<ResourcesItem>> resources,
+            Optional<CreateMultiResponseBundle> bundle,
+            Optional<List<CreateMultiResponseResourcesItem>> resources,
             Map<String, Object> additionalProperties) {
         this.success = success;
         this.message = message;
@@ -64,7 +64,7 @@ public final class CreateMultiResponse {
      * @return FHIR transaction Bundle containing all extracted resources
      */
     @JsonProperty("bundle")
-    public Optional<Bundle> getBundle() {
+    public Optional<CreateMultiResponseBundle> getBundle() {
         return bundle;
     }
 
@@ -72,7 +72,7 @@ public final class CreateMultiResponse {
      * @return Summary of extracted resources
      */
     @JsonProperty("resources")
-    public Optional<List<ResourcesItem>> getResources() {
+    public Optional<List<CreateMultiResponseResourcesItem>> getResources() {
         return resources;
     }
 
@@ -114,9 +114,9 @@ public final class CreateMultiResponse {
 
         private Optional<String> message = Optional.empty();
 
-        private Optional<Bundle> bundle = Optional.empty();
+        private Optional<CreateMultiResponseBundle> bundle = Optional.empty();
 
-        private Optional<List<ResourcesItem>> resources = Optional.empty();
+        private Optional<List<CreateMultiResponseResourcesItem>> resources = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -163,12 +163,12 @@ public final class CreateMultiResponse {
          * <p>FHIR transaction Bundle containing all extracted resources</p>
          */
         @JsonSetter(value = "bundle", nulls = Nulls.SKIP)
-        public Builder bundle(Optional<Bundle> bundle) {
+        public Builder bundle(Optional<CreateMultiResponseBundle> bundle) {
             this.bundle = bundle;
             return this;
         }
 
-        public Builder bundle(Bundle bundle) {
+        public Builder bundle(CreateMultiResponseBundle bundle) {
             this.bundle = Optional.ofNullable(bundle);
             return this;
         }
@@ -177,12 +177,12 @@ public final class CreateMultiResponse {
          * <p>Summary of extracted resources</p>
          */
         @JsonSetter(value = "resources", nulls = Nulls.SKIP)
-        public Builder resources(Optional<List<ResourcesItem>> resources) {
+        public Builder resources(Optional<List<CreateMultiResponseResourcesItem>> resources) {
             this.resources = resources;
             return this;
         }
 
-        public Builder resources(List<ResourcesItem> resources) {
+        public Builder resources(List<CreateMultiResponseResourcesItem> resources) {
             this.resources = Optional.ofNullable(resources);
             return this;
         }
@@ -190,502 +190,15 @@ public final class CreateMultiResponse {
         public CreateMultiResponse build() {
             return new CreateMultiResponse(success, message, bundle, resources, additionalProperties);
         }
-    }
 
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)
-    @JsonDeserialize(builder = Bundle.Builder.class)
-    public static final class Bundle {
-        private final Optional<String> resourceType;
-
-        private final Optional<String> type;
-
-        private final Optional<List<EntryItem>> entry;
-
-        private final Map<String, Object> additionalProperties;
-
-        private Bundle(
-                Optional<String> resourceType,
-                Optional<String> type,
-                Optional<List<EntryItem>> entry,
-                Map<String, Object> additionalProperties) {
-            this.resourceType = resourceType;
-            this.type = type;
-            this.entry = entry;
-            this.additionalProperties = additionalProperties;
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
-        @JsonProperty("resourceType")
-        public Optional<String> getResourceType() {
-            return resourceType;
-        }
-
-        @JsonProperty("type")
-        public Optional<String> getType() {
-            return type;
-        }
-
-        @JsonProperty("entry")
-        public Optional<List<EntryItem>> getEntry() {
-            return entry;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-            return other instanceof Bundle && equalTo((Bundle) other);
-        }
-
-        @JsonAnyGetter
-        public Map<String, Object> getAdditionalProperties() {
-            return this.additionalProperties;
-        }
-
-        private boolean equalTo(Bundle other) {
-            return resourceType.equals(other.resourceType) && type.equals(other.type) && entry.equals(other.entry);
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return Objects.hash(this.resourceType, this.type, this.entry);
-        }
-
-        @java.lang.Override
-        public String toString() {
-            return ObjectMappers.stringify(this);
-        }
-
-        public static Builder builder() {
-            return new Builder();
-        }
-
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static final class Builder {
-            private Optional<String> resourceType = Optional.empty();
-
-            private Optional<String> type = Optional.empty();
-
-            private Optional<List<EntryItem>> entry = Optional.empty();
-
-            @JsonAnySetter
-            private Map<String, Object> additionalProperties = new HashMap<>();
-
-            private Builder() {}
-
-            public Builder from(Bundle other) {
-                resourceType(other.getResourceType());
-                type(other.getType());
-                entry(other.getEntry());
-                return this;
-            }
-
-            @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
-            public Builder resourceType(Optional<String> resourceType) {
-                this.resourceType = resourceType;
-                return this;
-            }
-
-            public Builder resourceType(String resourceType) {
-                this.resourceType = Optional.ofNullable(resourceType);
-                return this;
-            }
-
-            @JsonSetter(value = "type", nulls = Nulls.SKIP)
-            public Builder type(Optional<String> type) {
-                this.type = type;
-                return this;
-            }
-
-            public Builder type(String type) {
-                this.type = Optional.ofNullable(type);
-                return this;
-            }
-
-            @JsonSetter(value = "entry", nulls = Nulls.SKIP)
-            public Builder entry(Optional<List<EntryItem>> entry) {
-                this.entry = entry;
-                return this;
-            }
-
-            public Builder entry(List<EntryItem> entry) {
-                this.entry = Optional.ofNullable(entry);
-                return this;
-            }
-
-            public Bundle build() {
-                return new Bundle(resourceType, type, entry, additionalProperties);
-            }
-        }
-
-        @JsonInclude(JsonInclude.Include.NON_ABSENT)
-        @JsonDeserialize(builder = EntryItem.Builder.class)
-        public static final class EntryItem {
-            private final Optional<String> fullUrl;
-
-            private final Optional<Map<String, Object>> resource;
-
-            private final Optional<Request> request;
-
-            private final Map<String, Object> additionalProperties;
-
-            private EntryItem(
-                    Optional<String> fullUrl,
-                    Optional<Map<String, Object>> resource,
-                    Optional<Request> request,
-                    Map<String, Object> additionalProperties) {
-                this.fullUrl = fullUrl;
-                this.resource = resource;
-                this.request = request;
-                this.additionalProperties = additionalProperties;
-            }
-
-            @JsonProperty("fullUrl")
-            public Optional<String> getFullUrl() {
-                return fullUrl;
-            }
-
-            @JsonProperty("resource")
-            public Optional<Map<String, Object>> getResource() {
-                return resource;
-            }
-
-            @JsonProperty("request")
-            public Optional<Request> getRequest() {
-                return request;
-            }
-
-            @java.lang.Override
-            public boolean equals(Object other) {
-                if (this == other) return true;
-                return other instanceof EntryItem && equalTo((EntryItem) other);
-            }
-
-            @JsonAnyGetter
-            public Map<String, Object> getAdditionalProperties() {
-                return this.additionalProperties;
-            }
-
-            private boolean equalTo(EntryItem other) {
-                return fullUrl.equals(other.fullUrl)
-                        && resource.equals(other.resource)
-                        && request.equals(other.request);
-            }
-
-            @java.lang.Override
-            public int hashCode() {
-                return Objects.hash(this.fullUrl, this.resource, this.request);
-            }
-
-            @java.lang.Override
-            public String toString() {
-                return ObjectMappers.stringify(this);
-            }
-
-            public static Builder builder() {
-                return new Builder();
-            }
-
-            @JsonIgnoreProperties(ignoreUnknown = true)
-            public static final class Builder {
-                private Optional<String> fullUrl = Optional.empty();
-
-                private Optional<Map<String, Object>> resource = Optional.empty();
-
-                private Optional<Request> request = Optional.empty();
-
-                @JsonAnySetter
-                private Map<String, Object> additionalProperties = new HashMap<>();
-
-                private Builder() {}
-
-                public Builder from(EntryItem other) {
-                    fullUrl(other.getFullUrl());
-                    resource(other.getResource());
-                    request(other.getRequest());
-                    return this;
-                }
-
-                @JsonSetter(value = "fullUrl", nulls = Nulls.SKIP)
-                public Builder fullUrl(Optional<String> fullUrl) {
-                    this.fullUrl = fullUrl;
-                    return this;
-                }
-
-                public Builder fullUrl(String fullUrl) {
-                    this.fullUrl = Optional.ofNullable(fullUrl);
-                    return this;
-                }
-
-                @JsonSetter(value = "resource", nulls = Nulls.SKIP)
-                public Builder resource(Optional<Map<String, Object>> resource) {
-                    this.resource = resource;
-                    return this;
-                }
-
-                public Builder resource(Map<String, Object> resource) {
-                    this.resource = Optional.ofNullable(resource);
-                    return this;
-                }
-
-                @JsonSetter(value = "request", nulls = Nulls.SKIP)
-                public Builder request(Optional<Request> request) {
-                    this.request = request;
-                    return this;
-                }
-
-                public Builder request(Request request) {
-                    this.request = Optional.ofNullable(request);
-                    return this;
-                }
-
-                public EntryItem build() {
-                    return new EntryItem(fullUrl, resource, request, additionalProperties);
-                }
-            }
-
-            @JsonInclude(JsonInclude.Include.NON_ABSENT)
-            @JsonDeserialize(builder = Request.Builder.class)
-            public static final class Request {
-                private final Optional<String> method;
-
-                private final Optional<String> url;
-
-                private final Map<String, Object> additionalProperties;
-
-                private Request(
-                        Optional<String> method, Optional<String> url, Map<String, Object> additionalProperties) {
-                    this.method = method;
-                    this.url = url;
-                    this.additionalProperties = additionalProperties;
-                }
-
-                @JsonProperty("method")
-                public Optional<String> getMethod() {
-                    return method;
-                }
-
-                @JsonProperty("url")
-                public Optional<String> getUrl() {
-                    return url;
-                }
-
-                @java.lang.Override
-                public boolean equals(Object other) {
-                    if (this == other) return true;
-                    return other instanceof Request && equalTo((Request) other);
-                }
-
-                @JsonAnyGetter
-                public Map<String, Object> getAdditionalProperties() {
-                    return this.additionalProperties;
-                }
-
-                private boolean equalTo(Request other) {
-                    return method.equals(other.method) && url.equals(other.url);
-                }
-
-                @java.lang.Override
-                public int hashCode() {
-                    return Objects.hash(this.method, this.url);
-                }
-
-                @java.lang.Override
-                public String toString() {
-                    return ObjectMappers.stringify(this);
-                }
-
-                public static Builder builder() {
-                    return new Builder();
-                }
-
-                @JsonIgnoreProperties(ignoreUnknown = true)
-                public static final class Builder {
-                    private Optional<String> method = Optional.empty();
-
-                    private Optional<String> url = Optional.empty();
-
-                    @JsonAnySetter
-                    private Map<String, Object> additionalProperties = new HashMap<>();
-
-                    private Builder() {}
-
-                    public Builder from(Request other) {
-                        method(other.getMethod());
-                        url(other.getUrl());
-                        return this;
-                    }
-
-                    @JsonSetter(value = "method", nulls = Nulls.SKIP)
-                    public Builder method(Optional<String> method) {
-                        this.method = method;
-                        return this;
-                    }
-
-                    public Builder method(String method) {
-                        this.method = Optional.ofNullable(method);
-                        return this;
-                    }
-
-                    @JsonSetter(value = "url", nulls = Nulls.SKIP)
-                    public Builder url(Optional<String> url) {
-                        this.url = url;
-                        return this;
-                    }
-
-                    public Builder url(String url) {
-                        this.url = Optional.ofNullable(url);
-                        return this;
-                    }
-
-                    public Request build() {
-                        return new Request(method, url, additionalProperties);
-                    }
-                }
-            }
-        }
-    }
-
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)
-    @JsonDeserialize(builder = ResourcesItem.Builder.class)
-    public static final class ResourcesItem {
-        private final Optional<String> tempId;
-
-        private final Optional<String> resourceType;
-
-        private final Optional<String> description;
-
-        private final Map<String, Object> additionalProperties;
-
-        private ResourcesItem(
-                Optional<String> tempId,
-                Optional<String> resourceType,
-                Optional<String> description,
-                Map<String, Object> additionalProperties) {
-            this.tempId = tempId;
-            this.resourceType = resourceType;
-            this.description = description;
-            this.additionalProperties = additionalProperties;
-        }
-
-        /**
-         * @return Temporary UUID for the resource
-         */
-        @JsonProperty("tempId")
-        public Optional<String> getTempId() {
-            return tempId;
-        }
-
-        /**
-         * @return FHIR resource type
-         */
-        @JsonProperty("resourceType")
-        public Optional<String> getResourceType() {
-            return resourceType;
-        }
-
-        /**
-         * @return Text excerpt this resource was extracted from
-         */
-        @JsonProperty("description")
-        public Optional<String> getDescription() {
-            return description;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-            return other instanceof ResourcesItem && equalTo((ResourcesItem) other);
-        }
-
-        @JsonAnyGetter
-        public Map<String, Object> getAdditionalProperties() {
-            return this.additionalProperties;
-        }
-
-        private boolean equalTo(ResourcesItem other) {
-            return tempId.equals(other.tempId)
-                    && resourceType.equals(other.resourceType)
-                    && description.equals(other.description);
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return Objects.hash(this.tempId, this.resourceType, this.description);
-        }
-
-        @java.lang.Override
-        public String toString() {
-            return ObjectMappers.stringify(this);
-        }
-
-        public static Builder builder() {
-            return new Builder();
-        }
-
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static final class Builder {
-            private Optional<String> tempId = Optional.empty();
-
-            private Optional<String> resourceType = Optional.empty();
-
-            private Optional<String> description = Optional.empty();
-
-            @JsonAnySetter
-            private Map<String, Object> additionalProperties = new HashMap<>();
-
-            private Builder() {}
-
-            public Builder from(ResourcesItem other) {
-                tempId(other.getTempId());
-                resourceType(other.getResourceType());
-                description(other.getDescription());
-                return this;
-            }
-
-            /**
-             * <p>Temporary UUID for the resource</p>
-             */
-            @JsonSetter(value = "tempId", nulls = Nulls.SKIP)
-            public Builder tempId(Optional<String> tempId) {
-                this.tempId = tempId;
-                return this;
-            }
-
-            public Builder tempId(String tempId) {
-                this.tempId = Optional.ofNullable(tempId);
-                return this;
-            }
-
-            /**
-             * <p>FHIR resource type</p>
-             */
-            @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
-            public Builder resourceType(Optional<String> resourceType) {
-                this.resourceType = resourceType;
-                return this;
-            }
-
-            public Builder resourceType(String resourceType) {
-                this.resourceType = Optional.ofNullable(resourceType);
-                return this;
-            }
-
-            /**
-             * <p>Text excerpt this resource was extracted from</p>
-             */
-            @JsonSetter(value = "description", nulls = Nulls.SKIP)
-            public Builder description(Optional<String> description) {
-                this.description = description;
-                return this;
-            }
-
-            public Builder description(String description) {
-                this.description = Optional.ofNullable(description);
-                return this;
-            }
-
-            public ResourcesItem build() {
-                return new ResourcesItem(tempId, resourceType, description, additionalProperties);
-            }
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

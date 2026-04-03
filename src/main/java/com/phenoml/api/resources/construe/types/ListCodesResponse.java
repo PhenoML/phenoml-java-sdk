@@ -120,6 +120,10 @@ public final class ListCodesResponse {
     public interface _FinalStage {
         ListCodesResponse build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         _FinalStage codes(List<CodeResponse> codes);
 
         _FinalStage addCodes(CodeResponse codes);
@@ -215,13 +219,27 @@ public final class ListCodesResponse {
         @JsonSetter(value = "codes", nulls = Nulls.SKIP)
         public _FinalStage codes(List<CodeResponse> codes) {
             this.codes.clear();
-            this.codes.addAll(codes);
+            if (codes != null) {
+                this.codes.addAll(codes);
+            }
             return this;
         }
 
         @java.lang.Override
         public ListCodesResponse build() {
             return new ListCodesResponse(system, codes, nextCursor, hasMore, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }
