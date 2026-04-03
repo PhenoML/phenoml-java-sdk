@@ -141,6 +141,10 @@ public final class AgentPromptsCreateRequest {
     public interface _FinalStage {
         AgentPromptsCreateRequest build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>Prompt description</p>
          */
@@ -277,6 +281,18 @@ public final class AgentPromptsCreateRequest {
         @java.lang.Override
         public AgentPromptsCreateRequest build() {
             return new AgentPromptsCreateRequest(name, description, content, isDefault, tags, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

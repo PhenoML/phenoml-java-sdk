@@ -9,16 +9,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.phenoml.api.core.ObjectMappers;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +35,7 @@ public final class AgentCreateRequest {
 
     private final Optional<List<String>> tags;
 
-    private final Provider provider;
+    private final AgentCreateRequestProvider provider;
 
     private final Map<String, Object> additionalProperties;
 
@@ -53,7 +46,7 @@ public final class AgentCreateRequest {
             Optional<List<String>> tools,
             Optional<List<String>> workflows,
             Optional<List<String>> tags,
-            Provider provider,
+            AgentCreateRequestProvider provider,
             Map<String, Object> additionalProperties) {
         this.name = name;
         this.description = description;
@@ -118,7 +111,7 @@ public final class AgentCreateRequest {
      * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.
      */
     @JsonProperty("provider")
-    public Provider getProvider() {
+    public AgentCreateRequestProvider getProvider() {
         return provider;
     }
 
@@ -172,11 +165,15 @@ public final class AgentCreateRequest {
          * <p>FHIR provider ID(s) for this agent. Required.
          * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.</p>
          */
-        _FinalStage provider(@NotNull Provider provider);
+        _FinalStage provider(@NotNull AgentCreateRequestProvider provider);
     }
 
     public interface _FinalStage {
         AgentCreateRequest build();
+
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
         /**
          * <p>Agent description</p>
@@ -220,7 +217,7 @@ public final class AgentCreateRequest {
     public static final class Builder implements NameStage, ProviderStage, _FinalStage {
         private String name;
 
-        private Provider provider;
+        private AgentCreateRequestProvider provider;
 
         private Optional<List<String>> tags = Optional.empty();
 
@@ -270,7 +267,7 @@ public final class AgentCreateRequest {
          */
         @java.lang.Override
         @JsonSetter("provider")
-        public _FinalStage provider(@NotNull Provider provider) {
+        public _FinalStage provider(@NotNull AgentCreateRequestProvider provider) {
             this.provider = Objects.requireNonNull(provider, "provider must not be null");
             return this;
         }
@@ -364,7 +361,9 @@ public final class AgentCreateRequest {
         @JsonSetter(value = "prompts", nulls = Nulls.SKIP)
         public _FinalStage prompts(List<String> prompts) {
             this.prompts.clear();
-            this.prompts.addAll(prompts);
+            if (prompts != null) {
+                this.prompts.addAll(prompts);
+            }
             return this;
         }
 
@@ -393,86 +392,17 @@ public final class AgentCreateRequest {
             return new AgentCreateRequest(
                     name, description, prompts, tools, workflows, tags, provider, additionalProperties);
         }
-    }
 
-    @JsonDeserialize(using = Provider.Deserializer.class)
-    public static final class Provider {
-        private final Object value;
-
-        private final int type;
-
-        private Provider(Object value, int type) {
-            this.value = value;
-            this.type = type;
-        }
-
-        @JsonValue
-        public Object get() {
-            return this.value;
-        }
-
-        @SuppressWarnings("unchecked")
-        public <T> T visit(Visitor<T> visitor) {
-            if (this.type == 0) {
-                return visitor.visit((String) this.value);
-            } else if (this.type == 1) {
-                return visitor.visit((List<String>) this.value);
-            }
-            throw new IllegalStateException("Failed to visit value. This should never happen.");
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
         @java.lang.Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-            return other instanceof Provider && equalTo((Provider) other);
-        }
-
-        private boolean equalTo(Provider other) {
-            return value.equals(other.value);
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return Objects.hash(this.value);
-        }
-
-        @java.lang.Override
-        public String toString() {
-            return this.value.toString();
-        }
-
-        public static Provider of(String value) {
-            return new Provider(value, 0);
-        }
-
-        public static Provider of(List<String> value) {
-            return new Provider(value, 1);
-        }
-
-        public interface Visitor<T> {
-            T visit(String value);
-
-            T visit(List<String> value);
-        }
-
-        static final class Deserializer extends StdDeserializer<Provider> {
-            Deserializer() {
-                super(Provider.class);
-            }
-
-            @java.lang.Override
-            public Provider deserialize(JsonParser p, DeserializationContext context) throws IOException {
-                Object value = p.readValueAs(Object.class);
-                try {
-                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, String.class));
-                } catch (RuntimeException e) {
-                }
-                try {
-                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<List<String>>() {}));
-                } catch (RuntimeException e) {
-                }
-                throw new JsonParseException(p, "Failed to deserialize");
-            }
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

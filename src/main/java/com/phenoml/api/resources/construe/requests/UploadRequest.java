@@ -5,16 +5,15 @@ package com.phenoml.api.resources.construe.requests;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.construe.types.CodeResponse;
+import com.phenoml.api.resources.construe.types.UploadRequestFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,7 @@ public final class UploadRequest {
 
     private final Optional<Double> revision;
 
-    private final Format format;
+    private final UploadRequestFormat format;
 
     private final Optional<String> file;
 
@@ -51,7 +50,7 @@ public final class UploadRequest {
             String name,
             String version,
             Optional<Double> revision,
-            Format format,
+            UploadRequestFormat format,
             Optional<String> file,
             Optional<String> codeCol,
             Optional<String> descCol,
@@ -102,7 +101,7 @@ public final class UploadRequest {
      * @return Upload format
      */
     @JsonProperty("format")
-    public Format getFormat() {
+    public UploadRequestFormat getFormat() {
         return format;
     }
 
@@ -230,11 +229,15 @@ public final class UploadRequest {
         /**
          * <p>Upload format</p>
          */
-        _FinalStage format(@NotNull Format format);
+        _FinalStage format(@NotNull UploadRequestFormat format);
     }
 
     public interface _FinalStage {
         UploadRequest build();
+
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
         /**
          * <p>Optional revision number</p>
@@ -298,7 +301,7 @@ public final class UploadRequest {
 
         private String version;
 
-        private Format format;
+        private UploadRequestFormat format;
 
         private Optional<Boolean> replace = Optional.empty();
 
@@ -369,7 +372,7 @@ public final class UploadRequest {
          */
         @java.lang.Override
         @JsonSetter("format")
-        public _FinalStage format(@NotNull Format format) {
+        public _FinalStage format(@NotNull UploadRequestFormat format) {
             this.format = Objects.requireNonNull(format, "format must not be null");
             return this;
         }
@@ -541,80 +544,17 @@ public final class UploadRequest {
                     replace,
                     additionalProperties);
         }
-    }
 
-    public static final class Format {
-        public static final Format CSV = new Format(Value.CSV, "csv");
-
-        public static final Format JSON = new Format(Value.JSON, "json");
-
-        private final Value value;
-
-        private final String string;
-
-        Format(Value value, String string) {
-            this.value = value;
-            this.string = string;
-        }
-
-        public Value getEnumValue() {
-            return value;
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
         @java.lang.Override
-        @JsonValue
-        public String toString() {
-            return this.string;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            return (this == other) || (other instanceof Format && this.string.equals(((Format) other).string));
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return this.string.hashCode();
-        }
-
-        public <T> T visit(Visitor<T> visitor) {
-            switch (value) {
-                case CSV:
-                    return visitor.visitCsv();
-                case JSON:
-                    return visitor.visitJson();
-                case UNKNOWN:
-                default:
-                    return visitor.visitUnknown(string);
-            }
-        }
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static Format valueOf(String value) {
-            switch (value) {
-                case "csv":
-                    return CSV;
-                case "json":
-                    return JSON;
-                default:
-                    return new Format(Value.UNKNOWN, value);
-            }
-        }
-
-        public enum Value {
-            CSV,
-
-            JSON,
-
-            UNKNOWN
-        }
-
-        public interface Visitor<T> {
-            T visitCsv();
-
-            T visitJson();
-
-            T visitUnknown(String unknownType);
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

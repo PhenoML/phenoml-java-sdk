@@ -102,7 +102,9 @@ public final class ExecuteWorkflowRequest {
         @JsonSetter(value = "input_data", nulls = Nulls.SKIP)
         public Builder inputData(Map<String, Object> inputData) {
             this.inputData.clear();
-            this.inputData.putAll(inputData);
+            if (inputData != null) {
+                this.inputData.putAll(inputData);
+            }
             return this;
         }
 
@@ -134,6 +136,16 @@ public final class ExecuteWorkflowRequest {
 
         public ExecuteWorkflowRequest build() {
             return new ExecuteWorkflowRequest(inputData, preview, additionalProperties);
+        }
+
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }
