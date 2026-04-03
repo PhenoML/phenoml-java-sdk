@@ -24,7 +24,7 @@ public final class ExecuteWorkflowResponse {
 
     private final Optional<String> message;
 
-    private final Optional<Results> results;
+    private final Optional<ExecuteWorkflowResponseResults> results;
 
     private final Optional<Boolean> preview;
 
@@ -33,7 +33,7 @@ public final class ExecuteWorkflowResponse {
     private ExecuteWorkflowResponse(
             Optional<Boolean> success,
             Optional<String> message,
-            Optional<Results> results,
+            Optional<ExecuteWorkflowResponseResults> results,
             Optional<Boolean> preview,
             Map<String, Object> additionalProperties) {
         this.success = success;
@@ -60,7 +60,7 @@ public final class ExecuteWorkflowResponse {
     }
 
     @JsonProperty("results")
-    public Optional<Results> getResults() {
+    public Optional<ExecuteWorkflowResponseResults> getResults() {
         return results;
     }
 
@@ -110,7 +110,7 @@ public final class ExecuteWorkflowResponse {
 
         private Optional<String> message = Optional.empty();
 
-        private Optional<Results> results = Optional.empty();
+        private Optional<ExecuteWorkflowResponseResults> results = Optional.empty();
 
         private Optional<Boolean> preview = Optional.empty();
 
@@ -156,12 +156,12 @@ public final class ExecuteWorkflowResponse {
         }
 
         @JsonSetter(value = "results", nulls = Nulls.SKIP)
-        public Builder results(Optional<Results> results) {
+        public Builder results(Optional<ExecuteWorkflowResponseResults> results) {
             this.results = results;
             return this;
         }
 
-        public Builder results(Results results) {
+        public Builder results(ExecuteWorkflowResponseResults results) {
             this.results = Optional.ofNullable(results);
             return this;
         }
@@ -183,88 +183,15 @@ public final class ExecuteWorkflowResponse {
         public ExecuteWorkflowResponse build() {
             return new ExecuteWorkflowResponse(success, message, results, preview, additionalProperties);
         }
-    }
 
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)
-    @JsonDeserialize(builder = Results.Builder.class)
-    public static final class Results {
-        private final Optional<Map<String, Object>> steps;
-
-        private final Map<String, Object> additionalProperties;
-
-        private Results(Optional<Map<String, Object>> steps, Map<String, Object> additionalProperties) {
-            this.steps = steps;
-            this.additionalProperties = additionalProperties;
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
-        /**
-         * @return Results for each executed workflow step, keyed by step ID
-         */
-        @JsonProperty("steps")
-        public Optional<Map<String, Object>> getSteps() {
-            return steps;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-            return other instanceof Results && equalTo((Results) other);
-        }
-
-        @JsonAnyGetter
-        public Map<String, Object> getAdditionalProperties() {
-            return this.additionalProperties;
-        }
-
-        private boolean equalTo(Results other) {
-            return steps.equals(other.steps);
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return Objects.hash(this.steps);
-        }
-
-        @java.lang.Override
-        public String toString() {
-            return ObjectMappers.stringify(this);
-        }
-
-        public static Builder builder() {
-            return new Builder();
-        }
-
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static final class Builder {
-            private Optional<Map<String, Object>> steps = Optional.empty();
-
-            @JsonAnySetter
-            private Map<String, Object> additionalProperties = new HashMap<>();
-
-            private Builder() {}
-
-            public Builder from(Results other) {
-                steps(other.getSteps());
-                return this;
-            }
-
-            /**
-             * <p>Results for each executed workflow step, keyed by step ID</p>
-             */
-            @JsonSetter(value = "steps", nulls = Nulls.SKIP)
-            public Builder steps(Optional<Map<String, Object>> steps) {
-                this.steps = steps;
-                return this;
-            }
-
-            public Builder steps(Map<String, Object> steps) {
-                this.steps = Optional.ofNullable(steps);
-                return this;
-            }
-
-            public Results build() {
-                return new Results(steps, additionalProperties);
-            }
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

@@ -123,6 +123,10 @@ public final class FeedbackRequest {
     public interface _FinalStage {
         FeedbackRequest build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>Optional details explaining the feedback</p>
          */
@@ -204,6 +208,18 @@ public final class FeedbackRequest {
         @java.lang.Override
         public FeedbackRequest build() {
             return new FeedbackRequest(text, receivedResult, expectedResult, detail, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

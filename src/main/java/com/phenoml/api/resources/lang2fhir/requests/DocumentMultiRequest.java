@@ -113,6 +113,10 @@ public final class DocumentMultiRequest {
     public interface _FinalStage {
         DocumentMultiRequest build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>Optional FHIR provider name for provider-specific profiles</p>
          */
@@ -193,6 +197,18 @@ public final class DocumentMultiRequest {
         @java.lang.Override
         public DocumentMultiRequest build() {
             return new DocumentMultiRequest(version, content, provider, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

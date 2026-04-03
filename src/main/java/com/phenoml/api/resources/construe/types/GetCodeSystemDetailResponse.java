@@ -5,12 +5,10 @@ package com.phenoml.api.resources.construe.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import java.time.OffsetDateTime;
@@ -30,7 +28,7 @@ public final class GetCodeSystemDetailResponse {
 
     private final boolean builtin;
 
-    private final Status status;
+    private final GetCodeSystemDetailResponseStatus status;
 
     private final OffsetDateTime createdAt;
 
@@ -43,7 +41,7 @@ public final class GetCodeSystemDetailResponse {
             String version,
             int codeCount,
             boolean builtin,
-            Status status,
+            GetCodeSystemDetailResponseStatus status,
             OffsetDateTime createdAt,
             OffsetDateTime updatedAt,
             Map<String, Object> additionalProperties) {
@@ -98,7 +96,7 @@ public final class GetCodeSystemDetailResponse {
      * </ul>
      */
     @JsonProperty("status")
-    public Status getStatus() {
+    public GetCodeSystemDetailResponseStatus getStatus() {
         return status;
     }
 
@@ -193,7 +191,7 @@ public final class GetCodeSystemDetailResponse {
          * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
          * </ul>
          */
-        CreatedAtStage status(@NotNull Status status);
+        CreatedAtStage status(@NotNull GetCodeSystemDetailResponseStatus status);
     }
 
     public interface CreatedAtStage {
@@ -212,6 +210,10 @@ public final class GetCodeSystemDetailResponse {
 
     public interface _FinalStage {
         GetCodeSystemDetailResponse build();
+
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -232,7 +234,7 @@ public final class GetCodeSystemDetailResponse {
 
         private boolean builtin;
 
-        private Status status;
+        private GetCodeSystemDetailResponseStatus status;
 
         private OffsetDateTime createdAt;
 
@@ -320,7 +322,7 @@ public final class GetCodeSystemDetailResponse {
          */
         @java.lang.Override
         @JsonSetter("status")
-        public CreatedAtStage status(@NotNull Status status) {
+        public CreatedAtStage status(@NotNull GetCodeSystemDetailResponseStatus status) {
             this.status = Objects.requireNonNull(status, "status must not be null");
             return this;
         }
@@ -354,90 +356,17 @@ public final class GetCodeSystemDetailResponse {
             return new GetCodeSystemDetailResponse(
                     name, version, codeCount, builtin, status, createdAt, updatedAt, additionalProperties);
         }
-    }
 
-    public static final class Status {
-        public static final Status FAILED = new Status(Value.FAILED, "failed");
-
-        public static final Status PROCESSING = new Status(Value.PROCESSING, "processing");
-
-        public static final Status READY = new Status(Value.READY, "ready");
-
-        private final Value value;
-
-        private final String string;
-
-        Status(Value value, String string) {
-            this.value = value;
-            this.string = string;
-        }
-
-        public Value getEnumValue() {
-            return value;
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
         @java.lang.Override
-        @JsonValue
-        public String toString() {
-            return this.string;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            return (this == other) || (other instanceof Status && this.string.equals(((Status) other).string));
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return this.string.hashCode();
-        }
-
-        public <T> T visit(Visitor<T> visitor) {
-            switch (value) {
-                case FAILED:
-                    return visitor.visitFailed();
-                case PROCESSING:
-                    return visitor.visitProcessing();
-                case READY:
-                    return visitor.visitReady();
-                case UNKNOWN:
-                default:
-                    return visitor.visitUnknown(string);
-            }
-        }
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static Status valueOf(String value) {
-            switch (value) {
-                case "failed":
-                    return FAILED;
-                case "processing":
-                    return PROCESSING;
-                case "ready":
-                    return READY;
-                default:
-                    return new Status(Value.UNKNOWN, value);
-            }
-        }
-
-        public enum Value {
-            PROCESSING,
-
-            READY,
-
-            FAILED,
-
-            UNKNOWN
-        }
-
-        public interface Visitor<T> {
-            T visitProcessing();
-
-            T visitReady();
-
-            T visitFailed();
-
-            T visitUnknown(String unknownType);
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

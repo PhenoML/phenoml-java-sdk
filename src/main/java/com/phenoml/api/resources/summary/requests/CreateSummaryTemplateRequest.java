@@ -168,6 +168,10 @@ public final class CreateSummaryTemplateRequest {
     public interface _FinalStage {
         CreateSummaryTemplateRequest build();
 
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
         /**
          * <p>Description of the template</p>
          */
@@ -307,7 +311,9 @@ public final class CreateSummaryTemplateRequest {
         @JsonSetter(value = "target_resources", nulls = Nulls.SKIP)
         public _FinalStage targetResources(List<String> targetResources) {
             this.targetResources.clear();
-            this.targetResources.addAll(targetResources);
+            if (targetResources != null) {
+                this.targetResources.addAll(targetResources);
+            }
             return this;
         }
 
@@ -335,6 +341,18 @@ public final class CreateSummaryTemplateRequest {
         public CreateSummaryTemplateRequest build() {
             return new CreateSummaryTemplateRequest(
                     name, description, exampleSummary, targetResources, exampleFhirData, mode, additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

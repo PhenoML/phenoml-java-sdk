@@ -5,6 +5,7 @@ package com.phenoml.api.resources.agent.requests;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -60,7 +61,7 @@ public final class AgentStreamChatRequest {
      * @return Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
      * Must be in the format: Patient/{uuid} or Practitioner/{uuid}
      */
-    @JsonProperty("X-Phenoml-On-Behalf-Of")
+    @JsonIgnore
     public Optional<String> getPhenomlOnBehalfOf() {
         return phenomlOnBehalfOf;
     }
@@ -69,7 +70,7 @@ public final class AgentStreamChatRequest {
      * @return Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
      * Multiple FHIR provider integrations can be provided as comma-separated values.
      */
-    @JsonProperty("X-Phenoml-Fhir-Provider")
+    @JsonIgnore
     public Optional<String> getPhenomlFhirProvider() {
         return phenomlFhirProvider;
     }
@@ -174,6 +175,10 @@ public final class AgentStreamChatRequest {
 
     public interface _FinalStage {
         AgentStreamChatRequest build();
+
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
         /**
          * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
@@ -346,7 +351,6 @@ public final class AgentStreamChatRequest {
          * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
          */
         @java.lang.Override
-        @JsonSetter(value = "X-Phenoml-Fhir-Provider", nulls = Nulls.SKIP)
         public _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider) {
             this.phenomlFhirProvider = phenomlFhirProvider;
             return this;
@@ -368,7 +372,6 @@ public final class AgentStreamChatRequest {
          * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
          */
         @java.lang.Override
-        @JsonSetter(value = "X-Phenoml-On-Behalf-Of", nulls = Nulls.SKIP)
         public _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf) {
             this.phenomlOnBehalfOf = phenomlOnBehalfOf;
             return this;
@@ -385,6 +388,18 @@ public final class AgentStreamChatRequest {
                     agentId,
                     enhancedReasoning,
                     additionalProperties);
+        }
+
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
+        }
+
+        @java.lang.Override
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

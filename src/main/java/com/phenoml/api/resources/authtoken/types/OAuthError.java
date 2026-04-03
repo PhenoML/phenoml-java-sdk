@@ -5,12 +5,10 @@ package com.phenoml.api.resources.authtoken.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
@@ -23,13 +21,14 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = OAuthError.Builder.class)
 public final class OAuthError {
-    private final Error error;
+    private final OAuthErrorError error;
 
     private final Optional<String> errorDescription;
 
     private final Map<String, Object> additionalProperties;
 
-    private OAuthError(Error error, Optional<String> errorDescription, Map<String, Object> additionalProperties) {
+    private OAuthError(
+            OAuthErrorError error, Optional<String> errorDescription, Map<String, Object> additionalProperties) {
         this.error = error;
         this.errorDescription = errorDescription;
         this.additionalProperties = additionalProperties;
@@ -39,7 +38,7 @@ public final class OAuthError {
      * @return Error code
      */
     @JsonProperty("error")
-    public Error getError() {
+    public OAuthErrorError getError() {
         return error;
     }
 
@@ -84,13 +83,17 @@ public final class OAuthError {
         /**
          * <p>Error code</p>
          */
-        _FinalStage error(@NotNull Error error);
+        _FinalStage error(@NotNull OAuthErrorError error);
 
         Builder from(OAuthError other);
     }
 
     public interface _FinalStage {
         OAuthError build();
+
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
         /**
          * <p>Human-readable error description</p>
@@ -102,7 +105,7 @@ public final class OAuthError {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder implements ErrorStage, _FinalStage {
-        private Error error;
+        private OAuthErrorError error;
 
         private Optional<String> errorDescription = Optional.empty();
 
@@ -125,7 +128,7 @@ public final class OAuthError {
          */
         @java.lang.Override
         @JsonSetter("error")
-        public _FinalStage error(@NotNull Error error) {
+        public _FinalStage error(@NotNull OAuthErrorError error) {
             this.error = Objects.requireNonNull(error, "error must not be null");
             return this;
         }
@@ -154,101 +157,17 @@ public final class OAuthError {
         public OAuthError build() {
             return new OAuthError(error, errorDescription, additionalProperties);
         }
-    }
 
-    public static final class Error {
-        public static final Error INVALID_REQUEST = new Error(Value.INVALID_REQUEST, "invalid_request");
-
-        public static final Error SERVER_ERROR = new Error(Value.SERVER_ERROR, "server_error");
-
-        public static final Error INVALID_CLIENT = new Error(Value.INVALID_CLIENT, "invalid_client");
-
-        public static final Error UNSUPPORTED_GRANT_TYPE =
-                new Error(Value.UNSUPPORTED_GRANT_TYPE, "unsupported_grant_type");
-
-        private final Value value;
-
-        private final String string;
-
-        Error(Value value, String string) {
-            this.value = value;
-            this.string = string;
-        }
-
-        public Value getEnumValue() {
-            return value;
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
         @java.lang.Override
-        @JsonValue
-        public String toString() {
-            return this.string;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            return (this == other) || (other instanceof Error && this.string.equals(((Error) other).string));
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return this.string.hashCode();
-        }
-
-        public <T> T visit(Visitor<T> visitor) {
-            switch (value) {
-                case INVALID_REQUEST:
-                    return visitor.visitInvalidRequest();
-                case SERVER_ERROR:
-                    return visitor.visitServerError();
-                case INVALID_CLIENT:
-                    return visitor.visitInvalidClient();
-                case UNSUPPORTED_GRANT_TYPE:
-                    return visitor.visitUnsupportedGrantType();
-                case UNKNOWN:
-                default:
-                    return visitor.visitUnknown(string);
-            }
-        }
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static Error valueOf(String value) {
-            switch (value) {
-                case "invalid_request":
-                    return INVALID_REQUEST;
-                case "server_error":
-                    return SERVER_ERROR;
-                case "invalid_client":
-                    return INVALID_CLIENT;
-                case "unsupported_grant_type":
-                    return UNSUPPORTED_GRANT_TYPE;
-                default:
-                    return new Error(Value.UNKNOWN, value);
-            }
-        }
-
-        public enum Value {
-            INVALID_REQUEST,
-
-            INVALID_CLIENT,
-
-            UNSUPPORTED_GRANT_TYPE,
-
-            SERVER_ERROR,
-
-            UNKNOWN
-        }
-
-        public interface Visitor<T> {
-            T visitInvalidRequest();
-
-            T visitInvalidClient();
-
-            T visitUnsupportedGrantType();
-
-            T visitServerError();
-
-            T visitUnknown(String unknownType);
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }
