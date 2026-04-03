@@ -25,17 +25,17 @@ public final class Lang2FhirAndCreateMultiResponse {
 
     private final Optional<String> message;
 
-    private final Optional<ResponseBundle> responseBundle;
+    private final Optional<Lang2FhirAndCreateMultiResponseResponseBundle> responseBundle;
 
-    private final Optional<List<ResourceInfoItem>> resourceInfo;
+    private final Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> resourceInfo;
 
     private final Map<String, Object> additionalProperties;
 
     private Lang2FhirAndCreateMultiResponse(
             Optional<Boolean> success,
             Optional<String> message,
-            Optional<ResponseBundle> responseBundle,
-            Optional<List<ResourceInfoItem>> resourceInfo,
+            Optional<Lang2FhirAndCreateMultiResponseResponseBundle> responseBundle,
+            Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> resourceInfo,
             Map<String, Object> additionalProperties) {
         this.success = success;
         this.message = message;
@@ -64,7 +64,7 @@ public final class Lang2FhirAndCreateMultiResponse {
      * @return FHIR transaction-response Bundle from the server with resolved resource IDs
      */
     @JsonProperty("response_bundle")
-    public Optional<ResponseBundle> getResponseBundle() {
+    public Optional<Lang2FhirAndCreateMultiResponseResponseBundle> getResponseBundle() {
         return responseBundle;
     }
 
@@ -72,7 +72,7 @@ public final class Lang2FhirAndCreateMultiResponse {
      * @return Metadata about created resources (temp IDs, types, descriptions)
      */
     @JsonProperty("resource_info")
-    public Optional<List<ResourceInfoItem>> getResourceInfo() {
+    public Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> getResourceInfo() {
         return resourceInfo;
     }
 
@@ -114,9 +114,9 @@ public final class Lang2FhirAndCreateMultiResponse {
 
         private Optional<String> message = Optional.empty();
 
-        private Optional<ResponseBundle> responseBundle = Optional.empty();
+        private Optional<Lang2FhirAndCreateMultiResponseResponseBundle> responseBundle = Optional.empty();
 
-        private Optional<List<ResourceInfoItem>> resourceInfo = Optional.empty();
+        private Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> resourceInfo = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -163,12 +163,12 @@ public final class Lang2FhirAndCreateMultiResponse {
          * <p>FHIR transaction-response Bundle from the server with resolved resource IDs</p>
          */
         @JsonSetter(value = "response_bundle", nulls = Nulls.SKIP)
-        public Builder responseBundle(Optional<ResponseBundle> responseBundle) {
+        public Builder responseBundle(Optional<Lang2FhirAndCreateMultiResponseResponseBundle> responseBundle) {
             this.responseBundle = responseBundle;
             return this;
         }
 
-        public Builder responseBundle(ResponseBundle responseBundle) {
+        public Builder responseBundle(Lang2FhirAndCreateMultiResponseResponseBundle responseBundle) {
             this.responseBundle = Optional.ofNullable(responseBundle);
             return this;
         }
@@ -177,12 +177,12 @@ public final class Lang2FhirAndCreateMultiResponse {
          * <p>Metadata about created resources (temp IDs, types, descriptions)</p>
          */
         @JsonSetter(value = "resource_info", nulls = Nulls.SKIP)
-        public Builder resourceInfo(Optional<List<ResourceInfoItem>> resourceInfo) {
+        public Builder resourceInfo(Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> resourceInfo) {
             this.resourceInfo = resourceInfo;
             return this;
         }
 
-        public Builder resourceInfo(List<ResourceInfoItem> resourceInfo) {
+        public Builder resourceInfo(List<Lang2FhirAndCreateMultiResponseResourceInfoItem> resourceInfo) {
             this.resourceInfo = Optional.ofNullable(resourceInfo);
             return this;
         }
@@ -191,275 +191,15 @@ public final class Lang2FhirAndCreateMultiResponse {
             return new Lang2FhirAndCreateMultiResponse(
                     success, message, responseBundle, resourceInfo, additionalProperties);
         }
-    }
 
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)
-    @JsonDeserialize(builder = ResponseBundle.Builder.class)
-    public static final class ResponseBundle {
-        private final Optional<String> resourceType;
-
-        private final Optional<String> type;
-
-        private final Optional<List<Map<String, Object>>> entry;
-
-        private final Map<String, Object> additionalProperties;
-
-        private ResponseBundle(
-                Optional<String> resourceType,
-                Optional<String> type,
-                Optional<List<Map<String, Object>>> entry,
-                Map<String, Object> additionalProperties) {
-            this.resourceType = resourceType;
-            this.type = type;
-            this.entry = entry;
-            this.additionalProperties = additionalProperties;
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
-        @JsonProperty("resourceType")
-        public Optional<String> getResourceType() {
-            return resourceType;
-        }
-
-        @JsonProperty("type")
-        public Optional<String> getType() {
-            return type;
-        }
-
-        @JsonProperty("entry")
-        public Optional<List<Map<String, Object>>> getEntry() {
-            return entry;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-            return other instanceof ResponseBundle && equalTo((ResponseBundle) other);
-        }
-
-        @JsonAnyGetter
-        public Map<String, Object> getAdditionalProperties() {
-            return this.additionalProperties;
-        }
-
-        private boolean equalTo(ResponseBundle other) {
-            return resourceType.equals(other.resourceType) && type.equals(other.type) && entry.equals(other.entry);
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return Objects.hash(this.resourceType, this.type, this.entry);
-        }
-
-        @java.lang.Override
-        public String toString() {
-            return ObjectMappers.stringify(this);
-        }
-
-        public static Builder builder() {
-            return new Builder();
-        }
-
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static final class Builder {
-            private Optional<String> resourceType = Optional.empty();
-
-            private Optional<String> type = Optional.empty();
-
-            private Optional<List<Map<String, Object>>> entry = Optional.empty();
-
-            @JsonAnySetter
-            private Map<String, Object> additionalProperties = new HashMap<>();
-
-            private Builder() {}
-
-            public Builder from(ResponseBundle other) {
-                resourceType(other.getResourceType());
-                type(other.getType());
-                entry(other.getEntry());
-                return this;
-            }
-
-            @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
-            public Builder resourceType(Optional<String> resourceType) {
-                this.resourceType = resourceType;
-                return this;
-            }
-
-            public Builder resourceType(String resourceType) {
-                this.resourceType = Optional.ofNullable(resourceType);
-                return this;
-            }
-
-            @JsonSetter(value = "type", nulls = Nulls.SKIP)
-            public Builder type(Optional<String> type) {
-                this.type = type;
-                return this;
-            }
-
-            public Builder type(String type) {
-                this.type = Optional.ofNullable(type);
-                return this;
-            }
-
-            @JsonSetter(value = "entry", nulls = Nulls.SKIP)
-            public Builder entry(Optional<List<Map<String, Object>>> entry) {
-                this.entry = entry;
-                return this;
-            }
-
-            public Builder entry(List<Map<String, Object>> entry) {
-                this.entry = Optional.ofNullable(entry);
-                return this;
-            }
-
-            public ResponseBundle build() {
-                return new ResponseBundle(resourceType, type, entry, additionalProperties);
-            }
-        }
-    }
-
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)
-    @JsonDeserialize(builder = ResourceInfoItem.Builder.class)
-    public static final class ResourceInfoItem {
-        private final Optional<String> tempId;
-
-        private final Optional<String> resourceType;
-
-        private final Optional<String> description;
-
-        private final Map<String, Object> additionalProperties;
-
-        private ResourceInfoItem(
-                Optional<String> tempId,
-                Optional<String> resourceType,
-                Optional<String> description,
-                Map<String, Object> additionalProperties) {
-            this.tempId = tempId;
-            this.resourceType = resourceType;
-            this.description = description;
-            this.additionalProperties = additionalProperties;
-        }
-
-        /**
-         * @return Original temporary UUID
-         */
-        @JsonProperty("tempId")
-        public Optional<String> getTempId() {
-            return tempId;
-        }
-
-        /**
-         * @return FHIR resource type
-         */
-        @JsonProperty("resourceType")
-        public Optional<String> getResourceType() {
-            return resourceType;
-        }
-
-        /**
-         * @return Text excerpt this resource was extracted from
-         */
-        @JsonProperty("description")
-        public Optional<String> getDescription() {
-            return description;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-            return other instanceof ResourceInfoItem && equalTo((ResourceInfoItem) other);
-        }
-
-        @JsonAnyGetter
-        public Map<String, Object> getAdditionalProperties() {
-            return this.additionalProperties;
-        }
-
-        private boolean equalTo(ResourceInfoItem other) {
-            return tempId.equals(other.tempId)
-                    && resourceType.equals(other.resourceType)
-                    && description.equals(other.description);
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return Objects.hash(this.tempId, this.resourceType, this.description);
-        }
-
-        @java.lang.Override
-        public String toString() {
-            return ObjectMappers.stringify(this);
-        }
-
-        public static Builder builder() {
-            return new Builder();
-        }
-
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static final class Builder {
-            private Optional<String> tempId = Optional.empty();
-
-            private Optional<String> resourceType = Optional.empty();
-
-            private Optional<String> description = Optional.empty();
-
-            @JsonAnySetter
-            private Map<String, Object> additionalProperties = new HashMap<>();
-
-            private Builder() {}
-
-            public Builder from(ResourceInfoItem other) {
-                tempId(other.getTempId());
-                resourceType(other.getResourceType());
-                description(other.getDescription());
-                return this;
-            }
-
-            /**
-             * <p>Original temporary UUID</p>
-             */
-            @JsonSetter(value = "tempId", nulls = Nulls.SKIP)
-            public Builder tempId(Optional<String> tempId) {
-                this.tempId = tempId;
-                return this;
-            }
-
-            public Builder tempId(String tempId) {
-                this.tempId = Optional.ofNullable(tempId);
-                return this;
-            }
-
-            /**
-             * <p>FHIR resource type</p>
-             */
-            @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
-            public Builder resourceType(Optional<String> resourceType) {
-                this.resourceType = resourceType;
-                return this;
-            }
-
-            public Builder resourceType(String resourceType) {
-                this.resourceType = Optional.ofNullable(resourceType);
-                return this;
-            }
-
-            /**
-             * <p>Text excerpt this resource was extracted from</p>
-             */
-            @JsonSetter(value = "description", nulls = Nulls.SKIP)
-            public Builder description(Optional<String> description) {
-                this.description = description;
-                return this;
-            }
-
-            public Builder description(String description) {
-                this.description = Optional.ofNullable(description);
-                return this;
-            }
-
-            public ResourceInfoItem build() {
-                return new ResourceInfoItem(tempId, resourceType, description, additionalProperties);
-            }
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

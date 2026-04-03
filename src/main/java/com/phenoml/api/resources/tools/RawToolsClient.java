@@ -25,8 +25,6 @@ import com.phenoml.api.resources.tools.types.Lang2FhirAndCreateMultiResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndCreateResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndSearchResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -54,25 +52,23 @@ public class RawToolsClient {
      */
     public PhenomlClientHttpResponse<Lang2FhirAndCreateResponse> createFhirResource(
             Lang2FhirAndCreateRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("tools/lang2fhir-and-create")
-                .build();
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("resource", request.getResource());
-        properties.put("text", request.getText());
-        if (request.getProvider().isPresent()) {
-            properties.put("provider", request.getProvider());
+                .addPathSegments("tools/lang2fhir-and-create");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
         }
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(properties), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json")
@@ -92,12 +88,12 @@ public class RawToolsClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), Lang2FhirAndCreateResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Lang2FhirAndCreateResponse.class),
                         response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -119,11 +115,9 @@ public class RawToolsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }
@@ -150,25 +144,23 @@ public class RawToolsClient {
      */
     public PhenomlClientHttpResponse<Lang2FhirAndCreateMultiResponse> createFhirResourcesMulti(
             Lang2FhirAndCreateMultiRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("tools/lang2fhir-and-create-multi")
-                .build();
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("text", request.getText());
-        if (request.getVersion().isPresent()) {
-            properties.put("version", request.getVersion());
+                .addPathSegments("tools/lang2fhir-and-create-multi");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
         }
-        properties.put("provider", request.getProvider());
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(properties), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json")
@@ -188,13 +180,12 @@ public class RawToolsClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBody.string(), Lang2FhirAndCreateMultiResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Lang2FhirAndCreateMultiResponse.class),
                         response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -216,11 +207,9 @@ public class RawToolsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }
@@ -239,33 +228,23 @@ public class RawToolsClient {
      */
     public PhenomlClientHttpResponse<Lang2FhirAndSearchResponse> searchFhirResources(
             Lang2FhirAndSearchRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("tools/lang2fhir-and-search")
-                .build();
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("text", request.getText());
-        if (request.getPatientId().isPresent()) {
-            properties.put("patient_id", request.getPatientId());
-        }
-        if (request.getPractitionerId().isPresent()) {
-            properties.put("practitioner_id", request.getPractitionerId());
-        }
-        if (request.getCount().isPresent()) {
-            properties.put("count", request.getCount());
-        }
-        if (request.getProvider().isPresent()) {
-            properties.put("provider", request.getProvider());
+                .addPathSegments("tools/lang2fhir-and-search");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
         }
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(properties), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json")
@@ -285,12 +264,12 @@ public class RawToolsClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), Lang2FhirAndSearchResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Lang2FhirAndSearchResponse.class),
                         response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -312,11 +291,9 @@ public class RawToolsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }
@@ -334,22 +311,23 @@ public class RawToolsClient {
      */
     public PhenomlClientHttpResponse<CohortResponse> analyzeCohort(
             CohortRequest request, RequestOptions requestOptions) {
-        HttpUrl httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("tools/cohort")
-                .build();
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("text", request.getText());
-        properties.put("provider", request.getProvider());
+                .addPathSegments("tools/cohort");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(properties), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl)
+                .url(httpUrl.build())
                 .method("POST", body)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Content-Type", "application/json")
@@ -369,11 +347,11 @@ public class RawToolsClient {
         }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBody.string(), CohortResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, CohortResponse.class), response);
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             try {
                 switch (response.code()) {
                     case 400:
@@ -392,11 +370,9 @@ public class RawToolsClient {
             } catch (JsonProcessingException ignored) {
                 // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(),
-                    response.code(),
-                    ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                    response);
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }

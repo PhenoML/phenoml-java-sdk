@@ -104,6 +104,13 @@ public class ConstrueClient {
     /**
      * Returns full metadata for a single code system, including timestamps and builtin status.
      */
+    public GetCodeSystemDetailResponse getCodeSystemDetail(String codesystem, RequestOptions requestOptions) {
+        return this.rawClient.getCodeSystemDetail(codesystem, requestOptions).body();
+    }
+
+    /**
+     * Returns full metadata for a single code system, including timestamps and builtin status.
+     */
     public GetCodeSystemDetailResponse getCodeSystemDetail(
             String codesystem, GetConstrueCodesSystemsCodesystemRequest request) {
         return this.rawClient.getCodeSystemDetail(codesystem, request).body();
@@ -125,6 +132,14 @@ public class ConstrueClient {
      */
     public DeleteCodeSystemResponse deleteCustomCodeSystem(String codesystem) {
         return this.rawClient.deleteCustomCodeSystem(codesystem).body();
+    }
+
+    /**
+     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+     * Only available on dedicated instances. Large systems may take up to a minute to delete.
+     */
+    public DeleteCodeSystemResponse deleteCustomCodeSystem(String codesystem, RequestOptions requestOptions) {
+        return this.rawClient.deleteCustomCodeSystem(codesystem, requestOptions).body();
     }
 
     /**
@@ -161,6 +176,15 @@ public class ConstrueClient {
      * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
      * Only available on dedicated instances. Builtin systems cannot be exported.
      */
+    public ExportCodeSystemResponse exportCustomCodeSystem(String codesystem, RequestOptions requestOptions) {
+        return this.rawClient.exportCustomCodeSystem(codesystem, requestOptions).body();
+    }
+
+    /**
+     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+     * Only available on dedicated instances. Builtin systems cannot be exported.
+     */
     public ExportCodeSystemResponse exportCustomCodeSystem(
             String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request) {
         return this.rawClient.exportCustomCodeSystem(codesystem, request).body();
@@ -190,6 +214,14 @@ public class ConstrueClient {
      * Returns a paginated list of all codes in the specified code system from the terminology server.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
+    public ListCodesResponse listCodesInACodeSystem(String codesystem, RequestOptions requestOptions) {
+        return this.rawClient.listCodesInACodeSystem(codesystem, requestOptions).body();
+    }
+
+    /**
+     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+     */
     public ListCodesResponse listCodesInACodeSystem(String codesystem, GetConstrueCodesCodesystemRequest request) {
         return this.rawClient.listCodesInACodeSystem(codesystem, request).body();
     }
@@ -211,6 +243,16 @@ public class ConstrueClient {
      */
     public GetCodeResponse getASpecificCode(String codesystem, String codeId) {
         return this.rawClient.getASpecificCode(codesystem, codeId).body();
+    }
+
+    /**
+     * Looks up a specific code in the terminology server and returns its details.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+     */
+    public GetCodeResponse getASpecificCode(String codesystem, String codeId, RequestOptions requestOptions) {
+        return this.rawClient
+                .getASpecificCode(codesystem, codeId, requestOptions)
+                .body();
     }
 
     /**
