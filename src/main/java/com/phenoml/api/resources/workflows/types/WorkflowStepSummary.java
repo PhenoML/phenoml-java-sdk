@@ -5,12 +5,10 @@ package com.phenoml.api.resources.workflows.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
@@ -28,7 +26,7 @@ public final class WorkflowStepSummary {
 
     private final Optional<String> description;
 
-    private final Optional<Type> type;
+    private final Optional<WorkflowStepSummaryType> type;
 
     private final Optional<String> providerId;
 
@@ -38,7 +36,7 @@ public final class WorkflowStepSummary {
             Optional<String> id,
             Optional<String> name,
             Optional<String> description,
-            Optional<Type> type,
+            Optional<WorkflowStepSummaryType> type,
             Optional<String> providerId,
             Map<String, Object> additionalProperties) {
         this.id = id;
@@ -77,7 +75,7 @@ public final class WorkflowStepSummary {
      * @return Type of operation this step performs
      */
     @JsonProperty("type")
-    public Optional<Type> getType() {
+    public Optional<WorkflowStepSummaryType> getType() {
         return type;
     }
 
@@ -130,7 +128,7 @@ public final class WorkflowStepSummary {
 
         private Optional<String> description = Optional.empty();
 
-        private Optional<Type> type = Optional.empty();
+        private Optional<WorkflowStepSummaryType> type = Optional.empty();
 
         private Optional<String> providerId = Optional.empty();
 
@@ -194,12 +192,12 @@ public final class WorkflowStepSummary {
          * <p>Type of operation this step performs</p>
          */
         @JsonSetter(value = "type", nulls = Nulls.SKIP)
-        public Builder type(Optional<Type> type) {
+        public Builder type(Optional<WorkflowStepSummaryType> type) {
             this.type = type;
             return this;
         }
 
-        public Builder type(Type type) {
+        public Builder type(WorkflowStepSummaryType type) {
             this.type = Optional.ofNullable(type);
             return this;
         }
@@ -221,100 +219,15 @@ public final class WorkflowStepSummary {
         public WorkflowStepSummary build() {
             return new WorkflowStepSummary(id, name, description, type, providerId, additionalProperties);
         }
-    }
 
-    public static final class Type {
-        public static final Type WORKFLOW = new Type(Value.WORKFLOW, "workflow");
-
-        public static final Type SEARCH = new Type(Value.SEARCH, "search");
-
-        public static final Type CREATE = new Type(Value.CREATE, "create");
-
-        public static final Type DECISION_NODE = new Type(Value.DECISION_NODE, "decision_node");
-
-        private final Value value;
-
-        private final String string;
-
-        Type(Value value, String string) {
-            this.value = value;
-            this.string = string;
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
-        public Value getEnumValue() {
-            return value;
-        }
-
-        @java.lang.Override
-        @JsonValue
-        public String toString() {
-            return this.string;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            return (this == other) || (other instanceof Type && this.string.equals(((Type) other).string));
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return this.string.hashCode();
-        }
-
-        public <T> T visit(Visitor<T> visitor) {
-            switch (value) {
-                case WORKFLOW:
-                    return visitor.visitWorkflow();
-                case SEARCH:
-                    return visitor.visitSearch();
-                case CREATE:
-                    return visitor.visitCreate();
-                case DECISION_NODE:
-                    return visitor.visitDecisionNode();
-                case UNKNOWN:
-                default:
-                    return visitor.visitUnknown(string);
-            }
-        }
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static Type valueOf(String value) {
-            switch (value) {
-                case "workflow":
-                    return WORKFLOW;
-                case "search":
-                    return SEARCH;
-                case "create":
-                    return CREATE;
-                case "decision_node":
-                    return DECISION_NODE;
-                default:
-                    return new Type(Value.UNKNOWN, value);
-            }
-        }
-
-        public enum Value {
-            SEARCH,
-
-            CREATE,
-
-            WORKFLOW,
-
-            DECISION_NODE,
-
-            UNKNOWN
-        }
-
-        public interface Visitor<T> {
-            T visitSearch();
-
-            T visitCreate();
-
-            T visitWorkflow();
-
-            T visitDecisionNode();
-
-            T visitUnknown(String unknownType);
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

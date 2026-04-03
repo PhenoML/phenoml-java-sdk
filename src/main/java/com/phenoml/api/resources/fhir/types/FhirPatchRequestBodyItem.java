@@ -5,12 +5,10 @@ package com.phenoml.api.resources.fhir.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
@@ -23,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = FhirPatchRequestBodyItem.Builder.class)
 public final class FhirPatchRequestBodyItem {
-    private final Op op;
+    private final FhirPatchRequestBodyItemOp op;
 
     private final String path;
 
@@ -34,7 +32,7 @@ public final class FhirPatchRequestBodyItem {
     private final Map<String, Object> additionalProperties;
 
     private FhirPatchRequestBodyItem(
-            Op op,
+            FhirPatchRequestBodyItemOp op,
             String path,
             Optional<Object> value,
             Optional<String> from,
@@ -50,7 +48,7 @@ public final class FhirPatchRequestBodyItem {
      * @return The operation to perform
      */
     @JsonProperty("op")
-    public Op getOp() {
+    public FhirPatchRequestBodyItemOp getOp() {
         return op;
     }
 
@@ -111,7 +109,7 @@ public final class FhirPatchRequestBodyItem {
         /**
          * <p>The operation to perform</p>
          */
-        PathStage op(@NotNull Op op);
+        PathStage op(@NotNull FhirPatchRequestBodyItemOp op);
 
         Builder from(FhirPatchRequestBodyItem other);
     }
@@ -125,6 +123,10 @@ public final class FhirPatchRequestBodyItem {
 
     public interface _FinalStage {
         FhirPatchRequestBodyItem build();
+
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
         /**
          * <p>The value to use (required for add, replace, test operations)</p>
@@ -143,7 +145,7 @@ public final class FhirPatchRequestBodyItem {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder implements OpStage, PathStage, _FinalStage {
-        private Op op;
+        private FhirPatchRequestBodyItemOp op;
 
         private String path;
 
@@ -172,7 +174,7 @@ public final class FhirPatchRequestBodyItem {
          */
         @java.lang.Override
         @JsonSetter("op")
-        public PathStage op(@NotNull Op op) {
+        public PathStage op(@NotNull FhirPatchRequestBodyItemOp op) {
             this.op = Objects.requireNonNull(op, "op must not be null");
             return this;
         }
@@ -233,120 +235,17 @@ public final class FhirPatchRequestBodyItem {
         public FhirPatchRequestBodyItem build() {
             return new FhirPatchRequestBodyItem(op, path, value, from, additionalProperties);
         }
-    }
 
-    public static final class Op {
-        public static final Op ADD = new Op(Value.ADD, "add");
-
-        public static final Op REMOVE = new Op(Value.REMOVE, "remove");
-
-        public static final Op TEST = new Op(Value.TEST, "test");
-
-        public static final Op REPLACE = new Op(Value.REPLACE, "replace");
-
-        public static final Op MOVE = new Op(Value.MOVE, "move");
-
-        public static final Op COPY = new Op(Value.COPY, "copy");
-
-        private final Value value;
-
-        private final String string;
-
-        Op(Value value, String string) {
-            this.value = value;
-            this.string = string;
-        }
-
-        public Value getEnumValue() {
-            return value;
+        @java.lang.Override
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
         @java.lang.Override
-        @JsonValue
-        public String toString() {
-            return this.string;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            return (this == other) || (other instanceof Op && this.string.equals(((Op) other).string));
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return this.string.hashCode();
-        }
-
-        public <T> T visit(Visitor<T> visitor) {
-            switch (value) {
-                case ADD:
-                    return visitor.visitAdd();
-                case REMOVE:
-                    return visitor.visitRemove();
-                case TEST:
-                    return visitor.visitTest();
-                case REPLACE:
-                    return visitor.visitReplace();
-                case MOVE:
-                    return visitor.visitMove();
-                case COPY:
-                    return visitor.visitCopy();
-                case UNKNOWN:
-                default:
-                    return visitor.visitUnknown(string);
-            }
-        }
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static Op valueOf(String value) {
-            switch (value) {
-                case "add":
-                    return ADD;
-                case "remove":
-                    return REMOVE;
-                case "test":
-                    return TEST;
-                case "replace":
-                    return REPLACE;
-                case "move":
-                    return MOVE;
-                case "copy":
-                    return COPY;
-                default:
-                    return new Op(Value.UNKNOWN, value);
-            }
-        }
-
-        public enum Value {
-            ADD,
-
-            REMOVE,
-
-            REPLACE,
-
-            MOVE,
-
-            COPY,
-
-            TEST,
-
-            UNKNOWN
-        }
-
-        public interface Visitor<T> {
-            T visitAdd();
-
-            T visitRemove();
-
-            T visitReplace();
-
-            T visitMove();
-
-            T visitCopy();
-
-            T visitTest();
-
-            T visitUnknown(String unknownType);
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

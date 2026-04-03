@@ -5,12 +5,10 @@ package com.phenoml.api.resources.construe.types;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
@@ -22,13 +20,13 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ExtractRequestConfig.Builder.class)
 public final class ExtractRequestConfig {
-    private final Optional<ChunkingMethod> chunkingMethod;
+    private final Optional<ExtractRequestConfigChunkingMethod> chunkingMethod;
 
     private final Optional<Integer> maxCodesPerChunk;
 
     private final Optional<Float> codeSimilarityFilter;
 
-    private final Optional<ValidationMethod> validationMethod;
+    private final Optional<ExtractRequestConfigValidationMethod> validationMethod;
 
     private final Optional<Boolean> includeRationale;
 
@@ -42,22 +40,22 @@ public final class ExtractRequestConfig {
 
     private final Optional<Double> minContextRelevance;
 
-    private final Optional<ConsistencyEffort> consistencyEffort;
+    private final Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort;
 
     private final Map<String, Object> additionalProperties;
 
     private ExtractRequestConfig(
-            Optional<ChunkingMethod> chunkingMethod,
+            Optional<ExtractRequestConfigChunkingMethod> chunkingMethod,
             Optional<Integer> maxCodesPerChunk,
             Optional<Float> codeSimilarityFilter,
-            Optional<ValidationMethod> validationMethod,
+            Optional<ExtractRequestConfigValidationMethod> validationMethod,
             Optional<Boolean> includeRationale,
             Optional<Boolean> includeAncestors,
             Optional<Boolean> includeInvalid,
             Optional<Boolean> includeCitations,
             Optional<String> extractionContext,
             Optional<Double> minContextRelevance,
-            Optional<ConsistencyEffort> consistencyEffort,
+            Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort,
             Map<String, Object> additionalProperties) {
         this.chunkingMethod = chunkingMethod;
         this.maxCodesPerChunk = maxCodesPerChunk;
@@ -77,7 +75,7 @@ public final class ExtractRequestConfig {
      * @return Method for splitting input text into chunks before code extraction
      */
     @JsonProperty("chunking_method")
-    public Optional<ChunkingMethod> getChunkingMethod() {
+    public Optional<ExtractRequestConfigChunkingMethod> getChunkingMethod() {
         return chunkingMethod;
     }
 
@@ -111,7 +109,7 @@ public final class ExtractRequestConfig {
      * </ul>
      */
     @JsonProperty("validation_method")
-    public Optional<ValidationMethod> getValidationMethod() {
+    public Optional<ExtractRequestConfigValidationMethod> getValidationMethod() {
         return validationMethod;
     }
 
@@ -178,7 +176,7 @@ public final class ExtractRequestConfig {
      * vary between calls, improving determinism at the cost of additional latency.
      */
     @JsonProperty("consistency_effort")
-    public Optional<ConsistencyEffort> getConsistencyEffort() {
+    public Optional<ExtractRequestConfigConsistencyEffort> getConsistencyEffort() {
         return consistencyEffort;
     }
 
@@ -234,13 +232,13 @@ public final class ExtractRequestConfig {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder {
-        private Optional<ChunkingMethod> chunkingMethod = Optional.empty();
+        private Optional<ExtractRequestConfigChunkingMethod> chunkingMethod = Optional.empty();
 
         private Optional<Integer> maxCodesPerChunk = Optional.empty();
 
         private Optional<Float> codeSimilarityFilter = Optional.empty();
 
-        private Optional<ValidationMethod> validationMethod = Optional.empty();
+        private Optional<ExtractRequestConfigValidationMethod> validationMethod = Optional.empty();
 
         private Optional<Boolean> includeRationale = Optional.empty();
 
@@ -254,7 +252,7 @@ public final class ExtractRequestConfig {
 
         private Optional<Double> minContextRelevance = Optional.empty();
 
-        private Optional<ConsistencyEffort> consistencyEffort = Optional.empty();
+        private Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -280,12 +278,12 @@ public final class ExtractRequestConfig {
          * <p>Method for splitting input text into chunks before code extraction</p>
          */
         @JsonSetter(value = "chunking_method", nulls = Nulls.SKIP)
-        public Builder chunkingMethod(Optional<ChunkingMethod> chunkingMethod) {
+        public Builder chunkingMethod(Optional<ExtractRequestConfigChunkingMethod> chunkingMethod) {
             this.chunkingMethod = chunkingMethod;
             return this;
         }
 
-        public Builder chunkingMethod(ChunkingMethod chunkingMethod) {
+        public Builder chunkingMethod(ExtractRequestConfigChunkingMethod chunkingMethod) {
             this.chunkingMethod = Optional.ofNullable(chunkingMethod);
             return this;
         }
@@ -332,12 +330,12 @@ public final class ExtractRequestConfig {
          * </ul>
          */
         @JsonSetter(value = "validation_method", nulls = Nulls.SKIP)
-        public Builder validationMethod(Optional<ValidationMethod> validationMethod) {
+        public Builder validationMethod(Optional<ExtractRequestConfigValidationMethod> validationMethod) {
             this.validationMethod = validationMethod;
             return this;
         }
 
-        public Builder validationMethod(ValidationMethod validationMethod) {
+        public Builder validationMethod(ExtractRequestConfigValidationMethod validationMethod) {
             this.validationMethod = Optional.ofNullable(validationMethod);
             return this;
         }
@@ -441,12 +439,12 @@ public final class ExtractRequestConfig {
          * vary between calls, improving determinism at the cost of additional latency.</p>
          */
         @JsonSetter(value = "consistency_effort", nulls = Nulls.SKIP)
-        public Builder consistencyEffort(Optional<ConsistencyEffort> consistencyEffort) {
+        public Builder consistencyEffort(Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort) {
             this.consistencyEffort = consistencyEffort;
             return this;
         }
 
-        public Builder consistencyEffort(ConsistencyEffort consistencyEffort) {
+        public Builder consistencyEffort(ExtractRequestConfigConsistencyEffort consistencyEffort) {
             this.consistencyEffort = Optional.ofNullable(consistencyEffort);
             return this;
         }
@@ -466,294 +464,15 @@ public final class ExtractRequestConfig {
                     consistencyEffort,
                     additionalProperties);
         }
-    }
 
-    public static final class ValidationMethod {
-        public static final ValidationMethod NONE = new ValidationMethod(Value.NONE, "none");
-
-        public static final ValidationMethod SIMPLE = new ValidationMethod(Value.SIMPLE, "simple");
-
-        public static final ValidationMethod MEDICATION_SEARCH =
-                new ValidationMethod(Value.MEDICATION_SEARCH, "medication_search");
-
-        private final Value value;
-
-        private final String string;
-
-        ValidationMethod(Value value, String string) {
-            this.value = value;
-            this.string = string;
+        public Builder additionalProperty(String key, Object value) {
+            this.additionalProperties.put(key, value);
+            return this;
         }
 
-        public Value getEnumValue() {
-            return value;
-        }
-
-        @java.lang.Override
-        @JsonValue
-        public String toString() {
-            return this.string;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            return (this == other)
-                    || (other instanceof ValidationMethod && this.string.equals(((ValidationMethod) other).string));
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return this.string.hashCode();
-        }
-
-        public <T> T visit(Visitor<T> visitor) {
-            switch (value) {
-                case NONE:
-                    return visitor.visitNone();
-                case SIMPLE:
-                    return visitor.visitSimple();
-                case MEDICATION_SEARCH:
-                    return visitor.visitMedicationSearch();
-                case UNKNOWN:
-                default:
-                    return visitor.visitUnknown(string);
-            }
-        }
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static ValidationMethod valueOf(String value) {
-            switch (value) {
-                case "none":
-                    return NONE;
-                case "simple":
-                    return SIMPLE;
-                case "medication_search":
-                    return MEDICATION_SEARCH;
-                default:
-                    return new ValidationMethod(Value.UNKNOWN, value);
-            }
-        }
-
-        public enum Value {
-            NONE,
-
-            SIMPLE,
-
-            MEDICATION_SEARCH,
-
-            UNKNOWN
-        }
-
-        public interface Visitor<T> {
-            T visitNone();
-
-            T visitSimple();
-
-            T visitMedicationSearch();
-
-            T visitUnknown(String unknownType);
-        }
-    }
-
-    public static final class ConsistencyEffort {
-        public static final ConsistencyEffort MEDIUM = new ConsistencyEffort(Value.MEDIUM, "medium");
-
-        public static final ConsistencyEffort LOW = new ConsistencyEffort(Value.LOW, "low");
-
-        public static final ConsistencyEffort NONE = new ConsistencyEffort(Value.NONE, "none");
-
-        public static final ConsistencyEffort HIGH = new ConsistencyEffort(Value.HIGH, "high");
-
-        private final Value value;
-
-        private final String string;
-
-        ConsistencyEffort(Value value, String string) {
-            this.value = value;
-            this.string = string;
-        }
-
-        public Value getEnumValue() {
-            return value;
-        }
-
-        @java.lang.Override
-        @JsonValue
-        public String toString() {
-            return this.string;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            return (this == other)
-                    || (other instanceof ConsistencyEffort && this.string.equals(((ConsistencyEffort) other).string));
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return this.string.hashCode();
-        }
-
-        public <T> T visit(Visitor<T> visitor) {
-            switch (value) {
-                case MEDIUM:
-                    return visitor.visitMedium();
-                case LOW:
-                    return visitor.visitLow();
-                case NONE:
-                    return visitor.visitNone();
-                case HIGH:
-                    return visitor.visitHigh();
-                case UNKNOWN:
-                default:
-                    return visitor.visitUnknown(string);
-            }
-        }
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static ConsistencyEffort valueOf(String value) {
-            switch (value) {
-                case "medium":
-                    return MEDIUM;
-                case "low":
-                    return LOW;
-                case "none":
-                    return NONE;
-                case "high":
-                    return HIGH;
-                default:
-                    return new ConsistencyEffort(Value.UNKNOWN, value);
-            }
-        }
-
-        public enum Value {
-            NONE,
-
-            LOW,
-
-            MEDIUM,
-
-            HIGH,
-
-            UNKNOWN
-        }
-
-        public interface Visitor<T> {
-            T visitNone();
-
-            T visitLow();
-
-            T visitMedium();
-
-            T visitHigh();
-
-            T visitUnknown(String unknownType);
-        }
-    }
-
-    public static final class ChunkingMethod {
-        public static final ChunkingMethod SOAP_NOTE = new ChunkingMethod(Value.SOAP_NOTE, "soap_note");
-
-        public static final ChunkingMethod TOPICS = new ChunkingMethod(Value.TOPICS, "topics");
-
-        public static final ChunkingMethod PARAGRAPHS = new ChunkingMethod(Value.PARAGRAPHS, "paragraphs");
-
-        public static final ChunkingMethod NONE = new ChunkingMethod(Value.NONE, "none");
-
-        public static final ChunkingMethod SENTENCES = new ChunkingMethod(Value.SENTENCES, "sentences");
-
-        private final Value value;
-
-        private final String string;
-
-        ChunkingMethod(Value value, String string) {
-            this.value = value;
-            this.string = string;
-        }
-
-        public Value getEnumValue() {
-            return value;
-        }
-
-        @java.lang.Override
-        @JsonValue
-        public String toString() {
-            return this.string;
-        }
-
-        @java.lang.Override
-        public boolean equals(Object other) {
-            return (this == other)
-                    || (other instanceof ChunkingMethod && this.string.equals(((ChunkingMethod) other).string));
-        }
-
-        @java.lang.Override
-        public int hashCode() {
-            return this.string.hashCode();
-        }
-
-        public <T> T visit(Visitor<T> visitor) {
-            switch (value) {
-                case SOAP_NOTE:
-                    return visitor.visitSoapNote();
-                case TOPICS:
-                    return visitor.visitTopics();
-                case PARAGRAPHS:
-                    return visitor.visitParagraphs();
-                case NONE:
-                    return visitor.visitNone();
-                case SENTENCES:
-                    return visitor.visitSentences();
-                case UNKNOWN:
-                default:
-                    return visitor.visitUnknown(string);
-            }
-        }
-
-        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static ChunkingMethod valueOf(String value) {
-            switch (value) {
-                case "soap_note":
-                    return SOAP_NOTE;
-                case "topics":
-                    return TOPICS;
-                case "paragraphs":
-                    return PARAGRAPHS;
-                case "none":
-                    return NONE;
-                case "sentences":
-                    return SENTENCES;
-                default:
-                    return new ChunkingMethod(Value.UNKNOWN, value);
-            }
-        }
-
-        public enum Value {
-            NONE,
-
-            SENTENCES,
-
-            PARAGRAPHS,
-
-            TOPICS,
-
-            SOAP_NOTE,
-
-            UNKNOWN
-        }
-
-        public interface Visitor<T> {
-            T visitNone();
-
-            T visitSentences();
-
-            T visitParagraphs();
-
-            T visitTopics();
-
-            T visitSoapNote();
-
-            T visitUnknown(String unknownType);
+        public Builder additionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties.putAll(additionalProperties);
+            return this;
         }
     }
 }

@@ -94,7 +94,30 @@ public class PhenomlClient {
         return this.workflowsClient.get();
     }
 
-    public static PhenomlClientBuilder builder() {
-        return new PhenomlClientBuilder();
+    /**
+     * Creates a client builder using a pre-generated access token.
+     * @param token The access token to use for authentication
+     * @return A builder configured for token authentication
+     */
+    public static PhenomlClientBuilder._TokenAuth withToken(String token) {
+        return PhenomlClientBuilder.withToken(token);
+    }
+
+    /**
+     * Creates a client builder using OAuth client credentials.
+     * @param clientId The OAuth client ID
+     * @param clientSecret The OAuth client secret
+     * @return A builder configured for OAuth authentication
+     */
+    public static PhenomlClientBuilder._CredentialsAuth withCredentials(String clientId, String clientSecret) {
+        return PhenomlClientBuilder.withCredentials(clientId, clientSecret);
+    }
+
+    /**
+     * Creates a new client builder.
+     * @return A builder for configuring and creating the client
+     */
+    public static PhenomlClientBuilder._Builder builder() {
+        return PhenomlClientBuilder.builder();
     }
 }
