@@ -1,3 +1,7 @@
+## 12.0.1 - 2026-04-06
+* SDK regeneration
+* Unable to analyze changes with AI, incrementing PATCH version.
+
 ## 12.0.0 - 2026-04-03
 * The `generateToken` method has been removed from `AuthClient`, `AsyncAuthClient`, `RawAuthClient`, and `AsyncRawAuthClient`, along with the associated `AuthGenerateTokenRequest` and `AuthGenerateTokenResponse` types. Callers must migrate to the OAuth 2.0 client credentials endpoint using `getToken(ClientCredentialsRequest)`, which provides the same token-acquisition functionality under RFC 6749 §4.4. The `BadRequestErrorBody` and `UnauthorizedErrorBody` types have also been removed.
 
