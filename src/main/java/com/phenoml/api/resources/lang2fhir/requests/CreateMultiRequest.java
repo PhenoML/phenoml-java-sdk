@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.resources.lang2fhir.types.CreateMultiRequestDetectionEffort;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -27,16 +28,20 @@ public final class CreateMultiRequest {
 
     private final Optional<String> provider;
 
+    private final Optional<CreateMultiRequestDetectionEffort> detectionEffort;
+
     private final Map<String, Object> additionalProperties;
 
     private CreateMultiRequest(
             String text,
             Optional<String> version,
             Optional<String> provider,
+            Optional<CreateMultiRequestDetectionEffort> detectionEffort,
             Map<String, Object> additionalProperties) {
         this.text = text;
         this.version = version;
         this.provider = provider;
+        this.detectionEffort = detectionEffort;
         this.additionalProperties = additionalProperties;
     }
 
@@ -64,6 +69,14 @@ public final class CreateMultiRequest {
         return provider;
     }
 
+    /**
+     * @return Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.
+     */
+    @JsonProperty("detection_effort")
+    public Optional<CreateMultiRequestDetectionEffort> getDetectionEffort() {
+        return detectionEffort;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -76,12 +89,15 @@ public final class CreateMultiRequest {
     }
 
     private boolean equalTo(CreateMultiRequest other) {
-        return text.equals(other.text) && version.equals(other.version) && provider.equals(other.provider);
+        return text.equals(other.text)
+                && version.equals(other.version)
+                && provider.equals(other.provider)
+                && detectionEffort.equals(other.detectionEffort);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.text, this.version, this.provider);
+        return Objects.hash(this.text, this.version, this.provider, this.detectionEffort);
     }
 
     @java.lang.Override
@@ -122,11 +138,20 @@ public final class CreateMultiRequest {
         _FinalStage provider(Optional<String> provider);
 
         _FinalStage provider(String provider);
+
+        /**
+         * <p>Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.</p>
+         */
+        _FinalStage detectionEffort(Optional<CreateMultiRequestDetectionEffort> detectionEffort);
+
+        _FinalStage detectionEffort(CreateMultiRequestDetectionEffort detectionEffort);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder implements TextStage, _FinalStage {
         private String text;
+
+        private Optional<CreateMultiRequestDetectionEffort> detectionEffort = Optional.empty();
 
         private Optional<String> provider = Optional.empty();
 
@@ -142,6 +167,7 @@ public final class CreateMultiRequest {
             text(other.getText());
             version(other.getVersion());
             provider(other.getProvider());
+            detectionEffort(other.getDetectionEffort());
             return this;
         }
 
@@ -154,6 +180,26 @@ public final class CreateMultiRequest {
         @JsonSetter("text")
         public _FinalStage text(@NotNull String text) {
             this.text = Objects.requireNonNull(text, "text must not be null");
+            return this;
+        }
+
+        /**
+         * <p>Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage detectionEffort(CreateMultiRequestDetectionEffort detectionEffort) {
+            this.detectionEffort = Optional.ofNullable(detectionEffort);
+            return this;
+        }
+
+        /**
+         * <p>Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "detection_effort", nulls = Nulls.SKIP)
+        public _FinalStage detectionEffort(Optional<CreateMultiRequestDetectionEffort> detectionEffort) {
+            this.detectionEffort = detectionEffort;
             return this;
         }
 
@@ -199,7 +245,7 @@ public final class CreateMultiRequest {
 
         @java.lang.Override
         public CreateMultiRequest build() {
-            return new CreateMultiRequest(text, version, provider, additionalProperties);
+            return new CreateMultiRequest(text, version, provider, detectionEffort, additionalProperties);
         }
 
         @java.lang.Override

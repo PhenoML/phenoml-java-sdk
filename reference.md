@@ -3654,6 +3654,14 @@ client.lang2Fhir().createMulti(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**detectionEffort:** `Optional<CreateMultiRequestDetectionEffort>` — Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -3959,6 +3967,14 @@ File type is auto-detected from content magic bytes.
 <dd>
 
 **provider:** `Optional<String>` — Optional FHIR provider name for provider-specific profiles
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**detectionEffort:** `Optional<DocumentMultiRequestDetectionEffort>` — Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.
     
 </dd>
 </dl>

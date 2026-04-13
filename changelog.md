@@ -1,3 +1,6 @@
+## 12.1.0 - 2026-04-13
+* Two new optional `detectionEffort` fields are now available on `CreateMultiRequest` and `DocumentMultiRequest`. Set it to `CreateMultiRequestDetectionEffort.STANDARD` for a single detection pass or `CreateMultiRequestDetectionEffort.DEEP` for multiple passes with higher recall. The field defaults to omitted (server default applies) when not specified.
+
 ## 12.0.1 - 2026-04-13
 * docs: expand Javadoc for `consistencyEffort` in `ExtractRequestConfig`
 * Improve the documentation for the `consistencyEffort` field and its

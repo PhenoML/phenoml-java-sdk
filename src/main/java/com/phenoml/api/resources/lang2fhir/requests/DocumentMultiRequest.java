@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.resources.lang2fhir.types.DocumentMultiRequestDetectionEffort;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -27,13 +28,20 @@ public final class DocumentMultiRequest {
 
     private final Optional<String> provider;
 
+    private final Optional<DocumentMultiRequestDetectionEffort> detectionEffort;
+
     private final Map<String, Object> additionalProperties;
 
     private DocumentMultiRequest(
-            String version, String content, Optional<String> provider, Map<String, Object> additionalProperties) {
+            String version,
+            String content,
+            Optional<String> provider,
+            Optional<DocumentMultiRequestDetectionEffort> detectionEffort,
+            Map<String, Object> additionalProperties) {
         this.version = version;
         this.content = content;
         this.provider = provider;
+        this.detectionEffort = detectionEffort;
         this.additionalProperties = additionalProperties;
     }
 
@@ -63,6 +71,14 @@ public final class DocumentMultiRequest {
         return provider;
     }
 
+    /**
+     * @return Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.
+     */
+    @JsonProperty("detection_effort")
+    public Optional<DocumentMultiRequestDetectionEffort> getDetectionEffort() {
+        return detectionEffort;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -75,12 +91,15 @@ public final class DocumentMultiRequest {
     }
 
     private boolean equalTo(DocumentMultiRequest other) {
-        return version.equals(other.version) && content.equals(other.content) && provider.equals(other.provider);
+        return version.equals(other.version)
+                && content.equals(other.content)
+                && provider.equals(other.provider)
+                && detectionEffort.equals(other.detectionEffort);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.version, this.content, this.provider);
+        return Objects.hash(this.version, this.content, this.provider, this.detectionEffort);
     }
 
     @java.lang.Override
@@ -123,6 +142,13 @@ public final class DocumentMultiRequest {
         _FinalStage provider(Optional<String> provider);
 
         _FinalStage provider(String provider);
+
+        /**
+         * <p>Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.</p>
+         */
+        _FinalStage detectionEffort(Optional<DocumentMultiRequestDetectionEffort> detectionEffort);
+
+        _FinalStage detectionEffort(DocumentMultiRequestDetectionEffort detectionEffort);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -130,6 +156,8 @@ public final class DocumentMultiRequest {
         private String version;
 
         private String content;
+
+        private Optional<DocumentMultiRequestDetectionEffort> detectionEffort = Optional.empty();
 
         private Optional<String> provider = Optional.empty();
 
@@ -143,6 +171,7 @@ public final class DocumentMultiRequest {
             version(other.getVersion());
             content(other.getContent());
             provider(other.getProvider());
+            detectionEffort(other.getDetectionEffort());
             return this;
         }
 
@@ -175,6 +204,26 @@ public final class DocumentMultiRequest {
         }
 
         /**
+         * <p>Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage detectionEffort(DocumentMultiRequestDetectionEffort detectionEffort) {
+            this.detectionEffort = Optional.ofNullable(detectionEffort);
+            return this;
+        }
+
+        /**
+         * <p>Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "detection_effort", nulls = Nulls.SKIP)
+        public _FinalStage detectionEffort(Optional<DocumentMultiRequestDetectionEffort> detectionEffort) {
+            this.detectionEffort = detectionEffort;
+            return this;
+        }
+
+        /**
          * <p>Optional FHIR provider name for provider-specific profiles</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
@@ -196,7 +245,7 @@ public final class DocumentMultiRequest {
 
         @java.lang.Override
         public DocumentMultiRequest build() {
-            return new DocumentMultiRequest(version, content, provider, additionalProperties);
+            return new DocumentMultiRequest(version, content, provider, detectionEffort, additionalProperties);
         }
 
         @java.lang.Override
