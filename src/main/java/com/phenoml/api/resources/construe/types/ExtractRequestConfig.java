@@ -172,8 +172,14 @@ public final class ExtractRequestConfig {
 
     /**
      * @return How much effort to spend ensuring consistent results across repeated requests.
-     * Higher levels apply stricter filtering to remove borderline codes that may
+     * Higher levels apply stricter filtering to remove borderline results that may
      * vary between calls, improving determinism at the cost of additional latency.
+     * <p>When validation_method is set to a value other than &quot;none&quot;, consistency is
+     * applied to the validation step: codes must be unanimously validated across
+     * multiple rounds to be included.</p>
+     * <p>When validation_method is &quot;none&quot; and min_context_relevance is set above 0,
+     * consistency is applied to the relevance ranking step instead: chunks must
+     * pass the relevance threshold in every round to be included.</p>
      */
     @JsonProperty("consistency_effort")
     public Optional<ExtractRequestConfigConsistencyEffort> getConsistencyEffort() {
@@ -435,8 +441,14 @@ public final class ExtractRequestConfig {
 
         /**
          * <p>How much effort to spend ensuring consistent results across repeated requests.
-         * Higher levels apply stricter filtering to remove borderline codes that may
+         * Higher levels apply stricter filtering to remove borderline results that may
          * vary between calls, improving determinism at the cost of additional latency.</p>
+         * <p>When validation_method is set to a value other than &quot;none&quot;, consistency is
+         * applied to the validation step: codes must be unanimously validated across
+         * multiple rounds to be included.</p>
+         * <p>When validation_method is &quot;none&quot; and min_context_relevance is set above 0,
+         * consistency is applied to the relevance ranking step instead: chunks must
+         * pass the relevance threshold in every round to be included.</p>
          */
         @JsonSetter(value = "consistency_effort", nulls = Nulls.SKIP)
         public Builder consistencyEffort(Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort) {
