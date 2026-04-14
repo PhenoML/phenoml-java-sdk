@@ -28,6 +28,8 @@ public final class CreateMultiRequest {
 
     private final Optional<String> provider;
 
+    private final Optional<String> implementationGuide;
+
     private final Optional<CreateMultiRequestDetectionEffort> detectionEffort;
 
     private final Map<String, Object> additionalProperties;
@@ -36,11 +38,13 @@ public final class CreateMultiRequest {
             String text,
             Optional<String> version,
             Optional<String> provider,
+            Optional<String> implementationGuide,
             Optional<CreateMultiRequestDetectionEffort> detectionEffort,
             Map<String, Object> additionalProperties) {
         this.text = text;
         this.version = version;
         this.provider = provider;
+        this.implementationGuide = implementationGuide;
         this.detectionEffort = detectionEffort;
         this.additionalProperties = additionalProperties;
     }
@@ -70,6 +74,14 @@ public final class CreateMultiRequest {
     }
 
     /**
+     * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.
+     */
+    @JsonProperty("implementation_guide")
+    public Optional<String> getImplementationGuide() {
+        return implementationGuide;
+    }
+
+    /**
      * @return Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.
      */
     @JsonProperty("detection_effort")
@@ -92,12 +104,13 @@ public final class CreateMultiRequest {
         return text.equals(other.text)
                 && version.equals(other.version)
                 && provider.equals(other.provider)
+                && implementationGuide.equals(other.implementationGuide)
                 && detectionEffort.equals(other.detectionEffort);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.text, this.version, this.provider, this.detectionEffort);
+        return Objects.hash(this.text, this.version, this.provider, this.implementationGuide, this.detectionEffort);
     }
 
     @java.lang.Override
@@ -140,6 +153,13 @@ public final class CreateMultiRequest {
         _FinalStage provider(String provider);
 
         /**
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         */
+        _FinalStage implementationGuide(Optional<String> implementationGuide);
+
+        _FinalStage implementationGuide(String implementationGuide);
+
+        /**
          * <p>Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.</p>
          */
         _FinalStage detectionEffort(Optional<CreateMultiRequestDetectionEffort> detectionEffort);
@@ -152,6 +172,8 @@ public final class CreateMultiRequest {
         private String text;
 
         private Optional<CreateMultiRequestDetectionEffort> detectionEffort = Optional.empty();
+
+        private Optional<String> implementationGuide = Optional.empty();
 
         private Optional<String> provider = Optional.empty();
 
@@ -167,6 +189,7 @@ public final class CreateMultiRequest {
             text(other.getText());
             version(other.getVersion());
             provider(other.getProvider());
+            implementationGuide(other.getImplementationGuide());
             detectionEffort(other.getDetectionEffort());
             return this;
         }
@@ -200,6 +223,26 @@ public final class CreateMultiRequest {
         @JsonSetter(value = "detection_effort", nulls = Nulls.SKIP)
         public _FinalStage detectionEffort(Optional<CreateMultiRequestDetectionEffort> detectionEffort) {
             this.detectionEffort = detectionEffort;
+            return this;
+        }
+
+        /**
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage implementationGuide(String implementationGuide) {
+            this.implementationGuide = Optional.ofNullable(implementationGuide);
+            return this;
+        }
+
+        /**
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
+        public _FinalStage implementationGuide(Optional<String> implementationGuide) {
+            this.implementationGuide = implementationGuide;
             return this;
         }
 
@@ -245,7 +288,8 @@ public final class CreateMultiRequest {
 
         @java.lang.Override
         public CreateMultiRequest build() {
-            return new CreateMultiRequest(text, version, provider, detectionEffort, additionalProperties);
+            return new CreateMultiRequest(
+                    text, version, provider, implementationGuide, detectionEffort, additionalProperties);
         }
 
         @java.lang.Override

@@ -28,6 +28,8 @@ public final class DocumentMultiRequest {
 
     private final Optional<String> provider;
 
+    private final Optional<String> implementationGuide;
+
     private final Optional<DocumentMultiRequestDetectionEffort> detectionEffort;
 
     private final Map<String, Object> additionalProperties;
@@ -36,11 +38,13 @@ public final class DocumentMultiRequest {
             String version,
             String content,
             Optional<String> provider,
+            Optional<String> implementationGuide,
             Optional<DocumentMultiRequestDetectionEffort> detectionEffort,
             Map<String, Object> additionalProperties) {
         this.version = version;
         this.content = content;
         this.provider = provider;
+        this.implementationGuide = implementationGuide;
         this.detectionEffort = detectionEffort;
         this.additionalProperties = additionalProperties;
     }
@@ -72,6 +76,14 @@ public final class DocumentMultiRequest {
     }
 
     /**
+     * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.
+     */
+    @JsonProperty("implementation_guide")
+    public Optional<String> getImplementationGuide() {
+        return implementationGuide;
+    }
+
+    /**
      * @return Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.
      */
     @JsonProperty("detection_effort")
@@ -94,12 +106,13 @@ public final class DocumentMultiRequest {
         return version.equals(other.version)
                 && content.equals(other.content)
                 && provider.equals(other.provider)
+                && implementationGuide.equals(other.implementationGuide)
                 && detectionEffort.equals(other.detectionEffort);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.version, this.content, this.provider, this.detectionEffort);
+        return Objects.hash(this.version, this.content, this.provider, this.implementationGuide, this.detectionEffort);
     }
 
     @java.lang.Override
@@ -144,6 +157,13 @@ public final class DocumentMultiRequest {
         _FinalStage provider(String provider);
 
         /**
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         */
+        _FinalStage implementationGuide(Optional<String> implementationGuide);
+
+        _FinalStage implementationGuide(String implementationGuide);
+
+        /**
          * <p>Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.</p>
          */
         _FinalStage detectionEffort(Optional<DocumentMultiRequestDetectionEffort> detectionEffort);
@@ -159,6 +179,8 @@ public final class DocumentMultiRequest {
 
         private Optional<DocumentMultiRequestDetectionEffort> detectionEffort = Optional.empty();
 
+        private Optional<String> implementationGuide = Optional.empty();
+
         private Optional<String> provider = Optional.empty();
 
         @JsonAnySetter
@@ -171,6 +193,7 @@ public final class DocumentMultiRequest {
             version(other.getVersion());
             content(other.getContent());
             provider(other.getProvider());
+            implementationGuide(other.getImplementationGuide());
             detectionEffort(other.getDetectionEffort());
             return this;
         }
@@ -224,6 +247,26 @@ public final class DocumentMultiRequest {
         }
 
         /**
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage implementationGuide(String implementationGuide) {
+            this.implementationGuide = Optional.ofNullable(implementationGuide);
+            return this;
+        }
+
+        /**
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
+        public _FinalStage implementationGuide(Optional<String> implementationGuide) {
+            this.implementationGuide = implementationGuide;
+            return this;
+        }
+
+        /**
          * <p>Optional FHIR provider name for provider-specific profiles</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
@@ -245,7 +288,8 @@ public final class DocumentMultiRequest {
 
         @java.lang.Override
         public DocumentMultiRequest build() {
-            return new DocumentMultiRequest(version, content, provider, detectionEffort, additionalProperties);
+            return new DocumentMultiRequest(
+                    version, content, provider, implementationGuide, detectionEffort, additionalProperties);
         }
 
         @java.lang.Override
