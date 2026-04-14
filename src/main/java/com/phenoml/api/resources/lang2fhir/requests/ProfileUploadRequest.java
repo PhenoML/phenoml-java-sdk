@@ -9,11 +9,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -21,10 +23,20 @@ import org.jetbrains.annotations.NotNull;
 public final class ProfileUploadRequest {
     private final String profile;
 
+    private final Optional<String> implementationGuide;
+
+    private final Optional<String> profileContext;
+
     private final Map<String, Object> additionalProperties;
 
-    private ProfileUploadRequest(String profile, Map<String, Object> additionalProperties) {
+    private ProfileUploadRequest(
+            String profile,
+            Optional<String> implementationGuide,
+            Optional<String> profileContext,
+            Map<String, Object> additionalProperties) {
         this.profile = profile;
+        this.implementationGuide = implementationGuide;
+        this.profileContext = profileContext;
         this.additionalProperties = additionalProperties;
     }
 
@@ -34,6 +46,22 @@ public final class ProfileUploadRequest {
     @JsonProperty("profile")
     public String getProfile() {
         return profile;
+    }
+
+    /**
+     * @return Implementation Guide name to group this profile under. Defaults to &quot;custom&quot; if omitted. Cannot be &quot;us_core&quot; (reserved). Use this to organize custom profiles into named IGs that can be referenced when calling create/multi or document/multi endpoints.
+     */
+    @JsonProperty("implementation_guide")
+    public Optional<String> getImplementationGuide() {
+        return implementationGuide;
+    }
+
+    /**
+     * @return Natural language context that helps the LLM select the right profiles from this implementation guide during resource detection. For example, &quot;When the text mentions phenotypic features or abnormalities, prefer the hpo-observation profile over Condition.&quot; This is stored as IG-level metadata and injected into the LLM prompt. Max 2000 characters. Providing this field on any upload will update the context for the entire IG (last write wins).
+     */
+    @JsonProperty("profile_context")
+    public Optional<String> getProfileContext() {
+        return profileContext;
     }
 
     @java.lang.Override
@@ -48,12 +76,14 @@ public final class ProfileUploadRequest {
     }
 
     private boolean equalTo(ProfileUploadRequest other) {
-        return profile.equals(other.profile);
+        return profile.equals(other.profile)
+                && implementationGuide.equals(other.implementationGuide)
+                && profileContext.equals(other.profileContext);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.profile);
+        return Objects.hash(this.profile, this.implementationGuide, this.profileContext);
     }
 
     @java.lang.Override
@@ -80,11 +110,29 @@ public final class ProfileUploadRequest {
         _FinalStage additionalProperty(String key, Object value);
 
         _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+        /**
+         * <p>Implementation Guide name to group this profile under. Defaults to &quot;custom&quot; if omitted. Cannot be &quot;us_core&quot; (reserved). Use this to organize custom profiles into named IGs that can be referenced when calling create/multi or document/multi endpoints.</p>
+         */
+        _FinalStage implementationGuide(Optional<String> implementationGuide);
+
+        _FinalStage implementationGuide(String implementationGuide);
+
+        /**
+         * <p>Natural language context that helps the LLM select the right profiles from this implementation guide during resource detection. For example, &quot;When the text mentions phenotypic features or abnormalities, prefer the hpo-observation profile over Condition.&quot; This is stored as IG-level metadata and injected into the LLM prompt. Max 2000 characters. Providing this field on any upload will update the context for the entire IG (last write wins).</p>
+         */
+        _FinalStage profileContext(Optional<String> profileContext);
+
+        _FinalStage profileContext(String profileContext);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder implements ProfileStage, _FinalStage {
         private String profile;
+
+        private Optional<String> profileContext = Optional.empty();
+
+        private Optional<String> implementationGuide = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -94,6 +142,8 @@ public final class ProfileUploadRequest {
         @java.lang.Override
         public Builder from(ProfileUploadRequest other) {
             profile(other.getProfile());
+            implementationGuide(other.getImplementationGuide());
+            profileContext(other.getProfileContext());
             return this;
         }
 
@@ -109,9 +159,49 @@ public final class ProfileUploadRequest {
             return this;
         }
 
+        /**
+         * <p>Natural language context that helps the LLM select the right profiles from this implementation guide during resource detection. For example, &quot;When the text mentions phenotypic features or abnormalities, prefer the hpo-observation profile over Condition.&quot; This is stored as IG-level metadata and injected into the LLM prompt. Max 2000 characters. Providing this field on any upload will update the context for the entire IG (last write wins).</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage profileContext(String profileContext) {
+            this.profileContext = Optional.ofNullable(profileContext);
+            return this;
+        }
+
+        /**
+         * <p>Natural language context that helps the LLM select the right profiles from this implementation guide during resource detection. For example, &quot;When the text mentions phenotypic features or abnormalities, prefer the hpo-observation profile over Condition.&quot; This is stored as IG-level metadata and injected into the LLM prompt. Max 2000 characters. Providing this field on any upload will update the context for the entire IG (last write wins).</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "profile_context", nulls = Nulls.SKIP)
+        public _FinalStage profileContext(Optional<String> profileContext) {
+            this.profileContext = profileContext;
+            return this;
+        }
+
+        /**
+         * <p>Implementation Guide name to group this profile under. Defaults to &quot;custom&quot; if omitted. Cannot be &quot;us_core&quot; (reserved). Use this to organize custom profiles into named IGs that can be referenced when calling create/multi or document/multi endpoints.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage implementationGuide(String implementationGuide) {
+            this.implementationGuide = Optional.ofNullable(implementationGuide);
+            return this;
+        }
+
+        /**
+         * <p>Implementation Guide name to group this profile under. Defaults to &quot;custom&quot; if omitted. Cannot be &quot;us_core&quot; (reserved). Use this to organize custom profiles into named IGs that can be referenced when calling create/multi or document/multi endpoints.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
+        public _FinalStage implementationGuide(Optional<String> implementationGuide) {
+            this.implementationGuide = implementationGuide;
+            return this;
+        }
+
         @java.lang.Override
         public ProfileUploadRequest build() {
-            return new ProfileUploadRequest(profile, additionalProperties);
+            return new ProfileUploadRequest(profile, implementationGuide, profileContext, additionalProperties);
         }
 
         @java.lang.Override

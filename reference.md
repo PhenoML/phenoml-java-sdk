@@ -3658,6 +3658,14 @@ client.lang2Fhir().createMulti(
 <dl>
 <dd>
 
+**implementationGuide:** `Optional<String>` — Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **detectionEffort:** `Optional<CreateMultiRequestDetectionEffort>` — Detection effort. 'standard' runs detection once, 'deep' runs detection multiple times for higher recall.
     
 </dd>
@@ -3803,6 +3811,22 @@ client.lang2Fhir().uploadProfile(
 <dd>
 
 **profile:** `String` — Base64 encoded JSON string of a FHIR StructureDefinition. The profile must include id, url, type, and a snapshot with elements. All metadata (version, resource type, identifier) is derived from the StructureDefinition itself. The lowercase id from the StructureDefinition becomes the profile's lookup key.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**implementationGuide:** `Optional<String>` — Implementation Guide name to group this profile under. Defaults to "custom" if omitted. Cannot be "us_core" (reserved). Use this to organize custom profiles into named IGs that can be referenced when calling create/multi or document/multi endpoints.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**profileContext:** `Optional<String>` — Natural language context that helps the LLM select the right profiles from this implementation guide during resource detection. For example, "When the text mentions phenotypic features or abnormalities, prefer the hpo-observation profile over Condition." This is stored as IG-level metadata and injected into the LLM prompt. Max 2000 characters. Providing this field on any upload will update the context for the entire IG (last write wins).
     
 </dd>
 </dl>
@@ -3967,6 +3991,14 @@ File type is auto-detected from content magic bytes.
 <dd>
 
 **provider:** `Optional<String>` — Optional FHIR provider name for provider-specific profiles
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**implementationGuide:** `Optional<String>` — Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.
     
 </dd>
 </dl>
