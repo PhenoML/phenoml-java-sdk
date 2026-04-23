@@ -28,6 +28,8 @@ public final class ExtractRequestConfig {
 
     private final Optional<ExtractRequestConfigValidationMethod> validationMethod;
 
+    private final Optional<Float> chunkCodeJaccardSimilarityFilteringThreshold;
+
     private final Optional<Boolean> includeRationale;
 
     private final Optional<Boolean> includeAncestors;
@@ -49,6 +51,7 @@ public final class ExtractRequestConfig {
             Optional<Integer> maxCodesPerChunk,
             Optional<Float> codeSimilarityFilter,
             Optional<ExtractRequestConfigValidationMethod> validationMethod,
+            Optional<Float> chunkCodeJaccardSimilarityFilteringThreshold,
             Optional<Boolean> includeRationale,
             Optional<Boolean> includeAncestors,
             Optional<Boolean> includeInvalid,
@@ -61,6 +64,7 @@ public final class ExtractRequestConfig {
         this.maxCodesPerChunk = maxCodesPerChunk;
         this.codeSimilarityFilter = codeSimilarityFilter;
         this.validationMethod = validationMethod;
+        this.chunkCodeJaccardSimilarityFilteringThreshold = chunkCodeJaccardSimilarityFilteringThreshold;
         this.includeRationale = includeRationale;
         this.includeAncestors = includeAncestors;
         this.includeInvalid = includeInvalid;
@@ -106,11 +110,21 @@ public final class ExtractRequestConfig {
      * <li>none - No validation, returns all candidate codes</li>
      * <li>simple - LLM-based validation</li>
      * <li>medication_search - LLM-based validation tailored for medication concepts</li>
+     * <li>chunk_code_jaccard_similarity - Token-level Jaccard similarity between source text chunk and code description</li>
      * </ul>
      */
     @JsonProperty("validation_method")
     public Optional<ExtractRequestConfigValidationMethod> getValidationMethod() {
         return validationMethod;
+    }
+
+    /**
+     * @return Minimum Jaccard similarity (0.0-1.0) for a code to be considered valid
+     * when using the &quot;chunk_code_jaccard_similarity&quot; validation method. Ignored by other methods.
+     */
+    @JsonProperty("chunk_code_jaccard_similarity_filtering_threshold")
+    public Optional<Float> getChunkCodeJaccardSimilarityFilteringThreshold() {
+        return chunkCodeJaccardSimilarityFilteringThreshold;
     }
 
     /**
@@ -202,6 +216,8 @@ public final class ExtractRequestConfig {
                 && maxCodesPerChunk.equals(other.maxCodesPerChunk)
                 && codeSimilarityFilter.equals(other.codeSimilarityFilter)
                 && validationMethod.equals(other.validationMethod)
+                && chunkCodeJaccardSimilarityFilteringThreshold.equals(
+                        other.chunkCodeJaccardSimilarityFilteringThreshold)
                 && includeRationale.equals(other.includeRationale)
                 && includeAncestors.equals(other.includeAncestors)
                 && includeInvalid.equals(other.includeInvalid)
@@ -218,6 +234,7 @@ public final class ExtractRequestConfig {
                 this.maxCodesPerChunk,
                 this.codeSimilarityFilter,
                 this.validationMethod,
+                this.chunkCodeJaccardSimilarityFilteringThreshold,
                 this.includeRationale,
                 this.includeAncestors,
                 this.includeInvalid,
@@ -246,6 +263,8 @@ public final class ExtractRequestConfig {
 
         private Optional<ExtractRequestConfigValidationMethod> validationMethod = Optional.empty();
 
+        private Optional<Float> chunkCodeJaccardSimilarityFilteringThreshold = Optional.empty();
+
         private Optional<Boolean> includeRationale = Optional.empty();
 
         private Optional<Boolean> includeAncestors = Optional.empty();
@@ -270,6 +289,7 @@ public final class ExtractRequestConfig {
             maxCodesPerChunk(other.getMaxCodesPerChunk());
             codeSimilarityFilter(other.getCodeSimilarityFilter());
             validationMethod(other.getValidationMethod());
+            chunkCodeJaccardSimilarityFilteringThreshold(other.getChunkCodeJaccardSimilarityFilteringThreshold());
             includeRationale(other.getIncludeRationale());
             includeAncestors(other.getIncludeAncestors());
             includeInvalid(other.getIncludeInvalid());
@@ -333,6 +353,7 @@ public final class ExtractRequestConfig {
          * <li>none - No validation, returns all candidate codes</li>
          * <li>simple - LLM-based validation</li>
          * <li>medication_search - LLM-based validation tailored for medication concepts</li>
+         * <li>chunk_code_jaccard_similarity - Token-level Jaccard similarity between source text chunk and code description</li>
          * </ul>
          */
         @JsonSetter(value = "validation_method", nulls = Nulls.SKIP)
@@ -343,6 +364,24 @@ public final class ExtractRequestConfig {
 
         public Builder validationMethod(ExtractRequestConfigValidationMethod validationMethod) {
             this.validationMethod = Optional.ofNullable(validationMethod);
+            return this;
+        }
+
+        /**
+         * <p>Minimum Jaccard similarity (0.0-1.0) for a code to be considered valid
+         * when using the &quot;chunk_code_jaccard_similarity&quot; validation method. Ignored by other methods.</p>
+         */
+        @JsonSetter(value = "chunk_code_jaccard_similarity_filtering_threshold", nulls = Nulls.SKIP)
+        public Builder chunkCodeJaccardSimilarityFilteringThreshold(
+                Optional<Float> chunkCodeJaccardSimilarityFilteringThreshold) {
+            this.chunkCodeJaccardSimilarityFilteringThreshold = chunkCodeJaccardSimilarityFilteringThreshold;
+            return this;
+        }
+
+        public Builder chunkCodeJaccardSimilarityFilteringThreshold(
+                Float chunkCodeJaccardSimilarityFilteringThreshold) {
+            this.chunkCodeJaccardSimilarityFilteringThreshold =
+                    Optional.ofNullable(chunkCodeJaccardSimilarityFilteringThreshold);
             return this;
         }
 
@@ -467,6 +506,7 @@ public final class ExtractRequestConfig {
                     maxCodesPerChunk,
                     codeSimilarityFilter,
                     validationMethod,
+                    chunkCodeJaccardSimilarityFilteringThreshold,
                     includeRationale,
                     includeAncestors,
                     includeInvalid,

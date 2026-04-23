@@ -1,3 +1,7 @@
+## 12.3.0 - 2026-04-23
+### Added
+* **`ExtractRequestConfigValidationMethod.CHUNK_CODE_JACCARD_SIMILARITY`** — new validation method that filters codes using token-level Jaccard similarity between the source text chunk and the code description; pair it with the new **`chunkCodeJaccardSimilarityFilteringThreshold`** field on `ExtractRequestConfig` to set the minimum similarity score (0.0–1.0). Both additions are optional and all existing call sites require no changes.
+
 ## 12.2.0 - 2026-04-14
 * Three new optional fields expand custom Implementation Guide (IG) support across the SDK. `CreateMultiRequest` and `DocumentMultiRequest` now accept an `implementationGuide` field to include profiles from a named custom IG alongside US Core profiles during resource detection. `ProfileUploadRequest` gains an `implementationGuide` field (to group uploaded profiles under a named IG) and a `profileContext` field (natural language context that guides LLM profile selection, stored as IG-level metadata). All new fields are optional and existing call sites require no changes.
 
