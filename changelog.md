@@ -1,3 +1,9 @@
+## 12.3.0 - 2026-04-24
+### Added
+* **`ExtractRequestConfigValidationMethod.CHUNK_CODE_JACCARD_SIMILARITY`** — new validation method that filters extracted codes using token-level Jaccard similarity between the source text chunk and the code description.
+* **`ExtractRequestConfig.chunkCodeJaccardSimilarityFilteringThreshold`** — new optional `Float` field (and builder setter) on `ExtractRequestConfig` that sets the minimum Jaccard similarity score (0.0–1.0) required for a code to pass validation when using the `chunk_code_jaccard_similarity` method; ignored by all other validation methods.
+* **`ExtractRequestConfigChunkingMethod.CLINICAL_NER_EXTRACT`** — new chunking method that extracts clinical concepts (problems, tests, treatments) and uses each as an individual chunk; supports source-text citations alongside the existing `sentences` method.
+
 ## 12.2.0 - 2026-04-14
 * Three new optional fields expand custom Implementation Guide (IG) support across the SDK. `CreateMultiRequest` and `DocumentMultiRequest` now accept an `implementationGuide` field to include profiles from a named custom IG alongside US Core profiles during resource detection. `ProfileUploadRequest` gains an `implementationGuide` field (to group uploaded profiles under a named IG) and a `profileContext` field (natural language context that guides LLM profile selection, stored as IG-level metadata). All new fields are optional and existing call sites require no changes.
 

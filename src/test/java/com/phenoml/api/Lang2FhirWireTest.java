@@ -145,7 +145,7 @@ public class Lang2FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:patient-abc123\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:patient-abc123\",\"resourceType\":\"Patient\",\"description\":\"John Smith, 45-year-old male\"}]}"));
+                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"resourceType\":\"Patient\",\"description\":\"John Smith, 45-year-old male\"}]}"));
         CreateMultiResponse response = client.lang2Fhir()
                 .createMulti(CreateMultiRequest.builder()
                         .text(
@@ -207,7 +207,7 @@ public class Lang2FhirWireTest {
                 + "    \"type\": \"transaction\",\n"
                 + "    \"entry\": [\n"
                 + "      {\n"
-                + "        \"fullUrl\": \"urn:uuid:patient-abc123\",\n"
+                + "        \"fullUrl\": \"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\n"
                 + "        \"request\": {\n"
                 + "          \"method\": \"POST\",\n"
                 + "          \"url\": \"Patient\"\n"
@@ -217,7 +217,7 @@ public class Lang2FhirWireTest {
                 + "  },\n"
                 + "  \"resources\": [\n"
                 + "    {\n"
-                + "      \"tempId\": \"urn:uuid:patient-abc123\",\n"
+                + "      \"tempId\": \"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\n"
                 + "      \"resourceType\": \"Patient\",\n"
                 + "      \"description\": \"John Smith, 45-year-old male\"\n"
                 + "    }\n"
@@ -551,7 +551,7 @@ public class Lang2FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:patient-abc123\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:patient-abc123\",\"resourceType\":\"Patient\",\"description\":\"John Smith, 45-year-old male\"}]}"));
+                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"resourceType\":\"Patient\",\"description\":\"John Smith, 45-year-old male\"}]}"));
         CreateMultiResponse response = client.lang2Fhir()
                 .extractMultipleFhirResourcesFromADocument(DocumentMultiRequest.builder()
                         .version("R4")
@@ -610,7 +610,7 @@ public class Lang2FhirWireTest {
                 + "    \"type\": \"transaction\",\n"
                 + "    \"entry\": [\n"
                 + "      {\n"
-                + "        \"fullUrl\": \"urn:uuid:patient-abc123\",\n"
+                + "        \"fullUrl\": \"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\n"
                 + "        \"request\": {\n"
                 + "          \"method\": \"POST\",\n"
                 + "          \"url\": \"Patient\"\n"
@@ -620,7 +620,7 @@ public class Lang2FhirWireTest {
                 + "  },\n"
                 + "  \"resources\": [\n"
                 + "    {\n"
-                + "      \"tempId\": \"urn:uuid:patient-abc123\",\n"
+                + "      \"tempId\": \"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\n"
                 + "      \"resourceType\": \"Patient\",\n"
                 + "      \"description\": \"John Smith, 45-year-old male\"\n"
                 + "    }\n"

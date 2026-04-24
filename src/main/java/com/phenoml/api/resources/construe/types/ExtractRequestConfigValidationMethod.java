@@ -10,6 +10,10 @@ public final class ExtractRequestConfigValidationMethod {
     public static final ExtractRequestConfigValidationMethod NONE =
             new ExtractRequestConfigValidationMethod(Value.NONE, "none");
 
+    public static final ExtractRequestConfigValidationMethod CHUNK_CODE_JACCARD_SIMILARITY =
+            new ExtractRequestConfigValidationMethod(
+                    Value.CHUNK_CODE_JACCARD_SIMILARITY, "chunk_code_jaccard_similarity");
+
     public static final ExtractRequestConfigValidationMethod SIMPLE =
             new ExtractRequestConfigValidationMethod(Value.SIMPLE, "simple");
 
@@ -51,6 +55,8 @@ public final class ExtractRequestConfigValidationMethod {
         switch (value) {
             case NONE:
                 return visitor.visitNone();
+            case CHUNK_CODE_JACCARD_SIMILARITY:
+                return visitor.visitChunkCodeJaccardSimilarity();
             case SIMPLE:
                 return visitor.visitSimple();
             case MEDICATION_SEARCH:
@@ -66,6 +72,8 @@ public final class ExtractRequestConfigValidationMethod {
         switch (value) {
             case "none":
                 return NONE;
+            case "chunk_code_jaccard_similarity":
+                return CHUNK_CODE_JACCARD_SIMILARITY;
             case "simple":
                 return SIMPLE;
             case "medication_search":
@@ -82,6 +90,8 @@ public final class ExtractRequestConfigValidationMethod {
 
         MEDICATION_SEARCH,
 
+        CHUNK_CODE_JACCARD_SIMILARITY,
+
         UNKNOWN
     }
 
@@ -91,6 +101,8 @@ public final class ExtractRequestConfigValidationMethod {
         T visitSimple();
 
         T visitMedicationSearch();
+
+        T visitChunkCodeJaccardSimilarity();
 
         T visitUnknown(String unknownType);
     }
