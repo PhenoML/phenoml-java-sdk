@@ -22,6 +22,9 @@ public final class ExtractRequestConfigChunkingMethod {
     public static final ExtractRequestConfigChunkingMethod SENTENCES =
             new ExtractRequestConfigChunkingMethod(Value.SENTENCES, "sentences");
 
+    public static final ExtractRequestConfigChunkingMethod CLINICAL_NER_EXTRACT =
+            new ExtractRequestConfigChunkingMethod(Value.CLINICAL_NER_EXTRACT, "clinical_ner_extract");
+
     private final Value value;
 
     private final String string;
@@ -65,6 +68,8 @@ public final class ExtractRequestConfigChunkingMethod {
                 return visitor.visitNone();
             case SENTENCES:
                 return visitor.visitSentences();
+            case CLINICAL_NER_EXTRACT:
+                return visitor.visitClinicalNerExtract();
             case UNKNOWN:
             default:
                 return visitor.visitUnknown(string);
@@ -84,6 +89,8 @@ public final class ExtractRequestConfigChunkingMethod {
                 return NONE;
             case "sentences":
                 return SENTENCES;
+            case "clinical_ner_extract":
+                return CLINICAL_NER_EXTRACT;
             default:
                 return new ExtractRequestConfigChunkingMethod(Value.UNKNOWN, value);
         }
@@ -100,6 +107,8 @@ public final class ExtractRequestConfigChunkingMethod {
 
         SOAP_NOTE,
 
+        CLINICAL_NER_EXTRACT,
+
         UNKNOWN
     }
 
@@ -113,6 +122,8 @@ public final class ExtractRequestConfigChunkingMethod {
         T visitTopics();
 
         T visitSoapNote();
+
+        T visitClinicalNerExtract();
 
         T visitUnknown(String unknownType);
     }
