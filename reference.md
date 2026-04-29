@@ -3617,7 +3617,7 @@ Resources are linked with proper references (e.g., Conditions reference the Pati
 client.lang2Fhir().createMulti(
     CreateMultiRequest
         .builder()
-        .text("John Smith, 45-year-old male, diagnosed with Type 2 Diabetes. Prescribed Metformin 500mg twice daily.")
+        .text("John Smith, male born on 1980-03-12, diagnosed with Type 2 Diabetes. Prescribed Metformin 500mg twice daily.")
         .build()
 );
 ```

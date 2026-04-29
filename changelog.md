@@ -1,3 +1,9 @@
+## 12.4.0 - 2026-04-29
+### Added
+* **`ExtractRequestConfigChunkingMethod.FASTHPOCR`** — new chunking method that extracts HPO concepts directly with category annotations and citation support; requires `system: HPO` and causes most other config options to be ignored.
+* **`CodeCategory`** — new type with `uri` and `label` fields representing a higher-level grouping (e.g. an HPO category term) that an extracted code belongs to.
+* **`ExtractedCodeResult.getCategories()`** — new optional `categories` field (`Optional<List<CodeCategory>>`) on `ExtractedCodeResult`, populated only by full-extraction chunking methods such as `fasthpocr`; corresponding builder methods `categories(List<CodeCategory>)` and `categories(Optional<List<CodeCategory>>)` are also available.
+
 ## 12.3.0 - 2026-04-24
 ### Added
 * **`ExtractRequestConfigValidationMethod.CHUNK_CODE_JACCARD_SIMILARITY`** — new validation method that filters extracted codes using token-level Jaccard similarity between the source text chunk and the code description.

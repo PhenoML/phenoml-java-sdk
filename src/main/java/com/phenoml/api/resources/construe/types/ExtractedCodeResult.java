@@ -34,6 +34,8 @@ public final class ExtractedCodeResult {
 
     private final Optional<List<Citation>> citations;
 
+    private final Optional<List<CodeCategory>> categories;
+
     private final Map<String, Object> additionalProperties;
 
     private ExtractedCodeResult(
@@ -43,6 +45,7 @@ public final class ExtractedCodeResult {
             Optional<String> reason,
             Optional<Boolean> isAncestor,
             Optional<List<Citation>> citations,
+            Optional<List<CodeCategory>> categories,
             Map<String, Object> additionalProperties) {
         this.code = code;
         this.description = description;
@@ -50,6 +53,7 @@ public final class ExtractedCodeResult {
         this.reason = reason;
         this.isAncestor = isAncestor;
         this.citations = citations;
+        this.categories = categories;
         this.additionalProperties = additionalProperties;
     }
 
@@ -104,6 +108,15 @@ public final class ExtractedCodeResult {
         return citations;
     }
 
+    /**
+     * @return Higher-level groupings the extracted code belongs to (e.g. HPO category terms).
+     * Only populated by full-extraction chunking methods such as &quot;fasthpocr&quot;.
+     */
+    @JsonProperty("categories")
+    public Optional<List<CodeCategory>> getCategories() {
+        return categories;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -121,12 +134,14 @@ public final class ExtractedCodeResult {
                 && valid == other.valid
                 && reason.equals(other.reason)
                 && isAncestor.equals(other.isAncestor)
-                && citations.equals(other.citations);
+                && citations.equals(other.citations)
+                && categories.equals(other.categories);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.code, this.description, this.valid, this.reason, this.isAncestor, this.citations);
+        return Objects.hash(
+                this.code, this.description, this.valid, this.reason, this.isAncestor, this.citations, this.categories);
     }
 
     @java.lang.Override
@@ -191,6 +206,14 @@ public final class ExtractedCodeResult {
         _FinalStage citations(Optional<List<Citation>> citations);
 
         _FinalStage citations(List<Citation> citations);
+
+        /**
+         * <p>Higher-level groupings the extracted code belongs to (e.g. HPO category terms).
+         * Only populated by full-extraction chunking methods such as &quot;fasthpocr&quot;.</p>
+         */
+        _FinalStage categories(Optional<List<CodeCategory>> categories);
+
+        _FinalStage categories(List<CodeCategory> categories);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -200,6 +223,8 @@ public final class ExtractedCodeResult {
         private String description;
 
         private boolean valid;
+
+        private Optional<List<CodeCategory>> categories = Optional.empty();
 
         private Optional<List<Citation>> citations = Optional.empty();
 
@@ -220,6 +245,7 @@ public final class ExtractedCodeResult {
             reason(other.getReason());
             isAncestor(other.getIsAncestor());
             citations(other.getCitations());
+            categories(other.getCategories());
             return this;
         }
 
@@ -256,6 +282,28 @@ public final class ExtractedCodeResult {
         @JsonSetter("valid")
         public _FinalStage valid(boolean valid) {
             this.valid = valid;
+            return this;
+        }
+
+        /**
+         * <p>Higher-level groupings the extracted code belongs to (e.g. HPO category terms).
+         * Only populated by full-extraction chunking methods such as &quot;fasthpocr&quot;.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage categories(List<CodeCategory> categories) {
+            this.categories = Optional.ofNullable(categories);
+            return this;
+        }
+
+        /**
+         * <p>Higher-level groupings the extracted code belongs to (e.g. HPO category terms).
+         * Only populated by full-extraction chunking methods such as &quot;fasthpocr&quot;.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "categories", nulls = Nulls.SKIP)
+        public _FinalStage categories(Optional<List<CodeCategory>> categories) {
+            this.categories = categories;
             return this;
         }
 
@@ -328,7 +376,7 @@ public final class ExtractedCodeResult {
         @java.lang.Override
         public ExtractedCodeResult build() {
             return new ExtractedCodeResult(
-                    code, description, valid, reason, isAncestor, citations, additionalProperties);
+                    code, description, valid, reason, isAncestor, citations, categories, additionalProperties);
         }
 
         @java.lang.Override

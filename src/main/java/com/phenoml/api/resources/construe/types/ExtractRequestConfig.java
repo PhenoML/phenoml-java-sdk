@@ -83,6 +83,10 @@ public final class ExtractRequestConfig {
      * <li>paragraphs / topics / soap_note - LLM-based chunking.</li>
      * <li>clinical_ner_extract - Extract clinical concepts (problems, tests,
      * treatments) and use each as a chunk (supports citations).</li>
+     * <li>fasthpocr - Extract HPO concepts directly with category
+     * annotations (supports citations). Requires <code>system: HPO</code>;
+     * other systems are rejected. Causes most other config options
+     * to be ignored.</li>
      * </ul>
      */
     @JsonProperty("chunking_method")
@@ -161,7 +165,7 @@ public final class ExtractRequestConfig {
     /**
      * @return Whether to include source text citations for each extracted code.
      * Citations show the exact text spans (with character offsets) that led to each code.
-     * Supported when chunking_method is &quot;sentences&quot; or &quot;clinical_ner_extract&quot;.
+     * Supported when chunking_method is &quot;sentences&quot;, &quot;clinical_ner_extract&quot;, or &quot;fasthpocr&quot;.
      */
     @JsonProperty("include_citations")
     public Optional<Boolean> getIncludeCitations() {
@@ -313,6 +317,10 @@ public final class ExtractRequestConfig {
          * <li>paragraphs / topics / soap_note - LLM-based chunking.</li>
          * <li>clinical_ner_extract - Extract clinical concepts (problems, tests,
          * treatments) and use each as a chunk (supports citations).</li>
+         * <li>fasthpocr - Extract HPO concepts directly with category
+         * annotations (supports citations). Requires <code>system: HPO</code>;
+         * other systems are rejected. Causes most other config options
+         * to be ignored.</li>
          * </ul>
          */
         @JsonSetter(value = "chunking_method", nulls = Nulls.SKIP)
@@ -442,7 +450,7 @@ public final class ExtractRequestConfig {
         /**
          * <p>Whether to include source text citations for each extracted code.
          * Citations show the exact text spans (with character offsets) that led to each code.
-         * Supported when chunking_method is &quot;sentences&quot; or &quot;clinical_ner_extract&quot;.</p>
+         * Supported when chunking_method is &quot;sentences&quot;, &quot;clinical_ner_extract&quot;, or &quot;fasthpocr&quot;.</p>
          */
         @JsonSetter(value = "include_citations", nulls = Nulls.SKIP)
         public Builder includeCitations(Optional<Boolean> includeCitations) {
