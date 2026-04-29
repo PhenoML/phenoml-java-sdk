@@ -166,7 +166,7 @@ public class ConstrueWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"system\":{\"name\":\"SNOMED_CT_US_LITE\",\"version\":\"20240901\"},\"codes\":[{\"code\":\"195967001\",\"description\":\"Asthma\",\"valid\":true,\"reason\":\"reason\",\"is_ancestor\":true,\"citations\":[{\"text\":\"Patient has type 2 diabetes\",\"begin_offset\":0,\"end_offset\":27}]}]}"));
+                                "{\"system\":{\"name\":\"SNOMED_CT_US_LITE\",\"version\":\"20240901\"},\"codes\":[{\"code\":\"195967001\",\"description\":\"Asthma\",\"valid\":true,\"reason\":\"reason\",\"is_ancestor\":true,\"citations\":[{\"text\":\"Patient has type 2 diabetes\",\"begin_offset\":0,\"end_offset\":27}],\"categories\":[{\"uri\":\"HP:0025142\",\"label\":\"Constitutional symptom\"}]}]}"));
         ExtractCodesResult response = client.construe()
                 .extractCodes(ExtractRequest.builder()
                         .text(
@@ -237,6 +237,12 @@ public class ConstrueWireTest {
                 + "          \"text\": \"Patient has type 2 diabetes\",\n"
                 + "          \"begin_offset\": 0,\n"
                 + "          \"end_offset\": 27\n"
+                + "        }\n"
+                + "      ],\n"
+                + "      \"categories\": [\n"
+                + "        {\n"
+                + "          \"uri\": \"HP:0025142\",\n"
+                + "          \"label\": \"Constitutional symptom\"\n"
                 + "        }\n"
                 + "      ]\n"
                 + "    }\n"

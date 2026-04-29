@@ -10,6 +10,9 @@ public final class ExtractRequestConfigChunkingMethod {
     public static final ExtractRequestConfigChunkingMethod SOAP_NOTE =
             new ExtractRequestConfigChunkingMethod(Value.SOAP_NOTE, "soap_note");
 
+    public static final ExtractRequestConfigChunkingMethod FASTHPOCR =
+            new ExtractRequestConfigChunkingMethod(Value.FASTHPOCR, "fasthpocr");
+
     public static final ExtractRequestConfigChunkingMethod TOPICS =
             new ExtractRequestConfigChunkingMethod(Value.TOPICS, "topics");
 
@@ -60,6 +63,8 @@ public final class ExtractRequestConfigChunkingMethod {
         switch (value) {
             case SOAP_NOTE:
                 return visitor.visitSoapNote();
+            case FASTHPOCR:
+                return visitor.visitFasthpocr();
             case TOPICS:
                 return visitor.visitTopics();
             case PARAGRAPHS:
@@ -81,6 +86,8 @@ public final class ExtractRequestConfigChunkingMethod {
         switch (value) {
             case "soap_note":
                 return SOAP_NOTE;
+            case "fasthpocr":
+                return FASTHPOCR;
             case "topics":
                 return TOPICS;
             case "paragraphs":
@@ -109,6 +116,8 @@ public final class ExtractRequestConfigChunkingMethod {
 
         CLINICAL_NER_EXTRACT,
 
+        FASTHPOCR,
+
         UNKNOWN
     }
 
@@ -124,6 +133,8 @@ public final class ExtractRequestConfigChunkingMethod {
         T visitSoapNote();
 
         T visitClinicalNerExtract();
+
+        T visitFasthpocr();
 
         T visitUnknown(String unknownType);
     }
