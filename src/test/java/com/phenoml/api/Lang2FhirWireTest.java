@@ -145,7 +145,7 @@ public class Lang2FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"resourceType\":\"Patient\",\"description\":\"John Smith, 45-year-old male\"}]}"));
+                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"resourceType\":\"Patient\",\"description\":\"John Smith, 45-year-old male\"}],\"validation\":{\"passes\":[{}],\"fixed\":true,\"attempts\":1,\"summary\":\"summary\"}}"));
         CreateMultiResponse response = client.lang2Fhir()
                 .createMulti(CreateMultiRequest.builder()
                         .text(
@@ -221,7 +221,15 @@ public class Lang2FhirWireTest {
                 + "      \"resourceType\": \"Patient\",\n"
                 + "      \"description\": \"John Smith, 45-year-old male\"\n"
                 + "    }\n"
-                + "  ]\n"
+                + "  ],\n"
+                + "  \"validation\": {\n"
+                + "    \"passes\": [\n"
+                + "      {}\n"
+                + "    ],\n"
+                + "    \"fixed\": true,\n"
+                + "    \"attempts\": 1,\n"
+                + "    \"summary\": \"summary\"\n"
+                + "  }\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
@@ -551,7 +559,7 @@ public class Lang2FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"resourceType\":\"Patient\",\"description\":\"John Smith, 45-year-old male\"}]}"));
+                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"resourceType\":\"Patient\",\"description\":\"John Smith, 45-year-old male\"}],\"validation\":{\"passes\":[{}],\"fixed\":true,\"attempts\":1,\"summary\":\"summary\"}}"));
         CreateMultiResponse response = client.lang2Fhir()
                 .extractMultipleFhirResourcesFromADocument(DocumentMultiRequest.builder()
                         .version("R4")
@@ -624,7 +632,15 @@ public class Lang2FhirWireTest {
                 + "      \"resourceType\": \"Patient\",\n"
                 + "      \"description\": \"John Smith, 45-year-old male\"\n"
                 + "    }\n"
-                + "  ]\n"
+                + "  ],\n"
+                + "  \"validation\": {\n"
+                + "    \"passes\": [\n"
+                + "      {}\n"
+                + "    ],\n"
+                + "    \"fixed\": true,\n"
+                + "    \"attempts\": 1,\n"
+                + "    \"summary\": \"summary\"\n"
+                + "  }\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
