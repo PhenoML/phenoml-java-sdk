@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.lang2fhir.types.DocumentMultiRequestDetectionEffort;
+import com.phenoml.api.resources.lang2fhir.types.DocumentMultiRequestValidationMethod;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,6 +33,8 @@ public final class DocumentMultiRequest {
 
     private final Optional<DocumentMultiRequestDetectionEffort> detectionEffort;
 
+    private final Optional<DocumentMultiRequestValidationMethod> validationMethod;
+
     private final Map<String, Object> additionalProperties;
 
     private DocumentMultiRequest(
@@ -40,12 +43,14 @@ public final class DocumentMultiRequest {
             Optional<String> provider,
             Optional<String> implementationGuide,
             Optional<DocumentMultiRequestDetectionEffort> detectionEffort,
+            Optional<DocumentMultiRequestValidationMethod> validationMethod,
             Map<String, Object> additionalProperties) {
         this.version = version;
         this.content = content;
         this.provider = provider;
         this.implementationGuide = implementationGuide;
         this.detectionEffort = detectionEffort;
+        this.validationMethod = validationMethod;
         this.additionalProperties = additionalProperties;
     }
 
@@ -91,6 +96,14 @@ public final class DocumentMultiRequest {
         return detectionEffort;
     }
 
+    /**
+     * @return FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.
+     */
+    @JsonProperty("validation_method")
+    public Optional<DocumentMultiRequestValidationMethod> getValidationMethod() {
+        return validationMethod;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -107,12 +120,19 @@ public final class DocumentMultiRequest {
                 && content.equals(other.content)
                 && provider.equals(other.provider)
                 && implementationGuide.equals(other.implementationGuide)
-                && detectionEffort.equals(other.detectionEffort);
+                && detectionEffort.equals(other.detectionEffort)
+                && validationMethod.equals(other.validationMethod);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.version, this.content, this.provider, this.implementationGuide, this.detectionEffort);
+        return Objects.hash(
+                this.version,
+                this.content,
+                this.provider,
+                this.implementationGuide,
+                this.detectionEffort,
+                this.validationMethod);
     }
 
     @java.lang.Override
@@ -169,6 +189,13 @@ public final class DocumentMultiRequest {
         _FinalStage detectionEffort(Optional<DocumentMultiRequestDetectionEffort> detectionEffort);
 
         _FinalStage detectionEffort(DocumentMultiRequestDetectionEffort detectionEffort);
+
+        /**
+         * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
+         */
+        _FinalStage validationMethod(Optional<DocumentMultiRequestValidationMethod> validationMethod);
+
+        _FinalStage validationMethod(DocumentMultiRequestValidationMethod validationMethod);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -176,6 +203,8 @@ public final class DocumentMultiRequest {
         private String version;
 
         private String content;
+
+        private Optional<DocumentMultiRequestValidationMethod> validationMethod = Optional.empty();
 
         private Optional<DocumentMultiRequestDetectionEffort> detectionEffort = Optional.empty();
 
@@ -195,6 +224,7 @@ public final class DocumentMultiRequest {
             provider(other.getProvider());
             implementationGuide(other.getImplementationGuide());
             detectionEffort(other.getDetectionEffort());
+            validationMethod(other.getValidationMethod());
             return this;
         }
 
@@ -223,6 +253,26 @@ public final class DocumentMultiRequest {
         @JsonSetter("content")
         public _FinalStage content(@NotNull String content) {
             this.content = Objects.requireNonNull(content, "content must not be null");
+            return this;
+        }
+
+        /**
+         * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage validationMethod(DocumentMultiRequestValidationMethod validationMethod) {
+            this.validationMethod = Optional.ofNullable(validationMethod);
+            return this;
+        }
+
+        /**
+         * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "validation_method", nulls = Nulls.SKIP)
+        public _FinalStage validationMethod(Optional<DocumentMultiRequestValidationMethod> validationMethod) {
+            this.validationMethod = validationMethod;
             return this;
         }
 
@@ -289,7 +339,13 @@ public final class DocumentMultiRequest {
         @java.lang.Override
         public DocumentMultiRequest build() {
             return new DocumentMultiRequest(
-                    version, content, provider, implementationGuide, detectionEffort, additionalProperties);
+                    version,
+                    content,
+                    provider,
+                    implementationGuide,
+                    detectionEffort,
+                    validationMethod,
+                    additionalProperties);
         }
 
         @java.lang.Override

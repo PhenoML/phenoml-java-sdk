@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiRequestDetectionEffort;
+import com.phenoml.api.resources.lang2fhir.types.CreateMultiRequestValidationMethod;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,6 +33,8 @@ public final class CreateMultiRequest {
 
     private final Optional<CreateMultiRequestDetectionEffort> detectionEffort;
 
+    private final Optional<CreateMultiRequestValidationMethod> validationMethod;
+
     private final Map<String, Object> additionalProperties;
 
     private CreateMultiRequest(
@@ -40,12 +43,14 @@ public final class CreateMultiRequest {
             Optional<String> provider,
             Optional<String> implementationGuide,
             Optional<CreateMultiRequestDetectionEffort> detectionEffort,
+            Optional<CreateMultiRequestValidationMethod> validationMethod,
             Map<String, Object> additionalProperties) {
         this.text = text;
         this.version = version;
         this.provider = provider;
         this.implementationGuide = implementationGuide;
         this.detectionEffort = detectionEffort;
+        this.validationMethod = validationMethod;
         this.additionalProperties = additionalProperties;
     }
 
@@ -89,6 +94,14 @@ public final class CreateMultiRequest {
         return detectionEffort;
     }
 
+    /**
+     * @return FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.
+     */
+    @JsonProperty("validation_method")
+    public Optional<CreateMultiRequestValidationMethod> getValidationMethod() {
+        return validationMethod;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -105,12 +118,19 @@ public final class CreateMultiRequest {
                 && version.equals(other.version)
                 && provider.equals(other.provider)
                 && implementationGuide.equals(other.implementationGuide)
-                && detectionEffort.equals(other.detectionEffort);
+                && detectionEffort.equals(other.detectionEffort)
+                && validationMethod.equals(other.validationMethod);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.text, this.version, this.provider, this.implementationGuide, this.detectionEffort);
+        return Objects.hash(
+                this.text,
+                this.version,
+                this.provider,
+                this.implementationGuide,
+                this.detectionEffort,
+                this.validationMethod);
     }
 
     @java.lang.Override
@@ -165,11 +185,20 @@ public final class CreateMultiRequest {
         _FinalStage detectionEffort(Optional<CreateMultiRequestDetectionEffort> detectionEffort);
 
         _FinalStage detectionEffort(CreateMultiRequestDetectionEffort detectionEffort);
+
+        /**
+         * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
+         */
+        _FinalStage validationMethod(Optional<CreateMultiRequestValidationMethod> validationMethod);
+
+        _FinalStage validationMethod(CreateMultiRequestValidationMethod validationMethod);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder implements TextStage, _FinalStage {
         private String text;
+
+        private Optional<CreateMultiRequestValidationMethod> validationMethod = Optional.empty();
 
         private Optional<CreateMultiRequestDetectionEffort> detectionEffort = Optional.empty();
 
@@ -191,6 +220,7 @@ public final class CreateMultiRequest {
             provider(other.getProvider());
             implementationGuide(other.getImplementationGuide());
             detectionEffort(other.getDetectionEffort());
+            validationMethod(other.getValidationMethod());
             return this;
         }
 
@@ -203,6 +233,26 @@ public final class CreateMultiRequest {
         @JsonSetter("text")
         public _FinalStage text(@NotNull String text) {
             this.text = Objects.requireNonNull(text, "text must not be null");
+            return this;
+        }
+
+        /**
+         * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage validationMethod(CreateMultiRequestValidationMethod validationMethod) {
+            this.validationMethod = Optional.ofNullable(validationMethod);
+            return this;
+        }
+
+        /**
+         * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "validation_method", nulls = Nulls.SKIP)
+        public _FinalStage validationMethod(Optional<CreateMultiRequestValidationMethod> validationMethod) {
+            this.validationMethod = validationMethod;
             return this;
         }
 
@@ -289,7 +339,13 @@ public final class CreateMultiRequest {
         @java.lang.Override
         public CreateMultiRequest build() {
             return new CreateMultiRequest(
-                    text, version, provider, implementationGuide, detectionEffort, additionalProperties);
+                    text,
+                    version,
+                    provider,
+                    implementationGuide,
+                    detectionEffort,
+                    validationMethod,
+                    additionalProperties);
         }
 
         @java.lang.Override

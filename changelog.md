@@ -1,3 +1,13 @@
+## 12.5.0 - 2026-05-01
+### Added
+* **`CreateMultiRequestValidationMethod`** — new enum (`NONE`, `CHECK`, `FIX`) controlling FHIR structure validation applied to the generated bundle.
+* **`DocumentMultiRequestValidationMethod`** — new enum (`NONE`, `CHECK`, `FIX`) mirroring validation control for document multi-requests.
+* **`validationMethod` field** — new optional field added to both `CreateMultiRequest` and `DocumentMultiRequest` (with builder setters) to select the validation strategy.
+* **`CreateMultiResponseValidation`** — new response type carrying per-pass validation results (`passes`, `fixed`, `attempts`, `summary`) returned when validation is requested.
+* **`CreateMultiResponse.getValidation()`** — new optional field on `CreateMultiResponse` populated with a `CreateMultiResponseValidation` object when `CHECK` or `FIX` validation was requested.
+* **`CreateMultiResponseValidationPassesItemIssuesItem`** and **`CreateMultiResponseValidationPassesItemStats`** — new types representing individual FHIR validation issues (with `severity`, `code`, `diagnostics`, `expression`, `source`) and per-pass statistics (`resourceType`, `profileUrl`, `isCustomProfile`, `durationMs`) respectively.
+* **`CreateMultiResponseValidationPassesItemIssuesItemSeverity`** — new enum (`FATAL`, `ERROR`, `WARNING`, `INFORMATION`) classifying validation issue severity; supports the visitor pattern.
+
 ## 12.4.0 - 2026-04-29
 ### Added
 * **`ExtractRequestConfigChunkingMethod.FASTHPOCR`** — new chunking method that extracts HPO concepts directly with category annotations and citation support; requires `system: HPO` and causes most other config options to be ignored.

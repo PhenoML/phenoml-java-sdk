@@ -29,6 +29,8 @@ public final class CreateMultiResponse {
 
     private final Optional<List<CreateMultiResponseResourcesItem>> resources;
 
+    private final Optional<CreateMultiResponseValidation> validation;
+
     private final Map<String, Object> additionalProperties;
 
     private CreateMultiResponse(
@@ -36,11 +38,13 @@ public final class CreateMultiResponse {
             Optional<String> message,
             Optional<CreateMultiResponseBundle> bundle,
             Optional<List<CreateMultiResponseResourcesItem>> resources,
+            Optional<CreateMultiResponseValidation> validation,
             Map<String, Object> additionalProperties) {
         this.success = success;
         this.message = message;
         this.bundle = bundle;
         this.resources = resources;
+        this.validation = validation;
         this.additionalProperties = additionalProperties;
     }
 
@@ -76,6 +80,14 @@ public final class CreateMultiResponse {
         return resources;
     }
 
+    /**
+     * @return FHIR validation results. Present when validation_method is 'check' or 'fix'. Contains results from each validation pass. For 'check', there is one pass. For 'fix', there may be up to 3 passes as the system attempts auto-correction.
+     */
+    @JsonProperty("validation")
+    public Optional<CreateMultiResponseValidation> getValidation() {
+        return validation;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -91,12 +103,13 @@ public final class CreateMultiResponse {
         return success.equals(other.success)
                 && message.equals(other.message)
                 && bundle.equals(other.bundle)
-                && resources.equals(other.resources);
+                && resources.equals(other.resources)
+                && validation.equals(other.validation);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.success, this.message, this.bundle, this.resources);
+        return Objects.hash(this.success, this.message, this.bundle, this.resources, this.validation);
     }
 
     @java.lang.Override
@@ -118,6 +131,8 @@ public final class CreateMultiResponse {
 
         private Optional<List<CreateMultiResponseResourcesItem>> resources = Optional.empty();
 
+        private Optional<CreateMultiResponseValidation> validation = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -128,6 +143,7 @@ public final class CreateMultiResponse {
             message(other.getMessage());
             bundle(other.getBundle());
             resources(other.getResources());
+            validation(other.getValidation());
             return this;
         }
 
@@ -187,8 +203,22 @@ public final class CreateMultiResponse {
             return this;
         }
 
+        /**
+         * <p>FHIR validation results. Present when validation_method is 'check' or 'fix'. Contains results from each validation pass. For 'check', there is one pass. For 'fix', there may be up to 3 passes as the system attempts auto-correction.</p>
+         */
+        @JsonSetter(value = "validation", nulls = Nulls.SKIP)
+        public Builder validation(Optional<CreateMultiResponseValidation> validation) {
+            this.validation = validation;
+            return this;
+        }
+
+        public Builder validation(CreateMultiResponseValidation validation) {
+            this.validation = Optional.ofNullable(validation);
+            return this;
+        }
+
         public CreateMultiResponse build() {
-            return new CreateMultiResponse(success, message, bundle, resources, additionalProperties);
+            return new CreateMultiResponse(success, message, bundle, resources, validation, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {
