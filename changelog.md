@@ -1,3 +1,10 @@
+## 12.6.0 - 2026-05-06
+### Added
+* **`CreateMultiResponseResourcesItem.getOriginalText()`** — new optional `String` field returning the verbatim text excerpt from the original clinical document, complementing the existing `description` field.
+* **`Builder.originalText()`** — new builder setter (accepting `String` or `Optional<String>`) on `CreateMultiResponseResourcesItem.Builder` to populate the new `originalText` field.
+### Changed
+* **`CreateMultiResponseResourcesItem.getDescription()`** — the `description` field now returns a context-enriched rewritten text excerpt for the resource, rather than the raw source text excerpt; the raw text is now available via the new `getOriginalText()` field.
+
 ## 12.5.0 - 2026-05-01
 ### Added
 * **`CreateMultiRequestValidationMethod`** — new enum (`NONE`, `CHECK`, `FIX`) controlling FHIR structure validation applied to the generated bundle.
