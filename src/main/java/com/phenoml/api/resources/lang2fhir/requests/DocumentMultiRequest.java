@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.resources.lang2fhir.types.DocumentConfig;
 import com.phenoml.api.resources.lang2fhir.types.DocumentMultiRequestDetectionEffort;
 import com.phenoml.api.resources.lang2fhir.types.DocumentMultiRequestValidationMethod;
 import java.util.HashMap;
@@ -35,6 +36,8 @@ public final class DocumentMultiRequest {
 
     private final Optional<DocumentMultiRequestValidationMethod> validationMethod;
 
+    private final Optional<DocumentConfig> config;
+
     private final Map<String, Object> additionalProperties;
 
     private DocumentMultiRequest(
@@ -44,6 +47,7 @@ public final class DocumentMultiRequest {
             Optional<String> implementationGuide,
             Optional<DocumentMultiRequestDetectionEffort> detectionEffort,
             Optional<DocumentMultiRequestValidationMethod> validationMethod,
+            Optional<DocumentConfig> config,
             Map<String, Object> additionalProperties) {
         this.version = version;
         this.content = content;
@@ -51,6 +55,7 @@ public final class DocumentMultiRequest {
         this.implementationGuide = implementationGuide;
         this.detectionEffort = detectionEffort;
         this.validationMethod = validationMethod;
+        this.config = config;
         this.additionalProperties = additionalProperties;
     }
 
@@ -104,6 +109,11 @@ public final class DocumentMultiRequest {
         return validationMethod;
     }
 
+    @JsonProperty("config")
+    public Optional<DocumentConfig> getConfig() {
+        return config;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -121,7 +131,8 @@ public final class DocumentMultiRequest {
                 && provider.equals(other.provider)
                 && implementationGuide.equals(other.implementationGuide)
                 && detectionEffort.equals(other.detectionEffort)
-                && validationMethod.equals(other.validationMethod);
+                && validationMethod.equals(other.validationMethod)
+                && config.equals(other.config);
     }
 
     @java.lang.Override
@@ -132,7 +143,8 @@ public final class DocumentMultiRequest {
                 this.provider,
                 this.implementationGuide,
                 this.detectionEffort,
-                this.validationMethod);
+                this.validationMethod,
+                this.config);
     }
 
     @java.lang.Override
@@ -196,6 +208,10 @@ public final class DocumentMultiRequest {
         _FinalStage validationMethod(Optional<DocumentMultiRequestValidationMethod> validationMethod);
 
         _FinalStage validationMethod(DocumentMultiRequestValidationMethod validationMethod);
+
+        _FinalStage config(Optional<DocumentConfig> config);
+
+        _FinalStage config(DocumentConfig config);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -203,6 +219,8 @@ public final class DocumentMultiRequest {
         private String version;
 
         private String content;
+
+        private Optional<DocumentConfig> config = Optional.empty();
 
         private Optional<DocumentMultiRequestValidationMethod> validationMethod = Optional.empty();
 
@@ -225,6 +243,7 @@ public final class DocumentMultiRequest {
             implementationGuide(other.getImplementationGuide());
             detectionEffort(other.getDetectionEffort());
             validationMethod(other.getValidationMethod());
+            config(other.getConfig());
             return this;
         }
 
@@ -253,6 +272,19 @@ public final class DocumentMultiRequest {
         @JsonSetter("content")
         public _FinalStage content(@NotNull String content) {
             this.content = Objects.requireNonNull(content, "content must not be null");
+            return this;
+        }
+
+        @java.lang.Override
+        public _FinalStage config(DocumentConfig config) {
+            this.config = Optional.ofNullable(config);
+            return this;
+        }
+
+        @java.lang.Override
+        @JsonSetter(value = "config", nulls = Nulls.SKIP)
+        public _FinalStage config(Optional<DocumentConfig> config) {
+            this.config = config;
             return this;
         }
 
@@ -345,6 +377,7 @@ public final class DocumentMultiRequest {
                     implementationGuide,
                     detectionEffort,
                     validationMethod,
+                    config,
                     additionalProperties);
         }
 

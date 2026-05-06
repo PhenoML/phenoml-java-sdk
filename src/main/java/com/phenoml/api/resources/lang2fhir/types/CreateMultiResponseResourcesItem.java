@@ -26,16 +26,20 @@ public final class CreateMultiResponseResourcesItem {
 
     private final Optional<String> description;
 
+    private final Optional<String> originalText;
+
     private final Map<String, Object> additionalProperties;
 
     private CreateMultiResponseResourcesItem(
             Optional<String> tempId,
             Optional<String> resourceType,
             Optional<String> description,
+            Optional<String> originalText,
             Map<String, Object> additionalProperties) {
         this.tempId = tempId;
         this.resourceType = resourceType;
         this.description = description;
+        this.originalText = originalText;
         this.additionalProperties = additionalProperties;
     }
 
@@ -56,11 +60,19 @@ public final class CreateMultiResponseResourcesItem {
     }
 
     /**
-     * @return Text excerpt this resource was extracted from
+     * @return Context-enriched rewritten text excerpt for this resource
      */
     @JsonProperty("description")
     public Optional<String> getDescription() {
         return description;
+    }
+
+    /**
+     * @return Verbatim text excerpt from the original clinical document
+     */
+    @JsonProperty("originalText")
+    public Optional<String> getOriginalText() {
+        return originalText;
     }
 
     @java.lang.Override
@@ -77,12 +89,13 @@ public final class CreateMultiResponseResourcesItem {
     private boolean equalTo(CreateMultiResponseResourcesItem other) {
         return tempId.equals(other.tempId)
                 && resourceType.equals(other.resourceType)
-                && description.equals(other.description);
+                && description.equals(other.description)
+                && originalText.equals(other.originalText);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.tempId, this.resourceType, this.description);
+        return Objects.hash(this.tempId, this.resourceType, this.description, this.originalText);
     }
 
     @java.lang.Override
@@ -102,6 +115,8 @@ public final class CreateMultiResponseResourcesItem {
 
         private Optional<String> description = Optional.empty();
 
+        private Optional<String> originalText = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -111,6 +126,7 @@ public final class CreateMultiResponseResourcesItem {
             tempId(other.getTempId());
             resourceType(other.getResourceType());
             description(other.getDescription());
+            originalText(other.getOriginalText());
             return this;
         }
 
@@ -143,7 +159,7 @@ public final class CreateMultiResponseResourcesItem {
         }
 
         /**
-         * <p>Text excerpt this resource was extracted from</p>
+         * <p>Context-enriched rewritten text excerpt for this resource</p>
          */
         @JsonSetter(value = "description", nulls = Nulls.SKIP)
         public Builder description(Optional<String> description) {
@@ -156,8 +172,23 @@ public final class CreateMultiResponseResourcesItem {
             return this;
         }
 
+        /**
+         * <p>Verbatim text excerpt from the original clinical document</p>
+         */
+        @JsonSetter(value = "originalText", nulls = Nulls.SKIP)
+        public Builder originalText(Optional<String> originalText) {
+            this.originalText = originalText;
+            return this;
+        }
+
+        public Builder originalText(String originalText) {
+            this.originalText = Optional.ofNullable(originalText);
+            return this;
+        }
+
         public CreateMultiResponseResourcesItem build() {
-            return new CreateMultiResponseResourcesItem(tempId, resourceType, description, additionalProperties);
+            return new CreateMultiResponseResourcesItem(
+                    tempId, resourceType, description, originalText, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {

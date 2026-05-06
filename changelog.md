@@ -1,3 +1,14 @@
+## 13.0.0 - 2026-05-06
+### Breaking Changes
+* **`extractMultipleFhirResourcesFromADocument`** — return type changed from `CreateMultiResponse` to `DocumentMultiResponse` in `Lang2FhirClient`, `AsyncLang2FhirClient`, `RawLang2FhirClient`, and `AsyncRawLang2FhirClient`; update any code that assigns or processes the result as `CreateMultiResponse` to use `DocumentMultiResponse` instead.
+### Added
+* **`DocumentMultiResponse`** — new dedicated response type returned by `extractMultipleFhirResourcesFromADocument`, mirroring `CreateMultiResponse` and additionally exposing `getPageClassifications()` (`Optional<List<PageClassification>>`), populated when a `page_filter` is supplied.
+* **`PageFilter`** — new request type with a required `context` field (natural-language description of relevant content); pages that do not match are dropped before FHIR extraction.
+* **`PageClassification`** — new response type with `pageNumber`, `include`, and `reason` fields representing the per-page classifier decision when a `page_filter` is supplied.
+* **`DocumentConfig`** — new type with an optional `pageFilter` (`PageFilter`) field, available as an optional `config` field on `DocumentRequest` and `DocumentMultiRequest`.
+* **`ICreateMultiResponse`** — new interface implemented by both `CreateMultiResponse` and `DocumentMultiResponse`, providing a common contract over `getSuccess()`, `getMessage()`, `getBundle()`, `getResources()`, and `getValidation()`.
+* **`CreateMultiResponseResourcesItem.getOriginalText()`** — new optional `String` field carrying the verbatim text excerpt from the original clinical document; the existing `description` field now returns a context-enriched rewritten excerpt.
+
 ## 12.5.0 - 2026-05-01
 ### Added
 * **`CreateMultiRequestValidationMethod`** — new enum (`NONE`, `CHECK`, `FIX`) controlling FHIR structure validation applied to the generated bundle.

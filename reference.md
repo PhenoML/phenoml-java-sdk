@@ -3919,6 +3919,14 @@ File type is auto-detected from content magic bytes.
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**config:** `Optional<DocumentConfig>` 
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -3927,7 +3935,7 @@ File type is auto-detected from content magic bytes.
 </dl>
 </details>
 
-<details><summary><code>client.lang2Fhir.extractMultipleFhirResourcesFromADocument(request) -> CreateMultiResponse</code></summary>
+<details><summary><code>client.lang2Fhir.extractMultipleFhirResourcesFromADocument(request) -> DocumentMultiResponse</code></summary>
 <dl>
 <dd>
 
@@ -4023,6 +4031,14 @@ File type is auto-detected from content magic bytes.
 <dd>
 
 **validationMethod:** `Optional<DocumentMultiRequestValidationMethod>` — FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**config:** `Optional<DocumentConfig>` 
     
 </dd>
 </dl>

@@ -25,6 +25,7 @@ import com.phenoml.api.resources.lang2fhir.requests.DocumentRequest;
 import com.phenoml.api.resources.lang2fhir.requests.ProfileUploadRequest;
 import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiResponse;
+import com.phenoml.api.resources.lang2fhir.types.DocumentMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.Lang2FhirUploadProfileResponse;
 import com.phenoml.api.resources.lang2fhir.types.SearchResponse;
 import java.io.IOException;
@@ -542,8 +543,8 @@ public class AsyncRawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> extractMultipleFhirResourcesFromADocument(
-            DocumentMultiRequest request) {
+    public CompletableFuture<PhenomlClientHttpResponse<DocumentMultiResponse>>
+            extractMultipleFhirResourcesFromADocument(DocumentMultiRequest request) {
         return extractMultipleFhirResourcesFromADocument(request, null);
     }
 
@@ -553,8 +554,8 @@ public class AsyncRawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> extractMultipleFhirResourcesFromADocument(
-            DocumentMultiRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<DocumentMultiResponse>>
+            extractMultipleFhirResourcesFromADocument(DocumentMultiRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/document/multi");
@@ -581,7 +582,7 @@ public class AsyncRawLang2FhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<DocumentMultiResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -589,7 +590,7 @@ public class AsyncRawLang2FhirClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, CreateMultiResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DocumentMultiResponse.class),
                                 response));
                         return;
                     }

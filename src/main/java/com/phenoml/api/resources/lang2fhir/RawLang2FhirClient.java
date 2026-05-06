@@ -25,6 +25,7 @@ import com.phenoml.api.resources.lang2fhir.requests.DocumentRequest;
 import com.phenoml.api.resources.lang2fhir.requests.ProfileUploadRequest;
 import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiResponse;
+import com.phenoml.api.resources.lang2fhir.types.DocumentMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.Lang2FhirUploadProfileResponse;
 import com.phenoml.api.resources.lang2fhir.types.SearchResponse;
 import java.io.IOException;
@@ -433,7 +434,7 @@ public class RawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public PhenomlClientHttpResponse<CreateMultiResponse> extractMultipleFhirResourcesFromADocument(
+    public PhenomlClientHttpResponse<DocumentMultiResponse> extractMultipleFhirResourcesFromADocument(
             DocumentMultiRequest request) {
         return extractMultipleFhirResourcesFromADocument(request, null);
     }
@@ -444,7 +445,7 @@ public class RawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public PhenomlClientHttpResponse<CreateMultiResponse> extractMultipleFhirResourcesFromADocument(
+    public PhenomlClientHttpResponse<DocumentMultiResponse> extractMultipleFhirResourcesFromADocument(
             DocumentMultiRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -477,7 +478,7 @@ public class RawLang2FhirClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, CreateMultiResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DocumentMultiResponse.class), response);
             }
             try {
                 switch (response.code()) {

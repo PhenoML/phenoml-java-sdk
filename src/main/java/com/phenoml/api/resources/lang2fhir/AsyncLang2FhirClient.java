@@ -12,6 +12,7 @@ import com.phenoml.api.resources.lang2fhir.requests.DocumentRequest;
 import com.phenoml.api.resources.lang2fhir.requests.ProfileUploadRequest;
 import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiResponse;
+import com.phenoml.api.resources.lang2fhir.types.DocumentMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.Lang2FhirUploadProfileResponse;
 import com.phenoml.api.resources.lang2fhir.types.SearchResponse;
 import java.util.Map;
@@ -146,7 +147,7 @@ public class AsyncLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public CompletableFuture<CreateMultiResponse> extractMultipleFhirResourcesFromADocument(
+    public CompletableFuture<DocumentMultiResponse> extractMultipleFhirResourcesFromADocument(
             DocumentMultiRequest request) {
         return this.rawClient.extractMultipleFhirResourcesFromADocument(request).thenApply(response -> response.body());
     }
@@ -157,7 +158,7 @@ public class AsyncLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      */
-    public CompletableFuture<CreateMultiResponse> extractMultipleFhirResourcesFromADocument(
+    public CompletableFuture<DocumentMultiResponse> extractMultipleFhirResourcesFromADocument(
             DocumentMultiRequest request, RequestOptions requestOptions) {
         return this.rawClient
                 .extractMultipleFhirResourcesFromADocument(request, requestOptions)
