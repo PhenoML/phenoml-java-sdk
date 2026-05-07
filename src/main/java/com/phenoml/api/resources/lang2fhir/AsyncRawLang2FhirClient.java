@@ -25,6 +25,7 @@ import com.phenoml.api.resources.lang2fhir.requests.DocumentRequest;
 import com.phenoml.api.resources.lang2fhir.requests.ProfileUploadRequest;
 import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiResponse;
+import com.phenoml.api.resources.lang2fhir.types.DocumentMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.Lang2FhirUploadProfileResponse;
 import com.phenoml.api.resources.lang2fhir.types.SearchResponse;
 import java.io.IOException;
@@ -49,14 +50,16 @@ public class AsyncRawLang2FhirClient {
     }
 
     /**
-     * Converts natural language text into a structured FHIR resource
+     * Converts natural language text into a structured FHIR resource.
+     * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> create(CreateRequest request) {
         return create(request, null);
     }
 
     /**
-     * Converts natural language text into a structured FHIR resource
+     * Converts natural language text into a structured FHIR resource.
+     * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> create(
             CreateRequest request, RequestOptions requestOptions) {
@@ -141,6 +144,7 @@ public class AsyncRawLang2FhirClient {
      * Analyzes natural language text and extracts multiple FHIR resources, returning them as a transaction Bundle.
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> createMulti(CreateMultiRequest request) {
         return createMulti(request, null);
@@ -150,6 +154,7 @@ public class AsyncRawLang2FhirClient {
      * Analyzes natural language text and extracts multiple FHIR resources, returning them as a transaction Bundle.
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> createMulti(
             CreateMultiRequest request, RequestOptions requestOptions) {
@@ -448,14 +453,16 @@ public class AsyncRawLang2FhirClient {
     }
 
     /**
-     * Extracts text from a document (PDF or image) and converts it into a structured FHIR resource
+     * Extracts text from a document (PDF or image) and converts it into a structured FHIR resource.
+     * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> document(DocumentRequest request) {
         return document(request, null);
     }
 
     /**
-     * Extracts text from a document (PDF or image) and converts it into a structured FHIR resource
+     * Extracts text from a document (PDF or image) and converts it into a structured FHIR resource.
+     * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> document(
             DocumentRequest request, RequestOptions requestOptions) {
@@ -541,9 +548,10 @@ public class AsyncRawLang2FhirClient {
      * returned as a transaction Bundle. Combines document text extraction with multi-resource detection.
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> extractMultipleFhirResourcesFromADocument(
-            DocumentMultiRequest request) {
+    public CompletableFuture<PhenomlClientHttpResponse<DocumentMultiResponse>>
+            extractMultipleFhirResourcesFromADocument(DocumentMultiRequest request) {
         return extractMultipleFhirResourcesFromADocument(request, null);
     }
 
@@ -552,9 +560,10 @@ public class AsyncRawLang2FhirClient {
      * returned as a transaction Bundle. Combines document text extraction with multi-resource detection.
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> extractMultipleFhirResourcesFromADocument(
-            DocumentMultiRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<DocumentMultiResponse>>
+            extractMultipleFhirResourcesFromADocument(DocumentMultiRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/document/multi");
@@ -581,7 +590,7 @@ public class AsyncRawLang2FhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<DocumentMultiResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -589,7 +598,7 @@ public class AsyncRawLang2FhirClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, CreateMultiResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DocumentMultiResponse.class),
                                 response));
                         return;
                     }

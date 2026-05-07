@@ -1,3 +1,15 @@
+## 13.0.0 - 2026-05-07
+### Breaking Changes
+* **`extractMultipleFhirResourcesFromADocument()`** — return type changed from `CreateMultiResponse` (or `PhenomlClientHttpResponse<CreateMultiResponse>`) to `DocumentMultiResponse` (or `PhenomlClientHttpResponse<DocumentMultiResponse>`) on `Lang2FhirClient`, `AsyncLang2FhirClient`, and their raw counterparts; update all variable declarations and assignments that reference `CreateMultiResponse` in this context to use `DocumentMultiResponse` instead.
+### Added
+* **`DocumentMultiResponse`** — new dedicated response type returned by `extractMultipleFhirResourcesFromADocument()`, implementing `ICreateMultiResponse` and carrying `bundle`, `resources`, `validation`, and a `pageClassifications` field.
+* **`ICreateMultiResponse`** — new shared interface (exposing `getSuccess()`, `getMessage()`, `getBundle()`, `getResources()`, `getValidation()`) now implemented by both `CreateMultiResponse` and `DocumentMultiResponse` to enable polymorphic handling.
+* **`PageFilter`** and **`PageClassification`** — new types enabling per-page filtering before FHIR extraction; `PageFilter` carries a required natural-language `context` field, and `PageClassification` records each page's keep/drop decision with `pageNumber`, `include`, and `reason`.
+* **`DocumentConfig`** — new optional config type with a `pageFilter` (`PageFilter`) field, available as a `config` builder setter on `DocumentRequest` and `DocumentMultiRequest`.
+* **`CreateMultiResponseResourcesItem.getOriginalText()`** — new optional field returning the verbatim source text excerpt (the existing `description` field now carries a context-enriched rewritten excerpt).
+### Changed
+* **`create`, `createMulti`, `document`, and `extractMultipleFhirResourcesFromADocument`** — Javadoc expanded with a "Patient identifier handling" section documenting synthetic identifier generation (`system: "urn:phenoml:lang2fhir-generated-id"`) when no identifier is found in source text.
+
 ## 12.5.0 - 2026-05-01
 ### Added
 * **`CreateMultiRequestValidationMethod`** — new enum (`NONE`, `CHECK`, `FIX`) controlling FHIR structure validation applied to the generated bundle.
