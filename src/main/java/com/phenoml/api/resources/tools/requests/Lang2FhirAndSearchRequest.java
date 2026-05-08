@@ -30,8 +30,6 @@ public final class Lang2FhirAndSearchRequest {
 
     private final Optional<String> patientId;
 
-    private final Optional<String> practitionerId;
-
     private final Optional<Integer> count;
 
     private final Optional<String> provider;
@@ -43,7 +41,6 @@ public final class Lang2FhirAndSearchRequest {
             Optional<String> phenomlFhirProvider,
             String text,
             Optional<String> patientId,
-            Optional<String> practitionerId,
             Optional<Integer> count,
             Optional<String> provider,
             Map<String, Object> additionalProperties) {
@@ -51,7 +48,6 @@ public final class Lang2FhirAndSearchRequest {
         this.phenomlFhirProvider = phenomlFhirProvider;
         this.text = text;
         this.patientId = patientId;
-        this.practitionerId = practitionerId;
         this.count = count;
         this.provider = provider;
         this.additionalProperties = additionalProperties;
@@ -92,14 +88,6 @@ public final class Lang2FhirAndSearchRequest {
     }
 
     /**
-     * @return Practitioner ID to filter results
-     */
-    @JsonProperty("practitioner_id")
-    public Optional<String> getPractitionerId() {
-        return practitionerId;
-    }
-
-    /**
      * @return Maximum number of results to return
      */
     @JsonProperty("count")
@@ -131,7 +119,6 @@ public final class Lang2FhirAndSearchRequest {
                 && phenomlFhirProvider.equals(other.phenomlFhirProvider)
                 && text.equals(other.text)
                 && patientId.equals(other.patientId)
-                && practitionerId.equals(other.practitionerId)
                 && count.equals(other.count)
                 && provider.equals(other.provider);
     }
@@ -139,13 +126,7 @@ public final class Lang2FhirAndSearchRequest {
     @java.lang.Override
     public int hashCode() {
         return Objects.hash(
-                this.phenomlOnBehalfOf,
-                this.phenomlFhirProvider,
-                this.text,
-                this.patientId,
-                this.practitionerId,
-                this.count,
-                this.provider);
+                this.phenomlOnBehalfOf, this.phenomlFhirProvider, this.text, this.patientId, this.count, this.provider);
     }
 
     @java.lang.Override
@@ -197,13 +178,6 @@ public final class Lang2FhirAndSearchRequest {
         _FinalStage patientId(String patientId);
 
         /**
-         * <p>Practitioner ID to filter results</p>
-         */
-        _FinalStage practitionerId(Optional<String> practitionerId);
-
-        _FinalStage practitionerId(String practitionerId);
-
-        /**
          * <p>Maximum number of results to return</p>
          */
         _FinalStage count(Optional<Integer> count);
@@ -226,8 +200,6 @@ public final class Lang2FhirAndSearchRequest {
 
         private Optional<Integer> count = Optional.empty();
 
-        private Optional<String> practitionerId = Optional.empty();
-
         private Optional<String> patientId = Optional.empty();
 
         private Optional<String> phenomlFhirProvider = Optional.empty();
@@ -245,7 +217,6 @@ public final class Lang2FhirAndSearchRequest {
             phenomlFhirProvider(other.getPhenomlFhirProvider());
             text(other.getText());
             patientId(other.getPatientId());
-            practitionerId(other.getPractitionerId());
             count(other.getCount());
             provider(other.getProvider());
             return this;
@@ -300,26 +271,6 @@ public final class Lang2FhirAndSearchRequest {
         @JsonSetter(value = "count", nulls = Nulls.SKIP)
         public _FinalStage count(Optional<Integer> count) {
             this.count = count;
-            return this;
-        }
-
-        /**
-         * <p>Practitioner ID to filter results</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage practitionerId(String practitionerId) {
-            this.practitionerId = Optional.ofNullable(practitionerId);
-            return this;
-        }
-
-        /**
-         * <p>Practitioner ID to filter results</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "practitioner_id", nulls = Nulls.SKIP)
-        public _FinalStage practitionerId(Optional<String> practitionerId) {
-            this.practitionerId = practitionerId;
             return this;
         }
 
@@ -388,14 +339,7 @@ public final class Lang2FhirAndSearchRequest {
         @java.lang.Override
         public Lang2FhirAndSearchRequest build() {
             return new Lang2FhirAndSearchRequest(
-                    phenomlOnBehalfOf,
-                    phenomlFhirProvider,
-                    text,
-                    patientId,
-                    practitionerId,
-                    count,
-                    provider,
-                    additionalProperties);
+                    phenomlOnBehalfOf, phenomlFhirProvider, text, patientId, count, provider, additionalProperties);
         }
 
         @java.lang.Override

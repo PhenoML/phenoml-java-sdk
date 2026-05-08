@@ -9,11 +9,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.resources.lang2fhir.types.DocumentConfig;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -25,12 +28,20 @@ public final class DocumentRequest {
 
     private final String content;
 
+    private final Optional<DocumentConfig> config;
+
     private final Map<String, Object> additionalProperties;
 
-    private DocumentRequest(String version, String resource, String content, Map<String, Object> additionalProperties) {
+    private DocumentRequest(
+            String version,
+            String resource,
+            String content,
+            Optional<DocumentConfig> config,
+            Map<String, Object> additionalProperties) {
         this.version = version;
         this.resource = resource;
         this.content = content;
+        this.config = config;
         this.additionalProperties = additionalProperties;
     }
 
@@ -60,6 +71,11 @@ public final class DocumentRequest {
         return content;
     }
 
+    @JsonProperty("config")
+    public Optional<DocumentConfig> getConfig() {
+        return config;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -72,12 +88,15 @@ public final class DocumentRequest {
     }
 
     private boolean equalTo(DocumentRequest other) {
-        return version.equals(other.version) && resource.equals(other.resource) && content.equals(other.content);
+        return version.equals(other.version)
+                && resource.equals(other.resource)
+                && content.equals(other.content)
+                && config.equals(other.config);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.version, this.resource, this.content);
+        return Objects.hash(this.version, this.resource, this.content, this.config);
     }
 
     @java.lang.Override
@@ -120,6 +139,10 @@ public final class DocumentRequest {
         _FinalStage additionalProperty(String key, Object value);
 
         _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+        _FinalStage config(Optional<DocumentConfig> config);
+
+        _FinalStage config(DocumentConfig config);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -129,6 +152,8 @@ public final class DocumentRequest {
         private String resource;
 
         private String content;
+
+        private Optional<DocumentConfig> config = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -140,6 +165,7 @@ public final class DocumentRequest {
             version(other.getVersion());
             resource(other.getResource());
             content(other.getContent());
+            config(other.getConfig());
             return this;
         }
 
@@ -184,8 +210,21 @@ public final class DocumentRequest {
         }
 
         @java.lang.Override
+        public _FinalStage config(DocumentConfig config) {
+            this.config = Optional.ofNullable(config);
+            return this;
+        }
+
+        @java.lang.Override
+        @JsonSetter(value = "config", nulls = Nulls.SKIP)
+        public _FinalStage config(Optional<DocumentConfig> config) {
+            this.config = config;
+            return this;
+        }
+
+        @java.lang.Override
         public DocumentRequest build() {
-            return new DocumentRequest(version, resource, content, additionalProperties);
+            return new DocumentRequest(version, resource, content, config, additionalProperties);
         }
 
         @java.lang.Override

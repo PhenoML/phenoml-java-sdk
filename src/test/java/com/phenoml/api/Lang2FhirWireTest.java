@@ -11,6 +11,7 @@ import com.phenoml.api.resources.lang2fhir.requests.ProfileUploadRequest;
 import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.CreateRequestResource;
+import com.phenoml.api.resources.lang2fhir.types.DocumentMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.Lang2FhirUploadProfileResponse;
 import com.phenoml.api.resources.lang2fhir.types.SearchResponse;
 import java.util.Map;
@@ -145,7 +146,7 @@ public class Lang2FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"resourceType\":\"Patient\",\"description\":\"John Smith, 45-year-old male\"}],\"validation\":{\"passes\":[{}],\"fixed\":true,\"attempts\":1,\"summary\":\"summary\"}}"));
+                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"resourceType\":\"Patient\",\"description\":\"John Smith (DOB 1980-05-12) was diagnosed with Type 2 Diabetes during office visit on 2025-03-01 with Dr. Chen\",\"originalText\":\"diagnosed with Type 2 Diabetes\"}],\"validation\":{\"passes\":[{}],\"fixed\":true,\"attempts\":1,\"summary\":\"summary\"}}"));
         CreateMultiResponse response = client.lang2Fhir()
                 .createMulti(CreateMultiRequest.builder()
                         .text(
@@ -219,7 +220,8 @@ public class Lang2FhirWireTest {
                 + "    {\n"
                 + "      \"tempId\": \"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\n"
                 + "      \"resourceType\": \"Patient\",\n"
-                + "      \"description\": \"John Smith, 45-year-old male\"\n"
+                + "      \"description\": \"John Smith (DOB 1980-05-12) was diagnosed with Type 2 Diabetes during office visit on 2025-03-01 with Dr. Chen\",\n"
+                + "      \"originalText\": \"diagnosed with Type 2 Diabetes\"\n"
                 + "    }\n"
                 + "  ],\n"
                 + "  \"validation\": {\n"
@@ -559,8 +561,8 @@ public class Lang2FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"resourceType\":\"Patient\",\"description\":\"John Smith, 45-year-old male\"}],\"validation\":{\"passes\":[{}],\"fixed\":true,\"attempts\":1,\"summary\":\"summary\"}}"));
-        CreateMultiResponse response = client.lang2Fhir()
+                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"resourceType\":\"Patient\",\"description\":\"John Smith (DOB 1980-05-12) was diagnosed with Type 2 Diabetes during office visit on 2025-03-01 with Dr. Chen\",\"originalText\":\"diagnosed with Type 2 Diabetes\"}],\"validation\":{\"passes\":[{}],\"fixed\":true,\"attempts\":1,\"summary\":\"summary\"},\"page_classifications\":[{\"page_number\":1,\"include\":true,\"reason\":\"clinical notes with diagnoses\"}]}"));
+        DocumentMultiResponse response = client.lang2Fhir()
                 .extractMultipleFhirResourcesFromADocument(DocumentMultiRequest.builder()
                         .version("R4")
                         .content("content")
@@ -630,7 +632,8 @@ public class Lang2FhirWireTest {
                 + "    {\n"
                 + "      \"tempId\": \"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\n"
                 + "      \"resourceType\": \"Patient\",\n"
-                + "      \"description\": \"John Smith, 45-year-old male\"\n"
+                + "      \"description\": \"John Smith (DOB 1980-05-12) was diagnosed with Type 2 Diabetes during office visit on 2025-03-01 with Dr. Chen\",\n"
+                + "      \"originalText\": \"diagnosed with Type 2 Diabetes\"\n"
                 + "    }\n"
                 + "  ],\n"
                 + "  \"validation\": {\n"
@@ -640,7 +643,14 @@ public class Lang2FhirWireTest {
                 + "    \"fixed\": true,\n"
                 + "    \"attempts\": 1,\n"
                 + "    \"summary\": \"summary\"\n"
-                + "  }\n"
+                + "  },\n"
+                + "  \"page_classifications\": [\n"
+                + "    {\n"
+                + "      \"page_number\": 1,\n"
+                + "      \"include\": true,\n"
+                + "      \"reason\": \"clinical notes with diagnoses\"\n"
+                + "    }\n"
+                + "  ]\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
