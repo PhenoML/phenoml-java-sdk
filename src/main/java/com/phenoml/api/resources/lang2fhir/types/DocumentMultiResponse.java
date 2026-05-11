@@ -19,8 +19,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-@JsonDeserialize(builder = CreateMultiResponse.Builder.class)
-public final class CreateMultiResponse implements ICreateMultiResponse {
+@JsonDeserialize(builder = DocumentMultiResponse.Builder.class)
+public final class DocumentMultiResponse implements ICreateMultiResponse {
     private final Optional<Boolean> success;
 
     private final Optional<String> message;
@@ -31,20 +31,24 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
 
     private final Optional<CreateMultiResponseValidation> validation;
 
+    private final Optional<List<PageClassification>> pageClassifications;
+
     private final Map<String, Object> additionalProperties;
 
-    private CreateMultiResponse(
+    private DocumentMultiResponse(
             Optional<Boolean> success,
             Optional<String> message,
             Optional<CreateMultiResponseBundle> bundle,
             Optional<List<CreateMultiResponseResourcesItem>> resources,
             Optional<CreateMultiResponseValidation> validation,
+            Optional<List<PageClassification>> pageClassifications,
             Map<String, Object> additionalProperties) {
         this.success = success;
         this.message = message;
         this.bundle = bundle;
         this.resources = resources;
         this.validation = validation;
+        this.pageClassifications = pageClassifications;
         this.additionalProperties = additionalProperties;
     }
 
@@ -90,10 +94,18 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
         return validation;
     }
 
+    /**
+     * @return Per-page classifier decisions. Populated only when a page_filter was supplied in the request. Contains one entry per input page, including both kept and dropped pages.
+     */
+    @JsonProperty("page_classifications")
+    public Optional<List<PageClassification>> getPageClassifications() {
+        return pageClassifications;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        return other instanceof CreateMultiResponse && equalTo((CreateMultiResponse) other);
+        return other instanceof DocumentMultiResponse && equalTo((DocumentMultiResponse) other);
     }
 
     @JsonAnyGetter
@@ -101,17 +113,19 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
         return this.additionalProperties;
     }
 
-    private boolean equalTo(CreateMultiResponse other) {
+    private boolean equalTo(DocumentMultiResponse other) {
         return success.equals(other.success)
                 && message.equals(other.message)
                 && bundle.equals(other.bundle)
                 && resources.equals(other.resources)
-                && validation.equals(other.validation);
+                && validation.equals(other.validation)
+                && pageClassifications.equals(other.pageClassifications);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.success, this.message, this.bundle, this.resources, this.validation);
+        return Objects.hash(
+                this.success, this.message, this.bundle, this.resources, this.validation, this.pageClassifications);
     }
 
     @java.lang.Override
@@ -135,17 +149,20 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
 
         private Optional<CreateMultiResponseValidation> validation = Optional.empty();
 
+        private Optional<List<PageClassification>> pageClassifications = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
 
-        public Builder from(CreateMultiResponse other) {
+        public Builder from(DocumentMultiResponse other) {
             success(other.getSuccess());
             message(other.getMessage());
             bundle(other.getBundle());
             resources(other.getResources());
             validation(other.getValidation());
+            pageClassifications(other.getPageClassifications());
             return this;
         }
 
@@ -219,8 +236,23 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
             return this;
         }
 
-        public CreateMultiResponse build() {
-            return new CreateMultiResponse(success, message, bundle, resources, validation, additionalProperties);
+        /**
+         * <p>Per-page classifier decisions. Populated only when a page_filter was supplied in the request. Contains one entry per input page, including both kept and dropped pages.</p>
+         */
+        @JsonSetter(value = "page_classifications", nulls = Nulls.SKIP)
+        public Builder pageClassifications(Optional<List<PageClassification>> pageClassifications) {
+            this.pageClassifications = pageClassifications;
+            return this;
+        }
+
+        public Builder pageClassifications(List<PageClassification> pageClassifications) {
+            this.pageClassifications = Optional.ofNullable(pageClassifications);
+            return this;
+        }
+
+        public DocumentMultiResponse build() {
+            return new DocumentMultiResponse(
+                    success, message, bundle, resources, validation, pageClassifications, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {

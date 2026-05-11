@@ -1,3 +1,14 @@
+## 13.0.0 - 2026-05-08
+### Breaking Changes
+* **`extractMultipleFhirResourcesFromADocument`** — return type changed from `CreateMultiResponse` to `DocumentMultiResponse` on `Lang2FhirClient`, `AsyncLang2FhirClient`, `RawLang2FhirClient`, and their async counterparts; update all call sites and variable declarations to use `DocumentMultiResponse` (or `CompletableFuture<DocumentMultiResponse>` for async variants).
+* **`Lang2FhirAndSearchRequest.getPractitionerId()`** — the `practitioner_id` field and its builder methods (`practitionerId(String)` / `practitionerId(Optional<String>)`) have been removed; remove any calls to these methods from your builder chains.
+### Added
+* **`DocumentMultiResponse`** — new dedicated response type (implementing `ICreateMultiResponse`) returned by document multi-resource extraction; carries `bundle`, `resources`, `validation`, and `pageClassifications` fields.
+* **`ICreateMultiResponse`** — new shared interface implemented by both `CreateMultiResponse` and `DocumentMultiResponse`, exposing `getSuccess()`, `getMessage()`, `getBundle()`, `getResources()`, and `getValidation()` for polymorphic handling.
+* **`DocumentConfig`** — new type with an optional `PageFilter` field, available as an optional `config` setter on `DocumentRequest` and `DocumentMultiRequest` builders.
+* **`PageFilter`** — new request type with a required `context` field that instructs the API to drop irrelevant pages before FHIR extraction.
+* **`PageClassification`** — new response type with `pageNumber`, `include`, and `reason` fields representing the per-page keep/drop decision from the page classifier; also added **`CreateMultiResponseResourcesItem.getOriginalText()`** returning the verbatim source text excerpt.
+
 ## 12.5.0 - 2026-05-01
 ### Added
 * **`CreateMultiRequestValidationMethod`** — new enum (`NONE`, `CHECK`, `FIX`) controlling FHIR structure validation applied to the generated bundle.
