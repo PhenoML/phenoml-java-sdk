@@ -10,33 +10,32 @@ public final class Lang2FhirAndCreateRequestResource {
     public static final Lang2FhirAndCreateRequestResource MEDICATIONREQUEST =
             new Lang2FhirAndCreateRequestResource(Value.MEDICATIONREQUEST, "medicationrequest");
 
+    public static final Lang2FhirAndCreateRequestResource VITAL_SIGNS =
+            new Lang2FhirAndCreateRequestResource(Value.VITAL_SIGNS, "vital-signs");
+
+    public static final Lang2FhirAndCreateRequestResource SIMPLE_OBSERVATION =
+            new Lang2FhirAndCreateRequestResource(Value.SIMPLE_OBSERVATION, "simple-observation");
+
+    public static final Lang2FhirAndCreateRequestResource QUESTIONNAIRE =
+            new Lang2FhirAndCreateRequestResource(Value.QUESTIONNAIRE, "questionnaire");
+
     public static final Lang2FhirAndCreateRequestResource OBSERVATION_LAB =
             new Lang2FhirAndCreateRequestResource(Value.OBSERVATION_LAB, "observation-lab");
 
     public static final Lang2FhirAndCreateRequestResource QUESTIONNAIRERESPONSE =
             new Lang2FhirAndCreateRequestResource(Value.QUESTIONNAIRERESPONSE, "questionnaireresponse");
 
-    public static final Lang2FhirAndCreateRequestResource VITAL_SIGNS =
-            new Lang2FhirAndCreateRequestResource(Value.VITAL_SIGNS, "vital-signs");
-
-    public static final Lang2FhirAndCreateRequestResource QUESTIONNAIRE =
-            new Lang2FhirAndCreateRequestResource(Value.QUESTIONNAIRE, "questionnaire");
-
-    public static final Lang2FhirAndCreateRequestResource CONDITION_PROBLEMS_HEALTH_CONCERNS =
-            new Lang2FhirAndCreateRequestResource(
-                    Value.CONDITION_PROBLEMS_HEALTH_CONCERNS, "condition-problems-health-concerns");
-
     public static final Lang2FhirAndCreateRequestResource ENCOUNTER =
             new Lang2FhirAndCreateRequestResource(Value.ENCOUNTER, "encounter");
-
-    public static final Lang2FhirAndCreateRequestResource SIMPLE_OBSERVATION =
-            new Lang2FhirAndCreateRequestResource(Value.SIMPLE_OBSERVATION, "simple-observation");
 
     public static final Lang2FhirAndCreateRequestResource OBSERVATION_CLINICAL_RESULT =
             new Lang2FhirAndCreateRequestResource(Value.OBSERVATION_CLINICAL_RESULT, "observation-clinical-result");
 
     public static final Lang2FhirAndCreateRequestResource CAREPLAN =
             new Lang2FhirAndCreateRequestResource(Value.CAREPLAN, "careplan");
+
+    public static final Lang2FhirAndCreateRequestResource SERVICEREQUEST =
+            new Lang2FhirAndCreateRequestResource(Value.SERVICEREQUEST, "servicerequest");
 
     public static final Lang2FhirAndCreateRequestResource COVERAGE =
             new Lang2FhirAndCreateRequestResource(Value.COVERAGE, "coverage");
@@ -47,14 +46,15 @@ public final class Lang2FhirAndCreateRequestResource {
     public static final Lang2FhirAndCreateRequestResource CONDITION_ENCOUNTER_DIAGNOSIS =
             new Lang2FhirAndCreateRequestResource(Value.CONDITION_ENCOUNTER_DIAGNOSIS, "condition-encounter-diagnosis");
 
-    public static final Lang2FhirAndCreateRequestResource SERVICEREQUEST =
-            new Lang2FhirAndCreateRequestResource(Value.SERVICEREQUEST, "servicerequest");
-
-    public static final Lang2FhirAndCreateRequestResource PATIENT =
-            new Lang2FhirAndCreateRequestResource(Value.PATIENT, "patient");
+    public static final Lang2FhirAndCreateRequestResource CONDITION_PROBLEMS_HEALTH_CONCERNS =
+            new Lang2FhirAndCreateRequestResource(
+                    Value.CONDITION_PROBLEMS_HEALTH_CONCERNS, "condition-problems-health-concerns");
 
     public static final Lang2FhirAndCreateRequestResource APPOINTMENT =
             new Lang2FhirAndCreateRequestResource(Value.APPOINTMENT, "appointment");
+
+    public static final Lang2FhirAndCreateRequestResource PATIENT =
+            new Lang2FhirAndCreateRequestResource(Value.PATIENT, "patient");
 
     public static final Lang2FhirAndCreateRequestResource PROCEDURE =
             new Lang2FhirAndCreateRequestResource(Value.PROCEDURE, "procedure");
@@ -94,36 +94,36 @@ public final class Lang2FhirAndCreateRequestResource {
         switch (value) {
             case MEDICATIONREQUEST:
                 return visitor.visitMedicationrequest();
+            case VITAL_SIGNS:
+                return visitor.visitVitalSigns();
+            case SIMPLE_OBSERVATION:
+                return visitor.visitSimpleObservation();
+            case QUESTIONNAIRE:
+                return visitor.visitQuestionnaire();
             case OBSERVATION_LAB:
                 return visitor.visitObservationLab();
             case QUESTIONNAIRERESPONSE:
                 return visitor.visitQuestionnaireresponse();
-            case VITAL_SIGNS:
-                return visitor.visitVitalSigns();
-            case QUESTIONNAIRE:
-                return visitor.visitQuestionnaire();
-            case CONDITION_PROBLEMS_HEALTH_CONCERNS:
-                return visitor.visitConditionProblemsHealthConcerns();
             case ENCOUNTER:
                 return visitor.visitEncounter();
-            case SIMPLE_OBSERVATION:
-                return visitor.visitSimpleObservation();
             case OBSERVATION_CLINICAL_RESULT:
                 return visitor.visitObservationClinicalResult();
             case CAREPLAN:
                 return visitor.visitCareplan();
+            case SERVICEREQUEST:
+                return visitor.visitServicerequest();
             case COVERAGE:
                 return visitor.visitCoverage();
             case AUTO:
                 return visitor.visitAuto();
             case CONDITION_ENCOUNTER_DIAGNOSIS:
                 return visitor.visitConditionEncounterDiagnosis();
-            case SERVICEREQUEST:
-                return visitor.visitServicerequest();
-            case PATIENT:
-                return visitor.visitPatient();
+            case CONDITION_PROBLEMS_HEALTH_CONCERNS:
+                return visitor.visitConditionProblemsHealthConcerns();
             case APPOINTMENT:
                 return visitor.visitAppointment();
+            case PATIENT:
+                return visitor.visitPatient();
             case PROCEDURE:
                 return visitor.visitProcedure();
             case UNKNOWN:
@@ -137,36 +137,36 @@ public final class Lang2FhirAndCreateRequestResource {
         switch (value) {
             case "medicationrequest":
                 return MEDICATIONREQUEST;
+            case "vital-signs":
+                return VITAL_SIGNS;
+            case "simple-observation":
+                return SIMPLE_OBSERVATION;
+            case "questionnaire":
+                return QUESTIONNAIRE;
             case "observation-lab":
                 return OBSERVATION_LAB;
             case "questionnaireresponse":
                 return QUESTIONNAIRERESPONSE;
-            case "vital-signs":
-                return VITAL_SIGNS;
-            case "questionnaire":
-                return QUESTIONNAIRE;
-            case "condition-problems-health-concerns":
-                return CONDITION_PROBLEMS_HEALTH_CONCERNS;
             case "encounter":
                 return ENCOUNTER;
-            case "simple-observation":
-                return SIMPLE_OBSERVATION;
             case "observation-clinical-result":
                 return OBSERVATION_CLINICAL_RESULT;
             case "careplan":
                 return CAREPLAN;
+            case "servicerequest":
+                return SERVICEREQUEST;
             case "coverage":
                 return COVERAGE;
             case "auto":
                 return AUTO;
             case "condition-encounter-diagnosis":
                 return CONDITION_ENCOUNTER_DIAGNOSIS;
-            case "servicerequest":
-                return SERVICEREQUEST;
-            case "patient":
-                return PATIENT;
+            case "condition-problems-health-concerns":
+                return CONDITION_PROBLEMS_HEALTH_CONCERNS;
             case "appointment":
                 return APPOINTMENT;
+            case "patient":
+                return PATIENT;
             case "procedure":
                 return PROCEDURE;
             default:

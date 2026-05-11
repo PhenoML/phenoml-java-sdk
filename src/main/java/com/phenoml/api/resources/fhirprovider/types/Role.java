@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class Role {
-    public static final Role WRITE = new Role(Value.WRITE, "write");
-
     public static final Role ADMIN = new Role(Value.ADMIN, "admin");
+
+    public static final Role WRITE = new Role(Value.WRITE, "write");
 
     public static final Role READ = new Role(Value.READ, "read");
 
@@ -44,10 +44,10 @@ public final class Role {
 
     public <T> T visit(Visitor<T> visitor) {
         switch (value) {
-            case WRITE:
-                return visitor.visitWrite();
             case ADMIN:
                 return visitor.visitAdmin();
+            case WRITE:
+                return visitor.visitWrite();
             case READ:
                 return visitor.visitRead();
             case UNKNOWN:
@@ -59,10 +59,10 @@ public final class Role {
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static Role valueOf(String value) {
         switch (value) {
-            case "write":
-                return WRITE;
             case "admin":
                 return ADMIN;
+            case "write":
+                return WRITE;
             case "read":
                 return READ;
             default:

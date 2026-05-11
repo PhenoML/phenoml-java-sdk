@@ -7,18 +7,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class ExtractRequestConfigValidationMethod {
+    public static final ExtractRequestConfigValidationMethod SIMPLE =
+            new ExtractRequestConfigValidationMethod(Value.SIMPLE, "simple");
+
+    public static final ExtractRequestConfigValidationMethod MEDICATION_SEARCH =
+            new ExtractRequestConfigValidationMethod(Value.MEDICATION_SEARCH, "medication_search");
+
     public static final ExtractRequestConfigValidationMethod NONE =
             new ExtractRequestConfigValidationMethod(Value.NONE, "none");
 
     public static final ExtractRequestConfigValidationMethod CHUNK_CODE_JACCARD_SIMILARITY =
             new ExtractRequestConfigValidationMethod(
                     Value.CHUNK_CODE_JACCARD_SIMILARITY, "chunk_code_jaccard_similarity");
-
-    public static final ExtractRequestConfigValidationMethod SIMPLE =
-            new ExtractRequestConfigValidationMethod(Value.SIMPLE, "simple");
-
-    public static final ExtractRequestConfigValidationMethod MEDICATION_SEARCH =
-            new ExtractRequestConfigValidationMethod(Value.MEDICATION_SEARCH, "medication_search");
 
     private final Value value;
 
@@ -53,14 +53,14 @@ public final class ExtractRequestConfigValidationMethod {
 
     public <T> T visit(Visitor<T> visitor) {
         switch (value) {
-            case NONE:
-                return visitor.visitNone();
-            case CHUNK_CODE_JACCARD_SIMILARITY:
-                return visitor.visitChunkCodeJaccardSimilarity();
             case SIMPLE:
                 return visitor.visitSimple();
             case MEDICATION_SEARCH:
                 return visitor.visitMedicationSearch();
+            case NONE:
+                return visitor.visitNone();
+            case CHUNK_CODE_JACCARD_SIMILARITY:
+                return visitor.visitChunkCodeJaccardSimilarity();
             case UNKNOWN:
             default:
                 return visitor.visitUnknown(string);
@@ -70,14 +70,14 @@ public final class ExtractRequestConfigValidationMethod {
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static ExtractRequestConfigValidationMethod valueOf(String value) {
         switch (value) {
-            case "none":
-                return NONE;
-            case "chunk_code_jaccard_similarity":
-                return CHUNK_CODE_JACCARD_SIMILARITY;
             case "simple":
                 return SIMPLE;
             case "medication_search":
                 return MEDICATION_SEARCH;
+            case "none":
+                return NONE;
+            case "chunk_code_jaccard_similarity":
+                return CHUNK_CODE_JACCARD_SIMILARITY;
             default:
                 return new ExtractRequestConfigValidationMethod(Value.UNKNOWN, value);
         }

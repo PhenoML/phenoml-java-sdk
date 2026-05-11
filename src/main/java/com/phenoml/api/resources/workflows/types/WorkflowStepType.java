@@ -11,9 +11,9 @@ public final class WorkflowStepType {
 
     public static final WorkflowStepType SEARCH = new WorkflowStepType(Value.SEARCH, "search");
 
-    public static final WorkflowStepType CREATE = new WorkflowStepType(Value.CREATE, "create");
-
     public static final WorkflowStepType DECISION_NODE = new WorkflowStepType(Value.DECISION_NODE, "decision_node");
+
+    public static final WorkflowStepType CREATE = new WorkflowStepType(Value.CREATE, "create");
 
     private final Value value;
 
@@ -51,10 +51,10 @@ public final class WorkflowStepType {
                 return visitor.visitWorkflow();
             case SEARCH:
                 return visitor.visitSearch();
-            case CREATE:
-                return visitor.visitCreate();
             case DECISION_NODE:
                 return visitor.visitDecisionNode();
+            case CREATE:
+                return visitor.visitCreate();
             case UNKNOWN:
             default:
                 return visitor.visitUnknown(string);
@@ -68,10 +68,10 @@ public final class WorkflowStepType {
                 return WORKFLOW;
             case "search":
                 return SEARCH;
-            case "create":
-                return CREATE;
             case "decision_node":
                 return DECISION_NODE;
+            case "create":
+                return CREATE;
             default:
                 return new WorkflowStepType(Value.UNKNOWN, value);
         }

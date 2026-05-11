@@ -11,11 +11,11 @@ public final class FhirPatchRequestBodyItemOp {
 
     public static final FhirPatchRequestBodyItemOp REMOVE = new FhirPatchRequestBodyItemOp(Value.REMOVE, "remove");
 
-    public static final FhirPatchRequestBodyItemOp TEST = new FhirPatchRequestBodyItemOp(Value.TEST, "test");
-
     public static final FhirPatchRequestBodyItemOp REPLACE = new FhirPatchRequestBodyItemOp(Value.REPLACE, "replace");
 
     public static final FhirPatchRequestBodyItemOp MOVE = new FhirPatchRequestBodyItemOp(Value.MOVE, "move");
+
+    public static final FhirPatchRequestBodyItemOp TEST = new FhirPatchRequestBodyItemOp(Value.TEST, "test");
 
     public static final FhirPatchRequestBodyItemOp COPY = new FhirPatchRequestBodyItemOp(Value.COPY, "copy");
 
@@ -56,12 +56,12 @@ public final class FhirPatchRequestBodyItemOp {
                 return visitor.visitAdd();
             case REMOVE:
                 return visitor.visitRemove();
-            case TEST:
-                return visitor.visitTest();
             case REPLACE:
                 return visitor.visitReplace();
             case MOVE:
                 return visitor.visitMove();
+            case TEST:
+                return visitor.visitTest();
             case COPY:
                 return visitor.visitCopy();
             case UNKNOWN:
@@ -77,12 +77,12 @@ public final class FhirPatchRequestBodyItemOp {
                 return ADD;
             case "remove":
                 return REMOVE;
-            case "test":
-                return TEST;
             case "replace":
                 return REPLACE;
             case "move":
                 return MOVE;
+            case "test":
+                return TEST;
             case "copy":
                 return COPY;
             default:

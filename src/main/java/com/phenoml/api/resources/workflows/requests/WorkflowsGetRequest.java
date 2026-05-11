@@ -5,9 +5,9 @@ package com.phenoml.api.resources.workflows.requests;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -32,7 +32,7 @@ public final class WorkflowsGetRequest {
     /**
      * @return If true, includes full workflow implementation details in workflow_details field
      */
-    @JsonIgnore
+    @JsonProperty("verbose")
     public Optional<Boolean> getVerbose() {
         return verbose;
     }

@@ -13,10 +13,10 @@ public final class AgentGetChatMessagesRequestRole {
     public static final AgentGetChatMessagesRequestRole MODEL =
             new AgentGetChatMessagesRequestRole(Value.MODEL, "model");
 
+    public static final AgentGetChatMessagesRequestRole USER = new AgentGetChatMessagesRequestRole(Value.USER, "user");
+
     public static final AgentGetChatMessagesRequestRole ASSISTANT =
             new AgentGetChatMessagesRequestRole(Value.ASSISTANT, "assistant");
-
-    public static final AgentGetChatMessagesRequestRole USER = new AgentGetChatMessagesRequestRole(Value.USER, "user");
 
     private final Value value;
 
@@ -55,10 +55,10 @@ public final class AgentGetChatMessagesRequestRole {
                 return visitor.visitFunction();
             case MODEL:
                 return visitor.visitModel();
-            case ASSISTANT:
-                return visitor.visitAssistant();
             case USER:
                 return visitor.visitUser();
+            case ASSISTANT:
+                return visitor.visitAssistant();
             case UNKNOWN:
             default:
                 return visitor.visitUnknown(string);
@@ -72,10 +72,10 @@ public final class AgentGetChatMessagesRequestRole {
                 return FUNCTION;
             case "model":
                 return MODEL;
-            case "assistant":
-                return ASSISTANT;
             case "user":
                 return USER;
+            case "assistant":
+                return ASSISTANT;
             default:
                 return new AgentGetChatMessagesRequestRole(Value.UNKNOWN, value);
         }

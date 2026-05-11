@@ -19,14 +19,14 @@ public final class ExtractRequestConfigChunkingMethod {
     public static final ExtractRequestConfigChunkingMethod PARAGRAPHS =
             new ExtractRequestConfigChunkingMethod(Value.PARAGRAPHS, "paragraphs");
 
-    public static final ExtractRequestConfigChunkingMethod NONE =
-            new ExtractRequestConfigChunkingMethod(Value.NONE, "none");
-
     public static final ExtractRequestConfigChunkingMethod SENTENCES =
             new ExtractRequestConfigChunkingMethod(Value.SENTENCES, "sentences");
 
     public static final ExtractRequestConfigChunkingMethod CLINICAL_NER_EXTRACT =
             new ExtractRequestConfigChunkingMethod(Value.CLINICAL_NER_EXTRACT, "clinical_ner_extract");
+
+    public static final ExtractRequestConfigChunkingMethod NONE =
+            new ExtractRequestConfigChunkingMethod(Value.NONE, "none");
 
     private final Value value;
 
@@ -69,12 +69,12 @@ public final class ExtractRequestConfigChunkingMethod {
                 return visitor.visitTopics();
             case PARAGRAPHS:
                 return visitor.visitParagraphs();
-            case NONE:
-                return visitor.visitNone();
             case SENTENCES:
                 return visitor.visitSentences();
             case CLINICAL_NER_EXTRACT:
                 return visitor.visitClinicalNerExtract();
+            case NONE:
+                return visitor.visitNone();
             case UNKNOWN:
             default:
                 return visitor.visitUnknown(string);
@@ -92,12 +92,12 @@ public final class ExtractRequestConfigChunkingMethod {
                 return TOPICS;
             case "paragraphs":
                 return PARAGRAPHS;
-            case "none":
-                return NONE;
             case "sentences":
                 return SENTENCES;
             case "clinical_ner_extract":
                 return CLINICAL_NER_EXTRACT;
+            case "none":
+                return NONE;
             default:
                 return new ExtractRequestConfigChunkingMethod(Value.UNKNOWN, value);
         }

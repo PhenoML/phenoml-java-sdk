@@ -5,9 +5,9 @@ package com.phenoml.api.resources.agent.requests;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -49,7 +49,7 @@ public final class AgentGetChatMessagesRequest {
     /**
      * @return Chat session ID
      */
-    @JsonIgnore
+    @JsonProperty("chat_session_id")
     public String getChatSessionId() {
         return chatSessionId;
     }
@@ -57,7 +57,7 @@ public final class AgentGetChatMessagesRequest {
     /**
      * @return Number of messages to return
      */
-    @JsonIgnore
+    @JsonProperty("num_messages")
     public Optional<Integer> getNumMessages() {
         return numMessages;
     }
@@ -73,7 +73,7 @@ public final class AgentGetChatMessagesRequest {
      * <li><code>function</code> - Function/tool call results</li>
      * </ul>
      */
-    @JsonIgnore
+    @JsonProperty("role")
     public Optional<AgentGetChatMessagesRequestRole> getRole() {
         return role;
     }
@@ -81,7 +81,7 @@ public final class AgentGetChatMessagesRequest {
     /**
      * @return Order of messages
      */
-    @JsonIgnore
+    @JsonProperty("order")
     public Optional<AgentGetChatMessagesRequestOrder> getOrder() {
         return order;
     }

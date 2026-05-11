@@ -11,11 +11,11 @@ public final class JsonPatchOperationOp {
 
     public static final JsonPatchOperationOp REMOVE = new JsonPatchOperationOp(Value.REMOVE, "remove");
 
-    public static final JsonPatchOperationOp TEST = new JsonPatchOperationOp(Value.TEST, "test");
-
     public static final JsonPatchOperationOp REPLACE = new JsonPatchOperationOp(Value.REPLACE, "replace");
 
     public static final JsonPatchOperationOp MOVE = new JsonPatchOperationOp(Value.MOVE, "move");
+
+    public static final JsonPatchOperationOp TEST = new JsonPatchOperationOp(Value.TEST, "test");
 
     public static final JsonPatchOperationOp COPY = new JsonPatchOperationOp(Value.COPY, "copy");
 
@@ -55,12 +55,12 @@ public final class JsonPatchOperationOp {
                 return visitor.visitAdd();
             case REMOVE:
                 return visitor.visitRemove();
-            case TEST:
-                return visitor.visitTest();
             case REPLACE:
                 return visitor.visitReplace();
             case MOVE:
                 return visitor.visitMove();
+            case TEST:
+                return visitor.visitTest();
             case COPY:
                 return visitor.visitCopy();
             case UNKNOWN:
@@ -76,12 +76,12 @@ public final class JsonPatchOperationOp {
                 return ADD;
             case "remove":
                 return REMOVE;
-            case "test":
-                return TEST;
             case "replace":
                 return REPLACE;
             case "move":
                 return MOVE;
+            case "test":
+                return TEST;
             case "copy":
                 return COPY;
             default:

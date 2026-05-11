@@ -40,19 +40,22 @@ public final class SearchResponseResourceType {
     public static final SearchResponseResourceType PRACTITIONER_ROLE =
             new SearchResponseResourceType(Value.PRACTITIONER_ROLE, "PractitionerRole");
 
-    public static final SearchResponseResourceType OBSERVATION =
-            new SearchResponseResourceType(Value.OBSERVATION, "Observation");
-
     public static final SearchResponseResourceType QUESTIONNAIRE_RESPONSE =
             new SearchResponseResourceType(Value.QUESTIONNAIRE_RESPONSE, "QuestionnaireResponse");
 
+    public static final SearchResponseResourceType OBSERVATION =
+            new SearchResponseResourceType(Value.OBSERVATION, "Observation");
+
     public static final SearchResponseResourceType SLOT = new SearchResponseResourceType(Value.SLOT, "Slot");
+
+    public static final SearchResponseResourceType ALLERGY_INTOLERANCE =
+            new SearchResponseResourceType(Value.ALLERGY_INTOLERANCE, "AllergyIntolerance");
 
     public static final SearchResponseResourceType SPECIMEN =
             new SearchResponseResourceType(Value.SPECIMEN, "Specimen");
 
-    public static final SearchResponseResourceType ALLERGY_INTOLERANCE =
-            new SearchResponseResourceType(Value.ALLERGY_INTOLERANCE, "AllergyIntolerance");
+    public static final SearchResponseResourceType PROCEDURE =
+            new SearchResponseResourceType(Value.PROCEDURE, "Procedure");
 
     public static final SearchResponseResourceType CARE_PLAN =
             new SearchResponseResourceType(Value.CARE_PLAN, "CarePlan");
@@ -60,15 +63,15 @@ public final class SearchResponseResourceType {
     public static final SearchResponseResourceType MEDICATION =
             new SearchResponseResourceType(Value.MEDICATION, "Medication");
 
-    public static final SearchResponseResourceType PROCEDURE =
-            new SearchResponseResourceType(Value.PROCEDURE, "Procedure");
+    public static final SearchResponseResourceType COVERAGE =
+            new SearchResponseResourceType(Value.COVERAGE, "Coverage");
 
     public static final SearchResponseResourceType DEVICE = new SearchResponseResourceType(Value.DEVICE, "Device");
 
     public static final SearchResponseResourceType PATIENT = new SearchResponseResourceType(Value.PATIENT, "Patient");
 
-    public static final SearchResponseResourceType COVERAGE =
-            new SearchResponseResourceType(Value.COVERAGE, "Coverage");
+    public static final SearchResponseResourceType QUESTIONNAIRE =
+            new SearchResponseResourceType(Value.QUESTIONNAIRE, "Questionnaire");
 
     public static final SearchResponseResourceType ORGANIZATION =
             new SearchResponseResourceType(Value.ORGANIZATION, "Organization");
@@ -81,17 +84,14 @@ public final class SearchResponseResourceType {
     public static final SearchResponseResourceType SCHEDULE =
             new SearchResponseResourceType(Value.SCHEDULE, "Schedule");
 
-    public static final SearchResponseResourceType APPOINTMENT =
-            new SearchResponseResourceType(Value.APPOINTMENT, "Appointment");
-
-    public static final SearchResponseResourceType QUESTIONNAIRE =
-            new SearchResponseResourceType(Value.QUESTIONNAIRE, "Questionnaire");
-
     public static final SearchResponseResourceType RELATED_PERSON =
             new SearchResponseResourceType(Value.RELATED_PERSON, "RelatedPerson");
 
     public static final SearchResponseResourceType SERVICE_REQUEST =
             new SearchResponseResourceType(Value.SERVICE_REQUEST, "ServiceRequest");
+
+    public static final SearchResponseResourceType APPOINTMENT =
+            new SearchResponseResourceType(Value.APPOINTMENT, "Appointment");
 
     private final Value value;
 
@@ -148,28 +148,30 @@ public final class SearchResponseResourceType {
                 return visitor.visitMedicationRequest();
             case PRACTITIONER_ROLE:
                 return visitor.visitPractitionerRole();
-            case OBSERVATION:
-                return visitor.visitObservation();
             case QUESTIONNAIRE_RESPONSE:
                 return visitor.visitQuestionnaireResponse();
+            case OBSERVATION:
+                return visitor.visitObservation();
             case SLOT:
                 return visitor.visitSlot();
-            case SPECIMEN:
-                return visitor.visitSpecimen();
             case ALLERGY_INTOLERANCE:
                 return visitor.visitAllergyIntolerance();
+            case SPECIMEN:
+                return visitor.visitSpecimen();
+            case PROCEDURE:
+                return visitor.visitProcedure();
             case CARE_PLAN:
                 return visitor.visitCarePlan();
             case MEDICATION:
                 return visitor.visitMedication();
-            case PROCEDURE:
-                return visitor.visitProcedure();
+            case COVERAGE:
+                return visitor.visitCoverage();
             case DEVICE:
                 return visitor.visitDevice();
             case PATIENT:
                 return visitor.visitPatient();
-            case COVERAGE:
-                return visitor.visitCoverage();
+            case QUESTIONNAIRE:
+                return visitor.visitQuestionnaire();
             case ORGANIZATION:
                 return visitor.visitOrganization();
             case ENCOUNTER:
@@ -178,14 +180,12 @@ public final class SearchResponseResourceType {
                 return visitor.visitGoal();
             case SCHEDULE:
                 return visitor.visitSchedule();
-            case APPOINTMENT:
-                return visitor.visitAppointment();
-            case QUESTIONNAIRE:
-                return visitor.visitQuestionnaire();
             case RELATED_PERSON:
                 return visitor.visitRelatedPerson();
             case SERVICE_REQUEST:
                 return visitor.visitServiceRequest();
+            case APPOINTMENT:
+                return visitor.visitAppointment();
             case UNKNOWN:
             default:
                 return visitor.visitUnknown(string);
@@ -217,28 +217,30 @@ public final class SearchResponseResourceType {
                 return MEDICATION_REQUEST;
             case "PractitionerRole":
                 return PRACTITIONER_ROLE;
-            case "Observation":
-                return OBSERVATION;
             case "QuestionnaireResponse":
                 return QUESTIONNAIRE_RESPONSE;
+            case "Observation":
+                return OBSERVATION;
             case "Slot":
                 return SLOT;
-            case "Specimen":
-                return SPECIMEN;
             case "AllergyIntolerance":
                 return ALLERGY_INTOLERANCE;
+            case "Specimen":
+                return SPECIMEN;
+            case "Procedure":
+                return PROCEDURE;
             case "CarePlan":
                 return CARE_PLAN;
             case "Medication":
                 return MEDICATION;
-            case "Procedure":
-                return PROCEDURE;
+            case "Coverage":
+                return COVERAGE;
             case "Device":
                 return DEVICE;
             case "Patient":
                 return PATIENT;
-            case "Coverage":
-                return COVERAGE;
+            case "Questionnaire":
+                return QUESTIONNAIRE;
             case "Organization":
                 return ORGANIZATION;
             case "Encounter":
@@ -247,14 +249,12 @@ public final class SearchResponseResourceType {
                 return GOAL;
             case "Schedule":
                 return SCHEDULE;
-            case "Appointment":
-                return APPOINTMENT;
-            case "Questionnaire":
-                return QUESTIONNAIRE;
             case "RelatedPerson":
                 return RELATED_PERSON;
             case "ServiceRequest":
                 return SERVICE_REQUEST;
+            case "Appointment":
+                return APPOINTMENT;
             default:
                 return new SearchResponseResourceType(Value.UNKNOWN, value);
         }

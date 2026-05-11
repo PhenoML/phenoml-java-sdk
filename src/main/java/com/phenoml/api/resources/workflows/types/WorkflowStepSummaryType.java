@@ -11,10 +11,10 @@ public final class WorkflowStepSummaryType {
 
     public static final WorkflowStepSummaryType SEARCH = new WorkflowStepSummaryType(Value.SEARCH, "search");
 
-    public static final WorkflowStepSummaryType CREATE = new WorkflowStepSummaryType(Value.CREATE, "create");
-
     public static final WorkflowStepSummaryType DECISION_NODE =
             new WorkflowStepSummaryType(Value.DECISION_NODE, "decision_node");
+
+    public static final WorkflowStepSummaryType CREATE = new WorkflowStepSummaryType(Value.CREATE, "create");
 
     private final Value value;
 
@@ -53,10 +53,10 @@ public final class WorkflowStepSummaryType {
                 return visitor.visitWorkflow();
             case SEARCH:
                 return visitor.visitSearch();
-            case CREATE:
-                return visitor.visitCreate();
             case DECISION_NODE:
                 return visitor.visitDecisionNode();
+            case CREATE:
+                return visitor.visitCreate();
             case UNKNOWN:
             default:
                 return visitor.visitUnknown(string);
@@ -70,10 +70,10 @@ public final class WorkflowStepSummaryType {
                 return WORKFLOW;
             case "search":
                 return SEARCH;
-            case "create":
-                return CREATE;
             case "decision_node":
                 return DECISION_NODE;
+            case "create":
+                return CREATE;
             default:
                 return new WorkflowStepSummaryType(Value.UNKNOWN, value);
         }
