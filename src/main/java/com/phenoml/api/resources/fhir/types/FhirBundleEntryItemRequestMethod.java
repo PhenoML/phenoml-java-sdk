@@ -7,15 +7,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class FhirBundleEntryItemRequestMethod {
+    public static final FhirBundleEntryItemRequestMethod GET = new FhirBundleEntryItemRequestMethod(Value.GET, "GET");
+
+    public static final FhirBundleEntryItemRequestMethod PUT = new FhirBundleEntryItemRequestMethod(Value.PUT, "PUT");
+
     public static final FhirBundleEntryItemRequestMethod PATCH =
             new FhirBundleEntryItemRequestMethod(Value.PATCH, "PATCH");
 
     public static final FhirBundleEntryItemRequestMethod DELETE =
             new FhirBundleEntryItemRequestMethod(Value.DELETE, "DELETE");
-
-    public static final FhirBundleEntryItemRequestMethod GET = new FhirBundleEntryItemRequestMethod(Value.GET, "GET");
-
-    public static final FhirBundleEntryItemRequestMethod PUT = new FhirBundleEntryItemRequestMethod(Value.PUT, "PUT");
 
     public static final FhirBundleEntryItemRequestMethod POST =
             new FhirBundleEntryItemRequestMethod(Value.POST, "POST");
@@ -53,14 +53,14 @@ public final class FhirBundleEntryItemRequestMethod {
 
     public <T> T visit(Visitor<T> visitor) {
         switch (value) {
-            case PATCH:
-                return visitor.visitPatch();
-            case DELETE:
-                return visitor.visitDelete();
             case GET:
                 return visitor.visitGet();
             case PUT:
                 return visitor.visitPut();
+            case PATCH:
+                return visitor.visitPatch();
+            case DELETE:
+                return visitor.visitDelete();
             case POST:
                 return visitor.visitPost();
             case UNKNOWN:
@@ -72,14 +72,14 @@ public final class FhirBundleEntryItemRequestMethod {
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static FhirBundleEntryItemRequestMethod valueOf(String value) {
         switch (value) {
-            case "PATCH":
-                return PATCH;
-            case "DELETE":
-                return DELETE;
             case "GET":
                 return GET;
             case "PUT":
                 return PUT;
+            case "PATCH":
+                return PATCH;
+            case "DELETE":
+                return DELETE;
             case "POST":
                 return POST;
             default:

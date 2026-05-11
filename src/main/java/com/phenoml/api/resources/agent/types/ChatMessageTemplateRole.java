@@ -11,9 +11,9 @@ public final class ChatMessageTemplateRole {
 
     public static final ChatMessageTemplateRole MODEL = new ChatMessageTemplateRole(Value.MODEL, "model");
 
-    public static final ChatMessageTemplateRole ASSISTANT = new ChatMessageTemplateRole(Value.ASSISTANT, "assistant");
-
     public static final ChatMessageTemplateRole USER = new ChatMessageTemplateRole(Value.USER, "user");
+
+    public static final ChatMessageTemplateRole ASSISTANT = new ChatMessageTemplateRole(Value.ASSISTANT, "assistant");
 
     private final Value value;
 
@@ -52,10 +52,10 @@ public final class ChatMessageTemplateRole {
                 return visitor.visitFunction();
             case MODEL:
                 return visitor.visitModel();
-            case ASSISTANT:
-                return visitor.visitAssistant();
             case USER:
                 return visitor.visitUser();
+            case ASSISTANT:
+                return visitor.visitAssistant();
             case UNKNOWN:
             default:
                 return visitor.visitUnknown(string);
@@ -69,10 +69,10 @@ public final class ChatMessageTemplateRole {
                 return FUNCTION;
             case "model":
                 return MODEL;
-            case "assistant":
-                return ASSISTANT;
             case "user":
                 return USER;
+            case "assistant":
+                return ASSISTANT;
             default:
                 return new ChatMessageTemplateRole(Value.UNKNOWN, value);
         }

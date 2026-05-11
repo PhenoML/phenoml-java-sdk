@@ -16,9 +16,9 @@ public final class AgentChatStreamEventType {
     public static final AgentChatStreamEventType MESSAGE_END =
             new AgentChatStreamEventType(Value.MESSAGE_END, "message_end");
 
-    public static final AgentChatStreamEventType ERROR = new AgentChatStreamEventType(Value.ERROR, "error");
-
     public static final AgentChatStreamEventType TOOL_USE = new AgentChatStreamEventType(Value.TOOL_USE, "tool_use");
+
+    public static final AgentChatStreamEventType ERROR = new AgentChatStreamEventType(Value.ERROR, "error");
 
     public static final AgentChatStreamEventType TOOL_RESULT =
             new AgentChatStreamEventType(Value.TOOL_RESULT, "tool_result");
@@ -62,10 +62,10 @@ public final class AgentChatStreamEventType {
                 return visitor.visitContentDelta();
             case MESSAGE_END:
                 return visitor.visitMessageEnd();
-            case ERROR:
-                return visitor.visitError();
             case TOOL_USE:
                 return visitor.visitToolUse();
+            case ERROR:
+                return visitor.visitError();
             case TOOL_RESULT:
                 return visitor.visitToolResult();
             case UNKNOWN:
@@ -83,10 +83,10 @@ public final class AgentChatStreamEventType {
                 return CONTENT_DELTA;
             case "message_end":
                 return MESSAGE_END;
-            case "error":
-                return ERROR;
             case "tool_use":
                 return TOOL_USE;
+            case "error":
+                return ERROR;
             case "tool_result":
                 return TOOL_RESULT;
             default:

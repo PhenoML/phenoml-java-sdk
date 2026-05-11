@@ -10,29 +10,29 @@ public final class CreateRequestResource {
     public static final CreateRequestResource MEDICATIONREQUEST =
             new CreateRequestResource(Value.MEDICATIONREQUEST, "medicationrequest");
 
+    public static final CreateRequestResource VITAL_SIGNS = new CreateRequestResource(Value.VITAL_SIGNS, "vital-signs");
+
+    public static final CreateRequestResource SIMPLE_OBSERVATION =
+            new CreateRequestResource(Value.SIMPLE_OBSERVATION, "simple-observation");
+
+    public static final CreateRequestResource QUESTIONNAIRE =
+            new CreateRequestResource(Value.QUESTIONNAIRE, "questionnaire");
+
     public static final CreateRequestResource OBSERVATION_LAB =
             new CreateRequestResource(Value.OBSERVATION_LAB, "observation-lab");
 
     public static final CreateRequestResource QUESTIONNAIRERESPONSE =
             new CreateRequestResource(Value.QUESTIONNAIRERESPONSE, "questionnaireresponse");
 
-    public static final CreateRequestResource VITAL_SIGNS = new CreateRequestResource(Value.VITAL_SIGNS, "vital-signs");
-
-    public static final CreateRequestResource QUESTIONNAIRE =
-            new CreateRequestResource(Value.QUESTIONNAIRE, "questionnaire");
-
-    public static final CreateRequestResource CONDITION_PROBLEMS_HEALTH_CONCERNS =
-            new CreateRequestResource(Value.CONDITION_PROBLEMS_HEALTH_CONCERNS, "condition-problems-health-concerns");
-
     public static final CreateRequestResource ENCOUNTER = new CreateRequestResource(Value.ENCOUNTER, "encounter");
-
-    public static final CreateRequestResource SIMPLE_OBSERVATION =
-            new CreateRequestResource(Value.SIMPLE_OBSERVATION, "simple-observation");
 
     public static final CreateRequestResource OBSERVATION_CLINICAL_RESULT =
             new CreateRequestResource(Value.OBSERVATION_CLINICAL_RESULT, "observation-clinical-result");
 
     public static final CreateRequestResource CAREPLAN = new CreateRequestResource(Value.CAREPLAN, "careplan");
+
+    public static final CreateRequestResource SERVICEREQUEST =
+            new CreateRequestResource(Value.SERVICEREQUEST, "servicerequest");
 
     public static final CreateRequestResource COVERAGE = new CreateRequestResource(Value.COVERAGE, "coverage");
 
@@ -41,12 +41,12 @@ public final class CreateRequestResource {
     public static final CreateRequestResource CONDITION_ENCOUNTER_DIAGNOSIS =
             new CreateRequestResource(Value.CONDITION_ENCOUNTER_DIAGNOSIS, "condition-encounter-diagnosis");
 
-    public static final CreateRequestResource SERVICEREQUEST =
-            new CreateRequestResource(Value.SERVICEREQUEST, "servicerequest");
-
-    public static final CreateRequestResource PATIENT = new CreateRequestResource(Value.PATIENT, "patient");
+    public static final CreateRequestResource CONDITION_PROBLEMS_HEALTH_CONCERNS =
+            new CreateRequestResource(Value.CONDITION_PROBLEMS_HEALTH_CONCERNS, "condition-problems-health-concerns");
 
     public static final CreateRequestResource APPOINTMENT = new CreateRequestResource(Value.APPOINTMENT, "appointment");
+
+    public static final CreateRequestResource PATIENT = new CreateRequestResource(Value.PATIENT, "patient");
 
     public static final CreateRequestResource PROCEDURE = new CreateRequestResource(Value.PROCEDURE, "procedure");
 
@@ -85,36 +85,36 @@ public final class CreateRequestResource {
         switch (value) {
             case MEDICATIONREQUEST:
                 return visitor.visitMedicationrequest();
+            case VITAL_SIGNS:
+                return visitor.visitVitalSigns();
+            case SIMPLE_OBSERVATION:
+                return visitor.visitSimpleObservation();
+            case QUESTIONNAIRE:
+                return visitor.visitQuestionnaire();
             case OBSERVATION_LAB:
                 return visitor.visitObservationLab();
             case QUESTIONNAIRERESPONSE:
                 return visitor.visitQuestionnaireresponse();
-            case VITAL_SIGNS:
-                return visitor.visitVitalSigns();
-            case QUESTIONNAIRE:
-                return visitor.visitQuestionnaire();
-            case CONDITION_PROBLEMS_HEALTH_CONCERNS:
-                return visitor.visitConditionProblemsHealthConcerns();
             case ENCOUNTER:
                 return visitor.visitEncounter();
-            case SIMPLE_OBSERVATION:
-                return visitor.visitSimpleObservation();
             case OBSERVATION_CLINICAL_RESULT:
                 return visitor.visitObservationClinicalResult();
             case CAREPLAN:
                 return visitor.visitCareplan();
+            case SERVICEREQUEST:
+                return visitor.visitServicerequest();
             case COVERAGE:
                 return visitor.visitCoverage();
             case AUTO:
                 return visitor.visitAuto();
             case CONDITION_ENCOUNTER_DIAGNOSIS:
                 return visitor.visitConditionEncounterDiagnosis();
-            case SERVICEREQUEST:
-                return visitor.visitServicerequest();
-            case PATIENT:
-                return visitor.visitPatient();
+            case CONDITION_PROBLEMS_HEALTH_CONCERNS:
+                return visitor.visitConditionProblemsHealthConcerns();
             case APPOINTMENT:
                 return visitor.visitAppointment();
+            case PATIENT:
+                return visitor.visitPatient();
             case PROCEDURE:
                 return visitor.visitProcedure();
             case UNKNOWN:
@@ -128,36 +128,36 @@ public final class CreateRequestResource {
         switch (value) {
             case "medicationrequest":
                 return MEDICATIONREQUEST;
+            case "vital-signs":
+                return VITAL_SIGNS;
+            case "simple-observation":
+                return SIMPLE_OBSERVATION;
+            case "questionnaire":
+                return QUESTIONNAIRE;
             case "observation-lab":
                 return OBSERVATION_LAB;
             case "questionnaireresponse":
                 return QUESTIONNAIRERESPONSE;
-            case "vital-signs":
-                return VITAL_SIGNS;
-            case "questionnaire":
-                return QUESTIONNAIRE;
-            case "condition-problems-health-concerns":
-                return CONDITION_PROBLEMS_HEALTH_CONCERNS;
             case "encounter":
                 return ENCOUNTER;
-            case "simple-observation":
-                return SIMPLE_OBSERVATION;
             case "observation-clinical-result":
                 return OBSERVATION_CLINICAL_RESULT;
             case "careplan":
                 return CAREPLAN;
+            case "servicerequest":
+                return SERVICEREQUEST;
             case "coverage":
                 return COVERAGE;
             case "auto":
                 return AUTO;
             case "condition-encounter-diagnosis":
                 return CONDITION_ENCOUNTER_DIAGNOSIS;
-            case "servicerequest":
-                return SERVICEREQUEST;
-            case "patient":
-                return PATIENT;
+            case "condition-problems-health-concerns":
+                return CONDITION_PROBLEMS_HEALTH_CONCERNS;
             case "appointment":
                 return APPOINTMENT;
+            case "patient":
+                return PATIENT;
             case "procedure":
                 return PROCEDURE;
             default:

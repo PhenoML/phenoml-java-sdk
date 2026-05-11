@@ -13,11 +13,11 @@ public final class ExtractRequestConfigConsistencyEffort {
     public static final ExtractRequestConfigConsistencyEffort LOW =
             new ExtractRequestConfigConsistencyEffort(Value.LOW, "low");
 
-    public static final ExtractRequestConfigConsistencyEffort NONE =
-            new ExtractRequestConfigConsistencyEffort(Value.NONE, "none");
-
     public static final ExtractRequestConfigConsistencyEffort HIGH =
             new ExtractRequestConfigConsistencyEffort(Value.HIGH, "high");
+
+    public static final ExtractRequestConfigConsistencyEffort NONE =
+            new ExtractRequestConfigConsistencyEffort(Value.NONE, "none");
 
     private final Value value;
 
@@ -56,10 +56,10 @@ public final class ExtractRequestConfigConsistencyEffort {
                 return visitor.visitMedium();
             case LOW:
                 return visitor.visitLow();
-            case NONE:
-                return visitor.visitNone();
             case HIGH:
                 return visitor.visitHigh();
+            case NONE:
+                return visitor.visitNone();
             case UNKNOWN:
             default:
                 return visitor.visitUnknown(string);
@@ -73,10 +73,10 @@ public final class ExtractRequestConfigConsistencyEffort {
                 return MEDIUM;
             case "low":
                 return LOW;
-            case "none":
-                return NONE;
             case "high":
                 return HIGH;
+            case "none":
+                return NONE;
             default:
                 return new ExtractRequestConfigConsistencyEffort(Value.UNKNOWN, value);
         }

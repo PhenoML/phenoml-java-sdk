@@ -7,13 +7,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class Provider {
+    public static final Provider HAPI = new Provider(Value.HAPI, "hapi");
+
+    public static final Provider EPIC = new Provider(Value.EPIC, "epic");
+
     public static final Provider MEDITECH = new Provider(Value.MEDITECH, "meditech");
 
     public static final Provider PHENOSTORE = new Provider(Value.PHENOSTORE, "phenostore");
 
-    public static final Provider HAPI = new Provider(Value.HAPI, "hapi");
-
-    public static final Provider EPIC = new Provider(Value.EPIC, "epic");
+    public static final Provider CERNER = new Provider(Value.CERNER, "cerner");
 
     public static final Provider ATHENAHEALTH = new Provider(Value.ATHENAHEALTH, "athenahealth");
 
@@ -22,8 +24,6 @@ public final class Provider {
     public static final Provider ELATION = new Provider(Value.ELATION, "elation");
 
     public static final Provider SANDBOX = new Provider(Value.SANDBOX, "sandbox");
-
-    public static final Provider CERNER = new Provider(Value.CERNER, "cerner");
 
     public static final Provider GOOGLE_HEALTHCARE = new Provider(Value.GOOGLE_HEALTHCARE, "google_healthcare");
 
@@ -60,14 +60,16 @@ public final class Provider {
 
     public <T> T visit(Visitor<T> visitor) {
         switch (value) {
-            case MEDITECH:
-                return visitor.visitMeditech();
-            case PHENOSTORE:
-                return visitor.visitPhenostore();
             case HAPI:
                 return visitor.visitHapi();
             case EPIC:
                 return visitor.visitEpic();
+            case MEDITECH:
+                return visitor.visitMeditech();
+            case PHENOSTORE:
+                return visitor.visitPhenostore();
+            case CERNER:
+                return visitor.visitCerner();
             case ATHENAHEALTH:
                 return visitor.visitAthenahealth();
             case CANVAS:
@@ -76,8 +78,6 @@ public final class Provider {
                 return visitor.visitElation();
             case SANDBOX:
                 return visitor.visitSandbox();
-            case CERNER:
-                return visitor.visitCerner();
             case GOOGLE_HEALTHCARE:
                 return visitor.visitGoogleHealthcare();
             case MEDPLUM:
@@ -91,14 +91,16 @@ public final class Provider {
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static Provider valueOf(String value) {
         switch (value) {
-            case "meditech":
-                return MEDITECH;
-            case "phenostore":
-                return PHENOSTORE;
             case "hapi":
                 return HAPI;
             case "epic":
                 return EPIC;
+            case "meditech":
+                return MEDITECH;
+            case "phenostore":
+                return PHENOSTORE;
+            case "cerner":
+                return CERNER;
             case "athenahealth":
                 return ATHENAHEALTH;
             case "canvas":
@@ -107,8 +109,6 @@ public final class Provider {
                 return ELATION;
             case "sandbox":
                 return SANDBOX;
-            case "cerner":
-                return CERNER;
             case "google_healthcare":
                 return GOOGLE_HEALTHCARE;
             case "medplum":

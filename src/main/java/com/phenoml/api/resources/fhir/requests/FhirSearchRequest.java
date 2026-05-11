@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -66,7 +67,7 @@ public final class FhirSearchRequest {
      * <li>Search prefixes for dates, numbers, quantities (eq, ne, gt, ge, lt, le, sa, eb, ap)</li>
      * </ul>
      */
-    @JsonIgnore
+    @JsonProperty("query_parameters")
     public Optional<Map<String, Optional<String>>> getQueryParameters() {
         return queryParameters;
     }

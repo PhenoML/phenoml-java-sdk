@@ -1,3 +1,25 @@
+## 13.0.1 - 2026-05-11
+* chore: reorder enum constant declarations across multiple types
+* Reorder static constant fields and switch/valueOf cases in several enum-like
+* types to reflect updated canonical ordering from the API specification. No
+* constants are added or removed; only their declaration order and switch-case
+* order change. This is a purely cosmetic/internal reorganisation with no
+* observable behavioural difference for callers who use the named constants
+* directly.
+* Key changes:
+* `AgentChatStreamEventType`: move `ERROR` after `TOOL_USE` in declarations and switch
+* `AgentGetChatMessagesRequestRole` / `ChatMessageTemplateRole`: reorder `USER` before `ASSISTANT`
+* `JsonPatchOperationOp` / `FhirPatchRequestBodyItemOp`: move `TEST` after `MOVE`
+* `ExtractRequestConfigChunkingMethod`: move `NONE` after `CLINICAL_NER_EXTRACT`
+* `ExtractRequestConfigConsistencyEffort`: move `NONE` after `HIGH`
+* `ExtractRequestConfigValidationMethod`: move `SIMPLE` / `MEDICATION_SEARCH` before `NONE`
+* `FhirBundleEntryItemRequestMethod`: move `GET` / `PUT` before `PATCH`
+* `AuthMethod`: move `NONE` after `ON_BEHALF_OF`
+* `Provider`: reorder `HAPI`, `EPIC`, `CERNER` relative to other providers
+* `Role`: move `ADMIN` before `WRITE`
+* `CreateRequestResource`: reorder multiple resource constants
+* 🌿 Generated with Fern
+
 ## 13.0.0 - 2026-05-08
 ### Breaking Changes
 * **`extractMultipleFhirResourcesFromADocument`** — return type changed from `CreateMultiResponse` to `DocumentMultiResponse` on `Lang2FhirClient`, `AsyncLang2FhirClient`, `RawLang2FhirClient`, and their async counterparts; update all call sites and variable declarations to use `DocumentMultiResponse` (or `CompletableFuture<DocumentMultiResponse>` for async variants).

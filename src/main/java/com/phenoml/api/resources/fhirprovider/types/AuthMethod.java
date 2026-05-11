@@ -11,13 +11,13 @@ public final class AuthMethod {
 
     public static final AuthMethod JWT = new AuthMethod(Value.JWT, "jwt");
 
-    public static final AuthMethod NONE = new AuthMethod(Value.NONE, "none");
-
     public static final AuthMethod CLIENT_SECRET = new AuthMethod(Value.CLIENT_SECRET, "client_secret");
 
     public static final AuthMethod GOOGLE_HEALTHCARE = new AuthMethod(Value.GOOGLE_HEALTHCARE, "google_healthcare");
 
     public static final AuthMethod ON_BEHALF_OF = new AuthMethod(Value.ON_BEHALF_OF, "on_behalf_of");
+
+    public static final AuthMethod NONE = new AuthMethod(Value.NONE, "none");
 
     private final Value value;
 
@@ -54,14 +54,14 @@ public final class AuthMethod {
                 return visitor.visitTokenPassthrough();
             case JWT:
                 return visitor.visitJwt();
-            case NONE:
-                return visitor.visitNone();
             case CLIENT_SECRET:
                 return visitor.visitClientSecret();
             case GOOGLE_HEALTHCARE:
                 return visitor.visitGoogleHealthcare();
             case ON_BEHALF_OF:
                 return visitor.visitOnBehalfOf();
+            case NONE:
+                return visitor.visitNone();
             case UNKNOWN:
             default:
                 return visitor.visitUnknown(string);
@@ -75,14 +75,14 @@ public final class AuthMethod {
                 return TOKEN_PASSTHROUGH;
             case "jwt":
                 return JWT;
-            case "none":
-                return NONE;
             case "client_secret":
                 return CLIENT_SECRET;
             case "google_healthcare":
                 return GOOGLE_HEALTHCARE;
             case "on_behalf_of":
                 return ON_BEHALF_OF;
+            case "none":
+                return NONE;
             default:
                 return new AuthMethod(Value.UNKNOWN, value);
         }
