@@ -1,3 +1,16 @@
+## 14.0.0 - 2026-05-12
+### Breaking Changes
+* **`McpServerResponseData`** — renamed to `McpServer`; update all type references, variable declarations, and builder calls to use `McpServer`.
+* **`McpServerToolResponseData`** / **`McpServerToolResponse.getData()`** — class renamed to `McpServerTool` and return type updated from `Optional<McpServerToolResponseData>` to `Optional<McpServerTool>`; update all call sites and variable declarations accordingly.
+* **`FhirProviderSandboxInfo.getId()` / `getName()`** — return types changed from `Optional<String>` to `String`; remove `Optional` unwrapping at call sites. The `provider` builder setter is removed; `getProvider()` now always returns `"sandbox"`.
+* **`FhirProviderTemplate`** — `getId()`, `getName()`, `getProvider()`, `getAuthConfigs()`, and `getLastUpdated()` return types changed from `Optional<T>` to their unwrapped required types; remove `Optional` unwrapping at call sites and update builder chains to use the new staged pattern (`IdStage` → `NameStage` → `ProviderStage` → `LastUpdatedStage` → `_FinalStage`).
+* **`SearchResponse`** — JSON property keys `resourceType` and `searchParams` renamed to `resource_type` and `search_params`; existing code serializing or deserializing the old camelCase keys will silently receive empty `Optional` values.
+### Added
+* **`McpServerResponse.getMcpServers()`** — new optional field returning `Optional<List<McpServer>>` with the list of MCP servers from create and list endpoints.
+* **`McpServerResponse.getMcpServerTools()`** / **`McpServerToolResponse.getMcpServerTools()`** — new optional fields returning `Optional<List<McpServerTool>>` with tools discovered at creation time or via list-endpoint responses.
+### Fixed
+* **`FhirProviderResponseData`** and **`FhirProviderListResponseFhirProvidersItem`** — deserializers now use field-presence checks before type conversion, preventing incorrect coercions between `FhirProviderTemplate` and `FhirProviderSandboxInfo`.
+
 ## 13.0.1 - 2026-05-11
 * chore: reorder enum constant declarations across multiple types
 * Reorder static constant fields and switch/valueOf cases in several enum-like

@@ -42,7 +42,7 @@ public class ToolsMcpServerWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"MCP server created successfully\",\"data\":{\"id\":\"123\",\"name\":\"My MCP Server\",\"description\":\"My MCP Server is a server that provides MCP services\",\"mcp_server_url\":\"https://mcp.example.com\"}}"));
+                                "{\"success\":true,\"message\":\"MCP Server and Tools created successfully\",\"data\":{\"id\":\"123\",\"name\":\"My MCP Server\",\"description\":\"My MCP Server is a server that provides MCP services\",\"mcp_server_url\":\"https://mcp.example.com\"},\"mcp_servers\":[{\"id\":\"123\",\"name\":\"My MCP Server\",\"description\":\"My MCP Server is a server that provides MCP services\",\"mcp_server_url\":\"https://mcp.example.com\"}],\"mcp_server_tools\":[{\"id\":\"tool-001\",\"name\":\"search_endpoints\",\"description\":\"Search across the documented endpoints\",\"input_schema\":{\"query\":\"string\"},\"mcp_server_id\":\"123\",\"mcp_server_url\":\"https://mcp.example.com\"},{\"id\":\"tool-002\",\"name\":\"get_endpoint\",\"description\":\"Fetch a single endpoint by ID\",\"input_schema\":{\"endpoint_id\":\"string\"},\"mcp_server_id\":\"123\",\"mcp_server_url\":\"https://mcp.example.com\"}]}"));
         McpServerResponse response = client.tools()
                 .mcpServer()
                 .create(McpServerCreateRequest.builder()
@@ -100,13 +100,43 @@ public class ToolsMcpServerWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"success\": true,\n"
-                + "  \"message\": \"MCP server created successfully\",\n"
+                + "  \"message\": \"MCP Server and Tools created successfully\",\n"
                 + "  \"data\": {\n"
                 + "    \"id\": \"123\",\n"
                 + "    \"name\": \"My MCP Server\",\n"
                 + "    \"description\": \"My MCP Server is a server that provides MCP services\",\n"
                 + "    \"mcp_server_url\": \"https://mcp.example.com\"\n"
-                + "  }\n"
+                + "  },\n"
+                + "  \"mcp_servers\": [\n"
+                + "    {\n"
+                + "      \"id\": \"123\",\n"
+                + "      \"name\": \"My MCP Server\",\n"
+                + "      \"description\": \"My MCP Server is a server that provides MCP services\",\n"
+                + "      \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "    }\n"
+                + "  ],\n"
+                + "  \"mcp_server_tools\": [\n"
+                + "    {\n"
+                + "      \"id\": \"tool-001\",\n"
+                + "      \"name\": \"search_endpoints\",\n"
+                + "      \"description\": \"Search across the documented endpoints\",\n"
+                + "      \"input_schema\": {\n"
+                + "        \"query\": \"string\"\n"
+                + "      },\n"
+                + "      \"mcp_server_id\": \"123\",\n"
+                + "      \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"id\": \"tool-002\",\n"
+                + "      \"name\": \"get_endpoint\",\n"
+                + "      \"description\": \"Fetch a single endpoint by ID\",\n"
+                + "      \"input_schema\": {\n"
+                + "        \"endpoint_id\": \"string\"\n"
+                + "      },\n"
+                + "      \"mcp_server_id\": \"123\",\n"
+                + "      \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "    }\n"
+                + "  ]\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
@@ -149,7 +179,7 @@ public class ToolsMcpServerWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"MCP server created successfully\",\"data\":{\"id\":\"123\",\"name\":\"My MCP Server\",\"description\":\"My MCP Server is a server that provides MCP services\",\"mcp_server_url\":\"https://mcp.example.com\"}}"));
+                                "{\"success\":true,\"message\":\"MCP Servers retrieved successfully\",\"data\":{\"id\":\"123\",\"name\":\"My MCP Server\",\"description\":\"My MCP Server is a server that provides MCP services\",\"mcp_server_url\":\"https://mcp.example.com\"},\"mcp_servers\":[{\"id\":\"123\",\"name\":\"My MCP Server\",\"description\":\"My MCP Server is a server that provides MCP services\",\"mcp_server_url\":\"https://mcp.example.com\"},{\"id\":\"456\",\"name\":\"Another MCP Server\",\"description\":\"A second MCP server\",\"mcp_server_url\":\"https://other.mcp.example.com\"}],\"mcp_server_tools\":[{\"id\":\"123\",\"name\":\"My MCP Server Tool\",\"description\":\"My MCP Server Tool is a tool that provides MCP services\",\"input_schema\":{\"name\":\"string\",\"age\":\"number\"},\"mcp_server_id\":\"123\",\"mcp_server_url\":\"https://mcp.example.com\"}]}"));
         McpServerResponse response = client.tools().mcpServer().list();
         // OAuth: consume the token request
         server.takeRequest();
@@ -169,13 +199,40 @@ public class ToolsMcpServerWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"success\": true,\n"
-                + "  \"message\": \"MCP server created successfully\",\n"
+                + "  \"message\": \"MCP Servers retrieved successfully\",\n"
                 + "  \"data\": {\n"
                 + "    \"id\": \"123\",\n"
                 + "    \"name\": \"My MCP Server\",\n"
                 + "    \"description\": \"My MCP Server is a server that provides MCP services\",\n"
                 + "    \"mcp_server_url\": \"https://mcp.example.com\"\n"
-                + "  }\n"
+                + "  },\n"
+                + "  \"mcp_servers\": [\n"
+                + "    {\n"
+                + "      \"id\": \"123\",\n"
+                + "      \"name\": \"My MCP Server\",\n"
+                + "      \"description\": \"My MCP Server is a server that provides MCP services\",\n"
+                + "      \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"id\": \"456\",\n"
+                + "      \"name\": \"Another MCP Server\",\n"
+                + "      \"description\": \"A second MCP server\",\n"
+                + "      \"mcp_server_url\": \"https://other.mcp.example.com\"\n"
+                + "    }\n"
+                + "  ],\n"
+                + "  \"mcp_server_tools\": [\n"
+                + "    {\n"
+                + "      \"id\": \"123\",\n"
+                + "      \"name\": \"My MCP Server Tool\",\n"
+                + "      \"description\": \"My MCP Server Tool is a tool that provides MCP services\",\n"
+                + "      \"input_schema\": {\n"
+                + "        \"name\": \"string\",\n"
+                + "        \"age\": \"number\"\n"
+                + "      },\n"
+                + "      \"mcp_server_id\": \"123\",\n"
+                + "      \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "    }\n"
+                + "  ]\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
@@ -218,7 +275,7 @@ public class ToolsMcpServerWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"MCP server created successfully\",\"data\":{\"id\":\"123\",\"name\":\"My MCP Server\",\"description\":\"My MCP Server is a server that provides MCP services\",\"mcp_server_url\":\"https://mcp.example.com\"}}"));
+                                "{\"success\":true,\"message\":\"MCP Server retrieved successfully\",\"data\":{\"id\":\"123\",\"name\":\"My MCP Server\",\"description\":\"My MCP Server is a server that provides MCP services\",\"mcp_server_url\":\"https://mcp.example.com\"},\"mcp_servers\":[{\"id\":\"123\",\"name\":\"My MCP Server\",\"description\":\"My MCP Server is a server that provides MCP services\",\"mcp_server_url\":\"https://mcp.example.com\"}],\"mcp_server_tools\":[{\"id\":\"123\",\"name\":\"My MCP Server Tool\",\"description\":\"My MCP Server Tool is a tool that provides MCP services\",\"input_schema\":{\"name\":\"string\",\"age\":\"number\"},\"mcp_server_id\":\"123\",\"mcp_server_url\":\"https://mcp.example.com\"}]}"));
         McpServerResponse response = client.tools().mcpServer().get("mcp_server_id");
         // OAuth: consume the token request
         server.takeRequest();
@@ -238,13 +295,34 @@ public class ToolsMcpServerWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"success\": true,\n"
-                + "  \"message\": \"MCP server created successfully\",\n"
+                + "  \"message\": \"MCP Server retrieved successfully\",\n"
                 + "  \"data\": {\n"
                 + "    \"id\": \"123\",\n"
                 + "    \"name\": \"My MCP Server\",\n"
                 + "    \"description\": \"My MCP Server is a server that provides MCP services\",\n"
                 + "    \"mcp_server_url\": \"https://mcp.example.com\"\n"
-                + "  }\n"
+                + "  },\n"
+                + "  \"mcp_servers\": [\n"
+                + "    {\n"
+                + "      \"id\": \"123\",\n"
+                + "      \"name\": \"My MCP Server\",\n"
+                + "      \"description\": \"My MCP Server is a server that provides MCP services\",\n"
+                + "      \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "    }\n"
+                + "  ],\n"
+                + "  \"mcp_server_tools\": [\n"
+                + "    {\n"
+                + "      \"id\": \"123\",\n"
+                + "      \"name\": \"My MCP Server Tool\",\n"
+                + "      \"description\": \"My MCP Server Tool is a tool that provides MCP services\",\n"
+                + "      \"input_schema\": {\n"
+                + "        \"name\": \"string\",\n"
+                + "        \"age\": \"number\"\n"
+                + "      },\n"
+                + "      \"mcp_server_id\": \"123\",\n"
+                + "      \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "    }\n"
+                + "  ]\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
@@ -287,7 +365,7 @@ public class ToolsMcpServerWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"MCP server created successfully\",\"data\":{\"id\":\"123\",\"name\":\"My MCP Server\",\"description\":\"My MCP Server is a server that provides MCP services\",\"mcp_server_url\":\"https://mcp.example.com\"}}"));
+                                "{\"success\":true,\"message\":\"MCP Server Configuration and Tools deleted successfully\",\"data\":{\"id\":\"123\",\"name\":\"My MCP Server\",\"description\":\"My MCP Server is a server that provides MCP services\",\"mcp_server_url\":\"https://mcp.example.com\"},\"mcp_servers\":[{\"id\":\"123\",\"name\":\"My MCP Server\",\"description\":\"My MCP Server is a server that provides MCP services\",\"mcp_server_url\":\"https://mcp.example.com\"}],\"mcp_server_tools\":[{\"id\":\"123\",\"name\":\"My MCP Server Tool\",\"description\":\"My MCP Server Tool is a tool that provides MCP services\",\"input_schema\":{\"name\":\"string\",\"age\":\"number\"},\"mcp_server_id\":\"123\",\"mcp_server_url\":\"https://mcp.example.com\"}]}"));
         McpServerResponse response = client.tools().mcpServer().delete("mcp_server_id");
         // OAuth: consume the token request
         server.takeRequest();
@@ -307,13 +385,34 @@ public class ToolsMcpServerWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"success\": true,\n"
-                + "  \"message\": \"MCP server created successfully\",\n"
+                + "  \"message\": \"MCP Server Configuration and Tools deleted successfully\",\n"
                 + "  \"data\": {\n"
                 + "    \"id\": \"123\",\n"
                 + "    \"name\": \"My MCP Server\",\n"
                 + "    \"description\": \"My MCP Server is a server that provides MCP services\",\n"
                 + "    \"mcp_server_url\": \"https://mcp.example.com\"\n"
-                + "  }\n"
+                + "  },\n"
+                + "  \"mcp_servers\": [\n"
+                + "    {\n"
+                + "      \"id\": \"123\",\n"
+                + "      \"name\": \"My MCP Server\",\n"
+                + "      \"description\": \"My MCP Server is a server that provides MCP services\",\n"
+                + "      \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "    }\n"
+                + "  ],\n"
+                + "  \"mcp_server_tools\": [\n"
+                + "    {\n"
+                + "      \"id\": \"123\",\n"
+                + "      \"name\": \"My MCP Server Tool\",\n"
+                + "      \"description\": \"My MCP Server Tool is a tool that provides MCP services\",\n"
+                + "      \"input_schema\": {\n"
+                + "        \"name\": \"string\",\n"
+                + "        \"age\": \"number\"\n"
+                + "      },\n"
+                + "      \"mcp_server_id\": \"123\",\n"
+                + "      \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "    }\n"
+                + "  ]\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);

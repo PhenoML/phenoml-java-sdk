@@ -20,6 +20,7 @@ import com.phenoml.api.resources.agent.types.AgentResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
 import com.phenoml.api.resources.agent.types.JsonPatchOperationOp;
 import java.util.Arrays;
+import java.util.Optional;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -57,12 +58,14 @@ public class AgentWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Agent created successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"provider\"}}"));
+                                "{\"success\":true,\"message\":\"Agent created successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"}}"));
         AgentResponse response = client.agent()
                 .create(AgentCreateRequest.builder()
-                        .name("name")
-                        .provider(AgentCreateRequestProvider.of("provider"))
-                        .prompts(Arrays.asList("prompt_123", "prompt_456"))
+                        .name("Medical Assistant")
+                        .provider(AgentCreateRequestProvider.of("7002b0b4-8d09-445a-bf65-0fafdaf26c35"))
+                        .description("An AI assistant for medical information processing")
+                        .prompts(Arrays.asList("prompt_123"))
+                        .tags(Optional.of(Arrays.asList("medical", "fhir")))
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -79,12 +82,16 @@ public class AgentWireTest {
         String actualRequestBody = request.getBody().readUtf8();
         String expectedRequestBody = ""
                 + "{\n"
-                + "  \"name\": \"name\",\n"
+                + "  \"name\": \"Medical Assistant\",\n"
+                + "  \"description\": \"An AI assistant for medical information processing\",\n"
                 + "  \"prompts\": [\n"
-                + "    \"prompt_123\",\n"
-                + "    \"prompt_456\"\n"
+                + "    \"prompt_123\"\n"
                 + "  ],\n"
-                + "  \"provider\": \"provider\"\n"
+                + "  \"tags\": [\n"
+                + "    \"medical\",\n"
+                + "    \"fhir\"\n"
+                + "  ],\n"
+                + "  \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
@@ -140,7 +147,7 @@ public class AgentWireTest {
                 + "      \"medical\",\n"
                 + "      \"fhir\"\n"
                 + "    ],\n"
-                + "    \"provider\": \"provider\"\n"
+                + "    \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n"
                 + "  }\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
@@ -180,11 +187,9 @@ public class AgentWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(
-                new MockResponse()
-                        .setResponseCode(200)
-                        .setBody(
-                                "{\"success\":true,\"message\":\"Agents retrieved successfully\",\"agents\":[{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"provider\"}]}"));
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(TestResources.loadResource("/wire-tests/AgentWireTest_testList_response.json")));
         AgentListResponse response =
                 client.agent().list(AgentListRequest.builder().tags("tags").build());
         // OAuth: consume the token request
@@ -202,35 +207,7 @@ public class AgentWireTest {
         // Validate response body
         Assertions.assertNotNull(response, "Response should not be null");
         String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = ""
-                + "{\n"
-                + "  \"success\": true,\n"
-                + "  \"message\": \"Agents retrieved successfully\",\n"
-                + "  \"agents\": [\n"
-                + "    {\n"
-                + "      \"id\": \"agent_123\",\n"
-                + "      \"name\": \"Medical Assistant\",\n"
-                + "      \"description\": \"An AI assistant for medical information processing\",\n"
-                + "      \"prompts\": [\n"
-                + "        \"prompt_123\",\n"
-                + "        \"prompt_456\"\n"
-                + "      ],\n"
-                + "      \"tools\": [\n"
-                + "        \"mcp_server_123\",\n"
-                + "        \"mcp_server_456\"\n"
-                + "      ],\n"
-                + "      \"workflows\": [\n"
-                + "        \"workflow_123\",\n"
-                + "        \"workflow_456\"\n"
-                + "      ],\n"
-                + "      \"tags\": [\n"
-                + "        \"medical\",\n"
-                + "        \"fhir\"\n"
-                + "      ],\n"
-                + "      \"provider\": \"provider\"\n"
-                + "    }\n"
-                + "  ]\n"
-                + "}";
+        String expectedResponseBody = TestResources.loadResource("/wire-tests/AgentWireTest_testList_response.json");
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
         Assertions.assertTrue(
@@ -272,7 +249,7 @@ public class AgentWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Agent created successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"provider\"}}"));
+                                "{\"success\":true,\"message\":\"Agent retrieved successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"}}"));
         AgentResponse response = client.agent().get("id");
         // OAuth: consume the token request
         server.takeRequest();
@@ -292,7 +269,7 @@ public class AgentWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"success\": true,\n"
-                + "  \"message\": \"Agent created successfully\",\n"
+                + "  \"message\": \"Agent retrieved successfully\",\n"
                 + "  \"data\": {\n"
                 + "    \"id\": \"agent_123\",\n"
                 + "    \"name\": \"Medical Assistant\",\n"
@@ -313,7 +290,7 @@ public class AgentWireTest {
                 + "      \"medical\",\n"
                 + "      \"fhir\"\n"
                 + "    ],\n"
-                + "    \"provider\": \"provider\"\n"
+                + "    \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n"
                 + "  }\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
@@ -357,14 +334,16 @@ public class AgentWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Agent created successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"provider\"}}"));
+                                "{\"success\":true,\"message\":\"Agent updated successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"}}"));
         AgentResponse response = client.agent()
                 .update(
                         "id",
                         AgentCreateRequest.builder()
-                                .name("name")
-                                .provider(AgentCreateRequestProvider.of("provider"))
-                                .prompts(Arrays.asList("prompt_123", "prompt_456"))
+                                .name("Medical Assistant")
+                                .provider(AgentCreateRequestProvider.of("7002b0b4-8d09-445a-bf65-0fafdaf26c35"))
+                                .description("Updated description for the medical assistant")
+                                .prompts(Arrays.asList("prompt_123"))
+                                .tags(Optional.of(Arrays.asList("medical", "fhir", "updated")))
                                 .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -381,12 +360,17 @@ public class AgentWireTest {
         String actualRequestBody = request.getBody().readUtf8();
         String expectedRequestBody = ""
                 + "{\n"
-                + "  \"name\": \"name\",\n"
+                + "  \"name\": \"Medical Assistant\",\n"
+                + "  \"description\": \"Updated description for the medical assistant\",\n"
                 + "  \"prompts\": [\n"
-                + "    \"prompt_123\",\n"
-                + "    \"prompt_456\"\n"
+                + "    \"prompt_123\"\n"
                 + "  ],\n"
-                + "  \"provider\": \"provider\"\n"
+                + "  \"tags\": [\n"
+                + "    \"medical\",\n"
+                + "    \"fhir\",\n"
+                + "    \"updated\"\n"
+                + "  ],\n"
+                + "  \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
@@ -421,7 +405,7 @@ public class AgentWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"success\": true,\n"
-                + "  \"message\": \"Agent created successfully\",\n"
+                + "  \"message\": \"Agent updated successfully\",\n"
                 + "  \"data\": {\n"
                 + "    \"id\": \"agent_123\",\n"
                 + "    \"name\": \"Medical Assistant\",\n"
@@ -442,7 +426,7 @@ public class AgentWireTest {
                 + "      \"medical\",\n"
                 + "      \"fhir\"\n"
                 + "    ],\n"
-                + "    \"provider\": \"provider\"\n"
+                + "    \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n"
                 + "  }\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
@@ -544,24 +528,20 @@ public class AgentWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Agent created successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"provider\"}}"));
+                                "{\"success\":true,\"message\":\"Agent patched successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"}}"));
         AgentResponse response = client.agent()
                 .patch(
                         "id",
                         Arrays.asList(
                                 JsonPatchOperation.builder()
                                         .op(JsonPatchOperationOp.REPLACE)
-                                        .path("/name")
-                                        .value("Updated Agent Name")
+                                        .path("/description")
+                                        .value("patched description")
                                         .build(),
                                 JsonPatchOperation.builder()
                                         .op(JsonPatchOperationOp.ADD)
                                         .path("/tags/-")
-                                        .value("new-tag")
-                                        .build(),
-                                JsonPatchOperation.builder()
-                                        .op(JsonPatchOperationOp.REMOVE)
-                                        .path("/description")
+                                        .value("updated")
                                         .build()));
         // OAuth: consume the token request
         server.takeRequest();
@@ -580,17 +560,13 @@ public class AgentWireTest {
                 + "[\n"
                 + "  {\n"
                 + "    \"op\": \"replace\",\n"
-                + "    \"path\": \"/name\",\n"
-                + "    \"value\": \"Updated Agent Name\"\n"
+                + "    \"path\": \"/description\",\n"
+                + "    \"value\": \"patched description\"\n"
                 + "  },\n"
                 + "  {\n"
                 + "    \"op\": \"add\",\n"
                 + "    \"path\": \"/tags/-\",\n"
-                + "    \"value\": \"new-tag\"\n"
-                + "  },\n"
-                + "  {\n"
-                + "    \"op\": \"remove\",\n"
-                + "    \"path\": \"/description\"\n"
+                + "    \"value\": \"updated\"\n"
                 + "  }\n"
                 + "]";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
@@ -626,7 +602,7 @@ public class AgentWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"success\": true,\n"
-                + "  \"message\": \"Agent created successfully\",\n"
+                + "  \"message\": \"Agent patched successfully\",\n"
                 + "  \"data\": {\n"
                 + "    \"id\": \"agent_123\",\n"
                 + "    \"name\": \"Medical Assistant\",\n"
@@ -647,7 +623,7 @@ public class AgentWireTest {
                 + "      \"medical\",\n"
                 + "      \"fhir\"\n"
                 + "    ],\n"
-                + "    \"provider\": \"provider\"\n"
+                + "    \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n"
                 + "  }\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
@@ -691,7 +667,7 @@ public class AgentWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"response\":\"I'll create a patient record for John Doe with diabetes. Let me process that information...\",\"success\":true,\"message\":\"Chat response generated successfully\",\"session_id\":\"session_123\"}"));
+                                "{\"response\":\"Based on the patient records, they have been diagnosed with Type 2 Diabetes Mellitus (ICD-10: E11.65) and Essential Hypertension (ICD-10: I10). Current medications include Metformin 500mg BID and Lisinopril 10mg daily. Most recent HbA1c was 7.2% on 2024-12-15.\",\"success\":true,\"message\":\"Response generated successfully\",\"session_id\":\"session-abc123\"}"));
         AgentChatResponse response = client.agent()
                 .chat(AgentChatRequest.builder()
                         .message("What is the patient's current condition?")
@@ -699,6 +675,7 @@ public class AgentWireTest {
                         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
                         .phenomlFhirProvider(
                                 "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
+                        .sessionId("session-abc123")
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -726,6 +703,7 @@ public class AgentWireTest {
         String expectedRequestBody = ""
                 + "{\n"
                 + "  \"message\": \"What is the patient's current condition?\",\n"
+                + "  \"session_id\": \"session-abc123\",\n"
                 + "  \"agent_id\": \"agent-123\"\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
@@ -760,10 +738,10 @@ public class AgentWireTest {
         String actualResponseJson = objectMapper.writeValueAsString(response);
         String expectedResponseBody = ""
                 + "{\n"
-                + "  \"response\": \"I'll create a patient record for John Doe with diabetes. Let me process that information...\",\n"
+                + "  \"response\": \"Based on the patient records, they have been diagnosed with Type 2 Diabetes Mellitus (ICD-10: E11.65) and Essential Hypertension (ICD-10: I10). Current medications include Metformin 500mg BID and Lisinopril 10mg daily. Most recent HbA1c was 7.2% on 2024-12-15.\",\n"
                 + "  \"success\": true,\n"
-                + "  \"message\": \"Chat response generated successfully\",\n"
-                + "  \"session_id\": \"session_123\"\n"
+                + "  \"message\": \"Response generated successfully\",\n"
+                + "  \"session_id\": \"session-abc123\"\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
@@ -810,6 +788,7 @@ public class AgentWireTest {
                         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
                         .phenomlFhirProvider(
                                 "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
+                        .sessionId("session-abc123")
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -837,6 +816,7 @@ public class AgentWireTest {
         String expectedRequestBody = ""
                 + "{\n"
                 + "  \"message\": \"What is the patient's current condition?\",\n"
+                + "  \"session_id\": \"session-abc123\",\n"
                 + "  \"agent_id\": \"agent-123\"\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
@@ -884,7 +864,7 @@ public class AgentWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"messages\":[{\"id\":\"message_123\",\"session_id\":\"session_123\",\"role\":\"user\",\"content\":\"Hello, how are you?\",\"created\":\"2021-01-01T00:00:00Z\",\"updated\":\"2021-01-01T00:00:00Z\",\"function_name\":\"get_patient_info\",\"function_args\":{\"patient_id\":\"123\"},\"function_result\":{\"name\":\"John Doe\"},\"message_order\":1}],\"total\":10,\"session_id\":\"session_123\"}"));
+                                "{\"messages\":[{\"id\":\"message_001\",\"session_id\":\"session_123\",\"role\":\"user\",\"content\":\"What is the patient's current condition?\",\"created\":\"2025-03-01T14:00:00Z\",\"updated\":\"2025-03-01T14:00:00Z\",\"function_name\":\"get_patient_info\",\"function_args\":{\"patient_id\":\"123\"},\"function_result\":{\"name\":\"John Doe\"},\"message_order\":1},{\"id\":\"message_002\",\"session_id\":\"session_123\",\"role\":\"assistant\",\"content\":\"Based on the patient records, they have been diagnosed with Type 2 Diabetes Mellitus (ICD-10: E11.65).\",\"created\":\"2025-03-01T14:00:02Z\",\"updated\":\"2025-03-01T14:00:02Z\",\"function_name\":\"get_patient_info\",\"function_args\":{\"patient_id\":\"123\"},\"function_result\":{\"name\":\"John Doe\"},\"message_order\":2}],\"total\":2,\"session_id\":\"session_123\"}"));
         AgentGetChatMessagesResponse response = client.agent()
                 .getChatMessages(AgentGetChatMessagesRequest.builder()
                         .chatSessionId("chat_session_id")
@@ -911,12 +891,12 @@ public class AgentWireTest {
                 + "{\n"
                 + "  \"messages\": [\n"
                 + "    {\n"
-                + "      \"id\": \"message_123\",\n"
+                + "      \"id\": \"message_001\",\n"
                 + "      \"session_id\": \"session_123\",\n"
                 + "      \"role\": \"user\",\n"
-                + "      \"content\": \"Hello, how are you?\",\n"
-                + "      \"created\": \"2021-01-01T00:00:00Z\",\n"
-                + "      \"updated\": \"2021-01-01T00:00:00Z\",\n"
+                + "      \"content\": \"What is the patient's current condition?\",\n"
+                + "      \"created\": \"2025-03-01T14:00:00Z\",\n"
+                + "      \"updated\": \"2025-03-01T14:00:00Z\",\n"
                 + "      \"function_name\": \"get_patient_info\",\n"
                 + "      \"function_args\": {\n"
                 + "        \"patient_id\": \"123\"\n"
@@ -925,9 +905,25 @@ public class AgentWireTest {
                 + "        \"name\": \"John Doe\"\n"
                 + "      },\n"
                 + "      \"message_order\": 1\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"id\": \"message_002\",\n"
+                + "      \"session_id\": \"session_123\",\n"
+                + "      \"role\": \"assistant\",\n"
+                + "      \"content\": \"Based on the patient records, they have been diagnosed with Type 2 Diabetes Mellitus (ICD-10: E11.65).\",\n"
+                + "      \"created\": \"2025-03-01T14:00:02Z\",\n"
+                + "      \"updated\": \"2025-03-01T14:00:02Z\",\n"
+                + "      \"function_name\": \"get_patient_info\",\n"
+                + "      \"function_args\": {\n"
+                + "        \"patient_id\": \"123\"\n"
+                + "      },\n"
+                + "      \"function_result\": {\n"
+                + "        \"name\": \"John Doe\"\n"
+                + "      },\n"
+                + "      \"message_order\": 2\n"
                 + "    }\n"
                 + "  ],\n"
-                + "  \"total\": 10,\n"
+                + "  \"total\": 2,\n"
                 + "  \"session_id\": \"session_123\"\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
