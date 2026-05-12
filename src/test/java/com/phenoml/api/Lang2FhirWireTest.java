@@ -48,12 +48,16 @@ public class Lang2FhirWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody("{\"key\":\"value\"}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"resourceType\":\"Condition\",\"clinicalStatus\":{\"coding\":[{\"system\":\"http://terminology.hl7.org/CodeSystem/condition-clinical\",\"code\":\"active\"}]},\"code\":{\"coding\":[{\"system\":\"http://snomed.info/sct\",\"code\":\"195967001\",\"display\":\"Asthma\"}],\"text\":\"Severe persistent asthma with acute exacerbation\"},\"severity\":{\"coding\":[{\"system\":\"http://snomed.info/sct\",\"code\":\"24484000\",\"display\":\"Severe\"}]}}"));
         Map<String, Object> response = client.lang2Fhir()
                 .create(CreateRequest.builder()
                         .version("R4")
-                        .resource(CreateRequestResource.AUTO)
-                        .text("Patient has severe asthma with acute exacerbation")
+                        .resource(CreateRequestResource.CONDITION_ENCOUNTER_DIAGNOSIS)
+                        .text("Patient has severe persistent asthma with acute exacerbation")
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -71,8 +75,8 @@ public class Lang2FhirWireTest {
         String expectedRequestBody = ""
                 + "{\n"
                 + "  \"version\": \"R4\",\n"
-                + "  \"resource\": \"auto\",\n"
-                + "  \"text\": \"Patient has severe asthma with acute exacerbation\"\n"
+                + "  \"resource\": \"condition-encounter-diagnosis\",\n"
+                + "  \"text\": \"Patient has severe persistent asthma with acute exacerbation\"\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
@@ -104,7 +108,37 @@ public class Lang2FhirWireTest {
         // Validate response body
         Assertions.assertNotNull(response, "Response should not be null");
         String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"resourceType\": \"Condition\",\n"
+                + "  \"clinicalStatus\": {\n"
+                + "    \"coding\": [\n"
+                + "      {\n"
+                + "        \"system\": \"http://terminology.hl7.org/CodeSystem/condition-clinical\",\n"
+                + "        \"code\": \"active\"\n"
+                + "      }\n"
+                + "    ]\n"
+                + "  },\n"
+                + "  \"code\": {\n"
+                + "    \"coding\": [\n"
+                + "      {\n"
+                + "        \"system\": \"http://snomed.info/sct\",\n"
+                + "        \"code\": \"195967001\",\n"
+                + "        \"display\": \"Asthma\"\n"
+                + "      }\n"
+                + "    ],\n"
+                + "    \"text\": \"Severe persistent asthma with acute exacerbation\"\n"
+                + "  },\n"
+                + "  \"severity\": {\n"
+                + "    \"coding\": [\n"
+                + "      {\n"
+                + "        \"system\": \"http://snomed.info/sct\",\n"
+                + "        \"code\": \"24484000\",\n"
+                + "        \"display\": \"Severe\"\n"
+                + "      }\n"
+                + "    ]\n"
+                + "  }\n"
+                + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
         Assertions.assertTrue(
@@ -142,15 +176,14 @@ public class Lang2FhirWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(
-                new MockResponse()
-                        .setResponseCode(200)
-                        .setBody(
-                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"resourceType\":\"Patient\",\"description\":\"John Smith (DOB 1980-05-12) was diagnosed with Type 2 Diabetes during office visit on 2025-03-01 with Dr. Chen\",\"originalText\":\"diagnosed with Type 2 Diabetes\"}],\"validation\":{\"passes\":[{}],\"fixed\":true,\"attempts\":1,\"summary\":\"summary\"}}"));
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(TestResources.loadResource("/wire-tests/Lang2FhirWireTest_testCreateMulti_response.json")));
         CreateMultiResponse response = client.lang2Fhir()
                 .createMulti(CreateMultiRequest.builder()
                         .text(
-                                "John Smith, male born on 1980-03-12, diagnosed with Type 2 Diabetes. Prescribed Metformin 500mg twice daily.")
+                                "John Smith, 45-year-old male, diagnosed with Type 2 Diabetes. Prescribed Metformin 500mg twice daily. Blood pressure 140/90.")
+                        .version("R4")
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -167,7 +200,8 @@ public class Lang2FhirWireTest {
         String actualRequestBody = request.getBody().readUtf8();
         String expectedRequestBody = ""
                 + "{\n"
-                + "  \"text\": \"John Smith, male born on 1980-03-12, diagnosed with Type 2 Diabetes. Prescribed Metformin 500mg twice daily.\"\n"
+                + "  \"text\": \"John Smith, 45-year-old male, diagnosed with Type 2 Diabetes. Prescribed Metformin 500mg twice daily. Blood pressure 140/90.\",\n"
+                + "  \"version\": \"R4\"\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
@@ -199,40 +233,8 @@ public class Lang2FhirWireTest {
         // Validate response body
         Assertions.assertNotNull(response, "Response should not be null");
         String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = ""
-                + "{\n"
-                + "  \"success\": true,\n"
-                + "  \"message\": \"Successfully extracted 3 resources\",\n"
-                + "  \"bundle\": {\n"
-                + "    \"resourceType\": \"Bundle\",\n"
-                + "    \"type\": \"transaction\",\n"
-                + "    \"entry\": [\n"
-                + "      {\n"
-                + "        \"fullUrl\": \"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\n"
-                + "        \"request\": {\n"
-                + "          \"method\": \"POST\",\n"
-                + "          \"url\": \"Patient\"\n"
-                + "        }\n"
-                + "      }\n"
-                + "    ]\n"
-                + "  },\n"
-                + "  \"resources\": [\n"
-                + "    {\n"
-                + "      \"tempId\": \"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\n"
-                + "      \"resourceType\": \"Patient\",\n"
-                + "      \"description\": \"John Smith (DOB 1980-05-12) was diagnosed with Type 2 Diabetes during office visit on 2025-03-01 with Dr. Chen\",\n"
-                + "      \"originalText\": \"diagnosed with Type 2 Diabetes\"\n"
-                + "    }\n"
-                + "  ],\n"
-                + "  \"validation\": {\n"
-                + "    \"passes\": [\n"
-                + "      {}\n"
-                + "    ],\n"
-                + "    \"fixed\": true,\n"
-                + "    \"attempts\": 1,\n"
-                + "    \"summary\": \"summary\"\n"
-                + "  }\n"
-                + "}";
+        String expectedResponseBody =
+                TestResources.loadResource("/wire-tests/Lang2FhirWireTest_testCreateMulti_response.json");
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
         Assertions.assertTrue(
@@ -274,7 +276,7 @@ public class Lang2FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"resourceType\":\"AllergyIntolerance\",\"searchParams\":\"date=ge2025-03-02&date=le2025-03-09\"}"));
+                                "{\"resource_type\":\"AllergyIntolerance\",\"search_params\":\"date=ge2025-03-02&date=le2025-03-09\"}"));
         SearchResponse response = client.lang2Fhir()
                 .search(SearchRequest.builder()
                         .text("Appointments between March 2-9, 2025")
@@ -325,8 +327,8 @@ public class Lang2FhirWireTest {
         String actualResponseJson = objectMapper.writeValueAsString(response);
         String expectedResponseBody = ""
                 + "{\n"
-                + "  \"resourceType\": \"AllergyIntolerance\",\n"
-                + "  \"searchParams\": \"date=ge2025-03-02&date=le2025-03-09\"\n"
+                + "  \"resource_type\": \"AllergyIntolerance\",\n"
+                + "  \"search_params\": \"date=ge2025-03-02&date=le2025-03-09\"\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
@@ -372,7 +374,11 @@ public class Lang2FhirWireTest {
                                 "{\"message\":\"Profile uploaded successfully\",\"id\":\"custom-patient\",\"type\":\"Patient\",\"url\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient\"}"));
         Lang2FhirUploadProfileResponse response = client.lang2Fhir()
                 .uploadProfile(ProfileUploadRequest.builder()
-                        .profile("(base64 encoded FHIR StructureDefinition JSON)")
+                        .profile(
+                                "eyJyZXNvdXJjZVR5cGUiOiJTdHJ1Y3R1cmVEZWZpbml0aW9uIiwiaWQiOiJjdXN0b20tcGF0aWVudCIsInVybCI6Imh0dHA6Ly9waGVub21sLmNvbS9maGlyL1N0cnVjdHVyZURlZmluaXRpb24vY3VzdG9tLXBhdGllbnQiLCJuYW1lIjoiQ3VzdG9tUGF0aWVudCIsInN0YXR1cyI6ImFjdGl2ZSIsImZoaXJWZXJzaW9uIjoiNC4wLjEiLCJraW5kIjoicmVzb3VyY2UiLCJhYnN0cmFjdCI6ZmFsc2UsInR5cGUiOiJQYXRpZW50IiwiYmFzZURlZmluaXRpb24iOiJodHRwOi8vaGw3Lm9yZy9maGlyL1N0cnVjdHVyZURlZmluaXRpb24vUGF0aWVudCIsImRlcml2YXRpb24iOiJjb25zdHJhaW50Iiwic25hcHNob3QiOnsiZWxlbWVudCI6W3siaWQiOiJQYXRpZW50IiwicGF0aCI6IlBhdGllbnQiLCJtaW4iOjAsIm1heCI6IioifSx7ImlkIjoiUGF0aWVudC5uYW1lIiwicGF0aCI6IlBhdGllbnQubmFtZSIsIm1pbiI6MSwibWF4IjoiKiJ9XX19Cg==")
+                        .implementationGuide("acme-cardiology")
+                        .profileContext(
+                                "When clinical text describes cardiology-specific findings, prefer this profile over the generic US Core Condition.")
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -387,8 +393,12 @@ public class Lang2FhirWireTest {
                 "OAuth Authorization header should contain Bearer token from OAuth flow");
         // Validate request body
         String actualRequestBody = request.getBody().readUtf8();
-        String expectedRequestBody =
-                "" + "{\n" + "  \"profile\": \"(base64 encoded FHIR StructureDefinition JSON)\"\n" + "}";
+        String expectedRequestBody = ""
+                + "{\n"
+                + "  \"profile\": \"eyJyZXNvdXJjZVR5cGUiOiJTdHJ1Y3R1cmVEZWZpbml0aW9uIiwiaWQiOiJjdXN0b20tcGF0aWVudCIsInVybCI6Imh0dHA6Ly9waGVub21sLmNvbS9maGlyL1N0cnVjdHVyZURlZmluaXRpb24vY3VzdG9tLXBhdGllbnQiLCJuYW1lIjoiQ3VzdG9tUGF0aWVudCIsInN0YXR1cyI6ImFjdGl2ZSIsImZoaXJWZXJzaW9uIjoiNC4wLjEiLCJraW5kIjoicmVzb3VyY2UiLCJhYnN0cmFjdCI6ZmFsc2UsInR5cGUiOiJQYXRpZW50IiwiYmFzZURlZmluaXRpb24iOiJodHRwOi8vaGw3Lm9yZy9maGlyL1N0cnVjdHVyZURlZmluaXRpb24vUGF0aWVudCIsImRlcml2YXRpb24iOiJjb25zdHJhaW50Iiwic25hcHNob3QiOnsiZWxlbWVudCI6W3siaWQiOiJQYXRpZW50IiwicGF0aCI6IlBhdGllbnQiLCJtaW4iOjAsIm1heCI6IioifSx7ImlkIjoiUGF0aWVudC5uYW1lIiwicGF0aCI6IlBhdGllbnQubmFtZSIsIm1pbiI6MSwibWF4IjoiKiJ9XX19Cg==\",\n"
+                + "  \"implementation_guide\": \"acme-cardiology\",\n"
+                + "  \"profile_context\": \"When clinical text describes cardiology-specific findings, prefer this profile over the generic US Core Condition.\"\n"
+                + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
         Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
@@ -463,12 +473,16 @@ public class Lang2FhirWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody("{\"key\":\"value\"}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"resourceType\":\"Questionnaire\",\"status\":\"active\",\"title\":\"Patient Intake Form\",\"item\":[{\"linkId\":\"1\",\"text\":\"What is your name?\",\"type\":\"string\"},{\"linkId\":\"2\",\"text\":\"What is your date of birth?\",\"type\":\"date\"}]}"));
         Map<String, Object> response = client.lang2Fhir()
                 .document(DocumentRequest.builder()
                         .version("R4")
                         .resource("questionnaire")
-                        .content("content")
+                        .content("JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)")
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -487,7 +501,7 @@ public class Lang2FhirWireTest {
                 + "{\n"
                 + "  \"version\": \"R4\",\n"
                 + "  \"resource\": \"questionnaire\",\n"
-                + "  \"content\": \"content\"\n"
+                + "  \"content\": \"JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)\"\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
@@ -519,7 +533,24 @@ public class Lang2FhirWireTest {
         // Validate response body
         Assertions.assertNotNull(response, "Response should not be null");
         String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"resourceType\": \"Questionnaire\",\n"
+                + "  \"status\": \"active\",\n"
+                + "  \"title\": \"Patient Intake Form\",\n"
+                + "  \"item\": [\n"
+                + "    {\n"
+                + "      \"linkId\": \"1\",\n"
+                + "      \"text\": \"What is your name?\",\n"
+                + "      \"type\": \"string\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"linkId\": \"2\",\n"
+                + "      \"text\": \"What is your date of birth?\",\n"
+                + "      \"type\": \"date\"\n"
+                + "    }\n"
+                + "  ]\n"
+                + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
         Assertions.assertTrue(
@@ -557,15 +588,15 @@ public class Lang2FhirWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(
-                new MockResponse()
-                        .setResponseCode(200)
-                        .setBody(
-                                "{\"success\":true,\"message\":\"Successfully extracted 3 resources\",\"bundle\":{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[{\"fullUrl\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"request\":{\"method\":\"POST\",\"url\":\"Patient\"}}]},\"resources\":[{\"tempId\":\"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\"resourceType\":\"Patient\",\"description\":\"John Smith (DOB 1980-05-12) was diagnosed with Type 2 Diabetes during office visit on 2025-03-01 with Dr. Chen\",\"originalText\":\"diagnosed with Type 2 Diabetes\"}],\"validation\":{\"passes\":[{}],\"fixed\":true,\"attempts\":1,\"summary\":\"summary\"},\"page_classifications\":[{\"page_number\":1,\"include\":true,\"reason\":\"clinical notes with diagnoses\"}]}"));
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(TestResources.loadResource(
+                        "/wire-tests/Lang2FhirWireTest_testExtractMultipleFhirResourcesFromADocument_response.json")));
         DocumentMultiResponse response = client.lang2Fhir()
                 .extractMultipleFhirResourcesFromADocument(DocumentMultiRequest.builder()
                         .version("R4")
-                        .content("content")
+                        .content("JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)")
+                        .provider("medplum")
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -580,7 +611,12 @@ public class Lang2FhirWireTest {
                 "OAuth Authorization header should contain Bearer token from OAuth flow");
         // Validate request body
         String actualRequestBody = request.getBody().readUtf8();
-        String expectedRequestBody = "" + "{\n" + "  \"version\": \"R4\",\n" + "  \"content\": \"content\"\n" + "}";
+        String expectedRequestBody = ""
+                + "{\n"
+                + "  \"version\": \"R4\",\n"
+                + "  \"content\": \"JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)\",\n"
+                + "  \"provider\": \"medplum\"\n"
+                + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
         Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
@@ -611,47 +647,8 @@ public class Lang2FhirWireTest {
         // Validate response body
         Assertions.assertNotNull(response, "Response should not be null");
         String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = ""
-                + "{\n"
-                + "  \"success\": true,\n"
-                + "  \"message\": \"Successfully extracted 3 resources\",\n"
-                + "  \"bundle\": {\n"
-                + "    \"resourceType\": \"Bundle\",\n"
-                + "    \"type\": \"transaction\",\n"
-                + "    \"entry\": [\n"
-                + "      {\n"
-                + "        \"fullUrl\": \"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\n"
-                + "        \"request\": {\n"
-                + "          \"method\": \"POST\",\n"
-                + "          \"url\": \"Patient\"\n"
-                + "        }\n"
-                + "      }\n"
-                + "    ]\n"
-                + "  },\n"
-                + "  \"resources\": [\n"
-                + "    {\n"
-                + "      \"tempId\": \"urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8\",\n"
-                + "      \"resourceType\": \"Patient\",\n"
-                + "      \"description\": \"John Smith (DOB 1980-05-12) was diagnosed with Type 2 Diabetes during office visit on 2025-03-01 with Dr. Chen\",\n"
-                + "      \"originalText\": \"diagnosed with Type 2 Diabetes\"\n"
-                + "    }\n"
-                + "  ],\n"
-                + "  \"validation\": {\n"
-                + "    \"passes\": [\n"
-                + "      {}\n"
-                + "    ],\n"
-                + "    \"fixed\": true,\n"
-                + "    \"attempts\": 1,\n"
-                + "    \"summary\": \"summary\"\n"
-                + "  },\n"
-                + "  \"page_classifications\": [\n"
-                + "    {\n"
-                + "      \"page_number\": 1,\n"
-                + "      \"include\": true,\n"
-                + "      \"reason\": \"clinical notes with diagnoses\"\n"
-                + "    }\n"
-                + "  ]\n"
-                + "}";
+        String expectedResponseBody = TestResources.loadResource(
+                "/wire-tests/Lang2FhirWireTest_testExtractMultipleFhirResourcesFromADocument_response.json");
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
         Assertions.assertTrue(

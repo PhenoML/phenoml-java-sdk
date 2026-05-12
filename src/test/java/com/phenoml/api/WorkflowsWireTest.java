@@ -115,7 +115,8 @@ public class WorkflowsWireTest {
         CreateWorkflowResponse response = client.workflows()
                 .create(CreateWorkflowRequest.builder()
                         .name("Patient Data Mapping Workflow")
-                        .workflowInstructions("Given diagnosis data, find the patient and create condition record")
+                        .workflowInstructions(
+                                "Given diagnosis data, find the patient and create a condition record linked to their encounter")
                         .fhirProviderId(CreateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000"))
                         .verbose(true)
                         .sampleData(new HashMap<String, Object>() {
@@ -123,6 +124,7 @@ public class WorkflowsWireTest {
                                 put("patient_last_name", "Rippin");
                                 put("patient_first_name", "Clay");
                                 put("diagnosis_code", "I10");
+                                put("encounter_date", "2024-01-15");
                             }
                         })
                         .build());
@@ -142,11 +144,12 @@ public class WorkflowsWireTest {
         String expectedRequestBody = ""
                 + "{\n"
                 + "  \"name\": \"Patient Data Mapping Workflow\",\n"
-                + "  \"workflow_instructions\": \"Given diagnosis data, find the patient and create condition record\",\n"
+                + "  \"workflow_instructions\": \"Given diagnosis data, find the patient and create a condition record linked to their encounter\",\n"
                 + "  \"sample_data\": {\n"
                 + "    \"patient_last_name\": \"Rippin\",\n"
                 + "    \"patient_first_name\": \"Clay\",\n"
-                + "    \"diagnosis_code\": \"I10\"\n"
+                + "    \"diagnosis_code\": \"I10\",\n"
+                + "    \"encounter_date\": \"2024-01-15\"\n"
                 + "  },\n"
                 + "  \"fhir_provider_id\": \"550e8400-e29b-41d4-a716-446655440000\"\n"
                 + "}";
@@ -284,17 +287,18 @@ public class WorkflowsWireTest {
                 .update(
                         "id",
                         UpdateWorkflowRequest.builder()
-                                .name("Updated Patient Data Mapping Workflow")
+                                .name("Patient Data Mapping Workflow (v2)")
                                 .workflowInstructions(
-                                        "Given diagnosis data, find the patient and create condition record")
+                                        "Given diagnosis data, find the patient and create a condition record linked to their encounter")
                                 .fhirProviderId(
                                         UpdateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000"))
                                 .verbose(true)
                                 .sampleData(new HashMap<String, Object>() {
                                     {
-                                        put("patient_last_name", "Smith");
-                                        put("patient_first_name", "John");
-                                        put("diagnosis_code", "E11");
+                                        put("patient_last_name", "Rippin");
+                                        put("patient_first_name", "Clay");
+                                        put("diagnosis_code", "I10");
+                                        put("encounter_date", "2024-01-15");
                                     }
                                 })
                                 .build());
@@ -313,12 +317,13 @@ public class WorkflowsWireTest {
         String actualRequestBody = request.getBody().readUtf8();
         String expectedRequestBody = ""
                 + "{\n"
-                + "  \"name\": \"Updated Patient Data Mapping Workflow\",\n"
-                + "  \"workflow_instructions\": \"Given diagnosis data, find the patient and create condition record\",\n"
+                + "  \"name\": \"Patient Data Mapping Workflow (v2)\",\n"
+                + "  \"workflow_instructions\": \"Given diagnosis data, find the patient and create a condition record linked to their encounter\",\n"
                 + "  \"sample_data\": {\n"
-                + "    \"patient_last_name\": \"Smith\",\n"
-                + "    \"patient_first_name\": \"John\",\n"
-                + "    \"diagnosis_code\": \"E11\"\n"
+                + "    \"patient_last_name\": \"Rippin\",\n"
+                + "    \"patient_first_name\": \"Clay\",\n"
+                + "    \"diagnosis_code\": \"I10\",\n"
+                + "    \"encounter_date\": \"2024-01-15\"\n"
                 + "  },\n"
                 + "  \"fhir_provider_id\": \"550e8400-e29b-41d4-a716-446655440000\"\n"
                 + "}";
@@ -449,21 +454,19 @@ public class WorkflowsWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(
-                new MockResponse()
-                        .setResponseCode(200)
-                        .setBody(
-                                "{\"success\":true,\"message\":\"Workflow executed successfully\",\"results\":{\"steps\":{\"key\":\"value\"}},\"preview\":false}"));
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(TestResources.loadResource("/wire-tests/WorkflowsWireTest_testExecute_response.json")));
         ExecuteWorkflowResponse response = client.workflows()
                 .execute(
-                        "id",
+                        "7a8b9c0d-1234-5678-abcd-ef9876543210",
                         ExecuteWorkflowRequest.builder()
                                 .inputData(new HashMap<String, Object>() {
                                     {
                                         put("patient_last_name", "Johnson");
                                         put("patient_first_name", "Mary");
                                         put("diagnosis_code", "M79.3");
-                                        put("encounter_date", "2024-01-15");
+                                        put("encounter_date", "2024-03-20");
                                     }
                                 })
                                 .build());
@@ -486,7 +489,7 @@ public class WorkflowsWireTest {
                 + "    \"patient_last_name\": \"Johnson\",\n"
                 + "    \"patient_first_name\": \"Mary\",\n"
                 + "    \"diagnosis_code\": \"M79.3\",\n"
-                + "    \"encounter_date\": \"2024-01-15\"\n"
+                + "    \"encounter_date\": \"2024-03-20\"\n"
                 + "  }\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
@@ -519,17 +522,8 @@ public class WorkflowsWireTest {
         // Validate response body
         Assertions.assertNotNull(response, "Response should not be null");
         String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = ""
-                + "{\n"
-                + "  \"success\": true,\n"
-                + "  \"message\": \"Workflow executed successfully\",\n"
-                + "  \"results\": {\n"
-                + "    \"steps\": {\n"
-                + "      \"key\": \"value\"\n"
-                + "    }\n"
-                + "  },\n"
-                + "  \"preview\": false\n"
-                + "}";
+        String expectedResponseBody =
+                TestResources.loadResource("/wire-tests/WorkflowsWireTest_testExecute_response.json");
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
         Assertions.assertTrue(

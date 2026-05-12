@@ -1,0 +1,66 @@
+{
+  "success": true,
+  "message": "Workflow executed successfully",
+  "results": {
+    "steps": {
+      "step_1_id": {
+        "type": "search_result",
+        "original_query": "find patient by first name Mary and last name Johnson",
+        "resource_type": "Patient",
+        "search_params": {
+          "family": "Johnson",
+          "given": "Mary"
+        },
+        "results": [
+          {
+            "resourceType": "Patient",
+            "id": "patient-123",
+            "name": [
+              {
+                "family": "Johnson",
+                "given": [
+                  "Mary"
+                ],
+                "use": "usual"
+              }
+            ],
+            "gender": "female",
+            "birthDate": "1961-01-01"
+          }
+        ]
+      },
+      "step_2_id": {
+        "type": "create_result",
+        "id": "condition-456",
+        "resource_type": "Condition",
+        "original_desc": "create condition with diagnosis code M79.3 for the patient from step_1_id",
+        "preview": false,
+        "created_resource": {
+          "resourceType": "Condition",
+          "id": "condition-456",
+          "clinicalStatus": {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                "code": "active"
+              }
+            ]
+          },
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/sid/icd-10",
+                "code": "M79.3",
+                "display": "Panniculitis, unspecified"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/patient-123"
+          }
+        }
+      }
+    }
+  },
+  "preview": false
+}

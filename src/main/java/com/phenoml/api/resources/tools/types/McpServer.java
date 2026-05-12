@@ -18,8 +18,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-@JsonDeserialize(builder = McpServerResponseData.Builder.class)
-public final class McpServerResponseData {
+@JsonDeserialize(builder = McpServer.Builder.class)
+public final class McpServer {
     private final Optional<String> id;
 
     private final Optional<String> name;
@@ -30,7 +30,7 @@ public final class McpServerResponseData {
 
     private final Map<String, Object> additionalProperties;
 
-    private McpServerResponseData(
+    private McpServer(
             Optional<String> id,
             Optional<String> name,
             Optional<String> description,
@@ -78,7 +78,7 @@ public final class McpServerResponseData {
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        return other instanceof McpServerResponseData && equalTo((McpServerResponseData) other);
+        return other instanceof McpServer && equalTo((McpServer) other);
     }
 
     @JsonAnyGetter
@@ -86,7 +86,7 @@ public final class McpServerResponseData {
         return this.additionalProperties;
     }
 
-    private boolean equalTo(McpServerResponseData other) {
+    private boolean equalTo(McpServer other) {
         return id.equals(other.id)
                 && name.equals(other.name)
                 && description.equals(other.description)
@@ -122,7 +122,7 @@ public final class McpServerResponseData {
 
         private Builder() {}
 
-        public Builder from(McpServerResponseData other) {
+        public Builder from(McpServer other) {
             id(other.getId());
             name(other.getName());
             description(other.getDescription());
@@ -186,8 +186,8 @@ public final class McpServerResponseData {
             return this;
         }
 
-        public McpServerResponseData build() {
-            return new McpServerResponseData(id, name, description, mcpServerUrl, additionalProperties);
+        public McpServer build() {
+            return new McpServer(id, name, description, mcpServerUrl, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {

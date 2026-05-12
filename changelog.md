@@ -1,3 +1,16 @@
+## 14.0.0 - 2026-05-12
+### Breaking Changes
+* **`CreateSummaryRequestFhirResources`**, **`FhirBundle`**, **`FhirBundleEntryItem`**, and **`FhirResource`** — four public classes in `summary.types` have been removed; delete all references to these types.
+* **`CreateSummaryRequest.getFhirResources()`** — return type changed from `CreateSummaryRequestFhirResources` to `Map<String, Object>`; update variable declarations and remove use of the deleted class.
+* **`FhirProviderSandboxInfo`** and **`FhirProviderTemplate`** — getter return types changed from `Optional<T>` to plain `T`, `provider(…)` builder setter removed from `FhirProviderSandboxInfo`, and both builders now use a staged `IdStage` pattern; remove all optional-unwrapping at call sites and update builder chains to supply required positional steps.
+* **`McpServerResponseData`** and **`McpServerToolResponseData`** — renamed to **`McpServer`** and **`McpServerTool`** respectively; update all type references, import statements, and `getData()` call sites.
+* **`SearchResponse`** — JSON deserialization keys for `resourceType` and `searchParams` corrected to snake_case (`resource_type`, `search_params`); responses previously relying on camelCase wire keys will no longer deserialize those fields.
+### Added
+* **`McpServerResponse.getMcpServers()`** and **`McpServerResponse.getMcpServerTools()`** — new optional fields returning `List<McpServer>` and `List<McpServerTool>` respectively, populated by MCP-server create and list endpoints.
+* **`McpServerToolResponse.getMcpServerTools()`** — new optional field returning `Optional<List<McpServerTool>>` populated by list-endpoint responses.
+### Fixed
+* **`FhirProviderResponseData`** and **`FhirProviderListResponseFhirProvidersItem`** — deserializers now use field-presence checks before type conversion, preventing incorrect coercions between `FhirProviderTemplate` and `FhirProviderSandboxInfo`.
+
 ## 13.0.1 - 2026-05-11
 * chore: reorder enum constant declarations across multiple types
 * Reorder static constant fields and switch/valueOf cases in several enum-like
