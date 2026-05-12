@@ -6,4 +6,7 @@ updates:
       interval: "monthly"
     cooldown:
       default-days: 30
-    open-pull-requests-limit: 10
+    groups:
+      github-actions:
+        patterns:
+          - "*"
