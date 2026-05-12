@@ -1,3 +1,16 @@
+## 14.0.0 - 2026-05-12
+### Breaking Changes
+* **`CreateSummaryRequestFhirResources`, `FhirBundle`, `FhirBundleEntryItem`, and `FhirResource`** — all four classes in the `summary` package have been removed; delete all references, builder usages, and imports.
+* **`CreateSummaryRequest.getFhirResources()`** — return type changed from `CreateSummaryRequestFhirResources` to `Map<String, Object>`; update all call sites accordingly.
+* **`FhirProviderSandboxInfo` and `FhirProviderTemplate` builders** — `builder()` now returns a staged `IdStage` instead of `Builder`, enforcing construction order; update all builder chains to supply required fields first via the staged API, and note that several getters now return unwrapped types instead of `Optional<T>`.
+* **`McpServerResponseData`** — renamed to `McpServer`, and **`McpServerToolResponseData`** renamed to `McpServerTool`; update all references, variable declarations, and import statements.
+* **`SearchResponse` JSON field names** — `resourceType` renamed to `resource_type` and `searchParams` renamed to `search_params` in serialized JSON; update any raw JSON parsing or `@JsonSetter` overrides.
+### Added
+* **`McpServerResponse.getMcpServers()` and `getMcpServerTools()`** — new optional fields returning `List<McpServer>` and `List<McpServerTool>` respectively on list and create endpoints.
+* **`McpServerToolResponse.getMcpServerTools()`** — new optional field returning `List<McpServerTool>` populated by the `/tools/mcp-server/{mcp_server_id}/list` endpoint, with corresponding builder methods.
+### Fixed
+* **`FhirProviderResponseData` and `FhirProviderListResponseFhirProvidersItem` deserializers** — now use field-presence guards before type conversion, preventing incorrect coercions on partial payloads.
+
 ## 13.0.1 - 2026-05-11
 * chore: reorder enum constant declarations across multiple types
 * Reorder static constant fields and switch/valueOf cases in several enum-like

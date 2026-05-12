@@ -6,15 +6,16 @@ import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.summary.requests.CreateSummaryRequest;
 import com.phenoml.api.resources.summary.requests.CreateSummaryTemplateRequest;
 import com.phenoml.api.resources.summary.requests.UpdateSummaryTemplateRequest;
-import com.phenoml.api.resources.summary.types.CreateSummaryRequestFhirResources;
+import com.phenoml.api.resources.summary.types.CreateSummaryRequestMode;
 import com.phenoml.api.resources.summary.types.CreateSummaryResponse;
 import com.phenoml.api.resources.summary.types.CreateSummaryTemplateResponse;
-import com.phenoml.api.resources.summary.types.FhirResource;
 import com.phenoml.api.resources.summary.types.SummaryDeleteTemplateResponse;
 import com.phenoml.api.resources.summary.types.SummaryGetTemplateResponse;
 import com.phenoml.api.resources.summary.types.SummaryListTemplatesResponse;
 import com.phenoml.api.resources.summary.types.SummaryUpdateTemplateResponse;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -52,7 +53,7 @@ public class SummaryWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"templates\":[{\"id\":\"id\",\"name\":\"name\",\"description\":\"description\",\"template\":\"template\",\"target_resources\":[\"target_resources\"],\"mode\":\"mode\",\"metadata\":{\"key\":\"value\"},\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}]}"));
+                                "{\"success\":true,\"templates\":[{\"id\":\"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\"name\":\"Discharge Summary\",\"description\":\"description\",\"template\":\"Patient \\\\{{Patient.name[0].text}}, age \\\\{{Patient.birthDate|age}}, was admitted on \\\\{{Encounter[0].period.start}} with \\\\{{Condition[0].code.coding[0].display}}.\",\"target_resources\":[\"Patient\",\"Condition\",\"MedicationRequest\"],\"mode\":\"narrative\",\"metadata\":{\"key\":\"value\"},\"created_at\":\"2024-01-15T10:30:00Z\",\"updated_at\":\"2024-01-15T10:30:00Z\"}]}"));
         SummaryListTemplatesResponse response = client.summary().listTemplates();
         // OAuth: consume the token request
         server.takeRequest();
@@ -74,19 +75,21 @@ public class SummaryWireTest {
                 + "  \"success\": true,\n"
                 + "  \"templates\": [\n"
                 + "    {\n"
-                + "      \"id\": \"id\",\n"
-                + "      \"name\": \"name\",\n"
+                + "      \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n"
+                + "      \"name\": \"Discharge Summary\",\n"
                 + "      \"description\": \"description\",\n"
-                + "      \"template\": \"template\",\n"
+                + "      \"template\": \"Patient \\\\{{Patient.name[0].text}}, age \\\\{{Patient.birthDate|age}}, was admitted on \\\\{{Encounter[0].period.start}} with \\\\{{Condition[0].code.coding[0].display}}.\",\n"
                 + "      \"target_resources\": [\n"
-                + "        \"target_resources\"\n"
+                + "        \"Patient\",\n"
+                + "        \"Condition\",\n"
+                + "        \"MedicationRequest\"\n"
                 + "      ],\n"
-                + "      \"mode\": \"mode\",\n"
+                + "      \"mode\": \"narrative\",\n"
                 + "      \"metadata\": {\n"
                 + "        \"key\": \"value\"\n"
                 + "      },\n"
-                + "      \"created_at\": \"2024-01-15T09:30:00Z\",\n"
-                + "      \"updated_at\": \"2024-01-15T09:30:00Z\"\n"
+                + "      \"created_at\": \"2024-01-15T10:30:00Z\",\n"
+                + "      \"updated_at\": \"2024-01-15T10:30:00Z\"\n"
                 + "    }\n"
                 + "  ]\n"
                 + "}";
@@ -131,13 +134,14 @@ public class SummaryWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"message\",\"template_id\":\"template_id\",\"template\":{\"id\":\"id\",\"name\":\"name\",\"description\":\"description\",\"template\":\"template\",\"target_resources\":[\"target_resources\"],\"mode\":\"mode\",\"metadata\":{\"key\":\"value\"},\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}}"));
+                                "{\"success\":true,\"message\":\"Template created successfully\",\"template_id\":\"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\"template\":{\"id\":\"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\"name\":\"Discharge Summary\",\"description\":\"description\",\"template\":\"Patient \\\\{{Patient.name[0].text}}, age \\\\{{Patient.birthDate|age}}, was admitted on \\\\{{Encounter[0].period.start}} with \\\\{{Condition[0].code.coding[0].display}}. Discharged on \\\\{{Encounter[0].period.end}} with \\\\{{MedicationRequest[0].medicationCodeableConcept.coding[0].display}} \\\\{{MedicationRequest[0].dosageInstruction[0].text}}.\",\"target_resources\":[\"Patient\",\"Condition\",\"MedicationRequest\"],\"mode\":\"narrative\",\"metadata\":{\"key\":\"value\"},\"created_at\":\"2024-01-15T10:30:00Z\",\"updated_at\":\"2024-01-15T10:30:00Z\"}}"));
         CreateSummaryTemplateResponse response = client.summary()
                 .createTemplate(CreateSummaryTemplateRequest.builder()
-                        .name("name")
-                        .exampleSummary("Patient John Doe, age 45, presents with hypertension diagnosed on 2024-01-15.")
-                        .mode("mode")
-                        .targetResources(Arrays.asList("Patient", "Condition", "Observation"))
+                        .name("Discharge Summary")
+                        .exampleSummary(
+                                "Patient John Doe, age 45, was admitted on 2024-01-10 with Type 2 Diabetes. Discharged on 2024-01-15 with Metformin 500mg BID.")
+                        .mode("narrative")
+                        .targetResources(Arrays.asList("Patient", "Condition", "MedicationRequest"))
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -154,14 +158,14 @@ public class SummaryWireTest {
         String actualRequestBody = request.getBody().readUtf8();
         String expectedRequestBody = ""
                 + "{\n"
-                + "  \"name\": \"name\",\n"
-                + "  \"example_summary\": \"Patient John Doe, age 45, presents with hypertension diagnosed on 2024-01-15.\",\n"
+                + "  \"name\": \"Discharge Summary\",\n"
+                + "  \"example_summary\": \"Patient John Doe, age 45, was admitted on 2024-01-10 with Type 2 Diabetes. Discharged on 2024-01-15 with Metformin 500mg BID.\",\n"
                 + "  \"target_resources\": [\n"
                 + "    \"Patient\",\n"
                 + "    \"Condition\",\n"
-                + "    \"Observation\"\n"
+                + "    \"MedicationRequest\"\n"
                 + "  ],\n"
-                + "  \"mode\": \"mode\"\n"
+                + "  \"mode\": \"narrative\"\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
@@ -196,22 +200,24 @@ public class SummaryWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"success\": true,\n"
-                + "  \"message\": \"message\",\n"
-                + "  \"template_id\": \"template_id\",\n"
+                + "  \"message\": \"Template created successfully\",\n"
+                + "  \"template_id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n"
                 + "  \"template\": {\n"
-                + "    \"id\": \"id\",\n"
-                + "    \"name\": \"name\",\n"
+                + "    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n"
+                + "    \"name\": \"Discharge Summary\",\n"
                 + "    \"description\": \"description\",\n"
-                + "    \"template\": \"template\",\n"
+                + "    \"template\": \"Patient \\\\{{Patient.name[0].text}}, age \\\\{{Patient.birthDate|age}}, was admitted on \\\\{{Encounter[0].period.start}} with \\\\{{Condition[0].code.coding[0].display}}. Discharged on \\\\{{Encounter[0].period.end}} with \\\\{{MedicationRequest[0].medicationCodeableConcept.coding[0].display}} \\\\{{MedicationRequest[0].dosageInstruction[0].text}}.\",\n"
                 + "    \"target_resources\": [\n"
-                + "      \"target_resources\"\n"
+                + "      \"Patient\",\n"
+                + "      \"Condition\",\n"
+                + "      \"MedicationRequest\"\n"
                 + "    ],\n"
-                + "    \"mode\": \"mode\",\n"
+                + "    \"mode\": \"narrative\",\n"
                 + "    \"metadata\": {\n"
                 + "      \"key\": \"value\"\n"
                 + "    },\n"
-                + "    \"created_at\": \"2024-01-15T09:30:00Z\",\n"
-                + "    \"updated_at\": \"2024-01-15T09:30:00Z\"\n"
+                + "    \"created_at\": \"2024-01-15T10:30:00Z\",\n"
+                + "    \"updated_at\": \"2024-01-15T10:30:00Z\"\n"
                 + "  }\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
@@ -255,7 +261,7 @@ public class SummaryWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"template\":{\"id\":\"id\",\"name\":\"name\",\"description\":\"description\",\"template\":\"template\",\"target_resources\":[\"target_resources\"],\"mode\":\"mode\",\"metadata\":{\"key\":\"value\"},\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}}"));
+                                "{\"success\":true,\"template\":{\"id\":\"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\"name\":\"Discharge Summary\",\"description\":\"description\",\"template\":\"Patient \\\\{{Patient.name[0].text}}, age \\\\{{Patient.birthDate|age}}, was admitted on \\\\{{Encounter[0].period.start}} with \\\\{{Condition[0].code.coding[0].display}}.\",\"target_resources\":[\"Patient\",\"Condition\",\"MedicationRequest\"],\"mode\":\"narrative\",\"metadata\":{\"key\":\"value\"},\"created_at\":\"2024-01-15T10:30:00Z\",\"updated_at\":\"2024-01-15T10:30:00Z\"}}"));
         SummaryGetTemplateResponse response = client.summary().getTemplate("id");
         // OAuth: consume the token request
         server.takeRequest();
@@ -276,19 +282,21 @@ public class SummaryWireTest {
                 + "{\n"
                 + "  \"success\": true,\n"
                 + "  \"template\": {\n"
-                + "    \"id\": \"id\",\n"
-                + "    \"name\": \"name\",\n"
+                + "    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n"
+                + "    \"name\": \"Discharge Summary\",\n"
                 + "    \"description\": \"description\",\n"
-                + "    \"template\": \"template\",\n"
+                + "    \"template\": \"Patient \\\\{{Patient.name[0].text}}, age \\\\{{Patient.birthDate|age}}, was admitted on \\\\{{Encounter[0].period.start}} with \\\\{{Condition[0].code.coding[0].display}}.\",\n"
                 + "    \"target_resources\": [\n"
-                + "      \"target_resources\"\n"
+                + "      \"Patient\",\n"
+                + "      \"Condition\",\n"
+                + "      \"MedicationRequest\"\n"
                 + "    ],\n"
-                + "    \"mode\": \"mode\",\n"
+                + "    \"mode\": \"narrative\",\n"
                 + "    \"metadata\": {\n"
                 + "      \"key\": \"value\"\n"
                 + "    },\n"
-                + "    \"created_at\": \"2024-01-15T09:30:00Z\",\n"
-                + "    \"updated_at\": \"2024-01-15T09:30:00Z\"\n"
+                + "    \"created_at\": \"2024-01-15T10:30:00Z\",\n"
+                + "    \"updated_at\": \"2024-01-15T10:30:00Z\"\n"
                 + "  }\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
@@ -332,15 +340,16 @@ public class SummaryWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"message\",\"template\":{\"id\":\"id\",\"name\":\"name\",\"description\":\"description\",\"template\":\"template\",\"target_resources\":[\"target_resources\"],\"mode\":\"mode\",\"metadata\":{\"key\":\"value\"},\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}}"));
+                                "{\"success\":true,\"message\":\"Template updated successfully\",\"template\":{\"id\":\"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\"name\":\"Discharge Summary\",\"description\":\"description\",\"template\":\"Patient \\\\{{Patient.name[0].text}} was discharged on \\\\{{Encounter[0].period.end}} with \\\\{{MedicationRequest[0].medicationCodeableConcept.coding[0].display}} \\\\{{MedicationRequest[0].dosageInstruction[0].text}}.\",\"target_resources\":[\"Patient\",\"Encounter\",\"MedicationRequest\"],\"mode\":\"narrative\",\"metadata\":{\"key\":\"value\"},\"created_at\":\"2024-01-15T10:30:00Z\",\"updated_at\":\"2024-02-20T11:00:00Z\"}}"));
         SummaryUpdateTemplateResponse response = client.summary()
                 .updateTemplate(
                         "id",
                         UpdateSummaryTemplateRequest.builder()
-                                .name("name")
-                                .template("template")
-                                .mode("mode")
-                                .targetResources(Arrays.asList("target_resources"))
+                                .name("Discharge Summary")
+                                .template(
+                                        "Patient {{Patient.name[0].text}} was discharged on {{Encounter[0].period.end}} with {{MedicationRequest[0].medicationCodeableConcept.coding[0].display}} {{MedicationRequest[0].dosageInstruction[0].text}}.")
+                                .mode("narrative")
+                                .targetResources(Arrays.asList("Patient", "Encounter", "MedicationRequest"))
                                 .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -357,12 +366,14 @@ public class SummaryWireTest {
         String actualRequestBody = request.getBody().readUtf8();
         String expectedRequestBody = ""
                 + "{\n"
-                + "  \"name\": \"name\",\n"
-                + "  \"template\": \"template\",\n"
+                + "  \"name\": \"Discharge Summary\",\n"
+                + "  \"template\": \"Patient {{Patient.name[0].text}} was discharged on {{Encounter[0].period.end}} with {{MedicationRequest[0].medicationCodeableConcept.coding[0].display}} {{MedicationRequest[0].dosageInstruction[0].text}}.\",\n"
                 + "  \"target_resources\": [\n"
-                + "    \"target_resources\"\n"
+                + "    \"Patient\",\n"
+                + "    \"Encounter\",\n"
+                + "    \"MedicationRequest\"\n"
                 + "  ],\n"
-                + "  \"mode\": \"mode\"\n"
+                + "  \"mode\": \"narrative\"\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
@@ -397,21 +408,23 @@ public class SummaryWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"success\": true,\n"
-                + "  \"message\": \"message\",\n"
+                + "  \"message\": \"Template updated successfully\",\n"
                 + "  \"template\": {\n"
-                + "    \"id\": \"id\",\n"
-                + "    \"name\": \"name\",\n"
+                + "    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n"
+                + "    \"name\": \"Discharge Summary\",\n"
                 + "    \"description\": \"description\",\n"
-                + "    \"template\": \"template\",\n"
+                + "    \"template\": \"Patient \\\\{{Patient.name[0].text}} was discharged on \\\\{{Encounter[0].period.end}} with \\\\{{MedicationRequest[0].medicationCodeableConcept.coding[0].display}} \\\\{{MedicationRequest[0].dosageInstruction[0].text}}.\",\n"
                 + "    \"target_resources\": [\n"
-                + "      \"target_resources\"\n"
+                + "      \"Patient\",\n"
+                + "      \"Encounter\",\n"
+                + "      \"MedicationRequest\"\n"
                 + "    ],\n"
-                + "    \"mode\": \"mode\",\n"
+                + "    \"mode\": \"narrative\",\n"
                 + "    \"metadata\": {\n"
                 + "      \"key\": \"value\"\n"
                 + "    },\n"
-                + "    \"created_at\": \"2024-01-15T09:30:00Z\",\n"
-                + "    \"updated_at\": \"2024-01-15T09:30:00Z\"\n"
+                + "    \"created_at\": \"2024-01-15T10:30:00Z\",\n"
+                + "    \"updated_at\": \"2024-02-20T11:00:00Z\"\n"
                 + "  }\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
@@ -451,7 +464,9 @@ public class SummaryWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody("{\"success\":true,\"message\":\"message\"}"));
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"success\":true,\"message\":\"Template deleted successfully\"}"));
         SummaryDeleteTemplateResponse response = client.summary().deleteTemplate("id");
         // OAuth: consume the token request
         server.takeRequest();
@@ -468,7 +483,8 @@ public class SummaryWireTest {
         // Validate response body
         Assertions.assertNotNull(response, "Response should not be null");
         String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = "" + "{\n" + "  \"success\": true,\n" + "  \"message\": \"message\"\n" + "}";
+        String expectedResponseBody =
+                "" + "{\n" + "  \"success\": true,\n" + "  \"message\": \"Template deleted successfully\"\n" + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
         Assertions.assertTrue(
@@ -510,12 +526,59 @@ public class SummaryWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"message\",\"summary\":\"summary\",\"warnings\":[\"warnings\"]}"));
+                                "{\"success\":true,\"message\":\"message\",\"summary\":\"Patient John Doe is a 45-year-old male diagnosed with Type 2 Diabetes Mellitus on January 15, 2024. Current treatment plan includes lifestyle modifications and medication management.\",\"warnings\":[\"warnings\"]}"));
         CreateSummaryResponse response = client.summary()
                 .create(CreateSummaryRequest.builder()
-                        .fhirResources(CreateSummaryRequestFhirResources.of(FhirResource.builder()
-                                .resourceType("resourceType")
-                                .build()))
+                        .fhirResources(new HashMap<String, Object>() {
+                            {
+                                put("resourceType", "Bundle");
+                                put("type", "collection");
+                                put(
+                                        "entry",
+                                        new ArrayList<Object>(Arrays.asList(
+                                                new HashMap<String, Object>() {
+                                                    {
+                                                        put("resource", new HashMap<String, Object>() {
+                                                            {
+                                                                put("resourceType", "Patient");
+                                                                put(
+                                                                        "name",
+                                                                        new ArrayList<Object>(Arrays.asList(
+                                                                                new HashMap<String, Object>() {
+                                                                                    {
+                                                                                        put(
+                                                                                                "given",
+                                                                                                new ArrayList<Object>(
+                                                                                                        Arrays.asList(
+                                                                                                                "John")));
+                                                                                        put("family", "Doe");
+                                                                                    }
+                                                                                })));
+                                                                put("gender", "male");
+                                                                put("birthDate", "1979-03-15");
+                                                            }
+                                                        });
+                                                    }
+                                                },
+                                                new HashMap<String, Object>() {
+                                                    {
+                                                        put("resource", new HashMap<String, Object>() {
+                                                            {
+                                                                put("resourceType", "Condition");
+                                                                put("code", new HashMap<String, Object>() {
+                                                                    {
+                                                                        put("text", "Type 2 Diabetes Mellitus");
+                                                                    }
+                                                                });
+                                                                put("onsetDateTime", "2024-01-15");
+                                                            }
+                                                        });
+                                                    }
+                                                })));
+                            }
+                        })
+                        .mode(CreateSummaryRequestMode.NARRATIVE)
+                        .templateId("a1b2c3d4-e5f6-7890-abcd-ef1234567890")
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -530,8 +593,41 @@ public class SummaryWireTest {
                 "OAuth Authorization header should contain Bearer token from OAuth flow");
         // Validate request body
         String actualRequestBody = request.getBody().readUtf8();
-        String expectedRequestBody =
-                "" + "{\n" + "  \"fhir_resources\": {\n" + "    \"resourceType\": \"resourceType\"\n" + "  }\n" + "}";
+        String expectedRequestBody = ""
+                + "{\n"
+                + "  \"mode\": \"narrative\",\n"
+                + "  \"template_id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n"
+                + "  \"fhir_resources\": {\n"
+                + "    \"resourceType\": \"Bundle\",\n"
+                + "    \"type\": \"collection\",\n"
+                + "    \"entry\": [\n"
+                + "      {\n"
+                + "        \"resource\": {\n"
+                + "          \"resourceType\": \"Patient\",\n"
+                + "          \"name\": [\n"
+                + "            {\n"
+                + "              \"given\": [\n"
+                + "                \"John\"\n"
+                + "              ],\n"
+                + "              \"family\": \"Doe\"\n"
+                + "            }\n"
+                + "          ],\n"
+                + "          \"gender\": \"male\",\n"
+                + "          \"birthDate\": \"1979-03-15\"\n"
+                + "        }\n"
+                + "      },\n"
+                + "      {\n"
+                + "        \"resource\": {\n"
+                + "          \"resourceType\": \"Condition\",\n"
+                + "          \"code\": {\n"
+                + "            \"text\": \"Type 2 Diabetes Mellitus\"\n"
+                + "          },\n"
+                + "          \"onsetDateTime\": \"2024-01-15\"\n"
+                + "        }\n"
+                + "      }\n"
+                + "    ]\n"
+                + "  }\n"
+                + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
         Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
@@ -566,7 +662,7 @@ public class SummaryWireTest {
                 + "{\n"
                 + "  \"success\": true,\n"
                 + "  \"message\": \"message\",\n"
-                + "  \"summary\": \"summary\",\n"
+                + "  \"summary\": \"Patient John Doe is a 45-year-old male diagnosed with Type 2 Diabetes Mellitus on January 15, 2024. Current treatment plan includes lifestyle modifications and medication management.\",\n"
                 + "  \"warnings\": [\n"
                 + "    \"warnings\"\n"
                 + "  ]\n"
