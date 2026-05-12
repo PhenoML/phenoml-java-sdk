@@ -155,7 +155,7 @@ public class FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"resourceType\":\"Patient\",\"id\":\"123\",\"meta\":{\"versionId\":\"versionId\",\"lastUpdated\":\"2024-01-15T09:30:00Z\",\"profile\":[\"profile\"]}}"));
+                                "{\"resourceType\":\"Patient\",\"id\":\"456\",\"meta\":{\"versionId\":\"1\",\"lastUpdated\":\"2024-01-15T10:30:00Z\",\"profile\":[\"profile\"]}}"));
         FhirResource response = client.fhir()
                 .create(
                         "550e8400-e29b-41d4-a716-446655440000",
@@ -225,10 +225,10 @@ public class FhirWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"resourceType\": \"Patient\",\n"
-                + "  \"id\": \"123\",\n"
+                + "  \"id\": \"456\",\n"
                 + "  \"meta\": {\n"
-                + "    \"versionId\": \"versionId\",\n"
-                + "    \"lastUpdated\": \"2024-01-15T09:30:00Z\",\n"
+                + "    \"versionId\": \"1\",\n"
+                + "    \"lastUpdated\": \"2024-01-15T10:30:00Z\",\n"
                 + "    \"profile\": [\n"
                 + "      \"profile\"\n"
                 + "    ]\n"
@@ -275,7 +275,7 @@ public class FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"resourceType\":\"Patient\",\"id\":\"123\",\"meta\":{\"versionId\":\"versionId\",\"lastUpdated\":\"2024-01-15T09:30:00Z\",\"profile\":[\"profile\"]}}"));
+                                "{\"resourceType\":\"Patient\",\"id\":\"123\",\"meta\":{\"versionId\":\"2\",\"lastUpdated\":\"2024-02-20T11:00:00Z\",\"profile\":[\"profile\"]}}"));
         FhirResource response = client.fhir()
                 .upsert(
                         "550e8400-e29b-41d4-a716-446655440000",
@@ -348,8 +348,8 @@ public class FhirWireTest {
                 + "  \"resourceType\": \"Patient\",\n"
                 + "  \"id\": \"123\",\n"
                 + "  \"meta\": {\n"
-                + "    \"versionId\": \"versionId\",\n"
-                + "    \"lastUpdated\": \"2024-01-15T09:30:00Z\",\n"
+                + "    \"versionId\": \"2\",\n"
+                + "    \"lastUpdated\": \"2024-02-20T11:00:00Z\",\n"
                 + "    \"profile\": [\n"
                 + "      \"profile\"\n"
                 + "    ]\n"
@@ -392,7 +392,11 @@ public class FhirWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody("{\"key\":\"value\"}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"resourceType\":\"OperationOutcome\",\"issue\":[{\"severity\":\"information\",\"code\":\"informational\",\"details\":{\"text\":\"Resource deleted successfully\"}}]}"));
         Map<String, Object> response = client.fhir()
                 .delete(
                         "550e8400-e29b-41d4-a716-446655440000",
@@ -427,7 +431,19 @@ public class FhirWireTest {
         // Validate response body
         Assertions.assertNotNull(response, "Response should not be null");
         String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"resourceType\": \"OperationOutcome\",\n"
+                + "  \"issue\": [\n"
+                + "    {\n"
+                + "      \"severity\": \"information\",\n"
+                + "      \"code\": \"informational\",\n"
+                + "      \"details\": {\n"
+                + "        \"text\": \"Resource deleted successfully\"\n"
+                + "      }\n"
+                + "    }\n"
+                + "  ]\n"
+                + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
         Assertions.assertTrue(
@@ -469,7 +485,7 @@ public class FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"resourceType\":\"Patient\",\"id\":\"123\",\"meta\":{\"versionId\":\"versionId\",\"lastUpdated\":\"2024-01-15T09:30:00Z\",\"profile\":[\"profile\"]}}"));
+                                "{\"resourceType\":\"Patient\",\"id\":\"123\",\"meta\":{\"versionId\":\"3\",\"lastUpdated\":\"2024-02-20T11:30:00Z\",\"profile\":[\"profile\"]}}"));
         FhirResource response = client.fhir()
                 .patch(
                         "550e8400-e29b-41d4-a716-446655440000",
@@ -550,8 +566,8 @@ public class FhirWireTest {
                 + "  \"resourceType\": \"Patient\",\n"
                 + "  \"id\": \"123\",\n"
                 + "  \"meta\": {\n"
-                + "    \"versionId\": \"versionId\",\n"
-                + "    \"lastUpdated\": \"2024-01-15T09:30:00Z\",\n"
+                + "    \"versionId\": \"3\",\n"
+                + "    \"lastUpdated\": \"2024-02-20T11:30:00Z\",\n"
                 + "    \"profile\": [\n"
                 + "      \"profile\"\n"
                 + "    ]\n"

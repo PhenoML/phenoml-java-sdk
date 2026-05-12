@@ -1,18 +1,19 @@
 {
   "success": true,
-  "message": "Auth configuration removed successfully",
+  "message": "Fhir provider auth config deleted successfully",
   "data": {
     "id": "1716d214-de93-43a4-aa6b-a878d864e2ad",
     "name": "Epic Sandbox",
     "description": "Epic sandbox environment for testing",
-    "provider": "athenahealth",
+    "provider": "epic",
     "base_url": "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4",
     "auth_configs": {
-      "key": {
+      "auth-config-123": {
         "auth_config_id": "auth-config-123",
+        "auth_method": "jwt",
         "is_active_auth_config": true,
         "created_at": "2024-01-15T10:30:00Z",
-        "updated_at": "2024-01-15T14:45:00Z",
+        "updated_at": "2024-01-15T10:30:00Z",
         "public_key_cert_pem": "-----BEGIN CERTIFICATE-----\n...",
         "json_web_key": {
           "kty": "RSA",
@@ -43,6 +44,6 @@
         "client_id": "your-client-id"
       }
     },
-    "last_updated": "2024-01-15T10:30:00Z"
+    "last_updated": "2024-02-20T11:30:00Z"
   }
 }

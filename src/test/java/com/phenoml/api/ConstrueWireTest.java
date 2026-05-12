@@ -13,6 +13,7 @@ import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSea
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemExportRequest;
 import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
 import com.phenoml.api.resources.construe.requests.UploadRequest;
+import com.phenoml.api.resources.construe.types.CodeResponse;
 import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExportCodeSystemResponse;
@@ -28,6 +29,7 @@ import com.phenoml.api.resources.construe.types.SemanticSearchResponse;
 import com.phenoml.api.resources.construe.types.TextSearchResponse;
 import com.phenoml.api.resources.construe.types.UploadRequestFormat;
 import java.util.Arrays;
+import java.util.Optional;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -68,7 +70,16 @@ public class ConstrueWireTest {
                 .uploadCodeSystem(UploadRequest.builder()
                         .name("CUSTOM_CODES")
                         .version("1.0")
-                        .format(UploadRequestFormat.CSV)
+                        .format(UploadRequestFormat.JSON)
+                        .codes(Optional.of(Arrays.asList(
+                                CodeResponse.builder()
+                                        .code("X001")
+                                        .description("Example custom code 1")
+                                        .build(),
+                                CodeResponse.builder()
+                                        .code("X002")
+                                        .description("Example custom code 2")
+                                        .build())))
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -87,7 +98,17 @@ public class ConstrueWireTest {
                 + "{\n"
                 + "  \"name\": \"CUSTOM_CODES\",\n"
                 + "  \"version\": \"1.0\",\n"
-                + "  \"format\": \"csv\"\n"
+                + "  \"format\": \"json\",\n"
+                + "  \"codes\": [\n"
+                + "    {\n"
+                + "      \"code\": \"X001\",\n"
+                + "      \"description\": \"Example custom code 1\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"code\": \"X002\",\n"
+                + "      \"description\": \"Example custom code 2\"\n"
+                + "    }\n"
+                + "  ]\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
@@ -162,15 +183,17 @@ public class ConstrueWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(
-                new MockResponse()
-                        .setResponseCode(200)
-                        .setBody(
-                                "{\"system\":{\"name\":\"SNOMED_CT_US_LITE\",\"version\":\"20240901\"},\"codes\":[{\"code\":\"195967001\",\"description\":\"Asthma\",\"valid\":true,\"reason\":\"reason\",\"is_ancestor\":true,\"citations\":[{\"text\":\"Patient has type 2 diabetes\",\"begin_offset\":0,\"end_offset\":27}],\"categories\":[{\"uri\":\"HP:0025142\",\"label\":\"Constitutional symptom\"}]}]}"));
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(TestResources.loadResource("/wire-tests/ConstrueWireTest_testExtractCodes_response.json")));
         ExtractCodesResult response = client.construe()
                 .extractCodes(ExtractRequest.builder()
                         .text(
-                                "Patient is a 14-year-old female, previously healthy, who is here for evaluation of abnormal renal ultrasound with atrophic right kidney")
+                                "Patient is a 14-year-old female, previously healthy, who is here for evaluation of abnormal renal ultrasound with atrophic right kidney.")
+                        .system(ExtractRequestSystem.builder()
+                                .name("ICD-10-CM")
+                                .version("2025")
+                                .build())
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -187,7 +210,11 @@ public class ConstrueWireTest {
         String actualRequestBody = request.getBody().readUtf8();
         String expectedRequestBody = ""
                 + "{\n"
-                + "  \"text\": \"Patient is a 14-year-old female, previously healthy, who is here for evaluation of abnormal renal ultrasound with atrophic right kidney\"\n"
+                + "  \"text\": \"Patient is a 14-year-old female, previously healthy, who is here for evaluation of abnormal renal ultrasound with atrophic right kidney.\",\n"
+                + "  \"system\": {\n"
+                + "    \"name\": \"ICD-10-CM\",\n"
+                + "    \"version\": \"2025\"\n"
+                + "  }\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
@@ -219,35 +246,8 @@ public class ConstrueWireTest {
         // Validate response body
         Assertions.assertNotNull(response, "Response should not be null");
         String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = ""
-                + "{\n"
-                + "  \"system\": {\n"
-                + "    \"name\": \"SNOMED_CT_US_LITE\",\n"
-                + "    \"version\": \"20240901\"\n"
-                + "  },\n"
-                + "  \"codes\": [\n"
-                + "    {\n"
-                + "      \"code\": \"195967001\",\n"
-                + "      \"description\": \"Asthma\",\n"
-                + "      \"valid\": true,\n"
-                + "      \"reason\": \"reason\",\n"
-                + "      \"is_ancestor\": true,\n"
-                + "      \"citations\": [\n"
-                + "        {\n"
-                + "          \"text\": \"Patient has type 2 diabetes\",\n"
-                + "          \"begin_offset\": 0,\n"
-                + "          \"end_offset\": 27\n"
-                + "        }\n"
-                + "      ],\n"
-                + "      \"categories\": [\n"
-                + "        {\n"
-                + "          \"uri\": \"HP:0025142\",\n"
-                + "          \"label\": \"Constitutional symptom\"\n"
-                + "        }\n"
-                + "      ]\n"
-                + "    }\n"
-                + "  ]\n"
-                + "}";
+        String expectedResponseBody =
+                TestResources.loadResource("/wire-tests/ConstrueWireTest_testExtractCodes_response.json");
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
         Assertions.assertTrue(
@@ -289,7 +289,7 @@ public class ConstrueWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"systems\":[{\"name\":\"ICD-10-CM\",\"version\":\"2025\",\"code_count\":72750,\"builtin\":true}]}"));
+                                "{\"systems\":[{\"name\":\"ICD-10-CM\",\"version\":\"2025\",\"code_count\":97584,\"builtin\":true},{\"name\":\"SNOMED_CT_US_LITE\",\"version\":\"20240901\",\"code_count\":102837,\"builtin\":true},{\"name\":\"RXNORM\",\"version\":\"11042024\",\"code_count\":257619,\"builtin\":true},{\"name\":\"LOINC\",\"version\":\"2.78\",\"code_count\":98123,\"builtin\":true},{\"name\":\"HPO\",\"version\":\"2025\",\"code_count\":19542,\"builtin\":true},{\"name\":\"CPT\",\"version\":\"2025\",\"code_count\":10192,\"builtin\":true},{\"name\":\"ICD-10-PCS\",\"version\":\"2025\",\"code_count\":78717,\"builtin\":true}]}"));
         ListCodeSystemsResponse response = client.construe().listAvailableCodeSystems();
         // OAuth: consume the token request
         server.takeRequest();
@@ -312,7 +312,43 @@ public class ConstrueWireTest {
                 + "    {\n"
                 + "      \"name\": \"ICD-10-CM\",\n"
                 + "      \"version\": \"2025\",\n"
-                + "      \"code_count\": 72750,\n"
+                + "      \"code_count\": 97584,\n"
+                + "      \"builtin\": true\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"name\": \"SNOMED_CT_US_LITE\",\n"
+                + "      \"version\": \"20240901\",\n"
+                + "      \"code_count\": 102837,\n"
+                + "      \"builtin\": true\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"name\": \"RXNORM\",\n"
+                + "      \"version\": \"11042024\",\n"
+                + "      \"code_count\": 257619,\n"
+                + "      \"builtin\": true\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"name\": \"LOINC\",\n"
+                + "      \"version\": \"2.78\",\n"
+                + "      \"code_count\": 98123,\n"
+                + "      \"builtin\": true\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"name\": \"HPO\",\n"
+                + "      \"version\": \"2025\",\n"
+                + "      \"code_count\": 19542,\n"
+                + "      \"builtin\": true\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"name\": \"CPT\",\n"
+                + "      \"version\": \"2025\",\n"
+                + "      \"code_count\": 10192,\n"
+                + "      \"builtin\": true\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"name\": \"ICD-10-PCS\",\n"
+                + "      \"version\": \"2025\",\n"
+                + "      \"code_count\": 78717,\n"
                 + "      \"builtin\": true\n"
                 + "    }\n"
                 + "  ]\n"
@@ -358,7 +394,7 @@ public class ConstrueWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"name\":\"ICD-10-CM\",\"version\":\"2025\",\"code_count\":72750,\"builtin\":true,\"status\":\"processing\",\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}"));
+                                "{\"name\":\"ICD-10-CM\",\"version\":\"2025\",\"code_count\":97584,\"builtin\":true,\"status\":\"ready\",\"created_at\":\"2026-02-10T18:33:23Z\",\"updated_at\":\"2026-02-10T18:33:23Z\"}"));
         GetCodeSystemDetailResponse response = client.construe()
                 .getCodeSystemDetail(
                         "ICD-10-CM",
@@ -384,11 +420,11 @@ public class ConstrueWireTest {
                 + "{\n"
                 + "  \"name\": \"ICD-10-CM\",\n"
                 + "  \"version\": \"2025\",\n"
-                + "  \"code_count\": 72750,\n"
+                + "  \"code_count\": 97584,\n"
                 + "  \"builtin\": true,\n"
-                + "  \"status\": \"processing\",\n"
-                + "  \"created_at\": \"2024-01-15T09:30:00Z\",\n"
-                + "  \"updated_at\": \"2024-01-15T09:30:00Z\"\n"
+                + "  \"status\": \"ready\",\n"
+                + "  \"created_at\": \"2026-02-10T18:33:23Z\",\n"
+                + "  \"updated_at\": \"2026-02-10T18:33:23Z\"\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
@@ -492,7 +528,7 @@ public class ConstrueWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"name\":\"CUSTOM_CODES\",\"version\":\"1.0\",\"format\":\"json\",\"codes\":[{\"code\":\"E11.65\",\"description\":\"Type 2 diabetes mellitus with hyperglycemia\",\"definition\":\"definition\"}]}"));
+                                "{\"name\":\"CUSTOM_CODES\",\"version\":\"1.0\",\"format\":\"json\",\"codes\":[{\"code\":\"X001\",\"description\":\"Example custom code 1\",\"definition\":\"definition\"},{\"code\":\"X002\",\"description\":\"Example custom code 2\",\"definition\":\"definition\"}]}"));
         ExportCodeSystemResponse response = client.construe()
                 .exportCustomCodeSystem(
                         "CUSTOM_CODES",
@@ -521,8 +557,13 @@ public class ConstrueWireTest {
                 + "  \"format\": \"json\",\n"
                 + "  \"codes\": [\n"
                 + "    {\n"
-                + "      \"code\": \"E11.65\",\n"
-                + "      \"description\": \"Type 2 diabetes mellitus with hyperglycemia\",\n"
+                + "      \"code\": \"X001\",\n"
+                + "      \"description\": \"Example custom code 1\",\n"
+                + "      \"definition\": \"definition\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"code\": \"X002\",\n"
+                + "      \"description\": \"Example custom code 2\",\n"
                 + "      \"definition\": \"definition\"\n"
                 + "    }\n"
                 + "  ]\n"
@@ -568,7 +609,7 @@ public class ConstrueWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"system\":{\"name\":\"ICD-10-CM\",\"version\":\"2025\"},\"codes\":[{\"code\":\"E11.65\",\"description\":\"Type 2 diabetes mellitus with hyperglycemia\",\"definition\":\"definition\"}],\"next_cursor\":\"next_cursor\",\"has_more\":true}"));
+                                "{\"system\":{\"name\":\"ICD-10-CM\",\"version\":\"2025\"},\"codes\":[{\"code\":\"A00\",\"description\":\"Cholera\",\"definition\":\"definition\"},{\"code\":\"A000\",\"description\":\"Cholera due to Vibrio cholerae 01, biovar cholerae\",\"definition\":\"definition\"},{\"code\":\"A001\",\"description\":\"Cholera due to Vibrio cholerae 01, biovar eltor\",\"definition\":\"definition\"},{\"code\":\"A009\",\"description\":\"Cholera, unspecified\",\"definition\":\"definition\"},{\"code\":\"A01\",\"description\":\"Typhoid and paratyphoid fevers\",\"definition\":\"definition\"}],\"next_cursor\":\"QTAx\",\"has_more\":true}"));
         ListCodesResponse response = client.construe()
                 .listCodesInACodeSystem(
                         "ICD-10-CM",
@@ -600,12 +641,32 @@ public class ConstrueWireTest {
                 + "  },\n"
                 + "  \"codes\": [\n"
                 + "    {\n"
-                + "      \"code\": \"E11.65\",\n"
-                + "      \"description\": \"Type 2 diabetes mellitus with hyperglycemia\",\n"
+                + "      \"code\": \"A00\",\n"
+                + "      \"description\": \"Cholera\",\n"
+                + "      \"definition\": \"definition\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"code\": \"A000\",\n"
+                + "      \"description\": \"Cholera due to Vibrio cholerae 01, biovar cholerae\",\n"
+                + "      \"definition\": \"definition\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"code\": \"A001\",\n"
+                + "      \"description\": \"Cholera due to Vibrio cholerae 01, biovar eltor\",\n"
+                + "      \"definition\": \"definition\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"code\": \"A009\",\n"
+                + "      \"description\": \"Cholera, unspecified\",\n"
+                + "      \"definition\": \"definition\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"code\": \"A01\",\n"
+                + "      \"description\": \"Typhoid and paratyphoid fevers\",\n"
                 + "      \"definition\": \"definition\"\n"
                 + "    }\n"
                 + "  ],\n"
-                + "  \"next_cursor\": \"next_cursor\",\n"
+                + "  \"next_cursor\": \"QTAx\",\n"
                 + "  \"has_more\": true\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
@@ -649,11 +710,11 @@ public class ConstrueWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"system\":{\"name\":\"ICD-10-CM\",\"version\":\"2025\"},\"code\":\"E11.65\",\"description\":\"Type 2 diabetes mellitus with hyperglycemia\",\"definition\":\"definition\"}"));
+                                "{\"system\":{\"name\":\"ICD-10-CM\",\"version\":\"2025\"},\"code\":\"E1165\",\"description\":\"Type 2 diabetes mellitus with hyperglycemia\",\"definition\":\"definition\"}"));
         GetCodeResponse response = client.construe()
                 .getASpecificCode(
                         "ICD-10-CM",
-                        "E11.65",
+                        "E1165",
                         GetConstrueCodesCodesystemCodeIdRequest.builder()
                                 .version("version")
                                 .build());
@@ -678,7 +739,7 @@ public class ConstrueWireTest {
                 + "    \"name\": \"ICD-10-CM\",\n"
                 + "    \"version\": \"2025\"\n"
                 + "  },\n"
-                + "  \"code\": \"E11.65\",\n"
+                + "  \"code\": \"E1165\",\n"
                 + "  \"description\": \"Type 2 diabetes mellitus with hyperglycemia\",\n"
                 + "  \"definition\": \"definition\"\n"
                 + "}";
@@ -723,7 +784,7 @@ public class ConstrueWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"system\":{\"name\":\"ICD-10-CM\",\"version\":\"2025\"},\"results\":[{\"code\":\"E11.65\",\"description\":\"Type 2 diabetes mellitus with hyperglycemia\"}]}"));
+                                "{\"system\":{\"name\":\"ICD-10-CM\",\"version\":\"2025\"},\"results\":[{\"code\":\"R06.00\",\"description\":\"Dyspnea, unspecified\"},{\"code\":\"R06.01\",\"description\":\"Orthopnea\"},{\"code\":\"G47.33\",\"description\":\"Obstructive sleep apnea\"},{\"code\":\"R06.83\",\"description\":\"Snoring\"},{\"code\":\"J45.20\",\"description\":\"Mild intermittent asthma, uncomplicated\"}]}"));
         SemanticSearchResponse response = client.construe()
                 .semanticSearchEmbeddingBased(
                         "ICD-10-CM",
@@ -755,8 +816,24 @@ public class ConstrueWireTest {
                 + "  },\n"
                 + "  \"results\": [\n"
                 + "    {\n"
-                + "      \"code\": \"E11.65\",\n"
-                + "      \"description\": \"Type 2 diabetes mellitus with hyperglycemia\"\n"
+                + "      \"code\": \"R06.00\",\n"
+                + "      \"description\": \"Dyspnea, unspecified\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"code\": \"R06.01\",\n"
+                + "      \"description\": \"Orthopnea\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"code\": \"G47.33\",\n"
+                + "      \"description\": \"Obstructive sleep apnea\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"code\": \"R06.83\",\n"
+                + "      \"description\": \"Snoring\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"code\": \"J45.20\",\n"
+                + "      \"description\": \"Mild intermittent asthma, uncomplicated\"\n"
                 + "    }\n"
                 + "  ]\n"
                 + "}";
@@ -802,21 +879,28 @@ public class ConstrueWireTest {
                 .submitFeedbackOnExtractionResults(FeedbackRequest.builder()
                         .text("Patient has type 2 diabetes with hyperglycemia")
                         .receivedResult(ExtractCodesResult.builder()
-                                .system(ExtractRequestSystem.builder().build())
+                                .system(ExtractRequestSystem.builder()
+                                        .name("ICD-10-CM")
+                                        .version("2025")
+                                        .build())
                                 .codes(Arrays.asList(ExtractedCodeResult.builder()
-                                        .code("195967001")
-                                        .description("Asthma")
+                                        .code("E11.9")
+                                        .description("Type 2 diabetes mellitus without complications")
                                         .valid(true)
                                         .build()))
                                 .build())
                         .expectedResult(ExtractCodesResult.builder()
-                                .system(ExtractRequestSystem.builder().build())
+                                .system(ExtractRequestSystem.builder()
+                                        .name("ICD-10-CM")
+                                        .version("2025")
+                                        .build())
                                 .codes(Arrays.asList(ExtractedCodeResult.builder()
-                                        .code("195967001")
-                                        .description("Asthma")
+                                        .code("E11.65")
+                                        .description("Type 2 diabetes mellitus with hyperglycemia")
                                         .valid(true)
                                         .build()))
                                 .build())
+                        .detail("Expected code E11.65 because the text mentions hyperglycemia")
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -835,25 +919,32 @@ public class ConstrueWireTest {
                 + "{\n"
                 + "  \"text\": \"Patient has type 2 diabetes with hyperglycemia\",\n"
                 + "  \"received_result\": {\n"
-                + "    \"system\": {},\n"
+                + "    \"system\": {\n"
+                + "      \"name\": \"ICD-10-CM\",\n"
+                + "      \"version\": \"2025\"\n"
+                + "    },\n"
                 + "    \"codes\": [\n"
                 + "      {\n"
-                + "        \"code\": \"195967001\",\n"
-                + "        \"description\": \"Asthma\",\n"
+                + "        \"code\": \"E11.9\",\n"
+                + "        \"description\": \"Type 2 diabetes mellitus without complications\",\n"
                 + "        \"valid\": true\n"
                 + "      }\n"
                 + "    ]\n"
                 + "  },\n"
                 + "  \"expected_result\": {\n"
-                + "    \"system\": {},\n"
+                + "    \"system\": {\n"
+                + "      \"name\": \"ICD-10-CM\",\n"
+                + "      \"version\": \"2025\"\n"
+                + "    },\n"
                 + "    \"codes\": [\n"
                 + "      {\n"
-                + "        \"code\": \"195967001\",\n"
-                + "        \"description\": \"Asthma\",\n"
+                + "        \"code\": \"E11.65\",\n"
+                + "        \"description\": \"Type 2 diabetes mellitus with hyperglycemia\",\n"
                 + "        \"valid\": true\n"
                 + "      }\n"
                 + "    ]\n"
-                + "  }\n"
+                + "  },\n"
+                + "  \"detail\": \"Expected code E11.65 because the text mentions hyperglycemia\"\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
@@ -927,7 +1018,7 @@ public class ConstrueWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"system\":{\"name\":\"ICD-10-CM\",\"version\":\"2025\"},\"results\":[{\"code\":\"E11.65\",\"description\":\"Type 2 diabetes mellitus with hyperglycemia\"}],\"found\":150}"));
+                                "{\"system\":{\"name\":\"ICD-10-CM\",\"version\":\"2025\"},\"results\":[{\"code\":\"E11.65\",\"description\":\"Type 2 diabetes mellitus with hyperglycemia\"},{\"code\":\"E11.649\",\"description\":\"Type 2 diabetes mellitus with hypoglycemia without coma\"},{\"code\":\"E11.69\",\"description\":\"Type 2 diabetes mellitus with other specified complication\"}],\"found\":3}"));
         TextSearchResponse response = client.construe()
                 .terminologyServerTextSearch(
                         "ICD-10-CM",
@@ -961,9 +1052,17 @@ public class ConstrueWireTest {
                 + "    {\n"
                 + "      \"code\": \"E11.65\",\n"
                 + "      \"description\": \"Type 2 diabetes mellitus with hyperglycemia\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"code\": \"E11.649\",\n"
+                + "      \"description\": \"Type 2 diabetes mellitus with hypoglycemia without coma\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"code\": \"E11.69\",\n"
+                + "      \"description\": \"Type 2 diabetes mellitus with other specified complication\"\n"
                 + "    }\n"
                 + "  ],\n"
-                + "  \"found\": 150\n"
+                + "  \"found\": 3\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);

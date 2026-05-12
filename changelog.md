@@ -1,3 +1,17 @@
+## 14.0.0 - 2026-05-12
+### Breaking Changes
+* **`FhirProviderSandboxInfo.getId()` / `getName()` / `getProvider()`** — return types changed from `Optional<String>` to `String`; remove `Optional` unwrapping at all call sites, and remove any `.provider(...)` calls from builder chains as that setter has been removed.
+* **`FhirProviderTemplate.getId()` / `getName()` / `getProvider()` / `getAuthConfigs()` / `getLastUpdated()`** — return types changed from `Optional<T>` to their unwrapped types; update all call sites to remove `Optional` unwrapping.
+* **`McpServerResponseData`** — renamed to `McpServer`; update all type references and import statements.
+* **`McpServerToolResponseData`** — renamed to `McpServerTool`; update all type references, import statements, and `McpServerToolResponse.getData()` call sites which now return `Optional<McpServerTool>`.
+* **`FhirProviderSandboxInfo` and `FhirProviderTemplate` builders** — now staged builders requiring mandatory fields (`id`, `name`, and for `FhirProviderTemplate` also `provider` and `lastUpdated`) to be set in order before optional fields; update builder chains accordingly.
+### Added
+* **`McpServerResponse.getMcpServers()`** — new optional field returning `List<McpServer>` for list and create endpoints.
+* **`McpServerResponse.getMcpServerTools()`** — new optional field returning `List<McpServerTool>` with tools discovered at MCP server creation time.
+* **`McpServerToolResponse.getMcpServerTools()`** — new optional field returning `Optional<List<McpServerTool>>` populated by the MCP server tool list endpoint.
+### Fixed
+* **`FhirProviderResponseData` and `FhirProviderListResponseFhirProvidersItem` deserializers** — now check for required key presence before attempting union-type conversion, preventing spurious deserialization failures when only one variant matches the payload.
+
 ## 13.0.1 - 2026-05-11
 * chore: reorder enum constant declarations across multiple types
 * Reorder static constant fields and switch/valueOf cases in several enum-like
