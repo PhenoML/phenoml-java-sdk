@@ -1,3 +1,9 @@
+## 15.0.0 - 2026-05-13
+### Breaking Changes
+* **`ToolsClient.call()`** and **`AsyncToolsClient.call()`** — removed from all four client variants (`ToolsClient`, `AsyncToolsClient`, `RawToolsClient`, `AsyncRawToolsClient`); remove any calls to these methods from your code.
+* **`McpServerToolCallRequest`** — deleted from `com.phenoml.api.resources.tools.mcpserver.tools.requests`; remove all references and builder usages.
+* **`McpServerToolCallResponse`** — deleted from `com.phenoml.api.resources.tools.types`; remove all references and variable declarations using this type.
+
 ## 14.0.0 - 2026-05-13
 ### Breaking Changes
 * **`PromptsClient.loadDefaults()`** — removed from `PromptsClient`, `AsyncPromptsClient`, `RawPromptsClient`, and `AsyncRawPromptsClient`; remove any calls to these methods.

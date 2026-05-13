@@ -5,8 +5,6 @@ package com.phenoml.api.resources.tools.mcpserver.tools;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.resources.tools.mcpserver.tools.requests.McpServerToolCallRequest;
-import com.phenoml.api.resources.tools.types.McpServerToolCallResponse;
 import com.phenoml.api.resources.tools.types.McpServerToolResponse;
 import java.util.concurrent.CompletableFuture;
 
@@ -67,20 +65,5 @@ public class AsyncToolsClient {
      */
     public CompletableFuture<McpServerToolResponse> delete(String mcpServerToolId, RequestOptions requestOptions) {
         return this.rawClient.delete(mcpServerToolId, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Calls a MCP server tool
-     */
-    public CompletableFuture<McpServerToolCallResponse> call(String mcpServerToolId, McpServerToolCallRequest request) {
-        return this.rawClient.call(mcpServerToolId, request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Calls a MCP server tool
-     */
-    public CompletableFuture<McpServerToolCallResponse> call(
-            String mcpServerToolId, McpServerToolCallRequest request, RequestOptions requestOptions) {
-        return this.rawClient.call(mcpServerToolId, request, requestOptions).thenApply(response -> response.body());
     }
 }
