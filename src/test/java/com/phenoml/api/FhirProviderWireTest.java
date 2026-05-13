@@ -6,13 +6,13 @@ import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderCreateRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderRemoveAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderSetActiveAuthConfigRequest;
+import com.phenoml.api.resources.fhirprovider.types.ClientSecretAuth;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderAddAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderCreateRequestAuth;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderDeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderListResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderRemoveAuthConfigResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderResponse;
-import com.phenoml.api.resources.fhirprovider.types.JwtAuth;
 import com.phenoml.api.resources.fhirprovider.types.Provider;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -53,10 +53,13 @@ public class FhirProviderWireTest {
         FhirProviderResponse response = client.fhirProvider()
                 .create(FhirProviderCreateRequest.builder()
                         .name("Epic Sandbox")
-                        .provider(Provider.ATHENAHEALTH)
+                        .provider(Provider.EPIC)
                         .baseUrl("https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4")
-                        .auth(FhirProviderCreateRequestAuth.jwt(
-                                JwtAuth.builder().clientId("your-client-id").build()))
+                        .auth(FhirProviderCreateRequestAuth.clientSecret(ClientSecretAuth.builder()
+                                .clientId("your-client-id")
+                                .clientSecret("your-client-secret")
+                                .build()))
+                        .description("Epic sandbox environment for testing")
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -74,11 +77,13 @@ public class FhirProviderWireTest {
         String expectedRequestBody = ""
                 + "{\n"
                 + "  \"name\": \"Epic Sandbox\",\n"
-                + "  \"provider\": \"athenahealth\",\n"
+                + "  \"description\": \"Epic sandbox environment for testing\",\n"
+                + "  \"provider\": \"epic\",\n"
                 + "  \"base_url\": \"https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4\",\n"
                 + "  \"auth\": {\n"
                 + "    \"client_id\": \"your-client-id\",\n"
-                + "    \"auth_method\": \"jwt\"\n"
+                + "    \"client_secret\": \"your-client-secret\",\n"
+                + "    \"auth_method\": \"client_secret\"\n"
                 + "  }\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
@@ -331,8 +336,10 @@ public class FhirProviderWireTest {
         FhirProviderResponse response = client.fhirProvider()
                 .addAuthConfig(
                         "1716d214-de93-43a4-aa6b-a878d864e2ad",
-                        FhirProviderAddAuthConfigRequest.jwt(
-                                JwtAuth.builder().clientId("your-client-id").build()));
+                        FhirProviderAddAuthConfigRequest.clientSecret(ClientSecretAuth.builder()
+                                .clientId("your-client-id")
+                                .clientSecret("your-client-secret")
+                                .build()));
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -346,8 +353,12 @@ public class FhirProviderWireTest {
                 "OAuth Authorization header should contain Bearer token from OAuth flow");
         // Validate request body
         String actualRequestBody = request.getBody().readUtf8();
-        String expectedRequestBody =
-                "" + "{\n" + "  \"client_id\": \"your-client-id\",\n" + "  \"auth_method\": \"jwt\"\n" + "}";
+        String expectedRequestBody = ""
+                + "{\n"
+                + "  \"client_id\": \"your-client-id\",\n"
+                + "  \"client_secret\": \"your-client-secret\",\n"
+                + "  \"auth_method\": \"client_secret\"\n"
+                + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
         Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
@@ -425,7 +436,7 @@ public class FhirProviderWireTest {
                 .setActiveAuthConfig(
                         "1716d214-de93-43a4-aa6b-a878d864e2ad",
                         FhirProviderSetActiveAuthConfigRequest.builder()
-                                .authConfigId("auth-config-123")
+                                .authConfigId("auth-config-456")
                                 .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -440,7 +451,7 @@ public class FhirProviderWireTest {
                 "OAuth Authorization header should contain Bearer token from OAuth flow");
         // Validate request body
         String actualRequestBody = request.getBody().readUtf8();
-        String expectedRequestBody = "" + "{\n" + "  \"auth_config_id\": \"auth-config-123\"\n" + "}";
+        String expectedRequestBody = "" + "{\n" + "  \"auth_config_id\": \"auth-config-456\"\n" + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
         Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
@@ -518,7 +529,7 @@ public class FhirProviderWireTest {
                 .removeAuthConfig(
                         "1716d214-de93-43a4-aa6b-a878d864e2ad",
                         FhirProviderRemoveAuthConfigRequest.builder()
-                                .authConfigId("auth-config-123")
+                                .authConfigId("auth-config-456")
                                 .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -533,7 +544,7 @@ public class FhirProviderWireTest {
                 "OAuth Authorization header should contain Bearer token from OAuth flow");
         // Validate request body
         String actualRequestBody = request.getBody().readUtf8();
-        String expectedRequestBody = "" + "{\n" + "  \"auth_config_id\": \"auth-config-123\"\n" + "}";
+        String expectedRequestBody = "" + "{\n" + "  \"auth_config_id\": \"auth-config-456\"\n" + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
         Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");

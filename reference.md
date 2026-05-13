@@ -30,12 +30,18 @@ Creates a new PhenoAgent with specified configuration
 client.agent().create(
     AgentCreateRequest
         .builder()
-        .name("name")
+        .name("Medical Assistant")
         .provider(
-            AgentCreateRequestProvider.of("provider")
+            AgentCreateRequestProvider.of("7002b0b4-8d09-445a-bf65-0fafdaf26c35")
         )
+        .description("An AI assistant for medical information processing")
         .prompts(
-            Arrays.asList("prompt_123", "prompt_456")
+            Arrays.asList("prompt_123")
+        )
+        .tags(
+            Optional.of(
+                Arrays.asList("medical", "fhir")
+            )
         )
         .build()
 );
@@ -209,12 +215,18 @@ client.agent().update(
     "id",
     AgentCreateRequest
         .builder()
-        .name("name")
+        .name("Medical Assistant")
         .provider(
-            AgentCreateRequestProvider.of("provider")
+            AgentCreateRequestProvider.of("7002b0b4-8d09-445a-bf65-0fafdaf26c35")
         )
+        .description("Updated description for the medical assistant")
         .prompts(
-            Arrays.asList("prompt_123", "prompt_456")
+            Arrays.asList("prompt_123")
+        )
+        .tags(
+            Optional.of(
+                Arrays.asList("medical", "fhir", "updated")
+            )
         )
         .build()
 );
@@ -339,19 +351,14 @@ client.agent().patch(
         JsonPatchOperation
             .builder()
             .op(JsonPatchOperationOp.REPLACE)
-            .path("/name")
-            .value("Updated Agent Name")
+            .path("/description")
+            .value("patched description")
             .build(),
         JsonPatchOperation
             .builder()
             .op(JsonPatchOperationOp.ADD)
             .path("/tags/-")
-            .value("new-tag")
-            .build(),
-        JsonPatchOperation
-            .builder()
-            .op(JsonPatchOperationOp.REMOVE)
-            .path("/description")
+            .value("updated")
             .build()
     )
 );
@@ -423,6 +430,7 @@ client.agent().chat(
         .agentId("agent-123")
         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
         .phenomlFhirProvider("550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
+        .sessionId("session-abc123")
         .build()
 );
 ```
@@ -541,6 +549,7 @@ client.agent().streamChat(
         .agentId("agent-123")
         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
         .phenomlFhirProvider("550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
+        .sessionId("session-abc123")
         .build()
 );
 ```
@@ -750,7 +759,14 @@ client.agent().prompts().create(
     AgentPromptsCreateRequest
         .builder()
         .name("Medical Assistant System Prompt")
-        .content("You are a helpful medical assistant specialized in FHIR data processing...")
+        .content("You are a helpful medical assistant specialized in FHIR data processing.")
+        .description("System prompt for medical assistant agent")
+        .isDefault(false)
+        .tags(
+            Optional.of(
+                Arrays.asList("medical", "system")
+            )
+        )
         .build()
 );
 ```
@@ -935,6 +951,15 @@ client.agent().prompts().update(
     "id",
     AgentPromptsUpdateRequest
         .builder()
+        .name("Medical Assistant System Prompt")
+        .description("Updated system prompt")
+        .content("You are a helpful medical assistant. Always cite ICD-10 codes when discussing diagnoses.")
+        .isDefault(false)
+        .tags(
+            Optional.of(
+                Arrays.asList("medical", "system", "updated")
+            )
+        )
         .build()
 );
 ```
@@ -1090,19 +1115,8 @@ client.agent().prompts().patch(
         JsonPatchOperation
             .builder()
             .op(JsonPatchOperationOp.REPLACE)
-            .path("/name")
-            .value("Updated Agent Name")
-            .build(),
-        JsonPatchOperation
-            .builder()
-            .op(JsonPatchOperationOp.ADD)
-            .path("/tags/-")
-            .value("new-tag")
-            .build(),
-        JsonPatchOperation
-            .builder()
-            .op(JsonPatchOperationOp.REMOVE)
-            .path("/description")
+            .path("/content")
+            .value("Updated prompt content.")
             .build()
     )
 );
@@ -1130,45 +1144,6 @@ client.agent().prompts().patch(
 
 **request:** `List<JsonPatchOperation>` 
     
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.agent.prompts.loadDefaults() -> SuccessResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Loads default agent prompts for the authenticated user
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.agent().prompts().loadDefaults();
-```
 </dd>
 </dl>
 </dd>
@@ -1213,6 +1188,8 @@ returns an access token with expiration information.
 client.authtoken().auth().getToken(
     ClientCredentialsRequest
         .builder()
+        .clientId("your_client_id")
+        .clientSecret("your_client_secret")
         .build()
 );
 ```
@@ -1353,7 +1330,23 @@ client.construe().uploadCodeSystem(
         .builder()
         .name("CUSTOM_CODES")
         .version("1.0")
-        .format(UploadRequestFormat.CSV)
+        .format(UploadRequestFormat.JSON)
+        .codes(
+            Optional.of(
+                Arrays.asList(
+                    CodeResponse
+                        .builder()
+                        .code("X001")
+                        .description("Example custom code 1")
+                        .build(),
+                    CodeResponse
+                        .builder()
+                        .code("X002")
+                        .description("Example custom code 2")
+                        .build()
+                )
+            )
+        )
         .build()
 );
 ```
@@ -1502,7 +1495,14 @@ Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
 client.construe().extractCodes(
     ExtractRequest
         .builder()
-        .text("Patient is a 14-year-old female, previously healthy, who is here for evaluation of abnormal renal ultrasound with atrophic right kidney")
+        .text("Patient is a 14-year-old female, previously healthy, who is here for evaluation of abnormal renal ultrasound with atrophic right kidney.")
+        .system(
+            ExtractRequestSystem
+                .builder()
+                .name("ICD-10-CM")
+                .version("2025")
+                .build()
+        )
         .build()
 );
 ```
@@ -1912,7 +1912,7 @@ Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
 ```java
 client.construe().getASpecificCode(
     "ICD-10-CM",
-    "E11.65",
+    "E1165",
     GetConstrueCodesCodesystemCodeIdRequest
         .builder()
         .version("version")
@@ -1940,7 +1940,10 @@ client.construe().getASpecificCode(
 <dl>
 <dd>
 
-**codeId:** `String` — The code identifier
+**codeId:** `String` 
+
+The code identifier. ICD-10-CM codes are stored without their
+cosmetic dot (use "E1165", not "E11.65").
     
 </dd>
 </dl>
@@ -2102,14 +2105,16 @@ client.construe().submitFeedbackOnExtractionResults(
                 .system(
                     ExtractRequestSystem
                         .builder()
+                        .name("ICD-10-CM")
+                        .version("2025")
                         .build()
                 )
                 .codes(
                     Arrays.asList(
                         ExtractedCodeResult
                             .builder()
-                            .code("195967001")
-                            .description("Asthma")
+                            .code("E11.9")
+                            .description("Type 2 diabetes mellitus without complications")
                             .valid(true)
                             .build()
                     )
@@ -2122,20 +2127,23 @@ client.construe().submitFeedbackOnExtractionResults(
                 .system(
                     ExtractRequestSystem
                         .builder()
+                        .name("ICD-10-CM")
+                        .version("2025")
                         .build()
                 )
                 .codes(
                     Arrays.asList(
                         ExtractedCodeResult
                             .builder()
-                            .code("195967001")
-                            .description("Asthma")
+                            .code("E11.65")
+                            .description("Type 2 diabetes mellitus with hyperglycemia")
                             .valid(true)
                             .build()
                     )
                 )
                 .build()
         )
+        .detail("Expected code E11.65 because the text mentions hyperglycemia")
         .build()
 );
 ```
@@ -3064,16 +3072,18 @@ client.fhirProvider().create(
     FhirProviderCreateRequest
         .builder()
         .name("Epic Sandbox")
-        .provider(Provider.ATHENAHEALTH)
+        .provider(Provider.EPIC)
         .baseUrl("https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4")
         .auth(
-            FhirProviderCreateRequestAuth.jwt(
-                JwtAuth
+            FhirProviderCreateRequestAuth.clientSecret(
+                ClientSecretAuth
                     .builder()
                     .clientId("your-client-id")
+                    .clientSecret("your-client-secret")
                     .build()
             )
         )
+        .description("Epic sandbox environment for testing")
         .build()
 );
 ```
@@ -3321,10 +3331,11 @@ Note: Sandbox providers cannot be modified.
 ```java
 client.fhirProvider().addAuthConfig(
     "1716d214-de93-43a4-aa6b-a878d864e2ad",
-    FhirProviderAddAuthConfigRequest.jwt(
-        JwtAuth
+    FhirProviderAddAuthConfigRequest.clientSecret(
+        ClientSecretAuth
             .builder()
             .clientId("your-client-id")
+            .clientSecret("your-client-secret")
             .build()
     )
 );
@@ -3399,7 +3410,7 @@ client.fhirProvider().setActiveAuthConfig(
     "1716d214-de93-43a4-aa6b-a878d864e2ad",
     FhirProviderSetActiveAuthConfigRequest
         .builder()
-        .authConfigId("auth-config-123")
+        .authConfigId("auth-config-456")
         .build()
 );
 ```
@@ -3470,7 +3481,7 @@ client.fhirProvider().removeAuthConfig(
     "1716d214-de93-43a4-aa6b-a878d864e2ad",
     FhirProviderRemoveAuthConfigRequest
         .builder()
-        .authConfigId("auth-config-123")
+        .authConfigId("auth-config-456")
         .build()
 );
 ```
@@ -3541,8 +3552,8 @@ client.lang2Fhir().create(
     CreateRequest
         .builder()
         .version("R4")
-        .resource(CreateRequestResource.AUTO)
-        .text("Patient has severe asthma with acute exacerbation")
+        .resource(CreateRequestResource.CONDITION_ENCOUNTER_DIAGNOSIS)
+        .text("Patient has severe persistent asthma with acute exacerbation")
         .build()
 );
 ```
@@ -3621,7 +3632,8 @@ Resources are linked with proper references (e.g., Conditions reference the Pati
 client.lang2Fhir().createMulti(
     CreateMultiRequest
         .builder()
-        .text("John Smith, male born on 1980-03-12, diagnosed with Type 2 Diabetes. Prescribed Metformin 500mg twice daily.")
+        .text("John Smith, 45-year-old male, diagnosed with Type 2 Diabetes. Prescribed Metformin 500mg twice daily. Blood pressure 140/90.")
+        .version("R4")
         .build()
 );
 ```
@@ -3805,7 +3817,9 @@ Uploads will be rejected if:
 client.lang2Fhir().uploadProfile(
     ProfileUploadRequest
         .builder()
-        .profile("(base64 encoded FHIR StructureDefinition JSON)")
+        .profile("eyJyZXNvdXJjZVR5cGUiOiJTdHJ1Y3R1cmVEZWZpbml0aW9uIiwiaWQiOiJjdXN0b20tcGF0aWVudCIsInVybCI6Imh0dHA6Ly9waGVub21sLmNvbS9maGlyL1N0cnVjdHVyZURlZmluaXRpb24vY3VzdG9tLXBhdGllbnQiLCJuYW1lIjoiQ3VzdG9tUGF0aWVudCIsInN0YXR1cyI6ImFjdGl2ZSIsImZoaXJWZXJzaW9uIjoiNC4wLjEiLCJraW5kIjoicmVzb3VyY2UiLCJhYnN0cmFjdCI6ZmFsc2UsInR5cGUiOiJQYXRpZW50IiwiYmFzZURlZmluaXRpb24iOiJodHRwOi8vaGw3Lm9yZy9maGlyL1N0cnVjdHVyZURlZmluaXRpb24vUGF0aWVudCIsImRlcml2YXRpb24iOiJjb25zdHJhaW50Iiwic25hcHNob3QiOnsiZWxlbWVudCI6W3siaWQiOiJQYXRpZW50IiwicGF0aCI6IlBhdGllbnQiLCJtaW4iOjAsIm1heCI6IioifSx7ImlkIjoiUGF0aWVudC5uYW1lIiwicGF0aCI6IlBhdGllbnQubmFtZSIsIm1pbiI6MSwibWF4IjoiKiJ9XX19Cg==")
+        .implementationGuide("acme-cardiology")
+        .profileContext("When clinical text describes cardiology-specific findings, prefer this profile over the generic US Core Condition.")
         .build()
 );
 ```
@@ -3884,7 +3898,7 @@ client.lang2Fhir().document(
         .builder()
         .version("R4")
         .resource("questionnaire")
-        .content("content")
+        .content("JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)")
         .build()
 );
 ```
@@ -3977,7 +3991,8 @@ client.lang2Fhir().extractMultipleFhirResourcesFromADocument(
     DocumentMultiRequest
         .builder()
         .version("R4")
-        .content("content")
+        .content("JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)")
+        .provider("medplum")
         .build()
 );
 ```
@@ -4128,11 +4143,11 @@ Creates a summary template from an example using LLM function calling
 client.summary().createTemplate(
     CreateSummaryTemplateRequest
         .builder()
-        .name("name")
-        .exampleSummary("Patient John Doe, age 45, presents with hypertension diagnosed on 2024-01-15.")
-        .mode("mode")
+        .name("Discharge Summary")
+        .exampleSummary("Patient John Doe, age 45, was admitted on 2024-01-10 with Type 2 Diabetes. Discharged on 2024-01-15 with Metformin 500mg BID.")
+        .mode("narrative")
         .targetResources(
-            Arrays.asList("Patient", "Condition", "Observation")
+            Arrays.asList("Patient", "Condition", "MedicationRequest")
         )
         .build()
 );
@@ -4287,11 +4302,11 @@ client.summary().updateTemplate(
     "id",
     UpdateSummaryTemplateRequest
         .builder()
-        .name("name")
-        .template("template")
-        .mode("mode")
+        .name("Discharge Summary")
+        .template("Patient {{Patient.name[0].text}} was discharged on {{Encounter[0].period.end}} with {{MedicationRequest[0].medicationCodeableConcept.coding[0].display}} {{MedicationRequest[0].dosageInstruction[0].text}}.")
+        .mode("narrative")
         .targetResources(
-            Arrays.asList("target_resources")
+            Arrays.asList("Patient", "Encounter", "MedicationRequest")
         )
         .build()
 );
@@ -4449,13 +4464,32 @@ client.summary().create(
     CreateSummaryRequest
         .builder()
         .fhirResources(
-            CreateSummaryRequestFhirResources.of(
-                FhirResource
-                    .builder()
-                    .resourceType("resourceType")
-                    .build()
-            )
+            new HashMap<String, Object>() {{
+                put("resourceType", "Bundle");
+                put("type", "collection");
+                put("entry", new ArrayList<Object>(Arrays.asList(new 
+                HashMap<String, Object>() {{put("resource", new 
+                    HashMap<String, Object>() {{put("resourceType", "Patient");
+                        put("name", new ArrayList<Object>(Arrays.asList(new 
+                        HashMap<String, Object>() {{put("given", new ArrayList<Object>(Arrays.asList("John")));
+                            put("family", "Doe");
+                        }})));
+                        put("gender", "male");
+                        put("birthDate", "1979-03-15");
+                    }});
+                }}, new 
+                HashMap<String, Object>() {{put("resource", new 
+                    HashMap<String, Object>() {{put("resourceType", "Condition");
+                        put("code", new 
+                        HashMap<String, Object>() {{put("text", "Type 2 Diabetes Mellitus");
+                        }});
+                        put("onsetDateTime", "2024-01-15");
+                    }});
+                }})));
+            }}
         )
+        .mode(CreateSummaryRequestMode.NARRATIVE)
+        .templateId("a1b2c3d4-e5f6-7890-abcd-ef1234567890")
         .build()
 );
 ```
@@ -4493,7 +4527,7 @@ Summary generation mode:
 <dl>
 <dd>
 
-**fhirResources:** `CreateSummaryRequestFhirResources` 
+**fhirResources:** `Map<String, Object>` 
 
 FHIR resources (single resource or Bundle).
 For IPS mode, must be a Bundle containing exactly one Patient resource with at least one
@@ -4542,10 +4576,11 @@ Converts natural language to FHIR resource and optionally stores it in a FHIR se
 client.tools().createFhirResource(
     Lang2FhirAndCreateRequest
         .builder()
-        .resource(Lang2FhirAndCreateRequestResource.AUTO)
-        .text("Patient John Doe has severe asthma with acute exacerbation")
+        .resource(Lang2FhirAndCreateRequestResource.CONDITION_ENCOUNTER_DIAGNOSIS)
+        .text("Patient has severe persistent asthma with acute exacerbation")
         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
         .phenomlFhirProvider("550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
+        .provider("550e8400-e29b-41d4-a716-446655440000")
         .build()
 );
 ```
@@ -4650,6 +4685,7 @@ client.tools().createFhirResourcesMulti(
         .provider("medplum")
         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
         .phenomlFhirProvider("550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
+        .version("R4")
         .build()
 );
 ```
@@ -4749,6 +4785,8 @@ client.tools().searchFhirResources(
         .text("Find all appointments for patient John Doe next week")
         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
         .phenomlFhirProvider("550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
+        .count(10)
+        .provider("550e8400-e29b-41d4-a716-446655440000")
         .build()
 );
 ```
@@ -5457,7 +5495,7 @@ client.workflows().create(
     CreateWorkflowRequest
         .builder()
         .name("Patient Data Mapping Workflow")
-        .workflowInstructions("Given diagnosis data, find the patient and create condition record")
+        .workflowInstructions("Given diagnosis data, find the patient and create a condition record linked to their encounter")
         .fhirProviderId(
             CreateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
         )
@@ -5467,6 +5505,7 @@ client.workflows().create(
                 put("patient_last_name", "Rippin");
                 put("patient_first_name", "Clay");
                 put("diagnosis_code", "I10");
+                put("encounter_date", "2024-01-15");
             }}
         )
         .build()
@@ -5636,17 +5675,18 @@ client.workflows().update(
     "id",
     UpdateWorkflowRequest
         .builder()
-        .name("Updated Patient Data Mapping Workflow")
-        .workflowInstructions("Given diagnosis data, find the patient and create condition record")
+        .name("Patient Data Mapping Workflow (v2)")
+        .workflowInstructions("Given diagnosis data, find the patient and create a condition record linked to their encounter")
         .fhirProviderId(
             UpdateWorkflowRequestFhirProviderId.of("550e8400-e29b-41d4-a716-446655440000")
         )
         .verbose(true)
         .sampleData(
             new HashMap<String, Object>() {{
-                put("patient_last_name", "Smith");
-                put("patient_first_name", "John");
-                put("diagnosis_code", "E11");
+                put("patient_last_name", "Rippin");
+                put("patient_first_name", "Clay");
+                put("diagnosis_code", "I10");
+                put("encounter_date", "2024-01-15");
             }}
         )
         .build()
@@ -5807,7 +5847,7 @@ Executes a workflow with provided input data and returns results
 
 ```java
 client.workflows().execute(
-    "id",
+    "7a8b9c0d-1234-5678-abcd-ef9876543210",
     ExecuteWorkflowRequest
         .builder()
         .inputData(
@@ -5815,7 +5855,7 @@ client.workflows().execute(
                 put("patient_last_name", "Johnson");
                 put("patient_first_name", "Mary");
                 put("diagnosis_code", "M79.3");
-                put("encounter_date", "2024-01-15");
+                put("encounter_date", "2024-03-20");
             }}
         )
         .build()

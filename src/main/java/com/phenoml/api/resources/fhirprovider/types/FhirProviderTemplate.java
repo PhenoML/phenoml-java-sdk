@@ -14,40 +14,42 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = FhirProviderTemplate.Builder.class)
 public final class FhirProviderTemplate {
-    private final Optional<String> id;
+    private final String id;
 
-    private final Optional<String> name;
+    private final String name;
 
     private final Optional<String> description;
 
-    private final Optional<Provider> provider;
+    private final Provider provider;
 
     private final Optional<String> baseUrl;
 
     private final Optional<String> clientId;
 
-    private final Optional<Map<String, FhirProviderAuthConfig>> authConfigs;
+    private final Map<String, FhirProviderAuthConfig> authConfigs;
 
-    private final Optional<OffsetDateTime> lastUpdated;
+    private final OffsetDateTime lastUpdated;
 
     private final Map<String, Object> additionalProperties;
 
     private FhirProviderTemplate(
-            Optional<String> id,
-            Optional<String> name,
+            String id,
+            String name,
             Optional<String> description,
-            Optional<Provider> provider,
+            Provider provider,
             Optional<String> baseUrl,
             Optional<String> clientId,
-            Optional<Map<String, FhirProviderAuthConfig>> authConfigs,
-            Optional<OffsetDateTime> lastUpdated,
+            Map<String, FhirProviderAuthConfig> authConfigs,
+            OffsetDateTime lastUpdated,
             Map<String, Object> additionalProperties) {
         this.id = id;
         this.name = name;
@@ -64,7 +66,7 @@ public final class FhirProviderTemplate {
      * @return Unique identifier for the FHIR provider
      */
     @JsonProperty("id")
-    public Optional<String> getId() {
+    public String getId() {
         return id;
     }
 
@@ -72,7 +74,7 @@ public final class FhirProviderTemplate {
      * @return Display name for the FHIR provider
      */
     @JsonProperty("name")
-    public Optional<String> getName() {
+    public String getName() {
         return name;
     }
 
@@ -85,7 +87,7 @@ public final class FhirProviderTemplate {
     }
 
     @JsonProperty("provider")
-    public Optional<Provider> getProvider() {
+    public Provider getProvider() {
         return provider;
     }
 
@@ -109,7 +111,7 @@ public final class FhirProviderTemplate {
      * @return Map of authentication configurations (key is auth_config_id)
      */
     @JsonProperty("auth_configs")
-    public Optional<Map<String, FhirProviderAuthConfig>> getAuthConfigs() {
+    public Map<String, FhirProviderAuthConfig> getAuthConfigs() {
         return authConfigs;
     }
 
@@ -117,7 +119,7 @@ public final class FhirProviderTemplate {
      * @return Timestamp when the provider was last updated
      */
     @JsonProperty("last_updated")
-    public Optional<OffsetDateTime> getLastUpdated() {
+    public OffsetDateTime getLastUpdated() {
         return lastUpdated;
     }
 
@@ -161,33 +163,99 @@ public final class FhirProviderTemplate {
         return ObjectMappers.stringify(this);
     }
 
-    public static Builder builder() {
+    public static IdStage builder() {
         return new Builder();
     }
 
+    public interface IdStage {
+        /**
+         * <p>Unique identifier for the FHIR provider</p>
+         */
+        NameStage id(@NotNull String id);
+
+        Builder from(FhirProviderTemplate other);
+    }
+
+    public interface NameStage {
+        /**
+         * <p>Display name for the FHIR provider</p>
+         */
+        ProviderStage name(@NotNull String name);
+    }
+
+    public interface ProviderStage {
+        LastUpdatedStage provider(@NotNull Provider provider);
+    }
+
+    public interface LastUpdatedStage {
+        /**
+         * <p>Timestamp when the provider was last updated</p>
+         */
+        _FinalStage lastUpdated(@NotNull OffsetDateTime lastUpdated);
+    }
+
+    public interface _FinalStage {
+        FhirProviderTemplate build();
+
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+        /**
+         * <p>Optional description of the FHIR provider</p>
+         */
+        _FinalStage description(Optional<String> description);
+
+        _FinalStage description(String description);
+
+        /**
+         * <p>Base URL of the FHIR server</p>
+         */
+        _FinalStage baseUrl(Optional<String> baseUrl);
+
+        _FinalStage baseUrl(String baseUrl);
+
+        /**
+         * <p>OAuth client ID. Deprecated: use client_id on FhirProviderAuthConfig instead. Retained for backward compatibility with existing providers.</p>
+         */
+        _FinalStage clientId(Optional<String> clientId);
+
+        _FinalStage clientId(String clientId);
+
+        /**
+         * <p>Map of authentication configurations (key is auth_config_id)</p>
+         */
+        _FinalStage authConfigs(Map<String, FhirProviderAuthConfig> authConfigs);
+
+        _FinalStage putAllAuthConfigs(Map<String, FhirProviderAuthConfig> authConfigs);
+
+        _FinalStage authConfigs(String key, FhirProviderAuthConfig value);
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> id = Optional.empty();
+    public static final class Builder implements IdStage, NameStage, ProviderStage, LastUpdatedStage, _FinalStage {
+        private String id;
 
-        private Optional<String> name = Optional.empty();
+        private String name;
 
-        private Optional<String> description = Optional.empty();
+        private Provider provider;
 
-        private Optional<Provider> provider = Optional.empty();
+        private OffsetDateTime lastUpdated;
 
-        private Optional<String> baseUrl = Optional.empty();
+        private Map<String, FhirProviderAuthConfig> authConfigs = new LinkedHashMap<>();
 
         private Optional<String> clientId = Optional.empty();
 
-        private Optional<Map<String, FhirProviderAuthConfig>> authConfigs = Optional.empty();
+        private Optional<String> baseUrl = Optional.empty();
 
-        private Optional<OffsetDateTime> lastUpdated = Optional.empty();
+        private Optional<String> description = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
 
+        @java.lang.Override
         public Builder from(FhirProviderTemplate other) {
             id(other.getId());
             name(other.getName());
@@ -202,123 +270,155 @@ public final class FhirProviderTemplate {
 
         /**
          * <p>Unique identifier for the FHIR provider</p>
+         * <p>Unique identifier for the FHIR provider</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @JsonSetter(value = "id", nulls = Nulls.SKIP)
-        public Builder id(Optional<String> id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder id(String id) {
-            this.id = Optional.ofNullable(id);
+        @java.lang.Override
+        @JsonSetter("id")
+        public NameStage id(@NotNull String id) {
+            this.id = Objects.requireNonNull(id, "id must not be null");
             return this;
         }
 
         /**
          * <p>Display name for the FHIR provider</p>
+         * <p>Display name for the FHIR provider</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @JsonSetter(value = "name", nulls = Nulls.SKIP)
-        public Builder name(Optional<String> name) {
-            this.name = name;
+        @java.lang.Override
+        @JsonSetter("name")
+        public ProviderStage name(@NotNull String name) {
+            this.name = Objects.requireNonNull(name, "name must not be null");
             return this;
         }
 
-        public Builder name(String name) {
-            this.name = Optional.ofNullable(name);
+        @java.lang.Override
+        @JsonSetter("provider")
+        public LastUpdatedStage provider(@NotNull Provider provider) {
+            this.provider = Objects.requireNonNull(provider, "provider must not be null");
             return this;
         }
 
         /**
-         * <p>Optional description of the FHIR provider</p>
+         * <p>Timestamp when the provider was last updated</p>
+         * <p>Timestamp when the provider was last updated</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @JsonSetter(value = "description", nulls = Nulls.SKIP)
-        public Builder description(Optional<String> description) {
-            this.description = description;
-            return this;
-        }
-
-        public Builder description(String description) {
-            this.description = Optional.ofNullable(description);
-            return this;
-        }
-
-        @JsonSetter(value = "provider", nulls = Nulls.SKIP)
-        public Builder provider(Optional<Provider> provider) {
-            this.provider = provider;
-            return this;
-        }
-
-        public Builder provider(Provider provider) {
-            this.provider = Optional.ofNullable(provider);
+        @java.lang.Override
+        @JsonSetter("last_updated")
+        public _FinalStage lastUpdated(@NotNull OffsetDateTime lastUpdated) {
+            this.lastUpdated = Objects.requireNonNull(lastUpdated, "lastUpdated must not be null");
             return this;
         }
 
         /**
-         * <p>Base URL of the FHIR server</p>
+         * <p>Map of authentication configurations (key is auth_config_id)</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @JsonSetter(value = "base_url", nulls = Nulls.SKIP)
-        public Builder baseUrl(Optional<String> baseUrl) {
-            this.baseUrl = baseUrl;
-            return this;
-        }
-
-        public Builder baseUrl(String baseUrl) {
-            this.baseUrl = Optional.ofNullable(baseUrl);
+        @java.lang.Override
+        public _FinalStage authConfigs(String key, FhirProviderAuthConfig value) {
+            this.authConfigs.put(key, value);
             return this;
         }
 
         /**
-         * <p>OAuth client ID. Deprecated: use client_id on FhirProviderAuthConfig instead. Retained for backward compatibility with existing providers.</p>
+         * <p>Map of authentication configurations (key is auth_config_id)</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @JsonSetter(value = "client_id", nulls = Nulls.SKIP)
-        public Builder clientId(Optional<String> clientId) {
-            this.clientId = clientId;
-            return this;
-        }
-
-        public Builder clientId(String clientId) {
-            this.clientId = Optional.ofNullable(clientId);
+        @java.lang.Override
+        public _FinalStage putAllAuthConfigs(Map<String, FhirProviderAuthConfig> authConfigs) {
+            if (authConfigs != null) {
+                this.authConfigs.putAll(authConfigs);
+            }
             return this;
         }
 
         /**
          * <p>Map of authentication configurations (key is auth_config_id)</p>
          */
+        @java.lang.Override
         @JsonSetter(value = "auth_configs", nulls = Nulls.SKIP)
-        public Builder authConfigs(Optional<Map<String, FhirProviderAuthConfig>> authConfigs) {
-            this.authConfigs = authConfigs;
-            return this;
-        }
-
-        public Builder authConfigs(Map<String, FhirProviderAuthConfig> authConfigs) {
-            this.authConfigs = Optional.ofNullable(authConfigs);
+        public _FinalStage authConfigs(Map<String, FhirProviderAuthConfig> authConfigs) {
+            this.authConfigs.clear();
+            if (authConfigs != null) {
+                this.authConfigs.putAll(authConfigs);
+            }
             return this;
         }
 
         /**
-         * <p>Timestamp when the provider was last updated</p>
+         * <p>OAuth client ID. Deprecated: use client_id on FhirProviderAuthConfig instead. Retained for backward compatibility with existing providers.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @JsonSetter(value = "last_updated", nulls = Nulls.SKIP)
-        public Builder lastUpdated(Optional<OffsetDateTime> lastUpdated) {
-            this.lastUpdated = lastUpdated;
+        @java.lang.Override
+        public _FinalStage clientId(String clientId) {
+            this.clientId = Optional.ofNullable(clientId);
             return this;
         }
 
-        public Builder lastUpdated(OffsetDateTime lastUpdated) {
-            this.lastUpdated = Optional.ofNullable(lastUpdated);
+        /**
+         * <p>OAuth client ID. Deprecated: use client_id on FhirProviderAuthConfig instead. Retained for backward compatibility with existing providers.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "client_id", nulls = Nulls.SKIP)
+        public _FinalStage clientId(Optional<String> clientId) {
+            this.clientId = clientId;
             return this;
         }
 
+        /**
+         * <p>Base URL of the FHIR server</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage baseUrl(String baseUrl) {
+            this.baseUrl = Optional.ofNullable(baseUrl);
+            return this;
+        }
+
+        /**
+         * <p>Base URL of the FHIR server</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "base_url", nulls = Nulls.SKIP)
+        public _FinalStage baseUrl(Optional<String> baseUrl) {
+            this.baseUrl = baseUrl;
+            return this;
+        }
+
+        /**
+         * <p>Optional description of the FHIR provider</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage description(String description) {
+            this.description = Optional.ofNullable(description);
+            return this;
+        }
+
+        /**
+         * <p>Optional description of the FHIR provider</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "description", nulls = Nulls.SKIP)
+        public _FinalStage description(Optional<String> description) {
+            this.description = description;
+            return this;
+        }
+
+        @java.lang.Override
         public FhirProviderTemplate build() {
             return new FhirProviderTemplate(
                     id, name, description, provider, baseUrl, clientId, authConfigs, lastUpdated, additionalProperties);
         }
 
+        @java.lang.Override
         public Builder additionalProperty(String key, Object value) {
             this.additionalProperties.put(key, value);
             return this;
         }
 
+        @java.lang.Override
         public Builder additionalProperties(Map<String, Object> additionalProperties) {
             this.additionalProperties.putAll(additionalProperties);
             return this;

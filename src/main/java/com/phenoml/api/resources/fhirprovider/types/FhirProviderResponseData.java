@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.phenoml.api.core.ObjectMappers;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 
 @JsonDeserialize(using = FhirProviderResponseData.Deserializer.class)
@@ -81,13 +82,24 @@ public final class FhirProviderResponseData {
         @java.lang.Override
         public FhirProviderResponseData deserialize(JsonParser p, DeserializationContext context) throws IOException {
             Object value = p.readValueAs(Object.class);
-            try {
-                return of(ObjectMappers.JSON_MAPPER.convertValue(value, FhirProviderTemplate.class));
-            } catch (RuntimeException e) {
+            if (value instanceof Map<?, ?>
+                    && ((Map<?, ?>) value).containsKey("id")
+                    && ((Map<?, ?>) value).containsKey("name")
+                    && ((Map<?, ?>) value).containsKey("provider")
+                    && ((Map<?, ?>) value).containsKey("auth_configs")
+                    && ((Map<?, ?>) value).containsKey("last_updated")) {
+                try {
+                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, FhirProviderTemplate.class));
+                } catch (RuntimeException e) {
+                }
             }
-            try {
-                return of(ObjectMappers.JSON_MAPPER.convertValue(value, FhirProviderSandboxInfo.class));
-            } catch (RuntimeException e) {
+            if (value instanceof Map<?, ?>
+                    && ((Map<?, ?>) value).containsKey("id")
+                    && ((Map<?, ?>) value).containsKey("name")) {
+                try {
+                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, FhirProviderSandboxInfo.class));
+                } catch (RuntimeException e) {
+                }
             }
             throw new JsonParseException(p, "Failed to deserialize");
         }

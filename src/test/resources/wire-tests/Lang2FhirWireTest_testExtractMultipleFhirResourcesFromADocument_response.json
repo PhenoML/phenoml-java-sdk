@@ -1,0 +1,97 @@
+{
+  "success": true,
+  "message": "Successfully extracted 3 resources",
+  "bundle": {
+    "resourceType": "Bundle",
+    "type": "transaction",
+    "entry": [
+      {
+        "fullUrl": "urn:uuid:patient-001",
+        "resource": {
+          "resourceType": "Patient",
+          "name": [
+            {
+              "given": [
+                "John"
+              ],
+              "family": "Doe"
+            }
+          ],
+          "gender": "male",
+          "birthDate": "1979-03-15"
+        },
+        "request": {
+          "method": "POST",
+          "url": "Patient"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:condition-001",
+        "resource": {
+          "resourceType": "Condition",
+          "code": {
+            "text": "Type 2 Diabetes Mellitus"
+          },
+          "subject": {
+            "reference": "urn:uuid:patient-001"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "Condition"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:medication-001",
+        "resource": {
+          "resourceType": "MedicationRequest",
+          "medicationCodeableConcept": {
+            "text": "Metformin 500mg"
+          },
+          "subject": {
+            "reference": "urn:uuid:patient-001"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "MedicationRequest"
+        }
+      }
+    ]
+  },
+  "resources": [
+    {
+      "tempId": "urn:uuid:patient-001",
+      "resourceType": "Patient",
+      "description": "John Doe, born 1979-03-15",
+      "originalText": "John Doe, DOB 1979-03-15"
+    },
+    {
+      "tempId": "urn:uuid:condition-001",
+      "resourceType": "Condition",
+      "description": "Type 2 Diabetes Mellitus diagnosis",
+      "originalText": "diagnosed with Type 2 Diabetes"
+    },
+    {
+      "tempId": "urn:uuid:medication-001",
+      "resourceType": "MedicationRequest",
+      "description": "Metformin 500mg prescription",
+      "originalText": "Prescribed Metformin 500mg"
+    }
+  ],
+  "validation": {
+    "passes": [
+      {}
+    ],
+    "fixed": true,
+    "attempts": 1,
+    "summary": "summary"
+  },
+  "page_classifications": [
+    {
+      "page_number": 1,
+      "include": true,
+      "reason": "clinical notes with diagnoses"
+    }
+  ]
+}

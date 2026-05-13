@@ -10,8 +10,8 @@ import com.phenoml.api.resources.agent.prompts.types.PromptsListResponse;
 import com.phenoml.api.resources.agent.types.AgentPromptsResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
 import com.phenoml.api.resources.agent.types.JsonPatchOperationOp;
-import com.phenoml.api.resources.agent.types.SuccessResponse;
 import java.util.Arrays;
+import java.util.Optional;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -54,7 +54,10 @@ public class AgentPromptsWireTest {
                 .prompts()
                 .create(AgentPromptsCreateRequest.builder()
                         .name("Medical Assistant System Prompt")
-                        .content("You are a helpful medical assistant specialized in FHIR data processing...")
+                        .content("You are a helpful medical assistant specialized in FHIR data processing.")
+                        .description("System prompt for medical assistant agent")
+                        .isDefault(false)
+                        .tags(Optional.of(Arrays.asList("medical", "system")))
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -72,7 +75,13 @@ public class AgentPromptsWireTest {
         String expectedRequestBody = ""
                 + "{\n"
                 + "  \"name\": \"Medical Assistant System Prompt\",\n"
-                + "  \"content\": \"You are a helpful medical assistant specialized in FHIR data processing...\"\n"
+                + "  \"description\": \"System prompt for medical assistant agent\",\n"
+                + "  \"content\": \"You are a helpful medical assistant specialized in FHIR data processing.\",\n"
+                + "  \"is_default\": false,\n"
+                + "  \"tags\": [\n"
+                + "    \"medical\",\n"
+                + "    \"system\"\n"
+                + "  ]\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
@@ -161,7 +170,7 @@ public class AgentPromptsWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Prompts retrieved successfully\",\"prompts\":[{\"id\":\"prompt_123\",\"name\":\"Medical Assistant System Prompt\",\"description\":\"System prompt for medical assistant agent\",\"content\":\"You are a helpful medical assistant...\",\"is_default\":false,\"tags\":[\"medical\",\"system\"]}]}"));
+                                "{\"success\":true,\"message\":\"Prompts retrieved successfully\",\"prompts\":[{\"id\":\"prompt_123\",\"name\":\"Medical Assistant System Prompt\",\"description\":\"System prompt for medical assistant agent\",\"content\":\"You are a helpful medical assistant...\",\"is_default\":false,\"tags\":[\"medical\",\"system\"]},{\"id\":\"prompt_456\",\"name\":\"Clinical Coding Prompt\",\"description\":\"Prompt for ICD-10 / SNOMED coding tasks\",\"content\":\"You assist with mapping clinical text to standard codes...\",\"is_default\":false,\"tags\":[\"coding\"]}]}"));
         PromptsListResponse response = client.agent().prompts().list();
         // OAuth: consume the token request
         server.takeRequest();
@@ -192,6 +201,16 @@ public class AgentPromptsWireTest {
                 + "      \"tags\": [\n"
                 + "        \"medical\",\n"
                 + "        \"system\"\n"
+                + "      ]\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"id\": \"prompt_456\",\n"
+                + "      \"name\": \"Clinical Coding Prompt\",\n"
+                + "      \"description\": \"Prompt for ICD-10 / SNOMED coding tasks\",\n"
+                + "      \"content\": \"You assist with mapping clinical text to standard codes...\",\n"
+                + "      \"is_default\": false,\n"
+                + "      \"tags\": [\n"
+                + "        \"coding\"\n"
                 + "      ]\n"
                 + "    }\n"
                 + "  ]\n"
@@ -237,7 +256,7 @@ public class AgentPromptsWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Prompt created successfully\",\"data\":{\"id\":\"prompt_123\",\"name\":\"Medical Assistant System Prompt\",\"description\":\"System prompt for medical assistant agent\",\"content\":\"You are a helpful medical assistant...\",\"is_default\":false,\"tags\":[\"medical\",\"system\"]}}"));
+                                "{\"success\":true,\"message\":\"Prompt retrieved successfully\",\"data\":{\"id\":\"prompt_123\",\"name\":\"Medical Assistant System Prompt\",\"description\":\"System prompt for medical assistant agent\",\"content\":\"You are a helpful medical assistant...\",\"is_default\":false,\"tags\":[\"medical\",\"system\"]}}"));
         AgentPromptsResponse response = client.agent().prompts().get("id");
         // OAuth: consume the token request
         server.takeRequest();
@@ -257,7 +276,7 @@ public class AgentPromptsWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"success\": true,\n"
-                + "  \"message\": \"Prompt created successfully\",\n"
+                + "  \"message\": \"Prompt retrieved successfully\",\n"
                 + "  \"data\": {\n"
                 + "    \"id\": \"prompt_123\",\n"
                 + "    \"name\": \"Medical Assistant System Prompt\",\n"
@@ -311,10 +330,19 @@ public class AgentPromptsWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Prompt created successfully\",\"data\":{\"id\":\"prompt_123\",\"name\":\"Medical Assistant System Prompt\",\"description\":\"System prompt for medical assistant agent\",\"content\":\"You are a helpful medical assistant...\",\"is_default\":false,\"tags\":[\"medical\",\"system\"]}}"));
+                                "{\"success\":true,\"message\":\"Prompt updated successfully\",\"data\":{\"id\":\"prompt_123\",\"name\":\"Medical Assistant System Prompt\",\"description\":\"System prompt for medical assistant agent\",\"content\":\"You are a helpful medical assistant...\",\"is_default\":false,\"tags\":[\"medical\",\"system\"]}}"));
         AgentPromptsResponse response = client.agent()
                 .prompts()
-                .update("id", AgentPromptsUpdateRequest.builder().build());
+                .update(
+                        "id",
+                        AgentPromptsUpdateRequest.builder()
+                                .name("Medical Assistant System Prompt")
+                                .description("Updated system prompt")
+                                .content(
+                                        "You are a helpful medical assistant. Always cite ICD-10 codes when discussing diagnoses.")
+                                .isDefault(false)
+                                .tags(Optional.of(Arrays.asList("medical", "system", "updated")))
+                                .build());
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -328,7 +356,18 @@ public class AgentPromptsWireTest {
                 "OAuth Authorization header should contain Bearer token from OAuth flow");
         // Validate request body
         String actualRequestBody = request.getBody().readUtf8();
-        String expectedRequestBody = "" + "{}";
+        String expectedRequestBody = ""
+                + "{\n"
+                + "  \"name\": \"Medical Assistant System Prompt\",\n"
+                + "  \"description\": \"Updated system prompt\",\n"
+                + "  \"content\": \"You are a helpful medical assistant. Always cite ICD-10 codes when discussing diagnoses.\",\n"
+                + "  \"is_default\": false,\n"
+                + "  \"tags\": [\n"
+                + "    \"medical\",\n"
+                + "    \"system\",\n"
+                + "    \"updated\"\n"
+                + "  ]\n"
+                + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
         Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
@@ -362,7 +401,7 @@ public class AgentPromptsWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"success\": true,\n"
-                + "  \"message\": \"Prompt created successfully\",\n"
+                + "  \"message\": \"Prompt updated successfully\",\n"
                 + "  \"data\": {\n"
                 + "    \"id\": \"prompt_123\",\n"
                 + "    \"name\": \"Medical Assistant System Prompt\",\n"
@@ -474,26 +513,16 @@ public class AgentPromptsWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Prompt created successfully\",\"data\":{\"id\":\"prompt_123\",\"name\":\"Medical Assistant System Prompt\",\"description\":\"System prompt for medical assistant agent\",\"content\":\"You are a helpful medical assistant...\",\"is_default\":false,\"tags\":[\"medical\",\"system\"]}}"));
+                                "{\"success\":true,\"message\":\"Prompt patched successfully\",\"data\":{\"id\":\"prompt_123\",\"name\":\"Medical Assistant System Prompt\",\"description\":\"System prompt for medical assistant agent\",\"content\":\"You are a helpful medical assistant...\",\"is_default\":false,\"tags\":[\"medical\",\"system\"]}}"));
         AgentPromptsResponse response = client.agent()
                 .prompts()
                 .patch(
                         "id",
-                        Arrays.asList(
-                                JsonPatchOperation.builder()
-                                        .op(JsonPatchOperationOp.REPLACE)
-                                        .path("/name")
-                                        .value("Updated Agent Name")
-                                        .build(),
-                                JsonPatchOperation.builder()
-                                        .op(JsonPatchOperationOp.ADD)
-                                        .path("/tags/-")
-                                        .value("new-tag")
-                                        .build(),
-                                JsonPatchOperation.builder()
-                                        .op(JsonPatchOperationOp.REMOVE)
-                                        .path("/description")
-                                        .build()));
+                        Arrays.asList(JsonPatchOperation.builder()
+                                .op(JsonPatchOperationOp.REPLACE)
+                                .path("/content")
+                                .value("Updated prompt content.")
+                                .build()));
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -511,17 +540,8 @@ public class AgentPromptsWireTest {
                 + "[\n"
                 + "  {\n"
                 + "    \"op\": \"replace\",\n"
-                + "    \"path\": \"/name\",\n"
-                + "    \"value\": \"Updated Agent Name\"\n"
-                + "  },\n"
-                + "  {\n"
-                + "    \"op\": \"add\",\n"
-                + "    \"path\": \"/tags/-\",\n"
-                + "    \"value\": \"new-tag\"\n"
-                + "  },\n"
-                + "  {\n"
-                + "    \"op\": \"remove\",\n"
-                + "    \"path\": \"/description\"\n"
+                + "    \"path\": \"/content\",\n"
+                + "    \"value\": \"Updated prompt content.\"\n"
                 + "  }\n"
                 + "]";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
@@ -557,7 +577,7 @@ public class AgentPromptsWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"success\": true,\n"
-                + "  \"message\": \"Prompt created successfully\",\n"
+                + "  \"message\": \"Prompt patched successfully\",\n"
                 + "  \"data\": {\n"
                 + "    \"id\": \"prompt_123\",\n"
                 + "    \"name\": \"Medical Assistant System Prompt\",\n"
@@ -570,64 +590,6 @@ public class AgentPromptsWireTest {
                 + "    ]\n"
                 + "  }\n"
                 + "}";
-        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
-        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
-        Assertions.assertTrue(
-                jsonEquals(expectedResponseNode, actualResponseNode),
-                "Response body structure does not match expected");
-        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
-            String discriminator = null;
-            if (actualResponseNode.has("type"))
-                discriminator = actualResponseNode.get("type").asText();
-            else if (actualResponseNode.has("_type"))
-                discriminator = actualResponseNode.get("_type").asText();
-            else if (actualResponseNode.has("kind"))
-                discriminator = actualResponseNode.get("kind").asText();
-            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
-            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
-        }
-
-        if (!actualResponseNode.isNull()) {
-            Assertions.assertTrue(
-                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
-                    "response should be a valid JSON value");
-        }
-
-        if (actualResponseNode.isArray()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
-        }
-        if (actualResponseNode.isObject()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
-        }
-    }
-
-    @Test
-    public void testLoadDefaults() throws Exception {
-        // OAuth: enqueue token response (client fetches token before API call)
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody("{\"success\":true,\"message\":\"Operation completed successfully\"}"));
-        SuccessResponse response = client.agent().prompts().loadDefaults();
-        // OAuth: consume the token request
-        server.takeRequest();
-        RecordedRequest request = server.takeRequest();
-        Assertions.assertNotNull(request);
-        Assertions.assertEquals("POST", request.getMethod());
-
-        // Validate OAuth Authorization header
-        Assertions.assertEquals(
-                "Bearer test-token",
-                request.getHeader("Authorization"),
-                "OAuth Authorization header should contain Bearer token from OAuth flow");
-
-        // Validate response body
-        Assertions.assertNotNull(response, "Response should not be null");
-        String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody =
-                "" + "{\n" + "  \"success\": true,\n" + "  \"message\": \"Operation completed successfully\"\n" + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
         Assertions.assertTrue(

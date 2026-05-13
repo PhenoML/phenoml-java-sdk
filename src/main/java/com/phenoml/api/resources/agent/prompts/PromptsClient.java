@@ -11,7 +11,6 @@ import com.phenoml.api.resources.agent.prompts.types.PromptsDeleteResponse;
 import com.phenoml.api.resources.agent.prompts.types.PromptsListResponse;
 import com.phenoml.api.resources.agent.types.AgentPromptsResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
-import com.phenoml.api.resources.agent.types.SuccessResponse;
 import java.util.List;
 
 public class PromptsClient {
@@ -127,19 +126,5 @@ public class PromptsClient {
      */
     public AgentPromptsResponse patch(String id, List<JsonPatchOperation> request, RequestOptions requestOptions) {
         return this.rawClient.patch(id, request, requestOptions).body();
-    }
-
-    /**
-     * Loads default agent prompts for the authenticated user
-     */
-    public SuccessResponse loadDefaults() {
-        return this.rawClient.loadDefaults().body();
-    }
-
-    /**
-     * Loads default agent prompts for the authenticated user
-     */
-    public SuccessResponse loadDefaults(RequestOptions requestOptions) {
-        return this.rawClient.loadDefaults(requestOptions).body();
     }
 }

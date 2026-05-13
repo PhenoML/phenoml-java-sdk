@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,23 +25,27 @@ public final class McpServerToolResponse {
 
     private final Optional<String> message;
 
-    private final Optional<McpServerToolResponseData> data;
+    private final Optional<McpServerTool> data;
+
+    private final Optional<List<McpServerTool>> mcpServerTools;
 
     private final Map<String, Object> additionalProperties;
 
     private McpServerToolResponse(
             Optional<Boolean> success,
             Optional<String> message,
-            Optional<McpServerToolResponseData> data,
+            Optional<McpServerTool> data,
+            Optional<List<McpServerTool>> mcpServerTools,
             Map<String, Object> additionalProperties) {
         this.success = success;
         this.message = message;
         this.data = data;
+        this.mcpServerTools = mcpServerTools;
         this.additionalProperties = additionalProperties;
     }
 
     /**
-     * @return Whether the MCP server tool was created successfully
+     * @return Whether the operation succeeded
      */
     @JsonProperty("success")
     public Optional<Boolean> getSuccess() {
@@ -56,11 +61,20 @@ public final class McpServerToolResponse {
     }
 
     /**
-     * @return MCP server tool data
+     * @return Single MCP server tool (returned by GET /tools/mcp-server/tool/{mcp_server_tool_id}).
      */
     @JsonProperty("data")
-    public Optional<McpServerToolResponseData> getData() {
+    public Optional<McpServerTool> getData() {
         return data;
+    }
+
+    /**
+     * @return List of MCP server tools. Returned by
+     * /tools/mcp-server/{mcp_server_id}/list.
+     */
+    @JsonProperty("mcp_server_tools")
+    public Optional<List<McpServerTool>> getMcpServerTools() {
+        return mcpServerTools;
     }
 
     @java.lang.Override
@@ -75,12 +89,15 @@ public final class McpServerToolResponse {
     }
 
     private boolean equalTo(McpServerToolResponse other) {
-        return success.equals(other.success) && message.equals(other.message) && data.equals(other.data);
+        return success.equals(other.success)
+                && message.equals(other.message)
+                && data.equals(other.data)
+                && mcpServerTools.equals(other.mcpServerTools);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.success, this.message, this.data);
+        return Objects.hash(this.success, this.message, this.data, this.mcpServerTools);
     }
 
     @java.lang.Override
@@ -98,7 +115,9 @@ public final class McpServerToolResponse {
 
         private Optional<String> message = Optional.empty();
 
-        private Optional<McpServerToolResponseData> data = Optional.empty();
+        private Optional<McpServerTool> data = Optional.empty();
+
+        private Optional<List<McpServerTool>> mcpServerTools = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -109,11 +128,12 @@ public final class McpServerToolResponse {
             success(other.getSuccess());
             message(other.getMessage());
             data(other.getData());
+            mcpServerTools(other.getMcpServerTools());
             return this;
         }
 
         /**
-         * <p>Whether the MCP server tool was created successfully</p>
+         * <p>Whether the operation succeeded</p>
          */
         @JsonSetter(value = "success", nulls = Nulls.SKIP)
         public Builder success(Optional<Boolean> success) {
@@ -141,21 +161,36 @@ public final class McpServerToolResponse {
         }
 
         /**
-         * <p>MCP server tool data</p>
+         * <p>Single MCP server tool (returned by GET /tools/mcp-server/tool/{mcp_server_tool_id}).</p>
          */
         @JsonSetter(value = "data", nulls = Nulls.SKIP)
-        public Builder data(Optional<McpServerToolResponseData> data) {
+        public Builder data(Optional<McpServerTool> data) {
             this.data = data;
             return this;
         }
 
-        public Builder data(McpServerToolResponseData data) {
+        public Builder data(McpServerTool data) {
             this.data = Optional.ofNullable(data);
             return this;
         }
 
+        /**
+         * <p>List of MCP server tools. Returned by
+         * /tools/mcp-server/{mcp_server_id}/list.</p>
+         */
+        @JsonSetter(value = "mcp_server_tools", nulls = Nulls.SKIP)
+        public Builder mcpServerTools(Optional<List<McpServerTool>> mcpServerTools) {
+            this.mcpServerTools = mcpServerTools;
+            return this;
+        }
+
+        public Builder mcpServerTools(List<McpServerTool> mcpServerTools) {
+            this.mcpServerTools = Optional.ofNullable(mcpServerTools);
+            return this;
+        }
+
         public McpServerToolResponse build() {
-            return new McpServerToolResponse(success, message, data, additionalProperties);
+            return new McpServerToolResponse(success, message, data, mcpServerTools, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {
