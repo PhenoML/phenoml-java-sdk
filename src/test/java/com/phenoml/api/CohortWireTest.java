@@ -42,7 +42,7 @@ public class CohortWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"success\":true,\"message\":\"Cohort analysis completed successfully. Generated 3 search queries from 3 concepts.\",\"queries\":[{\"resource_type\":\"Patient\",\"search_params\":\"gender=female&birthdate=le1959-01-01\",\"concept\":\"female patients over 65\",\"exclude\":false}]}"));
+                                "{\"success\":true,\"message\":\"Cohort analysis completed successfully. Generated 3 search queries from 3 concepts.\",\"queries\":[{\"resource_type\":\"Patient\",\"search_params\":\"gender=female&birthdate=le1959-01-01\",\"concept\":\"female patients over 65\",\"exclude\":false},{\"resource_type\":\"Condition\",\"search_params\":\"code=44054006\",\"concept\":\"diabetes\",\"exclude\":false},{\"resource_type\":\"Condition\",\"search_params\":\"code=38341003\",\"concept\":\"hypertension\",\"exclude\":true}]}"));
         CohortResponse response = client.cohort()
                 .analyze(CohortRequest.builder()
                         .text("female patients over 65 with diabetes but not hypertension")
@@ -102,6 +102,18 @@ public class CohortWireTest {
                 + "      \"search_params\": \"gender=female&birthdate=le1959-01-01\",\n"
                 + "      \"concept\": \"female patients over 65\",\n"
                 + "      \"exclude\": false\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"resource_type\": \"Condition\",\n"
+                + "      \"search_params\": \"code=44054006\",\n"
+                + "      \"concept\": \"diabetes\",\n"
+                + "      \"exclude\": false\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"resource_type\": \"Condition\",\n"
+                + "      \"search_params\": \"code=38341003\",\n"
+                + "      \"concept\": \"hypertension\",\n"
+                + "      \"exclude\": true\n"
                 + "    }\n"
                 + "  ]\n"
                 + "}";

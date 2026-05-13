@@ -12,13 +12,12 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.resources.summary.types.CreateSummaryRequestFhirResources;
 import com.phenoml.api.resources.summary.types.CreateSummaryRequestMode;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateSummaryRequest.Builder.class)
@@ -27,14 +26,14 @@ public final class CreateSummaryRequest {
 
     private final Optional<String> templateId;
 
-    private final CreateSummaryRequestFhirResources fhirResources;
+    private final Map<String, Object> fhirResources;
 
     private final Map<String, Object> additionalProperties;
 
     private CreateSummaryRequest(
             Optional<CreateSummaryRequestMode> mode,
             Optional<String> templateId,
-            CreateSummaryRequestFhirResources fhirResources,
+            Map<String, Object> fhirResources,
             Map<String, Object> additionalProperties) {
         this.mode = mode;
         this.templateId = templateId;
@@ -71,7 +70,7 @@ public final class CreateSummaryRequest {
      * automatically filtered to only include those referencing the patient.
      */
     @JsonProperty("fhir_resources")
-    public CreateSummaryRequestFhirResources getFhirResources() {
+    public Map<String, Object> getFhirResources() {
         return fhirResources;
     }
 
@@ -102,64 +101,23 @@ public final class CreateSummaryRequest {
         return ObjectMappers.stringify(this);
     }
 
-    public static FhirResourcesStage builder() {
+    public static Builder builder() {
         return new Builder();
     }
 
-    public interface FhirResourcesStage {
-        /**
-         * <p>FHIR resources (single resource or Bundle).
-         * For IPS mode, must be a Bundle containing exactly one Patient resource with at least one
-         * identifier (id, fullUrl, or identifier field). Returns an error if no Patient is found,
-         * if multiple Patients are present, or if the Patient has no identifiers. Resources are
-         * automatically filtered to only include those referencing the patient.</p>
-         */
-        _FinalStage fhirResources(@NotNull CreateSummaryRequestFhirResources fhirResources);
-
-        Builder from(CreateSummaryRequest other);
-    }
-
-    public interface _FinalStage {
-        CreateSummaryRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Summary generation mode:</p>
-         * <ul>
-         * <li>narrative: Substitute FHIR data into a template (requires template_id)</li>
-         * <li>flatten: Flatten FHIR resources for RAG/search (no template needed)</li>
-         * <li>ips: Generate International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG</li>
-         * </ul>
-         */
-        _FinalStage mode(Optional<CreateSummaryRequestMode> mode);
-
-        _FinalStage mode(CreateSummaryRequestMode mode);
-
-        /**
-         * <p>ID of the template to use (required for narrative mode)</p>
-         */
-        _FinalStage templateId(Optional<String> templateId);
-
-        _FinalStage templateId(String templateId);
-    }
-
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements FhirResourcesStage, _FinalStage {
-        private CreateSummaryRequestFhirResources fhirResources;
+    public static final class Builder {
+        private Optional<CreateSummaryRequestMode> mode = Optional.empty();
 
         private Optional<String> templateId = Optional.empty();
 
-        private Optional<CreateSummaryRequestMode> mode = Optional.empty();
+        private Map<String, Object> fhirResources = new LinkedHashMap<>();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
 
-        @java.lang.Override
         public Builder from(CreateSummaryRequest other) {
             mode(other.getMode());
             templateId(other.getTemplateId());
@@ -168,87 +126,75 @@ public final class CreateSummaryRequest {
         }
 
         /**
-         * <p>FHIR resources (single resource or Bundle).
-         * For IPS mode, must be a Bundle containing exactly one Patient resource with at least one
-         * identifier (id, fullUrl, or identifier field). Returns an error if no Patient is found,
-         * if multiple Patients are present, or if the Patient has no identifiers. Resources are
-         * automatically filtered to only include those referencing the patient.</p>
-         * <p>FHIR resources (single resource or Bundle).
-         * For IPS mode, must be a Bundle containing exactly one Patient resource with at least one
-         * identifier (id, fullUrl, or identifier field). Returns an error if no Patient is found,
-         * if multiple Patients are present, or if the Patient has no identifiers. Resources are
-         * automatically filtered to only include those referencing the patient.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("fhir_resources")
-        public _FinalStage fhirResources(@NotNull CreateSummaryRequestFhirResources fhirResources) {
-            this.fhirResources = Objects.requireNonNull(fhirResources, "fhirResources must not be null");
-            return this;
-        }
-
-        /**
-         * <p>ID of the template to use (required for narrative mode)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage templateId(String templateId) {
-            this.templateId = Optional.ofNullable(templateId);
-            return this;
-        }
-
-        /**
-         * <p>ID of the template to use (required for narrative mode)</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "template_id", nulls = Nulls.SKIP)
-        public _FinalStage templateId(Optional<String> templateId) {
-            this.templateId = templateId;
-            return this;
-        }
-
-        /**
          * <p>Summary generation mode:</p>
          * <ul>
          * <li>narrative: Substitute FHIR data into a template (requires template_id)</li>
          * <li>flatten: Flatten FHIR resources for RAG/search (no template needed)</li>
          * <li>ips: Generate International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG</li>
          * </ul>
-         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @java.lang.Override
-        public _FinalStage mode(CreateSummaryRequestMode mode) {
+        @JsonSetter(value = "mode", nulls = Nulls.SKIP)
+        public Builder mode(Optional<CreateSummaryRequestMode> mode) {
+            this.mode = mode;
+            return this;
+        }
+
+        public Builder mode(CreateSummaryRequestMode mode) {
             this.mode = Optional.ofNullable(mode);
             return this;
         }
 
         /**
-         * <p>Summary generation mode:</p>
-         * <ul>
-         * <li>narrative: Substitute FHIR data into a template (requires template_id)</li>
-         * <li>flatten: Flatten FHIR resources for RAG/search (no template needed)</li>
-         * <li>ips: Generate International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG</li>
-         * </ul>
+         * <p>ID of the template to use (required for narrative mode)</p>
          */
-        @java.lang.Override
-        @JsonSetter(value = "mode", nulls = Nulls.SKIP)
-        public _FinalStage mode(Optional<CreateSummaryRequestMode> mode) {
-            this.mode = mode;
+        @JsonSetter(value = "template_id", nulls = Nulls.SKIP)
+        public Builder templateId(Optional<String> templateId) {
+            this.templateId = templateId;
             return this;
         }
 
-        @java.lang.Override
+        public Builder templateId(String templateId) {
+            this.templateId = Optional.ofNullable(templateId);
+            return this;
+        }
+
+        /**
+         * <p>FHIR resources (single resource or Bundle).
+         * For IPS mode, must be a Bundle containing exactly one Patient resource with at least one
+         * identifier (id, fullUrl, or identifier field). Returns an error if no Patient is found,
+         * if multiple Patients are present, or if the Patient has no identifiers. Resources are
+         * automatically filtered to only include those referencing the patient.</p>
+         */
+        @JsonSetter(value = "fhir_resources", nulls = Nulls.SKIP)
+        public Builder fhirResources(Map<String, Object> fhirResources) {
+            this.fhirResources.clear();
+            if (fhirResources != null) {
+                this.fhirResources.putAll(fhirResources);
+            }
+            return this;
+        }
+
+        public Builder putAllFhirResources(Map<String, Object> fhirResources) {
+            if (fhirResources != null) {
+                this.fhirResources.putAll(fhirResources);
+            }
+            return this;
+        }
+
+        public Builder fhirResources(String key, Object value) {
+            this.fhirResources.put(key, value);
+            return this;
+        }
+
         public CreateSummaryRequest build() {
             return new CreateSummaryRequest(mode, templateId, fhirResources, additionalProperties);
         }
 
-        @java.lang.Override
         public Builder additionalProperty(String key, Object value) {
             this.additionalProperties.put(key, value);
             return this;
         }
 
-        @java.lang.Override
         public Builder additionalProperties(Map<String, Object> additionalProperties) {
             this.additionalProperties.putAll(additionalProperties);
             return this;

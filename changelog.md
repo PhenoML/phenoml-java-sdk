@@ -1,3 +1,16 @@
+## 14.0.0 - 2026-05-13
+### Breaking Changes
+* **`PromptsClient.loadDefaults()`** — removed from `PromptsClient`, `AsyncPromptsClient`, `RawPromptsClient`, and `AsyncRawPromptsClient`; remove any calls to these methods.
+* **`FhirProviderSandboxInfo`** — `getId()` and `getName()` now return `String` instead of `Optional<String>`, `getProvider()` always returns `"sandbox"` (builder setter removed), and the builder now uses a staged pattern (`IdStage` → `NameStage` → `_FinalStage`); update all call sites and builder chains accordingly.
+* **`FhirProviderTemplate`** — all getters now return plain (non-`Optional`) types and the builder enforces staged construction (`IdStage` → `NameStage` → `ProviderStage` → `LastUpdatedStage` → `_FinalStage`); update all call sites and builder usages.
+* **`McpServerResponseData`** and **`McpServerToolResponseData`** — renamed to `McpServer` and `McpServerTool` respectively; update all type references, import statements, and builder chains.
+* **`CreateSummaryRequest.getFhirResources()`** — return type changed from `CreateSummaryRequestFhirResources` to `Map<String, Object>` and the `FhirResourcesStage`/`_FinalStage` builder interfaces are removed; migrate to the plain `Builder` using `fhirResources(Map<String, Object>)` or `putAllFhirResources(Map<String, Object>)`.
+* **`CreateSummaryRequestFhirResources`**, **`FhirBundle`**, **`FhirBundleEntryItem`**, and **`FhirResource`** — deleted from the `summary` package; remove all references to these types.
+* **`SearchResponse`** — JSON property names `resourceType` and `searchParams` renamed to `resource_type` and `search_params`; update any manual serialization/deserialization code that references the old names.
+### Added
+* **`McpServerResponse.getMcpServers()`** and **`getMcpServerTools()`** — new optional fields returning lists of `McpServer` and `McpServerTool` objects respectively, populated by the create and list MCP server endpoints.
+* **`McpServerToolResponse.getMcpServerTools()`** — new optional field returning `Optional<List<McpServerTool>>` populated by the `/tools/mcp-server/{mcp_server_id}/list` endpoint.
+
 ## 13.0.1 - 2026-05-11
 * chore: reorder enum constant declarations across multiple types
 * Reorder static constant fields and switch/valueOf cases in several enum-like

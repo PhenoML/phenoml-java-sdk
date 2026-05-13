@@ -22,7 +22,6 @@ import com.phenoml.api.resources.agent.prompts.types.PromptsDeleteResponse;
 import com.phenoml.api.resources.agent.prompts.types.PromptsListResponse;
 import com.phenoml.api.resources.agent.types.AgentPromptsResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
-import com.phenoml.api.resources.agent.types.SuccessResponse;
 import java.io.IOException;
 import java.util.List;
 import okhttp3.Headers;
@@ -445,65 +444,6 @@ public class RawPromptsClient {
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 404:
                         throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
-
-    /**
-     * Loads default agent prompts for the authenticated user
-     */
-    public PhenomlClientHttpResponse<SuccessResponse> loadDefaults() {
-        return loadDefaults(null);
-    }
-
-    /**
-     * Loads default agent prompts for the authenticated user
-     */
-    public PhenomlClientHttpResponse<SuccessResponse> loadDefaults(RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("agent/prompts/load-defaults");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", RequestBody.create("", null))
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SuccessResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 500:
                         throw new InternalServerError(

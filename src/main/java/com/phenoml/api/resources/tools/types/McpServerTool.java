@@ -18,8 +18,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-@JsonDeserialize(builder = McpServerToolResponseData.Builder.class)
-public final class McpServerToolResponseData {
+@JsonDeserialize(builder = McpServerTool.Builder.class)
+public final class McpServerTool {
     private final Optional<String> id;
 
     private final Optional<String> name;
@@ -34,7 +34,7 @@ public final class McpServerToolResponseData {
 
     private final Map<String, Object> additionalProperties;
 
-    private McpServerToolResponseData(
+    private McpServerTool(
             Optional<String> id,
             Optional<String> name,
             Optional<String> description,
@@ -102,7 +102,7 @@ public final class McpServerToolResponseData {
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        return other instanceof McpServerToolResponseData && equalTo((McpServerToolResponseData) other);
+        return other instanceof McpServerTool && equalTo((McpServerTool) other);
     }
 
     @JsonAnyGetter
@@ -110,7 +110,7 @@ public final class McpServerToolResponseData {
         return this.additionalProperties;
     }
 
-    private boolean equalTo(McpServerToolResponseData other) {
+    private boolean equalTo(McpServerTool other) {
         return id.equals(other.id)
                 && name.equals(other.name)
                 && description.equals(other.description)
@@ -153,7 +153,7 @@ public final class McpServerToolResponseData {
 
         private Builder() {}
 
-        public Builder from(McpServerToolResponseData other) {
+        public Builder from(McpServerTool other) {
             id(other.getId());
             name(other.getName());
             description(other.getDescription());
@@ -247,8 +247,8 @@ public final class McpServerToolResponseData {
             return this;
         }
 
-        public McpServerToolResponseData build() {
-            return new McpServerToolResponseData(
+        public McpServerTool build() {
+            return new McpServerTool(
                     id, name, description, inputSchema, mcpServerId, mcpServerUrl, additionalProperties);
         }
 

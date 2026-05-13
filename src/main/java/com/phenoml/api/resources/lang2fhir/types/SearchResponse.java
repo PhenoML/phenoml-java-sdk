@@ -38,7 +38,7 @@ public final class SearchResponse {
     /**
      * @return The FHIR resource type identified for the search
      */
-    @JsonProperty("resourceType")
+    @JsonProperty("resource_type")
     public Optional<SearchResponseResourceType> getResourceType() {
         return resourceType;
     }
@@ -48,7 +48,7 @@ public final class SearchResponse {
      * Parameters are formatted according to the FHIR specification with appropriate operators.
      * Code parameters are resolved to standard terminology codes (SNOMED CT, LOINC, RxNorm, ICD-10-CM).
      */
-    @JsonProperty("searchParams")
+    @JsonProperty("search_params")
     public Optional<String> getSearchParams() {
         return searchParams;
     }
@@ -102,7 +102,7 @@ public final class SearchResponse {
         /**
          * <p>The FHIR resource type identified for the search</p>
          */
-        @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
+        @JsonSetter(value = "resource_type", nulls = Nulls.SKIP)
         public Builder resourceType(Optional<SearchResponseResourceType> resourceType) {
             this.resourceType = resourceType;
             return this;
@@ -118,7 +118,7 @@ public final class SearchResponse {
          * Parameters are formatted according to the FHIR specification with appropriate operators.
          * Code parameters are resolved to standard terminology codes (SNOMED CT, LOINC, RxNorm, ICD-10-CM).</p>
          */
-        @JsonSetter(value = "searchParams", nulls = Nulls.SKIP)
+        @JsonSetter(value = "search_params", nulls = Nulls.SKIP)
         public Builder searchParams(Optional<String> searchParams) {
             this.searchParams = searchParams;
             return this;

@@ -11,7 +11,6 @@ import com.phenoml.api.resources.agent.prompts.types.PromptsDeleteResponse;
 import com.phenoml.api.resources.agent.prompts.types.PromptsListResponse;
 import com.phenoml.api.resources.agent.types.AgentPromptsResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
-import com.phenoml.api.resources.agent.types.SuccessResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -131,19 +130,5 @@ public class AsyncPromptsClient {
     public CompletableFuture<AgentPromptsResponse> patch(
             String id, List<JsonPatchOperation> request, RequestOptions requestOptions) {
         return this.rawClient.patch(id, request, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Loads default agent prompts for the authenticated user
-     */
-    public CompletableFuture<SuccessResponse> loadDefaults() {
-        return this.rawClient.loadDefaults().thenApply(response -> response.body());
-    }
-
-    /**
-     * Loads default agent prompts for the authenticated user
-     */
-    public CompletableFuture<SuccessResponse> loadDefaults(RequestOptions requestOptions) {
-        return this.rawClient.loadDefaults(requestOptions).thenApply(response -> response.body());
     }
 }

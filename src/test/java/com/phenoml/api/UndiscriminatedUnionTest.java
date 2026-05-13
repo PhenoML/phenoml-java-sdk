@@ -9,7 +9,6 @@ import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.fhir.types.FhirBundle;
 import com.phenoml.api.resources.fhir.types.FhirResource;
 import com.phenoml.api.resources.fhir.types.FhirSearchResponse;
-import com.phenoml.api.resources.summary.types.CreateSummaryRequestFhirResources;
 import org.junit.jupiter.api.Test;
 
 public final class UndiscriminatedUnionTest {
@@ -25,25 +24,5 @@ public final class UndiscriminatedUnionTest {
         String json = "{\"resourceType\":\"test\"}";
         FhirSearchResponse union = ObjectMappers.JSON_MAPPER.readValue(json, FhirSearchResponse.class);
         assertTrue(union.get() instanceof FhirResource, "Expected FhirResource but got different variant");
-    }
-
-    @Test
-    public void testCreateSummaryRequestFhirResources_FhirResource() throws Exception {
-        String json = "{\"resourceType\":\"test\"}";
-        CreateSummaryRequestFhirResources union =
-                ObjectMappers.JSON_MAPPER.readValue(json, CreateSummaryRequestFhirResources.class);
-        assertTrue(
-                union.get() instanceof com.phenoml.api.resources.summary.types.FhirResource,
-                "Expected FhirResource but got different variant");
-    }
-
-    @Test
-    public void testCreateSummaryRequestFhirResources_FhirBundle() throws Exception {
-        String json = "{\"entry\":[]}";
-        CreateSummaryRequestFhirResources union =
-                ObjectMappers.JSON_MAPPER.readValue(json, CreateSummaryRequestFhirResources.class);
-        assertTrue(
-                union.get() instanceof com.phenoml.api.resources.summary.types.FhirBundle,
-                "Expected FhirBundle but got different variant");
     }
 }
