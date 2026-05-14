@@ -973,6 +973,31 @@
       },
       "sdkCallSource": "client.construe()\n                .listCodesInACodeSystem(\n                        \"ICD-10-CM\",\n                        GetConstrueCodesCodesystemRequest.builder()\n                                .version(\"2025\")\n                                .cursor(\"cursor\")\n                                .limit(1)\n                                .build())"
     },
+    "GET /construe/codes/{codesystem}/{code_id}": {
+      "httpMethod": "GET",
+      "httpPath": "/construe/codes/{codesystem}/{code_id}",
+      "sdkMethodChain": [
+        "construe",
+        "getASpecificCode"
+      ],
+      "sdkMethodName": "getASpecificCode",
+      "request": {
+        "body": null,
+        "sdkCallArgs": []
+      },
+      "response": {
+        "body": {
+          "system": {
+            "name": "ICD-10-CM",
+            "version": "2025"
+          },
+          "code": "E1165",
+          "description": "Type 2 diabetes mellitus with hyperglycemia",
+          "definition": "definition"
+        }
+      },
+      "sdkCallSource": "client.construe()\n                .getASpecificCode(\n                        \"ICD-10-CM\",\n                        \"E1165\",\n                        GetConstrueCodesCodesystemCodeIdRequest.builder()\n                                .version(\"version\")\n                                .build())"
+    },
     "GET /construe/codes/{codesystem}/search/semantic": {
       "httpMethod": "GET",
       "httpPath": "/construe/codes/{codesystem}/search/semantic",
