@@ -1,3 +1,9 @@
+## 15.0.0 - 2026-05-15
+### Breaking Changes
+* **`ToolsClient.call()`** and **`AsyncToolsClient.call()`** — the `call(String, McpServerToolCallRequest)` and `call(String, McpServerToolCallRequest, RequestOptions)` overloads have been removed from `ToolsClient`, `AsyncToolsClient`, `RawToolsClient`, and `AsyncRawToolsClient`; remove any calls to these methods from your code.
+* **`McpServerToolCallRequest`** — deleted from the `tools.mcpserver.tools.requests` package; remove all references and builder chains using this type.
+* **`McpServerToolCallResponse`** — deleted from the `tools.types` package; remove all references to this type and update any variable declarations or return-type usages accordingly.
+
 ## 14.0.0 - 2026-05-13
 ### Breaking Changes
 * **`PromptsClient.loadDefaults()`** — removed from `PromptsClient`, `AsyncPromptsClient`, `RawPromptsClient`, and `AsyncRawPromptsClient`; remove any calls to these methods.
