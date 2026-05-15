@@ -108,7 +108,7 @@ public final class AgentStreamChatRequest {
     }
 
     /**
-     * @return Enable enhanced reasoning capabilities, will increase latency but will also improve response quality and reliability.
+     * @return Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.
      */
     @JsonProperty("enhanced_reasoning")
     public Optional<Boolean> getEnhancedReasoning() {
@@ -211,7 +211,7 @@ public final class AgentStreamChatRequest {
         _FinalStage sessionId(String sessionId);
 
         /**
-         * <p>Enable enhanced reasoning capabilities, will increase latency but will also improve response quality and reliability.</p>
+         * <p>Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.</p>
          */
         _FinalStage enhancedReasoning(Optional<Boolean> enhancedReasoning);
 
@@ -276,7 +276,7 @@ public final class AgentStreamChatRequest {
         }
 
         /**
-         * <p>Enable enhanced reasoning capabilities, will increase latency but will also improve response quality and reliability.</p>
+         * <p>Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -286,7 +286,7 @@ public final class AgentStreamChatRequest {
         }
 
         /**
-         * <p>Enable enhanced reasoning capabilities, will increase latency but will also improve response quality and reliability.</p>
+         * <p>Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "enhanced_reasoning", nulls = Nulls.SKIP)

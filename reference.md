@@ -501,7 +501,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 <dl>
 <dd>
 
-**enhancedReasoning:** `Optional<Boolean>` — Enable enhanced reasoning capabilities, will increase latency but will also improve response quality and reliability.
+**enhancedReasoning:** `Optional<Boolean>` — Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.
     
 </dd>
 </dl>
@@ -620,7 +620,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 <dl>
 <dd>
 
-**enhancedReasoning:** `Optional<Boolean>` — Enable enhanced reasoning capabilities, will increase latency but will also improve response quality and reliability.
+**enhancedReasoning:** `Optional<Boolean>` — Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.
     
 </dd>
 </dl>
@@ -5321,78 +5321,6 @@ client.tools().mcpServer().tools().delete("mcp_server_tool_id");
 <dd>
 
 **mcpServerToolId:** `String` — ID of the MCP server tool to delete
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.tools.mcpServer.tools.call(mcpServerToolId, request) -> McpServerToolCallResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Calls a MCP server tool
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.tools().mcpServer().tools().call(
-    "mcp_server_tool_id",
-    McpServerToolCallRequest
-        .builder()
-        .arguments(
-            new HashMap<String, Object>() {{
-                put("title", "PhenoML Agent API");
-            }}
-        )
-        .build()
-);
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**mcpServerToolId:** `String` — ID of the MCP server tool to call
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**arguments:** `Map<String, Object>` — Arguments to pass to the MCP server tool
     
 </dd>
 </dl>
