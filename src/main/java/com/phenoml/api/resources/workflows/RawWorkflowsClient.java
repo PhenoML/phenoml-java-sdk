@@ -14,6 +14,7 @@ import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.workflows.errors.BadRequestError;
 import com.phenoml.api.resources.workflows.errors.ForbiddenError;
+import com.phenoml.api.resources.workflows.errors.GatewayTimeoutError;
 import com.phenoml.api.resources.workflows.errors.InternalServerError;
 import com.phenoml.api.resources.workflows.errors.NotFoundError;
 import com.phenoml.api.resources.workflows.errors.UnauthorizedError;
@@ -488,6 +489,9 @@ public class RawWorkflowsClient {
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 500:
                         throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 504:
+                        throw new GatewayTimeoutError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                 }
             } catch (JsonProcessingException ignored) {

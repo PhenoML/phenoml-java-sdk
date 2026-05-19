@@ -1,3 +1,7 @@
+## 15.1.0 - 2026-05-19
+### Added
+* **`GatewayTimeoutError`** — new exception class in the `workflows.errors` package that is thrown when the server returns an HTTP 504 Gateway Timeout response, allowing callers to catch and handle timeout scenarios explicitly in both synchronous (`RawWorkflowsClient`) and asynchronous (`AsyncRawWorkflowsClient`) workflows clients.
+
 ## 15.0.0 - 2026-05-15
 ### Breaking Changes
 * **`ToolsClient.call()`** and **`AsyncToolsClient.call()`** — the `call(String, McpServerToolCallRequest)` and `call(String, McpServerToolCallRequest, RequestOptions)` overloads have been removed from `ToolsClient`, `AsyncToolsClient`, `RawToolsClient`, and `AsyncRawToolsClient`; remove any calls to these methods from your code.
