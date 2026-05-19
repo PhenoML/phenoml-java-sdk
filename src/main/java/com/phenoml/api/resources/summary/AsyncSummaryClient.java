@@ -4,130 +4,29 @@
 package com.phenoml.api.resources.summary;
 
 import com.phenoml.api.core.ClientOptions;
-import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.resources.summary.requests.CreateSummaryRequest;
-import com.phenoml.api.resources.summary.requests.CreateSummaryTemplateRequest;
-import com.phenoml.api.resources.summary.requests.UpdateSummaryTemplateRequest;
-import com.phenoml.api.resources.summary.types.CreateSummaryResponse;
-import com.phenoml.api.resources.summary.types.CreateSummaryTemplateResponse;
-import com.phenoml.api.resources.summary.types.SummaryDeleteTemplateResponse;
-import com.phenoml.api.resources.summary.types.SummaryGetTemplateResponse;
-import com.phenoml.api.resources.summary.types.SummaryListTemplatesResponse;
-import com.phenoml.api.resources.summary.types.SummaryUpdateTemplateResponse;
-import java.util.concurrent.CompletableFuture;
+import com.phenoml.api.core.Suppliers;
+import com.phenoml.api.resources.summary.summarygeneration.AsyncSummaryGenerationClient;
+import com.phenoml.api.resources.summary.summarytemplates.AsyncSummaryTemplatesClient;
+import java.util.function.Supplier;
 
 public class AsyncSummaryClient {
     protected final ClientOptions clientOptions;
 
-    private final AsyncRawSummaryClient rawClient;
+    protected final Supplier<AsyncSummaryTemplatesClient> summaryTemplatesClient;
+
+    protected final Supplier<AsyncSummaryGenerationClient> summaryGenerationClient;
 
     public AsyncSummaryClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawSummaryClient(clientOptions);
+        this.summaryTemplatesClient = Suppliers.memoize(() -> new AsyncSummaryTemplatesClient(clientOptions));
+        this.summaryGenerationClient = Suppliers.memoize(() -> new AsyncSummaryGenerationClient(clientOptions));
     }
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawSummaryClient withRawResponse() {
-        return this.rawClient;
+    public AsyncSummaryTemplatesClient summaryTemplates() {
+        return this.summaryTemplatesClient.get();
     }
 
-    /**
-     * Retrieves all summary templates for the authenticated user
-     */
-    public CompletableFuture<SummaryListTemplatesResponse> listTemplates() {
-        return this.rawClient.listTemplates().thenApply(response -> response.body());
-    }
-
-    /**
-     * Retrieves all summary templates for the authenticated user
-     */
-    public CompletableFuture<SummaryListTemplatesResponse> listTemplates(RequestOptions requestOptions) {
-        return this.rawClient.listTemplates(requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Creates a summary template from an example using LLM function calling
-     */
-    public CompletableFuture<CreateSummaryTemplateResponse> createTemplate(CreateSummaryTemplateRequest request) {
-        return this.rawClient.createTemplate(request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Creates a summary template from an example using LLM function calling
-     */
-    public CompletableFuture<CreateSummaryTemplateResponse> createTemplate(
-            CreateSummaryTemplateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createTemplate(request, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Retrieves a specific summary template
-     */
-    public CompletableFuture<SummaryGetTemplateResponse> getTemplate(String id) {
-        return this.rawClient.getTemplate(id).thenApply(response -> response.body());
-    }
-
-    /**
-     * Retrieves a specific summary template
-     */
-    public CompletableFuture<SummaryGetTemplateResponse> getTemplate(String id, RequestOptions requestOptions) {
-        return this.rawClient.getTemplate(id, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Updates an existing summary template
-     */
-    public CompletableFuture<SummaryUpdateTemplateResponse> updateTemplate(
-            String id, UpdateSummaryTemplateRequest request) {
-        return this.rawClient.updateTemplate(id, request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Updates an existing summary template
-     */
-    public CompletableFuture<SummaryUpdateTemplateResponse> updateTemplate(
-            String id, UpdateSummaryTemplateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateTemplate(id, request, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Deletes a summary template
-     */
-    public CompletableFuture<SummaryDeleteTemplateResponse> deleteTemplate(String id) {
-        return this.rawClient.deleteTemplate(id).thenApply(response -> response.body());
-    }
-
-    /**
-     * Deletes a summary template
-     */
-    public CompletableFuture<SummaryDeleteTemplateResponse> deleteTemplate(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteTemplate(id, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Creates a summary from FHIR resources using one of three modes:
-     * <ul>
-     * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
-     * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
-     * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
-     * </ul>
-     */
-    public CompletableFuture<CreateSummaryResponse> create(CreateSummaryRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Creates a summary from FHIR resources using one of three modes:
-     * <ul>
-     * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
-     * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
-     * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
-     * </ul>
-     */
-    public CompletableFuture<CreateSummaryResponse> create(
-            CreateSummaryRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
+    public AsyncSummaryGenerationClient summaryGeneration() {
+        return this.summaryGenerationClient.get();
     }
 }

@@ -1,3 +1,7 @@
+## 15.0.1 - 2026-05-19
+* SDK regeneration
+* Unable to analyze changes with AI, incrementing PATCH version.
+
 ## 15.0.0 - 2026-05-15
 ### Breaking Changes
 * **`ToolsClient.call()`** and **`AsyncToolsClient.call()`** — the `call(String, McpServerToolCallRequest)` and `call(String, McpServerToolCallRequest, RequestOptions)` overloads have been removed from `ToolsClient`, `AsyncToolsClient`, `RawToolsClient`, and `AsyncRawToolsClient`; remove any calls to these methods from your code.

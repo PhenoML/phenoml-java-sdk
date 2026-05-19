@@ -22,17 +22,16 @@ import com.phenoml.api.resources.construe.errors.NotFoundError;
 import com.phenoml.api.resources.construe.errors.NotImplementedError;
 import com.phenoml.api.resources.construe.errors.ServiceUnavailableError;
 import com.phenoml.api.resources.construe.errors.UnauthorizedError;
-import com.phenoml.api.resources.construe.requests.DeleteConstrueCodesSystemsCodesystemRequest;
+import com.phenoml.api.resources.construe.requests.DeleteCodeSystemRequest;
+import com.phenoml.api.resources.construe.requests.ExportCodeSystemRequest;
 import com.phenoml.api.resources.construe.requests.ExtractRequest;
 import com.phenoml.api.resources.construe.requests.FeedbackRequest;
-import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCodeIdRequest;
-import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
-import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
-import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
-import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemExportRequest;
-import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
+import com.phenoml.api.resources.construe.requests.GetCodeRequest;
+import com.phenoml.api.resources.construe.requests.GetCodeSystemRequest;
+import com.phenoml.api.resources.construe.requests.ListCodesRequest;
+import com.phenoml.api.resources.construe.requests.SearchSemanticRequest;
+import com.phenoml.api.resources.construe.requests.SearchTextRequest;
 import com.phenoml.api.resources.construe.requests.UploadRequest;
-import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExportCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
@@ -43,6 +42,7 @@ import com.phenoml.api.resources.construe.types.ListCodeSystemsResponse;
 import com.phenoml.api.resources.construe.types.ListCodesResponse;
 import com.phenoml.api.resources.construe.types.SemanticSearchResponse;
 import com.phenoml.api.resources.construe.types.TextSearchResponse;
+import com.phenoml.api.resources.construe.types.UploadCodeSystemResponse;
 import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -65,7 +65,7 @@ public class RawConstrueClient {
      * GET /construe/codes/systems/{codesystem}?version={version} to check when status
      * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
-    public PhenomlClientHttpResponse<ConstrueUploadCodeSystemResponse> uploadCodeSystem(UploadRequest request) {
+    public PhenomlClientHttpResponse<UploadCodeSystemResponse> uploadCodeSystem(UploadRequest request) {
         return uploadCodeSystem(request, null);
     }
 
@@ -75,7 +75,7 @@ public class RawConstrueClient {
      * GET /construe/codes/systems/{codesystem}?version={version} to check when status
      * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
-    public PhenomlClientHttpResponse<ConstrueUploadCodeSystemResponse> uploadCodeSystem(
+    public PhenomlClientHttpResponse<UploadCodeSystemResponse> uploadCodeSystem(
             UploadRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -108,7 +108,7 @@ public class RawConstrueClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ConstrueUploadCodeSystemResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadCodeSystemResponse.class),
                         response);
             }
             try {
@@ -225,14 +225,14 @@ public class RawConstrueClient {
     /**
      * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
-    public PhenomlClientHttpResponse<ListCodeSystemsResponse> listAvailableCodeSystems() {
-        return listAvailableCodeSystems(null);
+    public PhenomlClientHttpResponse<ListCodeSystemsResponse> listCodeSystems() {
+        return listCodeSystems(null);
     }
 
     /**
      * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
-    public PhenomlClientHttpResponse<ListCodeSystemsResponse> listAvailableCodeSystems(RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<ListCodeSystemsResponse> listCodeSystems(RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/codes/systems");
@@ -282,33 +282,31 @@ public class RawConstrueClient {
     /**
      * Returns full metadata for a single code system, including timestamps and builtin status.
      */
-    public PhenomlClientHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(String codesystem) {
-        return getCodeSystemDetail(
-                codesystem, GetConstrueCodesSystemsCodesystemRequest.builder().build());
+    public PhenomlClientHttpResponse<GetCodeSystemDetailResponse> getCodeSystem(String codesystem) {
+        return getCodeSystem(codesystem, GetCodeSystemRequest.builder().build());
     }
 
     /**
      * Returns full metadata for a single code system, including timestamps and builtin status.
      */
-    public PhenomlClientHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(
+    public PhenomlClientHttpResponse<GetCodeSystemDetailResponse> getCodeSystem(
             String codesystem, RequestOptions requestOptions) {
-        return getCodeSystemDetail(
-                codesystem, GetConstrueCodesSystemsCodesystemRequest.builder().build(), requestOptions);
+        return getCodeSystem(codesystem, GetCodeSystemRequest.builder().build(), requestOptions);
     }
 
     /**
      * Returns full metadata for a single code system, including timestamps and builtin status.
      */
-    public PhenomlClientHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(
-            String codesystem, GetConstrueCodesSystemsCodesystemRequest request) {
-        return getCodeSystemDetail(codesystem, request, null);
+    public PhenomlClientHttpResponse<GetCodeSystemDetailResponse> getCodeSystem(
+            String codesystem, GetCodeSystemRequest request) {
+        return getCodeSystem(codesystem, request, null);
     }
 
     /**
      * Returns full metadata for a single code system, including timestamps and builtin status.
      */
-    public PhenomlClientHttpResponse<GetCodeSystemDetailResponse> getCodeSystemDetail(
-            String codesystem, GetConstrueCodesSystemsCodesystemRequest request, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<GetCodeSystemDetailResponse> getCodeSystem(
+            String codesystem, GetCodeSystemRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/codes/systems")
@@ -370,39 +368,34 @@ public class RawConstrueClient {
      * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
      * Only available on dedicated instances. Large systems may take up to a minute to delete.
      */
-    public PhenomlClientHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(String codesystem) {
-        return deleteCustomCodeSystem(
-                codesystem,
-                DeleteConstrueCodesSystemsCodesystemRequest.builder().build());
+    public PhenomlClientHttpResponse<DeleteCodeSystemResponse> deleteCodeSystem(String codesystem) {
+        return deleteCodeSystem(codesystem, DeleteCodeSystemRequest.builder().build());
     }
 
     /**
      * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
      * Only available on dedicated instances. Large systems may take up to a minute to delete.
      */
-    public PhenomlClientHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(
+    public PhenomlClientHttpResponse<DeleteCodeSystemResponse> deleteCodeSystem(
             String codesystem, RequestOptions requestOptions) {
-        return deleteCustomCodeSystem(
-                codesystem,
-                DeleteConstrueCodesSystemsCodesystemRequest.builder().build(),
-                requestOptions);
+        return deleteCodeSystem(codesystem, DeleteCodeSystemRequest.builder().build(), requestOptions);
     }
 
     /**
      * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
      * Only available on dedicated instances. Large systems may take up to a minute to delete.
      */
-    public PhenomlClientHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(
-            String codesystem, DeleteConstrueCodesSystemsCodesystemRequest request) {
-        return deleteCustomCodeSystem(codesystem, request, null);
+    public PhenomlClientHttpResponse<DeleteCodeSystemResponse> deleteCodeSystem(
+            String codesystem, DeleteCodeSystemRequest request) {
+        return deleteCodeSystem(codesystem, request, null);
     }
 
     /**
      * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
      * Only available on dedicated instances. Large systems may take up to a minute to delete.
      */
-    public PhenomlClientHttpResponse<DeleteCodeSystemResponse> deleteCustomCodeSystem(
-            String codesystem, DeleteConstrueCodesSystemsCodesystemRequest request, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<DeleteCodeSystemResponse> deleteCodeSystem(
+            String codesystem, DeleteCodeSystemRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/codes/systems")
@@ -468,10 +461,8 @@ public class RawConstrueClient {
      * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
      * Only available on dedicated instances. Builtin systems cannot be exported.
      */
-    public PhenomlClientHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(String codesystem) {
-        return exportCustomCodeSystem(
-                codesystem,
-                GetConstrueCodesSystemsCodesystemExportRequest.builder().build());
+    public PhenomlClientHttpResponse<ExportCodeSystemResponse> exportCodeSystem(String codesystem) {
+        return exportCodeSystem(codesystem, ExportCodeSystemRequest.builder().build());
     }
 
     /**
@@ -479,12 +470,9 @@ public class RawConstrueClient {
      * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
      * Only available on dedicated instances. Builtin systems cannot be exported.
      */
-    public PhenomlClientHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(
+    public PhenomlClientHttpResponse<ExportCodeSystemResponse> exportCodeSystem(
             String codesystem, RequestOptions requestOptions) {
-        return exportCustomCodeSystem(
-                codesystem,
-                GetConstrueCodesSystemsCodesystemExportRequest.builder().build(),
-                requestOptions);
+        return exportCodeSystem(codesystem, ExportCodeSystemRequest.builder().build(), requestOptions);
     }
 
     /**
@@ -492,9 +480,9 @@ public class RawConstrueClient {
      * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
      * Only available on dedicated instances. Builtin systems cannot be exported.
      */
-    public PhenomlClientHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(
-            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request) {
-        return exportCustomCodeSystem(codesystem, request, null);
+    public PhenomlClientHttpResponse<ExportCodeSystemResponse> exportCodeSystem(
+            String codesystem, ExportCodeSystemRequest request) {
+        return exportCodeSystem(codesystem, request, null);
     }
 
     /**
@@ -502,8 +490,8 @@ public class RawConstrueClient {
      * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
      * Only available on dedicated instances. Builtin systems cannot be exported.
      */
-    public PhenomlClientHttpResponse<ExportCodeSystemResponse> exportCustomCodeSystem(
-            String codesystem, GetConstrueCodesSystemsCodesystemExportRequest request, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<ExportCodeSystemResponse> exportCodeSystem(
+            String codesystem, ExportCodeSystemRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/codes/systems")
@@ -575,36 +563,32 @@ public class RawConstrueClient {
      * Returns a paginated list of all codes in the specified code system from the terminology server.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenomlClientHttpResponse<ListCodesResponse> listCodesInACodeSystem(String codesystem) {
-        return listCodesInACodeSystem(
-                codesystem, GetConstrueCodesCodesystemRequest.builder().build());
+    public PhenomlClientHttpResponse<ListCodesResponse> listCodes(String codesystem) {
+        return listCodes(codesystem, ListCodesRequest.builder().build());
     }
 
     /**
      * Returns a paginated list of all codes in the specified code system from the terminology server.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenomlClientHttpResponse<ListCodesResponse> listCodesInACodeSystem(
-            String codesystem, RequestOptions requestOptions) {
-        return listCodesInACodeSystem(
-                codesystem, GetConstrueCodesCodesystemRequest.builder().build(), requestOptions);
+    public PhenomlClientHttpResponse<ListCodesResponse> listCodes(String codesystem, RequestOptions requestOptions) {
+        return listCodes(codesystem, ListCodesRequest.builder().build(), requestOptions);
     }
 
     /**
      * Returns a paginated list of all codes in the specified code system from the terminology server.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenomlClientHttpResponse<ListCodesResponse> listCodesInACodeSystem(
-            String codesystem, GetConstrueCodesCodesystemRequest request) {
-        return listCodesInACodeSystem(codesystem, request, null);
+    public PhenomlClientHttpResponse<ListCodesResponse> listCodes(String codesystem, ListCodesRequest request) {
+        return listCodes(codesystem, request, null);
     }
 
     /**
      * Returns a paginated list of all codes in the specified code system from the terminology server.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenomlClientHttpResponse<ListCodesResponse> listCodesInACodeSystem(
-            String codesystem, GetConstrueCodesCodesystemRequest request, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<ListCodesResponse> listCodes(
+            String codesystem, ListCodesRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/codes")
@@ -673,44 +657,34 @@ public class RawConstrueClient {
      * Looks up a specific code in the terminology server and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenomlClientHttpResponse<GetCodeResponse> getASpecificCode(String codesystem, String codeId) {
-        return getASpecificCode(
-                codesystem,
-                codeId,
-                GetConstrueCodesCodesystemCodeIdRequest.builder().build());
+    public PhenomlClientHttpResponse<GetCodeResponse> getCode(String codesystem, String codeId) {
+        return getCode(codesystem, codeId, GetCodeRequest.builder().build());
     }
 
     /**
      * Looks up a specific code in the terminology server and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenomlClientHttpResponse<GetCodeResponse> getASpecificCode(
+    public PhenomlClientHttpResponse<GetCodeResponse> getCode(
             String codesystem, String codeId, RequestOptions requestOptions) {
-        return getASpecificCode(
-                codesystem,
-                codeId,
-                GetConstrueCodesCodesystemCodeIdRequest.builder().build(),
-                requestOptions);
+        return getCode(codesystem, codeId, GetCodeRequest.builder().build(), requestOptions);
     }
 
     /**
      * Looks up a specific code in the terminology server and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenomlClientHttpResponse<GetCodeResponse> getASpecificCode(
-            String codesystem, String codeId, GetConstrueCodesCodesystemCodeIdRequest request) {
-        return getASpecificCode(codesystem, codeId, request, null);
+    public PhenomlClientHttpResponse<GetCodeResponse> getCode(
+            String codesystem, String codeId, GetCodeRequest request) {
+        return getCode(codesystem, codeId, request, null);
     }
 
     /**
      * Looks up a specific code in the terminology server and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenomlClientHttpResponse<GetCodeResponse> getASpecificCode(
-            String codesystem,
-            String codeId,
-            GetConstrueCodesCodesystemCodeIdRequest request,
-            RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<GetCodeResponse> getCode(
+            String codesystem, String codeId, GetCodeRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/codes")
@@ -785,9 +759,9 @@ public class RawConstrueClient {
      * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenomlClientHttpResponse<SemanticSearchResponse> semanticSearchEmbeddingBased(
-            String codesystem, GetConstrueCodesCodesystemSearchSemanticRequest request) {
-        return semanticSearchEmbeddingBased(codesystem, request, null);
+    public PhenomlClientHttpResponse<SemanticSearchResponse> searchSemantic(
+            String codesystem, SearchSemanticRequest request) {
+        return searchSemantic(codesystem, request, null);
     }
 
     /**
@@ -807,8 +781,8 @@ public class RawConstrueClient {
      * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenomlClientHttpResponse<SemanticSearchResponse> semanticSearchEmbeddingBased(
-            String codesystem, GetConstrueCodesCodesystemSearchSemanticRequest request, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<SemanticSearchResponse> searchSemantic(
+            String codesystem, SearchSemanticRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/codes")
@@ -877,15 +851,15 @@ public class RawConstrueClient {
      * Submits user feedback on results from the Construe extraction endpoint.
      * Feedback includes the full extraction result received and the result the user expected.
      */
-    public PhenomlClientHttpResponse<FeedbackResponse> submitFeedbackOnExtractionResults(FeedbackRequest request) {
-        return submitFeedbackOnExtractionResults(request, null);
+    public PhenomlClientHttpResponse<FeedbackResponse> submitFeedback(FeedbackRequest request) {
+        return submitFeedback(request, null);
     }
 
     /**
      * Submits user feedback on results from the Construe extraction endpoint.
      * Feedback includes the full extraction result received and the result the user expected.
      */
-    public PhenomlClientHttpResponse<FeedbackResponse> submitFeedbackOnExtractionResults(
+    public PhenomlClientHttpResponse<FeedbackResponse> submitFeedback(
             FeedbackRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -969,9 +943,8 @@ public class RawConstrueClient {
      * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenomlClientHttpResponse<TextSearchResponse> terminologyServerTextSearch(
-            String codesystem, GetConstrueCodesCodesystemSearchTextRequest request) {
-        return terminologyServerTextSearch(codesystem, request, null);
+    public PhenomlClientHttpResponse<TextSearchResponse> searchText(String codesystem, SearchTextRequest request) {
+        return searchText(codesystem, request, null);
     }
 
     /**
@@ -997,8 +970,8 @@ public class RawConstrueClient {
      * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    public PhenomlClientHttpResponse<TextSearchResponse> terminologyServerTextSearch(
-            String codesystem, GetConstrueCodesCodesystemSearchTextRequest request, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<TextSearchResponse> searchText(
+            String codesystem, SearchTextRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/codes")

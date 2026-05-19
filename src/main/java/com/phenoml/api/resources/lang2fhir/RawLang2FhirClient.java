@@ -26,8 +26,8 @@ import com.phenoml.api.resources.lang2fhir.requests.ProfileUploadRequest;
 import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.DocumentMultiResponse;
-import com.phenoml.api.resources.lang2fhir.types.Lang2FhirUploadProfileResponse;
 import com.phenoml.api.resources.lang2fhir.types.SearchResponse;
+import com.phenoml.api.resources.lang2fhir.types.UploadProfileResponse;
 import java.io.IOException;
 import java.util.Map;
 import okhttp3.Headers;
@@ -284,7 +284,7 @@ public class RawLang2FhirClient {
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
      */
-    public PhenomlClientHttpResponse<Lang2FhirUploadProfileResponse> uploadProfile(ProfileUploadRequest request) {
+    public PhenomlClientHttpResponse<UploadProfileResponse> uploadProfile(ProfileUploadRequest request) {
         return uploadProfile(request, null);
     }
 
@@ -300,7 +300,7 @@ public class RawLang2FhirClient {
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
      */
-    public PhenomlClientHttpResponse<Lang2FhirUploadProfileResponse> uploadProfile(
+    public PhenomlClientHttpResponse<UploadProfileResponse> uploadProfile(
             ProfileUploadRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -333,8 +333,7 @@ public class RawLang2FhirClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Lang2FhirUploadProfileResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadProfileResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -441,9 +440,8 @@ public class RawLang2FhirClient {
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
-    public PhenomlClientHttpResponse<DocumentMultiResponse> extractMultipleFhirResourcesFromADocument(
-            DocumentMultiRequest request) {
-        return extractMultipleFhirResourcesFromADocument(request, null);
+    public PhenomlClientHttpResponse<DocumentMultiResponse> documentMulti(DocumentMultiRequest request) {
+        return documentMulti(request, null);
     }
 
     /**
@@ -453,7 +451,7 @@ public class RawLang2FhirClient {
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
-    public PhenomlClientHttpResponse<DocumentMultiResponse> extractMultipleFhirResourcesFromADocument(
+    public PhenomlClientHttpResponse<DocumentMultiResponse> documentMulti(
             DocumentMultiRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()

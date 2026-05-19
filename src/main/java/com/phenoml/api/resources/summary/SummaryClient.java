@@ -4,127 +4,29 @@
 package com.phenoml.api.resources.summary;
 
 import com.phenoml.api.core.ClientOptions;
-import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.resources.summary.requests.CreateSummaryRequest;
-import com.phenoml.api.resources.summary.requests.CreateSummaryTemplateRequest;
-import com.phenoml.api.resources.summary.requests.UpdateSummaryTemplateRequest;
-import com.phenoml.api.resources.summary.types.CreateSummaryResponse;
-import com.phenoml.api.resources.summary.types.CreateSummaryTemplateResponse;
-import com.phenoml.api.resources.summary.types.SummaryDeleteTemplateResponse;
-import com.phenoml.api.resources.summary.types.SummaryGetTemplateResponse;
-import com.phenoml.api.resources.summary.types.SummaryListTemplatesResponse;
-import com.phenoml.api.resources.summary.types.SummaryUpdateTemplateResponse;
+import com.phenoml.api.core.Suppliers;
+import com.phenoml.api.resources.summary.summarygeneration.SummaryGenerationClient;
+import com.phenoml.api.resources.summary.summarytemplates.SummaryTemplatesClient;
+import java.util.function.Supplier;
 
 public class SummaryClient {
     protected final ClientOptions clientOptions;
 
-    private final RawSummaryClient rawClient;
+    protected final Supplier<SummaryTemplatesClient> summaryTemplatesClient;
+
+    protected final Supplier<SummaryGenerationClient> summaryGenerationClient;
 
     public SummaryClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
-        this.rawClient = new RawSummaryClient(clientOptions);
+        this.summaryTemplatesClient = Suppliers.memoize(() -> new SummaryTemplatesClient(clientOptions));
+        this.summaryGenerationClient = Suppliers.memoize(() -> new SummaryGenerationClient(clientOptions));
     }
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawSummaryClient withRawResponse() {
-        return this.rawClient;
+    public SummaryTemplatesClient summaryTemplates() {
+        return this.summaryTemplatesClient.get();
     }
 
-    /**
-     * Retrieves all summary templates for the authenticated user
-     */
-    public SummaryListTemplatesResponse listTemplates() {
-        return this.rawClient.listTemplates().body();
-    }
-
-    /**
-     * Retrieves all summary templates for the authenticated user
-     */
-    public SummaryListTemplatesResponse listTemplates(RequestOptions requestOptions) {
-        return this.rawClient.listTemplates(requestOptions).body();
-    }
-
-    /**
-     * Creates a summary template from an example using LLM function calling
-     */
-    public CreateSummaryTemplateResponse createTemplate(CreateSummaryTemplateRequest request) {
-        return this.rawClient.createTemplate(request).body();
-    }
-
-    /**
-     * Creates a summary template from an example using LLM function calling
-     */
-    public CreateSummaryTemplateResponse createTemplate(
-            CreateSummaryTemplateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createTemplate(request, requestOptions).body();
-    }
-
-    /**
-     * Retrieves a specific summary template
-     */
-    public SummaryGetTemplateResponse getTemplate(String id) {
-        return this.rawClient.getTemplate(id).body();
-    }
-
-    /**
-     * Retrieves a specific summary template
-     */
-    public SummaryGetTemplateResponse getTemplate(String id, RequestOptions requestOptions) {
-        return this.rawClient.getTemplate(id, requestOptions).body();
-    }
-
-    /**
-     * Updates an existing summary template
-     */
-    public SummaryUpdateTemplateResponse updateTemplate(String id, UpdateSummaryTemplateRequest request) {
-        return this.rawClient.updateTemplate(id, request).body();
-    }
-
-    /**
-     * Updates an existing summary template
-     */
-    public SummaryUpdateTemplateResponse updateTemplate(
-            String id, UpdateSummaryTemplateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.updateTemplate(id, request, requestOptions).body();
-    }
-
-    /**
-     * Deletes a summary template
-     */
-    public SummaryDeleteTemplateResponse deleteTemplate(String id) {
-        return this.rawClient.deleteTemplate(id).body();
-    }
-
-    /**
-     * Deletes a summary template
-     */
-    public SummaryDeleteTemplateResponse deleteTemplate(String id, RequestOptions requestOptions) {
-        return this.rawClient.deleteTemplate(id, requestOptions).body();
-    }
-
-    /**
-     * Creates a summary from FHIR resources using one of three modes:
-     * <ul>
-     * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
-     * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
-     * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
-     * </ul>
-     */
-    public CreateSummaryResponse create(CreateSummaryRequest request) {
-        return this.rawClient.create(request).body();
-    }
-
-    /**
-     * Creates a summary from FHIR resources using one of three modes:
-     * <ul>
-     * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
-     * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
-     * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
-     * </ul>
-     */
-    public CreateSummaryResponse create(CreateSummaryRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).body();
+    public SummaryGenerationClient summaryGeneration() {
+        return this.summaryGenerationClient.get();
     }
 }

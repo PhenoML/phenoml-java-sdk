@@ -4,21 +4,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
-import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
-import com.phenoml.api.resources.agent.requests.AgentListRequest;
 import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
+import com.phenoml.api.resources.agent.requests.GetChatMessagesRequest;
+import com.phenoml.api.resources.agent.requests.ListRequest;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
 import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
 import com.phenoml.api.resources.agent.types.AgentCreateRequest;
 import com.phenoml.api.resources.agent.types.AgentCreateRequestProvider;
-import com.phenoml.api.resources.agent.types.AgentDeleteResponse;
-import com.phenoml.api.resources.agent.types.AgentGetChatMessagesRequestOrder;
-import com.phenoml.api.resources.agent.types.AgentGetChatMessagesRequestRole;
-import com.phenoml.api.resources.agent.types.AgentGetChatMessagesResponse;
-import com.phenoml.api.resources.agent.types.AgentListResponse;
 import com.phenoml.api.resources.agent.types.AgentResponse;
+import com.phenoml.api.resources.agent.types.DeleteResponse;
+import com.phenoml.api.resources.agent.types.GetChatMessagesRequestOrder;
+import com.phenoml.api.resources.agent.types.GetChatMessagesRequestRole;
+import com.phenoml.api.resources.agent.types.GetChatMessagesResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
 import com.phenoml.api.resources.agent.types.JsonPatchOperationOp;
+import com.phenoml.api.resources.agent.types.ListResponse;
 import java.util.Arrays;
 import java.util.Optional;
 import okhttp3.mockwebserver.MockResponse;
@@ -190,8 +190,8 @@ public class AgentWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody(TestResources.loadResource("/wire-tests/AgentWireTest_testList_response.json")));
-        AgentListResponse response =
-                client.agent().list(AgentListRequest.builder().tags("tags").build());
+        ListResponse response =
+                client.agent().list(ListRequest.builder().tags("tags").build());
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -469,7 +469,7 @@ public class AgentWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"success\":true,\"message\":\"Agent deleted successfully\"}"));
-        AgentDeleteResponse response = client.agent().delete("id");
+        DeleteResponse response = client.agent().delete("id");
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -865,12 +865,12 @@ public class AgentWireTest {
                         .setResponseCode(200)
                         .setBody(
                                 "{\"messages\":[{\"id\":\"message_001\",\"session_id\":\"session_123\",\"role\":\"user\",\"content\":\"What is the patient's current condition?\",\"created\":\"2025-03-01T14:00:00Z\",\"updated\":\"2025-03-01T14:00:00Z\",\"function_name\":\"get_patient_info\",\"function_args\":{\"patient_id\":\"123\"},\"function_result\":{\"name\":\"John Doe\"},\"message_order\":1},{\"id\":\"message_002\",\"session_id\":\"session_123\",\"role\":\"assistant\",\"content\":\"Based on the patient records, they have been diagnosed with Type 2 Diabetes Mellitus (ICD-10: E11.65).\",\"created\":\"2025-03-01T14:00:02Z\",\"updated\":\"2025-03-01T14:00:02Z\",\"function_name\":\"get_patient_info\",\"function_args\":{\"patient_id\":\"123\"},\"function_result\":{\"name\":\"John Doe\"},\"message_order\":2}],\"total\":2,\"session_id\":\"session_123\"}"));
-        AgentGetChatMessagesResponse response = client.agent()
-                .getChatMessages(AgentGetChatMessagesRequest.builder()
+        GetChatMessagesResponse response = client.agent()
+                .getChatMessages(GetChatMessagesRequest.builder()
                         .chatSessionId("chat_session_id")
                         .numMessages(1)
-                        .role(AgentGetChatMessagesRequestRole.USER)
-                        .order(AgentGetChatMessagesRequestOrder.ASC)
+                        .role(GetChatMessagesRequestRole.USER)
+                        .order(GetChatMessagesRequestOrder.ASC)
                         .build());
         // OAuth: consume the token request
         server.takeRequest();

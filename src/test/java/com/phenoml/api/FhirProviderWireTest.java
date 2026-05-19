@@ -7,13 +7,13 @@ import com.phenoml.api.resources.fhirprovider.requests.FhirProviderCreateRequest
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderRemoveAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderSetActiveAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.types.ClientSecretAuth;
+import com.phenoml.api.resources.fhirprovider.types.DeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderAddAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderCreateRequestAuth;
-import com.phenoml.api.resources.fhirprovider.types.FhirProviderDeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderListResponse;
-import com.phenoml.api.resources.fhirprovider.types.FhirProviderRemoveAuthConfigResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderResponse;
 import com.phenoml.api.resources.fhirprovider.types.Provider;
+import com.phenoml.api.resources.fhirprovider.types.RemoveAuthConfigResponse;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -274,7 +274,7 @@ public class FhirProviderWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"success\":true,\"message\":\"Fhir provider deleted successfully\"}"));
-        FhirProviderDeleteResponse response = client.fhirProvider().delete("fhir_provider_id");
+        DeleteResponse response = client.fhirProvider().delete("fhir_provider_id");
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -525,7 +525,7 @@ public class FhirProviderWireTest {
                 .setResponseCode(200)
                 .setBody(TestResources.loadResource(
                         "/wire-tests/FhirProviderWireTest_testRemoveAuthConfig_response.json")));
-        FhirProviderRemoveAuthConfigResponse response = client.fhirProvider()
+        RemoveAuthConfigResponse response = client.fhirProvider()
                 .removeAuthConfig(
                         "1716d214-de93-43a4-aa6b-a878d864e2ad",
                         FhirProviderRemoveAuthConfigRequest.builder()

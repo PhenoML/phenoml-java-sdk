@@ -6,23 +6,23 @@ package com.phenoml.api;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.resources.fhir.fhiroperations.types.SearchResponse;
 import com.phenoml.api.resources.fhir.types.FhirBundle;
 import com.phenoml.api.resources.fhir.types.FhirResource;
-import com.phenoml.api.resources.fhir.types.FhirSearchResponse;
 import org.junit.jupiter.api.Test;
 
 public final class UndiscriminatedUnionTest {
     @Test
-    public void testFhirSearchResponse_FhirBundle() throws Exception {
+    public void testSearchResponse_FhirBundle() throws Exception {
         String json = "{\"entry\":[]}";
-        FhirSearchResponse union = ObjectMappers.JSON_MAPPER.readValue(json, FhirSearchResponse.class);
+        SearchResponse union = ObjectMappers.JSON_MAPPER.readValue(json, SearchResponse.class);
         assertTrue(union.get() instanceof FhirBundle, "Expected FhirBundle but got different variant");
     }
 
     @Test
-    public void testFhirSearchResponse_FhirResource() throws Exception {
+    public void testSearchResponse_FhirResource() throws Exception {
         String json = "{\"resourceType\":\"test\"}";
-        FhirSearchResponse union = ObjectMappers.JSON_MAPPER.readValue(json, FhirSearchResponse.class);
+        SearchResponse union = ObjectMappers.JSON_MAPPER.readValue(json, SearchResponse.class);
         assertTrue(union.get() instanceof FhirResource, "Expected FhirResource but got different variant");
     }
 }
