@@ -14,20 +14,21 @@ import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.workflows.errors.BadRequestError;
 import com.phenoml.api.resources.workflows.errors.ForbiddenError;
+import com.phenoml.api.resources.workflows.errors.GatewayTimeoutError;
 import com.phenoml.api.resources.workflows.errors.InternalServerError;
 import com.phenoml.api.resources.workflows.errors.NotFoundError;
 import com.phenoml.api.resources.workflows.errors.UnauthorizedError;
 import com.phenoml.api.resources.workflows.requests.CreateWorkflowRequest;
 import com.phenoml.api.resources.workflows.requests.ExecuteWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.GetRequest;
+import com.phenoml.api.resources.workflows.requests.ListRequest;
 import com.phenoml.api.resources.workflows.requests.UpdateWorkflowRequest;
-import com.phenoml.api.resources.workflows.requests.WorkflowsGetRequest;
-import com.phenoml.api.resources.workflows.requests.WorkflowsListRequest;
 import com.phenoml.api.resources.workflows.types.CreateWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.DeleteResponse;
 import com.phenoml.api.resources.workflows.types.ExecuteWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.GetResponse;
 import com.phenoml.api.resources.workflows.types.ListWorkflowsResponse;
-import com.phenoml.api.resources.workflows.types.WorkflowsDeleteResponse;
-import com.phenoml.api.resources.workflows.types.WorkflowsGetResponse;
-import com.phenoml.api.resources.workflows.types.WorkflowsUpdateResponse;
+import com.phenoml.api.resources.workflows.types.UpdateResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -52,20 +53,20 @@ public class AsyncRawWorkflowsClient {
      * Retrieves all workflow definitions for the authenticated user
      */
     public CompletableFuture<PhenomlClientHttpResponse<ListWorkflowsResponse>> list() {
-        return list(WorkflowsListRequest.builder().build());
+        return list(ListRequest.builder().build());
     }
 
     /**
      * Retrieves all workflow definitions for the authenticated user
      */
     public CompletableFuture<PhenomlClientHttpResponse<ListWorkflowsResponse>> list(RequestOptions requestOptions) {
-        return list(WorkflowsListRequest.builder().build(), requestOptions);
+        return list(ListRequest.builder().build(), requestOptions);
     }
 
     /**
      * Retrieves all workflow definitions for the authenticated user
      */
-    public CompletableFuture<PhenomlClientHttpResponse<ListWorkflowsResponse>> list(WorkflowsListRequest request) {
+    public CompletableFuture<PhenomlClientHttpResponse<ListWorkflowsResponse>> list(ListRequest request) {
         return list(request, null);
     }
 
@@ -73,7 +74,7 @@ public class AsyncRawWorkflowsClient {
      * Retrieves all workflow definitions for the authenticated user
      */
     public CompletableFuture<PhenomlClientHttpResponse<ListWorkflowsResponse>> list(
-            WorkflowsListRequest request, RequestOptions requestOptions) {
+            ListRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("workflows");
@@ -246,31 +247,29 @@ public class AsyncRawWorkflowsClient {
     /**
      * Retrieves a workflow definition by its ID
      */
-    public CompletableFuture<PhenomlClientHttpResponse<WorkflowsGetResponse>> get(String id) {
-        return get(id, WorkflowsGetRequest.builder().build());
+    public CompletableFuture<PhenomlClientHttpResponse<GetResponse>> get(String id) {
+        return get(id, GetRequest.builder().build());
     }
 
     /**
      * Retrieves a workflow definition by its ID
      */
-    public CompletableFuture<PhenomlClientHttpResponse<WorkflowsGetResponse>> get(
-            String id, RequestOptions requestOptions) {
-        return get(id, WorkflowsGetRequest.builder().build(), requestOptions);
+    public CompletableFuture<PhenomlClientHttpResponse<GetResponse>> get(String id, RequestOptions requestOptions) {
+        return get(id, GetRequest.builder().build(), requestOptions);
     }
 
     /**
      * Retrieves a workflow definition by its ID
      */
-    public CompletableFuture<PhenomlClientHttpResponse<WorkflowsGetResponse>> get(
-            String id, WorkflowsGetRequest request) {
+    public CompletableFuture<PhenomlClientHttpResponse<GetResponse>> get(String id, GetRequest request) {
         return get(id, request, null);
     }
 
     /**
      * Retrieves a workflow definition by its ID
      */
-    public CompletableFuture<PhenomlClientHttpResponse<WorkflowsGetResponse>> get(
-            String id, WorkflowsGetRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<GetResponse>> get(
+            String id, GetRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("workflows")
@@ -294,7 +293,7 @@ public class AsyncRawWorkflowsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<WorkflowsGetResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<GetResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -302,8 +301,7 @@ public class AsyncRawWorkflowsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, WorkflowsGetResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetResponse.class), response));
                         return;
                     }
                     try {
@@ -352,7 +350,7 @@ public class AsyncRawWorkflowsClient {
     /**
      * Updates an existing workflow definition
      */
-    public CompletableFuture<PhenomlClientHttpResponse<WorkflowsUpdateResponse>> update(
+    public CompletableFuture<PhenomlClientHttpResponse<UpdateResponse>> update(
             String id, UpdateWorkflowRequest request) {
         return update(id, request, null);
     }
@@ -360,7 +358,7 @@ public class AsyncRawWorkflowsClient {
     /**
      * Updates an existing workflow definition
      */
-    public CompletableFuture<PhenomlClientHttpResponse<WorkflowsUpdateResponse>> update(
+    public CompletableFuture<PhenomlClientHttpResponse<UpdateResponse>> update(
             String id, UpdateWorkflowRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -393,7 +391,7 @@ public class AsyncRawWorkflowsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<WorkflowsUpdateResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<UpdateResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -401,7 +399,7 @@ public class AsyncRawWorkflowsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, WorkflowsUpdateResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateResponse.class),
                                 response));
                         return;
                     }
@@ -456,14 +454,14 @@ public class AsyncRawWorkflowsClient {
     /**
      * Deletes a workflow definition by its ID
      */
-    public CompletableFuture<PhenomlClientHttpResponse<WorkflowsDeleteResponse>> delete(String id) {
+    public CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> delete(String id) {
         return delete(id, null);
     }
 
     /**
      * Deletes a workflow definition by its ID
      */
-    public CompletableFuture<PhenomlClientHttpResponse<WorkflowsDeleteResponse>> delete(
+    public CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> delete(
             String id, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -484,7 +482,7 @@ public class AsyncRawWorkflowsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<WorkflowsDeleteResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -492,7 +490,7 @@ public class AsyncRawWorkflowsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, WorkflowsDeleteResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteResponse.class),
                                 response));
                         return;
                     }
@@ -616,6 +614,11 @@ public class AsyncRawWorkflowsClient {
                                 return;
                             case 500:
                                 future.completeExceptionally(new InternalServerError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 504:
+                                future.completeExceptionally(new GatewayTimeoutError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;

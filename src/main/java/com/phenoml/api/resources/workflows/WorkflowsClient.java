@@ -7,15 +7,15 @@ import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.workflows.requests.CreateWorkflowRequest;
 import com.phenoml.api.resources.workflows.requests.ExecuteWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.GetRequest;
+import com.phenoml.api.resources.workflows.requests.ListRequest;
 import com.phenoml.api.resources.workflows.requests.UpdateWorkflowRequest;
-import com.phenoml.api.resources.workflows.requests.WorkflowsGetRequest;
-import com.phenoml.api.resources.workflows.requests.WorkflowsListRequest;
 import com.phenoml.api.resources.workflows.types.CreateWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.DeleteResponse;
 import com.phenoml.api.resources.workflows.types.ExecuteWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.GetResponse;
 import com.phenoml.api.resources.workflows.types.ListWorkflowsResponse;
-import com.phenoml.api.resources.workflows.types.WorkflowsDeleteResponse;
-import com.phenoml.api.resources.workflows.types.WorkflowsGetResponse;
-import com.phenoml.api.resources.workflows.types.WorkflowsUpdateResponse;
+import com.phenoml.api.resources.workflows.types.UpdateResponse;
 
 public class WorkflowsClient {
     protected final ClientOptions clientOptions;
@@ -51,14 +51,14 @@ public class WorkflowsClient {
     /**
      * Retrieves all workflow definitions for the authenticated user
      */
-    public ListWorkflowsResponse list(WorkflowsListRequest request) {
+    public ListWorkflowsResponse list(ListRequest request) {
         return this.rawClient.list(request).body();
     }
 
     /**
      * Retrieves all workflow definitions for the authenticated user
      */
-    public ListWorkflowsResponse list(WorkflowsListRequest request, RequestOptions requestOptions) {
+    public ListWorkflowsResponse list(ListRequest request, RequestOptions requestOptions) {
         return this.rawClient.list(request, requestOptions).body();
     }
 
@@ -79,56 +79,56 @@ public class WorkflowsClient {
     /**
      * Retrieves a workflow definition by its ID
      */
-    public WorkflowsGetResponse get(String id) {
+    public GetResponse get(String id) {
         return this.rawClient.get(id).body();
     }
 
     /**
      * Retrieves a workflow definition by its ID
      */
-    public WorkflowsGetResponse get(String id, RequestOptions requestOptions) {
+    public GetResponse get(String id, RequestOptions requestOptions) {
         return this.rawClient.get(id, requestOptions).body();
     }
 
     /**
      * Retrieves a workflow definition by its ID
      */
-    public WorkflowsGetResponse get(String id, WorkflowsGetRequest request) {
+    public GetResponse get(String id, GetRequest request) {
         return this.rawClient.get(id, request).body();
     }
 
     /**
      * Retrieves a workflow definition by its ID
      */
-    public WorkflowsGetResponse get(String id, WorkflowsGetRequest request, RequestOptions requestOptions) {
+    public GetResponse get(String id, GetRequest request, RequestOptions requestOptions) {
         return this.rawClient.get(id, request, requestOptions).body();
     }
 
     /**
      * Updates an existing workflow definition
      */
-    public WorkflowsUpdateResponse update(String id, UpdateWorkflowRequest request) {
+    public UpdateResponse update(String id, UpdateWorkflowRequest request) {
         return this.rawClient.update(id, request).body();
     }
 
     /**
      * Updates an existing workflow definition
      */
-    public WorkflowsUpdateResponse update(String id, UpdateWorkflowRequest request, RequestOptions requestOptions) {
+    public UpdateResponse update(String id, UpdateWorkflowRequest request, RequestOptions requestOptions) {
         return this.rawClient.update(id, request, requestOptions).body();
     }
 
     /**
      * Deletes a workflow definition by its ID
      */
-    public WorkflowsDeleteResponse delete(String id) {
+    public DeleteResponse delete(String id) {
         return this.rawClient.delete(id).body();
     }
 
     /**
      * Deletes a workflow definition by its ID
      */
-    public WorkflowsDeleteResponse delete(String id, RequestOptions requestOptions) {
+    public DeleteResponse delete(String id, RequestOptions requestOptions) {
         return this.rawClient.delete(id, requestOptions).body();
     }
 

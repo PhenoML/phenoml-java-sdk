@@ -20,17 +20,17 @@ import com.phenoml.api.resources.agent.errors.InternalServerError;
 import com.phenoml.api.resources.agent.errors.NotFoundError;
 import com.phenoml.api.resources.agent.errors.UnauthorizedError;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
-import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
-import com.phenoml.api.resources.agent.requests.AgentListRequest;
 import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
+import com.phenoml.api.resources.agent.requests.GetChatMessagesRequest;
+import com.phenoml.api.resources.agent.requests.ListRequest;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
 import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
 import com.phenoml.api.resources.agent.types.AgentCreateRequest;
-import com.phenoml.api.resources.agent.types.AgentDeleteResponse;
-import com.phenoml.api.resources.agent.types.AgentGetChatMessagesResponse;
-import com.phenoml.api.resources.agent.types.AgentListResponse;
 import com.phenoml.api.resources.agent.types.AgentResponse;
+import com.phenoml.api.resources.agent.types.DeleteResponse;
+import com.phenoml.api.resources.agent.types.GetChatMessagesResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
+import com.phenoml.api.resources.agent.types.ListResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -123,28 +123,28 @@ public class RawAgentClient {
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public PhenomlClientHttpResponse<AgentListResponse> list() {
-        return list(AgentListRequest.builder().build());
+    public PhenomlClientHttpResponse<ListResponse> list() {
+        return list(ListRequest.builder().build());
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public PhenomlClientHttpResponse<AgentListResponse> list(RequestOptions requestOptions) {
-        return list(AgentListRequest.builder().build(), requestOptions);
+    public PhenomlClientHttpResponse<ListResponse> list(RequestOptions requestOptions) {
+        return list(ListRequest.builder().build(), requestOptions);
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public PhenomlClientHttpResponse<AgentListResponse> list(AgentListRequest request) {
+    public PhenomlClientHttpResponse<ListResponse> list(ListRequest request) {
         return list(request, null);
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public PhenomlClientHttpResponse<AgentListResponse> list(AgentListRequest request, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<ListResponse> list(ListRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/list");
@@ -172,7 +172,7 @@ public class RawAgentClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentListResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ListResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -338,14 +338,14 @@ public class RawAgentClient {
     /**
      * Deletes an existing agent
      */
-    public PhenomlClientHttpResponse<AgentDeleteResponse> delete(String id) {
+    public PhenomlClientHttpResponse<DeleteResponse> delete(String id) {
         return delete(id, null);
     }
 
     /**
      * Deletes an existing agent
      */
-    public PhenomlClientHttpResponse<AgentDeleteResponse> delete(String id, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<DeleteResponse> delete(String id, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent")
@@ -370,7 +370,7 @@ public class RawAgentClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentDeleteResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -638,16 +638,15 @@ public class RawAgentClient {
     /**
      * Retrieves a list of chat messages for a given chat session
      */
-    public PhenomlClientHttpResponse<AgentGetChatMessagesResponse> getChatMessages(
-            AgentGetChatMessagesRequest request) {
+    public PhenomlClientHttpResponse<GetChatMessagesResponse> getChatMessages(GetChatMessagesRequest request) {
         return getChatMessages(request, null);
     }
 
     /**
      * Retrieves a list of chat messages for a given chat session
      */
-    public PhenomlClientHttpResponse<AgentGetChatMessagesResponse> getChatMessages(
-            AgentGetChatMessagesRequest request, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<GetChatMessagesResponse> getChatMessages(
+            GetChatMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/chat/messages");
@@ -684,7 +683,7 @@ public class RawAgentClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentGetChatMessagesResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetChatMessagesResponse.class),
                         response);
             }
             try {

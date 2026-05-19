@@ -20,17 +20,17 @@ import com.phenoml.api.resources.agent.errors.InternalServerError;
 import com.phenoml.api.resources.agent.errors.NotFoundError;
 import com.phenoml.api.resources.agent.errors.UnauthorizedError;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
-import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
-import com.phenoml.api.resources.agent.requests.AgentListRequest;
 import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
+import com.phenoml.api.resources.agent.requests.GetChatMessagesRequest;
+import com.phenoml.api.resources.agent.requests.ListRequest;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
 import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
 import com.phenoml.api.resources.agent.types.AgentCreateRequest;
-import com.phenoml.api.resources.agent.types.AgentDeleteResponse;
-import com.phenoml.api.resources.agent.types.AgentGetChatMessagesResponse;
-import com.phenoml.api.resources.agent.types.AgentListResponse;
 import com.phenoml.api.resources.agent.types.AgentResponse;
+import com.phenoml.api.resources.agent.types.DeleteResponse;
+import com.phenoml.api.resources.agent.types.GetChatMessagesResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
+import com.phenoml.api.resources.agent.types.ListResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -150,29 +150,29 @@ public class AsyncRawAgentClient {
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public CompletableFuture<PhenomlClientHttpResponse<AgentListResponse>> list() {
-        return list(AgentListRequest.builder().build());
+    public CompletableFuture<PhenomlClientHttpResponse<ListResponse>> list() {
+        return list(ListRequest.builder().build());
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public CompletableFuture<PhenomlClientHttpResponse<AgentListResponse>> list(RequestOptions requestOptions) {
-        return list(AgentListRequest.builder().build(), requestOptions);
+    public CompletableFuture<PhenomlClientHttpResponse<ListResponse>> list(RequestOptions requestOptions) {
+        return list(ListRequest.builder().build(), requestOptions);
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public CompletableFuture<PhenomlClientHttpResponse<AgentListResponse>> list(AgentListRequest request) {
+    public CompletableFuture<PhenomlClientHttpResponse<ListResponse>> list(ListRequest request) {
         return list(request, null);
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public CompletableFuture<PhenomlClientHttpResponse<AgentListResponse>> list(
-            AgentListRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<ListResponse>> list(
+            ListRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/list");
@@ -195,7 +195,7 @@ public class AsyncRawAgentClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<AgentListResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<ListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -203,8 +203,7 @@ public class AsyncRawAgentClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentListResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ListResponse.class), response));
                         return;
                     }
                     try {
@@ -432,14 +431,14 @@ public class AsyncRawAgentClient {
     /**
      * Deletes an existing agent
      */
-    public CompletableFuture<PhenomlClientHttpResponse<AgentDeleteResponse>> delete(String id) {
+    public CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> delete(String id) {
         return delete(id, null);
     }
 
     /**
      * Deletes an existing agent
      */
-    public CompletableFuture<PhenomlClientHttpResponse<AgentDeleteResponse>> delete(
+    public CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> delete(
             String id, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -460,7 +459,7 @@ public class AsyncRawAgentClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<AgentDeleteResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -468,7 +467,7 @@ public class AsyncRawAgentClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentDeleteResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteResponse.class),
                                 response));
                         return;
                     }
@@ -826,16 +825,16 @@ public class AsyncRawAgentClient {
     /**
      * Retrieves a list of chat messages for a given chat session
      */
-    public CompletableFuture<PhenomlClientHttpResponse<AgentGetChatMessagesResponse>> getChatMessages(
-            AgentGetChatMessagesRequest request) {
+    public CompletableFuture<PhenomlClientHttpResponse<GetChatMessagesResponse>> getChatMessages(
+            GetChatMessagesRequest request) {
         return getChatMessages(request, null);
     }
 
     /**
      * Retrieves a list of chat messages for a given chat session
      */
-    public CompletableFuture<PhenomlClientHttpResponse<AgentGetChatMessagesResponse>> getChatMessages(
-            AgentGetChatMessagesRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<GetChatMessagesResponse>> getChatMessages(
+            GetChatMessagesRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/chat/messages");
@@ -867,7 +866,7 @@ public class AsyncRawAgentClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<AgentGetChatMessagesResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<GetChatMessagesResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -875,8 +874,7 @@ public class AsyncRawAgentClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, AgentGetChatMessagesResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetChatMessagesResponse.class),
                                 response));
                         return;
                     }
