@@ -19,11 +19,11 @@ import com.phenoml.api.resources.fhirprovider.errors.UnauthorizedError;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderCreateRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderRemoveAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderSetActiveAuthConfigRequest;
+import com.phenoml.api.resources.fhirprovider.types.DeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderAddAuthConfigRequest;
-import com.phenoml.api.resources.fhirprovider.types.FhirProviderDeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderListResponse;
-import com.phenoml.api.resources.fhirprovider.types.FhirProviderRemoveAuthConfigResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderResponse;
+import com.phenoml.api.resources.fhirprovider.types.RemoveAuthConfigResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
@@ -307,7 +307,7 @@ public class AsyncRawFhirProviderClient {
      * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirProviderDeleteResponse>> delete(String fhirProviderId) {
+    public CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> delete(String fhirProviderId) {
         return delete(fhirProviderId, null);
     }
 
@@ -315,7 +315,7 @@ public class AsyncRawFhirProviderClient {
      * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirProviderDeleteResponse>> delete(
+    public CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> delete(
             String fhirProviderId, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -336,7 +336,7 @@ public class AsyncRawFhirProviderClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<FhirProviderDeleteResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -344,8 +344,7 @@ public class AsyncRawFhirProviderClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, FhirProviderDeleteResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteResponse.class),
                                 response));
                         return;
                     }
@@ -611,7 +610,7 @@ public class AsyncRawFhirProviderClient {
      * Cannot remove the currently active auth configuration.
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirProviderRemoveAuthConfigResponse>> removeAuthConfig(
+    public CompletableFuture<PhenomlClientHttpResponse<RemoveAuthConfigResponse>> removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request) {
         return removeAuthConfig(fhirProviderId, request, null);
     }
@@ -621,7 +620,7 @@ public class AsyncRawFhirProviderClient {
      * Cannot remove the currently active auth configuration.
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirProviderRemoveAuthConfigResponse>> removeAuthConfig(
+    public CompletableFuture<PhenomlClientHttpResponse<RemoveAuthConfigResponse>> removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -651,8 +650,7 @@ public class AsyncRawFhirProviderClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<FhirProviderRemoveAuthConfigResponse>> future =
-                new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<RemoveAuthConfigResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -660,8 +658,7 @@ public class AsyncRawFhirProviderClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, FhirProviderRemoveAuthConfigResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RemoveAuthConfigResponse.class),
                                 response));
                         return;
                     }

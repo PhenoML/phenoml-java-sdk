@@ -8,17 +8,17 @@ import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.agent.prompts.AsyncPromptsClient;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
-import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
-import com.phenoml.api.resources.agent.requests.AgentListRequest;
 import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
+import com.phenoml.api.resources.agent.requests.GetChatMessagesRequest;
+import com.phenoml.api.resources.agent.requests.ListRequest;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
 import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
 import com.phenoml.api.resources.agent.types.AgentCreateRequest;
-import com.phenoml.api.resources.agent.types.AgentDeleteResponse;
-import com.phenoml.api.resources.agent.types.AgentGetChatMessagesResponse;
-import com.phenoml.api.resources.agent.types.AgentListResponse;
 import com.phenoml.api.resources.agent.types.AgentResponse;
+import com.phenoml.api.resources.agent.types.DeleteResponse;
+import com.phenoml.api.resources.agent.types.GetChatMessagesResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
+import com.phenoml.api.resources.agent.types.ListResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -60,28 +60,28 @@ public class AsyncAgentClient {
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public CompletableFuture<AgentListResponse> list() {
+    public CompletableFuture<ListResponse> list() {
         return this.rawClient.list().thenApply(response -> response.body());
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public CompletableFuture<AgentListResponse> list(RequestOptions requestOptions) {
+    public CompletableFuture<ListResponse> list(RequestOptions requestOptions) {
         return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public CompletableFuture<AgentListResponse> list(AgentListRequest request) {
+    public CompletableFuture<ListResponse> list(ListRequest request) {
         return this.rawClient.list(request).thenApply(response -> response.body());
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public CompletableFuture<AgentListResponse> list(AgentListRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<ListResponse> list(ListRequest request, RequestOptions requestOptions) {
         return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
     }
 
@@ -117,14 +117,14 @@ public class AsyncAgentClient {
     /**
      * Deletes an existing agent
      */
-    public CompletableFuture<AgentDeleteResponse> delete(String id) {
+    public CompletableFuture<DeleteResponse> delete(String id) {
         return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
     /**
      * Deletes an existing agent
      */
-    public CompletableFuture<AgentDeleteResponse> delete(String id, RequestOptions requestOptions) {
+    public CompletableFuture<DeleteResponse> delete(String id, RequestOptions requestOptions) {
         return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
     }
 
@@ -179,15 +179,15 @@ public class AsyncAgentClient {
     /**
      * Retrieves a list of chat messages for a given chat session
      */
-    public CompletableFuture<AgentGetChatMessagesResponse> getChatMessages(AgentGetChatMessagesRequest request) {
+    public CompletableFuture<GetChatMessagesResponse> getChatMessages(GetChatMessagesRequest request) {
         return this.rawClient.getChatMessages(request).thenApply(response -> response.body());
     }
 
     /**
      * Retrieves a list of chat messages for a given chat session
      */
-    public CompletableFuture<AgentGetChatMessagesResponse> getChatMessages(
-            AgentGetChatMessagesRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<GetChatMessagesResponse> getChatMessages(
+            GetChatMessagesRequest request, RequestOptions requestOptions) {
         return this.rawClient.getChatMessages(request, requestOptions).thenApply(response -> response.body());
     }
 

@@ -19,11 +19,11 @@ import com.phenoml.api.resources.fhirprovider.errors.UnauthorizedError;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderCreateRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderRemoveAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderSetActiveAuthConfigRequest;
+import com.phenoml.api.resources.fhirprovider.types.DeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderAddAuthConfigRequest;
-import com.phenoml.api.resources.fhirprovider.types.FhirProviderDeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderListResponse;
-import com.phenoml.api.resources.fhirprovider.types.FhirProviderRemoveAuthConfigResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderResponse;
+import com.phenoml.api.resources.fhirprovider.types.RemoveAuthConfigResponse;
 import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -242,7 +242,7 @@ public class RawFhirProviderClient {
      * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
-    public PhenomlClientHttpResponse<FhirProviderDeleteResponse> delete(String fhirProviderId) {
+    public PhenomlClientHttpResponse<DeleteResponse> delete(String fhirProviderId) {
         return delete(fhirProviderId, null);
     }
 
@@ -250,8 +250,7 @@ public class RawFhirProviderClient {
      * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
-    public PhenomlClientHttpResponse<FhirProviderDeleteResponse> delete(
-            String fhirProviderId, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<DeleteResponse> delete(String fhirProviderId, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
@@ -276,8 +275,7 @@ public class RawFhirProviderClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirProviderDeleteResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -476,7 +474,7 @@ public class RawFhirProviderClient {
      * Cannot remove the currently active auth configuration.
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public PhenomlClientHttpResponse<FhirProviderRemoveAuthConfigResponse> removeAuthConfig(
+    public PhenomlClientHttpResponse<RemoveAuthConfigResponse> removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request) {
         return removeAuthConfig(fhirProviderId, request, null);
     }
@@ -486,7 +484,7 @@ public class RawFhirProviderClient {
      * Cannot remove the currently active auth configuration.
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public PhenomlClientHttpResponse<FhirProviderRemoveAuthConfigResponse> removeAuthConfig(
+    public PhenomlClientHttpResponse<RemoveAuthConfigResponse> removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -521,8 +519,7 @@ public class RawFhirProviderClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, FhirProviderRemoveAuthConfigResponse.class),
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RemoveAuthConfigResponse.class),
                         response);
             }
             try {

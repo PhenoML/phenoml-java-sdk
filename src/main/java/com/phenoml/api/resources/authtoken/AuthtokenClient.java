@@ -4,21 +4,64 @@
 package com.phenoml.api.resources.authtoken;
 
 import com.phenoml.api.core.ClientOptions;
-import com.phenoml.api.core.Suppliers;
-import com.phenoml.api.resources.authtoken.auth.AuthClient;
-import java.util.function.Supplier;
+import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.resources.authtoken.requests.ClientCredentialsRequest;
+import com.phenoml.api.resources.authtoken.types.TokenResponse;
 
 public class AuthtokenClient {
     protected final ClientOptions clientOptions;
 
-    protected final Supplier<AuthClient> authClient;
+    private final RawAuthtokenClient rawClient;
 
     public AuthtokenClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
-        this.authClient = Suppliers.memoize(() -> new AuthClient(clientOptions));
+        this.rawClient = new RawAuthtokenClient(clientOptions);
     }
 
-    public AuthClient auth() {
-        return this.authClient.get();
+    /**
+     * Get responses with HTTP metadata like headers
+     */
+    public RawAuthtokenClient withRawResponse() {
+        return this.rawClient;
+    }
+
+    /**
+     * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
+     * Accepts client_id and client_secret in the request body (JSON or
+     * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
+     * returns an access token with expiration information.
+     */
+    public TokenResponse getToken() {
+        return this.rawClient.getToken().body();
+    }
+
+    /**
+     * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
+     * Accepts client_id and client_secret in the request body (JSON or
+     * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
+     * returns an access token with expiration information.
+     */
+    public TokenResponse getToken(RequestOptions requestOptions) {
+        return this.rawClient.getToken(requestOptions).body();
+    }
+
+    /**
+     * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
+     * Accepts client_id and client_secret in the request body (JSON or
+     * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
+     * returns an access token with expiration information.
+     */
+    public TokenResponse getToken(ClientCredentialsRequest request) {
+        return this.rawClient.getToken(request).body();
+    }
+
+    /**
+     * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
+     * Accepts client_id and client_secret in the request body (JSON or
+     * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
+     * returns an access token with expiration information.
+     */
+    public TokenResponse getToken(ClientCredentialsRequest request, RequestOptions requestOptions) {
+        return this.rawClient.getToken(request, requestOptions).body();
     }
 }
