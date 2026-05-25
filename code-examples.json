@@ -303,17 +303,79 @@
         }
       },
       "render": {
-        "callTemplate": "client.agent().prompts().patch({{id}}, {{request}})",
+        "callTemplate": "client.agent().prompts().patch({{id}}, {{__body__}})",
         "params": [
           {
             "name": "id",
             "kind": "string"
-          },
-          {
-            "name": "request",
-            "kind": "string"
           }
-        ]
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "",
+              "fieldTemplate": "{{value}}",
+              "kind": "list",
+              "required": true,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "object",
+                "required": true,
+                "nested": {
+                  "fieldSeparator": "",
+                  "fields": [
+                    {
+                      "jsonKey": "op",
+                      "fieldTemplate": ".op({{value}})",
+                      "kind": "object",
+                      "required": true,
+                      "nested": {
+                        "fieldSeparator": "",
+                        "fields": [
+                          {
+                            "jsonKey": "value",
+                            "fieldTemplate": ".value({{value}})",
+                            "kind": "object",
+                            "required": false
+                          },
+                          {
+                            "jsonKey": "string",
+                            "fieldTemplate": ".string({{value}})",
+                            "kind": "string",
+                            "required": false
+                          }
+                        ],
+                        "wrap": "JsonPatchOperationOp.builder(){{__body__}}.build()"
+                      }
+                    },
+                    {
+                      "jsonKey": "path",
+                      "fieldTemplate": ".path({{value}})",
+                      "kind": "string",
+                      "required": true
+                    },
+                    {
+                      "jsonKey": "value",
+                      "fieldTemplate": ".value({{value}})",
+                      "kind": "object",
+                      "required": false
+                    },
+                    {
+                      "jsonKey": "from",
+                      "fieldTemplate": ".from({{value}})",
+                      "kind": "string",
+                      "required": false
+                    }
+                  ],
+                  "wrap": "JsonPatchOperation.builder(){{__body__}}.build()"
+                }
+              },
+              "passthroughBody": true
+            }
+          ]
+        }
       }
     },
     "POST /agent/create": {
@@ -787,17 +849,79 @@
         }
       },
       "render": {
-        "callTemplate": "client.agent().patch({{id}}, {{request}})",
+        "callTemplate": "client.agent().patch({{id}}, {{__body__}})",
         "params": [
           {
             "name": "id",
             "kind": "string"
-          },
-          {
-            "name": "request",
-            "kind": "string"
           }
-        ]
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "",
+              "fieldTemplate": "{{value}}",
+              "kind": "list",
+              "required": true,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "object",
+                "required": true,
+                "nested": {
+                  "fieldSeparator": "",
+                  "fields": [
+                    {
+                      "jsonKey": "op",
+                      "fieldTemplate": ".op({{value}})",
+                      "kind": "object",
+                      "required": true,
+                      "nested": {
+                        "fieldSeparator": "",
+                        "fields": [
+                          {
+                            "jsonKey": "value",
+                            "fieldTemplate": ".value({{value}})",
+                            "kind": "object",
+                            "required": false
+                          },
+                          {
+                            "jsonKey": "string",
+                            "fieldTemplate": ".string({{value}})",
+                            "kind": "string",
+                            "required": false
+                          }
+                        ],
+                        "wrap": "JsonPatchOperationOp.builder(){{__body__}}.build()"
+                      }
+                    },
+                    {
+                      "jsonKey": "path",
+                      "fieldTemplate": ".path({{value}})",
+                      "kind": "string",
+                      "required": true
+                    },
+                    {
+                      "jsonKey": "value",
+                      "fieldTemplate": ".value({{value}})",
+                      "kind": "object",
+                      "required": false
+                    },
+                    {
+                      "jsonKey": "from",
+                      "fieldTemplate": ".from({{value}})",
+                      "kind": "string",
+                      "required": false
+                    }
+                  ],
+                  "wrap": "JsonPatchOperation.builder(){{__body__}}.build()"
+                }
+              },
+              "passthroughBody": true
+            }
+          ]
+        }
       }
     },
     "POST /agent/chat": {
@@ -2662,7 +2786,7 @@
         }
       },
       "render": {
-        "callTemplate": "client.fhirProvider().addAuthConfig({{fhir_provider_id}}, FhirProviderAddAuthConfigRequest.builder(){{__body__}}.build())",
+        "callTemplate": "client.fhirProvider().addAuthConfig({{fhir_provider_id}}, {{__body__}})",
         "params": [
           {
             "name": "fhir_provider_id",
@@ -2673,10 +2797,11 @@
           "fieldSeparator": "",
           "fields": [
             {
-              "jsonKey": "value",
-              "fieldTemplate": ".value({{value}})",
+              "jsonKey": "",
+              "fieldTemplate": "{{value}}",
               "kind": "object",
-              "required": false
+              "required": true,
+              "passthroughBody": true
             }
           ]
         }
