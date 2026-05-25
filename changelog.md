@@ -1,3 +1,31 @@
+## 16.0.0 - 2026-05-25
+### Breaking Changes
+* **`SummaryClient.listTemplates()` / `createTemplate(...)` / `getTemplate(...)` / `updateTemplate(...)` / `deleteTemplate(...)`** — the five template CRUD methods were removed from `SummaryClient` / `AsyncSummaryClient` (and the raw clients) and moved to a new `templates()` sub-client. Rewrite call sites as `client.summary().templates().list()` / `create(...)` / `get(...)` / `update(...)` / `delete(...)`. HTTP routes are unchanged.
+* **`SummaryListTemplatesResponse` / `SummaryGetTemplateResponse` / `SummaryUpdateTemplateResponse` / `SummaryDeleteTemplateResponse`** — removed; replaced by `TemplatesListResponse` / `TemplatesGetResponse` / `TemplatesUpdateResponse` / `TemplatesDeleteResponse` in the new `com.phenoml.api.resources.summary.templates.types` package. Update imports.
+* **`AuthtokenClient.auth().getToken(...)`** — the intermediate `auth()` accessor is removed and the `AuthClient` / `AsyncAuthClient` classes are deleted; call `client.authtoken().getToken(...)` directly. The request class moved from `com.phenoml.api.resources.authtoken.auth.requests.ClientCredentialsRequest` to `com.phenoml.api.resources.authtoken.requests.ClientCredentialsRequest`; update imports.
+* **`com.phenoml.api.core.OAuthTokenSupplier`** — public constructor now takes an `AuthtokenClient` instead of `AuthClient`; any code that constructs an `OAuthTokenSupplier` directly must be updated.
+* **`ConstrueClient.listAvailableCodeSystems(...)` → `listCodeSystems(...)`** — method renamed.
+* **`ConstrueClient.getCodeSystemDetail(...)` → `getCodeSystem(...)`** — method renamed; request type `GetConstrueCodesSystemsCodesystemRequest` → `GetCodeSystemRequest`.
+* **`ConstrueClient.deleteCustomCodeSystem(...)` → `deleteCodeSystem(...)`** — method renamed; request type `DeleteConstrueCodesSystemsCodesystemRequest` → `DeleteCodeSystemRequest`.
+* **`ConstrueClient.exportCustomCodeSystem(...)` → `exportCodeSystem(...)`** — method renamed; request type `GetConstrueCodesSystemsCodesystemExportRequest` → `ExportCodeSystemRequest`.
+* **`ConstrueClient.listCodesInACodeSystem(...)` → `listCodes(...)`** — method renamed; request type `GetConstrueCodesCodesystemRequest` → `ListCodesRequest`.
+* **`ConstrueClient.getASpecificCode(...)` → `getCode(...)`** — method renamed; request type `GetConstrueCodesCodesystemCodeIdRequest` → `GetCodeRequest`.
+* **`ConstrueClient.semanticSearchEmbeddingBased(...)` → `searchSemantic(...)`** — method renamed; request type `GetConstrueCodesCodesystemSearchSemanticRequest` → `SearchSemanticRequest`.
+* **`ConstrueClient.terminologyServerTextSearch(...)` → `searchText(...)`** — method renamed; request type `GetConstrueCodesCodesystemSearchTextRequest` → `SearchTextRequest`.
+* **`ConstrueClient.submitFeedbackOnExtractionResults(...)` → `submitFeedback(...)`** — method renamed.
+* **`ConstrueUploadCodeSystemResponse`** — renamed to `com.phenoml.api.resources.construe.types.UploadCodeSystemResponse`.
+* **`Lang2FhirClient.extractMultipleFhirResourcesFromADocument(...)` → `documentMulti(...)`** — method renamed.
+* **`Lang2FhirUploadProfileResponse`** — renamed to `com.phenoml.api.resources.lang2fhir.types.UploadProfileResponse`.
+* **`com.phenoml.api.resources.fhir.requests.Fhir*Request` and FHIR response types** — `Fhir` prefix dropped: `FhirSearchRequest` → `SearchRequest`, `FhirCreateRequest` → `CreateRequest`, `FhirUpsertRequest` → `UpsertRequest`, `FhirDeleteRequest` → `DeleteRequest`, `FhirPatchRequest` → `PatchRequest`, `FhirExecuteBundleRequest` → `ExecuteBundleRequest`, `FhirSearchResponse` → `SearchResponse`, `FhirPatchRequestBodyItem` → `PatchRequestBodyItem`, `FhirPatchRequestBodyItemOp` → `PatchRequestBodyItemOp`. Update imports and any `List<FhirPatchRequestBodyItem>` declarations passed to `FhirClient.patch(...)`.
+* **`FhirProviderDeleteResponse` / `FhirProviderRemoveAuthConfigResponse`** — renamed to `com.phenoml.api.resources.fhirprovider.types.DeleteResponse` / `RemoveAuthConfigResponse`; affects return types of `FhirProviderClient.delete(...)` / `removeAuthConfig(...)`.
+* **`AgentListRequest` / `AgentListResponse` / `AgentDeleteResponse` / `AgentGetChatMessagesRequest` / `AgentGetChatMessagesResponse` / `AgentGetChatMessagesRequestRole` / `AgentGetChatMessagesRequestOrder`** — `Agent` prefix dropped: now `ListRequest` / `ListResponse` / `DeleteResponse` / `GetChatMessagesRequest` / `GetChatMessagesResponse` / `GetChatMessagesRequestRole` / `GetChatMessagesRequestOrder` under `com.phenoml.api.resources.agent.requests` / `.types`.
+* **`WorkflowsListRequest` / `WorkflowsGetRequest` / `WorkflowsGetResponse` / `WorkflowsUpdateResponse` / `WorkflowsDeleteResponse`** — `Workflows` prefix dropped: now `ListRequest` / `GetRequest` / `GetResponse` / `UpdateResponse` / `DeleteResponse` under `com.phenoml.api.resources.workflows.requests` / `.types`.
+### Added
+* **`client.summary().templates()`** — new sub-client (`TemplatesClient` / `AsyncTemplatesClient`, with `RawTemplatesClient` / `AsyncRawTemplatesClient` raw variants) exposing `list()`, `create(...)`, `get(...)`, `update(...)`, `delete(...)` for summary templates.
+* **`TemplatesListResponse` / `TemplatesGetResponse` / `TemplatesUpdateResponse` / `TemplatesDeleteResponse`** — new response types in `com.phenoml.api.resources.summary.templates.types` for the relocated template methods.
+* **`com.phenoml.api.resources.workflows.errors.GatewayTimeoutError`** — new exception type thrown by `RawWorkflowsClient.execute(...)` (and bubbled through `WorkflowsClient.execute(...)`) on HTTP 504 responses; previously a 504 fell through to the generic `PhenomlClientApiException`.
+* **`AuthtokenClient.getToken(...)` / `AsyncAuthtokenClient.getToken(...)`** — `getToken` is now a direct method on the top-level `Authtoken` client (replaces the old nested `auth().getToken(...)`); a `withRawResponse()` raw variant is also exposed.
+
 ## 15.0.0 - 2026-05-15
 ### Breaking Changes
 * **`ToolsClient.call()`** and **`AsyncToolsClient.call()`** — the `call(String, McpServerToolCallRequest)` and `call(String, McpServerToolCallRequest, RequestOptions)` overloads have been removed from `ToolsClient`, `AsyncToolsClient`, `RawToolsClient`, and `AsyncRawToolsClient`; remove any calls to these methods from your code.
