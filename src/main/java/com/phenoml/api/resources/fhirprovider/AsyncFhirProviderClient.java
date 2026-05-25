@@ -8,11 +8,11 @@ import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderCreateRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderRemoveAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderSetActiveAuthConfigRequest;
+import com.phenoml.api.resources.fhirprovider.types.DeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderAddAuthConfigRequest;
-import com.phenoml.api.resources.fhirprovider.types.FhirProviderDeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderListResponse;
-import com.phenoml.api.resources.fhirprovider.types.FhirProviderRemoveAuthConfigResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderResponse;
+import com.phenoml.api.resources.fhirprovider.types.RemoveAuthConfigResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncFhirProviderClient {
@@ -89,7 +89,7 @@ public class AsyncFhirProviderClient {
      * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
-    public CompletableFuture<FhirProviderDeleteResponse> delete(String fhirProviderId) {
+    public CompletableFuture<DeleteResponse> delete(String fhirProviderId) {
         return this.rawClient.delete(fhirProviderId).thenApply(response -> response.body());
     }
 
@@ -97,7 +97,7 @@ public class AsyncFhirProviderClient {
      * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
-    public CompletableFuture<FhirProviderDeleteResponse> delete(String fhirProviderId, RequestOptions requestOptions) {
+    public CompletableFuture<DeleteResponse> delete(String fhirProviderId, RequestOptions requestOptions) {
         return this.rawClient.delete(fhirProviderId, requestOptions).thenApply(response -> response.body());
     }
 
@@ -154,7 +154,7 @@ public class AsyncFhirProviderClient {
      * Cannot remove the currently active auth configuration.
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public CompletableFuture<FhirProviderRemoveAuthConfigResponse> removeAuthConfig(
+    public CompletableFuture<RemoveAuthConfigResponse> removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request) {
         return this.rawClient.removeAuthConfig(fhirProviderId, request).thenApply(response -> response.body());
     }
@@ -164,7 +164,7 @@ public class AsyncFhirProviderClient {
      * Cannot remove the currently active auth configuration.
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public CompletableFuture<FhirProviderRemoveAuthConfigResponse> removeAuthConfig(
+    public CompletableFuture<RemoveAuthConfigResponse> removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request, RequestOptions requestOptions) {
         return this.rawClient
                 .removeAuthConfig(fhirProviderId, request, requestOptions)

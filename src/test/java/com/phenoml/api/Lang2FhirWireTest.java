@@ -12,8 +12,8 @@ import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.CreateRequestResource;
 import com.phenoml.api.resources.lang2fhir.types.DocumentMultiResponse;
-import com.phenoml.api.resources.lang2fhir.types.Lang2FhirUploadProfileResponse;
 import com.phenoml.api.resources.lang2fhir.types.SearchResponse;
+import com.phenoml.api.resources.lang2fhir.types.UploadProfileResponse;
 import java.util.Map;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -372,7 +372,7 @@ public class Lang2FhirWireTest {
                         .setResponseCode(200)
                         .setBody(
                                 "{\"message\":\"Profile uploaded successfully\",\"id\":\"custom-patient\",\"type\":\"Patient\",\"url\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient\"}"));
-        Lang2FhirUploadProfileResponse response = client.lang2Fhir()
+        UploadProfileResponse response = client.lang2Fhir()
                 .uploadProfile(ProfileUploadRequest.builder()
                         .profile(
                                 "eyJyZXNvdXJjZVR5cGUiOiJTdHJ1Y3R1cmVEZWZpbml0aW9uIiwiaWQiOiJjdXN0b20tcGF0aWVudCIsInVybCI6Imh0dHA6Ly9waGVub21sLmNvbS9maGlyL1N0cnVjdHVyZURlZmluaXRpb24vY3VzdG9tLXBhdGllbnQiLCJuYW1lIjoiQ3VzdG9tUGF0aWVudCIsInN0YXR1cyI6ImFjdGl2ZSIsImZoaXJWZXJzaW9uIjoiNC4wLjEiLCJraW5kIjoicmVzb3VyY2UiLCJhYnN0cmFjdCI6ZmFsc2UsInR5cGUiOiJQYXRpZW50IiwiYmFzZURlZmluaXRpb24iOiJodHRwOi8vaGw3Lm9yZy9maGlyL1N0cnVjdHVyZURlZmluaXRpb24vUGF0aWVudCIsImRlcml2YXRpb24iOiJjb25zdHJhaW50Iiwic25hcHNob3QiOnsiZWxlbWVudCI6W3siaWQiOiJQYXRpZW50IiwicGF0aCI6IlBhdGllbnQiLCJtaW4iOjAsIm1heCI6IioifSx7ImlkIjoiUGF0aWVudC5uYW1lIiwicGF0aCI6IlBhdGllbnQubmFtZSIsIm1pbiI6MSwibWF4IjoiKiJ9XX19Cg==")
@@ -583,17 +583,16 @@ public class Lang2FhirWireTest {
     }
 
     @Test
-    public void testExtractMultipleFhirResourcesFromADocument() throws Exception {
+    public void testDocumentMulti() throws Exception {
         // OAuth: enqueue token response (client fetches token before API call)
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
-                .setBody(TestResources.loadResource(
-                        "/wire-tests/Lang2FhirWireTest_testExtractMultipleFhirResourcesFromADocument_response.json")));
+                .setBody(TestResources.loadResource("/wire-tests/Lang2FhirWireTest_testDocumentMulti_response.json")));
         DocumentMultiResponse response = client.lang2Fhir()
-                .extractMultipleFhirResourcesFromADocument(DocumentMultiRequest.builder()
+                .documentMulti(DocumentMultiRequest.builder()
                         .version("R4")
                         .content("JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)")
                         .provider("medplum")
@@ -647,8 +646,8 @@ public class Lang2FhirWireTest {
         // Validate response body
         Assertions.assertNotNull(response, "Response should not be null");
         String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = TestResources.loadResource(
-                "/wire-tests/Lang2FhirWireTest_testExtractMultipleFhirResourcesFromADocument_response.json");
+        String expectedResponseBody =
+                TestResources.loadResource("/wire-tests/Lang2FhirWireTest_testDocumentMulti_response.json");
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
         Assertions.assertTrue(

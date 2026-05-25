@@ -13,8 +13,8 @@ import com.phenoml.api.resources.lang2fhir.requests.ProfileUploadRequest;
 import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.DocumentMultiResponse;
-import com.phenoml.api.resources.lang2fhir.types.Lang2FhirUploadProfileResponse;
 import com.phenoml.api.resources.lang2fhir.types.SearchResponse;
+import com.phenoml.api.resources.lang2fhir.types.UploadProfileResponse;
 import java.util.Map;
 
 public class Lang2FhirClient {
@@ -108,7 +108,7 @@ public class Lang2FhirClient {
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
      */
-    public Lang2FhirUploadProfileResponse uploadProfile(ProfileUploadRequest request) {
+    public UploadProfileResponse uploadProfile(ProfileUploadRequest request) {
         return this.rawClient.uploadProfile(request).body();
     }
 
@@ -124,7 +124,7 @@ public class Lang2FhirClient {
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
      */
-    public Lang2FhirUploadProfileResponse uploadProfile(ProfileUploadRequest request, RequestOptions requestOptions) {
+    public UploadProfileResponse uploadProfile(ProfileUploadRequest request, RequestOptions requestOptions) {
         return this.rawClient.uploadProfile(request, requestOptions).body();
     }
 
@@ -151,8 +151,8 @@ public class Lang2FhirClient {
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
-    public DocumentMultiResponse extractMultipleFhirResourcesFromADocument(DocumentMultiRequest request) {
-        return this.rawClient.extractMultipleFhirResourcesFromADocument(request).body();
+    public DocumentMultiResponse documentMulti(DocumentMultiRequest request) {
+        return this.rawClient.documentMulti(request).body();
     }
 
     /**
@@ -162,10 +162,7 @@ public class Lang2FhirClient {
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
-    public DocumentMultiResponse extractMultipleFhirResourcesFromADocument(
-            DocumentMultiRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .extractMultipleFhirResourcesFromADocument(request, requestOptions)
-                .body();
+    public DocumentMultiResponse documentMulti(DocumentMultiRequest request, RequestOptions requestOptions) {
+        return this.rawClient.documentMulti(request, requestOptions).body();
     }
 }

@@ -7,15 +7,15 @@ import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.workflows.requests.CreateWorkflowRequest;
 import com.phenoml.api.resources.workflows.requests.ExecuteWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.GetRequest;
+import com.phenoml.api.resources.workflows.requests.ListRequest;
 import com.phenoml.api.resources.workflows.requests.UpdateWorkflowRequest;
-import com.phenoml.api.resources.workflows.requests.WorkflowsGetRequest;
-import com.phenoml.api.resources.workflows.requests.WorkflowsListRequest;
 import com.phenoml.api.resources.workflows.types.CreateWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.DeleteResponse;
 import com.phenoml.api.resources.workflows.types.ExecuteWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.GetResponse;
 import com.phenoml.api.resources.workflows.types.ListWorkflowsResponse;
-import com.phenoml.api.resources.workflows.types.WorkflowsDeleteResponse;
-import com.phenoml.api.resources.workflows.types.WorkflowsGetResponse;
-import com.phenoml.api.resources.workflows.types.WorkflowsUpdateResponse;
+import com.phenoml.api.resources.workflows.types.UpdateResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncWorkflowsClient {
@@ -52,14 +52,14 @@ public class AsyncWorkflowsClient {
     /**
      * Retrieves all workflow definitions for the authenticated user
      */
-    public CompletableFuture<ListWorkflowsResponse> list(WorkflowsListRequest request) {
+    public CompletableFuture<ListWorkflowsResponse> list(ListRequest request) {
         return this.rawClient.list(request).thenApply(response -> response.body());
     }
 
     /**
      * Retrieves all workflow definitions for the authenticated user
      */
-    public CompletableFuture<ListWorkflowsResponse> list(WorkflowsListRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<ListWorkflowsResponse> list(ListRequest request, RequestOptions requestOptions) {
         return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
     }
 
@@ -81,43 +81,42 @@ public class AsyncWorkflowsClient {
     /**
      * Retrieves a workflow definition by its ID
      */
-    public CompletableFuture<WorkflowsGetResponse> get(String id) {
+    public CompletableFuture<GetResponse> get(String id) {
         return this.rawClient.get(id).thenApply(response -> response.body());
     }
 
     /**
      * Retrieves a workflow definition by its ID
      */
-    public CompletableFuture<WorkflowsGetResponse> get(String id, RequestOptions requestOptions) {
+    public CompletableFuture<GetResponse> get(String id, RequestOptions requestOptions) {
         return this.rawClient.get(id, requestOptions).thenApply(response -> response.body());
     }
 
     /**
      * Retrieves a workflow definition by its ID
      */
-    public CompletableFuture<WorkflowsGetResponse> get(String id, WorkflowsGetRequest request) {
+    public CompletableFuture<GetResponse> get(String id, GetRequest request) {
         return this.rawClient.get(id, request).thenApply(response -> response.body());
     }
 
     /**
      * Retrieves a workflow definition by its ID
      */
-    public CompletableFuture<WorkflowsGetResponse> get(
-            String id, WorkflowsGetRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<GetResponse> get(String id, GetRequest request, RequestOptions requestOptions) {
         return this.rawClient.get(id, request, requestOptions).thenApply(response -> response.body());
     }
 
     /**
      * Updates an existing workflow definition
      */
-    public CompletableFuture<WorkflowsUpdateResponse> update(String id, UpdateWorkflowRequest request) {
+    public CompletableFuture<UpdateResponse> update(String id, UpdateWorkflowRequest request) {
         return this.rawClient.update(id, request).thenApply(response -> response.body());
     }
 
     /**
      * Updates an existing workflow definition
      */
-    public CompletableFuture<WorkflowsUpdateResponse> update(
+    public CompletableFuture<UpdateResponse> update(
             String id, UpdateWorkflowRequest request, RequestOptions requestOptions) {
         return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
     }
@@ -125,14 +124,14 @@ public class AsyncWorkflowsClient {
     /**
      * Deletes a workflow definition by its ID
      */
-    public CompletableFuture<WorkflowsDeleteResponse> delete(String id) {
+    public CompletableFuture<DeleteResponse> delete(String id) {
         return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
     /**
      * Deletes a workflow definition by its ID
      */
-    public CompletableFuture<WorkflowsDeleteResponse> delete(String id, RequestOptions requestOptions) {
+    public CompletableFuture<DeleteResponse> delete(String id, RequestOptions requestOptions) {
         return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
     }
 

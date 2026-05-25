@@ -5,16 +5,16 @@ package com.phenoml.api.resources.fhir;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.resources.fhir.requests.FhirCreateRequest;
-import com.phenoml.api.resources.fhir.requests.FhirDeleteRequest;
-import com.phenoml.api.resources.fhir.requests.FhirExecuteBundleRequest;
-import com.phenoml.api.resources.fhir.requests.FhirPatchRequest;
-import com.phenoml.api.resources.fhir.requests.FhirSearchRequest;
-import com.phenoml.api.resources.fhir.requests.FhirUpsertRequest;
+import com.phenoml.api.resources.fhir.requests.CreateRequest;
+import com.phenoml.api.resources.fhir.requests.DeleteRequest;
+import com.phenoml.api.resources.fhir.requests.ExecuteBundleRequest;
+import com.phenoml.api.resources.fhir.requests.PatchRequest;
+import com.phenoml.api.resources.fhir.requests.SearchRequest;
+import com.phenoml.api.resources.fhir.requests.UpsertRequest;
 import com.phenoml.api.resources.fhir.types.FhirBundle;
-import com.phenoml.api.resources.fhir.types.FhirPatchRequestBodyItem;
 import com.phenoml.api.resources.fhir.types.FhirResource;
-import com.phenoml.api.resources.fhir.types.FhirSearchResponse;
+import com.phenoml.api.resources.fhir.types.PatchRequestBodyItem;
+import com.phenoml.api.resources.fhir.types.SearchResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +39,7 @@ public class FhirClient {
      * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public FhirSearchResponse search(String fhirProviderId, String fhirPath) {
+    public SearchResponse search(String fhirProviderId, String fhirPath) {
         return this.rawClient.search(fhirProviderId, fhirPath).body();
     }
 
@@ -47,7 +47,7 @@ public class FhirClient {
      * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public FhirSearchResponse search(String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
+    public SearchResponse search(String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
         return this.rawClient.search(fhirProviderId, fhirPath, requestOptions).body();
     }
 
@@ -55,7 +55,7 @@ public class FhirClient {
      * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public FhirSearchResponse search(String fhirProviderId, String fhirPath, FhirSearchRequest request) {
+    public SearchResponse search(String fhirProviderId, String fhirPath, SearchRequest request) {
         return this.rawClient.search(fhirProviderId, fhirPath, request).body();
     }
 
@@ -63,8 +63,8 @@ public class FhirClient {
      * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public FhirSearchResponse search(
-            String fhirProviderId, String fhirPath, FhirSearchRequest request, RequestOptions requestOptions) {
+    public SearchResponse search(
+            String fhirProviderId, String fhirPath, SearchRequest request, RequestOptions requestOptions) {
         return this.rawClient
                 .search(fhirProviderId, fhirPath, request, requestOptions)
                 .body();
@@ -93,7 +93,7 @@ public class FhirClient {
      * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public FhirResource create(String fhirProviderId, String fhirPath, FhirCreateRequest request) {
+    public FhirResource create(String fhirProviderId, String fhirPath, CreateRequest request) {
         return this.rawClient.create(fhirProviderId, fhirPath, request).body();
     }
 
@@ -102,7 +102,7 @@ public class FhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public FhirResource create(
-            String fhirProviderId, String fhirPath, FhirCreateRequest request, RequestOptions requestOptions) {
+            String fhirProviderId, String fhirPath, CreateRequest request, RequestOptions requestOptions) {
         return this.rawClient
                 .create(fhirProviderId, fhirPath, request, requestOptions)
                 .body();
@@ -131,7 +131,7 @@ public class FhirClient {
      * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public FhirResource upsert(String fhirProviderId, String fhirPath, FhirUpsertRequest request) {
+    public FhirResource upsert(String fhirProviderId, String fhirPath, UpsertRequest request) {
         return this.rawClient.upsert(fhirProviderId, fhirPath, request).body();
     }
 
@@ -140,7 +140,7 @@ public class FhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public FhirResource upsert(
-            String fhirProviderId, String fhirPath, FhirUpsertRequest request, RequestOptions requestOptions) {
+            String fhirProviderId, String fhirPath, UpsertRequest request, RequestOptions requestOptions) {
         return this.rawClient
                 .upsert(fhirProviderId, fhirPath, request, requestOptions)
                 .body();
@@ -166,7 +166,7 @@ public class FhirClient {
      * Deletes a FHIR resource from the specified provider.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public Map<String, Object> delete(String fhirProviderId, String fhirPath, FhirDeleteRequest request) {
+    public Map<String, Object> delete(String fhirProviderId, String fhirPath, DeleteRequest request) {
         return this.rawClient.delete(fhirProviderId, fhirPath, request).body();
     }
 
@@ -175,7 +175,7 @@ public class FhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public Map<String, Object> delete(
-            String fhirProviderId, String fhirPath, FhirDeleteRequest request, RequestOptions requestOptions) {
+            String fhirProviderId, String fhirPath, DeleteRequest request, RequestOptions requestOptions) {
         return this.rawClient
                 .delete(fhirProviderId, fhirPath, request, requestOptions)
                 .body();
@@ -191,7 +191,7 @@ public class FhirClient {
      * </ul>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public FhirResource patch(String fhirProviderId, String fhirPath, List<FhirPatchRequestBodyItem> body) {
+    public FhirResource patch(String fhirProviderId, String fhirPath, List<PatchRequestBodyItem> body) {
         return this.rawClient.patch(fhirProviderId, fhirPath, body).body();
     }
 
@@ -206,10 +206,7 @@ public class FhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public FhirResource patch(
-            String fhirProviderId,
-            String fhirPath,
-            List<FhirPatchRequestBodyItem> body,
-            RequestOptions requestOptions) {
+            String fhirProviderId, String fhirPath, List<PatchRequestBodyItem> body, RequestOptions requestOptions) {
         return this.rawClient
                 .patch(fhirProviderId, fhirPath, body, requestOptions)
                 .body();
@@ -225,7 +222,7 @@ public class FhirClient {
      * </ul>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public FhirResource patch(String fhirProviderId, String fhirPath, FhirPatchRequest request) {
+    public FhirResource patch(String fhirProviderId, String fhirPath, PatchRequest request) {
         return this.rawClient.patch(fhirProviderId, fhirPath, request).body();
     }
 
@@ -240,7 +237,7 @@ public class FhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public FhirResource patch(
-            String fhirProviderId, String fhirPath, FhirPatchRequest request, RequestOptions requestOptions) {
+            String fhirProviderId, String fhirPath, PatchRequest request, RequestOptions requestOptions) {
         return this.rawClient
                 .patch(fhirProviderId, fhirPath, request, requestOptions)
                 .body();
@@ -271,7 +268,7 @@ public class FhirClient {
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public FhirBundle executeBundle(String fhirProviderId, FhirExecuteBundleRequest request) {
+    public FhirBundle executeBundle(String fhirProviderId, ExecuteBundleRequest request) {
         return this.rawClient.executeBundle(fhirProviderId, request).body();
     }
 
@@ -281,7 +278,7 @@ public class FhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public FhirBundle executeBundle(
-            String fhirProviderId, FhirExecuteBundleRequest request, RequestOptions requestOptions) {
+            String fhirProviderId, ExecuteBundleRequest request, RequestOptions requestOptions) {
         return this.rawClient
                 .executeBundle(fhirProviderId, request, requestOptions)
                 .body();
