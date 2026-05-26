@@ -3,20 +3,20 @@ package com.phenoml.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.resources.fhir.requests.FhirCreateRequest;
-import com.phenoml.api.resources.fhir.requests.FhirDeleteRequest;
-import com.phenoml.api.resources.fhir.requests.FhirExecuteBundleRequest;
-import com.phenoml.api.resources.fhir.requests.FhirPatchRequest;
-import com.phenoml.api.resources.fhir.requests.FhirSearchRequest;
-import com.phenoml.api.resources.fhir.requests.FhirUpsertRequest;
+import com.phenoml.api.resources.fhir.requests.CreateRequest;
+import com.phenoml.api.resources.fhir.requests.DeleteRequest;
+import com.phenoml.api.resources.fhir.requests.ExecuteBundleRequest;
+import com.phenoml.api.resources.fhir.requests.PatchRequest;
+import com.phenoml.api.resources.fhir.requests.SearchRequest;
+import com.phenoml.api.resources.fhir.requests.UpsertRequest;
 import com.phenoml.api.resources.fhir.types.FhirBundle;
 import com.phenoml.api.resources.fhir.types.FhirBundleEntryItem;
 import com.phenoml.api.resources.fhir.types.FhirBundleEntryItemRequest;
 import com.phenoml.api.resources.fhir.types.FhirBundleEntryItemRequestMethod;
-import com.phenoml.api.resources.fhir.types.FhirPatchRequestBodyItem;
-import com.phenoml.api.resources.fhir.types.FhirPatchRequestBodyItemOp;
 import com.phenoml.api.resources.fhir.types.FhirResource;
-import com.phenoml.api.resources.fhir.types.FhirSearchResponse;
+import com.phenoml.api.resources.fhir.types.PatchRequestBodyItem;
+import com.phenoml.api.resources.fhir.types.PatchRequestBodyItemOp;
+import com.phenoml.api.resources.fhir.types.SearchResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,11 +59,11 @@ public class FhirWireTest {
                         .setResponseCode(200)
                         .setBody(
                                 "{\"resourceType\":\"Bundle\",\"total\":2,\"entry\":[{\"resource\":{\"resourceType\":\"Patient\",\"id\":\"123\",\"name\":[{\"family\":\"Doe\",\"given\":[\"John\"]}]}}]}"));
-        FhirSearchResponse response = client.fhir()
+        SearchResponse response = client.fhir()
                 .search(
                         "550e8400-e29b-41d4-a716-446655440000",
                         "Patient",
-                        FhirSearchRequest.builder()
+                        SearchRequest.builder()
                                 .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
                                 .phenomlFhirProvider(
                                         "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
@@ -160,7 +160,7 @@ public class FhirWireTest {
                 .create(
                         "550e8400-e29b-41d4-a716-446655440000",
                         "Patient",
-                        FhirCreateRequest.builder()
+                        CreateRequest.builder()
                                 .body(FhirResource.builder()
                                         .resourceType("Patient")
                                         .build())
@@ -280,7 +280,7 @@ public class FhirWireTest {
                 .upsert(
                         "550e8400-e29b-41d4-a716-446655440000",
                         "Patient",
-                        FhirUpsertRequest.builder()
+                        UpsertRequest.builder()
                                 .body(FhirResource.builder()
                                         .resourceType("Patient")
                                         .id("123")
@@ -401,7 +401,7 @@ public class FhirWireTest {
                 .delete(
                         "550e8400-e29b-41d4-a716-446655440000",
                         "Patient",
-                        FhirDeleteRequest.builder()
+                        DeleteRequest.builder()
                                 .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
                                 .phenomlFhirProvider(
                                         "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
@@ -490,9 +490,9 @@ public class FhirWireTest {
                 .patch(
                         "550e8400-e29b-41d4-a716-446655440000",
                         "Patient",
-                        FhirPatchRequest.builder()
-                                .body(Arrays.asList(FhirPatchRequestBodyItem.builder()
-                                        .op(FhirPatchRequestBodyItemOp.REPLACE)
+                        PatchRequest.builder()
+                                .body(Arrays.asList(PatchRequestBodyItem.builder()
+                                        .op(PatchRequestBodyItemOp.REPLACE)
                                         .path("/name/0/family")
                                         .value("NewFamilyName")
                                         .build()))
@@ -618,7 +618,7 @@ public class FhirWireTest {
         FhirBundle response = client.fhir()
                 .executeBundle(
                         "550e8400-e29b-41d4-a716-446655440000",
-                        FhirExecuteBundleRequest.builder()
+                        ExecuteBundleRequest.builder()
                                 .body(FhirBundle.builder()
                                         .entry(Arrays.asList(
                                                 FhirBundleEntryItem.builder()

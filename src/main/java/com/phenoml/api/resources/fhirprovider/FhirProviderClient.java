@@ -8,11 +8,11 @@ import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderCreateRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderRemoveAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderSetActiveAuthConfigRequest;
+import com.phenoml.api.resources.fhirprovider.types.DeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderAddAuthConfigRequest;
-import com.phenoml.api.resources.fhirprovider.types.FhirProviderDeleteResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderListResponse;
-import com.phenoml.api.resources.fhirprovider.types.FhirProviderRemoveAuthConfigResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderResponse;
+import com.phenoml.api.resources.fhirprovider.types.RemoveAuthConfigResponse;
 
 public class FhirProviderClient {
     protected final ClientOptions clientOptions;
@@ -87,7 +87,7 @@ public class FhirProviderClient {
      * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
-    public FhirProviderDeleteResponse delete(String fhirProviderId) {
+    public DeleteResponse delete(String fhirProviderId) {
         return this.rawClient.delete(fhirProviderId).body();
     }
 
@@ -95,7 +95,7 @@ public class FhirProviderClient {
      * Deletes a FHIR provider.
      * <p>Note: Sandbox providers cannot be deleted.</p>
      */
-    public FhirProviderDeleteResponse delete(String fhirProviderId, RequestOptions requestOptions) {
+    public DeleteResponse delete(String fhirProviderId, RequestOptions requestOptions) {
         return this.rawClient.delete(fhirProviderId, requestOptions).body();
     }
 
@@ -151,7 +151,7 @@ public class FhirProviderClient {
      * Cannot remove the currently active auth configuration.
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public FhirProviderRemoveAuthConfigResponse removeAuthConfig(
+    public RemoveAuthConfigResponse removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request) {
         return this.rawClient.removeAuthConfig(fhirProviderId, request).body();
     }
@@ -161,7 +161,7 @@ public class FhirProviderClient {
      * Cannot remove the currently active auth configuration.
      * <p>Note: Sandbox providers cannot be modified.</p>
      */
-    public FhirProviderRemoveAuthConfigResponse removeAuthConfig(
+    public RemoveAuthConfigResponse removeAuthConfig(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request, RequestOptions requestOptions) {
         return this.rawClient
                 .removeAuthConfig(fhirProviderId, request, requestOptions)

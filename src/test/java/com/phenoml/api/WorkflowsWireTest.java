@@ -5,17 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.workflows.requests.CreateWorkflowRequest;
 import com.phenoml.api.resources.workflows.requests.ExecuteWorkflowRequest;
+import com.phenoml.api.resources.workflows.requests.GetRequest;
+import com.phenoml.api.resources.workflows.requests.ListRequest;
 import com.phenoml.api.resources.workflows.requests.UpdateWorkflowRequest;
-import com.phenoml.api.resources.workflows.requests.WorkflowsGetRequest;
-import com.phenoml.api.resources.workflows.requests.WorkflowsListRequest;
 import com.phenoml.api.resources.workflows.types.CreateWorkflowRequestFhirProviderId;
 import com.phenoml.api.resources.workflows.types.CreateWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.DeleteResponse;
 import com.phenoml.api.resources.workflows.types.ExecuteWorkflowResponse;
+import com.phenoml.api.resources.workflows.types.GetResponse;
 import com.phenoml.api.resources.workflows.types.ListWorkflowsResponse;
+import com.phenoml.api.resources.workflows.types.UpdateResponse;
 import com.phenoml.api.resources.workflows.types.UpdateWorkflowRequestFhirProviderId;
-import com.phenoml.api.resources.workflows.types.WorkflowsDeleteResponse;
-import com.phenoml.api.resources.workflows.types.WorkflowsGetResponse;
-import com.phenoml.api.resources.workflows.types.WorkflowsUpdateResponse;
 import java.util.HashMap;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -53,8 +53,8 @@ public class WorkflowsWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody(TestResources.loadResource("/wire-tests/WorkflowsWireTest_testList_response.json")));
-        ListWorkflowsResponse response = client.workflows()
-                .list(WorkflowsListRequest.builder().verbose(true).build());
+        ListWorkflowsResponse response =
+                client.workflows().list(ListRequest.builder().verbose(true).build());
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -225,8 +225,8 @@ public class WorkflowsWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody(TestResources.loadResource("/wire-tests/WorkflowsWireTest_testGet_response.json")));
-        WorkflowsGetResponse response = client.workflows()
-                .get("id", WorkflowsGetRequest.builder().verbose(true).build());
+        GetResponse response =
+                client.workflows().get("id", GetRequest.builder().verbose(true).build());
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -283,7 +283,7 @@ public class WorkflowsWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody(TestResources.loadResource("/wire-tests/WorkflowsWireTest_testUpdate_response.json")));
-        WorkflowsUpdateResponse response = client.workflows()
+        UpdateResponse response = client.workflows()
                 .update(
                         "id",
                         UpdateWorkflowRequest.builder()
@@ -399,7 +399,7 @@ public class WorkflowsWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"success\":true,\"message\":\"Workflow deleted successfully\"}"));
-        WorkflowsDeleteResponse response = client.workflows().delete("id");
+        DeleteResponse response = client.workflows().delete("id");
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();

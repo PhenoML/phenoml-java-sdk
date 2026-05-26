@@ -71,7 +71,7 @@ client.agent().create(
 </dl>
 </details>
 
-<details><summary><code>client.agent.list() -> AgentListResponse</code></summary>
+<details><summary><code>client.agent.list() -> ListResponse</code></summary>
 <dl>
 <dd>
 
@@ -99,7 +99,7 @@ Retrieves a list of PhenoAgents belonging to the authenticated user
 
 ```java
 client.agent().list(
-    AgentListRequest
+    ListRequest
         .builder()
         .tags("tags")
         .build()
@@ -264,7 +264,7 @@ client.agent().update(
 </dl>
 </details>
 
-<details><summary><code>client.agent.delete(id) -> AgentDeleteResponse</code></summary>
+<details><summary><code>client.agent.delete(id) -> DeleteResponse</code></summary>
 <dl>
 <dd>
 
@@ -632,7 +632,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 </dl>
 </details>
 
-<details><summary><code>client.agent.getChatMessages() -> AgentGetChatMessagesResponse</code></summary>
+<details><summary><code>client.agent.getChatMessages() -> GetChatMessagesResponse</code></summary>
 <dl>
 <dd>
 
@@ -660,12 +660,12 @@ Retrieves a list of chat messages for a given chat session
 
 ```java
 client.agent().getChatMessages(
-    AgentGetChatMessagesRequest
+    GetChatMessagesRequest
         .builder()
         .chatSessionId("chat_session_id")
         .numMessages(1)
-        .role(AgentGetChatMessagesRequestRole.USER)
-        .order(AgentGetChatMessagesRequestOrder.ASC)
+        .role(GetChatMessagesRequestRole.USER)
+        .order(GetChatMessagesRequestOrder.ASC)
         .build()
 );
 ```
@@ -698,7 +698,7 @@ client.agent().getChatMessages(
 <dl>
 <dd>
 
-**role:** `Optional<AgentGetChatMessagesRequestRole>` 
+**role:** `Optional<GetChatMessagesRequestRole>` 
 
 Filter by one or more message roles. Multiple roles can be specified as a comma-separated string.
 If not specified, messages with all roles are returned.
@@ -715,7 +715,7 @@ If not specified, messages with all roles are returned.
 <dl>
 <dd>
 
-**order:** `Optional<AgentGetChatMessagesRequestOrder>` — Order of messages
+**order:** `Optional<GetChatMessagesRequestOrder>` — Order of messages
     
 </dd>
 </dl>
@@ -1154,8 +1154,8 @@ client.agent().prompts().patch(
 </dl>
 </details>
 
-## Authtoken Auth
-<details><summary><code>client.authtoken.auth.getToken(request) -> TokenResponse</code></summary>
+## Authtoken
+<details><summary><code>client.authtoken.getToken(request) -> TokenResponse</code></summary>
 <dl>
 <dd>
 
@@ -1185,7 +1185,7 @@ returns an access token with expiration information.
 <dd>
 
 ```java
-client.authtoken().auth().getToken(
+client.authtoken().getToken(
     ClientCredentialsRequest
         .builder()
         .clientId("your_client_id")
@@ -1295,7 +1295,7 @@ client.cohort().analyze(
 </details>
 
 ## Construe
-<details><summary><code>client.construe.uploadCodeSystem(request) -> ConstrueUploadCodeSystemResponse</code></summary>
+<details><summary><code>client.construe.uploadCodeSystem(request) -> UploadCodeSystemResponse</code></summary>
 <dl>
 <dd>
 
@@ -1547,7 +1547,7 @@ client.construe().extractCodes(
 </dl>
 </details>
 
-<details><summary><code>client.construe.listAvailableCodeSystems() -> ListCodeSystemsResponse</code></summary>
+<details><summary><code>client.construe.listCodeSystems() -> ListCodeSystemsResponse</code></summary>
 <dl>
 <dd>
 
@@ -1574,7 +1574,7 @@ Returns the terminology server's catalog of available code systems, including bo
 <dd>
 
 ```java
-client.construe().listAvailableCodeSystems();
+client.construe().listCodeSystems();
 ```
 </dd>
 </dl>
@@ -1586,7 +1586,7 @@ client.construe().listAvailableCodeSystems();
 </dl>
 </details>
 
-<details><summary><code>client.construe.getCodeSystemDetail(codesystem) -> GetCodeSystemDetailResponse</code></summary>
+<details><summary><code>client.construe.getCodeSystem(codesystem) -> GetCodeSystemDetailResponse</code></summary>
 <dl>
 <dd>
 
@@ -1613,9 +1613,9 @@ Returns full metadata for a single code system, including timestamps and builtin
 <dd>
 
 ```java
-client.construe().getCodeSystemDetail(
+client.construe().getCodeSystem(
     "ICD-10-CM",
-    GetConstrueCodesSystemsCodesystemRequest
+    GetCodeSystemRequest
         .builder()
         .version("2025")
         .build()
@@ -1654,7 +1654,7 @@ client.construe().getCodeSystemDetail(
 </dl>
 </details>
 
-<details><summary><code>client.construe.deleteCustomCodeSystem(codesystem) -> DeleteCodeSystemResponse</code></summary>
+<details><summary><code>client.construe.deleteCodeSystem(codesystem) -> DeleteCodeSystemResponse</code></summary>
 <dl>
 <dd>
 
@@ -1682,9 +1682,9 @@ Only available on dedicated instances. Large systems may take up to a minute to 
 <dd>
 
 ```java
-client.construe().deleteCustomCodeSystem(
+client.construe().deleteCodeSystem(
     "CUSTOM_CODES",
-    DeleteConstrueCodesSystemsCodesystemRequest
+    DeleteCodeSystemRequest
         .builder()
         .version("version")
         .build()
@@ -1723,7 +1723,7 @@ client.construe().deleteCustomCodeSystem(
 </dl>
 </details>
 
-<details><summary><code>client.construe.exportCustomCodeSystem(codesystem) -> ExportCodeSystemResponse</code></summary>
+<details><summary><code>client.construe.exportCodeSystem(codesystem) -> ExportCodeSystemResponse</code></summary>
 <dl>
 <dd>
 
@@ -1752,9 +1752,9 @@ Only available on dedicated instances. Builtin systems cannot be exported.
 <dd>
 
 ```java
-client.construe().exportCustomCodeSystem(
+client.construe().exportCodeSystem(
     "CUSTOM_CODES",
-    GetConstrueCodesSystemsCodesystemExportRequest
+    ExportCodeSystemRequest
         .builder()
         .version("version")
         .build()
@@ -1793,7 +1793,7 @@ client.construe().exportCustomCodeSystem(
 </dl>
 </details>
 
-<details><summary><code>client.construe.listCodesInACodeSystem(codesystem) -> ListCodesResponse</code></summary>
+<details><summary><code>client.construe.listCodes(codesystem) -> ListCodesResponse</code></summary>
 <dl>
 <dd>
 
@@ -1822,9 +1822,9 @@ Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
 <dd>
 
 ```java
-client.construe().listCodesInACodeSystem(
+client.construe().listCodes(
     "ICD-10-CM",
-    GetConstrueCodesCodesystemRequest
+    ListCodesRequest
         .builder()
         .version("2025")
         .cursor("cursor")
@@ -1881,7 +1881,7 @@ client.construe().listCodesInACodeSystem(
 </dl>
 </details>
 
-<details><summary><code>client.construe.getASpecificCode(codesystem, codeId) -> GetCodeResponse</code></summary>
+<details><summary><code>client.construe.getCode(codesystem, codeId) -> GetCodeResponse</code></summary>
 <dl>
 <dd>
 
@@ -1910,10 +1910,10 @@ Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
 <dd>
 
 ```java
-client.construe().getASpecificCode(
+client.construe().getCode(
     "ICD-10-CM",
     "E1165",
-    GetConstrueCodesCodesystemCodeIdRequest
+    GetCodeRequest
         .builder()
         .version("version")
         .build()
@@ -1963,7 +1963,7 @@ cosmetic dot (use "E1165", not "E11.65").
 </dl>
 </details>
 
-<details><summary><code>client.construe.semanticSearchEmbeddingBased(codesystem) -> SemanticSearchResponse</code></summary>
+<details><summary><code>client.construe.searchSemantic(codesystem) -> SemanticSearchResponse</code></summary>
 <dl>
 <dd>
 
@@ -2008,9 +2008,9 @@ Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
 <dd>
 
 ```java
-client.construe().semanticSearchEmbeddingBased(
+client.construe().searchSemantic(
     "ICD-10-CM",
-    GetConstrueCodesCodesystemSearchSemanticRequest
+    SearchSemanticRequest
         .builder()
         .text("patient has trouble breathing at night and wakes up gasping")
         .version("version")
@@ -2067,7 +2067,7 @@ client.construe().semanticSearchEmbeddingBased(
 </dl>
 </details>
 
-<details><summary><code>client.construe.submitFeedbackOnExtractionResults(request) -> FeedbackResponse</code></summary>
+<details><summary><code>client.construe.submitFeedback(request) -> FeedbackResponse</code></summary>
 <dl>
 <dd>
 
@@ -2095,7 +2095,7 @@ Feedback includes the full extraction result received and the result the user ex
 <dd>
 
 ```java
-client.construe().submitFeedbackOnExtractionResults(
+client.construe().submitFeedback(
     FeedbackRequest
         .builder()
         .text("Patient has type 2 diabetes with hyperglycemia")
@@ -2196,7 +2196,7 @@ client.construe().submitFeedbackOnExtractionResults(
 </dl>
 </details>
 
-<details><summary><code>client.construe.terminologyServerTextSearch(codesystem) -> TextSearchResponse</code></summary>
+<details><summary><code>client.construe.searchText(codesystem) -> TextSearchResponse</code></summary>
 <dl>
 <dd>
 
@@ -2246,9 +2246,9 @@ Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
 <dd>
 
 ```java
-client.construe().terminologyServerTextSearch(
+client.construe().searchText(
     "ICD-10-CM",
-    GetConstrueCodesCodesystemSearchTextRequest
+    SearchTextRequest
         .builder()
         .q("E11.65")
         .version("version")
@@ -2306,7 +2306,7 @@ client.construe().terminologyServerTextSearch(
 </details>
 
 ## Fhir
-<details><summary><code>client.fhir.search(fhirProviderId, fhirPath) -> FhirSearchResponse</code></summary>
+<details><summary><code>client.fhir.search(fhirProviderId, fhirPath) -> SearchResponse</code></summary>
 <dl>
 <dd>
 
@@ -2338,7 +2338,7 @@ The request is proxied to the configured FHIR server with appropriate authentica
 client.fhir().search(
     "550e8400-e29b-41d4-a716-446655440000",
     "Patient",
-    FhirSearchRequest
+    SearchRequest
         .builder()
         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
         .phenomlFhirProvider("550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
@@ -2456,7 +2456,7 @@ The request is proxied to the configured FHIR server with appropriate authentica
 client.fhir().create(
     "550e8400-e29b-41d4-a716-446655440000",
     "Patient",
-    FhirCreateRequest
+    CreateRequest
         .builder()
         .body(
             FhirResource
@@ -2574,7 +2574,7 @@ The request is proxied to the configured FHIR server with appropriate authentica
 client.fhir().upsert(
     "550e8400-e29b-41d4-a716-446655440000",
     "Patient",
-    FhirUpsertRequest
+    UpsertRequest
         .builder()
         .body(
             FhirResource
@@ -2693,7 +2693,7 @@ The request is proxied to the configured FHIR server with appropriate authentica
 client.fhir().delete(
     "550e8400-e29b-41d4-a716-446655440000",
     "Patient",
-    FhirDeleteRequest
+    DeleteRequest
         .builder()
         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
         .phenomlFhirProvider("550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
@@ -2802,13 +2802,13 @@ The request is proxied to the configured FHIR server with appropriate authentica
 client.fhir().patch(
     "550e8400-e29b-41d4-a716-446655440000",
     "Patient",
-    FhirPatchRequest
+    PatchRequest
         .builder()
         .body(
             Arrays.asList(
-                FhirPatchRequestBodyItem
+                PatchRequestBodyItem
                     .builder()
-                    .op(FhirPatchRequestBodyItemOp.REPLACE)
+                    .op(PatchRequestBodyItemOp.REPLACE)
                     .path("/name/0/family")
                     .value("NewFamilyName")
                     .build()
@@ -2880,7 +2880,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 <dl>
 <dd>
 
-**request:** `List<FhirPatchRequestBodyItem>` — Array of JSON Patch operations following RFC 6902
+**request:** `List<PatchRequestBodyItem>` — Array of JSON Patch operations following RFC 6902
     
 </dd>
 </dl>
@@ -2925,7 +2925,7 @@ The request is proxied to the configured FHIR server with appropriate authentica
 ```java
 client.fhir().executeBundle(
     "550e8400-e29b-41d4-a716-446655440000",
-    FhirExecuteBundleRequest
+    ExecuteBundleRequest
         .builder()
         .body(
             FhirBundle
@@ -3243,7 +3243,7 @@ client.fhirProvider().get("fhir_provider_id");
 </dl>
 </details>
 
-<details><summary><code>client.fhirProvider.delete(fhirProviderId) -> FhirProviderDeleteResponse</code></summary>
+<details><summary><code>client.fhirProvider.delete(fhirProviderId) -> DeleteResponse</code></summary>
 <dl>
 <dd>
 
@@ -3447,7 +3447,7 @@ client.fhirProvider().setActiveAuthConfig(
 </dl>
 </details>
 
-<details><summary><code>client.fhirProvider.removeAuthConfig(fhirProviderId, request) -> FhirProviderRemoveAuthConfigResponse</code></summary>
+<details><summary><code>client.fhirProvider.removeAuthConfig(fhirProviderId, request) -> RemoveAuthConfigResponse</code></summary>
 <dl>
 <dd>
 
@@ -3778,7 +3778,7 @@ Examples:
 </dl>
 </details>
 
-<details><summary><code>client.lang2Fhir.uploadProfile(request) -> Lang2FhirUploadProfileResponse</code></summary>
+<details><summary><code>client.lang2Fhir.uploadProfile(request) -> UploadProfileResponse</code></summary>
 <dl>
 <dd>
 
@@ -3955,7 +3955,7 @@ File type is auto-detected from content magic bytes.
 </dl>
 </details>
 
-<details><summary><code>client.lang2Fhir.extractMultipleFhirResourcesFromADocument(request) -> DocumentMultiResponse</code></summary>
+<details><summary><code>client.lang2Fhir.documentMulti(request) -> DocumentMultiResponse</code></summary>
 <dl>
 <dd>
 
@@ -3987,7 +3987,7 @@ Resources are linked with proper references (e.g., Conditions reference the Pati
 <dd>
 
 ```java
-client.lang2Fhir().extractMultipleFhirResourcesFromADocument(
+client.lang2Fhir().documentMulti(
     DocumentMultiRequest
         .builder()
         .version("R4")
@@ -4073,8 +4073,8 @@ File type is auto-detected from content magic bytes.
 </dl>
 </details>
 
-## Summary
-<details><summary><code>client.summary.listTemplates() -> SummaryListTemplatesResponse</code></summary>
+## Summary Templates
+<details><summary><code>client.summary.templates.list() -> TemplatesListResponse</code></summary>
 <dl>
 <dd>
 
@@ -4101,7 +4101,7 @@ Retrieves all summary templates for the authenticated user
 <dd>
 
 ```java
-client.summary().listTemplates();
+client.summary().templates().list();
 ```
 </dd>
 </dl>
@@ -4113,7 +4113,7 @@ client.summary().listTemplates();
 </dl>
 </details>
 
-<details><summary><code>client.summary.createTemplate(request) -> CreateSummaryTemplateResponse</code></summary>
+<details><summary><code>client.summary.templates.create(request) -> CreateSummaryTemplateResponse</code></summary>
 <dl>
 <dd>
 
@@ -4140,7 +4140,7 @@ Creates a summary template from an example using LLM function calling
 <dd>
 
 ```java
-client.summary().createTemplate(
+client.summary().templates().create(
     CreateSummaryTemplateRequest
         .builder()
         .name("Discharge Summary")
@@ -4217,7 +4217,7 @@ client.summary().createTemplate(
 </dl>
 </details>
 
-<details><summary><code>client.summary.getTemplate(id) -> SummaryGetTemplateResponse</code></summary>
+<details><summary><code>client.summary.templates.get(id) -> TemplatesGetResponse</code></summary>
 <dl>
 <dd>
 
@@ -4244,7 +4244,7 @@ Retrieves a specific summary template
 <dd>
 
 ```java
-client.summary().getTemplate("id");
+client.summary().templates().get("id");
 ```
 </dd>
 </dl>
@@ -4271,7 +4271,7 @@ client.summary().getTemplate("id");
 </dl>
 </details>
 
-<details><summary><code>client.summary.updateTemplate(id, request) -> SummaryUpdateTemplateResponse</code></summary>
+<details><summary><code>client.summary.templates.update(id, request) -> TemplatesUpdateResponse</code></summary>
 <dl>
 <dd>
 
@@ -4298,7 +4298,7 @@ Updates an existing summary template
 <dd>
 
 ```java
-client.summary().updateTemplate(
+client.summary().templates().update(
     "id",
     UpdateSummaryTemplateRequest
         .builder()
@@ -4376,7 +4376,7 @@ client.summary().updateTemplate(
 </dl>
 </details>
 
-<details><summary><code>client.summary.deleteTemplate(id) -> SummaryDeleteTemplateResponse</code></summary>
+<details><summary><code>client.summary.templates.delete(id) -> TemplatesDeleteResponse</code></summary>
 <dl>
 <dd>
 
@@ -4403,7 +4403,7 @@ Deletes a summary template
 <dd>
 
 ```java
-client.summary().deleteTemplate("id");
+client.summary().templates().delete("id");
 ```
 </dd>
 </dl>
@@ -4430,6 +4430,7 @@ client.summary().deleteTemplate("id");
 </dl>
 </details>
 
+## Summary
 <details><summary><code>client.summary.create(request) -> CreateSummaryResponse</code></summary>
 <dl>
 <dd>
@@ -5361,7 +5362,7 @@ Retrieves all workflow definitions for the authenticated user
 
 ```java
 client.workflows().list(
-    WorkflowsListRequest
+    ListRequest
         .builder()
         .verbose(true)
         .build()
@@ -5504,7 +5505,7 @@ client.workflows().create(
 </dl>
 </details>
 
-<details><summary><code>client.workflows.get(id) -> WorkflowsGetResponse</code></summary>
+<details><summary><code>client.workflows.get(id) -> GetResponse</code></summary>
 <dl>
 <dd>
 
@@ -5533,7 +5534,7 @@ Retrieves a workflow definition by its ID
 ```java
 client.workflows().get(
     "id",
-    WorkflowsGetRequest
+    GetRequest
         .builder()
         .verbose(true)
         .build()
@@ -5572,7 +5573,7 @@ client.workflows().get(
 </dl>
 </details>
 
-<details><summary><code>client.workflows.update(id, request) -> WorkflowsUpdateResponse</code></summary>
+<details><summary><code>client.workflows.update(id, request) -> UpdateResponse</code></summary>
 <dl>
 <dd>
 
@@ -5693,7 +5694,7 @@ client.workflows().update(
 </dl>
 </details>
 
-<details><summary><code>client.workflows.delete(id) -> WorkflowsDeleteResponse</code></summary>
+<details><summary><code>client.workflows.delete(id) -> DeleteResponse</code></summary>
 <dl>
 <dd>
 

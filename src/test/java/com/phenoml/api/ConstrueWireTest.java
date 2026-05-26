@@ -3,18 +3,17 @@ package com.phenoml.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.resources.construe.requests.DeleteConstrueCodesSystemsCodesystemRequest;
+import com.phenoml.api.resources.construe.requests.DeleteCodeSystemRequest;
+import com.phenoml.api.resources.construe.requests.ExportCodeSystemRequest;
 import com.phenoml.api.resources.construe.requests.ExtractRequest;
 import com.phenoml.api.resources.construe.requests.FeedbackRequest;
-import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemCodeIdRequest;
-import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemRequest;
-import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchSemanticRequest;
-import com.phenoml.api.resources.construe.requests.GetConstrueCodesCodesystemSearchTextRequest;
-import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemExportRequest;
-import com.phenoml.api.resources.construe.requests.GetConstrueCodesSystemsCodesystemRequest;
+import com.phenoml.api.resources.construe.requests.GetCodeRequest;
+import com.phenoml.api.resources.construe.requests.GetCodeSystemRequest;
+import com.phenoml.api.resources.construe.requests.ListCodesRequest;
+import com.phenoml.api.resources.construe.requests.SearchSemanticRequest;
+import com.phenoml.api.resources.construe.requests.SearchTextRequest;
 import com.phenoml.api.resources.construe.requests.UploadRequest;
 import com.phenoml.api.resources.construe.types.CodeResponse;
-import com.phenoml.api.resources.construe.types.ConstrueUploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExportCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
@@ -27,6 +26,7 @@ import com.phenoml.api.resources.construe.types.ListCodeSystemsResponse;
 import com.phenoml.api.resources.construe.types.ListCodesResponse;
 import com.phenoml.api.resources.construe.types.SemanticSearchResponse;
 import com.phenoml.api.resources.construe.types.TextSearchResponse;
+import com.phenoml.api.resources.construe.types.UploadCodeSystemResponse;
 import com.phenoml.api.resources.construe.types.UploadRequestFormat;
 import java.util.Arrays;
 import java.util.Optional;
@@ -66,7 +66,7 @@ public class ConstrueWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"status\":\"processing\",\"name\":\"CUSTOM_CODES\",\"version\":\"1.0\"}"));
-        ConstrueUploadCodeSystemResponse response = client.construe()
+        UploadCodeSystemResponse response = client.construe()
                 .uploadCodeSystem(UploadRequest.builder()
                         .name("CUSTOM_CODES")
                         .version("1.0")
@@ -280,7 +280,7 @@ public class ConstrueWireTest {
     }
 
     @Test
-    public void testListAvailableCodeSystems() throws Exception {
+    public void testListCodeSystems() throws Exception {
         // OAuth: enqueue token response (client fetches token before API call)
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -290,7 +290,7 @@ public class ConstrueWireTest {
                         .setResponseCode(200)
                         .setBody(
                                 "{\"systems\":[{\"name\":\"ICD-10-CM\",\"version\":\"2025\",\"code_count\":97584,\"builtin\":true},{\"name\":\"SNOMED_CT_US_LITE\",\"version\":\"20240901\",\"code_count\":102837,\"builtin\":true},{\"name\":\"RXNORM\",\"version\":\"11042024\",\"code_count\":257619,\"builtin\":true},{\"name\":\"LOINC\",\"version\":\"2.78\",\"code_count\":98123,\"builtin\":true},{\"name\":\"HPO\",\"version\":\"2025\",\"code_count\":19542,\"builtin\":true},{\"name\":\"CPT\",\"version\":\"2025\",\"code_count\":10192,\"builtin\":true},{\"name\":\"ICD-10-PCS\",\"version\":\"2025\",\"code_count\":78717,\"builtin\":true}]}"));
-        ListCodeSystemsResponse response = client.construe().listAvailableCodeSystems();
+        ListCodeSystemsResponse response = client.construe().listCodeSystems();
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -385,7 +385,7 @@ public class ConstrueWireTest {
     }
 
     @Test
-    public void testGetCodeSystemDetail() throws Exception {
+    public void testGetCodeSystem() throws Exception {
         // OAuth: enqueue token response (client fetches token before API call)
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -396,11 +396,9 @@ public class ConstrueWireTest {
                         .setBody(
                                 "{\"name\":\"ICD-10-CM\",\"version\":\"2025\",\"code_count\":97584,\"builtin\":true,\"status\":\"ready\",\"created_at\":\"2026-02-10T18:33:23Z\",\"updated_at\":\"2026-02-10T18:33:23Z\"}"));
         GetCodeSystemDetailResponse response = client.construe()
-                .getCodeSystemDetail(
+                .getCodeSystem(
                         "ICD-10-CM",
-                        GetConstrueCodesSystemsCodesystemRequest.builder()
-                                .version("2025")
-                                .build());
+                        GetCodeSystemRequest.builder().version("2025").build());
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -458,7 +456,7 @@ public class ConstrueWireTest {
     }
 
     @Test
-    public void testDeleteCustomCodeSystem() throws Exception {
+    public void testDeleteCodeSystem() throws Exception {
         // OAuth: enqueue token response (client fetches token before API call)
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -466,11 +464,9 @@ public class ConstrueWireTest {
         server.enqueue(
                 new MockResponse().setResponseCode(200).setBody("{\"message\":\"code system deleted successfully\"}"));
         DeleteCodeSystemResponse response = client.construe()
-                .deleteCustomCodeSystem(
+                .deleteCodeSystem(
                         "CUSTOM_CODES",
-                        DeleteConstrueCodesSystemsCodesystemRequest.builder()
-                                .version("version")
-                                .build());
+                        DeleteCodeSystemRequest.builder().version("version").build());
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -519,7 +515,7 @@ public class ConstrueWireTest {
     }
 
     @Test
-    public void testExportCustomCodeSystem() throws Exception {
+    public void testExportCodeSystem() throws Exception {
         // OAuth: enqueue token response (client fetches token before API call)
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -530,11 +526,9 @@ public class ConstrueWireTest {
                         .setBody(
                                 "{\"name\":\"CUSTOM_CODES\",\"version\":\"1.0\",\"format\":\"json\",\"codes\":[{\"code\":\"X001\",\"description\":\"Example custom code 1\",\"definition\":\"definition\"},{\"code\":\"X002\",\"description\":\"Example custom code 2\",\"definition\":\"definition\"}]}"));
         ExportCodeSystemResponse response = client.construe()
-                .exportCustomCodeSystem(
+                .exportCodeSystem(
                         "CUSTOM_CODES",
-                        GetConstrueCodesSystemsCodesystemExportRequest.builder()
-                                .version("version")
-                                .build());
+                        ExportCodeSystemRequest.builder().version("version").build());
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -600,7 +594,7 @@ public class ConstrueWireTest {
     }
 
     @Test
-    public void testListCodesInACodeSystem() throws Exception {
+    public void testListCodes() throws Exception {
         // OAuth: enqueue token response (client fetches token before API call)
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -611,9 +605,9 @@ public class ConstrueWireTest {
                         .setBody(
                                 "{\"system\":{\"name\":\"ICD-10-CM\",\"version\":\"2025\"},\"codes\":[{\"code\":\"A00\",\"description\":\"Cholera\",\"definition\":\"definition\"},{\"code\":\"A000\",\"description\":\"Cholera due to Vibrio cholerae 01, biovar cholerae\",\"definition\":\"definition\"},{\"code\":\"A001\",\"description\":\"Cholera due to Vibrio cholerae 01, biovar eltor\",\"definition\":\"definition\"},{\"code\":\"A009\",\"description\":\"Cholera, unspecified\",\"definition\":\"definition\"},{\"code\":\"A01\",\"description\":\"Typhoid and paratyphoid fevers\",\"definition\":\"definition\"}],\"next_cursor\":\"QTAx\",\"has_more\":true}"));
         ListCodesResponse response = client.construe()
-                .listCodesInACodeSystem(
+                .listCodes(
                         "ICD-10-CM",
-                        GetConstrueCodesCodesystemRequest.builder()
+                        ListCodesRequest.builder()
                                 .version("2025")
                                 .cursor("cursor")
                                 .limit(1)
@@ -701,7 +695,7 @@ public class ConstrueWireTest {
     }
 
     @Test
-    public void testGetASpecificCode() throws Exception {
+    public void testGetCode() throws Exception {
         // OAuth: enqueue token response (client fetches token before API call)
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -712,12 +706,10 @@ public class ConstrueWireTest {
                         .setBody(
                                 "{\"system\":{\"name\":\"ICD-10-CM\",\"version\":\"2025\"},\"code\":\"E1165\",\"description\":\"Type 2 diabetes mellitus with hyperglycemia\",\"definition\":\"definition\"}"));
         GetCodeResponse response = client.construe()
-                .getASpecificCode(
+                .getCode(
                         "ICD-10-CM",
                         "E1165",
-                        GetConstrueCodesCodesystemCodeIdRequest.builder()
-                                .version("version")
-                                .build());
+                        GetCodeRequest.builder().version("version").build());
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -775,7 +767,7 @@ public class ConstrueWireTest {
     }
 
     @Test
-    public void testSemanticSearchEmbeddingBased() throws Exception {
+    public void testSearchSemantic() throws Exception {
         // OAuth: enqueue token response (client fetches token before API call)
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -786,9 +778,9 @@ public class ConstrueWireTest {
                         .setBody(
                                 "{\"system\":{\"name\":\"ICD-10-CM\",\"version\":\"2025\"},\"results\":[{\"code\":\"R06.00\",\"description\":\"Dyspnea, unspecified\"},{\"code\":\"R06.01\",\"description\":\"Orthopnea\"},{\"code\":\"G47.33\",\"description\":\"Obstructive sleep apnea\"},{\"code\":\"R06.83\",\"description\":\"Snoring\"},{\"code\":\"J45.20\",\"description\":\"Mild intermittent asthma, uncomplicated\"}]}"));
         SemanticSearchResponse response = client.construe()
-                .semanticSearchEmbeddingBased(
+                .searchSemantic(
                         "ICD-10-CM",
-                        GetConstrueCodesCodesystemSearchSemanticRequest.builder()
+                        SearchSemanticRequest.builder()
                                 .text("patient has trouble breathing at night and wakes up gasping")
                                 .version("version")
                                 .limit(1)
@@ -869,14 +861,14 @@ public class ConstrueWireTest {
     }
 
     @Test
-    public void testSubmitFeedbackOnExtractionResults() throws Exception {
+    public void testSubmitFeedback() throws Exception {
         // OAuth: enqueue token response (client fetches token before API call)
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
         server.enqueue(new MockResponse().setResponseCode(200).setBody("{\"id\":\"abc123def456\"}"));
         FeedbackResponse response = client.construe()
-                .submitFeedbackOnExtractionResults(FeedbackRequest.builder()
+                .submitFeedback(FeedbackRequest.builder()
                         .text("Patient has type 2 diabetes with hyperglycemia")
                         .receivedResult(ExtractCodesResult.builder()
                                 .system(ExtractRequestSystem.builder()
@@ -1009,7 +1001,7 @@ public class ConstrueWireTest {
     }
 
     @Test
-    public void testTerminologyServerTextSearch() throws Exception {
+    public void testSearchText() throws Exception {
         // OAuth: enqueue token response (client fetches token before API call)
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -1020,9 +1012,9 @@ public class ConstrueWireTest {
                         .setBody(
                                 "{\"system\":{\"name\":\"ICD-10-CM\",\"version\":\"2025\"},\"results\":[{\"code\":\"E11.65\",\"description\":\"Type 2 diabetes mellitus with hyperglycemia\"},{\"code\":\"E11.649\",\"description\":\"Type 2 diabetes mellitus with hypoglycemia without coma\"},{\"code\":\"E11.69\",\"description\":\"Type 2 diabetes mellitus with other specified complication\"}],\"found\":3}"));
         TextSearchResponse response = client.construe()
-                .terminologyServerTextSearch(
+                .searchText(
                         "ICD-10-CM",
-                        GetConstrueCodesCodesystemSearchTextRequest.builder()
+                        SearchTextRequest.builder()
                                 .q("E11.65")
                                 .version("version")
                                 .limit(1)

@@ -8,17 +8,17 @@ import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.agent.prompts.PromptsClient;
 import com.phenoml.api.resources.agent.requests.AgentChatRequest;
-import com.phenoml.api.resources.agent.requests.AgentGetChatMessagesRequest;
-import com.phenoml.api.resources.agent.requests.AgentListRequest;
 import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
+import com.phenoml.api.resources.agent.requests.GetChatMessagesRequest;
+import com.phenoml.api.resources.agent.requests.ListRequest;
 import com.phenoml.api.resources.agent.types.AgentChatResponse;
 import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
 import com.phenoml.api.resources.agent.types.AgentCreateRequest;
-import com.phenoml.api.resources.agent.types.AgentDeleteResponse;
-import com.phenoml.api.resources.agent.types.AgentGetChatMessagesResponse;
-import com.phenoml.api.resources.agent.types.AgentListResponse;
 import com.phenoml.api.resources.agent.types.AgentResponse;
+import com.phenoml.api.resources.agent.types.DeleteResponse;
+import com.phenoml.api.resources.agent.types.GetChatMessagesResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
+import com.phenoml.api.resources.agent.types.ListResponse;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -59,28 +59,28 @@ public class AgentClient {
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public AgentListResponse list() {
+    public ListResponse list() {
         return this.rawClient.list().body();
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public AgentListResponse list(RequestOptions requestOptions) {
+    public ListResponse list(RequestOptions requestOptions) {
         return this.rawClient.list(requestOptions).body();
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public AgentListResponse list(AgentListRequest request) {
+    public ListResponse list(ListRequest request) {
         return this.rawClient.list(request).body();
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
-    public AgentListResponse list(AgentListRequest request, RequestOptions requestOptions) {
+    public ListResponse list(ListRequest request, RequestOptions requestOptions) {
         return this.rawClient.list(request, requestOptions).body();
     }
 
@@ -115,14 +115,14 @@ public class AgentClient {
     /**
      * Deletes an existing agent
      */
-    public AgentDeleteResponse delete(String id) {
+    public DeleteResponse delete(String id) {
         return this.rawClient.delete(id).body();
     }
 
     /**
      * Deletes an existing agent
      */
-    public AgentDeleteResponse delete(String id, RequestOptions requestOptions) {
+    public DeleteResponse delete(String id, RequestOptions requestOptions) {
         return this.rawClient.delete(id, requestOptions).body();
     }
 
@@ -175,15 +175,14 @@ public class AgentClient {
     /**
      * Retrieves a list of chat messages for a given chat session
      */
-    public AgentGetChatMessagesResponse getChatMessages(AgentGetChatMessagesRequest request) {
+    public GetChatMessagesResponse getChatMessages(GetChatMessagesRequest request) {
         return this.rawClient.getChatMessages(request).body();
     }
 
     /**
      * Retrieves a list of chat messages for a given chat session
      */
-    public AgentGetChatMessagesResponse getChatMessages(
-            AgentGetChatMessagesRequest request, RequestOptions requestOptions) {
+    public GetChatMessagesResponse getChatMessages(GetChatMessagesRequest request, RequestOptions requestOptions) {
         return this.rawClient.getChatMessages(request, requestOptions).body();
     }
 

@@ -7,7 +7,7 @@ import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.Environment;
 import com.phenoml.api.core.LogConfig;
 import com.phenoml.api.core.OAuthTokenSupplier;
-import com.phenoml.api.resources.authtoken.auth.AuthClient;
+import com.phenoml.api.resources.authtoken.AuthtokenClient;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -291,7 +291,7 @@ public class PhenomlClientBuilder {
         public PhenomlClient build() {
             validateConfiguration();
             ClientOptions baseOptions = buildClientOptions();
-            AuthClient authClient = new AuthClient(baseOptions);
+            AuthtokenClient authClient = new AuthtokenClient(baseOptions);
             OAuthTokenSupplier oAuthTokenSupplier =
                     new OAuthTokenSupplier(this.clientId, this.clientSecret, this.grantType, authClient);
             ClientOptions finalOptions = ClientOptions.Builder.from(baseOptions)

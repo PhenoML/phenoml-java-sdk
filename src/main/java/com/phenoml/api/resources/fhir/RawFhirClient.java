@@ -19,17 +19,17 @@ import com.phenoml.api.resources.fhir.errors.NotFoundError;
 import com.phenoml.api.resources.fhir.errors.ServiceUnavailableError;
 import com.phenoml.api.resources.fhir.errors.TooManyRequestsError;
 import com.phenoml.api.resources.fhir.errors.UnauthorizedError;
-import com.phenoml.api.resources.fhir.requests.FhirCreateRequest;
-import com.phenoml.api.resources.fhir.requests.FhirDeleteRequest;
-import com.phenoml.api.resources.fhir.requests.FhirExecuteBundleRequest;
-import com.phenoml.api.resources.fhir.requests.FhirPatchRequest;
-import com.phenoml.api.resources.fhir.requests.FhirSearchRequest;
-import com.phenoml.api.resources.fhir.requests.FhirUpsertRequest;
+import com.phenoml.api.resources.fhir.requests.CreateRequest;
+import com.phenoml.api.resources.fhir.requests.DeleteRequest;
+import com.phenoml.api.resources.fhir.requests.ExecuteBundleRequest;
+import com.phenoml.api.resources.fhir.requests.PatchRequest;
+import com.phenoml.api.resources.fhir.requests.SearchRequest;
+import com.phenoml.api.resources.fhir.requests.UpsertRequest;
 import com.phenoml.api.resources.fhir.types.ErrorResponse;
 import com.phenoml.api.resources.fhir.types.FhirBundle;
-import com.phenoml.api.resources.fhir.types.FhirPatchRequestBodyItem;
 import com.phenoml.api.resources.fhir.types.FhirResource;
-import com.phenoml.api.resources.fhir.types.FhirSearchResponse;
+import com.phenoml.api.resources.fhir.types.PatchRequestBodyItem;
+import com.phenoml.api.resources.fhir.types.SearchResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -53,25 +53,25 @@ public class RawFhirClient {
      * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenomlClientHttpResponse<FhirSearchResponse> search(String fhirProviderId, String fhirPath) {
-        return search(fhirProviderId, fhirPath, FhirSearchRequest.builder().build());
+    public PhenomlClientHttpResponse<SearchResponse> search(String fhirProviderId, String fhirPath) {
+        return search(fhirProviderId, fhirPath, SearchRequest.builder().build());
     }
 
     /**
      * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenomlClientHttpResponse<FhirSearchResponse> search(
+    public PhenomlClientHttpResponse<SearchResponse> search(
             String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
-        return search(fhirProviderId, fhirPath, FhirSearchRequest.builder().build(), requestOptions);
+        return search(fhirProviderId, fhirPath, SearchRequest.builder().build(), requestOptions);
     }
 
     /**
      * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenomlClientHttpResponse<FhirSearchResponse> search(
-            String fhirProviderId, String fhirPath, FhirSearchRequest request) {
+    public PhenomlClientHttpResponse<SearchResponse> search(
+            String fhirProviderId, String fhirPath, SearchRequest request) {
         return search(fhirProviderId, fhirPath, request, null);
     }
 
@@ -79,8 +79,8 @@ public class RawFhirClient {
      * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenomlClientHttpResponse<FhirSearchResponse> search(
-            String fhirProviderId, String fhirPath, FhirSearchRequest request, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<SearchResponse> search(
+            String fhirProviderId, String fhirPath, SearchRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
@@ -119,7 +119,7 @@ public class RawFhirClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirSearchResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SearchResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -162,7 +162,7 @@ public class RawFhirClient {
      */
     public PhenomlClientHttpResponse<FhirResource> create(String fhirProviderId, String fhirPath, FhirResource body) {
         return create(
-                fhirProviderId, fhirPath, FhirCreateRequest.builder().body(body).build());
+                fhirProviderId, fhirPath, CreateRequest.builder().body(body).build());
     }
 
     /**
@@ -172,7 +172,7 @@ public class RawFhirClient {
     public PhenomlClientHttpResponse<FhirResource> create(
             String fhirProviderId, String fhirPath, FhirResource body, RequestOptions requestOptions) {
         return create(
-                fhirProviderId, fhirPath, FhirCreateRequest.builder().body(body).build(), requestOptions);
+                fhirProviderId, fhirPath, CreateRequest.builder().body(body).build(), requestOptions);
     }
 
     /**
@@ -180,7 +180,7 @@ public class RawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public PhenomlClientHttpResponse<FhirResource> create(
-            String fhirProviderId, String fhirPath, FhirCreateRequest request) {
+            String fhirProviderId, String fhirPath, CreateRequest request) {
         return create(fhirProviderId, fhirPath, request, null);
     }
 
@@ -189,7 +189,7 @@ public class RawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public PhenomlClientHttpResponse<FhirResource> create(
-            String fhirProviderId, String fhirPath, FhirCreateRequest request, RequestOptions requestOptions) {
+            String fhirProviderId, String fhirPath, CreateRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
@@ -273,7 +273,7 @@ public class RawFhirClient {
      */
     public PhenomlClientHttpResponse<FhirResource> upsert(String fhirProviderId, String fhirPath, FhirResource body) {
         return upsert(
-                fhirProviderId, fhirPath, FhirUpsertRequest.builder().body(body).build());
+                fhirProviderId, fhirPath, UpsertRequest.builder().body(body).build());
     }
 
     /**
@@ -283,7 +283,7 @@ public class RawFhirClient {
     public PhenomlClientHttpResponse<FhirResource> upsert(
             String fhirProviderId, String fhirPath, FhirResource body, RequestOptions requestOptions) {
         return upsert(
-                fhirProviderId, fhirPath, FhirUpsertRequest.builder().body(body).build(), requestOptions);
+                fhirProviderId, fhirPath, UpsertRequest.builder().body(body).build(), requestOptions);
     }
 
     /**
@@ -291,7 +291,7 @@ public class RawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public PhenomlClientHttpResponse<FhirResource> upsert(
-            String fhirProviderId, String fhirPath, FhirUpsertRequest request) {
+            String fhirProviderId, String fhirPath, UpsertRequest request) {
         return upsert(fhirProviderId, fhirPath, request, null);
     }
 
@@ -300,7 +300,7 @@ public class RawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public PhenomlClientHttpResponse<FhirResource> upsert(
-            String fhirProviderId, String fhirPath, FhirUpsertRequest request, RequestOptions requestOptions) {
+            String fhirProviderId, String fhirPath, UpsertRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
@@ -383,7 +383,7 @@ public class RawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public PhenomlClientHttpResponse<Map<String, Object>> delete(String fhirProviderId, String fhirPath) {
-        return delete(fhirProviderId, fhirPath, FhirDeleteRequest.builder().build());
+        return delete(fhirProviderId, fhirPath, DeleteRequest.builder().build());
     }
 
     /**
@@ -392,7 +392,7 @@ public class RawFhirClient {
      */
     public PhenomlClientHttpResponse<Map<String, Object>> delete(
             String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
-        return delete(fhirProviderId, fhirPath, FhirDeleteRequest.builder().build(), requestOptions);
+        return delete(fhirProviderId, fhirPath, DeleteRequest.builder().build(), requestOptions);
     }
 
     /**
@@ -400,7 +400,7 @@ public class RawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public PhenomlClientHttpResponse<Map<String, Object>> delete(
-            String fhirProviderId, String fhirPath, FhirDeleteRequest request) {
+            String fhirProviderId, String fhirPath, DeleteRequest request) {
         return delete(fhirProviderId, fhirPath, request, null);
     }
 
@@ -409,7 +409,7 @@ public class RawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public PhenomlClientHttpResponse<Map<String, Object>> delete(
-            String fhirProviderId, String fhirPath, FhirDeleteRequest request, RequestOptions requestOptions) {
+            String fhirProviderId, String fhirPath, DeleteRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
@@ -494,9 +494,8 @@ public class RawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public PhenomlClientHttpResponse<FhirResource> patch(
-            String fhirProviderId, String fhirPath, List<FhirPatchRequestBodyItem> body) {
-        return patch(
-                fhirProviderId, fhirPath, FhirPatchRequest.builder().body(body).build());
+            String fhirProviderId, String fhirPath, List<PatchRequestBodyItem> body) {
+        return patch(fhirProviderId, fhirPath, PatchRequest.builder().body(body).build());
     }
 
     /**
@@ -510,12 +509,8 @@ public class RawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public PhenomlClientHttpResponse<FhirResource> patch(
-            String fhirProviderId,
-            String fhirPath,
-            List<FhirPatchRequestBodyItem> body,
-            RequestOptions requestOptions) {
-        return patch(
-                fhirProviderId, fhirPath, FhirPatchRequest.builder().body(body).build(), requestOptions);
+            String fhirProviderId, String fhirPath, List<PatchRequestBodyItem> body, RequestOptions requestOptions) {
+        return patch(fhirProviderId, fhirPath, PatchRequest.builder().body(body).build(), requestOptions);
     }
 
     /**
@@ -528,8 +523,7 @@ public class RawFhirClient {
      * </ul>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenomlClientHttpResponse<FhirResource> patch(
-            String fhirProviderId, String fhirPath, FhirPatchRequest request) {
+    public PhenomlClientHttpResponse<FhirResource> patch(String fhirProviderId, String fhirPath, PatchRequest request) {
         return patch(fhirProviderId, fhirPath, request, null);
     }
 
@@ -544,7 +538,7 @@ public class RawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public PhenomlClientHttpResponse<FhirResource> patch(
-            String fhirProviderId, String fhirPath, FhirPatchRequest request, RequestOptions requestOptions) {
+            String fhirProviderId, String fhirPath, PatchRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
@@ -632,7 +626,7 @@ public class RawFhirClient {
      */
     public PhenomlClientHttpResponse<FhirBundle> executeBundle(String fhirProviderId, FhirBundle body) {
         return executeBundle(
-                fhirProviderId, FhirExecuteBundleRequest.builder().body(body).build());
+                fhirProviderId, ExecuteBundleRequest.builder().body(body).build());
     }
 
     /**
@@ -643,7 +637,7 @@ public class RawFhirClient {
     public PhenomlClientHttpResponse<FhirBundle> executeBundle(
             String fhirProviderId, FhirBundle body, RequestOptions requestOptions) {
         return executeBundle(
-                fhirProviderId, FhirExecuteBundleRequest.builder().body(body).build(), requestOptions);
+                fhirProviderId, ExecuteBundleRequest.builder().body(body).build(), requestOptions);
     }
 
     /**
@@ -651,8 +645,7 @@ public class RawFhirClient {
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public PhenomlClientHttpResponse<FhirBundle> executeBundle(
-            String fhirProviderId, FhirExecuteBundleRequest request) {
+    public PhenomlClientHttpResponse<FhirBundle> executeBundle(String fhirProviderId, ExecuteBundleRequest request) {
         return executeBundle(fhirProviderId, request, null);
     }
 
@@ -662,7 +655,7 @@ public class RawFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public PhenomlClientHttpResponse<FhirBundle> executeBundle(
-            String fhirProviderId, FhirExecuteBundleRequest request, RequestOptions requestOptions) {
+            String fhirProviderId, ExecuteBundleRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
