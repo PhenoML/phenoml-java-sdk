@@ -329,25 +329,23 @@
                     {
                       "jsonKey": "op",
                       "fieldTemplate": ".op({{value}})",
-                      "kind": "object",
+                      "kind": "enum",
                       "required": true,
-                      "nested": {
-                        "fieldSeparator": "",
-                        "fields": [
-                          {
-                            "jsonKey": "value",
-                            "fieldTemplate": ".value({{value}})",
-                            "kind": "object",
-                            "required": false
-                          },
-                          {
-                            "jsonKey": "string",
-                            "fieldTemplate": ".string({{value}})",
-                            "kind": "string",
-                            "required": false
-                          }
-                        ],
-                        "wrap": "JsonPatchOperationOp.builder(){{__body__}}.build()"
+                      "enumValues": [
+                        "add",
+                        "remove",
+                        "replace",
+                        "move",
+                        "test",
+                        "copy"
+                      ],
+                      "enumConstants": {
+                        "add": "JsonPatchOperationOp.ADD",
+                        "remove": "JsonPatchOperationOp.REMOVE",
+                        "replace": "JsonPatchOperationOp.REPLACE",
+                        "move": "JsonPatchOperationOp.MOVE",
+                        "test": "JsonPatchOperationOp.TEST",
+                        "copy": "JsonPatchOperationOp.COPY"
                       }
                     },
                     {
@@ -875,25 +873,23 @@
                     {
                       "jsonKey": "op",
                       "fieldTemplate": ".op({{value}})",
-                      "kind": "object",
+                      "kind": "enum",
                       "required": true,
-                      "nested": {
-                        "fieldSeparator": "",
-                        "fields": [
-                          {
-                            "jsonKey": "value",
-                            "fieldTemplate": ".value({{value}})",
-                            "kind": "object",
-                            "required": false
-                          },
-                          {
-                            "jsonKey": "string",
-                            "fieldTemplate": ".string({{value}})",
-                            "kind": "string",
-                            "required": false
-                          }
-                        ],
-                        "wrap": "JsonPatchOperationOp.builder(){{__body__}}.build()"
+                      "enumValues": [
+                        "add",
+                        "remove",
+                        "replace",
+                        "move",
+                        "test",
+                        "copy"
+                      ],
+                      "enumConstants": {
+                        "add": "JsonPatchOperationOp.ADD",
+                        "remove": "JsonPatchOperationOp.REMOVE",
+                        "replace": "JsonPatchOperationOp.REPLACE",
+                        "move": "JsonPatchOperationOp.MOVE",
+                        "test": "JsonPatchOperationOp.TEST",
+                        "copy": "JsonPatchOperationOp.COPY"
                       }
                     },
                     {
@@ -1103,49 +1099,33 @@
             {
               "jsonKey": "role",
               "fieldTemplate": ".role({{value}})",
-              "kind": "object",
+              "kind": "enum",
               "required": false,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "string",
-                    "fieldTemplate": ".string({{value}})",
-                    "kind": "string",
-                    "required": false
-                  }
-                ],
-                "wrap": "GetChatMessagesRequestRole.builder(){{__body__}}.build()"
+              "enumValues": [
+                "function",
+                "model",
+                "user",
+                "assistant"
+              ],
+              "enumConstants": {
+                "function": "GetChatMessagesRequestRole.FUNCTION",
+                "model": "GetChatMessagesRequestRole.MODEL",
+                "user": "GetChatMessagesRequestRole.USER",
+                "assistant": "GetChatMessagesRequestRole.ASSISTANT"
               }
             },
             {
               "jsonKey": "order",
               "fieldTemplate": ".order({{value}})",
-              "kind": "object",
+              "kind": "enum",
               "required": false,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "string",
-                    "fieldTemplate": ".string({{value}})",
-                    "kind": "string",
-                    "required": false
-                  }
-                ],
-                "wrap": "GetChatMessagesRequestOrder.builder(){{__body__}}.build()"
+              "enumValues": [
+                "asc",
+                "desc"
+              ],
+              "enumConstants": {
+                "asc": "GetChatMessagesRequestOrder.ASC",
+                "desc": "GetChatMessagesRequestOrder.DESC"
               }
             }
           ]
@@ -1250,25 +1230,15 @@
             {
               "jsonKey": "format",
               "fieldTemplate": ".format({{value}})",
-              "kind": "object",
+              "kind": "enum",
               "required": true,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "string",
-                    "fieldTemplate": ".string({{value}})",
-                    "kind": "string",
-                    "required": false
-                  }
-                ],
-                "wrap": "UploadRequestFormat.builder(){{__body__}}.build()"
+              "enumValues": [
+                "csv",
+                "json"
+              ],
+              "enumConstants": {
+                "csv": "UploadRequestFormat.CSV",
+                "json": "UploadRequestFormat.JSON"
               }
             },
             {
@@ -1476,25 +1446,25 @@
                   {
                     "jsonKey": "chunking_method",
                     "fieldTemplate": ".chunkingMethod({{value}})",
-                    "kind": "object",
+                    "kind": "enum",
                     "required": false,
-                    "nested": {
-                      "fieldSeparator": "",
-                      "fields": [
-                        {
-                          "jsonKey": "value",
-                          "fieldTemplate": ".value({{value}})",
-                          "kind": "object",
-                          "required": false
-                        },
-                        {
-                          "jsonKey": "string",
-                          "fieldTemplate": ".string({{value}})",
-                          "kind": "string",
-                          "required": false
-                        }
-                      ],
-                      "wrap": "ExtractRequestConfigChunkingMethod.builder(){{__body__}}.build()"
+                    "enumValues": [
+                      "soap_note",
+                      "fasthpocr",
+                      "topics",
+                      "paragraphs",
+                      "sentences",
+                      "clinical_ner_extract",
+                      "none"
+                    ],
+                    "enumConstants": {
+                      "soap_note": "ExtractRequestConfigChunkingMethod.SOAP_NOTE",
+                      "fasthpocr": "ExtractRequestConfigChunkingMethod.FASTHPOCR",
+                      "topics": "ExtractRequestConfigChunkingMethod.TOPICS",
+                      "paragraphs": "ExtractRequestConfigChunkingMethod.PARAGRAPHS",
+                      "sentences": "ExtractRequestConfigChunkingMethod.SENTENCES",
+                      "clinical_ner_extract": "ExtractRequestConfigChunkingMethod.CLINICAL_NER_EXTRACT",
+                      "none": "ExtractRequestConfigChunkingMethod.NONE"
                     }
                   },
                   {
@@ -1512,25 +1482,19 @@
                   {
                     "jsonKey": "validation_method",
                     "fieldTemplate": ".validationMethod({{value}})",
-                    "kind": "object",
+                    "kind": "enum",
                     "required": false,
-                    "nested": {
-                      "fieldSeparator": "",
-                      "fields": [
-                        {
-                          "jsonKey": "value",
-                          "fieldTemplate": ".value({{value}})",
-                          "kind": "object",
-                          "required": false
-                        },
-                        {
-                          "jsonKey": "string",
-                          "fieldTemplate": ".string({{value}})",
-                          "kind": "string",
-                          "required": false
-                        }
-                      ],
-                      "wrap": "ExtractRequestConfigValidationMethod.builder(){{__body__}}.build()"
+                    "enumValues": [
+                      "simple",
+                      "medication_search",
+                      "none",
+                      "chunk_code_jaccard_similarity"
+                    ],
+                    "enumConstants": {
+                      "simple": "ExtractRequestConfigValidationMethod.SIMPLE",
+                      "medication_search": "ExtractRequestConfigValidationMethod.MEDICATION_SEARCH",
+                      "none": "ExtractRequestConfigValidationMethod.NONE",
+                      "chunk_code_jaccard_similarity": "ExtractRequestConfigValidationMethod.CHUNK_CODE_JACCARD_SIMILARITY"
                     }
                   },
                   {
@@ -1578,25 +1542,19 @@
                   {
                     "jsonKey": "consistency_effort",
                     "fieldTemplate": ".consistencyEffort({{value}})",
-                    "kind": "object",
+                    "kind": "enum",
                     "required": false,
-                    "nested": {
-                      "fieldSeparator": "",
-                      "fields": [
-                        {
-                          "jsonKey": "value",
-                          "fieldTemplate": ".value({{value}})",
-                          "kind": "object",
-                          "required": false
-                        },
-                        {
-                          "jsonKey": "string",
-                          "fieldTemplate": ".string({{value}})",
-                          "kind": "string",
-                          "required": false
-                        }
-                      ],
-                      "wrap": "ExtractRequestConfigConsistencyEffort.builder(){{__body__}}.build()"
+                    "enumValues": [
+                      "medium",
+                      "low",
+                      "high",
+                      "none"
+                    ],
+                    "enumConstants": {
+                      "medium": "ExtractRequestConfigConsistencyEffort.MEDIUM",
+                      "low": "ExtractRequestConfigConsistencyEffort.LOW",
+                      "high": "ExtractRequestConfigConsistencyEffort.HIGH",
+                      "none": "ExtractRequestConfigConsistencyEffort.NONE"
                     }
                   }
                 ],
@@ -2475,25 +2433,33 @@
             {
               "jsonKey": "provider",
               "fieldTemplate": ".provider({{value}})",
-              "kind": "object",
+              "kind": "enum",
               "required": true,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "string",
-                    "fieldTemplate": ".string({{value}})",
-                    "kind": "string",
-                    "required": false
-                  }
-                ],
-                "wrap": "Provider.builder(){{__body__}}.build()"
+              "enumValues": [
+                "hapi",
+                "epic",
+                "meditech",
+                "phenostore",
+                "cerner",
+                "athenahealth",
+                "canvas",
+                "elation",
+                "sandbox",
+                "google_healthcare",
+                "medplum"
+              ],
+              "enumConstants": {
+                "hapi": "Provider.HAPI",
+                "epic": "Provider.EPIC",
+                "meditech": "Provider.MEDITECH",
+                "phenostore": "Provider.PHENOSTORE",
+                "cerner": "Provider.CERNER",
+                "athenahealth": "Provider.ATHENAHEALTH",
+                "canvas": "Provider.CANVAS",
+                "elation": "Provider.ELATION",
+                "sandbox": "Provider.SANDBOX",
+                "google_healthcare": "Provider.GOOGLE_HEALTHCARE",
+                "medplum": "Provider.MEDPLUM"
               }
             },
             {
@@ -3352,25 +3318,23 @@
                     {
                       "jsonKey": "op",
                       "fieldTemplate": ".op({{value}})",
-                      "kind": "object",
+                      "kind": "enum",
                       "required": true,
-                      "nested": {
-                        "fieldSeparator": "",
-                        "fields": [
-                          {
-                            "jsonKey": "value",
-                            "fieldTemplate": ".value({{value}})",
-                            "kind": "object",
-                            "required": false
-                          },
-                          {
-                            "jsonKey": "string",
-                            "fieldTemplate": ".string({{value}})",
-                            "kind": "string",
-                            "required": false
-                          }
-                        ],
-                        "wrap": "PatchRequestBodyItemOp.builder(){{__body__}}.build()"
+                      "enumValues": [
+                        "add",
+                        "remove",
+                        "replace",
+                        "move",
+                        "test",
+                        "copy"
+                      ],
+                      "enumConstants": {
+                        "add": "PatchRequestBodyItemOp.ADD",
+                        "remove": "PatchRequestBodyItemOp.REMOVE",
+                        "replace": "PatchRequestBodyItemOp.REPLACE",
+                        "move": "PatchRequestBodyItemOp.MOVE",
+                        "test": "PatchRequestBodyItemOp.TEST",
+                        "copy": "PatchRequestBodyItemOp.COPY"
                       }
                     },
                     {
@@ -3514,25 +3478,21 @@
                                 {
                                   "jsonKey": "method",
                                   "fieldTemplate": ".method({{value}})",
-                                  "kind": "object",
+                                  "kind": "enum",
                                   "required": false,
-                                  "nested": {
-                                    "fieldSeparator": "",
-                                    "fields": [
-                                      {
-                                        "jsonKey": "value",
-                                        "fieldTemplate": ".value({{value}})",
-                                        "kind": "object",
-                                        "required": false
-                                      },
-                                      {
-                                        "jsonKey": "string",
-                                        "fieldTemplate": ".string({{value}})",
-                                        "kind": "string",
-                                        "required": false
-                                      }
-                                    ],
-                                    "wrap": "FhirBundleEntryItemRequestMethod.builder(){{__body__}}.build()"
+                                  "enumValues": [
+                                    "GET",
+                                    "PUT",
+                                    "PATCH",
+                                    "DELETE",
+                                    "POST"
+                                  ],
+                                  "enumConstants": {
+                                    "GET": "FhirBundleEntryItemRequestMethod.GET",
+                                    "PUT": "FhirBundleEntryItemRequestMethod.PUT",
+                                    "PATCH": "FhirBundleEntryItemRequestMethod.PATCH",
+                                    "DELETE": "FhirBundleEntryItemRequestMethod.DELETE",
+                                    "POST": "FhirBundleEntryItemRequestMethod.POST"
                                   }
                                 },
                                 {
@@ -3640,25 +3600,45 @@
             {
               "jsonKey": "resource",
               "fieldTemplate": ".resource({{value}})",
-              "kind": "object",
+              "kind": "enum",
               "required": true,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "string",
-                    "fieldTemplate": ".string({{value}})",
-                    "kind": "string",
-                    "required": false
-                  }
-                ],
-                "wrap": "CreateRequestResource.builder(){{__body__}}.build()"
+              "enumValues": [
+                "medicationrequest",
+                "vital-signs",
+                "simple-observation",
+                "questionnaire",
+                "observation-lab",
+                "questionnaireresponse",
+                "encounter",
+                "observation-clinical-result",
+                "careplan",
+                "servicerequest",
+                "coverage",
+                "auto",
+                "condition-encounter-diagnosis",
+                "condition-problems-health-concerns",
+                "appointment",
+                "patient",
+                "procedure"
+              ],
+              "enumConstants": {
+                "medicationrequest": "CreateRequestResource.MEDICATIONREQUEST",
+                "vital-signs": "CreateRequestResource.VITAL_SIGNS",
+                "simple-observation": "CreateRequestResource.SIMPLE_OBSERVATION",
+                "questionnaire": "CreateRequestResource.QUESTIONNAIRE",
+                "observation-lab": "CreateRequestResource.OBSERVATION_LAB",
+                "questionnaireresponse": "CreateRequestResource.QUESTIONNAIRERESPONSE",
+                "encounter": "CreateRequestResource.ENCOUNTER",
+                "observation-clinical-result": "CreateRequestResource.OBSERVATION_CLINICAL_RESULT",
+                "careplan": "CreateRequestResource.CAREPLAN",
+                "servicerequest": "CreateRequestResource.SERVICEREQUEST",
+                "coverage": "CreateRequestResource.COVERAGE",
+                "auto": "CreateRequestResource.AUTO",
+                "condition-encounter-diagnosis": "CreateRequestResource.CONDITION_ENCOUNTER_DIAGNOSIS",
+                "condition-problems-health-concerns": "CreateRequestResource.CONDITION_PROBLEMS_HEALTH_CONCERNS",
+                "appointment": "CreateRequestResource.APPOINTMENT",
+                "patient": "CreateRequestResource.PATIENT",
+                "procedure": "CreateRequestResource.PROCEDURE"
               }
             },
             {
@@ -3786,49 +3766,31 @@
             {
               "jsonKey": "detection_effort",
               "fieldTemplate": ".detectionEffort({{value}})",
-              "kind": "object",
+              "kind": "enum",
               "required": false,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "string",
-                    "fieldTemplate": ".string({{value}})",
-                    "kind": "string",
-                    "required": false
-                  }
-                ],
-                "wrap": "CreateMultiRequestDetectionEffort.builder(){{__body__}}.build()"
+              "enumValues": [
+                "deep",
+                "standard"
+              ],
+              "enumConstants": {
+                "deep": "CreateMultiRequestDetectionEffort.DEEP",
+                "standard": "CreateMultiRequestDetectionEffort.STANDARD"
               }
             },
             {
               "jsonKey": "validation_method",
               "fieldTemplate": ".validationMethod({{value}})",
-              "kind": "object",
+              "kind": "enum",
               "required": false,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "string",
-                    "fieldTemplate": ".string({{value}})",
-                    "kind": "string",
-                    "required": false
-                  }
-                ],
-                "wrap": "CreateMultiRequestValidationMethod.builder(){{__body__}}.build()"
+              "enumValues": [
+                "check",
+                "fix",
+                "none"
+              ],
+              "enumConstants": {
+                "check": "CreateMultiRequestValidationMethod.CHECK",
+                "fix": "CreateMultiRequestValidationMethod.FIX",
+                "none": "CreateMultiRequestValidationMethod.NONE"
               }
             }
           ]
@@ -4140,49 +4102,31 @@
             {
               "jsonKey": "detection_effort",
               "fieldTemplate": ".detectionEffort({{value}})",
-              "kind": "object",
+              "kind": "enum",
               "required": false,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "string",
-                    "fieldTemplate": ".string({{value}})",
-                    "kind": "string",
-                    "required": false
-                  }
-                ],
-                "wrap": "DocumentMultiRequestDetectionEffort.builder(){{__body__}}.build()"
+              "enumValues": [
+                "deep",
+                "standard"
+              ],
+              "enumConstants": {
+                "deep": "DocumentMultiRequestDetectionEffort.DEEP",
+                "standard": "DocumentMultiRequestDetectionEffort.STANDARD"
               }
             },
             {
               "jsonKey": "validation_method",
               "fieldTemplate": ".validationMethod({{value}})",
-              "kind": "object",
+              "kind": "enum",
               "required": false,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "string",
-                    "fieldTemplate": ".string({{value}})",
-                    "kind": "string",
-                    "required": false
-                  }
-                ],
-                "wrap": "DocumentMultiRequestValidationMethod.builder(){{__body__}}.build()"
+              "enumValues": [
+                "check",
+                "fix",
+                "none"
+              ],
+              "enumConstants": {
+                "check": "DocumentMultiRequestValidationMethod.CHECK",
+                "fix": "DocumentMultiRequestValidationMethod.FIX",
+                "none": "DocumentMultiRequestValidationMethod.NONE"
               }
             },
             {
@@ -4552,25 +4496,17 @@
             {
               "jsonKey": "mode",
               "fieldTemplate": ".mode({{value}})",
-              "kind": "object",
+              "kind": "enum",
               "required": false,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "string",
-                    "fieldTemplate": ".string({{value}})",
-                    "kind": "string",
-                    "required": false
-                  }
-                ],
-                "wrap": "CreateSummaryRequestMode.builder(){{__body__}}.build()"
+              "enumValues": [
+                "flatten",
+                "narrative",
+                "ips"
+              ],
+              "enumConstants": {
+                "flatten": "CreateSummaryRequestMode.FLATTEN",
+                "narrative": "CreateSummaryRequestMode.NARRATIVE",
+                "ips": "CreateSummaryRequestMode.IPS"
               }
             },
             {
@@ -5026,25 +4962,45 @@
             {
               "jsonKey": "resource",
               "fieldTemplate": ".resource({{value}})",
-              "kind": "object",
+              "kind": "enum",
               "required": true,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "string",
-                    "fieldTemplate": ".string({{value}})",
-                    "kind": "string",
-                    "required": false
-                  }
-                ],
-                "wrap": "Lang2FhirAndCreateRequestResource.builder(){{__body__}}.build()"
+              "enumValues": [
+                "medicationrequest",
+                "vital-signs",
+                "simple-observation",
+                "questionnaire",
+                "observation-lab",
+                "questionnaireresponse",
+                "encounter",
+                "observation-clinical-result",
+                "careplan",
+                "servicerequest",
+                "coverage",
+                "auto",
+                "condition-encounter-diagnosis",
+                "condition-problems-health-concerns",
+                "appointment",
+                "patient",
+                "procedure"
+              ],
+              "enumConstants": {
+                "medicationrequest": "Lang2FhirAndCreateRequestResource.MEDICATIONREQUEST",
+                "vital-signs": "Lang2FhirAndCreateRequestResource.VITAL_SIGNS",
+                "simple-observation": "Lang2FhirAndCreateRequestResource.SIMPLE_OBSERVATION",
+                "questionnaire": "Lang2FhirAndCreateRequestResource.QUESTIONNAIRE",
+                "observation-lab": "Lang2FhirAndCreateRequestResource.OBSERVATION_LAB",
+                "questionnaireresponse": "Lang2FhirAndCreateRequestResource.QUESTIONNAIRERESPONSE",
+                "encounter": "Lang2FhirAndCreateRequestResource.ENCOUNTER",
+                "observation-clinical-result": "Lang2FhirAndCreateRequestResource.OBSERVATION_CLINICAL_RESULT",
+                "careplan": "Lang2FhirAndCreateRequestResource.CAREPLAN",
+                "servicerequest": "Lang2FhirAndCreateRequestResource.SERVICEREQUEST",
+                "coverage": "Lang2FhirAndCreateRequestResource.COVERAGE",
+                "auto": "Lang2FhirAndCreateRequestResource.AUTO",
+                "condition-encounter-diagnosis": "Lang2FhirAndCreateRequestResource.CONDITION_ENCOUNTER_DIAGNOSIS",
+                "condition-problems-health-concerns": "Lang2FhirAndCreateRequestResource.CONDITION_PROBLEMS_HEALTH_CONCERNS",
+                "appointment": "Lang2FhirAndCreateRequestResource.APPOINTMENT",
+                "patient": "Lang2FhirAndCreateRequestResource.PATIENT",
+                "procedure": "Lang2FhirAndCreateRequestResource.PROCEDURE"
               }
             },
             {
