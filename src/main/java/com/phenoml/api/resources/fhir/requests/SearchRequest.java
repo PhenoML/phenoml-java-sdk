@@ -8,9 +8,6 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import java.util.HashMap;
@@ -25,18 +22,14 @@ public final class SearchRequest {
 
     private final Optional<String> phenomlFhirProvider;
 
-    private final Optional<Map<String, Optional<String>>> queryParameters;
-
     private final Map<String, Object> additionalProperties;
 
     private SearchRequest(
             Optional<String> phenomlOnBehalfOf,
             Optional<String> phenomlFhirProvider,
-            Optional<Map<String, Optional<String>>> queryParameters,
             Map<String, Object> additionalProperties) {
         this.phenomlOnBehalfOf = phenomlOnBehalfOf;
         this.phenomlFhirProvider = phenomlFhirProvider;
-        this.queryParameters = queryParameters;
         this.additionalProperties = additionalProperties;
     }
 
@@ -58,20 +51,6 @@ public final class SearchRequest {
         return phenomlFhirProvider;
     }
 
-    /**
-     * @return FHIR-compliant query parameters for search operations. Supports standard FHIR search parameters including:
-     * <ul>
-     * <li>Resource-specific search parameters (e.g., name for Patient, status for Observation)</li>
-     * <li>Common search parameters (_id, _lastUpdated, _tag, _profile, _security, _text, _content, _filter)</li>
-     * <li>Result parameters (_count, _offset, _sort, _include, _revinclude, _summary, _elements)</li>
-     * <li>Search prefixes for dates, numbers, quantities (eq, ne, gt, ge, lt, le, sa, eb, ap)</li>
-     * </ul>
-     */
-    @JsonProperty("query_parameters")
-    public Optional<Map<String, Optional<String>>> getQueryParameters() {
-        return queryParameters;
-    }
-
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -85,13 +64,12 @@ public final class SearchRequest {
 
     private boolean equalTo(SearchRequest other) {
         return phenomlOnBehalfOf.equals(other.phenomlOnBehalfOf)
-                && phenomlFhirProvider.equals(other.phenomlFhirProvider)
-                && queryParameters.equals(other.queryParameters);
+                && phenomlFhirProvider.equals(other.phenomlFhirProvider);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.phenomlOnBehalfOf, this.phenomlFhirProvider, this.queryParameters);
+        return Objects.hash(this.phenomlOnBehalfOf, this.phenomlFhirProvider);
     }
 
     @java.lang.Override
@@ -109,8 +87,6 @@ public final class SearchRequest {
 
         private Optional<String> phenomlFhirProvider = Optional.empty();
 
-        private Optional<Map<String, Optional<String>>> queryParameters = Optional.empty();
-
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -119,7 +95,6 @@ public final class SearchRequest {
         public Builder from(SearchRequest other) {
             phenomlOnBehalfOf(other.getPhenomlOnBehalfOf());
             phenomlFhirProvider(other.getPhenomlFhirProvider());
-            queryParameters(other.getQueryParameters());
             return this;
         }
 
@@ -151,28 +126,8 @@ public final class SearchRequest {
             return this;
         }
 
-        /**
-         * <p>FHIR-compliant query parameters for search operations. Supports standard FHIR search parameters including:</p>
-         * <ul>
-         * <li>Resource-specific search parameters (e.g., name for Patient, status for Observation)</li>
-         * <li>Common search parameters (_id, _lastUpdated, _tag, _profile, _security, _text, _content, _filter)</li>
-         * <li>Result parameters (_count, _offset, _sort, _include, _revinclude, _summary, _elements)</li>
-         * <li>Search prefixes for dates, numbers, quantities (eq, ne, gt, ge, lt, le, sa, eb, ap)</li>
-         * </ul>
-         */
-        @JsonSetter(value = "query_parameters", nulls = Nulls.SKIP)
-        public Builder queryParameters(Optional<Map<String, Optional<String>>> queryParameters) {
-            this.queryParameters = queryParameters;
-            return this;
-        }
-
-        public Builder queryParameters(Map<String, Optional<String>> queryParameters) {
-            this.queryParameters = Optional.ofNullable(queryParameters);
-            return this;
-        }
-
         public SearchRequest build() {
-            return new SearchRequest(phenomlOnBehalfOf, phenomlFhirProvider, queryParameters, additionalProperties);
+            return new SearchRequest(phenomlOnBehalfOf, phenomlFhirProvider, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {

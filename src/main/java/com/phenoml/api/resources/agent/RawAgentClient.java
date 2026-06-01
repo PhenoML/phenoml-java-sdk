@@ -10,30 +10,20 @@ import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.core.PhenomlClientApiException;
 import com.phenoml.api.core.PhenomlClientException;
 import com.phenoml.api.core.PhenomlClientHttpResponse;
-import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.core.ResponseBodyReader;
-import com.phenoml.api.core.Stream;
 import com.phenoml.api.resources.agent.errors.BadRequestError;
 import com.phenoml.api.resources.agent.errors.ForbiddenError;
 import com.phenoml.api.resources.agent.errors.InternalServerError;
 import com.phenoml.api.resources.agent.errors.NotFoundError;
 import com.phenoml.api.resources.agent.errors.UnauthorizedError;
-import com.phenoml.api.resources.agent.requests.AgentChatRequest;
-import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
-import com.phenoml.api.resources.agent.requests.GetChatMessagesRequest;
-import com.phenoml.api.resources.agent.requests.ListRequest;
-import com.phenoml.api.resources.agent.types.AgentChatResponse;
-import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
-import com.phenoml.api.resources.agent.types.AgentCreateRequest;
-import com.phenoml.api.resources.agent.types.AgentResponse;
-import com.phenoml.api.resources.agent.types.DeleteResponse;
-import com.phenoml.api.resources.agent.types.GetChatMessagesResponse;
+import com.phenoml.api.resources.agent.requests.AgentPromptsCreateRequest;
+import com.phenoml.api.resources.agent.requests.AgentPromptsUpdateRequest;
+import com.phenoml.api.resources.agent.types.AgentPromptsResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
-import com.phenoml.api.resources.agent.types.ListResponse;
+import com.phenoml.api.resources.agent.types.PromptsDeleteResponse;
+import com.phenoml.api.resources.agent.types.PromptsListResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -51,19 +41,20 @@ public class RawAgentClient {
     }
 
     /**
-     * Creates a new PhenoAgent with specified configuration
+     * Creates a new agent prompt
      */
-    public PhenomlClientHttpResponse<AgentResponse> create(AgentCreateRequest request) {
+    public PhenomlClientHttpResponse<AgentPromptsResponse> create(AgentPromptsCreateRequest request) {
         return create(request, null);
     }
 
     /**
-     * Creates a new PhenoAgent with specified configuration
+     * Creates a new agent prompt
      */
-    public PhenomlClientHttpResponse<AgentResponse> create(AgentCreateRequest request, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<AgentPromptsResponse> create(
+            AgentPromptsCreateRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("agent/create");
+                .addPathSegments("agent/prompts");
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);
@@ -92,7 +83,7 @@ public class RawAgentClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentPromptsResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -121,48 +112,30 @@ public class RawAgentClient {
     }
 
     /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
+     * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public PhenomlClientHttpResponse<ListResponse> list() {
-        return list(ListRequest.builder().build());
+    public PhenomlClientHttpResponse<PromptsListResponse> list() {
+        return list(null);
     }
 
     /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
+     * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public PhenomlClientHttpResponse<ListResponse> list(RequestOptions requestOptions) {
-        return list(ListRequest.builder().build(), requestOptions);
-    }
-
-    /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
-     */
-    public PhenomlClientHttpResponse<ListResponse> list(ListRequest request) {
-        return list(request, null);
-    }
-
-    /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
-     */
-    public PhenomlClientHttpResponse<ListResponse> list(ListRequest request, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<PromptsListResponse> list(RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("agent/list");
-        if (request.getTags().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "tags", request.getTags().get(), false);
-        }
+                .addPathSegments("agent/prompts/list");
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);
             });
         }
-        Request.Builder _requestBuilder = new Request.Builder()
+        Request okhttpRequest = new Request.Builder()
                 .url(httpUrl.build())
                 .method("GET", null)
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
+                .addHeader("Accept", "application/json")
+                .build();
         OkHttpClient client = clientOptions.httpClient();
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
@@ -172,7 +145,7 @@ public class RawAgentClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ListResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PromptsListResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -198,19 +171,19 @@ public class RawAgentClient {
     }
 
     /**
-     * Retrieves a specific agent by its ID
+     * Retrieves a specific prompt by its ID
      */
-    public PhenomlClientHttpResponse<AgentResponse> get(String id) {
+    public PhenomlClientHttpResponse<AgentPromptsResponse> get(String id) {
         return get(id, null);
     }
 
     /**
-     * Retrieves a specific agent by its ID
+     * Retrieves a specific prompt by its ID
      */
-    public PhenomlClientHttpResponse<AgentResponse> get(String id, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<AgentPromptsResponse> get(String id, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("agent")
+                .addPathSegments("agent/prompts")
                 .addPathSegment(id);
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -232,7 +205,7 @@ public class RawAgentClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentPromptsResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -261,20 +234,34 @@ public class RawAgentClient {
     }
 
     /**
-     * Updates an existing agent's configuration
+     * Updates an existing prompt
      */
-    public PhenomlClientHttpResponse<AgentResponse> update(String id, AgentCreateRequest request) {
+    public PhenomlClientHttpResponse<AgentPromptsResponse> update(String id) {
+        return update(id, AgentPromptsUpdateRequest.builder().build());
+    }
+
+    /**
+     * Updates an existing prompt
+     */
+    public PhenomlClientHttpResponse<AgentPromptsResponse> update(String id, RequestOptions requestOptions) {
+        return update(id, AgentPromptsUpdateRequest.builder().build(), requestOptions);
+    }
+
+    /**
+     * Updates an existing prompt
+     */
+    public PhenomlClientHttpResponse<AgentPromptsResponse> update(String id, AgentPromptsUpdateRequest request) {
         return update(id, request, null);
     }
 
     /**
-     * Updates an existing agent's configuration
+     * Updates an existing prompt
      */
-    public PhenomlClientHttpResponse<AgentResponse> update(
-            String id, AgentCreateRequest request, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<AgentPromptsResponse> update(
+            String id, AgentPromptsUpdateRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("agent")
+                .addPathSegments("agent/prompts")
                 .addPathSegment(id);
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -304,7 +291,7 @@ public class RawAgentClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentPromptsResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -336,19 +323,19 @@ public class RawAgentClient {
     }
 
     /**
-     * Deletes an existing agent
+     * Deletes a prompt
      */
-    public PhenomlClientHttpResponse<DeleteResponse> delete(String id) {
+    public PhenomlClientHttpResponse<PromptsDeleteResponse> delete(String id) {
         return delete(id, null);
     }
 
     /**
-     * Deletes an existing agent
+     * Deletes a prompt
      */
-    public PhenomlClientHttpResponse<DeleteResponse> delete(String id, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<PromptsDeleteResponse> delete(String id, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("agent")
+                .addPathSegments("agent/prompts")
                 .addPathSegment(id);
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -370,7 +357,7 @@ public class RawAgentClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PromptsDeleteResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -399,20 +386,20 @@ public class RawAgentClient {
     }
 
     /**
-     * Patches an existing agent's configuration
+     * Patches an existing prompt
      */
-    public PhenomlClientHttpResponse<AgentResponse> patch(String id, List<JsonPatchOperation> request) {
+    public PhenomlClientHttpResponse<AgentPromptsResponse> patch(String id, List<JsonPatchOperation> request) {
         return patch(id, request, null);
     }
 
     /**
-     * Patches an existing agent's configuration
+     * Patches an existing prompt
      */
-    public PhenomlClientHttpResponse<AgentResponse> patch(
+    public PhenomlClientHttpResponse<AgentPromptsResponse> patch(
             String id, List<JsonPatchOperation> request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
-                .addPathSegments("agent")
+                .addPathSegments("agent/prompts")
                 .addPathSegment(id);
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -442,7 +429,7 @@ public class RawAgentClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentPromptsResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -457,242 +444,6 @@ public class RawAgentClient {
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 404:
                         throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
-
-    /**
-     * Send a message to an agent and receive a JSON response.
-     */
-    public PhenomlClientHttpResponse<AgentChatResponse> chat(AgentChatRequest request) {
-        return chat(request, null);
-    }
-
-    /**
-     * Send a message to an agent and receive a JSON response.
-     */
-    public PhenomlClientHttpResponse<AgentChatResponse> chat(AgentChatRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("agent/chat");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json");
-        if (request.getPhenomlOnBehalfOf().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
-        }
-        if (request.getPhenomlFhirProvider().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
-        }
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, AgentChatResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
-
-    /**
-     * Send a message to an agent and receive the response as a Server-Sent Events
-     * (SSE) stream. Events include message_start, content_delta, tool_use,
-     * tool_result, message_end, and error.
-     */
-    public PhenomlClientHttpResponse<Iterable<AgentChatStreamEvent>> streamChat(AgentStreamChatRequest request) {
-        return streamChat(request, null);
-    }
-
-    /**
-     * Send a message to an agent and receive the response as a Server-Sent Events
-     * (SSE) stream. Events include message_start, content_delta, tool_use,
-     * tool_result, message_end, and error.
-     */
-    public PhenomlClientHttpResponse<Iterable<AgentChatStreamEvent>> streamChat(
-            AgentStreamChatRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("agent/stream-chat");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json");
-        if (request.getPhenomlOnBehalfOf().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
-        }
-        if (request.getPhenomlFhirProvider().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
-        }
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        client = client.newBuilder().callTimeout(0, TimeUnit.SECONDS).build();
-        try {
-            Response response = client.newCall(okhttpRequest).execute();
-            ResponseBody responseBody = response.body();
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        Stream.fromSse(AgentChatStreamEvent.class, new ResponseBodyReader(response)), response);
-            }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
-
-    /**
-     * Retrieves a list of chat messages for a given chat session
-     */
-    public PhenomlClientHttpResponse<GetChatMessagesResponse> getChatMessages(GetChatMessagesRequest request) {
-        return getChatMessages(request, null);
-    }
-
-    /**
-     * Retrieves a list of chat messages for a given chat session
-     */
-    public PhenomlClientHttpResponse<GetChatMessagesResponse> getChatMessages(
-            GetChatMessagesRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("agent/chat/messages");
-        QueryStringMapper.addQueryParameter(httpUrl, "chat_session_id", request.getChatSessionId(), false);
-        if (request.getNumMessages().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "num_messages", request.getNumMessages().get(), false);
-        }
-        if (request.getRole().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "role", request.getRole().get(), false);
-        }
-        if (request.getOrder().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "order", request.getOrder().get(), false);
-        }
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("GET", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetChatMessagesResponse.class),
-                        response);
-            }
-            try {
-                switch (response.code()) {
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 500:
                         throw new InternalServerError(

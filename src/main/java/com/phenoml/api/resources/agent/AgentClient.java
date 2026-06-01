@@ -6,19 +6,13 @@ package com.phenoml.api.resources.agent;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
-import com.phenoml.api.resources.agent.prompts.PromptsClient;
-import com.phenoml.api.resources.agent.requests.AgentChatRequest;
-import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
-import com.phenoml.api.resources.agent.requests.GetChatMessagesRequest;
-import com.phenoml.api.resources.agent.requests.ListRequest;
-import com.phenoml.api.resources.agent.types.AgentChatResponse;
-import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
-import com.phenoml.api.resources.agent.types.AgentCreateRequest;
-import com.phenoml.api.resources.agent.types.AgentResponse;
-import com.phenoml.api.resources.agent.types.DeleteResponse;
-import com.phenoml.api.resources.agent.types.GetChatMessagesResponse;
+import com.phenoml.api.resources.agent.chat.ChatClient;
+import com.phenoml.api.resources.agent.requests.AgentPromptsCreateRequest;
+import com.phenoml.api.resources.agent.requests.AgentPromptsUpdateRequest;
+import com.phenoml.api.resources.agent.types.AgentPromptsResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
-import com.phenoml.api.resources.agent.types.ListResponse;
+import com.phenoml.api.resources.agent.types.PromptsDeleteResponse;
+import com.phenoml.api.resources.agent.types.PromptsListResponse;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -27,12 +21,12 @@ public class AgentClient {
 
     private final RawAgentClient rawClient;
 
-    protected final Supplier<PromptsClient> promptsClient;
+    protected final Supplier<ChatClient> chatClient;
 
     public AgentClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.rawClient = new RawAgentClient(clientOptions);
-        this.promptsClient = Suppliers.memoize(() -> new PromptsClient(clientOptions));
+        this.chatClient = Suppliers.memoize(() -> new ChatClient(clientOptions));
     }
 
     /**
@@ -43,150 +37,104 @@ public class AgentClient {
     }
 
     /**
-     * Creates a new PhenoAgent with specified configuration
+     * Creates a new agent prompt
      */
-    public AgentResponse create(AgentCreateRequest request) {
+    public AgentPromptsResponse create(AgentPromptsCreateRequest request) {
         return this.rawClient.create(request).body();
     }
 
     /**
-     * Creates a new PhenoAgent with specified configuration
+     * Creates a new agent prompt
      */
-    public AgentResponse create(AgentCreateRequest request, RequestOptions requestOptions) {
+    public AgentPromptsResponse create(AgentPromptsCreateRequest request, RequestOptions requestOptions) {
         return this.rawClient.create(request, requestOptions).body();
     }
 
     /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
+     * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public ListResponse list() {
+    public PromptsListResponse list() {
         return this.rawClient.list().body();
     }
 
     /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
+     * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public ListResponse list(RequestOptions requestOptions) {
+    public PromptsListResponse list(RequestOptions requestOptions) {
         return this.rawClient.list(requestOptions).body();
     }
 
     /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
+     * Retrieves a specific prompt by its ID
      */
-    public ListResponse list(ListRequest request) {
-        return this.rawClient.list(request).body();
-    }
-
-    /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
-     */
-    public ListResponse list(ListRequest request, RequestOptions requestOptions) {
-        return this.rawClient.list(request, requestOptions).body();
-    }
-
-    /**
-     * Retrieves a specific agent by its ID
-     */
-    public AgentResponse get(String id) {
+    public AgentPromptsResponse get(String id) {
         return this.rawClient.get(id).body();
     }
 
     /**
-     * Retrieves a specific agent by its ID
+     * Retrieves a specific prompt by its ID
      */
-    public AgentResponse get(String id, RequestOptions requestOptions) {
+    public AgentPromptsResponse get(String id, RequestOptions requestOptions) {
         return this.rawClient.get(id, requestOptions).body();
     }
 
     /**
-     * Updates an existing agent's configuration
+     * Updates an existing prompt
      */
-    public AgentResponse update(String id, AgentCreateRequest request) {
+    public AgentPromptsResponse update(String id) {
+        return this.rawClient.update(id).body();
+    }
+
+    /**
+     * Updates an existing prompt
+     */
+    public AgentPromptsResponse update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).body();
+    }
+
+    /**
+     * Updates an existing prompt
+     */
+    public AgentPromptsResponse update(String id, AgentPromptsUpdateRequest request) {
         return this.rawClient.update(id, request).body();
     }
 
     /**
-     * Updates an existing agent's configuration
+     * Updates an existing prompt
      */
-    public AgentResponse update(String id, AgentCreateRequest request, RequestOptions requestOptions) {
+    public AgentPromptsResponse update(String id, AgentPromptsUpdateRequest request, RequestOptions requestOptions) {
         return this.rawClient.update(id, request, requestOptions).body();
     }
 
     /**
-     * Deletes an existing agent
+     * Deletes a prompt
      */
-    public DeleteResponse delete(String id) {
+    public PromptsDeleteResponse delete(String id) {
         return this.rawClient.delete(id).body();
     }
 
     /**
-     * Deletes an existing agent
+     * Deletes a prompt
      */
-    public DeleteResponse delete(String id, RequestOptions requestOptions) {
+    public PromptsDeleteResponse delete(String id, RequestOptions requestOptions) {
         return this.rawClient.delete(id, requestOptions).body();
     }
 
     /**
-     * Patches an existing agent's configuration
+     * Patches an existing prompt
      */
-    public AgentResponse patch(String id, List<JsonPatchOperation> request) {
+    public AgentPromptsResponse patch(String id, List<JsonPatchOperation> request) {
         return this.rawClient.patch(id, request).body();
     }
 
     /**
-     * Patches an existing agent's configuration
+     * Patches an existing prompt
      */
-    public AgentResponse patch(String id, List<JsonPatchOperation> request, RequestOptions requestOptions) {
+    public AgentPromptsResponse patch(String id, List<JsonPatchOperation> request, RequestOptions requestOptions) {
         return this.rawClient.patch(id, request, requestOptions).body();
     }
 
-    /**
-     * Send a message to an agent and receive a JSON response.
-     */
-    public AgentChatResponse chat(AgentChatRequest request) {
-        return this.rawClient.chat(request).body();
-    }
-
-    /**
-     * Send a message to an agent and receive a JSON response.
-     */
-    public AgentChatResponse chat(AgentChatRequest request, RequestOptions requestOptions) {
-        return this.rawClient.chat(request, requestOptions).body();
-    }
-
-    /**
-     * Send a message to an agent and receive the response as a Server-Sent Events
-     * (SSE) stream. Events include message_start, content_delta, tool_use,
-     * tool_result, message_end, and error.
-     */
-    public Iterable<AgentChatStreamEvent> streamChat(AgentStreamChatRequest request) {
-        return this.rawClient.streamChat(request).body();
-    }
-
-    /**
-     * Send a message to an agent and receive the response as a Server-Sent Events
-     * (SSE) stream. Events include message_start, content_delta, tool_use,
-     * tool_result, message_end, and error.
-     */
-    public Iterable<AgentChatStreamEvent> streamChat(AgentStreamChatRequest request, RequestOptions requestOptions) {
-        return this.rawClient.streamChat(request, requestOptions).body();
-    }
-
-    /**
-     * Retrieves a list of chat messages for a given chat session
-     */
-    public GetChatMessagesResponse getChatMessages(GetChatMessagesRequest request) {
-        return this.rawClient.getChatMessages(request).body();
-    }
-
-    /**
-     * Retrieves a list of chat messages for a given chat session
-     */
-    public GetChatMessagesResponse getChatMessages(GetChatMessagesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getChatMessages(request, requestOptions).body();
-    }
-
-    public PromptsClient prompts() {
-        return this.promptsClient.get();
+    public ChatClient chat() {
+        return this.chatClient.get();
     }
 }

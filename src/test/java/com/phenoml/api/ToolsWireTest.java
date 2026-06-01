@@ -12,6 +12,7 @@ import com.phenoml.api.resources.tools.types.Lang2FhirAndCreateMultiResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndCreateRequestResource;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndCreateResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndSearchResponse;
+import com.phenoml.api.resources.tools.types.McpServerToolResponse;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -594,6 +595,276 @@ public class ToolsWireTest {
                 + "      \"search_params\": \"code=38341003\",\n"
                 + "      \"concept\": \"hypertension\",\n"
                 + "      \"exclude\": true\n"
+                + "    }\n"
+                + "  ]\n"
+                + "}";
+        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+        Assertions.assertTrue(
+                jsonEquals(expectedResponseNode, actualResponseNode),
+                "Response body structure does not match expected");
+        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
+            String discriminator = null;
+            if (actualResponseNode.has("type"))
+                discriminator = actualResponseNode.get("type").asText();
+            else if (actualResponseNode.has("_type"))
+                discriminator = actualResponseNode.get("_type").asText();
+            else if (actualResponseNode.has("kind"))
+                discriminator = actualResponseNode.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualResponseNode.isNull()) {
+            Assertions.assertTrue(
+                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
+                    "response should be a valid JSON value");
+        }
+
+        if (actualResponseNode.isArray()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+        }
+        if (actualResponseNode.isObject()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+        }
+    }
+
+    @Test
+    public void testList() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"success\":true,\"message\":\"MCP Server tools retrieved successfully\",\"data\":{\"id\":\"123\",\"name\":\"My MCP Server Tool\",\"description\":\"My MCP Server Tool is a tool that provides MCP services\",\"input_schema\":{\"name\":\"string\",\"age\":\"number\"},\"mcp_server_id\":\"123\",\"mcp_server_url\":\"https://mcp.example.com\"},\"mcp_server_tools\":[{\"id\":\"tool-001\",\"name\":\"search_endpoints\",\"description\":\"Search across the documented endpoints\",\"input_schema\":{\"query\":\"string\"},\"mcp_server_id\":\"123\",\"mcp_server_url\":\"https://mcp.example.com\"},{\"id\":\"tool-002\",\"name\":\"get_endpoint\",\"description\":\"Fetch a single endpoint by ID\",\"input_schema\":{\"endpoint_id\":\"string\"},\"mcp_server_id\":\"123\",\"mcp_server_url\":\"https://mcp.example.com\"}]}"));
+        McpServerToolResponse response = client.tools().list("mcp_server_id");
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("GET", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate response body
+        Assertions.assertNotNull(response, "Response should not be null");
+        String actualResponseJson = objectMapper.writeValueAsString(response);
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"success\": true,\n"
+                + "  \"message\": \"MCP Server tools retrieved successfully\",\n"
+                + "  \"data\": {\n"
+                + "    \"id\": \"123\",\n"
+                + "    \"name\": \"My MCP Server Tool\",\n"
+                + "    \"description\": \"My MCP Server Tool is a tool that provides MCP services\",\n"
+                + "    \"input_schema\": {\n"
+                + "      \"name\": \"string\",\n"
+                + "      \"age\": \"number\"\n"
+                + "    },\n"
+                + "    \"mcp_server_id\": \"123\",\n"
+                + "    \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "  },\n"
+                + "  \"mcp_server_tools\": [\n"
+                + "    {\n"
+                + "      \"id\": \"tool-001\",\n"
+                + "      \"name\": \"search_endpoints\",\n"
+                + "      \"description\": \"Search across the documented endpoints\",\n"
+                + "      \"input_schema\": {\n"
+                + "        \"query\": \"string\"\n"
+                + "      },\n"
+                + "      \"mcp_server_id\": \"123\",\n"
+                + "      \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"id\": \"tool-002\",\n"
+                + "      \"name\": \"get_endpoint\",\n"
+                + "      \"description\": \"Fetch a single endpoint by ID\",\n"
+                + "      \"input_schema\": {\n"
+                + "        \"endpoint_id\": \"string\"\n"
+                + "      },\n"
+                + "      \"mcp_server_id\": \"123\",\n"
+                + "      \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "    }\n"
+                + "  ]\n"
+                + "}";
+        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+        Assertions.assertTrue(
+                jsonEquals(expectedResponseNode, actualResponseNode),
+                "Response body structure does not match expected");
+        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
+            String discriminator = null;
+            if (actualResponseNode.has("type"))
+                discriminator = actualResponseNode.get("type").asText();
+            else if (actualResponseNode.has("_type"))
+                discriminator = actualResponseNode.get("_type").asText();
+            else if (actualResponseNode.has("kind"))
+                discriminator = actualResponseNode.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualResponseNode.isNull()) {
+            Assertions.assertTrue(
+                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
+                    "response should be a valid JSON value");
+        }
+
+        if (actualResponseNode.isArray()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+        }
+        if (actualResponseNode.isObject()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+        }
+    }
+
+    @Test
+    public void testGet() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"success\":true,\"message\":\"MCP Server tool retrieved successfully\",\"data\":{\"id\":\"123\",\"name\":\"My MCP Server Tool\",\"description\":\"My MCP Server Tool is a tool that provides MCP services\",\"input_schema\":{\"name\":\"string\",\"age\":\"number\"},\"mcp_server_id\":\"123\",\"mcp_server_url\":\"https://mcp.example.com\"},\"mcp_server_tools\":[{\"id\":\"123\",\"name\":\"My MCP Server Tool\",\"description\":\"My MCP Server Tool is a tool that provides MCP services\",\"input_schema\":{\"name\":\"string\",\"age\":\"number\"},\"mcp_server_id\":\"123\",\"mcp_server_url\":\"https://mcp.example.com\"}]}"));
+        McpServerToolResponse response = client.tools().get("mcp_server_tool_id");
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("GET", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate response body
+        Assertions.assertNotNull(response, "Response should not be null");
+        String actualResponseJson = objectMapper.writeValueAsString(response);
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"success\": true,\n"
+                + "  \"message\": \"MCP Server tool retrieved successfully\",\n"
+                + "  \"data\": {\n"
+                + "    \"id\": \"123\",\n"
+                + "    \"name\": \"My MCP Server Tool\",\n"
+                + "    \"description\": \"My MCP Server Tool is a tool that provides MCP services\",\n"
+                + "    \"input_schema\": {\n"
+                + "      \"name\": \"string\",\n"
+                + "      \"age\": \"number\"\n"
+                + "    },\n"
+                + "    \"mcp_server_id\": \"123\",\n"
+                + "    \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "  },\n"
+                + "  \"mcp_server_tools\": [\n"
+                + "    {\n"
+                + "      \"id\": \"123\",\n"
+                + "      \"name\": \"My MCP Server Tool\",\n"
+                + "      \"description\": \"My MCP Server Tool is a tool that provides MCP services\",\n"
+                + "      \"input_schema\": {\n"
+                + "        \"name\": \"string\",\n"
+                + "        \"age\": \"number\"\n"
+                + "      },\n"
+                + "      \"mcp_server_id\": \"123\",\n"
+                + "      \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "    }\n"
+                + "  ]\n"
+                + "}";
+        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+        Assertions.assertTrue(
+                jsonEquals(expectedResponseNode, actualResponseNode),
+                "Response body structure does not match expected");
+        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
+            String discriminator = null;
+            if (actualResponseNode.has("type"))
+                discriminator = actualResponseNode.get("type").asText();
+            else if (actualResponseNode.has("_type"))
+                discriminator = actualResponseNode.get("_type").asText();
+            else if (actualResponseNode.has("kind"))
+                discriminator = actualResponseNode.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualResponseNode.isNull()) {
+            Assertions.assertTrue(
+                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
+                    "response should be a valid JSON value");
+        }
+
+        if (actualResponseNode.isArray()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+        }
+        if (actualResponseNode.isObject()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+        }
+    }
+
+    @Test
+    public void testDelete() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"success\":true,\"message\":\"MCP Server tool deleted successfully\",\"data\":{\"id\":\"123\",\"name\":\"My MCP Server Tool\",\"description\":\"My MCP Server Tool is a tool that provides MCP services\",\"input_schema\":{\"name\":\"string\",\"age\":\"number\"},\"mcp_server_id\":\"123\",\"mcp_server_url\":\"https://mcp.example.com\"},\"mcp_server_tools\":[{\"id\":\"123\",\"name\":\"My MCP Server Tool\",\"description\":\"My MCP Server Tool is a tool that provides MCP services\",\"input_schema\":{\"name\":\"string\",\"age\":\"number\"},\"mcp_server_id\":\"123\",\"mcp_server_url\":\"https://mcp.example.com\"}]}"));
+        McpServerToolResponse response = client.tools().delete("mcp_server_tool_id");
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("DELETE", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate response body
+        Assertions.assertNotNull(response, "Response should not be null");
+        String actualResponseJson = objectMapper.writeValueAsString(response);
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"success\": true,\n"
+                + "  \"message\": \"MCP Server tool deleted successfully\",\n"
+                + "  \"data\": {\n"
+                + "    \"id\": \"123\",\n"
+                + "    \"name\": \"My MCP Server Tool\",\n"
+                + "    \"description\": \"My MCP Server Tool is a tool that provides MCP services\",\n"
+                + "    \"input_schema\": {\n"
+                + "      \"name\": \"string\",\n"
+                + "      \"age\": \"number\"\n"
+                + "    },\n"
+                + "    \"mcp_server_id\": \"123\",\n"
+                + "    \"mcp_server_url\": \"https://mcp.example.com\"\n"
+                + "  },\n"
+                + "  \"mcp_server_tools\": [\n"
+                + "    {\n"
+                + "      \"id\": \"123\",\n"
+                + "      \"name\": \"My MCP Server Tool\",\n"
+                + "      \"description\": \"My MCP Server Tool is a tool that provides MCP services\",\n"
+                + "      \"input_schema\": {\n"
+                + "        \"name\": \"string\",\n"
+                + "        \"age\": \"number\"\n"
+                + "      },\n"
+                + "      \"mcp_server_id\": \"123\",\n"
+                + "      \"mcp_server_url\": \"https://mcp.example.com\"\n"
                 + "    }\n"
                 + "  ]\n"
                 + "}";

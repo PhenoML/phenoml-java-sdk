@@ -16,13 +16,11 @@ import com.phenoml.api.resources.summary.errors.ForbiddenError;
 import com.phenoml.api.resources.summary.errors.InternalServerError;
 import com.phenoml.api.resources.summary.errors.NotFoundError;
 import com.phenoml.api.resources.summary.errors.UnauthorizedError;
-import com.phenoml.api.resources.summary.templates.requests.CreateSummaryTemplateRequest;
 import com.phenoml.api.resources.summary.templates.requests.UpdateSummaryTemplateRequest;
-import com.phenoml.api.resources.summary.templates.types.TemplatesDeleteResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesGetResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesListResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesUpdateResponse;
-import com.phenoml.api.resources.summary.types.CreateSummaryTemplateResponse;
+import com.phenoml.api.resources.summary.templates.types.DeleteResponse;
+import com.phenoml.api.resources.summary.templates.types.GetResponse;
+import com.phenoml.api.resources.summary.templates.types.ListResponse;
+import com.phenoml.api.resources.summary.templates.types.UpdateResponse;
 import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -42,14 +40,14 @@ public class RawTemplatesClient {
     /**
      * Retrieves all summary templates for the authenticated user
      */
-    public PhenomlClientHttpResponse<TemplatesListResponse> list() {
+    public PhenomlClientHttpResponse<ListResponse> list() {
         return list(null);
     }
 
     /**
      * Retrieves all summary templates for the authenticated user
      */
-    public PhenomlClientHttpResponse<TemplatesListResponse> list(RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<ListResponse> list(RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir2summary/templates");
@@ -73,79 +71,10 @@ public class RawTemplatesClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TemplatesListResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ListResponse.class), response);
             }
             try {
                 switch (response.code()) {
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
-
-    /**
-     * Creates a summary template from an example using LLM function calling
-     */
-    public PhenomlClientHttpResponse<CreateSummaryTemplateResponse> create(CreateSummaryTemplateRequest request) {
-        return create(request, null);
-    }
-
-    /**
-     * Creates a summary template from an example using LLM function calling
-     */
-    public PhenomlClientHttpResponse<CreateSummaryTemplateResponse> create(
-            CreateSummaryTemplateRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir2summary/template");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, CreateSummaryTemplateResponse.class),
-                        response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 401:
                         throw new UnauthorizedError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
@@ -167,14 +96,14 @@ public class RawTemplatesClient {
     /**
      * Retrieves a specific summary template
      */
-    public PhenomlClientHttpResponse<TemplatesGetResponse> get(String id) {
+    public PhenomlClientHttpResponse<GetResponse> get(String id) {
         return get(id, null);
     }
 
     /**
      * Retrieves a specific summary template
      */
-    public PhenomlClientHttpResponse<TemplatesGetResponse> get(String id, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<GetResponse> get(String id, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir2summary/template")
@@ -199,7 +128,7 @@ public class RawTemplatesClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TemplatesGetResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -230,14 +159,14 @@ public class RawTemplatesClient {
     /**
      * Updates an existing summary template
      */
-    public PhenomlClientHttpResponse<TemplatesUpdateResponse> update(String id, UpdateSummaryTemplateRequest request) {
+    public PhenomlClientHttpResponse<UpdateResponse> update(String id, UpdateSummaryTemplateRequest request) {
         return update(id, request, null);
     }
 
     /**
      * Updates an existing summary template
      */
-    public PhenomlClientHttpResponse<TemplatesUpdateResponse> update(
+    public PhenomlClientHttpResponse<UpdateResponse> update(
             String id, UpdateSummaryTemplateRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -271,8 +200,7 @@ public class RawTemplatesClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TemplatesUpdateResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -306,14 +234,14 @@ public class RawTemplatesClient {
     /**
      * Deletes a summary template
      */
-    public PhenomlClientHttpResponse<TemplatesDeleteResponse> delete(String id) {
+    public PhenomlClientHttpResponse<DeleteResponse> delete(String id) {
         return delete(id, null);
     }
 
     /**
      * Deletes a summary template
      */
-    public PhenomlClientHttpResponse<TemplatesDeleteResponse> delete(String id, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<DeleteResponse> delete(String id, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir2summary/template")
@@ -338,8 +266,7 @@ public class RawTemplatesClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TemplatesDeleteResponse.class),
-                        response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteResponse.class), response);
             }
             try {
                 switch (response.code()) {

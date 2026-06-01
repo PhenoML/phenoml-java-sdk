@@ -6,7 +6,7 @@ package com.phenoml.api.resources.tools;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
-import com.phenoml.api.resources.tools.mcpserver.McpServerClient;
+import com.phenoml.api.resources.tools.mcpservers.McpServersClient;
 import com.phenoml.api.resources.tools.requests.CohortRequest;
 import com.phenoml.api.resources.tools.requests.Lang2FhirAndCreateMultiRequest;
 import com.phenoml.api.resources.tools.requests.Lang2FhirAndCreateRequest;
@@ -15,6 +15,7 @@ import com.phenoml.api.resources.tools.types.CohortResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndCreateMultiResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndCreateResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndSearchResponse;
+import com.phenoml.api.resources.tools.types.McpServerToolResponse;
 import java.util.function.Supplier;
 
 public class ToolsClient {
@@ -22,12 +23,12 @@ public class ToolsClient {
 
     private final RawToolsClient rawClient;
 
-    protected final Supplier<McpServerClient> mcpServerClient;
+    protected final Supplier<McpServersClient> mcpServersClient;
 
     public ToolsClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.rawClient = new RawToolsClient(clientOptions);
-        this.mcpServerClient = Suppliers.memoize(() -> new McpServerClient(clientOptions));
+        this.mcpServersClient = Suppliers.memoize(() -> new McpServersClient(clientOptions));
     }
 
     /**
@@ -104,7 +105,49 @@ public class ToolsClient {
         return this.rawClient.analyzeCohort(request, requestOptions).body();
     }
 
-    public McpServerClient mcpServer() {
-        return this.mcpServerClient.get();
+    /**
+     * Lists all MCP server tools for a specific MCP server
+     */
+    public McpServerToolResponse list(String mcpServerId) {
+        return this.rawClient.list(mcpServerId).body();
+    }
+
+    /**
+     * Lists all MCP server tools for a specific MCP server
+     */
+    public McpServerToolResponse list(String mcpServerId, RequestOptions requestOptions) {
+        return this.rawClient.list(mcpServerId, requestOptions).body();
+    }
+
+    /**
+     * Gets a MCP server tool by ID
+     */
+    public McpServerToolResponse get(String mcpServerToolId) {
+        return this.rawClient.get(mcpServerToolId).body();
+    }
+
+    /**
+     * Gets a MCP server tool by ID
+     */
+    public McpServerToolResponse get(String mcpServerToolId, RequestOptions requestOptions) {
+        return this.rawClient.get(mcpServerToolId, requestOptions).body();
+    }
+
+    /**
+     * Deletes a MCP server tool by ID
+     */
+    public McpServerToolResponse delete(String mcpServerToolId) {
+        return this.rawClient.delete(mcpServerToolId).body();
+    }
+
+    /**
+     * Deletes a MCP server tool by ID
+     */
+    public McpServerToolResponse delete(String mcpServerToolId, RequestOptions requestOptions) {
+        return this.rawClient.delete(mcpServerToolId, requestOptions).body();
+    }
+
+    public McpServersClient mcpServers() {
+        return this.mcpServersClient.get();
     }
 }

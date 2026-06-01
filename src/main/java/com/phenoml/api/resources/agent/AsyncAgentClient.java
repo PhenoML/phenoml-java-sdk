@@ -6,19 +6,13 @@ package com.phenoml.api.resources.agent;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
-import com.phenoml.api.resources.agent.prompts.AsyncPromptsClient;
-import com.phenoml.api.resources.agent.requests.AgentChatRequest;
-import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
-import com.phenoml.api.resources.agent.requests.GetChatMessagesRequest;
-import com.phenoml.api.resources.agent.requests.ListRequest;
-import com.phenoml.api.resources.agent.types.AgentChatResponse;
-import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
-import com.phenoml.api.resources.agent.types.AgentCreateRequest;
-import com.phenoml.api.resources.agent.types.AgentResponse;
-import com.phenoml.api.resources.agent.types.DeleteResponse;
-import com.phenoml.api.resources.agent.types.GetChatMessagesResponse;
+import com.phenoml.api.resources.agent.chat.AsyncChatClient;
+import com.phenoml.api.resources.agent.requests.AgentPromptsCreateRequest;
+import com.phenoml.api.resources.agent.requests.AgentPromptsUpdateRequest;
+import com.phenoml.api.resources.agent.types.AgentPromptsResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
-import com.phenoml.api.resources.agent.types.ListResponse;
+import com.phenoml.api.resources.agent.types.PromptsDeleteResponse;
+import com.phenoml.api.resources.agent.types.PromptsListResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -28,12 +22,12 @@ public class AsyncAgentClient {
 
     private final AsyncRawAgentClient rawClient;
 
-    protected final Supplier<AsyncPromptsClient> promptsClient;
+    protected final Supplier<AsyncChatClient> chatClient;
 
     public AsyncAgentClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.rawClient = new AsyncRawAgentClient(clientOptions);
-        this.promptsClient = Suppliers.memoize(() -> new AsyncPromptsClient(clientOptions));
+        this.chatClient = Suppliers.memoize(() -> new AsyncChatClient(clientOptions));
     }
 
     /**
@@ -44,154 +38,107 @@ public class AsyncAgentClient {
     }
 
     /**
-     * Creates a new PhenoAgent with specified configuration
+     * Creates a new agent prompt
      */
-    public CompletableFuture<AgentResponse> create(AgentCreateRequest request) {
+    public CompletableFuture<AgentPromptsResponse> create(AgentPromptsCreateRequest request) {
         return this.rawClient.create(request).thenApply(response -> response.body());
     }
 
     /**
-     * Creates a new PhenoAgent with specified configuration
+     * Creates a new agent prompt
      */
-    public CompletableFuture<AgentResponse> create(AgentCreateRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<AgentPromptsResponse> create(
+            AgentPromptsCreateRequest request, RequestOptions requestOptions) {
         return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
     }
 
     /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
+     * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public CompletableFuture<ListResponse> list() {
+    public CompletableFuture<PromptsListResponse> list() {
         return this.rawClient.list().thenApply(response -> response.body());
     }
 
     /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
+     * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public CompletableFuture<ListResponse> list(RequestOptions requestOptions) {
+    public CompletableFuture<PromptsListResponse> list(RequestOptions requestOptions) {
         return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
     /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
+     * Retrieves a specific prompt by its ID
      */
-    public CompletableFuture<ListResponse> list(ListRequest request) {
-        return this.rawClient.list(request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
-     */
-    public CompletableFuture<ListResponse> list(ListRequest request, RequestOptions requestOptions) {
-        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Retrieves a specific agent by its ID
-     */
-    public CompletableFuture<AgentResponse> get(String id) {
+    public CompletableFuture<AgentPromptsResponse> get(String id) {
         return this.rawClient.get(id).thenApply(response -> response.body());
     }
 
     /**
-     * Retrieves a specific agent by its ID
+     * Retrieves a specific prompt by its ID
      */
-    public CompletableFuture<AgentResponse> get(String id, RequestOptions requestOptions) {
+    public CompletableFuture<AgentPromptsResponse> get(String id, RequestOptions requestOptions) {
         return this.rawClient.get(id, requestOptions).thenApply(response -> response.body());
     }
 
     /**
-     * Updates an existing agent's configuration
+     * Updates an existing prompt
      */
-    public CompletableFuture<AgentResponse> update(String id, AgentCreateRequest request) {
+    public CompletableFuture<AgentPromptsResponse> update(String id) {
+        return this.rawClient.update(id).thenApply(response -> response.body());
+    }
+
+    /**
+     * Updates an existing prompt
+     */
+    public CompletableFuture<AgentPromptsResponse> update(String id, RequestOptions requestOptions) {
+        return this.rawClient.update(id, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Updates an existing prompt
+     */
+    public CompletableFuture<AgentPromptsResponse> update(String id, AgentPromptsUpdateRequest request) {
         return this.rawClient.update(id, request).thenApply(response -> response.body());
     }
 
     /**
-     * Updates an existing agent's configuration
+     * Updates an existing prompt
      */
-    public CompletableFuture<AgentResponse> update(
-            String id, AgentCreateRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<AgentPromptsResponse> update(
+            String id, AgentPromptsUpdateRequest request, RequestOptions requestOptions) {
         return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
     }
 
     /**
-     * Deletes an existing agent
+     * Deletes a prompt
      */
-    public CompletableFuture<DeleteResponse> delete(String id) {
+    public CompletableFuture<PromptsDeleteResponse> delete(String id) {
         return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
     /**
-     * Deletes an existing agent
+     * Deletes a prompt
      */
-    public CompletableFuture<DeleteResponse> delete(String id, RequestOptions requestOptions) {
+    public CompletableFuture<PromptsDeleteResponse> delete(String id, RequestOptions requestOptions) {
         return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
     }
 
     /**
-     * Patches an existing agent's configuration
+     * Patches an existing prompt
      */
-    public CompletableFuture<AgentResponse> patch(String id, List<JsonPatchOperation> request) {
+    public CompletableFuture<AgentPromptsResponse> patch(String id, List<JsonPatchOperation> request) {
         return this.rawClient.patch(id, request).thenApply(response -> response.body());
     }
 
     /**
-     * Patches an existing agent's configuration
+     * Patches an existing prompt
      */
-    public CompletableFuture<AgentResponse> patch(
+    public CompletableFuture<AgentPromptsResponse> patch(
             String id, List<JsonPatchOperation> request, RequestOptions requestOptions) {
         return this.rawClient.patch(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    /**
-     * Send a message to an agent and receive a JSON response.
-     */
-    public CompletableFuture<AgentChatResponse> chat(AgentChatRequest request) {
-        return this.rawClient.chat(request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Send a message to an agent and receive a JSON response.
-     */
-    public CompletableFuture<AgentChatResponse> chat(AgentChatRequest request, RequestOptions requestOptions) {
-        return this.rawClient.chat(request, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Send a message to an agent and receive the response as a Server-Sent Events
-     * (SSE) stream. Events include message_start, content_delta, tool_use,
-     * tool_result, message_end, and error.
-     */
-    public CompletableFuture<Iterable<AgentChatStreamEvent>> streamChat(AgentStreamChatRequest request) {
-        return this.rawClient.streamChat(request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Send a message to an agent and receive the response as a Server-Sent Events
-     * (SSE) stream. Events include message_start, content_delta, tool_use,
-     * tool_result, message_end, and error.
-     */
-    public CompletableFuture<Iterable<AgentChatStreamEvent>> streamChat(
-            AgentStreamChatRequest request, RequestOptions requestOptions) {
-        return this.rawClient.streamChat(request, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Retrieves a list of chat messages for a given chat session
-     */
-    public CompletableFuture<GetChatMessagesResponse> getChatMessages(GetChatMessagesRequest request) {
-        return this.rawClient.getChatMessages(request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Retrieves a list of chat messages for a given chat session
-     */
-    public CompletableFuture<GetChatMessagesResponse> getChatMessages(
-            GetChatMessagesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getChatMessages(request, requestOptions).thenApply(response -> response.body());
-    }
-
-    public AsyncPromptsClient prompts() {
-        return this.promptsClient.get();
+    public AsyncChatClient chat() {
+        return this.chatClient.get();
     }
 }

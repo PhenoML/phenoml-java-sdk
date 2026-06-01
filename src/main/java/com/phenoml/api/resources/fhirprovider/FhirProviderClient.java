@@ -5,23 +5,25 @@ package com.phenoml.api.resources.fhirprovider;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.core.Suppliers;
+import com.phenoml.api.resources.fhirprovider.authconfig.AuthConfigClient;
 import com.phenoml.api.resources.fhirprovider.requests.FhirProviderCreateRequest;
-import com.phenoml.api.resources.fhirprovider.requests.FhirProviderRemoveAuthConfigRequest;
-import com.phenoml.api.resources.fhirprovider.requests.FhirProviderSetActiveAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.types.DeleteResponse;
-import com.phenoml.api.resources.fhirprovider.types.FhirProviderAddAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderListResponse;
 import com.phenoml.api.resources.fhirprovider.types.FhirProviderResponse;
-import com.phenoml.api.resources.fhirprovider.types.RemoveAuthConfigResponse;
+import java.util.function.Supplier;
 
 public class FhirProviderClient {
     protected final ClientOptions clientOptions;
 
     private final RawFhirProviderClient rawClient;
 
+    protected final Supplier<AuthConfigClient> authConfigClient;
+
     public FhirProviderClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.rawClient = new RawFhirProviderClient(clientOptions);
+        this.authConfigClient = Suppliers.memoize(() -> new AuthConfigClient(clientOptions));
     }
 
     /**
@@ -99,72 +101,7 @@ public class FhirProviderClient {
         return this.rawClient.delete(fhirProviderId, requestOptions).body();
     }
 
-    /**
-     * Adds a new authentication configuration to an existing FHIR provider.
-     * This enables key rotation and multiple auth configurations per provider.
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public FhirProviderResponse addAuthConfig(String fhirProviderId, FhirProviderAddAuthConfigRequest request) {
-        return this.rawClient.addAuthConfig(fhirProviderId, request).body();
-    }
-
-    /**
-     * Adds a new authentication configuration to an existing FHIR provider.
-     * This enables key rotation and multiple auth configurations per provider.
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public FhirProviderResponse addAuthConfig(
-            String fhirProviderId, FhirProviderAddAuthConfigRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .addAuthConfig(fhirProviderId, request, requestOptions)
-                .body();
-    }
-
-    /**
-     * Sets which authentication configuration should be active for a FHIR provider.
-     * Only one auth config can be active at a time.
-     * <p>If the specified auth config is already active, the request succeeds without
-     * making any changes and returns a message indicating the config is already active.</p>
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public FhirProviderResponse setActiveAuthConfig(
-            String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request) {
-        return this.rawClient.setActiveAuthConfig(fhirProviderId, request).body();
-    }
-
-    /**
-     * Sets which authentication configuration should be active for a FHIR provider.
-     * Only one auth config can be active at a time.
-     * <p>If the specified auth config is already active, the request succeeds without
-     * making any changes and returns a message indicating the config is already active.</p>
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public FhirProviderResponse setActiveAuthConfig(
-            String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .setActiveAuthConfig(fhirProviderId, request, requestOptions)
-                .body();
-    }
-
-    /**
-     * Removes an authentication configuration from a FHIR provider.
-     * Cannot remove the currently active auth configuration.
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public RemoveAuthConfigResponse removeAuthConfig(
-            String fhirProviderId, FhirProviderRemoveAuthConfigRequest request) {
-        return this.rawClient.removeAuthConfig(fhirProviderId, request).body();
-    }
-
-    /**
-     * Removes an authentication configuration from a FHIR provider.
-     * Cannot remove the currently active auth configuration.
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public RemoveAuthConfigResponse removeAuthConfig(
-            String fhirProviderId, FhirProviderRemoveAuthConfigRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .removeAuthConfig(fhirProviderId, request, requestOptions)
-                .body();
+    public AuthConfigClient authConfig() {
+        return this.authConfigClient.get();
     }
 }

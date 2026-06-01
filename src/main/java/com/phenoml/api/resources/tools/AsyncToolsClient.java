@@ -6,7 +6,7 @@ package com.phenoml.api.resources.tools;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
-import com.phenoml.api.resources.tools.mcpserver.AsyncMcpServerClient;
+import com.phenoml.api.resources.tools.mcpservers.AsyncMcpServersClient;
 import com.phenoml.api.resources.tools.requests.CohortRequest;
 import com.phenoml.api.resources.tools.requests.Lang2FhirAndCreateMultiRequest;
 import com.phenoml.api.resources.tools.requests.Lang2FhirAndCreateRequest;
@@ -15,6 +15,7 @@ import com.phenoml.api.resources.tools.types.CohortResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndCreateMultiResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndCreateResponse;
 import com.phenoml.api.resources.tools.types.Lang2FhirAndSearchResponse;
+import com.phenoml.api.resources.tools.types.McpServerToolResponse;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -23,12 +24,12 @@ public class AsyncToolsClient {
 
     private final AsyncRawToolsClient rawClient;
 
-    protected final Supplier<AsyncMcpServerClient> mcpServerClient;
+    protected final Supplier<AsyncMcpServersClient> mcpServersClient;
 
     public AsyncToolsClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.rawClient = new AsyncRawToolsClient(clientOptions);
-        this.mcpServerClient = Suppliers.memoize(() -> new AsyncMcpServerClient(clientOptions));
+        this.mcpServersClient = Suppliers.memoize(() -> new AsyncMcpServersClient(clientOptions));
     }
 
     /**
@@ -106,7 +107,49 @@ public class AsyncToolsClient {
         return this.rawClient.analyzeCohort(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public AsyncMcpServerClient mcpServer() {
-        return this.mcpServerClient.get();
+    /**
+     * Lists all MCP server tools for a specific MCP server
+     */
+    public CompletableFuture<McpServerToolResponse> list(String mcpServerId) {
+        return this.rawClient.list(mcpServerId).thenApply(response -> response.body());
+    }
+
+    /**
+     * Lists all MCP server tools for a specific MCP server
+     */
+    public CompletableFuture<McpServerToolResponse> list(String mcpServerId, RequestOptions requestOptions) {
+        return this.rawClient.list(mcpServerId, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Gets a MCP server tool by ID
+     */
+    public CompletableFuture<McpServerToolResponse> get(String mcpServerToolId) {
+        return this.rawClient.get(mcpServerToolId).thenApply(response -> response.body());
+    }
+
+    /**
+     * Gets a MCP server tool by ID
+     */
+    public CompletableFuture<McpServerToolResponse> get(String mcpServerToolId, RequestOptions requestOptions) {
+        return this.rawClient.get(mcpServerToolId, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Deletes a MCP server tool by ID
+     */
+    public CompletableFuture<McpServerToolResponse> delete(String mcpServerToolId) {
+        return this.rawClient.delete(mcpServerToolId).thenApply(response -> response.body());
+    }
+
+    /**
+     * Deletes a MCP server tool by ID
+     */
+    public CompletableFuture<McpServerToolResponse> delete(String mcpServerToolId, RequestOptions requestOptions) {
+        return this.rawClient.delete(mcpServerToolId, requestOptions).thenApply(response -> response.body());
+    }
+
+    public AsyncMcpServersClient mcpServers() {
+        return this.mcpServersClient.get();
     }
 }
