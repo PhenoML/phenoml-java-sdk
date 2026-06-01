@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Phenoml API",
-    "version": "f58e6727d43f86164a0a9161d5634db4c3a61e22"
+    "version": "41ef317ce3bddadde34ef93326bda5d05006d536"
   },
   "x-services": [
     {
@@ -3019,7 +3019,7 @@
     "/fhir-provider/{fhir_provider_id}/fhir/{fhir_path}": {
       "get": {
         "summary": "Read or search FHIR resources",
-        "description": "Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.\n\nThe request is proxied to the configured FHIR server with appropriate authentication headers.\n",
+        "description": "Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. `Patient/123` via the path) and search operations.\n\nFHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:\n- Resource-specific search parameters (e.g. `name` for Patient, `status` for Observation)\n- Common search parameters (`_id`, `_lastUpdated`, `_tag`, `_profile`, `_security`, `_text`, `_content`, `_filter`)\n- Result parameters (`_count`, `_offset`, `_sort`, `_include`, `_revinclude`, `_summary`, `_elements`)\n- Search prefixes for dates, numbers, and quantities (`eq`, `ne`, `gt`, `ge`, `lt`, `le`, `sa`, `eb`, `ap`)\n\nExamples:\n- `Patient?name=John%20Doe&_count=10&_sort=family`\n- `Observation?patient=Patient/123&date=ge2023-01-01&category=vital-signs&_sort=-date`\n\nWhen using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.\n\nThe request is proxied to the configured FHIR server with appropriate authentication headers.\n",
         "operationId": "fhir_search",
         "parameters": [
           {
@@ -3033,58 +3033,6 @@
           },
           {
             "$ref": "#/components/parameters/fhir_FhirProviderHeader"
-          },
-          {
-            "name": "query_parameters",
-            "in": "query",
-            "description": "FHIR-compliant query parameters for search operations. Supports standard FHIR search parameters including:\n- Resource-specific search parameters (e.g., name for Patient, status for Observation)\n- Common search parameters (_id, _lastUpdated, _tag, _profile, _security, _text, _content, _filter)\n- Result parameters (_count, _offset, _sort, _include, _revinclude, _summary, _elements)\n- Search prefixes for dates, numbers, quantities (eq, ne, gt, ge, lt, le, sa, eb, ap)\n",
-            "schema": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "string"
-              }
-            },
-            "style": "form",
-            "explode": true,
-            "examples": {
-              "patient_name_search": {
-                "summary": "Search patients by name with pagination",
-                "value": {
-                  "name": "John Doe",
-                  "_count": "10",
-                  "_offset": "0",
-                  "_sort": "family"
-                }
-              },
-              "patient_advanced_search": {
-                "summary": "Advanced patient search with multiple criteria",
-                "value": {
-                  "family": "Doe",
-                  "given": "John",
-                  "birthdate": "ge1980-01-01",
-                  "gender": "male",
-                  "_include": "Patient:general-practitioner"
-                }
-              },
-              "observation_search": {
-                "summary": "Search observations by patient and date range",
-                "value": {
-                  "patient": "Patient/123",
-                  "date": "ge2023-01-01",
-                  "category": "vital-signs",
-                  "_sort": "-date"
-                }
-              },
-              "condition_search": {
-                "summary": "Search conditions with text search",
-                "value": {
-                  "patient": "Patient/123",
-                  "clinical-status": "active",
-                  "_text": "diabetes",
-                  "_summary": "true"
-                }
-              }
-            }
           }
         ],
         "responses": {
@@ -3092,16 +3040,7 @@
             "description": "Successfully retrieved FHIR resource(s)",
             "content": {
               "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/fhir_FHIRBundle"
-                    },
-                    {
-                      "$ref": "#/components/schemas/fhir_FHIRResource"
-                    }
-                  ]
-                },
+                "schema": {},
                 "examples": {
                   "bundle_response": {
                     "summary": "Search results as FHIR Bundle",
@@ -3144,27 +3083,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/fhir_BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/fhir_Unauthorized"
-          },
-          "404": {
-            "$ref": "#/components/responses/fhir_NotFound"
-          },
-          "429": {
-            "$ref": "#/components/responses/fhir_TooManyRequests"
-          },
-          "500": {
-            "$ref": "#/components/responses/fhir_InternalServerError"
-          },
-          "502": {
-            "$ref": "#/components/responses/fhir_BadGateway"
-          },
-          "503": {
-            "$ref": "#/components/responses/fhir_ServiceUnavailable"
           }
         },
         "security": [
@@ -3197,9 +3115,7 @@
           "required": true,
           "content": {
             "application/fhir+json": {
-              "schema": {
-                "$ref": "#/components/schemas/fhir_FHIRResource"
-              },
+              "schema": {},
               "examples": {
                 "create_patient": {
                   "summary": "Create a new patient",
@@ -3216,9 +3132,7 @@
             "description": "Resource created successfully",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/fhir_FHIRResource"
-                },
+                "schema": {},
                 "example": {
                   "resourceType": "Patient",
                   "id": "456",
@@ -3229,24 +3143,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/fhir_BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/fhir_Unauthorized"
-          },
-          "429": {
-            "$ref": "#/components/responses/fhir_TooManyRequests"
-          },
-          "500": {
-            "$ref": "#/components/responses/fhir_InternalServerError"
-          },
-          "502": {
-            "$ref": "#/components/responses/fhir_BadGateway"
-          },
-          "503": {
-            "$ref": "#/components/responses/fhir_ServiceUnavailable"
           }
         },
         "security": [
@@ -3279,9 +3175,7 @@
           "required": true,
           "content": {
             "application/fhir+json": {
-              "schema": {
-                "$ref": "#/components/schemas/fhir_FHIRResource"
-              },
+              "schema": {},
               "examples": {
                 "upsert_patient": {
                   "summary": "Create or update a patient",
@@ -3299,9 +3193,7 @@
             "description": "Resource upserted successfully",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/fhir_FHIRResource"
-                },
+                "schema": {},
                 "example": {
                   "resourceType": "Patient",
                   "id": "123",
@@ -3312,24 +3204,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/fhir_BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/fhir_Unauthorized"
-          },
-          "429": {
-            "$ref": "#/components/responses/fhir_TooManyRequests"
-          },
-          "500": {
-            "$ref": "#/components/responses/fhir_InternalServerError"
-          },
-          "502": {
-            "$ref": "#/components/responses/fhir_BadGateway"
-          },
-          "503": {
-            "$ref": "#/components/responses/fhir_ServiceUnavailable"
           }
         },
         "security": [
@@ -3341,7 +3215,7 @@
       },
       "patch": {
         "summary": "Patch FHIR resource",
-        "description": "Partially updates a FHIR resource on the specified provider using JSON Patch operations as defined in RFC 6902.\n\nThe request body should contain an array of JSON Patch operations. Each operation specifies:\n- `op`: The operation type (add, remove, replace, move, copy, test)\n- `path`: JSON Pointer to the target location in the resource\n- `value`: The value to use (required for add, replace, and test operations)\n\nThe request is proxied to the configured FHIR server with appropriate authentication headers.\n",
+        "description": "Partially updates a FHIR resource on the specified provider.\n\nTwo body formats are supported, selected by request content type:\n- `application/json-patch+json` \u2014 an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:\n  - `op`: The operation type (add, remove, replace, move, copy, test)\n  - `path`: JSON Pointer to the target location in the resource\n  - `value`: The value to use (required for add, replace, and test operations)\n- `application/fhir+json` \u2014 a partial FHIR resource for merge-patch semantics.\n\n**Note:** This proxy currently forwards the request body to the upstream FHIR server with `Content-Type: application/fhir+json` regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under `application/fhir+json`; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.\n\nThe request is proxied to the configured FHIR server with appropriate authentication headers.\n",
         "operationId": "fhir_patch",
         "parameters": [
           {
@@ -3463,10 +3337,7 @@
               }
             },
             "application/fhir+json": {
-              "schema": {
-                "type": "object",
-                "description": "Alternative: Partial FHIR resource for merge-patch operations \n(support depends on FHIR server implementation)\n"
-              },
+              "schema": {},
               "examples": {
                 "merge_patch_patient": {
                   "summary": "Merge patch format (server-dependent)",
@@ -3490,9 +3361,7 @@
             "description": "Resource patched successfully",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/fhir_FHIRResource"
-                },
+                "schema": {},
                 "example": {
                   "resourceType": "Patient",
                   "id": "123",
@@ -3503,27 +3372,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/fhir_BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/fhir_Unauthorized"
-          },
-          "404": {
-            "$ref": "#/components/responses/fhir_NotFound"
-          },
-          "429": {
-            "$ref": "#/components/responses/fhir_TooManyRequests"
-          },
-          "500": {
-            "$ref": "#/components/responses/fhir_InternalServerError"
-          },
-          "502": {
-            "$ref": "#/components/responses/fhir_BadGateway"
-          },
-          "503": {
-            "$ref": "#/components/responses/fhir_ServiceUnavailable"
           }
         },
         "security": [
@@ -3556,10 +3404,7 @@
             "description": "Resource deleted successfully",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "Deletion confirmation or operation outcome"
-                },
+                "schema": {},
                 "example": {
                   "resourceType": "OperationOutcome",
                   "issue": [
@@ -3574,27 +3419,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/fhir_BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/fhir_Unauthorized"
-          },
-          "404": {
-            "$ref": "#/components/responses/fhir_NotFound"
-          },
-          "429": {
-            "$ref": "#/components/responses/fhir_TooManyRequests"
-          },
-          "500": {
-            "$ref": "#/components/responses/fhir_InternalServerError"
-          },
-          "502": {
-            "$ref": "#/components/responses/fhir_BadGateway"
-          },
-          "503": {
-            "$ref": "#/components/responses/fhir_ServiceUnavailable"
           }
         },
         "security": [
@@ -3626,9 +3450,7 @@
           "required": true,
           "content": {
             "application/fhir+json": {
-              "schema": {
-                "$ref": "#/components/schemas/fhir_FHIRBundle"
-              },
+              "schema": {},
               "examples": {
                 "transaction_bundle": {
                   "summary": "Transaction bundle with multiple operations",
@@ -3678,9 +3500,7 @@
             "description": "Bundle executed successfully",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/fhir_FHIRBundle"
-                },
+                "schema": {},
                 "examples": {
                   "bundle_response": {
                     "summary": "Bundle execution response",
@@ -3704,24 +3524,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/fhir_BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/fhir_Unauthorized"
-          },
-          "429": {
-            "$ref": "#/components/responses/fhir_TooManyRequests"
-          },
-          "500": {
-            "$ref": "#/components/responses/fhir_InternalServerError"
-          },
-          "502": {
-            "$ref": "#/components/responses/fhir_BadGateway"
-          },
-          "503": {
-            "$ref": "#/components/responses/fhir_ServiceUnavailable"
           }
         },
         "security": [
@@ -8474,134 +8276,6 @@
           }
         }
       },
-      "fhir_FHIRBundle": {
-        "type": "object",
-        "description": "Represents a FHIR Bundle response containing multiple resources or operation results.\nBased on the FHIRBundle struct from io/fhir.go.\n",
-        "required": [
-          "resourceType",
-          "entry"
-        ],
-        "properties": {
-          "resourceType": {
-            "type": "string",
-            "enum": [
-              "Bundle"
-            ],
-            "description": "Always \"Bundle\" for bundle resources"
-          },
-          "total": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "Total number of resources that match the search criteria.\nOptional field as not all FHIR servers include it (e.g., Medplum).\n"
-          },
-          "entry": {
-            "type": "array",
-            "description": "Array of bundle entries containing resources or operation results",
-            "items": {
-              "type": "object",
-              "properties": {
-                "resource": {
-                  "type": "object",
-                  "description": "The FHIR resource contained in this entry",
-                  "additionalProperties": true
-                },
-                "request": {
-                  "type": "object",
-                  "description": "Request information for transaction/batch bundles",
-                  "properties": {
-                    "method": {
-                      "type": "string",
-                      "enum": [
-                        "GET",
-                        "POST",
-                        "PUT",
-                        "PATCH",
-                        "DELETE"
-                      ]
-                    },
-                    "url": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "response": {
-                  "type": "object",
-                  "description": "Response information for transaction/batch bundle responses",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "location": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "fhir_FHIRResource": {
-        "type": "object",
-        "description": "A generic FHIR resource. All FHIR resources share common elements like resourceType and id,\nbut the specific structure depends on the resource type.\n",
-        "required": [
-          "resourceType"
-        ],
-        "properties": {
-          "resourceType": {
-            "type": "string",
-            "description": "The type of FHIR resource (e.g., Patient, Observation, etc.)",
-            "example": "Patient"
-          },
-          "id": {
-            "type": "string",
-            "description": "Logical ID of the resource",
-            "example": "123"
-          },
-          "meta": {
-            "type": "object",
-            "description": "Metadata about the resource",
-            "properties": {
-              "versionId": {
-                "type": "string"
-              },
-              "lastUpdated": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "profile": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "additionalProperties": true
-      },
-      "fhir_ErrorResponse": {
-        "type": "object",
-        "description": "Standard error response structure",
-        "required": [
-          "message"
-        ],
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "Human-readable error message"
-          },
-          "code": {
-            "type": "integer",
-            "description": "HTTP status code"
-          },
-          "data": {
-            "type": "object",
-            "description": "Additional error details",
-            "additionalProperties": true
-          }
-        }
-      },
       "fhir_provider_FhirProviderCreateRequest": {
         "type": "object",
         "required": [
@@ -11340,171 +11014,6 @@
         "type": "http",
         "scheme": "basic",
         "description": "The header should be formatted as:\nAuthorization: Basic base64(client_id:client_secret)"
-      }
-    },
-    "responses": {
-      "fhir_BadRequest": {
-        "description": "Bad request - invalid input parameters or malformed request",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/fhir_ErrorResponse"
-            },
-            "examples": {
-              "invalid_provider": {
-                "summary": "Invalid provider ID",
-                "value": {
-                  "message": "Provider not found: invalid-provider-id",
-                  "code": 400
-                }
-              },
-              "malformed_resource": {
-                "summary": "Malformed FHIR resource",
-                "value": {
-                  "message": "Invalid FHIR resource format",
-                  "code": 400
-                }
-              }
-            }
-          }
-        }
-      },
-      "fhir_Unauthorized": {
-        "description": "Unauthorized - authentication required or invalid",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/fhir_ErrorResponse"
-            },
-            "examples": {
-              "missing_auth": {
-                "summary": "Missing authentication",
-                "value": {
-                  "message": "Authentication required",
-                  "code": 401
-                }
-              },
-              "invalid_token": {
-                "summary": "Invalid authentication token",
-                "value": {
-                  "message": "Invalid or expired authentication token",
-                  "code": 401
-                }
-              }
-            }
-          }
-        }
-      },
-      "fhir_NotFound": {
-        "description": "Not found - requested resource does not exist",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/fhir_ErrorResponse"
-            },
-            "examples": {
-              "resource_not_found": {
-                "summary": "FHIR resource not found",
-                "value": {
-                  "message": "Resource not found",
-                  "code": 404
-                }
-              }
-            }
-          }
-        }
-      },
-      "fhir_TooManyRequests": {
-        "description": "Too many requests - upstream FHIR server rate limit exceeded",
-        "headers": {
-          "Retry-After": {
-            "description": "Number of seconds to wait before retrying the request",
-            "schema": {
-              "type": "string"
-            },
-            "example": "60"
-          }
-        },
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/fhir_ErrorResponse"
-            },
-            "examples": {
-              "rate_limited": {
-                "summary": "Rate limited by upstream FHIR server",
-                "value": {
-                  "message": "Rate limit exceeded",
-                  "code": 429
-                }
-              }
-            }
-          }
-        }
-      },
-      "fhir_ServiceUnavailable": {
-        "description": "Service unavailable - upstream FHIR server temporarily unavailable",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/fhir_ErrorResponse"
-            },
-            "examples": {
-              "upstream_unavailable": {
-                "summary": "Upstream FHIR server unavailable",
-                "value": {
-                  "message": "Service temporarily unavailable",
-                  "code": 503
-                }
-              }
-            }
-          }
-        }
-      },
-      "fhir_InternalServerError": {
-        "description": "Internal server error - unexpected server-side error",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/fhir_ErrorResponse"
-            },
-            "examples": {
-              "server_error": {
-                "summary": "Generic server error",
-                "value": {
-                  "message": "Internal server error",
-                  "code": 500
-                }
-              }
-            }
-          }
-        }
-      },
-      "fhir_BadGateway": {
-        "description": "Bad gateway - upstream FHIR server error",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/fhir_ErrorResponse"
-            },
-            "examples": {
-              "token_endpoint_error": {
-                "summary": "Token endpoint failure",
-                "value": {
-                  "message": "Upstream service error: token endpoint returned 401",
-                  "code": 502
-                }
-              },
-              "fhir_server_unreachable": {
-                "summary": "FHIR server unreachable",
-                "value": {
-                  "message": "Upstream service error: failed to connect to FHIR server",
-                  "code": 502
-                }
-              }
-            }
-          }
-        }
       }
     }
   },
