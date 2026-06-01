@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.summary.templates.requests.CreateSummaryTemplateRequest;
 import com.phenoml.api.resources.summary.templates.requests.UpdateSummaryTemplateRequest;
-import com.phenoml.api.resources.summary.templates.types.TemplatesDeleteResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesGetResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesListResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesUpdateResponse;
+import com.phenoml.api.resources.summary.templates.types.DeleteResponse;
+import com.phenoml.api.resources.summary.templates.types.GetResponse;
+import com.phenoml.api.resources.summary.templates.types.ListResponse;
+import com.phenoml.api.resources.summary.templates.types.UpdateResponse;
 import com.phenoml.api.resources.summary.types.CreateSummaryTemplateResponse;
 import java.util.Arrays;
 import okhttp3.mockwebserver.MockResponse;
@@ -49,7 +49,7 @@ public class SummaryTemplatesWireTest {
                         .setResponseCode(200)
                         .setBody(
                                 "{\"success\":true,\"templates\":[{\"id\":\"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\"name\":\"Discharge Summary\",\"description\":\"description\",\"template\":\"Patient <<Patient.name[0].text>>, age <<Patient.birthDate|age>>, was admitted on <<Encounter[0].period.start>> with <<Condition[0].code.coding[0].display>>.\",\"target_resources\":[\"Patient\",\"Condition\",\"MedicationRequest\"],\"mode\":\"narrative\",\"metadata\":{\"key\":\"value\"},\"created_at\":\"2024-01-15T10:30:00Z\",\"updated_at\":\"2024-01-15T10:30:00Z\"}]}"));
-        TemplatesListResponse response = client.summary().templates().list();
+        ListResponse response = client.summary().templates().list();
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -258,7 +258,7 @@ public class SummaryTemplatesWireTest {
                         .setResponseCode(200)
                         .setBody(
                                 "{\"success\":true,\"template\":{\"id\":\"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\"name\":\"Discharge Summary\",\"description\":\"description\",\"template\":\"Patient <<Patient.name[0].text>>, age <<Patient.birthDate|age>>, was admitted on <<Encounter[0].period.start>> with <<Condition[0].code.coding[0].display>>.\",\"target_resources\":[\"Patient\",\"Condition\",\"MedicationRequest\"],\"mode\":\"narrative\",\"metadata\":{\"key\":\"value\"},\"created_at\":\"2024-01-15T10:30:00Z\",\"updated_at\":\"2024-01-15T10:30:00Z\"}}"));
-        TemplatesGetResponse response = client.summary().templates().get("id");
+        GetResponse response = client.summary().templates().get("id");
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -337,7 +337,7 @@ public class SummaryTemplatesWireTest {
                         .setResponseCode(200)
                         .setBody(
                                 "{\"success\":true,\"message\":\"Template updated successfully\",\"template\":{\"id\":\"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\"name\":\"Discharge Summary\",\"description\":\"description\",\"template\":\"Patient <<Patient.name[0].text>> was discharged on <<Encounter[0].period.end>> with <<MedicationRequest[0].medicationCodeableConcept.coding[0].display>> <<MedicationRequest[0].dosageInstruction[0].text>>.\",\"target_resources\":[\"Patient\",\"Encounter\",\"MedicationRequest\"],\"mode\":\"narrative\",\"metadata\":{\"key\":\"value\"},\"created_at\":\"2024-01-15T10:30:00Z\",\"updated_at\":\"2024-02-20T11:00:00Z\"}}"));
-        TemplatesUpdateResponse response = client.summary()
+        UpdateResponse response = client.summary()
                 .templates()
                 .update(
                         "id",
@@ -464,7 +464,7 @@ public class SummaryTemplatesWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"success\":true,\"message\":\"Template deleted successfully\"}"));
-        TemplatesDeleteResponse response = client.summary().templates().delete("id");
+        DeleteResponse response = client.summary().templates().delete("id");
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();

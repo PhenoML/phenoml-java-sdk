@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.agent.prompts.requests.AgentPromptsCreateRequest;
 import com.phenoml.api.resources.agent.prompts.requests.AgentPromptsUpdateRequest;
-import com.phenoml.api.resources.agent.prompts.types.PromptsDeleteResponse;
-import com.phenoml.api.resources.agent.prompts.types.PromptsListResponse;
+import com.phenoml.api.resources.agent.prompts.types.PromptDeleteResponse;
+import com.phenoml.api.resources.agent.prompts.types.PromptListResponse;
 import com.phenoml.api.resources.agent.types.AgentPromptsResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
 import com.phenoml.api.resources.agent.types.JsonPatchOperationOp;
@@ -171,7 +171,7 @@ public class AgentPromptsWireTest {
                         .setResponseCode(200)
                         .setBody(
                                 "{\"success\":true,\"message\":\"Prompts retrieved successfully\",\"prompts\":[{\"id\":\"prompt_123\",\"name\":\"Medical Assistant System Prompt\",\"description\":\"System prompt for medical assistant agent\",\"content\":\"You are a helpful medical assistant...\",\"is_default\":false,\"tags\":[\"medical\",\"system\"]},{\"id\":\"prompt_456\",\"name\":\"Clinical Coding Prompt\",\"description\":\"Prompt for ICD-10 / SNOMED coding tasks\",\"content\":\"You assist with mapping clinical text to standard codes...\",\"is_default\":false,\"tags\":[\"coding\"]}]}"));
-        PromptsListResponse response = client.agent().prompts().list();
+        PromptListResponse response = client.agent().prompts().list();
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();
@@ -454,7 +454,7 @@ public class AgentPromptsWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"success\":true,\"message\":\"Prompt deleted successfully\"}"));
-        PromptsDeleteResponse response = client.agent().prompts().delete("id");
+        PromptDeleteResponse response = client.agent().prompts().delete("id");
         // OAuth: consume the token request
         server.takeRequest();
         RecordedRequest request = server.takeRequest();

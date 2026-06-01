@@ -18,10 +18,10 @@ import com.phenoml.api.resources.summary.errors.NotFoundError;
 import com.phenoml.api.resources.summary.errors.UnauthorizedError;
 import com.phenoml.api.resources.summary.templates.requests.CreateSummaryTemplateRequest;
 import com.phenoml.api.resources.summary.templates.requests.UpdateSummaryTemplateRequest;
-import com.phenoml.api.resources.summary.templates.types.TemplatesDeleteResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesGetResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesListResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesUpdateResponse;
+import com.phenoml.api.resources.summary.templates.types.DeleteResponse;
+import com.phenoml.api.resources.summary.templates.types.GetResponse;
+import com.phenoml.api.resources.summary.templates.types.ListResponse;
+import com.phenoml.api.resources.summary.templates.types.UpdateResponse;
 import com.phenoml.api.resources.summary.types.CreateSummaryTemplateResponse;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -46,14 +46,14 @@ public class AsyncRawTemplatesClient {
     /**
      * Retrieves all summary templates for the authenticated user
      */
-    public CompletableFuture<PhenomlClientHttpResponse<TemplatesListResponse>> list() {
+    public CompletableFuture<PhenomlClientHttpResponse<ListResponse>> list() {
         return list(null);
     }
 
     /**
      * Retrieves all summary templates for the authenticated user
      */
-    public CompletableFuture<PhenomlClientHttpResponse<TemplatesListResponse>> list(RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<ListResponse>> list(RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir2summary/templates");
@@ -72,7 +72,7 @@ public class AsyncRawTemplatesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<TemplatesListResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<ListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -80,8 +80,7 @@ public class AsyncRawTemplatesClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TemplatesListResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ListResponse.class), response));
                         return;
                     }
                     try {
@@ -210,15 +209,14 @@ public class AsyncRawTemplatesClient {
     /**
      * Retrieves a specific summary template
      */
-    public CompletableFuture<PhenomlClientHttpResponse<TemplatesGetResponse>> get(String id) {
+    public CompletableFuture<PhenomlClientHttpResponse<GetResponse>> get(String id) {
         return get(id, null);
     }
 
     /**
      * Retrieves a specific summary template
      */
-    public CompletableFuture<PhenomlClientHttpResponse<TemplatesGetResponse>> get(
-            String id, RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<GetResponse>> get(String id, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir2summary/template")
@@ -238,7 +236,7 @@ public class AsyncRawTemplatesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<TemplatesGetResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<GetResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -246,8 +244,7 @@ public class AsyncRawTemplatesClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TemplatesGetResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetResponse.class), response));
                         return;
                     }
                     try {
@@ -296,7 +293,7 @@ public class AsyncRawTemplatesClient {
     /**
      * Updates an existing summary template
      */
-    public CompletableFuture<PhenomlClientHttpResponse<TemplatesUpdateResponse>> update(
+    public CompletableFuture<PhenomlClientHttpResponse<UpdateResponse>> update(
             String id, UpdateSummaryTemplateRequest request) {
         return update(id, request, null);
     }
@@ -304,7 +301,7 @@ public class AsyncRawTemplatesClient {
     /**
      * Updates an existing summary template
      */
-    public CompletableFuture<PhenomlClientHttpResponse<TemplatesUpdateResponse>> update(
+    public CompletableFuture<PhenomlClientHttpResponse<UpdateResponse>> update(
             String id, UpdateSummaryTemplateRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -333,7 +330,7 @@ public class AsyncRawTemplatesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<TemplatesUpdateResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<UpdateResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -341,7 +338,7 @@ public class AsyncRawTemplatesClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TemplatesUpdateResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UpdateResponse.class),
                                 response));
                         return;
                     }
@@ -396,14 +393,14 @@ public class AsyncRawTemplatesClient {
     /**
      * Deletes a summary template
      */
-    public CompletableFuture<PhenomlClientHttpResponse<TemplatesDeleteResponse>> delete(String id) {
+    public CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> delete(String id) {
         return delete(id, null);
     }
 
     /**
      * Deletes a summary template
      */
-    public CompletableFuture<PhenomlClientHttpResponse<TemplatesDeleteResponse>> delete(
+    public CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> delete(
             String id, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -424,7 +421,7 @@ public class AsyncRawTemplatesClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<TemplatesDeleteResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -432,7 +429,7 @@ public class AsyncRawTemplatesClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TemplatesDeleteResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DeleteResponse.class),
                                 response));
                         return;
                     }

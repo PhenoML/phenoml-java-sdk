@@ -18,8 +18,8 @@ import com.phenoml.api.resources.agent.errors.NotFoundError;
 import com.phenoml.api.resources.agent.errors.UnauthorizedError;
 import com.phenoml.api.resources.agent.prompts.requests.AgentPromptsCreateRequest;
 import com.phenoml.api.resources.agent.prompts.requests.AgentPromptsUpdateRequest;
-import com.phenoml.api.resources.agent.prompts.types.PromptsDeleteResponse;
-import com.phenoml.api.resources.agent.prompts.types.PromptsListResponse;
+import com.phenoml.api.resources.agent.prompts.types.PromptDeleteResponse;
+import com.phenoml.api.resources.agent.prompts.types.PromptListResponse;
 import com.phenoml.api.resources.agent.types.AgentPromptsResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
 import java.io.IOException;
@@ -141,14 +141,14 @@ public class AsyncRawPromptsClient {
     /**
      * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public CompletableFuture<PhenomlClientHttpResponse<PromptsListResponse>> list() {
+    public CompletableFuture<PhenomlClientHttpResponse<PromptListResponse>> list() {
         return list(null);
     }
 
     /**
      * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public CompletableFuture<PhenomlClientHttpResponse<PromptsListResponse>> list(RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<PromptListResponse>> list(RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/prompts/list");
@@ -167,7 +167,7 @@ public class AsyncRawPromptsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<PromptsListResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<PromptListResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -175,7 +175,7 @@ public class AsyncRawPromptsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PromptsListResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PromptListResponse.class),
                                 response));
                         return;
                     }
@@ -421,14 +421,14 @@ public class AsyncRawPromptsClient {
     /**
      * Deletes a prompt
      */
-    public CompletableFuture<PhenomlClientHttpResponse<PromptsDeleteResponse>> delete(String id) {
+    public CompletableFuture<PhenomlClientHttpResponse<PromptDeleteResponse>> delete(String id) {
         return delete(id, null);
     }
 
     /**
      * Deletes a prompt
      */
-    public CompletableFuture<PhenomlClientHttpResponse<PromptsDeleteResponse>> delete(
+    public CompletableFuture<PhenomlClientHttpResponse<PromptDeleteResponse>> delete(
             String id, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -449,7 +449,7 @@ public class AsyncRawPromptsClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<PromptsDeleteResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<PromptDeleteResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -457,7 +457,7 @@ public class AsyncRawPromptsClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PromptsDeleteResponse.class),
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PromptDeleteResponse.class),
                                 response));
                         return;
                     }

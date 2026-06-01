@@ -6,7 +6,8 @@ package com.phenoml.api.resources.tools;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
-import com.phenoml.api.resources.tools.mcpserver.AsyncMcpServerClient;
+import com.phenoml.api.resources.tools.mcpservers.AsyncMcpServersClient;
+import com.phenoml.api.resources.tools.mcptools.AsyncMcpToolsClient;
 import com.phenoml.api.resources.tools.requests.CohortRequest;
 import com.phenoml.api.resources.tools.requests.Lang2FhirAndCreateMultiRequest;
 import com.phenoml.api.resources.tools.requests.Lang2FhirAndCreateRequest;
@@ -23,12 +24,15 @@ public class AsyncToolsClient {
 
     private final AsyncRawToolsClient rawClient;
 
-    protected final Supplier<AsyncMcpServerClient> mcpServerClient;
+    protected final Supplier<AsyncMcpServersClient> mcpServersClient;
+
+    protected final Supplier<AsyncMcpToolsClient> mcpToolsClient;
 
     public AsyncToolsClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.rawClient = new AsyncRawToolsClient(clientOptions);
-        this.mcpServerClient = Suppliers.memoize(() -> new AsyncMcpServerClient(clientOptions));
+        this.mcpServersClient = Suppliers.memoize(() -> new AsyncMcpServersClient(clientOptions));
+        this.mcpToolsClient = Suppliers.memoize(() -> new AsyncMcpToolsClient(clientOptions));
     }
 
     /**
@@ -106,7 +110,11 @@ public class AsyncToolsClient {
         return this.rawClient.analyzeCohort(request, requestOptions).thenApply(response -> response.body());
     }
 
-    public AsyncMcpServerClient mcpServer() {
-        return this.mcpServerClient.get();
+    public AsyncMcpServersClient mcpServers() {
+        return this.mcpServersClient.get();
+    }
+
+    public AsyncMcpToolsClient mcpTools() {
+        return this.mcpToolsClient.get();
     }
 }
