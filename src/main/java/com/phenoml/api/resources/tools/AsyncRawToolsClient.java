@@ -12,7 +12,6 @@ import com.phenoml.api.core.PhenomlClientException;
 import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.tools.errors.BadRequestError;
-import com.phenoml.api.resources.tools.errors.FailedDependencyError;
 import com.phenoml.api.resources.tools.errors.ForbiddenError;
 import com.phenoml.api.resources.tools.errors.InternalServerError;
 import com.phenoml.api.resources.tools.errors.UnauthorizedError;
@@ -118,11 +117,6 @@ public class AsyncRawToolsClient {
                                 return;
                             case 403:
                                 future.completeExceptionally(new ForbiddenError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 424:
-                                future.completeExceptionally(new FailedDependencyError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
@@ -238,11 +232,6 @@ public class AsyncRawToolsClient {
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
-                            case 424:
-                                future.completeExceptionally(new FailedDependencyError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
                             case 500:
                                 future.completeExceptionally(new InternalServerError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
@@ -343,11 +332,6 @@ public class AsyncRawToolsClient {
                                 return;
                             case 403:
                                 future.completeExceptionally(new ForbiddenError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 424:
-                                future.completeExceptionally(new FailedDependencyError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;

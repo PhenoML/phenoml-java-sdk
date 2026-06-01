@@ -12,12 +12,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
-import com.phenoml.api.resources.fhir.types.FhirResource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateRequest.Builder.class)
@@ -26,14 +24,14 @@ public final class CreateRequest {
 
     private final Optional<String> phenomlFhirProvider;
 
-    private final FhirResource body;
+    private final Object body;
 
     private final Map<String, Object> additionalProperties;
 
     private CreateRequest(
             Optional<String> phenomlOnBehalfOf,
             Optional<String> phenomlFhirProvider,
-            FhirResource body,
+            Object body,
             Map<String, Object> additionalProperties) {
         this.phenomlOnBehalfOf = phenomlOnBehalfOf;
         this.phenomlFhirProvider = phenomlFhirProvider;
@@ -60,7 +58,7 @@ public final class CreateRequest {
     }
 
     @JsonProperty("body")
-    public FhirResource getBody() {
+    public Object getBody() {
         return body;
     }
 
@@ -96,7 +94,7 @@ public final class CreateRequest {
     }
 
     public interface BodyStage {
-        _FinalStage body(@NotNull FhirResource body);
+        _FinalStage body(Object body);
 
         Builder from(CreateRequest other);
     }
@@ -127,7 +125,7 @@ public final class CreateRequest {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder implements BodyStage, _FinalStage {
-        private FhirResource body;
+        private Object body;
 
         private Optional<String> phenomlFhirProvider = Optional.empty();
 
@@ -148,8 +146,8 @@ public final class CreateRequest {
 
         @java.lang.Override
         @JsonSetter("body")
-        public _FinalStage body(@NotNull FhirResource body) {
-            this.body = Objects.requireNonNull(body, "body must not be null");
+        public _FinalStage body(Object body) {
+            this.body = body;
             return this;
         }
 

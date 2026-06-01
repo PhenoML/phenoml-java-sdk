@@ -18,8 +18,8 @@ import com.phenoml.api.resources.agent.errors.NotFoundError;
 import com.phenoml.api.resources.agent.errors.UnauthorizedError;
 import com.phenoml.api.resources.agent.prompts.requests.AgentPromptsCreateRequest;
 import com.phenoml.api.resources.agent.prompts.requests.AgentPromptsUpdateRequest;
-import com.phenoml.api.resources.agent.prompts.types.PromptsDeleteResponse;
-import com.phenoml.api.resources.agent.prompts.types.PromptsListResponse;
+import com.phenoml.api.resources.agent.prompts.types.PromptDeleteResponse;
+import com.phenoml.api.resources.agent.prompts.types.PromptListResponse;
 import com.phenoml.api.resources.agent.types.AgentPromptsResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
 import java.io.IOException;
@@ -114,14 +114,14 @@ public class RawPromptsClient {
     /**
      * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public PhenomlClientHttpResponse<PromptsListResponse> list() {
+    public PhenomlClientHttpResponse<PromptListResponse> list() {
         return list(null);
     }
 
     /**
      * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public PhenomlClientHttpResponse<PromptsListResponse> list(RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<PromptListResponse> list(RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/prompts/list");
@@ -145,7 +145,7 @@ public class RawPromptsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PromptsListResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PromptListResponse.class), response);
             }
             try {
                 switch (response.code()) {
@@ -325,14 +325,14 @@ public class RawPromptsClient {
     /**
      * Deletes a prompt
      */
-    public PhenomlClientHttpResponse<PromptsDeleteResponse> delete(String id) {
+    public PhenomlClientHttpResponse<PromptDeleteResponse> delete(String id) {
         return delete(id, null);
     }
 
     /**
      * Deletes a prompt
      */
-    public PhenomlClientHttpResponse<PromptsDeleteResponse> delete(String id, RequestOptions requestOptions) {
+    public PhenomlClientHttpResponse<PromptDeleteResponse> delete(String id, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("agent/prompts")
@@ -357,7 +357,7 @@ public class RawPromptsClient {
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
                 return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PromptsDeleteResponse.class), response);
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, PromptDeleteResponse.class), response);
             }
             try {
                 switch (response.code()) {

@@ -7,8 +7,8 @@ import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.agent.prompts.requests.AgentPromptsCreateRequest;
 import com.phenoml.api.resources.agent.prompts.requests.AgentPromptsUpdateRequest;
-import com.phenoml.api.resources.agent.prompts.types.PromptsDeleteResponse;
-import com.phenoml.api.resources.agent.prompts.types.PromptsListResponse;
+import com.phenoml.api.resources.agent.prompts.types.PromptDeleteResponse;
+import com.phenoml.api.resources.agent.prompts.types.PromptListResponse;
 import com.phenoml.api.resources.agent.types.AgentPromptsResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
 import java.util.List;
@@ -49,14 +49,14 @@ public class AsyncPromptsClient {
     /**
      * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public CompletableFuture<PromptsListResponse> list() {
+    public CompletableFuture<PromptListResponse> list() {
         return this.rawClient.list().thenApply(response -> response.body());
     }
 
     /**
      * Retrieves a list of agent prompts belonging to the authenticated user
      */
-    public CompletableFuture<PromptsListResponse> list(RequestOptions requestOptions) {
+    public CompletableFuture<PromptListResponse> list(RequestOptions requestOptions) {
         return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
@@ -106,14 +106,14 @@ public class AsyncPromptsClient {
     /**
      * Deletes a prompt
      */
-    public CompletableFuture<PromptsDeleteResponse> delete(String id) {
+    public CompletableFuture<PromptDeleteResponse> delete(String id) {
         return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
     /**
      * Deletes a prompt
      */
-    public CompletableFuture<PromptsDeleteResponse> delete(String id, RequestOptions requestOptions) {
+    public CompletableFuture<PromptDeleteResponse> delete(String id, RequestOptions requestOptions) {
         return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
     }
 
