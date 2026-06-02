@@ -5,37 +5,28 @@ package com.phenoml.api.resources.construe;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.resources.construe.requests.DeleteCodeSystemRequest;
-import com.phenoml.api.resources.construe.requests.ExportCodeSystemRequest;
-import com.phenoml.api.resources.construe.requests.ExtractRequest;
+import com.phenoml.api.core.Suppliers;
+import com.phenoml.api.resources.construe.codes.AsyncCodesClient;
+import com.phenoml.api.resources.construe.codesystems.AsyncCodeSystemsClient;
 import com.phenoml.api.resources.construe.requests.FeedbackRequest;
-import com.phenoml.api.resources.construe.requests.GetCodeRequest;
-import com.phenoml.api.resources.construe.requests.GetCodeSystemRequest;
-import com.phenoml.api.resources.construe.requests.ListCodesRequest;
-import com.phenoml.api.resources.construe.requests.SearchSemanticRequest;
-import com.phenoml.api.resources.construe.requests.SearchTextRequest;
-import com.phenoml.api.resources.construe.requests.UploadRequest;
-import com.phenoml.api.resources.construe.types.DeleteCodeSystemResponse;
-import com.phenoml.api.resources.construe.types.ExportCodeSystemResponse;
-import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import com.phenoml.api.resources.construe.types.FeedbackResponse;
-import com.phenoml.api.resources.construe.types.GetCodeResponse;
-import com.phenoml.api.resources.construe.types.GetCodeSystemDetailResponse;
-import com.phenoml.api.resources.construe.types.ListCodeSystemsResponse;
-import com.phenoml.api.resources.construe.types.ListCodesResponse;
-import com.phenoml.api.resources.construe.types.SemanticSearchResponse;
-import com.phenoml.api.resources.construe.types.TextSearchResponse;
-import com.phenoml.api.resources.construe.types.UploadCodeSystemResponse;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 public class AsyncConstrueClient {
     protected final ClientOptions clientOptions;
 
     private final AsyncRawConstrueClient rawClient;
 
+    protected final Supplier<AsyncCodeSystemsClient> codeSystemsClient;
+
+    protected final Supplier<AsyncCodesClient> codesClient;
+
     public AsyncConstrueClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.rawClient = new AsyncRawConstrueClient(clientOptions);
+        this.codeSystemsClient = Suppliers.memoize(() -> new AsyncCodeSystemsClient(clientOptions));
+        this.codesClient = Suppliers.memoize(() -> new AsyncCodesClient(clientOptions));
     }
 
     /**
@@ -43,279 +34,6 @@ public class AsyncConstrueClient {
      */
     public AsyncRawConstrueClient withRawResponse() {
         return this.rawClient;
-    }
-
-    /**
-     * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
-     * Returns 202 immediately; embedding generation runs asynchronously. Poll
-     * GET /construe/codes/systems/{codesystem}?version={version} to check when status
-     * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
-     */
-    public CompletableFuture<UploadCodeSystemResponse> uploadCodeSystem(UploadRequest request) {
-        return this.rawClient.uploadCodeSystem(request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
-     * Returns 202 immediately; embedding generation runs asynchronously. Poll
-     * GET /construe/codes/systems/{codesystem}?version={version} to check when status
-     * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
-     */
-    public CompletableFuture<UploadCodeSystemResponse> uploadCodeSystem(
-            UploadRequest request, RequestOptions requestOptions) {
-        return this.rawClient.uploadCodeSystem(request, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Converts natural language text into structured medical codes.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<ExtractCodesResult> extractCodes(ExtractRequest request) {
-        return this.rawClient.extractCodes(request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Converts natural language text into structured medical codes.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<ExtractCodesResult> extractCodes(ExtractRequest request, RequestOptions requestOptions) {
-        return this.rawClient.extractCodes(request, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
-     */
-    public CompletableFuture<ListCodeSystemsResponse> listCodeSystems() {
-        return this.rawClient.listCodeSystems().thenApply(response -> response.body());
-    }
-
-    /**
-     * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
-     */
-    public CompletableFuture<ListCodeSystemsResponse> listCodeSystems(RequestOptions requestOptions) {
-        return this.rawClient.listCodeSystems(requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Returns full metadata for a single code system, including timestamps and builtin status.
-     */
-    public CompletableFuture<GetCodeSystemDetailResponse> getCodeSystem(String codesystem) {
-        return this.rawClient.getCodeSystem(codesystem).thenApply(response -> response.body());
-    }
-
-    /**
-     * Returns full metadata for a single code system, including timestamps and builtin status.
-     */
-    public CompletableFuture<GetCodeSystemDetailResponse> getCodeSystem(
-            String codesystem, RequestOptions requestOptions) {
-        return this.rawClient.getCodeSystem(codesystem, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Returns full metadata for a single code system, including timestamps and builtin status.
-     */
-    public CompletableFuture<GetCodeSystemDetailResponse> getCodeSystem(
-            String codesystem, GetCodeSystemRequest request) {
-        return this.rawClient.getCodeSystem(codesystem, request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Returns full metadata for a single code system, including timestamps and builtin status.
-     */
-    public CompletableFuture<GetCodeSystemDetailResponse> getCodeSystem(
-            String codesystem, GetCodeSystemRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getCodeSystem(codesystem, request, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
-     * Only available on dedicated instances. Large systems may take up to a minute to delete.
-     */
-    public CompletableFuture<DeleteCodeSystemResponse> deleteCodeSystem(String codesystem) {
-        return this.rawClient.deleteCodeSystem(codesystem).thenApply(response -> response.body());
-    }
-
-    /**
-     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
-     * Only available on dedicated instances. Large systems may take up to a minute to delete.
-     */
-    public CompletableFuture<DeleteCodeSystemResponse> deleteCodeSystem(
-            String codesystem, RequestOptions requestOptions) {
-        return this.rawClient.deleteCodeSystem(codesystem, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
-     * Only available on dedicated instances. Large systems may take up to a minute to delete.
-     */
-    public CompletableFuture<DeleteCodeSystemResponse> deleteCodeSystem(
-            String codesystem, DeleteCodeSystemRequest request) {
-        return this.rawClient.deleteCodeSystem(codesystem, request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
-     * Only available on dedicated instances. Large systems may take up to a minute to delete.
-     */
-    public CompletableFuture<DeleteCodeSystemResponse> deleteCodeSystem(
-            String codesystem, DeleteCodeSystemRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .deleteCodeSystem(codesystem, request, requestOptions)
-                .thenApply(response -> response.body());
-    }
-
-    /**
-     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
-     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
-     * Only available on dedicated instances. Builtin systems cannot be exported.
-     */
-    public CompletableFuture<ExportCodeSystemResponse> exportCodeSystem(String codesystem) {
-        return this.rawClient.exportCodeSystem(codesystem).thenApply(response -> response.body());
-    }
-
-    /**
-     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
-     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
-     * Only available on dedicated instances. Builtin systems cannot be exported.
-     */
-    public CompletableFuture<ExportCodeSystemResponse> exportCodeSystem(
-            String codesystem, RequestOptions requestOptions) {
-        return this.rawClient.exportCodeSystem(codesystem, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
-     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
-     * Only available on dedicated instances. Builtin systems cannot be exported.
-     */
-    public CompletableFuture<ExportCodeSystemResponse> exportCodeSystem(
-            String codesystem, ExportCodeSystemRequest request) {
-        return this.rawClient.exportCodeSystem(codesystem, request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
-     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
-     * Only available on dedicated instances. Builtin systems cannot be exported.
-     */
-    public CompletableFuture<ExportCodeSystemResponse> exportCodeSystem(
-            String codesystem, ExportCodeSystemRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .exportCodeSystem(codesystem, request, requestOptions)
-                .thenApply(response -> response.body());
-    }
-
-    /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<ListCodesResponse> listCodes(String codesystem) {
-        return this.rawClient.listCodes(codesystem).thenApply(response -> response.body());
-    }
-
-    /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<ListCodesResponse> listCodes(String codesystem, RequestOptions requestOptions) {
-        return this.rawClient.listCodes(codesystem, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<ListCodesResponse> listCodes(String codesystem, ListCodesRequest request) {
-        return this.rawClient.listCodes(codesystem, request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<ListCodesResponse> listCodes(
-            String codesystem, ListCodesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listCodes(codesystem, request, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Looks up a specific code in the terminology server and returns its details.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<GetCodeResponse> getCode(String codesystem, String codeId) {
-        return this.rawClient.getCode(codesystem, codeId).thenApply(response -> response.body());
-    }
-
-    /**
-     * Looks up a specific code in the terminology server and returns its details.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<GetCodeResponse> getCode(String codesystem, String codeId, RequestOptions requestOptions) {
-        return this.rawClient.getCode(codesystem, codeId, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Looks up a specific code in the terminology server and returns its details.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<GetCodeResponse> getCode(String codesystem, String codeId, GetCodeRequest request) {
-        return this.rawClient.getCode(codesystem, codeId, request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Looks up a specific code in the terminology server and returns its details.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<GetCodeResponse> getCode(
-            String codesystem, String codeId, GetCodeRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .getCode(codesystem, codeId, request, requestOptions)
-                .thenApply(response -> response.body());
-    }
-
-    /**
-     * Performs semantic similarity search using vector embeddings.
-     * <p><strong>Availability</strong>: This endpoint works for both <strong>built-in and custom</strong> code systems.</p>
-     * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
-     * related codes, even when different terminology is used. The search understands meaning,
-     * not just keywords.</p>
-     * <p><strong>Examples</strong>:</p>
-     * <ul>
-     * <li>Query &quot;trouble breathing at night&quot; finds codes like &quot;Sleep apnea&quot;, &quot;Orthopnea&quot;,
-     * &quot;Nocturnal dyspnea&quot; — semantically related but no exact keyword matches</li>
-     * <li>Query &quot;heart problems&quot; finds &quot;Myocardial infarction&quot;, &quot;Cardiac arrest&quot;, &quot;Arrhythmia&quot;</li>
-     * </ul>
-     * <p><strong>Trade-offs</strong>: Slower than text search (requires embedding generation), but finds
-     * conceptually similar results that keyword search would miss.</p>
-     * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<SemanticSearchResponse> searchSemantic(String codesystem, SearchSemanticRequest request) {
-        return this.rawClient.searchSemantic(codesystem, request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Performs semantic similarity search using vector embeddings.
-     * <p><strong>Availability</strong>: This endpoint works for both <strong>built-in and custom</strong> code systems.</p>
-     * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
-     * related codes, even when different terminology is used. The search understands meaning,
-     * not just keywords.</p>
-     * <p><strong>Examples</strong>:</p>
-     * <ul>
-     * <li>Query &quot;trouble breathing at night&quot; finds codes like &quot;Sleep apnea&quot;, &quot;Orthopnea&quot;,
-     * &quot;Nocturnal dyspnea&quot; — semantically related but no exact keyword matches</li>
-     * <li>Query &quot;heart problems&quot; finds &quot;Myocardial infarction&quot;, &quot;Cardiac arrest&quot;, &quot;Arrhythmia&quot;</li>
-     * </ul>
-     * <p><strong>Trade-offs</strong>: Slower than text search (requires embedding generation), but finds
-     * conceptually similar results that keyword search would miss.</p>
-     * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<SemanticSearchResponse> searchSemantic(
-            String codesystem, SearchSemanticRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .searchSemantic(codesystem, request, requestOptions)
-                .thenApply(response -> response.body());
     }
 
     /**
@@ -334,58 +52,11 @@ public class AsyncConstrueClient {
         return this.rawClient.submitFeedback(request, requestOptions).thenApply(response -> response.body());
     }
 
-    /**
-     * Performs fast full-text search over code IDs and descriptions.
-     * <p><strong>Availability</strong>: This endpoint is only available for <strong>built-in code systems</strong>.
-     * Custom code systems uploaded via <code>/construe/upload</code> are not indexed for full-text search
-     * and will return empty results. Use <code>/search/semantic</code> to search custom code systems.</p>
-     * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
-     * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
-     * <p><strong>Features</strong>:</p>
-     * <ul>
-     * <li>Substring matching on code IDs (e.g., &quot;11.65&quot; finds &quot;E11.65&quot;)</li>
-     * <li>Typo tolerance on descriptions (not on code IDs)</li>
-     * <li>Fast response times (~10-50ms)</li>
-     * </ul>
-     * <p><strong>Examples</strong>:</p>
-     * <ul>
-     * <li>Query &quot;E11&quot; finds all codes starting with E11 (diabetes codes)</li>
-     * <li>Query &quot;diabtes&quot; (typo) still finds &quot;diabetes&quot; codes</li>
-     * </ul>
-     * <p><strong>Trade-offs</strong>: Faster than semantic search, but only matches keywords/substrings.
-     * Won't find conceptually related codes with different terminology.</p>
-     * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<TextSearchResponse> searchText(String codesystem, SearchTextRequest request) {
-        return this.rawClient.searchText(codesystem, request).thenApply(response -> response.body());
+    public AsyncCodeSystemsClient codeSystems() {
+        return this.codeSystemsClient.get();
     }
 
-    /**
-     * Performs fast full-text search over code IDs and descriptions.
-     * <p><strong>Availability</strong>: This endpoint is only available for <strong>built-in code systems</strong>.
-     * Custom code systems uploaded via <code>/construe/upload</code> are not indexed for full-text search
-     * and will return empty results. Use <code>/search/semantic</code> to search custom code systems.</p>
-     * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
-     * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
-     * <p><strong>Features</strong>:</p>
-     * <ul>
-     * <li>Substring matching on code IDs (e.g., &quot;11.65&quot; finds &quot;E11.65&quot;)</li>
-     * <li>Typo tolerance on descriptions (not on code IDs)</li>
-     * <li>Fast response times (~10-50ms)</li>
-     * </ul>
-     * <p><strong>Examples</strong>:</p>
-     * <ul>
-     * <li>Query &quot;E11&quot; finds all codes starting with E11 (diabetes codes)</li>
-     * <li>Query &quot;diabtes&quot; (typo) still finds &quot;diabetes&quot; codes</li>
-     * </ul>
-     * <p><strong>Trade-offs</strong>: Faster than semantic search, but only matches keywords/substrings.
-     * Won't find conceptually related codes with different terminology.</p>
-     * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<TextSearchResponse> searchText(
-            String codesystem, SearchTextRequest request, RequestOptions requestOptions) {
-        return this.rawClient.searchText(codesystem, request, requestOptions).thenApply(response -> response.body());
+    public AsyncCodesClient codes() {
+        return this.codesClient.get();
     }
 }

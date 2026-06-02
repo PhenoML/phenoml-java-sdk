@@ -9,18 +9,11 @@ import com.phenoml.api.resources.fhir.requests.ExecuteBundleRequest;
 import com.phenoml.api.resources.fhir.requests.PatchRequest;
 import com.phenoml.api.resources.fhir.requests.SearchRequest;
 import com.phenoml.api.resources.fhir.requests.UpsertRequest;
-import com.phenoml.api.resources.fhir.types.FhirBundle;
-import com.phenoml.api.resources.fhir.types.FhirBundleEntryItem;
-import com.phenoml.api.resources.fhir.types.FhirBundleEntryItemRequest;
-import com.phenoml.api.resources.fhir.types.FhirBundleEntryItemRequestMethod;
-import com.phenoml.api.resources.fhir.types.FhirResource;
 import com.phenoml.api.resources.fhir.types.PatchRequestBodyItem;
 import com.phenoml.api.resources.fhir.types.PatchRequestBodyItemOp;
-import com.phenoml.api.resources.fhir.types.SearchResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -59,7 +52,7 @@ public class FhirWireTest {
                         .setResponseCode(200)
                         .setBody(
                                 "{\"resourceType\":\"Bundle\",\"total\":2,\"entry\":[{\"resource\":{\"resourceType\":\"Patient\",\"id\":\"123\",\"name\":[{\"family\":\"Doe\",\"given\":[\"John\"]}]}}]}"));
-        SearchResponse response = client.fhir()
+        Object response = client.fhir()
                 .search(
                         "550e8400-e29b-41d4-a716-446655440000",
                         "Patient",
@@ -155,15 +148,17 @@ public class FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"resourceType\":\"Patient\",\"id\":\"456\",\"meta\":{\"versionId\":\"1\",\"lastUpdated\":\"2024-01-15T10:30:00Z\",\"profile\":[\"profile\"]}}"));
-        FhirResource response = client.fhir()
+                                "{\"resourceType\":\"Patient\",\"id\":\"456\",\"meta\":{\"versionId\":\"1\",\"lastUpdated\":\"2024-01-15T10:30:00Z\"}}"));
+        Object response = client.fhir()
                 .create(
                         "550e8400-e29b-41d4-a716-446655440000",
                         "Patient",
                         CreateRequest.builder()
-                                .body(FhirResource.builder()
-                                        .resourceType("Patient")
-                                        .build())
+                                .body(new HashMap<String, Object>() {
+                                    {
+                                        put("resourceType", "Patient");
+                                    }
+                                })
                                 .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
                                 .phenomlFhirProvider(
                                         "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
@@ -228,10 +223,7 @@ public class FhirWireTest {
                 + "  \"id\": \"456\",\n"
                 + "  \"meta\": {\n"
                 + "    \"versionId\": \"1\",\n"
-                + "    \"lastUpdated\": \"2024-01-15T10:30:00Z\",\n"
-                + "    \"profile\": [\n"
-                + "      \"profile\"\n"
-                + "    ]\n"
+                + "    \"lastUpdated\": \"2024-01-15T10:30:00Z\"\n"
                 + "  }\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
@@ -275,16 +267,18 @@ public class FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"resourceType\":\"Patient\",\"id\":\"123\",\"meta\":{\"versionId\":\"2\",\"lastUpdated\":\"2024-02-20T11:00:00Z\",\"profile\":[\"profile\"]}}"));
-        FhirResource response = client.fhir()
+                                "{\"resourceType\":\"Patient\",\"id\":\"123\",\"meta\":{\"versionId\":\"2\",\"lastUpdated\":\"2024-02-20T11:00:00Z\"}}"));
+        Object response = client.fhir()
                 .upsert(
                         "550e8400-e29b-41d4-a716-446655440000",
                         "Patient",
                         UpsertRequest.builder()
-                                .body(FhirResource.builder()
-                                        .resourceType("Patient")
-                                        .id("123")
-                                        .build())
+                                .body(new HashMap<String, Object>() {
+                                    {
+                                        put("resourceType", "Patient");
+                                        put("id", "123");
+                                    }
+                                })
                                 .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
                                 .phenomlFhirProvider(
                                         "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
@@ -349,10 +343,7 @@ public class FhirWireTest {
                 + "  \"id\": \"123\",\n"
                 + "  \"meta\": {\n"
                 + "    \"versionId\": \"2\",\n"
-                + "    \"lastUpdated\": \"2024-02-20T11:00:00Z\",\n"
-                + "    \"profile\": [\n"
-                + "      \"profile\"\n"
-                + "    ]\n"
+                + "    \"lastUpdated\": \"2024-02-20T11:00:00Z\"\n"
                 + "  }\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
@@ -397,7 +388,7 @@ public class FhirWireTest {
                         .setResponseCode(200)
                         .setBody(
                                 "{\"resourceType\":\"OperationOutcome\",\"issue\":[{\"severity\":\"information\",\"code\":\"informational\",\"details\":{\"text\":\"Resource deleted successfully\"}}]}"));
-        Map<String, Object> response = client.fhir()
+        Object response = client.fhir()
                 .delete(
                         "550e8400-e29b-41d4-a716-446655440000",
                         "Patient",
@@ -485,8 +476,8 @@ public class FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"resourceType\":\"Patient\",\"id\":\"123\",\"meta\":{\"versionId\":\"3\",\"lastUpdated\":\"2024-02-20T11:30:00Z\",\"profile\":[\"profile\"]}}"));
-        FhirResource response = client.fhir()
+                                "{\"resourceType\":\"Patient\",\"id\":\"123\",\"meta\":{\"versionId\":\"3\",\"lastUpdated\":\"2024-02-20T11:30:00Z\"}}"));
+        Object response = client.fhir()
                 .patch(
                         "550e8400-e29b-41d4-a716-446655440000",
                         "Patient",
@@ -567,10 +558,7 @@ public class FhirWireTest {
                 + "  \"id\": \"123\",\n"
                 + "  \"meta\": {\n"
                 + "    \"versionId\": \"3\",\n"
-                + "    \"lastUpdated\": \"2024-02-20T11:30:00Z\",\n"
-                + "    \"profile\": [\n"
-                + "      \"profile\"\n"
-                + "    ]\n"
+                + "    \"lastUpdated\": \"2024-02-20T11:30:00Z\"\n"
                 + "  }\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
@@ -614,55 +602,76 @@ public class FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"resourceType\":\"Bundle\",\"total\":1,\"entry\":[{\"resource\":{\"resourceType\":\"Patient\",\"id\":\"456\"},\"response\":{\"status\":\"201 Created\",\"location\":\"Patient/456\"}}]}"));
-        FhirBundle response = client.fhir()
+                                "{\"resourceType\":\"Bundle\",\"type\":\"transaction-response\",\"entry\":[{\"response\":{\"status\":\"201 Created\",\"location\":\"Patient/456\"},\"resource\":{\"resourceType\":\"Patient\",\"id\":\"456\"}}]}"));
+        Object response = client.fhir()
                 .executeBundle(
                         "550e8400-e29b-41d4-a716-446655440000",
                         ExecuteBundleRequest.builder()
-                                .body(FhirBundle.builder()
-                                        .entry(Arrays.asList(
-                                                FhirBundleEntryItem.builder()
-                                                        .resource(new HashMap<String, Object>() {
+                                .body(new HashMap<String, Object>() {
+                                    {
+                                        put("resourceType", "Bundle");
+                                        put("type", "transaction");
+                                        put(
+                                                "entry",
+                                                new ArrayList<Object>(Arrays.asList(
+                                                        new HashMap<String, Object>() {
                                                             {
-                                                                put("resourceType", "Patient");
-                                                                put(
-                                                                        "name",
-                                                                        new ArrayList<Object>(Arrays.asList(
-                                                                                new HashMap<String, Object>() {
-                                                                                    {
-                                                                                        put("family", "Doe");
-                                                                                        put(
-                                                                                                "given",
-                                                                                                new ArrayList<Object>(
-                                                                                                        Arrays.asList(
-                                                                                                                "John")));
-                                                                                    }
-                                                                                })));
-                                                            }
-                                                        })
-                                                        .request(FhirBundleEntryItemRequest.builder()
-                                                                .method(FhirBundleEntryItemRequestMethod.POST)
-                                                                .url("Patient")
-                                                                .build())
-                                                        .build(),
-                                                FhirBundleEntryItem.builder()
-                                                        .resource(new HashMap<String, Object>() {
-                                                            {
-                                                                put("resourceType", "Observation");
-                                                                put("status", "final");
-                                                                put("subject", new HashMap<String, Object>() {
+                                                                put("request", new HashMap<String, Object>() {
                                                                     {
-                                                                        put("reference", "Patient/123");
+                                                                        put("method", "POST");
+                                                                        put("url", "Patient");
+                                                                    }
+                                                                });
+                                                                put("resource", new HashMap<String, Object>() {
+                                                                    {
+                                                                        put("resourceType", "Patient");
+                                                                        put(
+                                                                                "name",
+                                                                                new ArrayList<Object>(
+                                                                                        Arrays.asList(
+                                                                                                new HashMap<
+                                                                                                        String,
+                                                                                                        Object>() {
+                                                                                                    {
+                                                                                                        put(
+                                                                                                                "family",
+                                                                                                                "Doe");
+                                                                                                        put(
+                                                                                                                "given",
+                                                                                                                new ArrayList<
+                                                                                                                        Object>(
+                                                                                                                        Arrays
+                                                                                                                                .asList(
+                                                                                                                                        "John")));
+                                                                                                    }
+                                                                                                })));
                                                                     }
                                                                 });
                                                             }
-                                                        })
-                                                        .request(FhirBundleEntryItemRequest.builder()
-                                                                .method(FhirBundleEntryItemRequestMethod.POST)
-                                                                .url("Observation")
-                                                                .build())
-                                                        .build()))
-                                        .build())
+                                                        },
+                                                        new HashMap<String, Object>() {
+                                                            {
+                                                                put("request", new HashMap<String, Object>() {
+                                                                    {
+                                                                        put("method", "POST");
+                                                                        put("url", "Observation");
+                                                                    }
+                                                                });
+                                                                put("resource", new HashMap<String, Object>() {
+                                                                    {
+                                                                        put("resourceType", "Observation");
+                                                                        put("status", "final");
+                                                                        put("subject", new HashMap<String, Object>() {
+                                                                            {
+                                                                                put("reference", "Patient/123");
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                });
+                                                            }
+                                                        })));
+                                    }
+                                })
                                 .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
                                 .phenomlFhirProvider(
                                         "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
@@ -693,8 +702,13 @@ public class FhirWireTest {
         String expectedRequestBody = ""
                 + "{\n"
                 + "  \"resourceType\": \"Bundle\",\n"
+                + "  \"type\": \"transaction\",\n"
                 + "  \"entry\": [\n"
                 + "    {\n"
+                + "      \"request\": {\n"
+                + "        \"method\": \"POST\",\n"
+                + "        \"url\": \"Patient\"\n"
+                + "      },\n"
                 + "      \"resource\": {\n"
                 + "        \"resourceType\": \"Patient\",\n"
                 + "        \"name\": [\n"
@@ -705,23 +719,19 @@ public class FhirWireTest {
                 + "            ]\n"
                 + "          }\n"
                 + "        ]\n"
-                + "      },\n"
-                + "      \"request\": {\n"
-                + "        \"method\": \"POST\",\n"
-                + "        \"url\": \"Patient\"\n"
                 + "      }\n"
                 + "    },\n"
                 + "    {\n"
+                + "      \"request\": {\n"
+                + "        \"method\": \"POST\",\n"
+                + "        \"url\": \"Observation\"\n"
+                + "      },\n"
                 + "      \"resource\": {\n"
                 + "        \"resourceType\": \"Observation\",\n"
                 + "        \"status\": \"final\",\n"
                 + "        \"subject\": {\n"
                 + "          \"reference\": \"Patient/123\"\n"
                 + "        }\n"
-                + "      },\n"
-                + "      \"request\": {\n"
-                + "        \"method\": \"POST\",\n"
-                + "        \"url\": \"Observation\"\n"
                 + "      }\n"
                 + "    }\n"
                 + "  ]\n"
@@ -759,16 +769,16 @@ public class FhirWireTest {
         String expectedResponseBody = ""
                 + "{\n"
                 + "  \"resourceType\": \"Bundle\",\n"
-                + "  \"total\": 1,\n"
+                + "  \"type\": \"transaction-response\",\n"
                 + "  \"entry\": [\n"
                 + "    {\n"
-                + "      \"resource\": {\n"
-                + "        \"resourceType\": \"Patient\",\n"
-                + "        \"id\": \"456\"\n"
-                + "      },\n"
                 + "      \"response\": {\n"
                 + "        \"status\": \"201 Created\",\n"
                 + "        \"location\": \"Patient/456\"\n"
+                + "      },\n"
+                + "      \"resource\": {\n"
+                + "        \"resourceType\": \"Patient\",\n"
+                + "        \"id\": \"456\"\n"
                 + "      }\n"
                 + "    }\n"
                 + "  ]\n"

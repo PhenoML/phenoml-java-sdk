@@ -6,17 +6,12 @@ package com.phenoml.api.resources.agent;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
+import com.phenoml.api.resources.agent.chat.AsyncChatClient;
 import com.phenoml.api.resources.agent.prompts.AsyncPromptsClient;
-import com.phenoml.api.resources.agent.requests.AgentChatRequest;
-import com.phenoml.api.resources.agent.requests.AgentStreamChatRequest;
-import com.phenoml.api.resources.agent.requests.GetChatMessagesRequest;
 import com.phenoml.api.resources.agent.requests.ListRequest;
-import com.phenoml.api.resources.agent.types.AgentChatResponse;
-import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
 import com.phenoml.api.resources.agent.types.AgentCreateRequest;
 import com.phenoml.api.resources.agent.types.AgentResponse;
 import com.phenoml.api.resources.agent.types.DeleteResponse;
-import com.phenoml.api.resources.agent.types.GetChatMessagesResponse;
 import com.phenoml.api.resources.agent.types.JsonPatchOperation;
 import com.phenoml.api.resources.agent.types.ListResponse;
 import java.util.List;
@@ -28,11 +23,14 @@ public class AsyncAgentClient {
 
     private final AsyncRawAgentClient rawClient;
 
+    protected final Supplier<AsyncChatClient> chatClient;
+
     protected final Supplier<AsyncPromptsClient> promptsClient;
 
     public AsyncAgentClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.rawClient = new AsyncRawAgentClient(clientOptions);
+        this.chatClient = Suppliers.memoize(() -> new AsyncChatClient(clientOptions));
         this.promptsClient = Suppliers.memoize(() -> new AsyncPromptsClient(clientOptions));
     }
 
@@ -143,52 +141,8 @@ public class AsyncAgentClient {
         return this.rawClient.patch(id, request, requestOptions).thenApply(response -> response.body());
     }
 
-    /**
-     * Send a message to an agent and receive a JSON response.
-     */
-    public CompletableFuture<AgentChatResponse> chat(AgentChatRequest request) {
-        return this.rawClient.chat(request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Send a message to an agent and receive a JSON response.
-     */
-    public CompletableFuture<AgentChatResponse> chat(AgentChatRequest request, RequestOptions requestOptions) {
-        return this.rawClient.chat(request, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Send a message to an agent and receive the response as a Server-Sent Events
-     * (SSE) stream. Events include message_start, content_delta, tool_use,
-     * tool_result, message_end, and error.
-     */
-    public CompletableFuture<Iterable<AgentChatStreamEvent>> streamChat(AgentStreamChatRequest request) {
-        return this.rawClient.streamChat(request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Send a message to an agent and receive the response as a Server-Sent Events
-     * (SSE) stream. Events include message_start, content_delta, tool_use,
-     * tool_result, message_end, and error.
-     */
-    public CompletableFuture<Iterable<AgentChatStreamEvent>> streamChat(
-            AgentStreamChatRequest request, RequestOptions requestOptions) {
-        return this.rawClient.streamChat(request, requestOptions).thenApply(response -> response.body());
-    }
-
-    /**
-     * Retrieves a list of chat messages for a given chat session
-     */
-    public CompletableFuture<GetChatMessagesResponse> getChatMessages(GetChatMessagesRequest request) {
-        return this.rawClient.getChatMessages(request).thenApply(response -> response.body());
-    }
-
-    /**
-     * Retrieves a list of chat messages for a given chat session
-     */
-    public CompletableFuture<GetChatMessagesResponse> getChatMessages(
-            GetChatMessagesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getChatMessages(request, requestOptions).thenApply(response -> response.body());
+    public AsyncChatClient chat() {
+        return this.chatClient.get();
     }
 
     public AsyncPromptsClient prompts() {

@@ -396,7 +396,8 @@ client.agent().patch(
 </dl>
 </details>
 
-<details><summary><code>client.agent.chat(request) -> AgentChatResponse</code></summary>
+## Chat
+<details><summary><code>client.agent.chat.send(request) -> AgentChatResponse</code></summary>
 <dl>
 <dd>
 
@@ -423,7 +424,7 @@ Send a message to an agent and receive a JSON response.
 <dd>
 
 ```java
-client.agent().chat(
+client.agent().chat().send(
     AgentChatRequest
         .builder()
         .message("What is the patient's current condition?")
@@ -513,7 +514,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 </dl>
 </details>
 
-<details><summary><code>client.agent.streamChat(request) -> Iterable&amp;lt;AgentChatStreamEvent&amp;gt;</code></summary>
+<details><summary><code>client.agent.chat.stream(request) -> Iterable&amp;lt;AgentChatStreamEvent&amp;gt;</code></summary>
 <dl>
 <dd>
 
@@ -542,7 +543,7 @@ tool_result, message_end, and error.
 <dd>
 
 ```java
-client.agent().streamChat(
+client.agent().chat().stream(
     AgentStreamChatRequest
         .builder()
         .message("What is the patient's current condition?")
@@ -632,7 +633,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 </dl>
 </details>
 
-<details><summary><code>client.agent.getChatMessages() -> GetChatMessagesResponse</code></summary>
+<details><summary><code>client.agent.chat.listMessages() -> ListMessagesResponse</code></summary>
 <dl>
 <dd>
 
@@ -659,13 +660,13 @@ Retrieves a list of chat messages for a given chat session
 <dd>
 
 ```java
-client.agent().getChatMessages(
-    GetChatMessagesRequest
+client.agent().chat().listMessages(
+    ListMessagesRequest
         .builder()
         .chatSessionId("chat_session_id")
         .numMessages(1)
-        .role(GetChatMessagesRequestRole.USER)
-        .order(GetChatMessagesRequestOrder.ASC)
+        .role(ListMessagesRequestRole.USER)
+        .order(ListMessagesRequestOrder.ASC)
         .build()
 );
 ```
@@ -698,7 +699,7 @@ client.agent().getChatMessages(
 <dl>
 <dd>
 
-**role:** `Optional<GetChatMessagesRequestRole>` 
+**role:** `Optional<ListMessagesRequestRole>` 
 
 Filter by one or more message roles. Multiple roles can be specified as a comma-separated string.
 If not specified, messages with all roles are returned.
@@ -715,7 +716,7 @@ If not specified, messages with all roles are returned.
 <dl>
 <dd>
 
-**order:** `Optional<GetChatMessagesRequestOrder>` — Order of messages
+**order:** `Optional<ListMessagesRequestOrder>` — Order of messages
     
 </dd>
 </dl>
@@ -1294,8 +1295,8 @@ client.cohort().analyze(
 </dl>
 </details>
 
-## Construe
-<details><summary><code>client.construe.uploadCodeSystem(request) -> UploadCodeSystemResponse</code></summary>
+## Code Systems
+<details><summary><code>client.construe.codeSystems.upload(request) -> UploadResponse</code></summary>
 <dl>
 <dd>
 
@@ -1325,7 +1326,7 @@ transitions from "processing" to "ready" or "failed".
 <dd>
 
 ```java
-client.construe().uploadCodeSystem(
+client.construe().codeSystems().upload(
     UploadRequest
         .builder()
         .name("CUSTOM_CODES")
@@ -1463,91 +1464,7 @@ When false (default), uploading a duplicate returns 409 Conflict.
 </dl>
 </details>
 
-<details><summary><code>client.construe.extractCodes(request) -> ExtractCodesResult</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Converts natural language text into structured medical codes.
-
-Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.construe().extractCodes(
-    ExtractRequest
-        .builder()
-        .text("Patient is a 14-year-old female, previously healthy, who is here for evaluation of abnormal renal ultrasound with atrophic right kidney.")
-        .system(
-            ExtractRequestSystem
-                .builder()
-                .name("ICD-10-CM")
-                .version("2025")
-                .build()
-        )
-        .build()
-);
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**text:** `String` — Natural language text to extract codes from
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**system:** `Optional<ExtractRequestSystem>` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**config:** `Optional<ExtractRequestConfig>` 
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.construe.listCodeSystems() -> ListCodeSystemsResponse</code></summary>
+<details><summary><code>client.construe.codeSystems.list() -> ListCodeSystemsResponse</code></summary>
 <dl>
 <dd>
 
@@ -1574,7 +1491,7 @@ Returns the terminology server's catalog of available code systems, including bo
 <dd>
 
 ```java
-client.construe().listCodeSystems();
+client.construe().codeSystems().list();
 ```
 </dd>
 </dl>
@@ -1586,7 +1503,7 @@ client.construe().listCodeSystems();
 </dl>
 </details>
 
-<details><summary><code>client.construe.getCodeSystem(codesystem) -> GetCodeSystemDetailResponse</code></summary>
+<details><summary><code>client.construe.codeSystems.find(codesystem) -> GetCodeSystemDetailResponse</code></summary>
 <dl>
 <dd>
 
@@ -1613,9 +1530,9 @@ Returns full metadata for a single code system, including timestamps and builtin
 <dd>
 
 ```java
-client.construe().getCodeSystem(
+client.construe().codeSystems().find(
     "ICD-10-CM",
-    GetCodeSystemRequest
+    FindRequest
         .builder()
         .version("2025")
         .build()
@@ -1654,7 +1571,7 @@ client.construe().getCodeSystem(
 </dl>
 </details>
 
-<details><summary><code>client.construe.deleteCodeSystem(codesystem) -> DeleteCodeSystemResponse</code></summary>
+<details><summary><code>client.construe.codeSystems.delete(codesystem) -> DeleteCodeSystemResponse</code></summary>
 <dl>
 <dd>
 
@@ -1682,9 +1599,9 @@ Only available on dedicated instances. Large systems may take up to a minute to 
 <dd>
 
 ```java
-client.construe().deleteCodeSystem(
+client.construe().codeSystems().delete(
     "CUSTOM_CODES",
-    DeleteCodeSystemRequest
+    DeleteRequest
         .builder()
         .version("version")
         .build()
@@ -1723,7 +1640,7 @@ client.construe().deleteCodeSystem(
 </dl>
 </details>
 
-<details><summary><code>client.construe.exportCodeSystem(codesystem) -> ExportCodeSystemResponse</code></summary>
+<details><summary><code>client.construe.codeSystems.export(codesystem) -> ExportCodeSystemResponse</code></summary>
 <dl>
 <dd>
 
@@ -1752,9 +1669,9 @@ Only available on dedicated instances. Builtin systems cannot be exported.
 <dd>
 
 ```java
-client.construe().exportCodeSystem(
+client.construe().codeSystems().export(
     "CUSTOM_CODES",
-    ExportCodeSystemRequest
+    ExportRequest
         .builder()
         .version("version")
         .build()
@@ -1793,280 +1710,7 @@ client.construe().exportCodeSystem(
 </dl>
 </details>
 
-<details><summary><code>client.construe.listCodes(codesystem) -> ListCodesResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns a paginated list of all codes in the specified code system from the terminology server.
-
-Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.construe().listCodes(
-    "ICD-10-CM",
-    ListCodesRequest
-        .builder()
-        .version("2025")
-        .cursor("cursor")
-        .limit(1)
-        .build()
-);
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**codesystem:** `String` — Code system name (e.g., "ICD-10-CM", "SNOMED_CT_US_LITE")
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**version:** `Optional<String>` — Specific version of the code system. Required if multiple versions exist.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cursor:** `Optional<String>` — Pagination cursor from previous response
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `Optional<Integer>` — Maximum number of codes to return (default 20)
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.construe.getCode(codesystem, codeId) -> GetCodeResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Looks up a specific code in the terminology server and returns its details.
-
-Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.construe().getCode(
-    "ICD-10-CM",
-    "E1165",
-    GetCodeRequest
-        .builder()
-        .version("version")
-        .build()
-);
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**codesystem:** `String` — Code system name
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**codeId:** `String` 
-
-The code identifier. ICD-10-CM codes are stored without their
-cosmetic dot (use "E1165", not "E11.65").
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**version:** `Optional<String>` — Specific version of the code system
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.construe.searchSemantic(codesystem) -> SemanticSearchResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Performs semantic similarity search using vector embeddings.
-
-**Availability**: This endpoint works for both **built-in and custom** code systems.
-
-**When to use**: Best for natural language queries where you want to find conceptually
-related codes, even when different terminology is used. The search understands meaning,
-not just keywords.
-
-**Examples**:
-- Query "trouble breathing at night" finds codes like "Sleep apnea", "Orthopnea",
-  "Nocturnal dyspnea" — semantically related but no exact keyword matches
-- Query "heart problems" finds "Myocardial infarction", "Cardiac arrest", "Arrhythmia"
-
-**Trade-offs**: Slower than text search (requires embedding generation), but finds
-conceptually similar results that keyword search would miss.
-
-See also: `/search/text` for faster keyword-based lookup with typo tolerance.
-
-Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```java
-client.construe().searchSemantic(
-    "ICD-10-CM",
-    SearchSemanticRequest
-        .builder()
-        .text("patient has trouble breathing at night and wakes up gasping")
-        .version("version")
-        .limit(1)
-        .build()
-);
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**codesystem:** `String` — Code system name
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**text:** `String` — Natural language text to find semantically similar codes for
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**version:** `Optional<String>` — Specific version of the code system
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `Optional<Integer>` — Maximum number of results (default 10, max 50)
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
+## Construe
 <details><summary><code>client.construe.submitFeedback(request) -> FeedbackResponse</code></summary>
 <dl>
 <dd>
@@ -2196,7 +1840,366 @@ client.construe().submitFeedback(
 </dl>
 </details>
 
-<details><summary><code>client.construe.searchText(codesystem) -> TextSearchResponse</code></summary>
+## Codes
+<details><summary><code>client.construe.codes.extract(request) -> ExtractCodesResult</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Converts natural language text into structured medical codes.
+
+Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.construe().codes().extract(
+    ExtractRequest
+        .builder()
+        .text("Patient is a 14-year-old female, previously healthy, who is here for evaluation of abnormal renal ultrasound with atrophic right kidney.")
+        .system(
+            ExtractRequestSystem
+                .builder()
+                .name("ICD-10-CM")
+                .version("2025")
+                .build()
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**text:** `String` — Natural language text to extract codes from
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**system:** `Optional<ExtractRequestSystem>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**config:** `Optional<ExtractRequestConfig>` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.construe.codes.list(codesystem) -> ListCodesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a paginated list of all codes in the specified code system from the terminology server.
+
+Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.construe().codes().list(
+    "ICD-10-CM",
+    CodesListRequest
+        .builder()
+        .version("2025")
+        .cursor("cursor")
+        .limit(1)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**codesystem:** `String` — Code system name (e.g., "ICD-10-CM", "SNOMED_CT_US_LITE")
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `Optional<String>` — Specific version of the code system. Required if multiple versions exist.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `Optional<String>` — Pagination cursor from previous response
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Maximum number of codes to return (default 20)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.construe.codes.lookup(codesystem, codeId) -> GetCodeResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Looks up a specific code in the terminology server and returns its details.
+
+Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.construe().codes().lookup(
+    "ICD-10-CM",
+    "E1165",
+    LookupRequest
+        .builder()
+        .version("version")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**codesystem:** `String` — Code system name
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**codeId:** `String` 
+
+The code identifier. ICD-10-CM codes are stored without their
+cosmetic dot (use "E1165", not "E11.65").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `Optional<String>` — Specific version of the code system
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.construe.codes.searchSemantic(codesystem) -> SemanticSearchResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Performs semantic similarity search using vector embeddings.
+
+**Availability**: This endpoint works for both **built-in and custom** code systems.
+
+**When to use**: Best for natural language queries where you want to find conceptually
+related codes, even when different terminology is used. The search understands meaning,
+not just keywords.
+
+**Examples**:
+- Query "trouble breathing at night" finds codes like "Sleep apnea", "Orthopnea",
+  "Nocturnal dyspnea" — semantically related but no exact keyword matches
+- Query "heart problems" finds "Myocardial infarction", "Cardiac arrest", "Arrhythmia"
+
+**Trade-offs**: Slower than text search (requires embedding generation), but finds
+conceptually similar results that keyword search would miss.
+
+See also: `/search/text` for faster keyword-based lookup with typo tolerance.
+
+Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.construe().codes().searchSemantic(
+    "ICD-10-CM",
+    SearchSemanticRequest
+        .builder()
+        .text("patient has trouble breathing at night and wakes up gasping")
+        .version("version")
+        .limit(1)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**codesystem:** `String` — Code system name
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**text:** `String` — Natural language text to find semantically similar codes for
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `Optional<String>` — Specific version of the code system
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Maximum number of results (default 10, max 50)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.construe.codes.searchText(codesystem) -> TextSearchResponse</code></summary>
 <dl>
 <dd>
 
@@ -2246,7 +2249,7 @@ Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
 <dd>
 
 ```java
-client.construe().searchText(
+client.construe().codes().searchText(
     "ICD-10-CM",
     SearchTextRequest
         .builder()
@@ -2306,7 +2309,7 @@ client.construe().searchText(
 </details>
 
 ## Fhir
-<details><summary><code>client.fhir.search(fhirProviderId, fhirPath) -> SearchResponse</code></summary>
+<details><summary><code>client.fhir.search(fhirProviderId, fhirPath) -> Object</code></summary>
 <dl>
 <dd>
 
@@ -2318,7 +2321,19 @@ client.construe().searchText(
 <dl>
 <dd>
 
-Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
+Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. `Patient/123` via the path) and search operations.
+
+FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:
+- Resource-specific search parameters (e.g. `name` for Patient, `status` for Observation)
+- Common search parameters (`_id`, `_lastUpdated`, `_tag`, `_profile`, `_security`, `_text`, `_content`, `_filter`)
+- Result parameters (`_count`, `_offset`, `_sort`, `_include`, `_revinclude`, `_summary`, `_elements`)
+- Search prefixes for dates, numbers, and quantities (`eq`, `ne`, `gt`, `ge`, `lt`, `le`, `sa`, `eb`, `ap`)
+
+Examples:
+- `Patient?name=John%20Doe&_count=10&_sort=family`
+- `Observation?patient=Patient/123&date=ge2023-01-01&category=vital-signs&_sort=-date`
+
+When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.
 
 The request is proxied to the configured FHIR server with appropriate authentication headers.
 </dd>
@@ -2384,20 +2399,6 @@ Examples:
 <dl>
 <dd>
 
-**queryParameters:** `Optional<Map<String, Optional<String>>>` 
-
-FHIR-compliant query parameters for search operations. Supports standard FHIR search parameters including:
-- Resource-specific search parameters (e.g., name for Patient, status for Observation)
-- Common search parameters (_id, _lastUpdated, _tag, _profile, _security, _text, _content, _filter)
-- Result parameters (_count, _offset, _sort, _include, _revinclude, _summary, _elements)
-- Search prefixes for dates, numbers, quantities (eq, ne, gt, ge, lt, le, sa, eb, ap)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **phenomlOnBehalfOf:** `Optional<String>` 
 
 Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
@@ -2424,7 +2425,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 </dl>
 </details>
 
-<details><summary><code>client.fhir.create(fhirProviderId, fhirPath, request) -> FhirResource</code></summary>
+<details><summary><code>client.fhir.create(fhirProviderId, fhirPath, request) -> Object</code></summary>
 <dl>
 <dd>
 
@@ -2458,12 +2459,9 @@ client.fhir().create(
     "Patient",
     CreateRequest
         .builder()
-        .body(
-            FhirResource
-                .builder()
-                .resourceType("Patient")
-                .build()
-        )
+        .body(new 
+            HashMap<String, Object>() {{put("resourceType", "Patient");
+            }})
         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
         .phenomlFhirProvider("550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
         .build()
@@ -2530,7 +2528,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 <dl>
 <dd>
 
-**request:** `FhirResource` 
+**request:** `Object` 
     
 </dd>
 </dl>
@@ -2542,7 +2540,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 </dl>
 </details>
 
-<details><summary><code>client.fhir.upsert(fhirProviderId, fhirPath, request) -> FhirResource</code></summary>
+<details><summary><code>client.fhir.upsert(fhirProviderId, fhirPath, request) -> Object</code></summary>
 <dl>
 <dd>
 
@@ -2576,13 +2574,10 @@ client.fhir().upsert(
     "Patient",
     UpsertRequest
         .builder()
-        .body(
-            FhirResource
-                .builder()
-                .resourceType("Patient")
-                .id("123")
-                .build()
-        )
+        .body(new 
+            HashMap<String, Object>() {{put("resourceType", "Patient");
+                put("id", "123");
+            }})
         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
         .phenomlFhirProvider("550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
         .build()
@@ -2649,7 +2644,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 <dl>
 <dd>
 
-**request:** `FhirResource` 
+**request:** `Object` 
     
 </dd>
 </dl>
@@ -2661,7 +2656,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 </dl>
 </details>
 
-<details><summary><code>client.fhir.delete(fhirProviderId, fhirPath) -> Map&amp;lt;String, Object&amp;gt;</code></summary>
+<details><summary><code>client.fhir.delete(fhirProviderId, fhirPath) -> Object</code></summary>
 <dl>
 <dd>
 
@@ -2765,7 +2760,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 </dl>
 </details>
 
-<details><summary><code>client.fhir.patch(fhirProviderId, fhirPath, request) -> FhirResource</code></summary>
+<details><summary><code>client.fhir.patch(fhirProviderId, fhirPath, request) -> Object</code></summary>
 <dl>
 <dd>
 
@@ -2777,12 +2772,16 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 <dl>
 <dd>
 
-Partially updates a FHIR resource on the specified provider using JSON Patch operations as defined in RFC 6902.
+Partially updates a FHIR resource on the specified provider.
 
-The request body should contain an array of JSON Patch operations. Each operation specifies:
-- `op`: The operation type (add, remove, replace, move, copy, test)
-- `path`: JSON Pointer to the target location in the resource
-- `value`: The value to use (required for add, replace, and test operations)
+Two body formats are supported, selected by request content type:
+- `application/json-patch+json` — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
+  - `op`: The operation type (add, remove, replace, move, copy, test)
+  - `path`: JSON Pointer to the target location in the resource
+  - `value`: The value to use (required for add, replace, and test operations)
+- `application/fhir+json` — a partial FHIR resource for merge-patch semantics.
+
+**Note:** This proxy currently forwards the request body to the upstream FHIR server with `Content-Type: application/fhir+json` regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under `application/fhir+json`; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.
 
 The request is proxied to the configured FHIR server with appropriate authentication headers.
 </dd>
@@ -2892,7 +2891,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 </dl>
 </details>
 
-<details><summary><code>client.fhir.executeBundle(fhirProviderId, request) -> FhirBundle</code></summary>
+<details><summary><code>client.fhir.executeBundle(fhirProviderId, request) -> Object</code></summary>
 <dl>
 <dd>
 
@@ -2927,53 +2926,35 @@ client.fhir().executeBundle(
     "550e8400-e29b-41d4-a716-446655440000",
     ExecuteBundleRequest
         .builder()
-        .body(
-            FhirBundle
-                .builder()
-                .entry(
-                    Arrays.asList(
-                        FhirBundleEntryItem
-                            .builder()
-                            .resource(
-                                new HashMap<String, Object>() {{
-                                    put("resourceType", "Patient");
-                                    put("name", new ArrayList<Object>(Arrays.asList(new 
-                                    HashMap<String, Object>() {{put("family", "Doe");
-                                        put("given", new ArrayList<Object>(Arrays.asList("John")));
-                                    }})));
-                                }}
-                            )
-                            .request(
-                                FhirBundleEntryItemRequest
-                                    .builder()
-                                    .method(FhirBundleEntryItemRequestMethod.POST)
-                                    .url("Patient")
-                                    .build()
-                            )
-                            .build(),
-                        FhirBundleEntryItem
-                            .builder()
-                            .resource(
-                                new HashMap<String, Object>() {{
-                                    put("resourceType", "Observation");
-                                    put("status", "final");
-                                    put("subject", new 
-                                    HashMap<String, Object>() {{put("reference", "Patient/123");
-                                    }});
-                                }}
-                            )
-                            .request(
-                                FhirBundleEntryItemRequest
-                                    .builder()
-                                    .method(FhirBundleEntryItemRequestMethod.POST)
-                                    .url("Observation")
-                                    .build()
-                            )
-                            .build()
-                    )
-                )
-                .build()
-        )
+        .body(new 
+            HashMap<String, Object>() {{put("resourceType", "Bundle");
+                put("type", "transaction");
+                put("entry", new ArrayList<Object>(Arrays.asList(new 
+                HashMap<String, Object>() {{put("request", new 
+                    HashMap<String, Object>() {{put("method", "POST");
+                        put("url", "Patient");
+                    }});
+                    put("resource", new 
+                    HashMap<String, Object>() {{put("resourceType", "Patient");
+                        put("name", new ArrayList<Object>(Arrays.asList(new 
+                        HashMap<String, Object>() {{put("family", "Doe");
+                            put("given", new ArrayList<Object>(Arrays.asList("John")));
+                        }})));
+                    }});
+                }}, new 
+                HashMap<String, Object>() {{put("request", new 
+                    HashMap<String, Object>() {{put("method", "POST");
+                        put("url", "Observation");
+                    }});
+                    put("resource", new 
+                    HashMap<String, Object>() {{put("resourceType", "Observation");
+                        put("status", "final");
+                        put("subject", new 
+                        HashMap<String, Object>() {{put("reference", "Patient/123");
+                        }});
+                    }});
+                }})));
+            }})
         .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
         .phenomlFhirProvider("550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
         .build()
@@ -3026,7 +3007,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 <dl>
 <dd>
 
-**request:** `FhirBundle` 
+**request:** `Object` 
     
 </dd>
 </dl>
@@ -3299,7 +3280,8 @@ client.fhirProvider().delete("fhir_provider_id");
 </dl>
 </details>
 
-<details><summary><code>client.fhirProvider.addAuthConfig(fhirProviderId, request) -> FhirProviderResponse</code></summary>
+## Auth Config
+<details><summary><code>client.fhirProvider.authConfig.add(fhirProviderId, request) -> FhirProviderResponse</code></summary>
 <dl>
 <dd>
 
@@ -3329,7 +3311,7 @@ Note: Sandbox providers cannot be modified.
 <dd>
 
 ```java
-client.fhirProvider().addAuthConfig(
+client.fhirProvider().authConfig().add(
     "1716d214-de93-43a4-aa6b-a878d864e2ad",
     FhirProviderAddAuthConfigRequest.clientSecret(
         ClientSecretAuth
@@ -3373,7 +3355,7 @@ client.fhirProvider().addAuthConfig(
 </dl>
 </details>
 
-<details><summary><code>client.fhirProvider.setActiveAuthConfig(fhirProviderId, request) -> FhirProviderResponse</code></summary>
+<details><summary><code>client.fhirProvider.authConfig.setActive(fhirProviderId, request) -> FhirProviderResponse</code></summary>
 <dl>
 <dd>
 
@@ -3406,7 +3388,7 @@ Note: Sandbox providers cannot be modified.
 <dd>
 
 ```java
-client.fhirProvider().setActiveAuthConfig(
+client.fhirProvider().authConfig().setActive(
     "1716d214-de93-43a4-aa6b-a878d864e2ad",
     FhirProviderSetActiveAuthConfigRequest
         .builder()
@@ -3447,7 +3429,7 @@ client.fhirProvider().setActiveAuthConfig(
 </dl>
 </details>
 
-<details><summary><code>client.fhirProvider.removeAuthConfig(fhirProviderId, request) -> RemoveAuthConfigResponse</code></summary>
+<details><summary><code>client.fhirProvider.authConfig.remove(fhirProviderId, request) -> RemoveResponse</code></summary>
 <dl>
 <dd>
 
@@ -3477,7 +3459,7 @@ Note: Sandbox providers cannot be modified.
 <dd>
 
 ```java
-client.fhirProvider().removeAuthConfig(
+client.fhirProvider().authConfig().remove(
     "1716d214-de93-43a4-aa6b-a878d864e2ad",
     FhirProviderRemoveAuthConfigRequest
         .builder()
@@ -4073,8 +4055,8 @@ File type is auto-detected from content magic bytes.
 </dl>
 </details>
 
-## Summary Templates
-<details><summary><code>client.summary.templates.list() -> TemplatesListResponse</code></summary>
+## Templates
+<details><summary><code>client.summary.templates.list() -> ListResponse</code></summary>
 <dl>
 <dd>
 
@@ -4217,7 +4199,7 @@ client.summary().templates().create(
 </dl>
 </details>
 
-<details><summary><code>client.summary.templates.get(id) -> TemplatesGetResponse</code></summary>
+<details><summary><code>client.summary.templates.get(id) -> GetResponse</code></summary>
 <dl>
 <dd>
 
@@ -4271,7 +4253,7 @@ client.summary().templates().get("id");
 </dl>
 </details>
 
-<details><summary><code>client.summary.templates.update(id, request) -> TemplatesUpdateResponse</code></summary>
+<details><summary><code>client.summary.templates.update(id, request) -> UpdateResponse</code></summary>
 <dl>
 <dd>
 
@@ -4376,7 +4358,7 @@ client.summary().templates().update(
 </dl>
 </details>
 
-<details><summary><code>client.summary.templates.delete(id) -> TemplatesDeleteResponse</code></summary>
+<details><summary><code>client.summary.templates.delete(id) -> DeleteResponse</code></summary>
 <dl>
 <dd>
 
@@ -4954,8 +4936,8 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 </dl>
 </details>
 
-## Tools McpServer
-<details><summary><code>client.tools.mcpServer.create(request) -> McpServerResponse</code></summary>
+## MCP Servers
+<details><summary><code>client.tools.mcpServers.create(request) -> McpServerResponse</code></summary>
 <dl>
 <dd>
 
@@ -4982,7 +4964,7 @@ Creates a new MCP server
 <dd>
 
 ```java
-client.tools().mcpServer().create(
+client.tools().mcpServers().create(
     McpServerCreateRequest
         .builder()
         .name("My MCP Server")
@@ -5023,7 +5005,7 @@ client.tools().mcpServer().create(
 </dl>
 </details>
 
-<details><summary><code>client.tools.mcpServer.list() -> McpServerResponse</code></summary>
+<details><summary><code>client.tools.mcpServers.list() -> McpServerResponse</code></summary>
 <dl>
 <dd>
 
@@ -5050,7 +5032,7 @@ Lists all MCP servers for a specific user
 <dd>
 
 ```java
-client.tools().mcpServer().list();
+client.tools().mcpServers().list();
 ```
 </dd>
 </dl>
@@ -5062,7 +5044,7 @@ client.tools().mcpServer().list();
 </dl>
 </details>
 
-<details><summary><code>client.tools.mcpServer.get(mcpServerId) -> McpServerResponse</code></summary>
+<details><summary><code>client.tools.mcpServers.get(mcpServerId) -> McpServerResponse</code></summary>
 <dl>
 <dd>
 
@@ -5089,7 +5071,7 @@ Gets a MCP server by ID
 <dd>
 
 ```java
-client.tools().mcpServer().get("mcp_server_id");
+client.tools().mcpServers().get("mcp_server_id");
 ```
 </dd>
 </dl>
@@ -5116,7 +5098,7 @@ client.tools().mcpServer().get("mcp_server_id");
 </dl>
 </details>
 
-<details><summary><code>client.tools.mcpServer.delete(mcpServerId) -> McpServerResponse</code></summary>
+<details><summary><code>client.tools.mcpServers.delete(mcpServerId) -> McpServerResponse</code></summary>
 <dl>
 <dd>
 
@@ -5143,7 +5125,7 @@ Deletes a MCP server by ID
 <dd>
 
 ```java
-client.tools().mcpServer().delete("mcp_server_id");
+client.tools().mcpServers().delete("mcp_server_id");
 ```
 </dd>
 </dl>
@@ -5170,8 +5152,8 @@ client.tools().mcpServer().delete("mcp_server_id");
 </dl>
 </details>
 
-## Tools McpServer Tools
-<details><summary><code>client.tools.mcpServer.tools.list(mcpServerId) -> McpServerToolResponse</code></summary>
+## Tools McpTools
+<details><summary><code>client.tools.mcpTools.list(mcpServerId) -> McpServerToolResponse</code></summary>
 <dl>
 <dd>
 
@@ -5198,7 +5180,7 @@ Lists all MCP server tools for a specific MCP server
 <dd>
 
 ```java
-client.tools().mcpServer().tools().list("mcp_server_id");
+client.tools().mcpTools().list("mcp_server_id");
 ```
 </dd>
 </dl>
@@ -5225,7 +5207,7 @@ client.tools().mcpServer().tools().list("mcp_server_id");
 </dl>
 </details>
 
-<details><summary><code>client.tools.mcpServer.tools.get(mcpServerToolId) -> McpServerToolResponse</code></summary>
+<details><summary><code>client.tools.mcpTools.get(mcpServerToolId) -> McpServerToolResponse</code></summary>
 <dl>
 <dd>
 
@@ -5252,7 +5234,7 @@ Gets a MCP server tool by ID
 <dd>
 
 ```java
-client.tools().mcpServer().tools().get("mcp_server_tool_id");
+client.tools().mcpTools().get("mcp_server_tool_id");
 ```
 </dd>
 </dl>
@@ -5279,7 +5261,7 @@ client.tools().mcpServer().tools().get("mcp_server_tool_id");
 </dl>
 </details>
 
-<details><summary><code>client.tools.mcpServer.tools.delete(mcpServerToolId) -> McpServerToolResponse</code></summary>
+<details><summary><code>client.tools.mcpTools.delete(mcpServerToolId) -> McpServerToolResponse</code></summary>
 <dl>
 <dd>
 
@@ -5306,7 +5288,7 @@ Deletes a MCP server tool by ID
 <dd>
 
 ```java
-client.tools().mcpServer().tools().delete("mcp_server_tool_id");
+client.tools().mcpTools().delete("mcp_server_tool_id");
 ```
 </dd>
 </dl>

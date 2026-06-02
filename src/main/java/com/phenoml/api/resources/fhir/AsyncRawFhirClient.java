@@ -3,36 +3,21 @@
  */
 package com.phenoml.api.resources.fhir;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.core.PhenomlClientApiException;
 import com.phenoml.api.core.PhenomlClientException;
 import com.phenoml.api.core.PhenomlClientHttpResponse;
-import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
-import com.phenoml.api.resources.fhir.errors.BadGatewayError;
-import com.phenoml.api.resources.fhir.errors.BadRequestError;
-import com.phenoml.api.resources.fhir.errors.InternalServerError;
-import com.phenoml.api.resources.fhir.errors.NotFoundError;
-import com.phenoml.api.resources.fhir.errors.ServiceUnavailableError;
-import com.phenoml.api.resources.fhir.errors.TooManyRequestsError;
-import com.phenoml.api.resources.fhir.errors.UnauthorizedError;
 import com.phenoml.api.resources.fhir.requests.CreateRequest;
 import com.phenoml.api.resources.fhir.requests.DeleteRequest;
 import com.phenoml.api.resources.fhir.requests.ExecuteBundleRequest;
 import com.phenoml.api.resources.fhir.requests.PatchRequest;
 import com.phenoml.api.resources.fhir.requests.SearchRequest;
 import com.phenoml.api.resources.fhir.requests.UpsertRequest;
-import com.phenoml.api.resources.fhir.types.ErrorResponse;
-import com.phenoml.api.resources.fhir.types.FhirBundle;
-import com.phenoml.api.resources.fhir.types.FhirResource;
 import com.phenoml.api.resources.fhir.types.PatchRequestBodyItem;
-import com.phenoml.api.resources.fhir.types.SearchResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -54,36 +39,88 @@ public class AsyncRawFhirClient {
     }
 
     /**
-     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
+     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
+     * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
+     * <ul>
+     * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
+     * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
+     * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
+     * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
+     * </ul>
+     * <p>Examples:</p>
+     * <ul>
+     * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
+     * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
+     * </ul>
+     * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<SearchResponse>> search(String fhirProviderId, String fhirPath) {
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> search(String fhirProviderId, String fhirPath) {
         return search(fhirProviderId, fhirPath, SearchRequest.builder().build());
     }
 
     /**
-     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
+     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
+     * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
+     * <ul>
+     * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
+     * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
+     * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
+     * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
+     * </ul>
+     * <p>Examples:</p>
+     * <ul>
+     * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
+     * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
+     * </ul>
+     * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<SearchResponse>> search(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> search(
             String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
         return search(fhirProviderId, fhirPath, SearchRequest.builder().build(), requestOptions);
     }
 
     /**
-     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
+     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
+     * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
+     * <ul>
+     * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
+     * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
+     * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
+     * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
+     * </ul>
+     * <p>Examples:</p>
+     * <ul>
+     * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
+     * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
+     * </ul>
+     * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<SearchResponse>> search(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> search(
             String fhirProviderId, String fhirPath, SearchRequest request) {
         return search(fhirProviderId, fhirPath, request, null);
     }
 
     /**
-     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval and search operations based on the FHIR path and query parameters.
+     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
+     * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
+     * <ul>
+     * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
+     * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
+     * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
+     * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
+     * </ul>
+     * <p>Examples:</p>
+     * <ul>
+     * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
+     * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
+     * </ul>
+     * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<SearchResponse>> search(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> search(
             String fhirProviderId, String fhirPath, SearchRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -91,10 +128,6 @@ public class AsyncRawFhirClient {
                 .addPathSegment(fhirProviderId)
                 .addPathSegments("fhir")
                 .addPathSegment(fhirPath);
-        if (request.getQueryParameters().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "query_parameters", request.getQueryParameters().get(), false);
-        }
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);
@@ -118,7 +151,7 @@ public class AsyncRawFhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<SearchResponse>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<Object>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -126,50 +159,8 @@ public class AsyncRawFhirClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SearchResponse.class),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
                         return;
-                    }
-                    try {
-                        switch (response.code()) {
-                            case 400:
-                                future.completeExceptionally(new BadRequestError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 401:
-                                future.completeExceptionally(new UnauthorizedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 404:
-                                future.completeExceptionally(new NotFoundError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 429:
-                                future.completeExceptionally(new TooManyRequestsError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 500:
-                                future.completeExceptionally(new InternalServerError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 502:
-                                future.completeExceptionally(new BadGatewayError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 503:
-                                future.completeExceptionally(new ServiceUnavailableError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
                     }
                     Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenomlClientApiException(
@@ -192,8 +183,8 @@ public class AsyncRawFhirClient {
      * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirResource>> create(
-            String fhirProviderId, String fhirPath, FhirResource body) {
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> create(
+            String fhirProviderId, String fhirPath, Object body) {
         return create(
                 fhirProviderId, fhirPath, CreateRequest.builder().body(body).build());
     }
@@ -202,8 +193,8 @@ public class AsyncRawFhirClient {
      * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirResource>> create(
-            String fhirProviderId, String fhirPath, FhirResource body, RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> create(
+            String fhirProviderId, String fhirPath, Object body, RequestOptions requestOptions) {
         return create(
                 fhirProviderId, fhirPath, CreateRequest.builder().body(body).build(), requestOptions);
     }
@@ -212,7 +203,7 @@ public class AsyncRawFhirClient {
      * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirResource>> create(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> create(
             String fhirProviderId, String fhirPath, CreateRequest request) {
         return create(fhirProviderId, fhirPath, request, null);
     }
@@ -221,7 +212,7 @@ public class AsyncRawFhirClient {
      * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirResource>> create(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> create(
             String fhirProviderId, String fhirPath, CreateRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -261,7 +252,7 @@ public class AsyncRawFhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<FhirResource>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<Object>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -269,44 +260,8 @@ public class AsyncRawFhirClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirResource.class), response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
                         return;
-                    }
-                    try {
-                        switch (response.code()) {
-                            case 400:
-                                future.completeExceptionally(new BadRequestError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 401:
-                                future.completeExceptionally(new UnauthorizedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 429:
-                                future.completeExceptionally(new TooManyRequestsError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 500:
-                                future.completeExceptionally(new InternalServerError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 502:
-                                future.completeExceptionally(new BadGatewayError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 503:
-                                future.completeExceptionally(new ServiceUnavailableError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
                     }
                     Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenomlClientApiException(
@@ -329,8 +284,8 @@ public class AsyncRawFhirClient {
      * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirResource>> upsert(
-            String fhirProviderId, String fhirPath, FhirResource body) {
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> upsert(
+            String fhirProviderId, String fhirPath, Object body) {
         return upsert(
                 fhirProviderId, fhirPath, UpsertRequest.builder().body(body).build());
     }
@@ -339,8 +294,8 @@ public class AsyncRawFhirClient {
      * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirResource>> upsert(
-            String fhirProviderId, String fhirPath, FhirResource body, RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> upsert(
+            String fhirProviderId, String fhirPath, Object body, RequestOptions requestOptions) {
         return upsert(
                 fhirProviderId, fhirPath, UpsertRequest.builder().body(body).build(), requestOptions);
     }
@@ -349,7 +304,7 @@ public class AsyncRawFhirClient {
      * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirResource>> upsert(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> upsert(
             String fhirProviderId, String fhirPath, UpsertRequest request) {
         return upsert(fhirProviderId, fhirPath, request, null);
     }
@@ -358,7 +313,7 @@ public class AsyncRawFhirClient {
      * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirResource>> upsert(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> upsert(
             String fhirProviderId, String fhirPath, UpsertRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -398,7 +353,7 @@ public class AsyncRawFhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<FhirResource>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<Object>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -406,44 +361,8 @@ public class AsyncRawFhirClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirResource.class), response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
                         return;
-                    }
-                    try {
-                        switch (response.code()) {
-                            case 400:
-                                future.completeExceptionally(new BadRequestError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 401:
-                                future.completeExceptionally(new UnauthorizedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 429:
-                                future.completeExceptionally(new TooManyRequestsError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 500:
-                                future.completeExceptionally(new InternalServerError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 502:
-                                future.completeExceptionally(new BadGatewayError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 503:
-                                future.completeExceptionally(new ServiceUnavailableError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
                     }
                     Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenomlClientApiException(
@@ -466,8 +385,7 @@ public class AsyncRawFhirClient {
      * Deletes a FHIR resource from the specified provider.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> delete(
-            String fhirProviderId, String fhirPath) {
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> delete(String fhirProviderId, String fhirPath) {
         return delete(fhirProviderId, fhirPath, DeleteRequest.builder().build());
     }
 
@@ -475,7 +393,7 @@ public class AsyncRawFhirClient {
      * Deletes a FHIR resource from the specified provider.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> delete(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> delete(
             String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
         return delete(fhirProviderId, fhirPath, DeleteRequest.builder().build(), requestOptions);
     }
@@ -484,7 +402,7 @@ public class AsyncRawFhirClient {
      * Deletes a FHIR resource from the specified provider.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> delete(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> delete(
             String fhirProviderId, String fhirPath, DeleteRequest request) {
         return delete(fhirProviderId, fhirPath, request, null);
     }
@@ -493,7 +411,7 @@ public class AsyncRawFhirClient {
      * Deletes a FHIR resource from the specified provider.
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> delete(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> delete(
             String fhirProviderId, String fhirPath, DeleteRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -524,7 +442,7 @@ public class AsyncRawFhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<Object>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -532,51 +450,8 @@ public class AsyncRawFhirClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, new TypeReference<Map<String, Object>>() {}),
-                                response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
                         return;
-                    }
-                    try {
-                        switch (response.code()) {
-                            case 400:
-                                future.completeExceptionally(new BadRequestError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 401:
-                                future.completeExceptionally(new UnauthorizedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 404:
-                                future.completeExceptionally(new NotFoundError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 429:
-                                future.completeExceptionally(new TooManyRequestsError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 500:
-                                future.completeExceptionally(new InternalServerError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 502:
-                                future.completeExceptionally(new BadGatewayError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 503:
-                                future.completeExceptionally(new ServiceUnavailableError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
                     }
                     Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenomlClientApiException(
@@ -596,61 +471,85 @@ public class AsyncRawFhirClient {
     }
 
     /**
-     * Partially updates a FHIR resource on the specified provider using JSON Patch operations as defined in RFC 6902.
-     * <p>The request body should contain an array of JSON Patch operations. Each operation specifies:</p>
+     * Partially updates a FHIR resource on the specified provider.
+     * <p>Two body formats are supported, selected by request content type:</p>
+     * <ul>
+     * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
      * <ul>
      * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
      * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
      * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
      * </ul>
+     * </li>
+     * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
+     * </ul>
+     * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirResource>> patch(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> patch(
             String fhirProviderId, String fhirPath, List<PatchRequestBodyItem> body) {
         return patch(fhirProviderId, fhirPath, PatchRequest.builder().body(body).build());
     }
 
     /**
-     * Partially updates a FHIR resource on the specified provider using JSON Patch operations as defined in RFC 6902.
-     * <p>The request body should contain an array of JSON Patch operations. Each operation specifies:</p>
+     * Partially updates a FHIR resource on the specified provider.
+     * <p>Two body formats are supported, selected by request content type:</p>
+     * <ul>
+     * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
      * <ul>
      * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
      * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
      * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
      * </ul>
+     * </li>
+     * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
+     * </ul>
+     * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirResource>> patch(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> patch(
             String fhirProviderId, String fhirPath, List<PatchRequestBodyItem> body, RequestOptions requestOptions) {
         return patch(fhirProviderId, fhirPath, PatchRequest.builder().body(body).build(), requestOptions);
     }
 
     /**
-     * Partially updates a FHIR resource on the specified provider using JSON Patch operations as defined in RFC 6902.
-     * <p>The request body should contain an array of JSON Patch operations. Each operation specifies:</p>
+     * Partially updates a FHIR resource on the specified provider.
+     * <p>Two body formats are supported, selected by request content type:</p>
+     * <ul>
+     * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
      * <ul>
      * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
      * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
      * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
      * </ul>
+     * </li>
+     * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
+     * </ul>
+     * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirResource>> patch(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> patch(
             String fhirProviderId, String fhirPath, PatchRequest request) {
         return patch(fhirProviderId, fhirPath, request, null);
     }
 
     /**
-     * Partially updates a FHIR resource on the specified provider using JSON Patch operations as defined in RFC 6902.
-     * <p>The request body should contain an array of JSON Patch operations. Each operation specifies:</p>
+     * Partially updates a FHIR resource on the specified provider.
+     * <p>Two body formats are supported, selected by request content type:</p>
+     * <ul>
+     * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
      * <ul>
      * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
      * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
      * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
      * </ul>
+     * </li>
+     * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
+     * </ul>
+     * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirResource>> patch(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> patch(
             String fhirProviderId, String fhirPath, PatchRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -690,7 +589,7 @@ public class AsyncRawFhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<FhirResource>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<Object>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -698,49 +597,8 @@ public class AsyncRawFhirClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirResource.class), response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
                         return;
-                    }
-                    try {
-                        switch (response.code()) {
-                            case 400:
-                                future.completeExceptionally(new BadRequestError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 401:
-                                future.completeExceptionally(new UnauthorizedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 404:
-                                future.completeExceptionally(new NotFoundError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 429:
-                                future.completeExceptionally(new TooManyRequestsError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 500:
-                                future.completeExceptionally(new InternalServerError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 502:
-                                future.completeExceptionally(new BadGatewayError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 503:
-                                future.completeExceptionally(new ServiceUnavailableError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
                     }
                     Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenomlClientApiException(
@@ -764,8 +622,7 @@ public class AsyncRawFhirClient {
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirBundle>> executeBundle(
-            String fhirProviderId, FhirBundle body) {
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> executeBundle(String fhirProviderId, Object body) {
         return executeBundle(
                 fhirProviderId, ExecuteBundleRequest.builder().body(body).build());
     }
@@ -775,8 +632,8 @@ public class AsyncRawFhirClient {
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirBundle>> executeBundle(
-            String fhirProviderId, FhirBundle body, RequestOptions requestOptions) {
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> executeBundle(
+            String fhirProviderId, Object body, RequestOptions requestOptions) {
         return executeBundle(
                 fhirProviderId, ExecuteBundleRequest.builder().body(body).build(), requestOptions);
     }
@@ -786,7 +643,7 @@ public class AsyncRawFhirClient {
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirBundle>> executeBundle(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> executeBundle(
             String fhirProviderId, ExecuteBundleRequest request) {
         return executeBundle(fhirProviderId, request, null);
     }
@@ -796,7 +653,7 @@ public class AsyncRawFhirClient {
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
-    public CompletableFuture<PhenomlClientHttpResponse<FhirBundle>> executeBundle(
+    public CompletableFuture<PhenomlClientHttpResponse<Object>> executeBundle(
             String fhirProviderId, ExecuteBundleRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
@@ -835,7 +692,7 @@ public class AsyncRawFhirClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<PhenomlClientHttpResponse<FhirBundle>> future = new CompletableFuture<>();
+        CompletableFuture<PhenomlClientHttpResponse<Object>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -843,44 +700,8 @@ public class AsyncRawFhirClient {
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
                         future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirBundle.class), response));
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
                         return;
-                    }
-                    try {
-                        switch (response.code()) {
-                            case 400:
-                                future.completeExceptionally(new BadRequestError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 401:
-                                future.completeExceptionally(new UnauthorizedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 429:
-                                future.completeExceptionally(new TooManyRequestsError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 500:
-                                future.completeExceptionally(new InternalServerError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 502:
-                                future.completeExceptionally(new BadGatewayError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ErrorResponse.class),
-                                        response));
-                                return;
-                            case 503:
-                                future.completeExceptionally(new ServiceUnavailableError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
                     }
                     Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new PhenomlClientApiException(
