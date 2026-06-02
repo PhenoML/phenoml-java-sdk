@@ -276,7 +276,7 @@ public class Lang2FhirWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"resource_type\":\"AllergyIntolerance\",\"search_params\":\"date=ge2025-03-02&date=le2025-03-09\"}"));
+                                "{\"resource_type\":\"Appointment\",\"search_params\":\"date=ge2025-03-02&date=le2025-03-09\"}"));
         SearchResponse response = client.lang2Fhir()
                 .search(SearchRequest.builder()
                         .text("Appointments between March 2-9, 2025")
@@ -327,7 +327,7 @@ public class Lang2FhirWireTest {
         String actualResponseJson = objectMapper.writeValueAsString(response);
         String expectedResponseBody = ""
                 + "{\n"
-                + "  \"resource_type\": \"AllergyIntolerance\",\n"
+                + "  \"resource_type\": \"Appointment\",\n"
                 + "  \"search_params\": \"date=ge2025-03-02&date=le2025-03-09\"\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);

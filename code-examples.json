@@ -2,8 +2,8 @@
   "metadata": {
     "language": "java",
     "packageName": "com.phenoml.maven:phenoml-java-sdk",
-    "sdkVersion": "16.0.0",
-    "specCommit": "0be22a22f76bdd8d90a4f341dcd435fd5590ef7e",
+    "sdkVersion": "17.0.0",
+    "specCommit": "2903d5176690213e8f9bd937e4d4696088f870f9",
     "generatorName": "fernapi/fern-java-sdk"
   },
   "renderRules": {
@@ -16,6 +16,678 @@
     "listSeparator": ", "
   },
   "examples": {
+    "POST /agent/create": {
+      "httpMethod": "POST",
+      "httpPath": "/agent/create",
+      "request": {
+        "body": {
+          "name": "Medical Assistant",
+          "description": "An AI assistant for medical information processing",
+          "prompts": [
+            "prompt_123"
+          ],
+          "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35",
+          "tags": [
+            "medical",
+            "fhir"
+          ]
+        }
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "Agent created successfully",
+          "data": {
+            "id": "agent_123",
+            "name": "Medical Assistant",
+            "description": "An AI assistant for medical information processing",
+            "prompts": [
+              "prompt_123",
+              "prompt_456"
+            ],
+            "tools": [
+              "mcp_server_123",
+              "mcp_server_456"
+            ],
+            "workflows": [
+              "workflow_123",
+              "workflow_456"
+            ],
+            "tags": [
+              "medical",
+              "fhir"
+            ],
+            "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
+          }
+        }
+      },
+      "render": {
+        "callTemplate": "client.agent().create(AgentCreateRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "name",
+              "fieldTemplate": ".name({{value}})",
+              "kind": "string",
+              "required": true
+            },
+            {
+              "jsonKey": "prompts",
+              "fieldTemplate": ".prompts({{value}})",
+              "kind": "list",
+              "required": true,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "string",
+                "required": true
+              }
+            },
+            {
+              "jsonKey": "provider",
+              "fieldTemplate": ".provider({{value}})",
+              "kind": "object",
+              "required": true
+            },
+            {
+              "jsonKey": "description",
+              "fieldTemplate": ".description({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "tools",
+              "fieldTemplate": ".tools({{value}})",
+              "kind": "list",
+              "required": false,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "string",
+                "required": true
+              }
+            },
+            {
+              "jsonKey": "workflows",
+              "fieldTemplate": ".workflows({{value}})",
+              "kind": "list",
+              "required": false,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "string",
+                "required": true
+              }
+            },
+            {
+              "jsonKey": "tags",
+              "fieldTemplate": ".tags({{value}})",
+              "kind": "list",
+              "required": false,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "string",
+                "required": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "GET /agent/list": {
+      "httpMethod": "GET",
+      "httpPath": "/agent/list",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "Agents retrieved successfully",
+          "agents": [
+            {
+              "id": "agent_123",
+              "name": "Medical Assistant",
+              "description": "An AI assistant for medical information processing",
+              "prompts": [
+                "prompt_123"
+              ],
+              "tags": [
+                "medical",
+                "fhir"
+              ],
+              "provider": [
+                "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
+              ]
+            },
+            {
+              "id": "agent_456",
+              "name": "Clinical Coding Assistant",
+              "description": "Helps with ICD-10 and SNOMED coding",
+              "prompts": [
+                "prompt_456"
+              ],
+              "tags": [
+                "coding"
+              ],
+              "provider": [
+                "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
+              ]
+            }
+          ]
+        }
+      },
+      "render": {
+        "callTemplate": "client.agent().list(ListRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "tags",
+              "fieldTemplate": ".tags({{value}})",
+              "kind": "string",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "GET /agent/{id}": {
+      "httpMethod": "GET",
+      "httpPath": "/agent/{id}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "Agent retrieved successfully",
+          "data": {
+            "id": "agent_123",
+            "name": "Medical Assistant",
+            "description": "An AI assistant for medical information processing",
+            "prompts": [
+              "prompt_123",
+              "prompt_456"
+            ],
+            "tools": [
+              "mcp_server_123",
+              "mcp_server_456"
+            ],
+            "workflows": [
+              "workflow_123",
+              "workflow_456"
+            ],
+            "tags": [
+              "medical",
+              "fhir"
+            ],
+            "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
+          }
+        }
+      },
+      "render": {
+        "callTemplate": "client.agent().get({{id}})",
+        "params": [
+          {
+            "name": "id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "PUT /agent/{id}": {
+      "httpMethod": "PUT",
+      "httpPath": "/agent/{id}",
+      "request": {
+        "body": {
+          "name": "Medical Assistant",
+          "description": "Updated description for the medical assistant",
+          "prompts": [
+            "prompt_123"
+          ],
+          "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35",
+          "tags": [
+            "medical",
+            "fhir",
+            "updated"
+          ]
+        }
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "Agent updated successfully",
+          "data": {
+            "id": "agent_123",
+            "name": "Medical Assistant",
+            "description": "An AI assistant for medical information processing",
+            "prompts": [
+              "prompt_123",
+              "prompt_456"
+            ],
+            "tools": [
+              "mcp_server_123",
+              "mcp_server_456"
+            ],
+            "workflows": [
+              "workflow_123",
+              "workflow_456"
+            ],
+            "tags": [
+              "medical",
+              "fhir"
+            ],
+            "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
+          }
+        }
+      },
+      "render": {
+        "callTemplate": "client.agent().update({{id}}, AgentCreateRequest.builder(){{__body__}}.build())",
+        "params": [
+          {
+            "name": "id",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "name",
+              "fieldTemplate": ".name({{value}})",
+              "kind": "string",
+              "required": true
+            },
+            {
+              "jsonKey": "prompts",
+              "fieldTemplate": ".prompts({{value}})",
+              "kind": "list",
+              "required": true,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "string",
+                "required": true
+              }
+            },
+            {
+              "jsonKey": "provider",
+              "fieldTemplate": ".provider({{value}})",
+              "kind": "object",
+              "required": true
+            },
+            {
+              "jsonKey": "description",
+              "fieldTemplate": ".description({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "tools",
+              "fieldTemplate": ".tools({{value}})",
+              "kind": "list",
+              "required": false,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "string",
+                "required": true
+              }
+            },
+            {
+              "jsonKey": "workflows",
+              "fieldTemplate": ".workflows({{value}})",
+              "kind": "list",
+              "required": false,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "string",
+                "required": true
+              }
+            },
+            {
+              "jsonKey": "tags",
+              "fieldTemplate": ".tags({{value}})",
+              "kind": "list",
+              "required": false,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "string",
+                "required": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "DELETE /agent/{id}": {
+      "httpMethod": "DELETE",
+      "httpPath": "/agent/{id}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "Agent deleted successfully"
+        }
+      },
+      "render": {
+        "callTemplate": "client.agent().delete({{id}})",
+        "params": [
+          {
+            "name": "id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "PATCH /agent/{id}": {
+      "httpMethod": "PATCH",
+      "httpPath": "/agent/{id}",
+      "request": {
+        "body": [
+          {
+            "op": "replace",
+            "path": "/description",
+            "value": "patched description"
+          },
+          {
+            "op": "add",
+            "path": "/tags/-",
+            "value": "updated"
+          }
+        ]
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "Agent patched successfully",
+          "data": {
+            "id": "agent_123",
+            "name": "Medical Assistant",
+            "description": "An AI assistant for medical information processing",
+            "prompts": [
+              "prompt_123",
+              "prompt_456"
+            ],
+            "tools": [
+              "mcp_server_123",
+              "mcp_server_456"
+            ],
+            "workflows": [
+              "workflow_123",
+              "workflow_456"
+            ],
+            "tags": [
+              "medical",
+              "fhir"
+            ],
+            "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
+          }
+        }
+      },
+      "render": {
+        "callTemplate": "client.agent().patch({{id}}, {{__body__}})",
+        "params": [
+          {
+            "name": "id",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "",
+              "fieldTemplate": "{{value}}",
+              "kind": "list",
+              "required": true,
+              "passthroughBody": true,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "object",
+                "required": true,
+                "nested": {
+                  "fieldSeparator": "",
+                  "fields": [
+                    {
+                      "jsonKey": "op",
+                      "fieldTemplate": ".op({{value}})",
+                      "kind": "enum",
+                      "required": true,
+                      "enumValues": [
+                        "add",
+                        "remove",
+                        "replace",
+                        "move",
+                        "copy",
+                        "test"
+                      ]
+                    },
+                    {
+                      "jsonKey": "path",
+                      "fieldTemplate": ".path({{value}})",
+                      "kind": "string",
+                      "required": true
+                    },
+                    {
+                      "jsonKey": "value",
+                      "fieldTemplate": ".value({{value}})",
+                      "kind": "object",
+                      "required": false
+                    },
+                    {
+                      "jsonKey": "from",
+                      "fieldTemplate": ".from({{value}})",
+                      "kind": "string",
+                      "required": false
+                    }
+                  ],
+                  "wrap": "JSONPatchOperation.builder(){{__body__}}.build()"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "POST /agent/chat": {
+      "httpMethod": "POST",
+      "httpPath": "/agent/chat",
+      "request": {
+        "body": {
+          "message": "What is the patient's current condition?",
+          "agent_id": "agent-123",
+          "session_id": "session-abc123"
+        }
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "Response generated successfully",
+          "response": "Based on the patient records, they have been diagnosed with Type 2 Diabetes Mellitus (ICD-10: E11.65) and Essential Hypertension (ICD-10: I10). Current medications include Metformin 500mg BID and Lisinopril 10mg daily. Most recent HbA1c was 7.2% on 2024-12-15.",
+          "session_id": "session-abc123"
+        }
+      },
+      "render": {
+        "callTemplate": "client.agent().chat().send(AgentChatRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "message",
+              "fieldTemplate": ".message({{value}})",
+              "kind": "string",
+              "required": true
+            },
+            {
+              "jsonKey": "agent_id",
+              "fieldTemplate": ".agentId({{value}})",
+              "kind": "string",
+              "required": true
+            },
+            {
+              "jsonKey": "context",
+              "fieldTemplate": ".context({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "session_id",
+              "fieldTemplate": ".sessionId({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "enhanced_reasoning",
+              "fieldTemplate": ".enhancedReasoning({{value}})",
+              "kind": "boolean",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "POST /agent/stream-chat": {
+      "httpMethod": "POST",
+      "httpPath": "/agent/stream-chat",
+      "request": {
+        "body": {
+          "message": "What is the patient's current condition?",
+          "agent_id": "agent-123",
+          "session_id": "session-abc123"
+        }
+      },
+      "response": {
+        "body": null,
+        "streaming": true
+      },
+      "render": {
+        "callTemplate": "client.agent().chat().stream(AgentStreamChatRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "message",
+              "fieldTemplate": ".message({{value}})",
+              "kind": "string",
+              "required": true
+            },
+            {
+              "jsonKey": "agent_id",
+              "fieldTemplate": ".agentId({{value}})",
+              "kind": "string",
+              "required": true
+            },
+            {
+              "jsonKey": "context",
+              "fieldTemplate": ".context({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "session_id",
+              "fieldTemplate": ".sessionId({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "enhanced_reasoning",
+              "fieldTemplate": ".enhancedReasoning({{value}})",
+              "kind": "boolean",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "GET /agent/chat/messages": {
+      "httpMethod": "GET",
+      "httpPath": "/agent/chat/messages",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": {
+          "session_id": "session_123",
+          "total": 2,
+          "messages": [
+            {
+              "id": "message_001",
+              "session_id": "session_123",
+              "role": "user",
+              "content": "What is the patient's current condition?",
+              "created": "2025-03-01T14:00:00Z",
+              "updated": "2025-03-01T14:00:00Z",
+              "message_order": 1
+            },
+            {
+              "id": "message_002",
+              "session_id": "session_123",
+              "role": "assistant",
+              "content": "Based on the patient records, they have been diagnosed with Type 2 Diabetes Mellitus (ICD-10: E11.65).",
+              "created": "2025-03-01T14:00:02Z",
+              "updated": "2025-03-01T14:00:02Z",
+              "message_order": 2
+            }
+          ]
+        }
+      },
+      "render": {
+        "callTemplate": "client.agent().chat().listMessages(ListMessagesRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "chat_session_id",
+              "fieldTemplate": ".chatSessionId({{value}})",
+              "kind": "string",
+              "required": true
+            },
+            {
+              "jsonKey": "num_messages",
+              "fieldTemplate": ".numMessages({{value}})",
+              "kind": "number",
+              "required": false
+            },
+            {
+              "jsonKey": "role",
+              "fieldTemplate": ".role({{value}})",
+              "kind": "enum",
+              "required": false,
+              "enumValues": [
+                "user",
+                "assistant",
+                "model",
+                "function"
+              ]
+            },
+            {
+              "jsonKey": "order",
+              "fieldTemplate": ".order({{value}})",
+              "kind": "enum",
+              "required": false,
+              "enumValues": [
+                "asc",
+                "desc"
+              ]
+            }
+          ]
+        }
+      }
+    },
     "POST /agent/prompts": {
       "httpMethod": "POST",
       "httpPath": "/agent/prompts",
@@ -251,28 +923,6 @@
         }
       }
     },
-    "DELETE /agent/prompts/{id}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/agent/prompts/{id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Prompt deleted successfully"
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().prompts().delete({{id}})",
-        "params": [
-          {
-            "name": "id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
     "PATCH /agent/prompts/{id}": {
       "httpMethod": "PATCH",
       "httpPath": "/agent/prompts/{id}",
@@ -318,6 +968,7 @@
               "fieldTemplate": "{{value}}",
               "kind": "list",
               "required": true,
+              "passthroughBody": true,
               "items": {
                 "jsonKey": "",
                 "fieldTemplate": "{{value}}",
@@ -336,17 +987,9 @@
                         "remove",
                         "replace",
                         "move",
-                        "test",
-                        "copy"
-                      ],
-                      "enumConstants": {
-                        "add": "JsonPatchOperationOp.ADD",
-                        "remove": "JsonPatchOperationOp.REMOVE",
-                        "replace": "JsonPatchOperationOp.REPLACE",
-                        "move": "JsonPatchOperationOp.MOVE",
-                        "test": "JsonPatchOperationOp.TEST",
-                        "copy": "JsonPatchOperationOp.COPY"
-                      }
+                        "copy",
+                        "test"
+                      ]
                     },
                     {
                       "jsonKey": "path",
@@ -367,432 +1010,28 @@
                       "required": false
                     }
                   ],
-                  "wrap": "JsonPatchOperation.builder(){{__body__}}.build()"
+                  "wrap": "JSONPatchOperation.builder(){{__body__}}.build()"
                 }
-              },
-              "passthroughBody": true
-            }
-          ]
-        }
-      }
-    },
-    "POST /agent/create": {
-      "httpMethod": "POST",
-      "httpPath": "/agent/create",
-      "request": {
-        "body": {
-          "name": "Medical Assistant",
-          "description": "An AI assistant for medical information processing",
-          "prompts": [
-            "prompt_123"
-          ],
-          "tags": [
-            "medical",
-            "fhir"
-          ],
-          "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Agent created successfully",
-          "data": {
-            "id": "agent_123",
-            "name": "Medical Assistant",
-            "description": "An AI assistant for medical information processing",
-            "prompts": [
-              "prompt_123",
-              "prompt_456"
-            ],
-            "tools": [
-              "mcp_server_123",
-              "mcp_server_456"
-            ],
-            "workflows": [
-              "workflow_123",
-              "workflow_456"
-            ],
-            "tags": [
-              "medical",
-              "fhir"
-            ],
-            "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
-          }
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().create(AgentCreateRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "name",
-              "fieldTemplate": ".name({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "provider",
-              "fieldTemplate": ".provider({{value}})",
-              "kind": "object",
-              "required": true,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "type",
-                    "fieldTemplate": ".type({{value}})",
-                    "kind": "number",
-                    "required": false
-                  }
-                ],
-                "wrap": "AgentCreateRequestProvider.builder(){{__body__}}.build()"
-              }
-            },
-            {
-              "jsonKey": "description",
-              "fieldTemplate": ".description({{value}})",
-              "kind": "string",
-              "required": false
-            },
-            {
-              "jsonKey": "prompts",
-              "fieldTemplate": ".prompts({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
-            },
-            {
-              "jsonKey": "tools",
-              "fieldTemplate": ".tools({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
-            },
-            {
-              "jsonKey": "workflows",
-              "fieldTemplate": ".workflows({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
-            },
-            {
-              "jsonKey": "tags",
-              "fieldTemplate": ".tags({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
               }
             }
           ]
         }
       }
     },
-    "GET /agent/list": {
-      "httpMethod": "GET",
-      "httpPath": "/agent/list",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Agents retrieved successfully",
-          "agents": [
-            {
-              "id": "agent_123",
-              "name": "Medical Assistant",
-              "description": "An AI assistant for medical information processing",
-              "prompts": [
-                "prompt_123"
-              ],
-              "tools": [
-                "mcp_server_123",
-                "mcp_server_456"
-              ],
-              "workflows": [
-                "workflow_123",
-                "workflow_456"
-              ],
-              "tags": [
-                "medical",
-                "fhir"
-              ],
-              "provider": [
-                "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
-              ]
-            },
-            {
-              "id": "agent_456",
-              "name": "Clinical Coding Assistant",
-              "description": "Helps with ICD-10 and SNOMED coding",
-              "prompts": [
-                "prompt_456"
-              ],
-              "tools": [
-                "mcp_server_123",
-                "mcp_server_456"
-              ],
-              "workflows": [
-                "workflow_123",
-                "workflow_456"
-              ],
-              "tags": [
-                "coding"
-              ],
-              "provider": [
-                "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
-              ]
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().list(ListRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "tags",
-              "fieldTemplate": ".tags({{value}})",
-              "kind": "string",
-              "required": false
-            }
-          ]
-        }
-      }
-    },
-    "GET /agent/{id}": {
-      "httpMethod": "GET",
-      "httpPath": "/agent/{id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Agent retrieved successfully",
-          "data": {
-            "id": "agent_123",
-            "name": "Medical Assistant",
-            "description": "An AI assistant for medical information processing",
-            "prompts": [
-              "prompt_123",
-              "prompt_456"
-            ],
-            "tools": [
-              "mcp_server_123",
-              "mcp_server_456"
-            ],
-            "workflows": [
-              "workflow_123",
-              "workflow_456"
-            ],
-            "tags": [
-              "medical",
-              "fhir"
-            ],
-            "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
-          }
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().get({{id}})",
-        "params": [
-          {
-            "name": "id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
-    "PUT /agent/{id}": {
-      "httpMethod": "PUT",
-      "httpPath": "/agent/{id}",
-      "request": {
-        "body": {
-          "name": "Medical Assistant",
-          "description": "Updated description for the medical assistant",
-          "prompts": [
-            "prompt_123"
-          ],
-          "tags": [
-            "medical",
-            "fhir",
-            "updated"
-          ],
-          "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Agent updated successfully",
-          "data": {
-            "id": "agent_123",
-            "name": "Medical Assistant",
-            "description": "An AI assistant for medical information processing",
-            "prompts": [
-              "prompt_123",
-              "prompt_456"
-            ],
-            "tools": [
-              "mcp_server_123",
-              "mcp_server_456"
-            ],
-            "workflows": [
-              "workflow_123",
-              "workflow_456"
-            ],
-            "tags": [
-              "medical",
-              "fhir"
-            ],
-            "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
-          }
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().update({{id}}, AgentCreateRequest.builder(){{__body__}}.build())",
-        "params": [
-          {
-            "name": "id",
-            "kind": "string"
-          }
-        ],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "name",
-              "fieldTemplate": ".name({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "provider",
-              "fieldTemplate": ".provider({{value}})",
-              "kind": "object",
-              "required": true,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "type",
-                    "fieldTemplate": ".type({{value}})",
-                    "kind": "number",
-                    "required": false
-                  }
-                ],
-                "wrap": "AgentCreateRequestProvider.builder(){{__body__}}.build()"
-              }
-            },
-            {
-              "jsonKey": "description",
-              "fieldTemplate": ".description({{value}})",
-              "kind": "string",
-              "required": false
-            },
-            {
-              "jsonKey": "prompts",
-              "fieldTemplate": ".prompts({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
-            },
-            {
-              "jsonKey": "tools",
-              "fieldTemplate": ".tools({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
-            },
-            {
-              "jsonKey": "workflows",
-              "fieldTemplate": ".workflows({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
-            },
-            {
-              "jsonKey": "tags",
-              "fieldTemplate": ".tags({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
-            }
-          ]
-        }
-      }
-    },
-    "DELETE /agent/{id}": {
+    "DELETE /agent/prompts/{id}": {
       "httpMethod": "DELETE",
-      "httpPath": "/agent/{id}",
+      "httpPath": "/agent/prompts/{id}",
       "request": {
         "body": null
       },
       "response": {
         "body": {
           "success": true,
-          "message": "Agent deleted successfully"
+          "message": "Prompt deleted successfully"
         }
       },
       "render": {
-        "callTemplate": "client.agent().delete({{id}})",
+        "callTemplate": "client.agent().prompts().delete({{id}})",
         "params": [
           {
             "name": "id",
@@ -801,382 +1040,45 @@
         ]
       }
     },
-    "PATCH /agent/{id}": {
-      "httpMethod": "PATCH",
-      "httpPath": "/agent/{id}",
-      "request": {
-        "body": [
-          {
-            "op": "replace",
-            "path": "/description",
-            "value": "patched description"
-          },
-          {
-            "op": "add",
-            "path": "/tags/-",
-            "value": "updated"
-          }
-        ]
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Agent patched successfully",
-          "data": {
-            "id": "agent_123",
-            "name": "Medical Assistant",
-            "description": "An AI assistant for medical information processing",
-            "prompts": [
-              "prompt_123",
-              "prompt_456"
-            ],
-            "tools": [
-              "mcp_server_123",
-              "mcp_server_456"
-            ],
-            "workflows": [
-              "workflow_123",
-              "workflow_456"
-            ],
-            "tags": [
-              "medical",
-              "fhir"
-            ],
-            "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
-          }
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().patch({{id}}, {{__body__}})",
-        "params": [
-          {
-            "name": "id",
-            "kind": "string"
-          }
-        ],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "",
-              "fieldTemplate": "{{value}}",
-              "kind": "list",
-              "required": true,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "object",
-                "required": true,
-                "nested": {
-                  "fieldSeparator": "",
-                  "fields": [
-                    {
-                      "jsonKey": "op",
-                      "fieldTemplate": ".op({{value}})",
-                      "kind": "enum",
-                      "required": true,
-                      "enumValues": [
-                        "add",
-                        "remove",
-                        "replace",
-                        "move",
-                        "test",
-                        "copy"
-                      ],
-                      "enumConstants": {
-                        "add": "JsonPatchOperationOp.ADD",
-                        "remove": "JsonPatchOperationOp.REMOVE",
-                        "replace": "JsonPatchOperationOp.REPLACE",
-                        "move": "JsonPatchOperationOp.MOVE",
-                        "test": "JsonPatchOperationOp.TEST",
-                        "copy": "JsonPatchOperationOp.COPY"
-                      }
-                    },
-                    {
-                      "jsonKey": "path",
-                      "fieldTemplate": ".path({{value}})",
-                      "kind": "string",
-                      "required": true
-                    },
-                    {
-                      "jsonKey": "value",
-                      "fieldTemplate": ".value({{value}})",
-                      "kind": "object",
-                      "required": false
-                    },
-                    {
-                      "jsonKey": "from",
-                      "fieldTemplate": ".from({{value}})",
-                      "kind": "string",
-                      "required": false
-                    }
-                  ],
-                  "wrap": "JsonPatchOperation.builder(){{__body__}}.build()"
-                }
-              },
-              "passthroughBody": true
-            }
-          ]
-        }
-      }
-    },
-    "POST /agent/chat": {
+    "POST /v2/auth/token": {
       "httpMethod": "POST",
-      "httpPath": "/agent/chat",
+      "httpPath": "/v2/auth/token",
       "request": {
         "body": {
-          "message": "What is the patient's current condition?",
-          "session_id": "session-abc123",
-          "agent_id": "agent-123"
+          "client_id": "your_client_id",
+          "client_secret": "your_client_secret"
         }
       },
       "response": {
         "body": {
-          "response": "Based on the patient records, they have been diagnosed with Type 2 Diabetes Mellitus (ICD-10: E11.65) and Essential Hypertension (ICD-10: I10). Current medications include Metformin 500mg BID and Lisinopril 10mg daily. Most recent HbA1c was 7.2% on 2024-12-15.",
-          "success": true,
-          "message": "Response generated successfully",
-          "session_id": "session-abc123"
+          "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+          "token_type": "Bearer",
+          "expires_in": 172800
         }
       },
       "render": {
-        "callTemplate": "client.agent().chat(AgentChatRequest.builder(){{__body__}}.build())",
+        "callTemplate": "client.authtoken().getToken(ClientCredentialsRequest.builder(){{__body__}}.build())",
         "params": [],
         "body": {
           "fieldSeparator": "",
           "fields": [
             {
-              "jsonKey": "message",
-              "fieldTemplate": ".message({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "agent_id",
-              "fieldTemplate": ".agentId({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "context",
-              "fieldTemplate": ".context({{value}})",
+              "jsonKey": "grant_type",
+              "fieldTemplate": ".grantType({{value}})",
               "kind": "string",
               "required": false
             },
             {
-              "jsonKey": "session_id",
-              "fieldTemplate": ".sessionId({{value}})",
+              "jsonKey": "client_id",
+              "fieldTemplate": ".clientId({{value}})",
               "kind": "string",
               "required": false
             },
             {
-              "jsonKey": "enhanced_reasoning",
-              "fieldTemplate": ".enhancedReasoning({{value}})",
-              "kind": "boolean",
-              "required": false
-            }
-          ]
-        }
-      }
-    },
-    "POST /agent/stream-chat": {
-      "httpMethod": "POST",
-      "httpPath": "/agent/stream-chat",
-      "request": {
-        "body": {
-          "message": "What is the patient's current condition?",
-          "session_id": "session-abc123",
-          "agent_id": "agent-123"
-        }
-      },
-      "response": {
-        "body": null,
-        "streaming": true
-      },
-      "render": {
-        "callTemplate": "client.agent().streamChat(AgentStreamChatRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "message",
-              "fieldTemplate": ".message({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "agent_id",
-              "fieldTemplate": ".agentId({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "context",
-              "fieldTemplate": ".context({{value}})",
+              "jsonKey": "client_secret",
+              "fieldTemplate": ".clientSecret({{value}})",
               "kind": "string",
               "required": false
-            },
-            {
-              "jsonKey": "session_id",
-              "fieldTemplate": ".sessionId({{value}})",
-              "kind": "string",
-              "required": false
-            },
-            {
-              "jsonKey": "enhanced_reasoning",
-              "fieldTemplate": ".enhancedReasoning({{value}})",
-              "kind": "boolean",
-              "required": false
-            }
-          ]
-        }
-      }
-    },
-    "GET /agent/chat/messages": {
-      "httpMethod": "GET",
-      "httpPath": "/agent/chat/messages",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "messages": [
-            {
-              "id": "message_001",
-              "session_id": "session_123",
-              "role": "user",
-              "content": "What is the patient's current condition?",
-              "created": "2025-03-01T14:00:00Z",
-              "updated": "2025-03-01T14:00:00Z",
-              "function_name": "get_patient_info",
-              "function_args": {
-                "patient_id": "123"
-              },
-              "function_result": {
-                "name": "John Doe"
-              },
-              "message_order": 1
-            },
-            {
-              "id": "message_002",
-              "session_id": "session_123",
-              "role": "assistant",
-              "content": "Based on the patient records, they have been diagnosed with Type 2 Diabetes Mellitus (ICD-10: E11.65).",
-              "created": "2025-03-01T14:00:02Z",
-              "updated": "2025-03-01T14:00:02Z",
-              "function_name": "get_patient_info",
-              "function_args": {
-                "patient_id": "123"
-              },
-              "function_result": {
-                "name": "John Doe"
-              },
-              "message_order": 2
-            }
-          ],
-          "total": 2,
-          "session_id": "session_123"
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().getChatMessages(GetChatMessagesRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "chat_session_id",
-              "fieldTemplate": ".chatSessionId({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "num_messages",
-              "fieldTemplate": ".numMessages({{value}})",
-              "kind": "number",
-              "required": false
-            },
-            {
-              "jsonKey": "role",
-              "fieldTemplate": ".role({{value}})",
-              "kind": "enum",
-              "required": false,
-              "enumValues": [
-                "function",
-                "model",
-                "user",
-                "assistant"
-              ],
-              "enumConstants": {
-                "function": "GetChatMessagesRequestRole.FUNCTION",
-                "model": "GetChatMessagesRequestRole.MODEL",
-                "user": "GetChatMessagesRequestRole.USER",
-                "assistant": "GetChatMessagesRequestRole.ASSISTANT"
-              }
-            },
-            {
-              "jsonKey": "order",
-              "fieldTemplate": ".order({{value}})",
-              "kind": "enum",
-              "required": false,
-              "enumValues": [
-                "asc",
-                "desc"
-              ],
-              "enumConstants": {
-                "asc": "GetChatMessagesRequestOrder.ASC",
-                "desc": "GetChatMessagesRequestOrder.DESC"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "POST /cohort": {
-      "httpMethod": "POST",
-      "httpPath": "/cohort",
-      "request": {
-        "body": {
-          "text": "female patients over 65 with diabetes but not hypertension"
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Cohort analysis completed successfully. Generated 3 search queries from 3 concepts.",
-          "queries": [
-            {
-              "resource_type": "Patient",
-              "search_params": "gender=female&birthdate=le1959-01-01",
-              "concept": "female patients over 65",
-              "exclude": false
-            },
-            {
-              "resource_type": "Condition",
-              "search_params": "code=44054006",
-              "concept": "diabetes",
-              "exclude": false
-            },
-            {
-              "resource_type": "Condition",
-              "search_params": "code=38341003",
-              "concept": "hypertension",
-              "exclude": true
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.cohort().analyze(CohortRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "text",
-              "fieldTemplate": ".text({{value}})",
-              "kind": "string",
-              "required": true
             }
           ]
         }
@@ -1210,7 +1112,7 @@
         }
       },
       "render": {
-        "callTemplate": "client.construe().uploadCodeSystem(UploadRequest.builder(){{__body__}}.build())",
+        "callTemplate": "client.construe().codeSystems().upload(UploadRequest.builder(){{__body__}}.build())",
         "params": [],
         "body": {
           "fieldSeparator": "",
@@ -1235,11 +1137,7 @@
               "enumValues": [
                 "csv",
                 "json"
-              ],
-              "enumConstants": {
-                "csv": "UploadRequestFormat.CSV",
-                "json": "UploadRequestFormat.JSON"
-              }
+              ]
             },
             {
               "jsonKey": "revision",
@@ -1339,68 +1237,23 @@
             {
               "code": "Q60.3",
               "description": "Renal hypoplasia, unspecified",
-              "valid": true,
-              "reason": "reason",
-              "is_ancestor": true,
-              "citations": [
-                {
-                  "text": "Patient has type 2 diabetes",
-                  "begin_offset": 0,
-                  "end_offset": 27
-                }
-              ],
-              "categories": [
-                {
-                  "uri": "HP:0025142",
-                  "label": "Constitutional symptom"
-                }
-              ]
+              "valid": true
             },
             {
               "code": "R93.42",
               "description": "Abnormal findings on diagnostic imaging of kidney",
-              "valid": true,
-              "reason": "reason",
-              "is_ancestor": true,
-              "citations": [
-                {
-                  "text": "Patient has type 2 diabetes",
-                  "begin_offset": 0,
-                  "end_offset": 27
-                }
-              ],
-              "categories": [
-                {
-                  "uri": "HP:0025142",
-                  "label": "Constitutional symptom"
-                }
-              ]
+              "valid": true
             },
             {
               "code": "N28.1",
               "description": "Cyst of kidney, acquired",
-              "valid": true,
-              "reason": "reason",
-              "is_ancestor": true,
-              "citations": [
-                {
-                  "text": "Patient has type 2 diabetes",
-                  "begin_offset": 0,
-                  "end_offset": 27
-                }
-              ],
-              "categories": [
-                {
-                  "uri": "HP:0025142",
-                  "label": "Constitutional symptom"
-                }
-              ]
+              "valid": true
             }
           ]
         }
       },
       "render": {
-        "callTemplate": "client.construe().extractCodes(ExtractRequest.builder(){{__body__}}.build())",
+        "callTemplate": "client.construe().codes().extract(ExtractRequest.builder(){{__body__}}.build())",
         "params": [],
         "body": {
           "fieldSeparator": "",
@@ -1449,23 +1302,14 @@
                     "kind": "enum",
                     "required": false,
                     "enumValues": [
-                      "soap_note",
-                      "fasthpocr",
-                      "topics",
-                      "paragraphs",
+                      "none",
                       "sentences",
+                      "paragraphs",
+                      "topics",
+                      "soap_note",
                       "clinical_ner_extract",
-                      "none"
-                    ],
-                    "enumConstants": {
-                      "soap_note": "ExtractRequestConfigChunkingMethod.SOAP_NOTE",
-                      "fasthpocr": "ExtractRequestConfigChunkingMethod.FASTHPOCR",
-                      "topics": "ExtractRequestConfigChunkingMethod.TOPICS",
-                      "paragraphs": "ExtractRequestConfigChunkingMethod.PARAGRAPHS",
-                      "sentences": "ExtractRequestConfigChunkingMethod.SENTENCES",
-                      "clinical_ner_extract": "ExtractRequestConfigChunkingMethod.CLINICAL_NER_EXTRACT",
-                      "none": "ExtractRequestConfigChunkingMethod.NONE"
-                    }
+                      "fasthpocr"
+                    ]
                   },
                   {
                     "jsonKey": "max_codes_per_chunk",
@@ -1485,17 +1329,11 @@
                     "kind": "enum",
                     "required": false,
                     "enumValues": [
+                      "none",
                       "simple",
                       "medication_search",
-                      "none",
                       "chunk_code_jaccard_similarity"
-                    ],
-                    "enumConstants": {
-                      "simple": "ExtractRequestConfigValidationMethod.SIMPLE",
-                      "medication_search": "ExtractRequestConfigValidationMethod.MEDICATION_SEARCH",
-                      "none": "ExtractRequestConfigValidationMethod.NONE",
-                      "chunk_code_jaccard_similarity": "ExtractRequestConfigValidationMethod.CHUNK_CODE_JACCARD_SIMILARITY"
-                    }
+                    ]
                   },
                   {
                     "jsonKey": "chunk_code_jaccard_similarity_filtering_threshold",
@@ -1545,17 +1383,11 @@
                     "kind": "enum",
                     "required": false,
                     "enumValues": [
-                      "medium",
+                      "none",
                       "low",
-                      "high",
-                      "none"
-                    ],
-                    "enumConstants": {
-                      "medium": "ExtractRequestConfigConsistencyEffort.MEDIUM",
-                      "low": "ExtractRequestConfigConsistencyEffort.LOW",
-                      "high": "ExtractRequestConfigConsistencyEffort.HIGH",
-                      "none": "ExtractRequestConfigConsistencyEffort.NONE"
-                    }
+                      "medium",
+                      "high"
+                    ]
                   }
                 ],
                 "wrap": "ExtractRequestConfig.builder(){{__body__}}.build()"
@@ -1620,7 +1452,7 @@
         }
       },
       "render": {
-        "callTemplate": "client.construe().listCodeSystems()",
+        "callTemplate": "client.construe().codeSystems().list()",
         "params": []
       }
     },
@@ -1642,7 +1474,7 @@
         }
       },
       "render": {
-        "callTemplate": "client.construe().getCodeSystem({{codesystem}}, GetCodeSystemRequest.builder(){{__body__}}.build())",
+        "callTemplate": "client.construe().codeSystems().find({{codesystem}}, FindRequest.builder(){{__body__}}.build())",
         "params": [
           {
             "name": "codesystem",
@@ -1674,7 +1506,7 @@
         }
       },
       "render": {
-        "callTemplate": "client.construe().deleteCodeSystem({{codesystem}}, DeleteCodeSystemRequest.builder(){{__body__}}.build())",
+        "callTemplate": "client.construe().codeSystems().delete({{codesystem}}, DeleteRequest.builder(){{__body__}}.build())",
         "params": [
           {
             "name": "codesystem",
@@ -1708,19 +1540,17 @@
           "codes": [
             {
               "code": "X001",
-              "description": "Example custom code 1",
-              "definition": "definition"
+              "description": "Example custom code 1"
             },
             {
               "code": "X002",
-              "description": "Example custom code 2",
-              "definition": "definition"
+              "description": "Example custom code 2"
             }
           ]
         }
       },
       "render": {
-        "callTemplate": "client.construe().exportCodeSystem({{codesystem}}, ExportCodeSystemRequest.builder(){{__body__}}.build())",
+        "callTemplate": "client.construe().codeSystems().export({{codesystem}}, ExportRequest.builder(){{__body__}}.build())",
         "params": [
           {
             "name": "codesystem",
@@ -1755,28 +1585,23 @@
           "codes": [
             {
               "code": "A00",
-              "description": "Cholera",
-              "definition": "definition"
+              "description": "Cholera"
             },
             {
               "code": "A000",
-              "description": "Cholera due to Vibrio cholerae 01, biovar cholerae",
-              "definition": "definition"
+              "description": "Cholera due to Vibrio cholerae 01, biovar cholerae"
             },
             {
               "code": "A001",
-              "description": "Cholera due to Vibrio cholerae 01, biovar eltor",
-              "definition": "definition"
+              "description": "Cholera due to Vibrio cholerae 01, biovar eltor"
             },
             {
               "code": "A009",
-              "description": "Cholera, unspecified",
-              "definition": "definition"
+              "description": "Cholera, unspecified"
             },
             {
               "code": "A01",
-              "description": "Typhoid and paratyphoid fevers",
-              "definition": "definition"
+              "description": "Typhoid and paratyphoid fevers"
             }
           ],
           "next_cursor": "QTAx",
@@ -1784,7 +1609,7 @@
         }
       },
       "render": {
-        "callTemplate": "client.construe().listCodes({{codesystem}}, ListCodesRequest.builder(){{__body__}}.build())",
+        "callTemplate": "client.construe().codes().list({{codesystem}}, CodesListRequest.builder(){{__body__}}.build())",
         "params": [
           {
             "name": "codesystem",
@@ -1829,19 +1654,18 @@
             "version": "2025"
           },
           "code": "E1165",
-          "description": "Type 2 diabetes mellitus with hyperglycemia",
-          "definition": "definition"
+          "description": "Type 2 diabetes mellitus with hyperglycemia"
         }
       },
       "render": {
-        "callTemplate": "client.construe().getCode({{codesystem}}, {{code_id}}, GetCodeRequest.builder(){{__body__}}.build())",
+        "callTemplate": "client.construe().codes().lookup({{codesystem}}, {{codeID}}, LookupRequest.builder(){{__body__}}.build())",
         "params": [
           {
             "name": "codesystem",
             "kind": "string"
           },
           {
-            "name": "code_id",
+            "name": "codeID",
             "kind": "string"
           }
         ],
@@ -1895,7 +1719,7 @@
         }
       },
       "render": {
-        "callTemplate": "client.construe().searchSemantic({{codesystem}}, SearchSemanticRequest.builder(){{__body__}}.build())",
+        "callTemplate": "client.construe().codes().searchSemantic({{codesystem}}, SearchSemanticRequest.builder(){{__body__}}.build())",
         "params": [
           {
             "name": "codesystem",
@@ -2015,7 +1839,7 @@
                     "jsonKey": "codes",
                     "fieldTemplate": ".codes({{value}})",
                     "kind": "list",
-                    "required": false,
+                    "required": true,
                     "items": {
                       "jsonKey": "",
                       "fieldTemplate": "{{value}}",
@@ -2165,7 +1989,7 @@
                     "jsonKey": "codes",
                     "fieldTemplate": ".codes({{value}})",
                     "kind": "list",
-                    "required": false,
+                    "required": true,
                     "items": {
                       "jsonKey": "",
                       "fieldTemplate": "{{value}}",
@@ -2319,7 +2143,7 @@
         }
       },
       "render": {
-        "callTemplate": "client.construe().searchText({{codesystem}}, SearchTextRequest.builder(){{__body__}}.build())",
+        "callTemplate": "client.construe().codes().searchText({{codesystem}}, SearchTextRequest.builder(){{__body__}}.build())",
         "params": [
           {
             "name": "codesystem",
@@ -2333,7 +2157,7 @@
               "jsonKey": "q",
               "fieldTemplate": ".q({{value}})",
               "kind": "string",
-              "required": false
+              "required": true
             },
             {
               "jsonKey": "version",
@@ -2351,6 +2175,306 @@
         }
       }
     },
+    "GET /fhir-provider/{fhir_provider_id}/fhir/{fhir_path}": {
+      "httpMethod": "GET",
+      "httpPath": "/fhir-provider/{fhir_provider_id}/fhir/{fhir_path}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": {
+          "resourceType": "Bundle",
+          "total": 2,
+          "entry": [
+            {
+              "resource": {
+                "resourceType": "Patient",
+                "id": "123",
+                "name": [
+                  {
+                    "family": "Doe",
+                    "given": [
+                      "John"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "render": {
+        "callTemplate": "client.fhir().search({{fhir_provider_id}}, {{fhir_path}})",
+        "params": [
+          {
+            "name": "fhir_provider_id",
+            "kind": "string"
+          },
+          {
+            "name": "fhir_path",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "POST /fhir-provider/{fhir_provider_id}/fhir/{fhir_path}": {
+      "httpMethod": "POST",
+      "httpPath": "/fhir-provider/{fhir_provider_id}/fhir/{fhir_path}",
+      "request": {
+        "body": {
+          "resourceType": "Patient"
+        }
+      },
+      "response": {
+        "body": {
+          "resourceType": "Patient",
+          "id": "456",
+          "meta": {
+            "versionId": "1",
+            "lastUpdated": "2024-01-15T10:30:00Z"
+          }
+        }
+      },
+      "render": {
+        "callTemplate": "client.fhir().create({{fhir_provider_id}}, {{fhir_path}}, {{__body__}})",
+        "params": [
+          {
+            "name": "fhir_provider_id",
+            "kind": "string"
+          },
+          {
+            "name": "fhir_path",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "",
+              "fieldTemplate": "{{value}}",
+              "kind": "object",
+              "required": true,
+              "passthroughBody": true
+            }
+          ]
+        }
+      }
+    },
+    "PUT /fhir-provider/{fhir_provider_id}/fhir/{fhir_path}": {
+      "httpMethod": "PUT",
+      "httpPath": "/fhir-provider/{fhir_provider_id}/fhir/{fhir_path}",
+      "request": {
+        "body": {
+          "resourceType": "Patient",
+          "id": "123"
+        }
+      },
+      "response": {
+        "body": {
+          "resourceType": "Patient",
+          "id": "123",
+          "meta": {
+            "versionId": "2",
+            "lastUpdated": "2024-02-20T11:00:00Z"
+          }
+        }
+      },
+      "render": {
+        "callTemplate": "client.fhir().upsert({{fhir_provider_id}}, {{fhir_path}}, {{__body__}})",
+        "params": [
+          {
+            "name": "fhir_provider_id",
+            "kind": "string"
+          },
+          {
+            "name": "fhir_path",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "",
+              "fieldTemplate": "{{value}}",
+              "kind": "object",
+              "required": true,
+              "passthroughBody": true
+            }
+          ]
+        }
+      }
+    },
+    "PATCH /fhir-provider/{fhir_provider_id}/fhir/{fhir_path}": {
+      "httpMethod": "PATCH",
+      "httpPath": "/fhir-provider/{fhir_provider_id}/fhir/{fhir_path}",
+      "request": {
+        "body": [
+          {
+            "op": "replace",
+            "path": "/name/0/family",
+            "value": "NewFamilyName"
+          }
+        ]
+      },
+      "response": {
+        "body": {
+          "resourceType": "Patient",
+          "id": "123",
+          "meta": {
+            "versionId": "3",
+            "lastUpdated": "2024-02-20T11:30:00Z"
+          }
+        }
+      },
+      "render": {
+        "callTemplate": "client.fhir().patch({{fhir_provider_id}}, {{fhir_path}}, {{__body__}})",
+        "params": [
+          {
+            "name": "fhir_provider_id",
+            "kind": "string"
+          },
+          {
+            "name": "fhir_path",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "",
+              "fieldTemplate": "{{value}}",
+              "kind": "list",
+              "required": true,
+              "passthroughBody": true,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "object",
+                "required": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "DELETE /fhir-provider/{fhir_provider_id}/fhir/{fhir_path}": {
+      "httpMethod": "DELETE",
+      "httpPath": "/fhir-provider/{fhir_provider_id}/fhir/{fhir_path}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": {
+          "resourceType": "OperationOutcome",
+          "issue": [
+            {
+              "severity": "information",
+              "code": "informational",
+              "details": {
+                "text": "Resource deleted successfully"
+              }
+            }
+          ]
+        }
+      },
+      "render": {
+        "callTemplate": "client.fhir().delete({{fhir_provider_id}}, {{fhir_path}})",
+        "params": [
+          {
+            "name": "fhir_provider_id",
+            "kind": "string"
+          },
+          {
+            "name": "fhir_path",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "POST /fhir-provider/{fhir_provider_id}/fhir": {
+      "httpMethod": "POST",
+      "httpPath": "/fhir-provider/{fhir_provider_id}/fhir",
+      "request": {
+        "body": {
+          "resourceType": "Bundle",
+          "type": "transaction",
+          "entry": [
+            {
+              "request": {
+                "method": "POST",
+                "url": "Patient"
+              },
+              "resource": {
+                "resourceType": "Patient",
+                "name": [
+                  {
+                    "family": "Doe",
+                    "given": [
+                      "John"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "request": {
+                "method": "POST",
+                "url": "Observation"
+              },
+              "resource": {
+                "resourceType": "Observation",
+                "status": "final",
+                "subject": {
+                  "reference": "Patient/123"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "response": {
+        "body": {
+          "resourceType": "Bundle",
+          "type": "transaction-response",
+          "entry": [
+            {
+              "response": {
+                "status": "201 Created",
+                "location": "Patient/456"
+              },
+              "resource": {
+                "resourceType": "Patient",
+                "id": "456"
+              }
+            }
+          ]
+        }
+      },
+      "render": {
+        "callTemplate": "client.fhir().executeBundle({{fhir_provider_id}}, {{__body__}})",
+        "params": [
+          {
+            "name": "fhir_provider_id",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "",
+              "fieldTemplate": "{{value}}",
+              "kind": "object",
+              "required": true,
+              "passthroughBody": true
+            }
+          ]
+        }
+      }
+    },
     "POST /fhir-provider": {
       "httpMethod": "POST",
       "httpPath": "/fhir-provider",
@@ -2361,9 +2485,10 @@
           "provider": "epic",
           "base_url": "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4",
           "auth": {
+            "auth_method": "client_secret",
             "client_id": "your-client-id",
             "client_secret": "your-client-secret",
-            "auth_method": "client_secret"
+            "role": "read"
           }
         }
       },
@@ -2384,32 +2509,6 @@
                 "is_active_auth_config": true,
                 "created_at": "2024-01-15T10:30:00Z",
                 "updated_at": "2024-01-15T10:30:00Z",
-                "public_key_cert_pem": "-----BEGIN CERTIFICATE-----\n...",
-                "json_web_key": {
-                  "kty": "RSA",
-                  "use": "sig",
-                  "kid": "FHIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0vx7agoeb",
-                  "alg": "RS384",
-                  "n": "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbIS",
-                  "e": "AQAB"
-                },
-                "credential_expiry": "2024-12-31T23:59:59Z",
-                "smart_configuration": {
-                  "authorization_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize",
-                  "token_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token",
-                  "issuer": "https://fhir.epic.com/interconnect-fhir-oauth",
-                  "jwks_uri": "https://fhir.epic.com/interconnect-fhir-oauth/.well-known/jwks",
-                  "scopes_supported": [
-                    "patient/*.read",
-                    "system/*.read"
-                  ]
-                },
-                "service_account_metadata": {
-                  "type": "service_account",
-                  "project_id": "my-gcp-project",
-                  "client_email": "service-account@my-gcp-project.iam.gserviceaccount.com",
-                  "client_id": "123456789012345678901"
-                },
                 "scopes": "system/Patient.read system/Observation.read",
                 "client_id": "your-client-id"
               }
@@ -2436,30 +2535,30 @@
               "kind": "enum",
               "required": true,
               "enumValues": [
-                "hapi",
-                "epic",
-                "meditech",
-                "phenostore",
-                "cerner",
                 "athenahealth",
                 "canvas",
+                "cerner",
                 "elation",
-                "sandbox",
+                "epic",
                 "google_healthcare",
-                "medplum"
+                "hapi",
+                "meditech",
+                "medplum",
+                "phenostore",
+                "sandbox"
               ],
               "enumConstants": {
-                "hapi": "Provider.HAPI",
-                "epic": "Provider.EPIC",
-                "meditech": "Provider.MEDITECH",
-                "phenostore": "Provider.PHENOSTORE",
-                "cerner": "Provider.CERNER",
                 "athenahealth": "Provider.ATHENAHEALTH",
                 "canvas": "Provider.CANVAS",
+                "cerner": "Provider.CERNER",
                 "elation": "Provider.ELATION",
-                "sandbox": "Provider.SANDBOX",
+                "epic": "Provider.EPIC",
                 "google_healthcare": "Provider.GOOGLE_HEALTHCARE",
-                "medplum": "Provider.MEDPLUM"
+                "hapi": "Provider.HAPI",
+                "meditech": "Provider.MEDITECH",
+                "medplum": "Provider.MEDPLUM",
+                "phenostore": "Provider.PHENOSTORE",
+                "sandbox": "Provider.SANDBOX"
               }
             },
             {
@@ -2472,19 +2571,7 @@
               "jsonKey": "auth",
               "fieldTemplate": ".auth({{value}})",
               "kind": "object",
-              "required": true,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  }
-                ],
-                "wrap": "FhirProviderCreateRequestAuth.builder(){{__body__}}.build()"
-              }
+              "required": true
             },
             {
               "jsonKey": "description",
@@ -2520,32 +2607,6 @@
                   "is_active_auth_config": true,
                   "created_at": "2024-01-15T10:30:00Z",
                   "updated_at": "2024-01-15T10:30:00Z",
-                  "public_key_cert_pem": "-----BEGIN CERTIFICATE-----\n...",
-                  "json_web_key": {
-                    "kty": "RSA",
-                    "use": "sig",
-                    "kid": "FHIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0vx7agoeb",
-                    "alg": "RS384",
-                    "n": "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbIS",
-                    "e": "AQAB"
-                  },
-                  "credential_expiry": "2024-12-31T23:59:59Z",
-                  "smart_configuration": {
-                    "authorization_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize",
-                    "token_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token",
-                    "issuer": "https://fhir.epic.com/interconnect-fhir-oauth",
-                    "jwks_uri": "https://fhir.epic.com/interconnect-fhir-oauth/.well-known/jwks",
-                    "scopes_supported": [
-                      "patient/*.read",
-                      "system/*.read"
-                    ]
-                  },
-                  "service_account_metadata": {
-                    "type": "service_account",
-                    "project_id": "my-gcp-project",
-                    "client_email": "service-account@my-gcp-project.iam.gserviceaccount.com",
-                    "client_id": "123456789012345678901"
-                  },
                   "scopes": "system/Patient.read system/Observation.read",
                   "client_id": "your-client-id"
                 }
@@ -2589,32 +2650,6 @@
                 "is_active_auth_config": true,
                 "created_at": "2024-01-15T10:30:00Z",
                 "updated_at": "2024-01-15T14:45:00Z",
-                "public_key_cert_pem": "-----BEGIN CERTIFICATE-----\n...",
-                "json_web_key": {
-                  "kty": "RSA",
-                  "use": "sig",
-                  "kid": "FHIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0vx7agoeb",
-                  "alg": "RS384",
-                  "n": "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbIS",
-                  "e": "AQAB"
-                },
-                "credential_expiry": "2024-12-31T23:59:59Z",
-                "smart_configuration": {
-                  "authorization_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize",
-                  "token_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token",
-                  "issuer": "https://fhir.epic.com/interconnect-fhir-oauth",
-                  "jwks_uri": "https://fhir.epic.com/interconnect-fhir-oauth/.well-known/jwks",
-                  "scopes_supported": [
-                    "patient/*.read",
-                    "system/*.read"
-                  ]
-                },
-                "service_account_metadata": {
-                  "type": "service_account",
-                  "project_id": "my-gcp-project",
-                  "client_email": "service-account@my-gcp-project.iam.gserviceaccount.com",
-                  "client_id": "123456789012345678901"
-                },
                 "scopes": "system/Patient.read system/Observation.read",
                 "client_id": "your-client-id"
               }
@@ -2660,9 +2695,10 @@
       "httpPath": "/fhir-provider/{fhir_provider_id}/add-auth-config",
       "request": {
         "body": {
-          "client_id": "your-client-id",
-          "client_secret": "your-client-secret",
-          "auth_method": "client_secret"
+          "auth_method": "client_secret",
+          "client_id": "your-other-client-id",
+          "client_secret": "your-other-client-secret",
+          "role": "read"
         }
       },
       "response": {
@@ -2682,32 +2718,6 @@
                 "is_active_auth_config": true,
                 "created_at": "2024-01-15T10:30:00Z",
                 "updated_at": "2024-01-15T14:45:00Z",
-                "public_key_cert_pem": "-----BEGIN CERTIFICATE-----\n...",
-                "json_web_key": {
-                  "kty": "RSA",
-                  "use": "sig",
-                  "kid": "FHIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0vx7agoeb",
-                  "alg": "RS384",
-                  "n": "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbIS",
-                  "e": "AQAB"
-                },
-                "credential_expiry": "2024-12-31T23:59:59Z",
-                "smart_configuration": {
-                  "authorization_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize",
-                  "token_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token",
-                  "issuer": "https://fhir.epic.com/interconnect-fhir-oauth",
-                  "jwks_uri": "https://fhir.epic.com/interconnect-fhir-oauth/.well-known/jwks",
-                  "scopes_supported": [
-                    "patient/*.read",
-                    "system/*.read"
-                  ]
-                },
-                "service_account_metadata": {
-                  "type": "service_account",
-                  "project_id": "my-gcp-project",
-                  "client_email": "service-account@my-gcp-project.iam.gserviceaccount.com",
-                  "client_id": "123456789012345678901"
-                },
                 "scopes": "system/Patient.read system/Observation.read",
                 "client_id": "your-client-id"
               },
@@ -2717,32 +2727,6 @@
                 "is_active_auth_config": false,
                 "created_at": "2024-02-20T09:00:00Z",
                 "updated_at": "2024-02-20T09:00:00Z",
-                "public_key_cert_pem": "-----BEGIN CERTIFICATE-----\n...",
-                "json_web_key": {
-                  "kty": "RSA",
-                  "use": "sig",
-                  "kid": "FHIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0vx7agoeb",
-                  "alg": "RS384",
-                  "n": "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbIS",
-                  "e": "AQAB"
-                },
-                "credential_expiry": "2024-12-31T23:59:59Z",
-                "smart_configuration": {
-                  "authorization_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize",
-                  "token_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token",
-                  "issuer": "https://fhir.epic.com/interconnect-fhir-oauth",
-                  "jwks_uri": "https://fhir.epic.com/interconnect-fhir-oauth/.well-known/jwks",
-                  "scopes_supported": [
-                    "patient/*.read",
-                    "system/*.read"
-                  ]
-                },
-                "service_account_metadata": {
-                  "type": "service_account",
-                  "project_id": "my-gcp-project",
-                  "client_email": "service-account@my-gcp-project.iam.gserviceaccount.com",
-                  "client_id": "123456789012345678901"
-                },
                 "scopes": "system/Patient.read",
                 "client_id": "your-other-client-id"
               }
@@ -2752,7 +2736,7 @@
         }
       },
       "render": {
-        "callTemplate": "client.fhirProvider().addAuthConfig({{fhir_provider_id}}, {{__body__}})",
+        "callTemplate": "client.fhirProvider().authConfig().add({{fhir_provider_id}}, {{__body__}})",
         "params": [
           {
             "name": "fhir_provider_id",
@@ -2798,32 +2782,6 @@
                 "is_active_auth_config": false,
                 "created_at": "2024-01-15T10:30:00Z",
                 "updated_at": "2024-02-20T11:00:00Z",
-                "public_key_cert_pem": "-----BEGIN CERTIFICATE-----\n...",
-                "json_web_key": {
-                  "kty": "RSA",
-                  "use": "sig",
-                  "kid": "FHIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0vx7agoeb",
-                  "alg": "RS384",
-                  "n": "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbIS",
-                  "e": "AQAB"
-                },
-                "credential_expiry": "2024-12-31T23:59:59Z",
-                "smart_configuration": {
-                  "authorization_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize",
-                  "token_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token",
-                  "issuer": "https://fhir.epic.com/interconnect-fhir-oauth",
-                  "jwks_uri": "https://fhir.epic.com/interconnect-fhir-oauth/.well-known/jwks",
-                  "scopes_supported": [
-                    "patient/*.read",
-                    "system/*.read"
-                  ]
-                },
-                "service_account_metadata": {
-                  "type": "service_account",
-                  "project_id": "my-gcp-project",
-                  "client_email": "service-account@my-gcp-project.iam.gserviceaccount.com",
-                  "client_id": "123456789012345678901"
-                },
                 "scopes": "system/Patient.read system/Observation.read",
                 "client_id": "your-client-id"
               },
@@ -2833,32 +2791,6 @@
                 "is_active_auth_config": true,
                 "created_at": "2024-02-20T09:00:00Z",
                 "updated_at": "2024-02-20T11:00:00Z",
-                "public_key_cert_pem": "-----BEGIN CERTIFICATE-----\n...",
-                "json_web_key": {
-                  "kty": "RSA",
-                  "use": "sig",
-                  "kid": "FHIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0vx7agoeb",
-                  "alg": "RS384",
-                  "n": "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbIS",
-                  "e": "AQAB"
-                },
-                "credential_expiry": "2024-12-31T23:59:59Z",
-                "smart_configuration": {
-                  "authorization_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize",
-                  "token_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token",
-                  "issuer": "https://fhir.epic.com/interconnect-fhir-oauth",
-                  "jwks_uri": "https://fhir.epic.com/interconnect-fhir-oauth/.well-known/jwks",
-                  "scopes_supported": [
-                    "patient/*.read",
-                    "system/*.read"
-                  ]
-                },
-                "service_account_metadata": {
-                  "type": "service_account",
-                  "project_id": "my-gcp-project",
-                  "client_email": "service-account@my-gcp-project.iam.gserviceaccount.com",
-                  "client_id": "123456789012345678901"
-                },
                 "scopes": "system/Patient.read",
                 "client_id": "your-other-client-id"
               }
@@ -2868,7 +2800,7 @@
         }
       },
       "render": {
-        "callTemplate": "client.fhirProvider().setActiveAuthConfig({{fhir_provider_id}}, FhirProviderSetActiveAuthConfigRequest.builder(){{__body__}}.build())",
+        "callTemplate": "client.fhirProvider().authConfig().setActive({{fhir_provider_id}}, FhirProviderSetActiveAuthConfigRequest.builder(){{__body__}}.build())",
         "params": [
           {
             "name": "fhir_provider_id",
@@ -2913,32 +2845,6 @@
                 "is_active_auth_config": true,
                 "created_at": "2024-01-15T10:30:00Z",
                 "updated_at": "2024-01-15T10:30:00Z",
-                "public_key_cert_pem": "-----BEGIN CERTIFICATE-----\n...",
-                "json_web_key": {
-                  "kty": "RSA",
-                  "use": "sig",
-                  "kid": "FHIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0vx7agoeb",
-                  "alg": "RS384",
-                  "n": "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbIS",
-                  "e": "AQAB"
-                },
-                "credential_expiry": "2024-12-31T23:59:59Z",
-                "smart_configuration": {
-                  "authorization_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize",
-                  "token_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token",
-                  "issuer": "https://fhir.epic.com/interconnect-fhir-oauth",
-                  "jwks_uri": "https://fhir.epic.com/interconnect-fhir-oauth/.well-known/jwks",
-                  "scopes_supported": [
-                    "patient/*.read",
-                    "system/*.read"
-                  ]
-                },
-                "service_account_metadata": {
-                  "type": "service_account",
-                  "project_id": "my-gcp-project",
-                  "client_email": "service-account@my-gcp-project.iam.gserviceaccount.com",
-                  "client_id": "123456789012345678901"
-                },
                 "scopes": "system/Patient.read system/Observation.read",
                 "client_id": "your-client-id"
               }
@@ -2948,7 +2854,7 @@
         }
       },
       "render": {
-        "callTemplate": "client.fhirProvider().removeAuthConfig({{fhir_provider_id}}, FhirProviderRemoveAuthConfigRequest.builder(){{__body__}}.build())",
+        "callTemplate": "client.fhirProvider().authConfig().remove({{fhir_provider_id}}, FhirProviderRemoveAuthConfigRequest.builder(){{__body__}}.build())",
         "params": [
           {
             "name": "fhir_provider_id",
@@ -2968,576 +2874,51 @@
         }
       }
     },
-    "GET /fhir-provider/{fhir_provider_id}/fhir/{fhir_path}": {
-      "httpMethod": "GET",
-      "httpPath": "/fhir-provider/{fhir_provider_id}/fhir/{fhir_path}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "resourceType": "Bundle",
-          "total": 2,
-          "entry": [
-            {
-              "resource": {
-                "resourceType": "Patient",
-                "id": "123",
-                "name": [
-                  {
-                    "family": "Doe",
-                    "given": [
-                      "John"
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.fhir().search({{fhir_provider_id}}, {{fhir_path}}, SearchRequest.builder(){{__body__}}.build())",
-        "params": [
-          {
-            "name": "fhir_provider_id",
-            "kind": "string"
-          },
-          {
-            "name": "fhir_path",
-            "kind": "string"
-          }
-        ],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "query_parameters",
-              "fieldTemplate": ".queryParameters({{value}})",
-              "kind": "object",
-              "required": false
-            }
-          ]
-        }
-      }
-    },
-    "POST /fhir-provider/{fhir_provider_id}/fhir/{fhir_path}": {
+    "POST /cohort": {
       "httpMethod": "POST",
-      "httpPath": "/fhir-provider/{fhir_provider_id}/fhir/{fhir_path}",
+      "httpPath": "/cohort",
       "request": {
         "body": {
-          "resourceType": "Patient"
+          "text": "female patients over 65 with diabetes but not hypertension"
         }
       },
       "response": {
         "body": {
-          "resourceType": "Patient",
-          "id": "456",
-          "meta": {
-            "versionId": "1",
-            "lastUpdated": "2024-01-15T10:30:00Z",
-            "profile": [
-              "profile"
-            ]
-          }
-        }
-      },
-      "render": {
-        "callTemplate": "client.fhir().create({{fhir_provider_id}}, {{fhir_path}}, CreateRequest.builder(){{__body__}}.build())",
-        "params": [
-          {
-            "name": "fhir_provider_id",
-            "kind": "string"
-          },
-          {
-            "name": "fhir_path",
-            "kind": "string"
-          }
-        ],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
+          "success": true,
+          "message": "Cohort analysis completed successfully. Generated 3 search queries from 3 concepts.",
+          "queries": [
             {
-              "jsonKey": "body",
-              "fieldTemplate": ".body({{value}})",
-              "kind": "object",
-              "required": true,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "resourceType",
-                    "fieldTemplate": ".resourceType({{value}})",
-                    "kind": "string",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "id",
-                    "fieldTemplate": ".id({{value}})",
-                    "kind": "string",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "meta",
-                    "fieldTemplate": ".meta({{value}})",
-                    "kind": "object",
-                    "required": false,
-                    "nested": {
-                      "fieldSeparator": "",
-                      "fields": [
-                        {
-                          "jsonKey": "versionId",
-                          "fieldTemplate": ".versionId({{value}})",
-                          "kind": "string",
-                          "required": false
-                        },
-                        {
-                          "jsonKey": "lastUpdated",
-                          "fieldTemplate": ".lastUpdated({{value}})",
-                          "kind": "string",
-                          "required": false
-                        },
-                        {
-                          "jsonKey": "profile",
-                          "fieldTemplate": ".profile({{value}})",
-                          "kind": "list",
-                          "required": false,
-                          "items": {
-                            "jsonKey": "",
-                            "fieldTemplate": "{{value}}",
-                            "kind": "string",
-                            "required": true
-                          }
-                        }
-                      ],
-                      "wrap": "FhirResourceMeta.builder(){{__body__}}.build()"
-                    }
-                  }
-                ],
-                "wrap": "FhirResource.builder(){{__body__}}.build()"
-              },
-              "passthroughBody": true
-            }
-          ]
-        }
-      }
-    },
-    "PUT /fhir-provider/{fhir_provider_id}/fhir/{fhir_path}": {
-      "httpMethod": "PUT",
-      "httpPath": "/fhir-provider/{fhir_provider_id}/fhir/{fhir_path}",
-      "request": {
-        "body": {
-          "resourceType": "Patient",
-          "id": "123"
-        }
-      },
-      "response": {
-        "body": {
-          "resourceType": "Patient",
-          "id": "123",
-          "meta": {
-            "versionId": "2",
-            "lastUpdated": "2024-02-20T11:00:00Z",
-            "profile": [
-              "profile"
-            ]
-          }
-        }
-      },
-      "render": {
-        "callTemplate": "client.fhir().upsert({{fhir_provider_id}}, {{fhir_path}}, UpsertRequest.builder(){{__body__}}.build())",
-        "params": [
-          {
-            "name": "fhir_provider_id",
-            "kind": "string"
-          },
-          {
-            "name": "fhir_path",
-            "kind": "string"
-          }
-        ],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "body",
-              "fieldTemplate": ".body({{value}})",
-              "kind": "object",
-              "required": true,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "resourceType",
-                    "fieldTemplate": ".resourceType({{value}})",
-                    "kind": "string",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "id",
-                    "fieldTemplate": ".id({{value}})",
-                    "kind": "string",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "meta",
-                    "fieldTemplate": ".meta({{value}})",
-                    "kind": "object",
-                    "required": false,
-                    "nested": {
-                      "fieldSeparator": "",
-                      "fields": [
-                        {
-                          "jsonKey": "versionId",
-                          "fieldTemplate": ".versionId({{value}})",
-                          "kind": "string",
-                          "required": false
-                        },
-                        {
-                          "jsonKey": "lastUpdated",
-                          "fieldTemplate": ".lastUpdated({{value}})",
-                          "kind": "string",
-                          "required": false
-                        },
-                        {
-                          "jsonKey": "profile",
-                          "fieldTemplate": ".profile({{value}})",
-                          "kind": "list",
-                          "required": false,
-                          "items": {
-                            "jsonKey": "",
-                            "fieldTemplate": "{{value}}",
-                            "kind": "string",
-                            "required": true
-                          }
-                        }
-                      ],
-                      "wrap": "FhirResourceMeta.builder(){{__body__}}.build()"
-                    }
-                  }
-                ],
-                "wrap": "FhirResource.builder(){{__body__}}.build()"
-              },
-              "passthroughBody": true
-            }
-          ]
-        }
-      }
-    },
-    "DELETE /fhir-provider/{fhir_provider_id}/fhir/{fhir_path}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/fhir-provider/{fhir_provider_id}/fhir/{fhir_path}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "resourceType": "OperationOutcome",
-          "issue": [
-            {
-              "severity": "information",
-              "code": "informational",
-              "details": {
-                "text": "Resource deleted successfully"
-              }
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.fhir().delete({{fhir_provider_id}}, {{fhir_path}}, DeleteRequest.builder(){{__body__}}.build())",
-        "params": [
-          {
-            "name": "fhir_provider_id",
-            "kind": "string"
-          },
-          {
-            "name": "fhir_path",
-            "kind": "string"
-          }
-        ],
-        "body": {
-          "fieldSeparator": "",
-          "fields": []
-        }
-      }
-    },
-    "PATCH /fhir-provider/{fhir_provider_id}/fhir/{fhir_path}": {
-      "httpMethod": "PATCH",
-      "httpPath": "/fhir-provider/{fhir_provider_id}/fhir/{fhir_path}",
-      "request": {
-        "body": [
-          {
-            "op": "replace",
-            "path": "/name/0/family",
-            "value": "NewFamilyName"
-          }
-        ]
-      },
-      "response": {
-        "body": {
-          "resourceType": "Patient",
-          "id": "123",
-          "meta": {
-            "versionId": "3",
-            "lastUpdated": "2024-02-20T11:30:00Z",
-            "profile": [
-              "profile"
-            ]
-          }
-        }
-      },
-      "render": {
-        "callTemplate": "client.fhir().patch({{fhir_provider_id}}, {{fhir_path}}, PatchRequest.builder(){{__body__}}.build())",
-        "params": [
-          {
-            "name": "fhir_provider_id",
-            "kind": "string"
-          },
-          {
-            "name": "fhir_path",
-            "kind": "string"
-          }
-        ],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "body",
-              "fieldTemplate": ".body({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "object",
-                "required": true,
-                "nested": {
-                  "fieldSeparator": "",
-                  "fields": [
-                    {
-                      "jsonKey": "op",
-                      "fieldTemplate": ".op({{value}})",
-                      "kind": "enum",
-                      "required": true,
-                      "enumValues": [
-                        "add",
-                        "remove",
-                        "replace",
-                        "move",
-                        "test",
-                        "copy"
-                      ],
-                      "enumConstants": {
-                        "add": "PatchRequestBodyItemOp.ADD",
-                        "remove": "PatchRequestBodyItemOp.REMOVE",
-                        "replace": "PatchRequestBodyItemOp.REPLACE",
-                        "move": "PatchRequestBodyItemOp.MOVE",
-                        "test": "PatchRequestBodyItemOp.TEST",
-                        "copy": "PatchRequestBodyItemOp.COPY"
-                      }
-                    },
-                    {
-                      "jsonKey": "path",
-                      "fieldTemplate": ".path({{value}})",
-                      "kind": "string",
-                      "required": true
-                    },
-                    {
-                      "jsonKey": "value",
-                      "fieldTemplate": ".value({{value}})",
-                      "kind": "object",
-                      "required": false
-                    },
-                    {
-                      "jsonKey": "from",
-                      "fieldTemplate": ".from({{value}})",
-                      "kind": "string",
-                      "required": false
-                    }
-                  ],
-                  "wrap": "PatchRequestBodyItem.builder(){{__body__}}.build()"
-                }
-              },
-              "passthroughBody": true
-            }
-          ]
-        }
-      }
-    },
-    "POST /fhir-provider/{fhir_provider_id}/fhir": {
-      "httpMethod": "POST",
-      "httpPath": "/fhir-provider/{fhir_provider_id}/fhir",
-      "request": {
-        "body": {
-          "resourceType": "Bundle",
-          "entry": [
-            {
-              "resource": {
-                "resourceType": "Patient",
-                "name": [
-                  {
-                    "family": "Doe",
-                    "given": [
-                      "John"
-                    ]
-                  }
-                ]
-              },
-              "request": {
-                "method": "POST",
-                "url": "Patient"
-              }
+              "resource_type": "Patient",
+              "search_params": "gender=female&birthdate=le1959-01-01",
+              "concept": "female patients over 65",
+              "exclude": false
             },
             {
-              "resource": {
-                "resourceType": "Observation",
-                "status": "final",
-                "subject": {
-                  "reference": "Patient/123"
-                }
-              },
-              "request": {
-                "method": "POST",
-                "url": "Observation"
-              }
-            }
-          ]
-        }
-      },
-      "response": {
-        "body": {
-          "resourceType": "Bundle",
-          "total": 1,
-          "entry": [
+              "resource_type": "Condition",
+              "search_params": "code=44054006",
+              "concept": "diabetes",
+              "exclude": false
+            },
             {
-              "resource": {
-                "resourceType": "Patient",
-                "id": "456"
-              },
-              "response": {
-                "status": "201 Created",
-                "location": "Patient/456"
-              }
+              "resource_type": "Condition",
+              "search_params": "code=38341003",
+              "concept": "hypertension",
+              "exclude": true
             }
           ]
         }
       },
       "render": {
-        "callTemplate": "client.fhir().executeBundle({{fhir_provider_id}}, ExecuteBundleRequest.builder(){{__body__}}.build())",
-        "params": [
-          {
-            "name": "fhir_provider_id",
-            "kind": "string"
-          }
-        ],
+        "callTemplate": "client.cohort().analyze(CohortRequest.builder(){{__body__}}.build())",
+        "params": [],
         "body": {
           "fieldSeparator": "",
           "fields": [
             {
-              "jsonKey": "body",
-              "fieldTemplate": ".body({{value}})",
-              "kind": "object",
-              "required": true,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "total",
-                    "fieldTemplate": ".total({{value}})",
-                    "kind": "number",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "entry",
-                    "fieldTemplate": ".entry({{value}})",
-                    "kind": "list",
-                    "required": false,
-                    "items": {
-                      "jsonKey": "",
-                      "fieldTemplate": "{{value}}",
-                      "kind": "object",
-                      "required": true,
-                      "nested": {
-                        "fieldSeparator": "",
-                        "fields": [
-                          {
-                            "jsonKey": "resource",
-                            "fieldTemplate": ".resource({{value}})",
-                            "kind": "object",
-                            "required": false
-                          },
-                          {
-                            "jsonKey": "request",
-                            "fieldTemplate": ".request({{value}})",
-                            "kind": "object",
-                            "required": false,
-                            "nested": {
-                              "fieldSeparator": "",
-                              "fields": [
-                                {
-                                  "jsonKey": "method",
-                                  "fieldTemplate": ".method({{value}})",
-                                  "kind": "enum",
-                                  "required": false,
-                                  "enumValues": [
-                                    "GET",
-                                    "PUT",
-                                    "PATCH",
-                                    "DELETE",
-                                    "POST"
-                                  ],
-                                  "enumConstants": {
-                                    "GET": "FhirBundleEntryItemRequestMethod.GET",
-                                    "PUT": "FhirBundleEntryItemRequestMethod.PUT",
-                                    "PATCH": "FhirBundleEntryItemRequestMethod.PATCH",
-                                    "DELETE": "FhirBundleEntryItemRequestMethod.DELETE",
-                                    "POST": "FhirBundleEntryItemRequestMethod.POST"
-                                  }
-                                },
-                                {
-                                  "jsonKey": "url",
-                                  "fieldTemplate": ".url({{value}})",
-                                  "kind": "string",
-                                  "required": false
-                                }
-                              ],
-                              "wrap": "FhirBundleEntryItemRequest.builder(){{__body__}}.build()"
-                            }
-                          },
-                          {
-                            "jsonKey": "response",
-                            "fieldTemplate": ".response({{value}})",
-                            "kind": "object",
-                            "required": false,
-                            "nested": {
-                              "fieldSeparator": "",
-                              "fields": [
-                                {
-                                  "jsonKey": "status",
-                                  "fieldTemplate": ".status({{value}})",
-                                  "kind": "string",
-                                  "required": false
-                                },
-                                {
-                                  "jsonKey": "location",
-                                  "fieldTemplate": ".location({{value}})",
-                                  "kind": "string",
-                                  "required": false
-                                }
-                              ],
-                              "wrap": "FhirBundleEntryItemResponse.builder(){{__body__}}.build()"
-                            }
-                          }
-                        ],
-                        "wrap": "FhirBundleEntryItem.builder(){{__body__}}.build()"
-                      }
-                    }
-                  }
-                ],
-                "wrap": "FhirBundle.builder(){{__body__}}.build()"
-              },
-              "passthroughBody": true
+              "jsonKey": "text",
+              "fieldTemplate": ".text({{value}})",
+              "kind": "string",
+              "required": true
             }
           ]
         }
@@ -3548,9 +2929,9 @@
       "httpPath": "/lang2fhir/create",
       "request": {
         "body": {
+          "text": "Patient has severe persistent asthma with acute exacerbation",
           "version": "R4",
-          "resource": "condition-encounter-diagnosis",
-          "text": "Patient has severe persistent asthma with acute exacerbation"
+          "resource": "condition-encounter-diagnosis"
         }
       },
       "response": {
@@ -3603,43 +2984,24 @@
               "kind": "enum",
               "required": true,
               "enumValues": [
+                "auto",
+                "appointment",
+                "condition-encounter-diagnosis",
                 "medicationrequest",
-                "vital-signs",
-                "simple-observation",
-                "questionnaire",
-                "observation-lab",
-                "questionnaireresponse",
+                "careplan",
+                "condition-problems-health-concerns",
+                "coverage",
                 "encounter",
                 "observation-clinical-result",
-                "careplan",
-                "servicerequest",
-                "coverage",
-                "auto",
-                "condition-encounter-diagnosis",
-                "condition-problems-health-concerns",
-                "appointment",
+                "observation-lab",
                 "patient",
-                "procedure"
-              ],
-              "enumConstants": {
-                "medicationrequest": "CreateRequestResource.MEDICATIONREQUEST",
-                "vital-signs": "CreateRequestResource.VITAL_SIGNS",
-                "simple-observation": "CreateRequestResource.SIMPLE_OBSERVATION",
-                "questionnaire": "CreateRequestResource.QUESTIONNAIRE",
-                "observation-lab": "CreateRequestResource.OBSERVATION_LAB",
-                "questionnaireresponse": "CreateRequestResource.QUESTIONNAIRERESPONSE",
-                "encounter": "CreateRequestResource.ENCOUNTER",
-                "observation-clinical-result": "CreateRequestResource.OBSERVATION_CLINICAL_RESULT",
-                "careplan": "CreateRequestResource.CAREPLAN",
-                "servicerequest": "CreateRequestResource.SERVICEREQUEST",
-                "coverage": "CreateRequestResource.COVERAGE",
-                "auto": "CreateRequestResource.AUTO",
-                "condition-encounter-diagnosis": "CreateRequestResource.CONDITION_ENCOUNTER_DIAGNOSIS",
-                "condition-problems-health-concerns": "CreateRequestResource.CONDITION_PROBLEMS_HEALTH_CONCERNS",
-                "appointment": "CreateRequestResource.APPOINTMENT",
-                "patient": "CreateRequestResource.PATIENT",
-                "procedure": "CreateRequestResource.PROCEDURE"
-              }
+                "procedure",
+                "questionnaire",
+                "questionnaireresponse",
+                "servicerequest",
+                "simple-observation",
+                "vital-signs"
+              ]
             },
             {
               "jsonKey": "text",
@@ -3714,22 +3076,6 @@
                 }
               }
             ]
-          },
-          "resources": [
-            {
-              "tempId": "urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8",
-              "resourceType": "Patient",
-              "description": "John Smith (DOB 1980-05-12) was diagnosed with Type 2 Diabetes during office visit on 2025-03-01 with Dr. Chen",
-              "originalText": "diagnosed with Type 2 Diabetes"
-            }
-          ],
-          "validation": {
-            "passes": [
-              {}
-            ],
-            "fixed": true,
-            "attempts": 1,
-            "summary": "summary"
           }
         }
       },
@@ -3769,13 +3115,9 @@
               "kind": "enum",
               "required": false,
               "enumValues": [
-                "deep",
-                "standard"
-              ],
-              "enumConstants": {
-                "deep": "CreateMultiRequestDetectionEffort.DEEP",
-                "standard": "CreateMultiRequestDetectionEffort.STANDARD"
-              }
+                "standard",
+                "deep"
+              ]
             },
             {
               "jsonKey": "validation_method",
@@ -3783,15 +3125,10 @@
               "kind": "enum",
               "required": false,
               "enumValues": [
+                "none",
                 "check",
-                "fix",
-                "none"
-              ],
-              "enumConstants": {
-                "check": "CreateMultiRequestValidationMethod.CHECK",
-                "fix": "CreateMultiRequestValidationMethod.FIX",
-                "none": "CreateMultiRequestValidationMethod.NONE"
-              }
+                "fix"
+              ]
             }
           ]
         }
@@ -3807,7 +3144,7 @@
       },
       "response": {
         "body": {
-          "resource_type": "AllergyIntolerance",
+          "resource_type": "Appointment",
           "search_params": "date=ge2025-03-02&date=le2025-03-09"
         }
       },
@@ -3855,7 +3192,7 @@
               "jsonKey": "profile",
               "fieldTemplate": ".profile({{value}})",
               "kind": "string",
-              "required": false
+              "required": true
             },
             {
               "jsonKey": "implementation_guide",
@@ -4051,21 +3388,6 @@
               "description": "Metformin 500mg prescription",
               "originalText": "Prescribed Metformin 500mg"
             }
-          ],
-          "validation": {
-            "passes": [
-              {}
-            ],
-            "fixed": true,
-            "attempts": 1,
-            "summary": "summary"
-          },
-          "page_classifications": [
-            {
-              "page_number": 1,
-              "include": true,
-              "reason": "clinical notes with diagnoses"
-            }
           ]
         }
       },
@@ -4105,13 +3427,9 @@
               "kind": "enum",
               "required": false,
               "enumValues": [
-                "deep",
-                "standard"
-              ],
-              "enumConstants": {
-                "deep": "DocumentMultiRequestDetectionEffort.DEEP",
-                "standard": "DocumentMultiRequestDetectionEffort.STANDARD"
-              }
+                "standard",
+                "deep"
+              ]
             },
             {
               "jsonKey": "validation_method",
@@ -4119,15 +3437,10 @@
               "kind": "enum",
               "required": false,
               "enumValues": [
+                "none",
                 "check",
-                "fix",
-                "none"
-              ],
-              "enumConstants": {
-                "check": "DocumentMultiRequestValidationMethod.CHECK",
-                "fix": "DocumentMultiRequestValidationMethod.FIX",
-                "none": "DocumentMultiRequestValidationMethod.NONE"
-              }
+                "fix"
+              ]
             },
             {
               "jsonKey": "config",
@@ -4176,7 +3489,6 @@
             {
               "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
               "name": "Discharge Summary",
-              "description": "description",
               "template": "Patient <<Patient.name[0].text>>, age <<Patient.birthDate|age>>, was admitted on <<Encounter[0].period.start>> with <<Condition[0].code.coding[0].display>>.",
               "target_resources": [
                 "Patient",
@@ -4184,9 +3496,6 @@
                 "MedicationRequest"
               ],
               "mode": "narrative",
-              "metadata": {
-                "key": "value"
-              },
               "created_at": "2024-01-15T10:30:00Z",
               "updated_at": "2024-01-15T10:30:00Z"
             }
@@ -4221,7 +3530,6 @@
           "template": {
             "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
             "name": "Discharge Summary",
-            "description": "description",
             "template": "Patient <<Patient.name[0].text>>, age <<Patient.birthDate|age>>, was admitted on <<Encounter[0].period.start>> with <<Condition[0].code.coding[0].display>>. Discharged on <<Encounter[0].period.end>> with <<MedicationRequest[0].medicationCodeableConcept.coding[0].display>> <<MedicationRequest[0].dosageInstruction[0].text>>.",
             "target_resources": [
               "Patient",
@@ -4229,9 +3537,6 @@
               "MedicationRequest"
             ],
             "mode": "narrative",
-            "metadata": {
-              "key": "value"
-            },
             "created_at": "2024-01-15T10:30:00Z",
             "updated_at": "2024-01-15T10:30:00Z"
           }
@@ -4256,6 +3561,18 @@
               "required": true
             },
             {
+              "jsonKey": "target_resources",
+              "fieldTemplate": ".targetResources({{value}})",
+              "kind": "list",
+              "required": true,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "string",
+                "required": true
+              }
+            },
+            {
               "jsonKey": "mode",
               "fieldTemplate": ".mode({{value}})",
               "kind": "string",
@@ -4266,18 +3583,6 @@
               "fieldTemplate": ".description({{value}})",
               "kind": "string",
               "required": false
-            },
-            {
-              "jsonKey": "target_resources",
-              "fieldTemplate": ".targetResources({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
             },
             {
               "jsonKey": "example_fhir_data",
@@ -4301,7 +3606,6 @@
           "template": {
             "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
             "name": "Discharge Summary",
-            "description": "description",
             "template": "Patient <<Patient.name[0].text>>, age <<Patient.birthDate|age>>, was admitted on <<Encounter[0].period.start>> with <<Condition[0].code.coding[0].display>>.",
             "target_resources": [
               "Patient",
@@ -4309,9 +3613,6 @@
               "MedicationRequest"
             ],
             "mode": "narrative",
-            "metadata": {
-              "key": "value"
-            },
             "created_at": "2024-01-15T10:30:00Z",
             "updated_at": "2024-01-15T10:30:00Z"
           }
@@ -4349,7 +3650,6 @@
           "template": {
             "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
             "name": "Discharge Summary",
-            "description": "description",
             "template": "Patient <<Patient.name[0].text>> was discharged on <<Encounter[0].period.end>> with <<MedicationRequest[0].medicationCodeableConcept.coding[0].display>> <<MedicationRequest[0].dosageInstruction[0].text>>.",
             "target_resources": [
               "Patient",
@@ -4357,9 +3657,6 @@
               "MedicationRequest"
             ],
             "mode": "narrative",
-            "metadata": {
-              "key": "value"
-            },
             "created_at": "2024-01-15T10:30:00Z",
             "updated_at": "2024-02-20T11:00:00Z"
           }
@@ -4389,6 +3686,18 @@
               "required": true
             },
             {
+              "jsonKey": "target_resources",
+              "fieldTemplate": ".targetResources({{value}})",
+              "kind": "list",
+              "required": true,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "string",
+                "required": true
+              }
+            },
+            {
               "jsonKey": "mode",
               "fieldTemplate": ".mode({{value}})",
               "kind": "string",
@@ -4399,18 +3708,6 @@
               "fieldTemplate": ".description({{value}})",
               "kind": "string",
               "required": false
-            },
-            {
-              "jsonKey": "target_resources",
-              "fieldTemplate": ".targetResources({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
             }
           ]
         }
@@ -4480,11 +3777,8 @@
       "response": {
         "body": {
           "success": true,
-          "message": "message",
           "summary": "Patient John Doe is a 45-year-old male diagnosed with Type 2 Diabetes Mellitus on January 15, 2024. Current treatment plan includes lifestyle modifications and medication management.",
-          "warnings": [
-            "warnings"
-          ]
+          "warnings": []
         }
       },
       "render": {
@@ -4494,403 +3788,30 @@
           "fieldSeparator": "",
           "fields": [
             {
+              "jsonKey": "fhir_resources",
+              "fieldTemplate": ".fhirResources({{value}})",
+              "kind": "object",
+              "required": true
+            },
+            {
               "jsonKey": "mode",
               "fieldTemplate": ".mode({{value}})",
               "kind": "enum",
               "required": false,
               "enumValues": [
-                "flatten",
                 "narrative",
+                "flatten",
                 "ips"
-              ],
-              "enumConstants": {
-                "flatten": "CreateSummaryRequestMode.FLATTEN",
-                "narrative": "CreateSummaryRequestMode.NARRATIVE",
-                "ips": "CreateSummaryRequestMode.IPS"
-              }
+              ]
             },
             {
               "jsonKey": "template_id",
               "fieldTemplate": ".templateId({{value}})",
               "kind": "string",
               "required": false
-            },
-            {
-              "jsonKey": "fhir_resources",
-              "fieldTemplate": ".fhirResources({{value}})",
-              "kind": "object",
-              "required": false
             }
           ]
         }
-      }
-    },
-    "GET /tools/mcp-server/{mcp_server_id}/list": {
-      "httpMethod": "GET",
-      "httpPath": "/tools/mcp-server/{mcp_server_id}/list",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "MCP Server tools retrieved successfully",
-          "data": {
-            "id": "123",
-            "name": "My MCP Server Tool",
-            "description": "My MCP Server Tool is a tool that provides MCP services",
-            "input_schema": {
-              "name": "string",
-              "age": "number"
-            },
-            "mcp_server_id": "123",
-            "mcp_server_url": "https://mcp.example.com"
-          },
-          "mcp_server_tools": [
-            {
-              "id": "tool-001",
-              "name": "search_endpoints",
-              "description": "Search across the documented endpoints",
-              "input_schema": {
-                "query": "string"
-              },
-              "mcp_server_id": "123",
-              "mcp_server_url": "https://mcp.example.com"
-            },
-            {
-              "id": "tool-002",
-              "name": "get_endpoint",
-              "description": "Fetch a single endpoint by ID",
-              "input_schema": {
-                "endpoint_id": "string"
-              },
-              "mcp_server_id": "123",
-              "mcp_server_url": "https://mcp.example.com"
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().mcpServer().tools().list({{mcp_server_id}})",
-        "params": [
-          {
-            "name": "mcp_server_id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
-    "GET /tools/mcp-server/tool/{mcp_server_tool_id}": {
-      "httpMethod": "GET",
-      "httpPath": "/tools/mcp-server/tool/{mcp_server_tool_id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "MCP Server tool retrieved successfully",
-          "data": {
-            "id": "123",
-            "name": "My MCP Server Tool",
-            "description": "My MCP Server Tool is a tool that provides MCP services",
-            "input_schema": {
-              "name": "string",
-              "age": "number"
-            },
-            "mcp_server_id": "123",
-            "mcp_server_url": "https://mcp.example.com"
-          },
-          "mcp_server_tools": [
-            {
-              "id": "123",
-              "name": "My MCP Server Tool",
-              "description": "My MCP Server Tool is a tool that provides MCP services",
-              "input_schema": {
-                "name": "string",
-                "age": "number"
-              },
-              "mcp_server_id": "123",
-              "mcp_server_url": "https://mcp.example.com"
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().mcpServer().tools().get({{mcp_server_tool_id}})",
-        "params": [
-          {
-            "name": "mcp_server_tool_id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
-    "DELETE /tools/mcp-server/tool/{mcp_server_tool_id}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/tools/mcp-server/tool/{mcp_server_tool_id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "MCP Server tool deleted successfully",
-          "data": {
-            "id": "123",
-            "name": "My MCP Server Tool",
-            "description": "My MCP Server Tool is a tool that provides MCP services",
-            "input_schema": {
-              "name": "string",
-              "age": "number"
-            },
-            "mcp_server_id": "123",
-            "mcp_server_url": "https://mcp.example.com"
-          },
-          "mcp_server_tools": [
-            {
-              "id": "123",
-              "name": "My MCP Server Tool",
-              "description": "My MCP Server Tool is a tool that provides MCP services",
-              "input_schema": {
-                "name": "string",
-                "age": "number"
-              },
-              "mcp_server_id": "123",
-              "mcp_server_url": "https://mcp.example.com"
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().mcpServer().tools().delete({{mcp_server_tool_id}})",
-        "params": [
-          {
-            "name": "mcp_server_tool_id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
-    "POST /tools/mcp-server/create": {
-      "httpMethod": "POST",
-      "httpPath": "/tools/mcp-server/create",
-      "request": {
-        "body": {
-          "name": "My MCP Server",
-          "mcp_server_url": "https://mcp.example.com"
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "MCP Server and Tools created successfully",
-          "data": {
-            "id": "123",
-            "name": "My MCP Server",
-            "description": "My MCP Server is a server that provides MCP services",
-            "mcp_server_url": "https://mcp.example.com"
-          },
-          "mcp_servers": [
-            {
-              "id": "123",
-              "name": "My MCP Server",
-              "description": "My MCP Server is a server that provides MCP services",
-              "mcp_server_url": "https://mcp.example.com"
-            }
-          ],
-          "mcp_server_tools": [
-            {
-              "id": "tool-001",
-              "name": "search_endpoints",
-              "description": "Search across the documented endpoints",
-              "input_schema": {
-                "query": "string"
-              },
-              "mcp_server_id": "123",
-              "mcp_server_url": "https://mcp.example.com"
-            },
-            {
-              "id": "tool-002",
-              "name": "get_endpoint",
-              "description": "Fetch a single endpoint by ID",
-              "input_schema": {
-                "endpoint_id": "string"
-              },
-              "mcp_server_id": "123",
-              "mcp_server_url": "https://mcp.example.com"
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().mcpServer().create(McpServerCreateRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "name",
-              "fieldTemplate": ".name({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "mcp_server_url",
-              "fieldTemplate": ".mcpServerUrl({{value}})",
-              "kind": "string",
-              "required": true
-            }
-          ]
-        }
-      }
-    },
-    "GET /tools/mcp-server/list": {
-      "httpMethod": "GET",
-      "httpPath": "/tools/mcp-server/list",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "MCP Servers retrieved successfully",
-          "data": {
-            "id": "123",
-            "name": "My MCP Server",
-            "description": "My MCP Server is a server that provides MCP services",
-            "mcp_server_url": "https://mcp.example.com"
-          },
-          "mcp_servers": [
-            {
-              "id": "123",
-              "name": "My MCP Server",
-              "description": "My MCP Server is a server that provides MCP services",
-              "mcp_server_url": "https://mcp.example.com"
-            },
-            {
-              "id": "456",
-              "name": "Another MCP Server",
-              "description": "A second MCP server",
-              "mcp_server_url": "https://other.mcp.example.com"
-            }
-          ],
-          "mcp_server_tools": [
-            {
-              "id": "123",
-              "name": "My MCP Server Tool",
-              "description": "My MCP Server Tool is a tool that provides MCP services",
-              "input_schema": {
-                "name": "string",
-                "age": "number"
-              },
-              "mcp_server_id": "123",
-              "mcp_server_url": "https://mcp.example.com"
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().mcpServer().list()",
-        "params": []
-      }
-    },
-    "GET /tools/mcp-server/{mcp_server_id}": {
-      "httpMethod": "GET",
-      "httpPath": "/tools/mcp-server/{mcp_server_id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "MCP Server retrieved successfully",
-          "data": {
-            "id": "123",
-            "name": "My MCP Server",
-            "description": "My MCP Server is a server that provides MCP services",
-            "mcp_server_url": "https://mcp.example.com"
-          },
-          "mcp_servers": [
-            {
-              "id": "123",
-              "name": "My MCP Server",
-              "description": "My MCP Server is a server that provides MCP services",
-              "mcp_server_url": "https://mcp.example.com"
-            }
-          ],
-          "mcp_server_tools": [
-            {
-              "id": "123",
-              "name": "My MCP Server Tool",
-              "description": "My MCP Server Tool is a tool that provides MCP services",
-              "input_schema": {
-                "name": "string",
-                "age": "number"
-              },
-              "mcp_server_id": "123",
-              "mcp_server_url": "https://mcp.example.com"
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().mcpServer().get({{mcp_server_id}})",
-        "params": [
-          {
-            "name": "mcp_server_id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
-    "DELETE /tools/mcp-server/{mcp_server_id}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/tools/mcp-server/{mcp_server_id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "MCP Server Configuration and Tools deleted successfully",
-          "data": {
-            "id": "123",
-            "name": "My MCP Server",
-            "description": "My MCP Server is a server that provides MCP services",
-            "mcp_server_url": "https://mcp.example.com"
-          },
-          "mcp_servers": [
-            {
-              "id": "123",
-              "name": "My MCP Server",
-              "description": "My MCP Server is a server that provides MCP services",
-              "mcp_server_url": "https://mcp.example.com"
-            }
-          ],
-          "mcp_server_tools": [
-            {
-              "id": "123",
-              "name": "My MCP Server Tool",
-              "description": "My MCP Server Tool is a tool that provides MCP services",
-              "input_schema": {
-                "name": "string",
-                "age": "number"
-              },
-              "mcp_server_id": "123",
-              "mcp_server_url": "https://mcp.example.com"
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().mcpServer().delete({{mcp_server_id}})",
-        "params": [
-          {
-            "name": "mcp_server_id",
-            "kind": "string"
-          }
-        ]
       }
     },
     "POST /tools/lang2fhir-and-create": {
@@ -4905,6 +3826,9 @@
       },
       "response": {
         "body": {
+          "success": true,
+          "message": "FHIR resource created successfully",
+          "fhir_id": "condition-123",
           "fhir_resource": {
             "resourceType": "Condition",
             "id": "condition-123",
@@ -4947,10 +3871,7 @@
             "subject": {
               "reference": "Patient/patient-123"
             }
-          },
-          "fhir_id": "condition-123",
-          "success": true,
-          "message": "FHIR resource created successfully"
+          }
         }
       },
       "render": {
@@ -4965,43 +3886,24 @@
               "kind": "enum",
               "required": true,
               "enumValues": [
+                "auto",
+                "appointment",
+                "condition-encounter-diagnosis",
                 "medicationrequest",
-                "vital-signs",
-                "simple-observation",
-                "questionnaire",
-                "observation-lab",
-                "questionnaireresponse",
+                "careplan",
+                "condition-problems-health-concerns",
+                "coverage",
                 "encounter",
                 "observation-clinical-result",
-                "careplan",
-                "servicerequest",
-                "coverage",
-                "auto",
-                "condition-encounter-diagnosis",
-                "condition-problems-health-concerns",
-                "appointment",
+                "observation-lab",
                 "patient",
-                "procedure"
-              ],
-              "enumConstants": {
-                "medicationrequest": "Lang2FhirAndCreateRequestResource.MEDICATIONREQUEST",
-                "vital-signs": "Lang2FhirAndCreateRequestResource.VITAL_SIGNS",
-                "simple-observation": "Lang2FhirAndCreateRequestResource.SIMPLE_OBSERVATION",
-                "questionnaire": "Lang2FhirAndCreateRequestResource.QUESTIONNAIRE",
-                "observation-lab": "Lang2FhirAndCreateRequestResource.OBSERVATION_LAB",
-                "questionnaireresponse": "Lang2FhirAndCreateRequestResource.QUESTIONNAIRERESPONSE",
-                "encounter": "Lang2FhirAndCreateRequestResource.ENCOUNTER",
-                "observation-clinical-result": "Lang2FhirAndCreateRequestResource.OBSERVATION_CLINICAL_RESULT",
-                "careplan": "Lang2FhirAndCreateRequestResource.CAREPLAN",
-                "servicerequest": "Lang2FhirAndCreateRequestResource.SERVICEREQUEST",
-                "coverage": "Lang2FhirAndCreateRequestResource.COVERAGE",
-                "auto": "Lang2FhirAndCreateRequestResource.AUTO",
-                "condition-encounter-diagnosis": "Lang2FhirAndCreateRequestResource.CONDITION_ENCOUNTER_DIAGNOSIS",
-                "condition-problems-health-concerns": "Lang2FhirAndCreateRequestResource.CONDITION_PROBLEMS_HEALTH_CONCERNS",
-                "appointment": "Lang2FhirAndCreateRequestResource.APPOINTMENT",
-                "patient": "Lang2FhirAndCreateRequestResource.PATIENT",
-                "procedure": "Lang2FhirAndCreateRequestResource.PROCEDURE"
-              }
+                "procedure",
+                "questionnaire",
+                "questionnaireresponse",
+                "servicerequest",
+                "simple-observation",
+                "vital-signs"
+              ]
             },
             {
               "jsonKey": "text",
@@ -5116,6 +4018,8 @@
       },
       "response": {
         "body": {
+          "success": true,
+          "message": "Search query generated and executed in FHIR server successfully. Found 1 results.",
           "resource_type": "Appointment",
           "search_params": "patient=Patient/patient-123&date=ge2024-01-15&date=le2024-01-22",
           "fhir_results": [
@@ -5134,9 +4038,7 @@
                 }
               ]
             }
-          ],
-          "success": true,
-          "message": "Search query generated and executed in FHIR server successfully. Found 1 results."
+          ]
         }
       },
       "render": {
@@ -5236,6 +4138,253 @@
         }
       }
     },
+    "POST /tools/mcp-server/create": {
+      "httpMethod": "POST",
+      "httpPath": "/tools/mcp-server/create",
+      "request": {
+        "body": {
+          "name": "My MCP Server",
+          "mcp_server_url": "https://mcp.example.com"
+        }
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "MCP Server and Tools created successfully",
+          "mcp_servers": [
+            {
+              "id": "123",
+              "name": "My MCP Server",
+              "description": "My MCP Server is a server that provides MCP services",
+              "mcp_server_url": "https://mcp.example.com"
+            }
+          ],
+          "mcp_server_tools": [
+            {
+              "id": "tool-001",
+              "name": "search_endpoints",
+              "description": "Search across the documented endpoints",
+              "input_schema": {
+                "query": "string"
+              },
+              "mcp_server_id": "123",
+              "mcp_server_url": "https://mcp.example.com"
+            },
+            {
+              "id": "tool-002",
+              "name": "get_endpoint",
+              "description": "Fetch a single endpoint by ID",
+              "input_schema": {
+                "endpoint_id": "string"
+              },
+              "mcp_server_id": "123",
+              "mcp_server_url": "https://mcp.example.com"
+            }
+          ]
+        }
+      },
+      "render": {
+        "callTemplate": "client.tools().mcpServers().create(McpServerCreateRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "name",
+              "fieldTemplate": ".name({{value}})",
+              "kind": "string",
+              "required": true
+            },
+            {
+              "jsonKey": "mcp_server_url",
+              "fieldTemplate": ".mcpServerUrl({{value}})",
+              "kind": "string",
+              "required": true
+            }
+          ]
+        }
+      }
+    },
+    "GET /tools/mcp-server/list": {
+      "httpMethod": "GET",
+      "httpPath": "/tools/mcp-server/list",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "MCP Servers retrieved successfully",
+          "mcp_servers": [
+            {
+              "id": "123",
+              "name": "My MCP Server",
+              "description": "My MCP Server is a server that provides MCP services",
+              "mcp_server_url": "https://mcp.example.com"
+            },
+            {
+              "id": "456",
+              "name": "Another MCP Server",
+              "description": "A second MCP server",
+              "mcp_server_url": "https://other.mcp.example.com"
+            }
+          ]
+        }
+      },
+      "render": {
+        "callTemplate": "client.tools().mcpServers().list()",
+        "params": []
+      }
+    },
+    "GET /tools/mcp-server/{mcp_server_id}": {
+      "httpMethod": "GET",
+      "httpPath": "/tools/mcp-server/{mcp_server_id}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "MCP Server retrieved successfully",
+          "data": {
+            "id": "123",
+            "name": "My MCP Server",
+            "description": "My MCP Server is a server that provides MCP services",
+            "mcp_server_url": "https://mcp.example.com"
+          }
+        }
+      },
+      "render": {
+        "callTemplate": "client.tools().mcpServers().get({{mcp_server_id}})",
+        "params": [
+          {
+            "name": "mcp_server_id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "DELETE /tools/mcp-server/{mcp_server_id}": {
+      "httpMethod": "DELETE",
+      "httpPath": "/tools/mcp-server/{mcp_server_id}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "MCP Server Configuration and Tools deleted successfully"
+        }
+      },
+      "render": {
+        "callTemplate": "client.tools().mcpServers().delete({{mcp_server_id}})",
+        "params": [
+          {
+            "name": "mcp_server_id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "GET /tools/mcp-server/{mcp_server_id}/list": {
+      "httpMethod": "GET",
+      "httpPath": "/tools/mcp-server/{mcp_server_id}/list",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "MCP Server tools retrieved successfully",
+          "mcp_server_tools": [
+            {
+              "id": "tool-001",
+              "name": "search_endpoints",
+              "description": "Search across the documented endpoints",
+              "input_schema": {
+                "query": "string"
+              },
+              "mcp_server_id": "123",
+              "mcp_server_url": "https://mcp.example.com"
+            },
+            {
+              "id": "tool-002",
+              "name": "get_endpoint",
+              "description": "Fetch a single endpoint by ID",
+              "input_schema": {
+                "endpoint_id": "string"
+              },
+              "mcp_server_id": "123",
+              "mcp_server_url": "https://mcp.example.com"
+            }
+          ]
+        }
+      },
+      "render": {
+        "callTemplate": "client.tools().mcpTools().list({{mcp_server_id}})",
+        "params": [
+          {
+            "name": "mcp_server_id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "GET /tools/mcp-server/tool/{mcp_server_tool_id}": {
+      "httpMethod": "GET",
+      "httpPath": "/tools/mcp-server/tool/{mcp_server_tool_id}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "MCP Server tool retrieved successfully",
+          "data": {
+            "id": "123",
+            "name": "My MCP Server Tool",
+            "description": "My MCP Server Tool is a tool that provides MCP services",
+            "input_schema": {
+              "name": "string",
+              "age": "number"
+            },
+            "mcp_server_id": "123",
+            "mcp_server_url": "https://mcp.example.com"
+          }
+        }
+      },
+      "render": {
+        "callTemplate": "client.tools().mcpTools().get({{mcp_server_tool_id}})",
+        "params": [
+          {
+            "name": "mcp_server_tool_id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "DELETE /tools/mcp-server/tool/{mcp_server_tool_id}": {
+      "httpMethod": "DELETE",
+      "httpPath": "/tools/mcp-server/tool/{mcp_server_tool_id}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": {
+          "success": true,
+          "message": "MCP Server tool deleted successfully"
+        }
+      },
+      "render": {
+        "callTemplate": "client.tools().mcpTools().delete({{mcp_server_tool_id}})",
+        "params": [
+          {
+            "name": "mcp_server_tool_id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
     "GET /workflows": {
       "httpMethod": "GET",
       "httpPath": "/workflows",
@@ -5283,105 +4432,6 @@
               },
               "created_at": "2024-01-15T09:30:00Z",
               "updated_at": "2024-01-15T09:30:00Z"
-            }
-          ],
-          "workflow_details": [
-            {
-              "id": "550e8400-e29b-41d4-a716-446655440001",
-              "name": "Patient Data Mapping Workflow",
-              "workflow_instructions": "Given diagnosis data, find the patient and create condition record",
-              "sample_data": {
-                "diagnosis_code": "I10",
-                "diagnosis_date": "2025-01-01",
-                "patient_first_name": "Clay",
-                "patient_last_name": "Rippin"
-              },
-              "config": {
-                "fhir_provider_ids": [
-                  "550e8400-e29b-41d4-a716-446655440000"
-                ],
-                "dynamic_generation": false
-              },
-              "graph": {
-                "steps": [
-                  {
-                    "id": "1",
-                    "name": "Create Patient Resource",
-                    "description": "Create a FHIR Patient resource from input data",
-                    "operation": {
-                      "search_definition": {
-                        "original_query": "find patient {{patient_first_name}} {{patient_last_name}} by first name and last name",
-                        "resource_type": "Patient",
-                        "search_parameters": {
-                          "family": "{{patient_last_name}}",
-                          "given": "{{patient_first_name}}"
-                        },
-                        "required_fields": [
-                          "id",
-                          "name",
-                          "identifier"
-                        ],
-                        "runtime_placeholders": {
-                          "{{patient_first_name}}": "input.patient_first_name",
-                          "{{patient_last_name}}": "input.patient_last_name"
-                        }
-                      },
-                      "create_definition": {
-                        "original_description": "create condition with diagnosis code {{diagnosis_code}} and diagnosis date 2025-01-01",
-                        "resource_type": "Condition",
-                        "resource_template": {
-                          "resourceType": "Condition",
-                          "code": {
-                            "coding": [
-                              {
-                                "code": "{{diagnosis_code}}",
-                                "system": "http://hl7.org/fhir/sid/icd-10"
-                              }
-                            ]
-                          },
-                          "subject": {
-                            "reference": "Patient/{{step_1_id}}"
-                          }
-                        },
-                        "runtime_placeholders": {
-                          "{{diagnosis_code}}": "input.diagnosis_code",
-                          "{{diagnosis_date}}": "input.diagnosis_date"
-                        }
-                      },
-                      "workflow_definition": {
-                        "workflow_id": "550e8400-e29b-41d4-a716-446655440002",
-                        "input": {
-                          "patient_id": "{{step_1_id}}",
-                          "additional_context": "laboratory_results"
-                        },
-                        "runtime_placeholders": {
-                          "{{step_1_id}}": "step_1.result.id",
-                          "{{patient_data}}": "input.patient_data"
-                        }
-                      },
-                      "decision_definition": {
-                        "expression": "input.patient_age >= 18",
-                        "paths": {
-                          "true": "step_adult_workflow",
-                          "false": "step_pediatric_workflow",
-                          "default": "step_error_handler"
-                        },
-                        "runtime_placeholders": {
-                          "{{patient_age}}": "input.patient_age",
-                          "{{diagnosis_type}}": "step_2.result.diagnosis_category"
-                        }
-                      }
-                    },
-                    "provider_id": "550e8400-e29b-41d4-a716-446655440000",
-                    "dependencies": [
-                      "dependencies"
-                    ],
-                    "dynamic_generation": false
-                  }
-                ]
-              },
-              "created_at": "2024-01-15T10:30:00Z",
-              "updated_at": "2024-01-15T15:45:00Z"
             }
           ]
         }
@@ -5433,121 +4483,8 @@
               "diagnosis_code": "I10",
               "encounter_date": "2024-01-15"
             },
-            "config": {
-              "fhir_provider_ids": [
-                "550e8400-e29b-41d4-a716-446655440000"
-              ],
-              "dynamic_generation": false
-            },
-            "graph": {
-              "steps": [
-                {
-                  "id": "step_1_id",
-                  "name": "Find Patient",
-                  "description": "Search for an existing patient by first name and last name",
-                  "provider_id": "550e8400-e29b-41d4-a716-446655440000"
-                }
-              ]
-            },
             "created_at": "2024-01-15T09:30:00Z",
             "updated_at": "2024-01-15T09:30:00Z"
-          },
-          "workflow_details": {
-            "id": "550e8400-e29b-41d4-a716-446655440001",
-            "name": "Patient Data Mapping Workflow",
-            "workflow_instructions": "Given diagnosis data, find the patient and create condition record",
-            "sample_data": {
-              "diagnosis_code": "I10",
-              "diagnosis_date": "2025-01-01",
-              "patient_first_name": "Clay",
-              "patient_last_name": "Rippin"
-            },
-            "config": {
-              "fhir_provider_ids": [
-                "550e8400-e29b-41d4-a716-446655440000"
-              ],
-              "dynamic_generation": false
-            },
-            "graph": {
-              "steps": [
-                {
-                  "id": "1",
-                  "name": "Create Patient Resource",
-                  "description": "Create a FHIR Patient resource from input data",
-                  "operation": {
-                    "search_definition": {
-                      "original_query": "find patient {{patient_first_name}} {{patient_last_name}} by first name and last name",
-                      "resource_type": "Patient",
-                      "search_parameters": {
-                        "family": "{{patient_last_name}}",
-                        "given": "{{patient_first_name}}"
-                      },
-                      "required_fields": [
-                        "id",
-                        "name",
-                        "identifier"
-                      ],
-                      "runtime_placeholders": {
-                        "{{patient_first_name}}": "input.patient_first_name",
-                        "{{patient_last_name}}": "input.patient_last_name"
-                      }
-                    },
-                    "create_definition": {
-                      "original_description": "create condition with diagnosis code {{diagnosis_code}} and diagnosis date 2025-01-01",
-                      "resource_type": "Condition",
-                      "resource_template": {
-                        "resourceType": "Condition",
-                        "code": {
-                          "coding": [
-                            {
-                              "code": "{{diagnosis_code}}",
-                              "system": "http://hl7.org/fhir/sid/icd-10"
-                            }
-                          ]
-                        },
-                        "subject": {
-                          "reference": "Patient/{{step_1_id}}"
-                        }
-                      },
-                      "runtime_placeholders": {
-                        "{{diagnosis_code}}": "input.diagnosis_code",
-                        "{{diagnosis_date}}": "input.diagnosis_date"
-                      }
-                    },
-                    "workflow_definition": {
-                      "workflow_id": "550e8400-e29b-41d4-a716-446655440002",
-                      "input": {
-                        "patient_id": "{{step_1_id}}",
-                        "additional_context": "laboratory_results"
-                      },
-                      "runtime_placeholders": {
-                        "{{step_1_id}}": "step_1.result.id",
-                        "{{patient_data}}": "input.patient_data"
-                      }
-                    },
-                    "decision_definition": {
-                      "expression": "input.patient_age >= 18",
-                      "paths": {
-                        "true": "step_adult_workflow",
-                        "false": "step_pediatric_workflow",
-                        "default": "step_error_handler"
-                      },
-                      "runtime_placeholders": {
-                        "{{patient_age}}": "input.patient_age",
-                        "{{diagnosis_type}}": "step_2.result.diagnosis_category"
-                      }
-                    }
-                  },
-                  "provider_id": "550e8400-e29b-41d4-a716-446655440000",
-                  "dependencies": [
-                    "dependencies"
-                  ],
-                  "dynamic_generation": false
-                }
-              ]
-            },
-            "created_at": "2024-01-15T10:30:00Z",
-            "updated_at": "2024-01-15T15:45:00Z"
           }
         }
       },
@@ -5570,38 +4507,26 @@
               "required": true
             },
             {
-              "jsonKey": "fhir_provider_id",
-              "fieldTemplate": ".fhirProviderId({{value}})",
-              "kind": "object",
-              "required": true,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "type",
-                    "fieldTemplate": ".type({{value}})",
-                    "kind": "number",
-                    "required": false
-                  }
-                ],
-                "wrap": "CreateWorkflowRequestFhirProviderId.builder(){{__body__}}.build()"
-              }
-            },
-            {
               "jsonKey": "sample_data",
               "fieldTemplate": ".sampleData({{value}})",
               "kind": "object",
-              "required": false
+              "required": true
+            },
+            {
+              "jsonKey": "fhir_provider_id",
+              "fieldTemplate": ".fhirProviderId({{value}})",
+              "kind": "object",
+              "required": true
             },
             {
               "jsonKey": "dynamic_generation",
               "fieldTemplate": ".dynamicGeneration({{value}})",
+              "kind": "boolean",
+              "required": false
+            },
+            {
+              "jsonKey": "verbose",
+              "fieldTemplate": ".verbose({{value}})",
               "kind": "boolean",
               "required": false
             }
@@ -5654,103 +4579,6 @@
             },
             "created_at": "2024-01-15T09:30:00Z",
             "updated_at": "2024-01-15T09:30:00Z"
-          },
-          "workflow_details": {
-            "id": "550e8400-e29b-41d4-a716-446655440001",
-            "name": "Patient Data Mapping Workflow",
-            "workflow_instructions": "Given diagnosis data, find the patient and create condition record",
-            "sample_data": {
-              "diagnosis_code": "I10",
-              "diagnosis_date": "2025-01-01",
-              "patient_first_name": "Clay",
-              "patient_last_name": "Rippin"
-            },
-            "config": {
-              "fhir_provider_ids": [
-                "550e8400-e29b-41d4-a716-446655440000"
-              ],
-              "dynamic_generation": false
-            },
-            "graph": {
-              "steps": [
-                {
-                  "id": "1",
-                  "name": "Create Patient Resource",
-                  "description": "Create a FHIR Patient resource from input data",
-                  "operation": {
-                    "search_definition": {
-                      "original_query": "find patient {{patient_first_name}} {{patient_last_name}} by first name and last name",
-                      "resource_type": "Patient",
-                      "search_parameters": {
-                        "family": "{{patient_last_name}}",
-                        "given": "{{patient_first_name}}"
-                      },
-                      "required_fields": [
-                        "id",
-                        "name",
-                        "identifier"
-                      ],
-                      "runtime_placeholders": {
-                        "{{patient_first_name}}": "input.patient_first_name",
-                        "{{patient_last_name}}": "input.patient_last_name"
-                      }
-                    },
-                    "create_definition": {
-                      "original_description": "create condition with diagnosis code {{diagnosis_code}} and diagnosis date 2025-01-01",
-                      "resource_type": "Condition",
-                      "resource_template": {
-                        "resourceType": "Condition",
-                        "code": {
-                          "coding": [
-                            {
-                              "code": "{{diagnosis_code}}",
-                              "system": "http://hl7.org/fhir/sid/icd-10"
-                            }
-                          ]
-                        },
-                        "subject": {
-                          "reference": "Patient/{{step_1_id}}"
-                        }
-                      },
-                      "runtime_placeholders": {
-                        "{{diagnosis_code}}": "input.diagnosis_code",
-                        "{{diagnosis_date}}": "input.diagnosis_date"
-                      }
-                    },
-                    "workflow_definition": {
-                      "workflow_id": "550e8400-e29b-41d4-a716-446655440002",
-                      "input": {
-                        "patient_id": "{{step_1_id}}",
-                        "additional_context": "laboratory_results"
-                      },
-                      "runtime_placeholders": {
-                        "{{step_1_id}}": "step_1.result.id",
-                        "{{patient_data}}": "input.patient_data"
-                      }
-                    },
-                    "decision_definition": {
-                      "expression": "input.patient_age >= 18",
-                      "paths": {
-                        "true": "step_adult_workflow",
-                        "false": "step_pediatric_workflow",
-                        "default": "step_error_handler"
-                      },
-                      "runtime_placeholders": {
-                        "{{patient_age}}": "input.patient_age",
-                        "{{diagnosis_type}}": "step_2.result.diagnosis_category"
-                      }
-                    }
-                  },
-                  "provider_id": "550e8400-e29b-41d4-a716-446655440000",
-                  "dependencies": [
-                    "dependencies"
-                  ],
-                  "dynamic_generation": false
-                }
-              ]
-            },
-            "created_at": "2024-01-15T10:30:00Z",
-            "updated_at": "2024-01-15T15:45:00Z"
           }
         }
       },
@@ -5824,103 +4652,6 @@
             },
             "created_at": "2024-01-15T09:30:00Z",
             "updated_at": "2024-02-20T11:00:00Z"
-          },
-          "workflow_details": {
-            "id": "550e8400-e29b-41d4-a716-446655440001",
-            "name": "Patient Data Mapping Workflow",
-            "workflow_instructions": "Given diagnosis data, find the patient and create condition record",
-            "sample_data": {
-              "diagnosis_code": "I10",
-              "diagnosis_date": "2025-01-01",
-              "patient_first_name": "Clay",
-              "patient_last_name": "Rippin"
-            },
-            "config": {
-              "fhir_provider_ids": [
-                "550e8400-e29b-41d4-a716-446655440000"
-              ],
-              "dynamic_generation": false
-            },
-            "graph": {
-              "steps": [
-                {
-                  "id": "1",
-                  "name": "Create Patient Resource",
-                  "description": "Create a FHIR Patient resource from input data",
-                  "operation": {
-                    "search_definition": {
-                      "original_query": "find patient {{patient_first_name}} {{patient_last_name}} by first name and last name",
-                      "resource_type": "Patient",
-                      "search_parameters": {
-                        "family": "{{patient_last_name}}",
-                        "given": "{{patient_first_name}}"
-                      },
-                      "required_fields": [
-                        "id",
-                        "name",
-                        "identifier"
-                      ],
-                      "runtime_placeholders": {
-                        "{{patient_first_name}}": "input.patient_first_name",
-                        "{{patient_last_name}}": "input.patient_last_name"
-                      }
-                    },
-                    "create_definition": {
-                      "original_description": "create condition with diagnosis code {{diagnosis_code}} and diagnosis date 2025-01-01",
-                      "resource_type": "Condition",
-                      "resource_template": {
-                        "resourceType": "Condition",
-                        "code": {
-                          "coding": [
-                            {
-                              "code": "{{diagnosis_code}}",
-                              "system": "http://hl7.org/fhir/sid/icd-10"
-                            }
-                          ]
-                        },
-                        "subject": {
-                          "reference": "Patient/{{step_1_id}}"
-                        }
-                      },
-                      "runtime_placeholders": {
-                        "{{diagnosis_code}}": "input.diagnosis_code",
-                        "{{diagnosis_date}}": "input.diagnosis_date"
-                      }
-                    },
-                    "workflow_definition": {
-                      "workflow_id": "550e8400-e29b-41d4-a716-446655440002",
-                      "input": {
-                        "patient_id": "{{step_1_id}}",
-                        "additional_context": "laboratory_results"
-                      },
-                      "runtime_placeholders": {
-                        "{{step_1_id}}": "step_1.result.id",
-                        "{{patient_data}}": "input.patient_data"
-                      }
-                    },
-                    "decision_definition": {
-                      "expression": "input.patient_age >= 18",
-                      "paths": {
-                        "true": "step_adult_workflow",
-                        "false": "step_pediatric_workflow",
-                        "default": "step_error_handler"
-                      },
-                      "runtime_placeholders": {
-                        "{{patient_age}}": "input.patient_age",
-                        "{{diagnosis_type}}": "step_2.result.diagnosis_category"
-                      }
-                    }
-                  },
-                  "provider_id": "550e8400-e29b-41d4-a716-446655440000",
-                  "dependencies": [
-                    "dependencies"
-                  ],
-                  "dynamic_generation": false
-                }
-              ]
-            },
-            "created_at": "2024-01-15T10:30:00Z",
-            "updated_at": "2024-01-15T15:45:00Z"
           }
         }
       },
@@ -5948,38 +4679,26 @@
               "required": true
             },
             {
-              "jsonKey": "fhir_provider_id",
-              "fieldTemplate": ".fhirProviderId({{value}})",
-              "kind": "object",
-              "required": true,
-              "nested": {
-                "fieldSeparator": "",
-                "fields": [
-                  {
-                    "jsonKey": "value",
-                    "fieldTemplate": ".value({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
-                    "jsonKey": "type",
-                    "fieldTemplate": ".type({{value}})",
-                    "kind": "number",
-                    "required": false
-                  }
-                ],
-                "wrap": "UpdateWorkflowRequestFhirProviderId.builder(){{__body__}}.build()"
-              }
-            },
-            {
               "jsonKey": "sample_data",
               "fieldTemplate": ".sampleData({{value}})",
               "kind": "object",
-              "required": false
+              "required": true
+            },
+            {
+              "jsonKey": "fhir_provider_id",
+              "fieldTemplate": ".fhirProviderId({{value}})",
+              "kind": "object",
+              "required": true
             },
             {
               "jsonKey": "dynamic_generation",
               "fieldTemplate": ".dynamicGeneration({{value}})",
+              "kind": "boolean",
+              "required": false
+            },
+            {
+              "jsonKey": "verbose",
+              "fieldTemplate": ".verbose({{value}})",
               "kind": "boolean",
               "required": false
             }
@@ -6105,7 +4824,7 @@
               "jsonKey": "input_data",
               "fieldTemplate": ".inputData({{value}})",
               "kind": "object",
-              "required": false
+              "required": true
             },
             {
               "jsonKey": "preview",

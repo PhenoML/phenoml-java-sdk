@@ -7,10 +7,10 @@ import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.summary.templates.requests.CreateSummaryTemplateRequest;
 import com.phenoml.api.resources.summary.templates.requests.UpdateSummaryTemplateRequest;
-import com.phenoml.api.resources.summary.templates.types.TemplatesDeleteResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesGetResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesListResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesUpdateResponse;
+import com.phenoml.api.resources.summary.templates.types.DeleteResponse;
+import com.phenoml.api.resources.summary.templates.types.GetResponse;
+import com.phenoml.api.resources.summary.templates.types.ListResponse;
+import com.phenoml.api.resources.summary.templates.types.UpdateResponse;
 import com.phenoml.api.resources.summary.types.CreateSummaryTemplateResponse;
 
 public class TemplatesClient {
@@ -33,14 +33,14 @@ public class TemplatesClient {
     /**
      * Retrieves all summary templates for the authenticated user
      */
-    public TemplatesListResponse list() {
+    public ListResponse list() {
         return this.rawClient.list().body();
     }
 
     /**
      * Retrieves all summary templates for the authenticated user
      */
-    public TemplatesListResponse list(RequestOptions requestOptions) {
+    public ListResponse list(RequestOptions requestOptions) {
         return this.rawClient.list(requestOptions).body();
     }
 
@@ -61,43 +61,42 @@ public class TemplatesClient {
     /**
      * Retrieves a specific summary template
      */
-    public TemplatesGetResponse get(String id) {
+    public GetResponse get(String id) {
         return this.rawClient.get(id).body();
     }
 
     /**
      * Retrieves a specific summary template
      */
-    public TemplatesGetResponse get(String id, RequestOptions requestOptions) {
+    public GetResponse get(String id, RequestOptions requestOptions) {
         return this.rawClient.get(id, requestOptions).body();
     }
 
     /**
      * Updates an existing summary template
      */
-    public TemplatesUpdateResponse update(String id, UpdateSummaryTemplateRequest request) {
+    public UpdateResponse update(String id, UpdateSummaryTemplateRequest request) {
         return this.rawClient.update(id, request).body();
     }
 
     /**
      * Updates an existing summary template
      */
-    public TemplatesUpdateResponse update(
-            String id, UpdateSummaryTemplateRequest request, RequestOptions requestOptions) {
+    public UpdateResponse update(String id, UpdateSummaryTemplateRequest request, RequestOptions requestOptions) {
         return this.rawClient.update(id, request, requestOptions).body();
     }
 
     /**
      * Deletes a summary template
      */
-    public TemplatesDeleteResponse delete(String id) {
+    public DeleteResponse delete(String id) {
         return this.rawClient.delete(id).body();
     }
 
     /**
      * Deletes a summary template
      */
-    public TemplatesDeleteResponse delete(String id, RequestOptions requestOptions) {
+    public DeleteResponse delete(String id, RequestOptions requestOptions) {
         return this.rawClient.delete(id, requestOptions).body();
     }
 }
