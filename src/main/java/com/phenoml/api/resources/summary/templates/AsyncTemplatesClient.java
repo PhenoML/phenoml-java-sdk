@@ -7,10 +7,10 @@ import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.summary.templates.requests.CreateSummaryTemplateRequest;
 import com.phenoml.api.resources.summary.templates.requests.UpdateSummaryTemplateRequest;
-import com.phenoml.api.resources.summary.templates.types.TemplatesDeleteResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesGetResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesListResponse;
-import com.phenoml.api.resources.summary.templates.types.TemplatesUpdateResponse;
+import com.phenoml.api.resources.summary.templates.types.DeleteResponse;
+import com.phenoml.api.resources.summary.templates.types.GetResponse;
+import com.phenoml.api.resources.summary.templates.types.ListResponse;
+import com.phenoml.api.resources.summary.templates.types.UpdateResponse;
 import com.phenoml.api.resources.summary.types.CreateSummaryTemplateResponse;
 import java.util.concurrent.CompletableFuture;
 
@@ -34,14 +34,14 @@ public class AsyncTemplatesClient {
     /**
      * Retrieves all summary templates for the authenticated user
      */
-    public CompletableFuture<TemplatesListResponse> list() {
+    public CompletableFuture<ListResponse> list() {
         return this.rawClient.list().thenApply(response -> response.body());
     }
 
     /**
      * Retrieves all summary templates for the authenticated user
      */
-    public CompletableFuture<TemplatesListResponse> list(RequestOptions requestOptions) {
+    public CompletableFuture<ListResponse> list(RequestOptions requestOptions) {
         return this.rawClient.list(requestOptions).thenApply(response -> response.body());
     }
 
@@ -63,28 +63,28 @@ public class AsyncTemplatesClient {
     /**
      * Retrieves a specific summary template
      */
-    public CompletableFuture<TemplatesGetResponse> get(String id) {
+    public CompletableFuture<GetResponse> get(String id) {
         return this.rawClient.get(id).thenApply(response -> response.body());
     }
 
     /**
      * Retrieves a specific summary template
      */
-    public CompletableFuture<TemplatesGetResponse> get(String id, RequestOptions requestOptions) {
+    public CompletableFuture<GetResponse> get(String id, RequestOptions requestOptions) {
         return this.rawClient.get(id, requestOptions).thenApply(response -> response.body());
     }
 
     /**
      * Updates an existing summary template
      */
-    public CompletableFuture<TemplatesUpdateResponse> update(String id, UpdateSummaryTemplateRequest request) {
+    public CompletableFuture<UpdateResponse> update(String id, UpdateSummaryTemplateRequest request) {
         return this.rawClient.update(id, request).thenApply(response -> response.body());
     }
 
     /**
      * Updates an existing summary template
      */
-    public CompletableFuture<TemplatesUpdateResponse> update(
+    public CompletableFuture<UpdateResponse> update(
             String id, UpdateSummaryTemplateRequest request, RequestOptions requestOptions) {
         return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
     }
@@ -92,14 +92,14 @@ public class AsyncTemplatesClient {
     /**
      * Deletes a summary template
      */
-    public CompletableFuture<TemplatesDeleteResponse> delete(String id) {
+    public CompletableFuture<DeleteResponse> delete(String id) {
         return this.rawClient.delete(id).thenApply(response -> response.body());
     }
 
     /**
      * Deletes a summary template
      */
-    public CompletableFuture<TemplatesDeleteResponse> delete(String id, RequestOptions requestOptions) {
+    public CompletableFuture<DeleteResponse> delete(String id, RequestOptions requestOptions) {
         return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
     }
 }
