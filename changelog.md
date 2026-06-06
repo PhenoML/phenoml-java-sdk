@@ -1,3 +1,7 @@
+## 17.0.1 - 2026-06-06
+### Changed
+* **Generator/CLI metadata** — regenerated with Fern CLI 5.45.0 and `fernapi/fern-java-sdk` generator 4.9.1. No API surface or behavioral changes; only the release version (`build.gradle`) and the `User-Agent` / `X-Fern-SDK-Version` client headers (`ClientOptions`) are updated to 17.0.1.
+
 ## 17.0.0 - 2026-06-02
 ### Breaking Changes
 * **`ConstrueClient.uploadCodeSystem(...)` / `listCodeSystems()` / `getCodeSystem(...)` / `deleteCodeSystem(...)` / `exportCodeSystem(...)`** — the five code-system methods were removed from `ConstrueClient` / `AsyncConstrueClient` (and the raw clients) and moved to a new `codeSystems()` sub-client with renamed methods; rewrite as `client.construe().codeSystems().upload(...)` / `list()` / `find(...)` / `delete(...)` / `export(...)`.
