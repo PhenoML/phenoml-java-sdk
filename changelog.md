@@ -1,3 +1,10 @@
+## 17.1.0 - 2026-06-09
+### Added
+* **`PhenomlClient.fhir2Omop().create(...)`** — new method posting FHIR R4 resources or a Bundle to `POST /fhir2omop/create` and returning OMOP CDM v5.4 rows; structural mode only, so all clinical `concept_id`s are `0` (the vocabulary crosswalk is a later release). Also available on `AsyncPhenomlClient`.
+* **`CreateOmopRequest` / `CreateOmopResponse`** — request carries `fhirResources` (JSON `fhir_resources`, single resource or Bundle); response exposes `tables`, `report`, and `scanSummary`.
+* **`OmopTables`** and the row types `PersonRow`, `ConditionOccurrenceRow`, `DrugExposureRow`, `MeasurementRow`, `ObservationRow`, `ProcedureOccurrenceRow`, `VisitOccurrenceRow` — typed OMOP CDM table output.
+* **`MappingReportEntry` / `DroppedResource` / `ScanSummary`** — Usagi-shaped per-coding mapping report and White Rabbit-style scan summary.
+
 ## 17.0.1 - 2026-06-06
 ### Changed
 * **Generator/CLI metadata** — regenerated with Fern CLI 5.45.0 and `fernapi/fern-java-sdk` generator 4.9.1. No API surface or behavioral changes; only the release version (`build.gradle`) and the `User-Agent` / `X-Fern-SDK-Version` client headers (`ClientOptions`) are updated to 17.0.1.

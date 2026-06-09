@@ -3019,6 +3019,143 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 </dl>
 </details>
 
+## Fhir2Omop
+<details><summary><code>client.fhir2Omop.create(request) -> CreateOmopResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Shapes a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows
+(person, visit_occurrence, condition_occurrence, drug_exposure,
+procedure_occurrence, measurement, observation).
+
+**This is a structural mapping (`mode: "structural"`).** Rows are
+structurally valid OMOP, but every clinical and source `concept_id` is `0`:
+the vocabulary crosswalk that assigns real OMOP `concept_id`s is a planned
+follow-up. Each `*_source_value` carries the verbatim FHIR coding
+(`system#code`), `*_type_concept_id` is set to `32817` (EHR), and the
+response `report` lists a standard-code *suggestion* for each source coding
+(already-standard, an unchecked normalization suggestion, or unmapped). Do
+not treat the output as analytically resolved OMOP until `concept_id`s are
+populated.
+
+Medication codes are resolved whether they appear inline
+(`medicationCodeableConcept`) or via a `medicationReference` to a contained,
+relative (`Type/id`), or bundle-entry (`urn:uuid`) `Medication` resource.
+A medication with no usable code, resolvable reference, or display is
+reported under `scan_summary.dropped_resources` rather than emitted as a
+blank row. The bundle must contain at least one Patient resource.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.fhir2Omop().create(
+    CreateOmopRequest
+        .builder()
+        .fhirResources(
+            new HashMap<String, Object>() {{
+                put("resourceType", "Bundle");
+                put("type", "collection");
+                put("entry", new ArrayList<Object>(Arrays.asList(new 
+                HashMap<String, Object>() {{put("resource", new 
+                    HashMap<String, Object>() {{put("resourceType", "Patient");
+                        put("id", "patient-1");
+                        put("gender", "female");
+                        put("birthDate", "1985-07-22");
+                    }});
+                }}, new 
+                HashMap<String, Object>() {{put("resource", new 
+                    HashMap<String, Object>() {{put("resourceType", "Condition");
+                        put("id", "condition-1");
+                        put("subject", new 
+                        HashMap<String, Object>() {{put("reference", "Patient/patient-1");
+                        }});
+                        put("code", new 
+                        HashMap<String, Object>() {{put("coding", new ArrayList<Object>(Arrays.asList(new 
+                            HashMap<String, Object>() {{put("system", "http://snomed.info/sct");
+                                put("code", "44054006");
+                                put("display", "Type 2 diabetes mellitus");
+                            }})));
+                        }});
+                        put("onsetDateTime", "2024-01-15");
+                    }});
+                }}, new 
+                HashMap<String, Object>() {{put("resource", new 
+                    HashMap<String, Object>() {{put("resourceType", "MedicationRequest");
+                        put("id", "medreq-1");
+                        put("status", "active");
+                        put("subject", new 
+                        HashMap<String, Object>() {{put("reference", "Patient/patient-1");
+                        }});
+                        put("medicationReference", new 
+                        HashMap<String, Object>() {{put("reference", "#med0");
+                        }});
+                        put("authoredOn", "2024-01-16");
+                        put("contained", new ArrayList<Object>(Arrays.asList(new 
+                        HashMap<String, Object>() {{put("resourceType", "Medication");
+                            put("id", "med0");
+                            put("code", new 
+                            HashMap<String, Object>() {{put("coding", new ArrayList<Object>(Arrays.asList(new 
+                                HashMap<String, Object>() {{put("system", "http://www.nlm.nih.gov/research/umls/rxnorm");
+                                    put("code", "860975");
+                                    put("display", "metformin hydrochloride 500 MG");
+                                }})));
+                            }});
+                        }})));
+                    }});
+                }})));
+            }}
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fhirResources:** `Map<String, Object>` 
+
+FHIR resources (single resource or Bundle). Must contain at least one
+Patient resource. Resources are mapped to OMOP rows; standalone
+Medication resources are consumed by medication references rather than
+mapped to their own table.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## FhirProvider
 <details><summary><code>client.fhirProvider.create(request) -> FhirProviderResponse</code></summary>
 <dl>
