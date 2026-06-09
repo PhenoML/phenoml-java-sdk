@@ -39,6 +39,16 @@ public final class ScanSummary {
 
     private final Optional<List<DroppedResource>> droppedResources;
 
+    private final Optional<String> resolvedVocabVersion;
+
+    private final Optional<String> conceptResolverNote;
+
+    private final Optional<Integer> conceptsBridged;
+
+    private final Optional<Integer> conceptCandidatesTruncated;
+
+    private final Optional<Integer> construeResolutions;
+
     private final Map<String, Object> additionalProperties;
 
     private ScanSummary(
@@ -51,6 +61,11 @@ public final class ScanSummary {
             Optional<Integer> codesUnmapped,
             Optional<Double> offVocabRate,
             Optional<List<DroppedResource>> droppedResources,
+            Optional<String> resolvedVocabVersion,
+            Optional<String> conceptResolverNote,
+            Optional<Integer> conceptsBridged,
+            Optional<Integer> conceptCandidatesTruncated,
+            Optional<Integer> construeResolutions,
             Map<String, Object> additionalProperties) {
         this.totalResources = totalResources;
         this.resourceCounts = resourceCounts;
@@ -61,6 +76,11 @@ public final class ScanSummary {
         this.codesUnmapped = codesUnmapped;
         this.offVocabRate = offVocabRate;
         this.droppedResources = droppedResources;
+        this.resolvedVocabVersion = resolvedVocabVersion;
+        this.conceptResolverNote = conceptResolverNote;
+        this.conceptsBridged = conceptsBridged;
+        this.conceptCandidatesTruncated = conceptCandidatesTruncated;
+        this.construeResolutions = construeResolutions;
         this.additionalProperties = additionalProperties;
     }
 
@@ -109,6 +129,52 @@ public final class ScanSummary {
         return droppedResources;
     }
 
+    /**
+     * @return OMOP vocabulary release the resolver mapped against (e.g. &quot;v20240229&quot;).
+     * Resolved mode only; empty when no coded concept reached the service.
+     */
+    @JsonProperty("resolved_vocab_version")
+    public Optional<String> getResolvedVocabVersion() {
+        return resolvedVocabVersion;
+    }
+
+    /**
+     * @return Set when concept resolution was degraded — the resolver was unavailable
+     * for one or more codings, whose <code>concept_id</code>s fell back to the structural
+     * (construe) tier. Empty when resolution was clean.
+     */
+    @JsonProperty("concept_resolver_note")
+    public Optional<String> getConceptResolverNote() {
+        return conceptResolverNote;
+    }
+
+    /**
+     * @return Count of <code>concept_id</code>s chosen via the lower-confidence UMLS-CUI bridge
+     * (no direct OMOP crosswalk existed). Resolved mode only.
+     */
+    @JsonProperty("concepts_bridged")
+    public Optional<Integer> getConceptsBridged() {
+        return conceptsBridged;
+    }
+
+    /**
+     * @return Count of codings whose candidate list the resolver capped, so the best
+     * concept may not have been among those returned.
+     */
+    @JsonProperty("concept_candidates_truncated")
+    public Optional<Integer> getConceptCandidatesTruncated() {
+        return conceptCandidatesTruncated;
+    }
+
+    /**
+     * @return Count of codings resolved via the construe ML extractor — the text-only
+     * or availability fallback path. A non-zero value bills the construe tier.
+     */
+    @JsonProperty("construe_resolutions")
+    public Optional<Integer> getConstrueResolutions() {
+        return construeResolutions;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -129,7 +195,12 @@ public final class ScanSummary {
                 && codesNormalized.equals(other.codesNormalized)
                 && codesUnmapped.equals(other.codesUnmapped)
                 && offVocabRate.equals(other.offVocabRate)
-                && droppedResources.equals(other.droppedResources);
+                && droppedResources.equals(other.droppedResources)
+                && resolvedVocabVersion.equals(other.resolvedVocabVersion)
+                && conceptResolverNote.equals(other.conceptResolverNote)
+                && conceptsBridged.equals(other.conceptsBridged)
+                && conceptCandidatesTruncated.equals(other.conceptCandidatesTruncated)
+                && construeResolutions.equals(other.construeResolutions);
     }
 
     @java.lang.Override
@@ -143,7 +214,12 @@ public final class ScanSummary {
                 this.codesNormalized,
                 this.codesUnmapped,
                 this.offVocabRate,
-                this.droppedResources);
+                this.droppedResources,
+                this.resolvedVocabVersion,
+                this.conceptResolverNote,
+                this.conceptsBridged,
+                this.conceptCandidatesTruncated,
+                this.construeResolutions);
     }
 
     @java.lang.Override
@@ -175,6 +251,16 @@ public final class ScanSummary {
 
         private Optional<List<DroppedResource>> droppedResources = Optional.empty();
 
+        private Optional<String> resolvedVocabVersion = Optional.empty();
+
+        private Optional<String> conceptResolverNote = Optional.empty();
+
+        private Optional<Integer> conceptsBridged = Optional.empty();
+
+        private Optional<Integer> conceptCandidatesTruncated = Optional.empty();
+
+        private Optional<Integer> construeResolutions = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -190,6 +276,11 @@ public final class ScanSummary {
             codesUnmapped(other.getCodesUnmapped());
             offVocabRate(other.getOffVocabRate());
             droppedResources(other.getDroppedResources());
+            resolvedVocabVersion(other.getResolvedVocabVersion());
+            conceptResolverNote(other.getConceptResolverNote());
+            conceptsBridged(other.getConceptsBridged());
+            conceptCandidatesTruncated(other.getConceptCandidatesTruncated());
+            construeResolutions(other.getConstrueResolutions());
             return this;
         }
 
@@ -292,6 +383,82 @@ public final class ScanSummary {
             return this;
         }
 
+        /**
+         * <p>OMOP vocabulary release the resolver mapped against (e.g. &quot;v20240229&quot;).
+         * Resolved mode only; empty when no coded concept reached the service.</p>
+         */
+        @JsonSetter(value = "resolved_vocab_version", nulls = Nulls.SKIP)
+        public Builder resolvedVocabVersion(Optional<String> resolvedVocabVersion) {
+            this.resolvedVocabVersion = resolvedVocabVersion;
+            return this;
+        }
+
+        public Builder resolvedVocabVersion(String resolvedVocabVersion) {
+            this.resolvedVocabVersion = Optional.ofNullable(resolvedVocabVersion);
+            return this;
+        }
+
+        /**
+         * <p>Set when concept resolution was degraded — the resolver was unavailable
+         * for one or more codings, whose <code>concept_id</code>s fell back to the structural
+         * (construe) tier. Empty when resolution was clean.</p>
+         */
+        @JsonSetter(value = "concept_resolver_note", nulls = Nulls.SKIP)
+        public Builder conceptResolverNote(Optional<String> conceptResolverNote) {
+            this.conceptResolverNote = conceptResolverNote;
+            return this;
+        }
+
+        public Builder conceptResolverNote(String conceptResolverNote) {
+            this.conceptResolverNote = Optional.ofNullable(conceptResolverNote);
+            return this;
+        }
+
+        /**
+         * <p>Count of <code>concept_id</code>s chosen via the lower-confidence UMLS-CUI bridge
+         * (no direct OMOP crosswalk existed). Resolved mode only.</p>
+         */
+        @JsonSetter(value = "concepts_bridged", nulls = Nulls.SKIP)
+        public Builder conceptsBridged(Optional<Integer> conceptsBridged) {
+            this.conceptsBridged = conceptsBridged;
+            return this;
+        }
+
+        public Builder conceptsBridged(Integer conceptsBridged) {
+            this.conceptsBridged = Optional.ofNullable(conceptsBridged);
+            return this;
+        }
+
+        /**
+         * <p>Count of codings whose candidate list the resolver capped, so the best
+         * concept may not have been among those returned.</p>
+         */
+        @JsonSetter(value = "concept_candidates_truncated", nulls = Nulls.SKIP)
+        public Builder conceptCandidatesTruncated(Optional<Integer> conceptCandidatesTruncated) {
+            this.conceptCandidatesTruncated = conceptCandidatesTruncated;
+            return this;
+        }
+
+        public Builder conceptCandidatesTruncated(Integer conceptCandidatesTruncated) {
+            this.conceptCandidatesTruncated = Optional.ofNullable(conceptCandidatesTruncated);
+            return this;
+        }
+
+        /**
+         * <p>Count of codings resolved via the construe ML extractor — the text-only
+         * or availability fallback path. A non-zero value bills the construe tier.</p>
+         */
+        @JsonSetter(value = "construe_resolutions", nulls = Nulls.SKIP)
+        public Builder construeResolutions(Optional<Integer> construeResolutions) {
+            this.construeResolutions = construeResolutions;
+            return this;
+        }
+
+        public Builder construeResolutions(Integer construeResolutions) {
+            this.construeResolutions = Optional.ofNullable(construeResolutions);
+            return this;
+        }
+
         public ScanSummary build() {
             return new ScanSummary(
                     totalResources,
@@ -303,6 +470,11 @@ public final class ScanSummary {
                     codesUnmapped,
                     offVocabRate,
                     droppedResources,
+                    resolvedVocabVersion,
+                    conceptResolverNote,
+                    conceptsBridged,
+                    conceptCandidatesTruncated,
+                    construeResolutions,
                     additionalProperties);
         }
 

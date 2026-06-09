@@ -40,8 +40,6 @@ public final class MappingReportEntry {
 
     private final Optional<String> mappingStatus;
 
-    private final Optional<String> equivalence;
-
     private final Optional<String> note;
 
     private final Map<String, Object> additionalProperties;
@@ -57,7 +55,6 @@ public final class MappingReportEntry {
             Optional<String> targetCode,
             Optional<String> targetName,
             Optional<String> mappingStatus,
-            Optional<String> equivalence,
             Optional<String> note,
             Map<String, Object> additionalProperties) {
         this.resourceType = resourceType;
@@ -70,7 +67,6 @@ public final class MappingReportEntry {
         this.targetCode = targetCode;
         this.targetName = targetName;
         this.mappingStatus = mappingStatus;
-        this.equivalence = equivalence;
         this.note = note;
         this.additionalProperties = additionalProperties;
     }
@@ -110,6 +106,15 @@ public final class MappingReportEntry {
         return targetVocabulary;
     }
 
+    /**
+     * @return Standard concept code. Set when a coding is matched by the structural
+     * (construe) tier — an already-standard code taken verbatim, or a
+     * construe-suggested code — which is every match in structural mode and,
+     * in resolved mode, codings for text-only resources or ones that fell back
+     * when the resolver was unavailable. Omitted for codings resolved directly
+     * by the concept-resolver service, which returns the standard concept's
+     * id, name, and vocabulary but not its <code>concept_code</code>.
+     */
     @JsonProperty("target_code")
     public Optional<String> getTargetCode() {
         return targetCode;
@@ -121,16 +126,15 @@ public final class MappingReportEntry {
     }
 
     /**
-     * @return ALREADY_STANDARD (source already in target vocabulary), UNCHECKED (unreviewed suggestion), or UNMAPPED (no candidate found).
+     * @return ALREADY_STANDARD (source already in the target standard vocabulary),
+     * MAPPED (resolved to a standard concept via the OMOP &quot;Maps to&quot; crosswalk
+     * or UMLS-CUI bridge; resolved mode only), UNCHECKED (an unreviewed
+     * construe suggestion; structural / fallback only), or UNMAPPED (no
+     * candidate found).
      */
     @JsonProperty("mapping_status")
     public Optional<String> getMappingStatus() {
         return mappingStatus;
-    }
-
-    @JsonProperty("equivalence")
-    public Optional<String> getEquivalence() {
-        return equivalence;
     }
 
     @JsonProperty("note")
@@ -160,7 +164,6 @@ public final class MappingReportEntry {
                 && targetCode.equals(other.targetCode)
                 && targetName.equals(other.targetName)
                 && mappingStatus.equals(other.mappingStatus)
-                && equivalence.equals(other.equivalence)
                 && note.equals(other.note);
     }
 
@@ -177,7 +180,6 @@ public final class MappingReportEntry {
                 this.targetCode,
                 this.targetName,
                 this.mappingStatus,
-                this.equivalence,
                 this.note);
     }
 
@@ -212,8 +214,6 @@ public final class MappingReportEntry {
 
         private Optional<String> mappingStatus = Optional.empty();
 
-        private Optional<String> equivalence = Optional.empty();
-
         private Optional<String> note = Optional.empty();
 
         @JsonAnySetter
@@ -232,7 +232,6 @@ public final class MappingReportEntry {
             targetCode(other.getTargetCode());
             targetName(other.getTargetName());
             mappingStatus(other.getMappingStatus());
-            equivalence(other.getEquivalence());
             note(other.getNote());
             return this;
         }
@@ -314,6 +313,15 @@ public final class MappingReportEntry {
             return this;
         }
 
+        /**
+         * <p>Standard concept code. Set when a coding is matched by the structural
+         * (construe) tier — an already-standard code taken verbatim, or a
+         * construe-suggested code — which is every match in structural mode and,
+         * in resolved mode, codings for text-only resources or ones that fell back
+         * when the resolver was unavailable. Omitted for codings resolved directly
+         * by the concept-resolver service, which returns the standard concept's
+         * id, name, and vocabulary but not its <code>concept_code</code>.</p>
+         */
         @JsonSetter(value = "target_code", nulls = Nulls.SKIP)
         public Builder targetCode(Optional<String> targetCode) {
             this.targetCode = targetCode;
@@ -337,7 +345,11 @@ public final class MappingReportEntry {
         }
 
         /**
-         * <p>ALREADY_STANDARD (source already in target vocabulary), UNCHECKED (unreviewed suggestion), or UNMAPPED (no candidate found).</p>
+         * <p>ALREADY_STANDARD (source already in the target standard vocabulary),
+         * MAPPED (resolved to a standard concept via the OMOP &quot;Maps to&quot; crosswalk
+         * or UMLS-CUI bridge; resolved mode only), UNCHECKED (an unreviewed
+         * construe suggestion; structural / fallback only), or UNMAPPED (no
+         * candidate found).</p>
          */
         @JsonSetter(value = "mapping_status", nulls = Nulls.SKIP)
         public Builder mappingStatus(Optional<String> mappingStatus) {
@@ -347,17 +359,6 @@ public final class MappingReportEntry {
 
         public Builder mappingStatus(String mappingStatus) {
             this.mappingStatus = Optional.ofNullable(mappingStatus);
-            return this;
-        }
-
-        @JsonSetter(value = "equivalence", nulls = Nulls.SKIP)
-        public Builder equivalence(Optional<String> equivalence) {
-            this.equivalence = equivalence;
-            return this;
-        }
-
-        public Builder equivalence(String equivalence) {
-            this.equivalence = Optional.ofNullable(equivalence);
             return this;
         }
 
@@ -384,7 +385,6 @@ public final class MappingReportEntry {
                     targetCode,
                     targetName,
                     mappingStatus,
-                    equivalence,
                     note,
                     additionalProperties);
         }

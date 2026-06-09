@@ -1,7 +1,7 @@
 {
   "success": true,
-  "message": "FHIR resources mapped to OMOP CDM v5.4 (structural; concept_ids pending vocabulary crosswalk)",
-  "mode": "structural",
+  "message": "FHIR resources mapped to OMOP CDM v5.4 with vocabulary concept resolution",
+  "mode": "resolved",
   "tables": {
     "person": [
       {
@@ -24,24 +24,24 @@
       {
         "condition_occurrence_id": 1,
         "person_id": 1,
-        "condition_concept_id": 0,
+        "condition_concept_id": 201826,
         "condition_start_date": "2024-01-15",
         "condition_start_datetime": "2024-01-15",
         "condition_type_concept_id": 32817,
         "condition_source_value": "http://snomed.info/sct#44054006",
-        "condition_source_concept_id": 0
+        "condition_source_concept_id": 201826
       }
     ],
     "drug_exposure": [
       {
         "drug_exposure_id": 1,
         "person_id": 1,
-        "drug_concept_id": 0,
+        "drug_concept_id": 40163924,
         "drug_exposure_start_date": "2024-01-16",
         "drug_exposure_start_datetime": "2024-01-16",
         "drug_type_concept_id": 32817,
         "drug_source_value": "http://www.nlm.nih.gov/research/umls/rxnorm#860975",
-        "drug_source_concept_id": 0
+        "drug_source_concept_id": 40163924
       }
     ],
     "procedure_occurrence": [
@@ -63,10 +63,9 @@
       "source_code": "44054006",
       "source_name": "Type 2 diabetes mellitus",
       "target_vocabulary": "SNOMED",
-      "target_code": "44054006",
+      "target_code": "target_code",
       "target_name": "Type 2 diabetes mellitus",
       "mapping_status": "ALREADY_STANDARD",
-      "equivalence": "equivalence",
       "note": "note"
     },
     {
@@ -77,10 +76,9 @@
       "source_code": "860975",
       "source_name": "metformin hydrochloride 500 MG",
       "target_vocabulary": "RXNORM",
-      "target_code": "860975",
+      "target_code": "target_code",
       "target_name": "metformin hydrochloride 500 MG",
       "mapping_status": "ALREADY_STANDARD",
-      "equivalence": "equivalence",
       "note": "note"
     }
   ],
@@ -106,6 +104,11 @@
     "off_vocab_rate": 0,
     "dropped_resources": [
       {}
-    ]
+    ],
+    "resolved_vocab_version": "v20240229",
+    "concept_resolver_note": "concept_resolver_note",
+    "concepts_bridged": 1,
+    "concept_candidates_truncated": 1,
+    "construe_resolutions": 1
   }
 }

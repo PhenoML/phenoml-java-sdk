@@ -63,7 +63,11 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return Resolution mode. <code>structural</code> means all clinical concept_ids are 0 (vocabulary crosswalk pending).
+     * @return Resolution mode. <code>resolved</code> (default) means clinical <code>concept_id</code>s were
+     * filled by the concept-resolver service; <code>structural</code> means no resolver
+     * was configured, so all clinical <code>concept_id</code>s are <code>0</code>. Reflects which
+     * resolver is wired, not the path an individual coding took — per-coding
+     * degradation is surfaced in <code>scan_summary</code>, not the mode.
      */
     @JsonProperty("mode")
     public Optional<String> getMode() {
@@ -174,7 +178,11 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>Resolution mode. <code>structural</code> means all clinical concept_ids are 0 (vocabulary crosswalk pending).</p>
+         * <p>Resolution mode. <code>resolved</code> (default) means clinical <code>concept_id</code>s were
+         * filled by the concept-resolver service; <code>structural</code> means no resolver
+         * was configured, so all clinical <code>concept_id</code>s are <code>0</code>. Reflects which
+         * resolver is wired, not the path an individual coding took — per-coding
+         * degradation is surfaced in <code>scan_summary</code>, not the mode.</p>
          */
         @JsonSetter(value = "mode", nulls = Nulls.SKIP)
         public Builder mode(Optional<String> mode) {

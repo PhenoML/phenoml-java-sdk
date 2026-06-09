@@ -1,3 +1,12 @@
+## 17.2.0 - 2026-06-09
+### Added
+* **`ScanSummary.getResolvedVocabVersion()` / `getConceptResolverNote()` / `getConceptsBridged()` / `getConceptCandidatesTruncated()` / `getConstrueResolutions()`** — five resolver-telemetry getters added, reporting the OMOP vocabulary release used and where concept resolution was degraded, bridged, truncated, or fell back to (and billed) the construe tier.
+### Changed
+* **`PhenomlClient.fhir2Omop().create(...)`** — now defaults to `mode: "resolved"`, filling clinical `concept_id`s via the concept-resolver service; the former structural-only behavior (all clinical `concept_id`s `0`) now occurs only when no resolver is configured and is reported as `mode: "structural"`. Also applies to `AsyncPhenomlClient`.
+* **`MappingReportEntry.getMappingStatus()`** — adds the `MAPPED` value, returned in resolved mode when a coding is mapped to a standard concept via the OMOP "Maps to" crosswalk or UMLS-CUI bridge.
+* **`MappingReportEntry.getEquivalence()`** — getter and `equivalence(...)` builder methods removed; per-coding mapping confidence is now conveyed by `getMappingStatus()`. (Finalizes the fhir2omop response shape first shipped earlier today in 17.1.0.)
+* **`MappingReportEntry.getTargetCode()`** — now empty for codings resolved directly by the concept-resolver (which returns the concept id/name/vocabulary but not its `concept_code`); still populated for structural / construe-tier matches.
+
 ## 17.1.0 - 2026-06-09
 ### Added
 * **`PhenomlClient.fhir2Omop().create(...)`** — new method posting FHIR R4 resources or a Bundle to `POST /fhir2omop/create` and returning OMOP CDM v5.4 rows; structural mode only, so all clinical `concept_id`s are `0` (the vocabulary crosswalk is a later release). Also available on `AsyncPhenomlClient`.

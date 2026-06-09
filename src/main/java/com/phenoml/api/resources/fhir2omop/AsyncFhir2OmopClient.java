@@ -30,21 +30,33 @@ public class AsyncFhir2OmopClient {
      * Shapes a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows
      * (person, visit_occurrence, condition_occurrence, drug_exposure,
      * procedure_occurrence, measurement, observation).
-     * <p><strong>This is a structural mapping (<code>mode: &quot;structural&quot;</code>).</strong> Rows are
-     * structurally valid OMOP, but every clinical and source <code>concept_id</code> is <code>0</code>:
-     * the vocabulary crosswalk that assigns real OMOP <code>concept_id</code>s is a planned
-     * follow-up. Each <code>*_source_value</code> carries the verbatim FHIR coding
+     * <p><strong>Two resolution modes, reported in <code>mode</code>.</strong> <code>mode</code> reflects which
+     * resolver is wired, not the path an individual coding took. With a
+     * concept-resolver configured (the default), <code>mode</code> is <code>&quot;resolved&quot;</code> and the
+     * resource's primary clinical coding is resolved to a real OMOP <code>concept_id</code>;
+     * with no resolver configured, <code>mode</code> is <code>&quot;structural&quot;</code> and every clinical
+     * and source <code>concept_id</code> is <code>0</code>. In <code>&quot;resolved&quot;</code> mode individual codings can
+     * still land at <code>concept_id</code> <code>0</code> without changing the mode: a coding the
+     * service finds no match for is <code>UNMAPPED</code>, and a coding that fell back to the
+     * structural tier (the resolver was briefly unavailable, or the resource was
+     * text-only) is surfaced in <code>scan_summary</code> (<code>concept_resolver_note</code>,
+     * <code>construe_resolutions</code>). A <code>concept_id</code> of <code>0</code> is &quot;no matching concept&quot; per
+     * OMOP semantics, deliberately not omitted. Only the primary clinical coding
+     * is resolved — <code>gender</code>/<code>race</code>/<code>ethnicity</code>/<code>visit</code>/<code>value</code>/<code>unit</code>
+     * <code>concept_id</code>s are always <code>0</code>.</p>
+     * <p>In every mode each <code>*_source_value</code> carries the verbatim FHIR coding
      * (<code>system#code</code>), <code>*_type_concept_id</code> is set to <code>32817</code> (EHR), and the
-     * response <code>report</code> lists a standard-code <em>suggestion</em> for each source coding
-     * (already-standard, an unchecked normalization suggestion, or unmapped). Do
-     * not treat the output as analytically resolved OMOP until <code>concept_id</code>s are
-     * populated.</p>
+     * response <code>report</code> lists one Usagi-shaped entry per source coding describing
+     * how it resolved (<code>ALREADY_STANDARD</code>, <code>MAPPED</code>, an <code>UNCHECKED</code> suggestion,
+     * or <code>UNMAPPED</code>).</p>
      * <p>Medication codes are resolved whether they appear inline
      * (<code>medicationCodeableConcept</code>) or via a <code>medicationReference</code> to a contained,
      * relative (<code>Type/id</code>), or bundle-entry (<code>urn:uuid</code>) <code>Medication</code> resource.
-     * A medication with no usable code, resolvable reference, or display is
-     * reported under <code>scan_summary.dropped_resources</code> rather than emitted as a
-     * blank row. The bundle must contain at least one Patient resource.</p>
+     * Resources that cannot be shaped into a row — a medication with no usable
+     * code, resolvable reference, or display, or any clinical resource whose
+     * subject/patient reference cannot be tied to a person — are reported under
+     * <code>scan_summary.dropped_resources</code> rather than emitted as blank rows. The
+     * bundle must contain at least one Patient resource.</p>
      */
     public CompletableFuture<CreateOmopResponse> create(CreateOmopRequest request) {
         return this.rawClient.create(request).thenApply(response -> response.body());
@@ -54,21 +66,33 @@ public class AsyncFhir2OmopClient {
      * Shapes a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows
      * (person, visit_occurrence, condition_occurrence, drug_exposure,
      * procedure_occurrence, measurement, observation).
-     * <p><strong>This is a structural mapping (<code>mode: &quot;structural&quot;</code>).</strong> Rows are
-     * structurally valid OMOP, but every clinical and source <code>concept_id</code> is <code>0</code>:
-     * the vocabulary crosswalk that assigns real OMOP <code>concept_id</code>s is a planned
-     * follow-up. Each <code>*_source_value</code> carries the verbatim FHIR coding
+     * <p><strong>Two resolution modes, reported in <code>mode</code>.</strong> <code>mode</code> reflects which
+     * resolver is wired, not the path an individual coding took. With a
+     * concept-resolver configured (the default), <code>mode</code> is <code>&quot;resolved&quot;</code> and the
+     * resource's primary clinical coding is resolved to a real OMOP <code>concept_id</code>;
+     * with no resolver configured, <code>mode</code> is <code>&quot;structural&quot;</code> and every clinical
+     * and source <code>concept_id</code> is <code>0</code>. In <code>&quot;resolved&quot;</code> mode individual codings can
+     * still land at <code>concept_id</code> <code>0</code> without changing the mode: a coding the
+     * service finds no match for is <code>UNMAPPED</code>, and a coding that fell back to the
+     * structural tier (the resolver was briefly unavailable, or the resource was
+     * text-only) is surfaced in <code>scan_summary</code> (<code>concept_resolver_note</code>,
+     * <code>construe_resolutions</code>). A <code>concept_id</code> of <code>0</code> is &quot;no matching concept&quot; per
+     * OMOP semantics, deliberately not omitted. Only the primary clinical coding
+     * is resolved — <code>gender</code>/<code>race</code>/<code>ethnicity</code>/<code>visit</code>/<code>value</code>/<code>unit</code>
+     * <code>concept_id</code>s are always <code>0</code>.</p>
+     * <p>In every mode each <code>*_source_value</code> carries the verbatim FHIR coding
      * (<code>system#code</code>), <code>*_type_concept_id</code> is set to <code>32817</code> (EHR), and the
-     * response <code>report</code> lists a standard-code <em>suggestion</em> for each source coding
-     * (already-standard, an unchecked normalization suggestion, or unmapped). Do
-     * not treat the output as analytically resolved OMOP until <code>concept_id</code>s are
-     * populated.</p>
+     * response <code>report</code> lists one Usagi-shaped entry per source coding describing
+     * how it resolved (<code>ALREADY_STANDARD</code>, <code>MAPPED</code>, an <code>UNCHECKED</code> suggestion,
+     * or <code>UNMAPPED</code>).</p>
      * <p>Medication codes are resolved whether they appear inline
      * (<code>medicationCodeableConcept</code>) or via a <code>medicationReference</code> to a contained,
      * relative (<code>Type/id</code>), or bundle-entry (<code>urn:uuid</code>) <code>Medication</code> resource.
-     * A medication with no usable code, resolvable reference, or display is
-     * reported under <code>scan_summary.dropped_resources</code> rather than emitted as a
-     * blank row. The bundle must contain at least one Patient resource.</p>
+     * Resources that cannot be shaped into a row — a medication with no usable
+     * code, resolvable reference, or display, or any clinical resource whose
+     * subject/patient reference cannot be tied to a person — are reported under
+     * <code>scan_summary.dropped_resources</code> rather than emitted as blank rows. The
+     * bundle must contain at least one Patient resource.</p>
      */
     public CompletableFuture<CreateOmopResponse> create(CreateOmopRequest request, RequestOptions requestOptions) {
         return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
