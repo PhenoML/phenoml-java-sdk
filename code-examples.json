@@ -2,7 +2,7 @@
   "metadata": {
     "language": "java",
     "packageName": "com.phenoml.maven:phenoml-java-sdk",
-    "sdkVersion": "18.0.0",
+    "sdkVersion": "17.2.0",
     "specCommit": "f96459701356d9f1fe1acbeab0f6f2eccc498046",
     "generatorName": "fernapi/fern-java-sdk"
   },
