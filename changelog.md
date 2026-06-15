@@ -1,3 +1,12 @@
+## [17.4.0] - 2026-06-15
+### Added
+- **`PhenomlClient.fhir2Omop()` / `AsyncPhenomlClient.fhir2Omop()`** — new top-level accessors returning the synchronous `Fhir2OmopClient` or asynchronous `AsyncFhir2OmopClient` for the fhir2omop service (alpha).
+- **`Fhir2OmopClient` / `AsyncFhir2OmopClient` / `RawFhir2OmopClient` / `AsyncRawFhir2OmopClient`** — new synchronous and asynchronous client classes exposing `create(CreateOmopRequest)` and `create(CreateOmopRequest, RequestOptions)` with typed error dispatch.
+- **`CreateOmopRequest` / `CreateOmopResponse`** — new request/response types for submitting FHIR R4 resources or Bundles and receiving typed OMOP CDM v5.4 conversion results including `tables`, `mappings`, `dropped`, `vocabVersion`, and `summary`.
+- **OMOP CDM v5.4 row types** — new `OmopTables` aggregate and row classes `PersonRow`, `ConditionOccurrenceRow`, `DrugExposureRow`, `MeasurementRow`, `ObservationRow`, `ProcedureOccurrenceRow`, and `VisitOccurrenceRow` representing destination table records.
+- **`MappingEntry` / `Summary` / `DroppedResource`** — new supporting types providing per-coding mapping status, aggregate resolution statistics, and details on FHIR resources that could not be shaped into OMOP rows.
+- **Typed exception classes** — new `BadRequestError`, `UnauthorizedError`, `InternalServerError`, and `ServiceUnavailableError` under `com.phenoml.api.resources.fhir2omop.errors` surfacing structured response bodies for HTTP 400, 401, 500, and 503 errors.
+
 ## [17.3.0] - 2026-06-15
 ### Added
 - **`PhenomlClient.fhir2Omop().create()`** — new method (sync and async) posting a FHIR R4 resource or Bundle to `POST /fhir2omop/create` and returning typed OMOP CDM v5.4 rows in both `resolved` and `structural` modes.
