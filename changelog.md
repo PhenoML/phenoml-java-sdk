@@ -1,12 +1,6 @@
 ## [17.5.0] - 2026-06-15
 ### Added
-- **`PhenomlClient.fhir2Omop()`** / **`AsyncPhenomlClient.fhir2Omop()`** — new client accessors exposing the `fhir2omop` service in both synchronous and asynchronous flavors.
-- **`Fhir2OmopClient`**, **`AsyncFhir2OmopClient`**, **`RawFhir2OmopClient`**, and **`AsyncRawFhir2OmopClient`** — new client classes for `POST /fhir2omop/create`, returning typed `CreateOmopResponse` results.
-- **`CreateOmopRequest`** / **`CreateOmopResponse`** — new request/response types for the fhir2omop endpoint, carrying a `fhirResources` map and returning `tables`, `mappings`, `dropped`, `vocabVersion`, and `summary` fields.
-- **OMOP CDM v5.4 row types** — new `OmopTables` aggregate and row classes (`PersonRow`, `VisitOccurrenceRow`, `ConditionOccurrenceRow`, `DrugExposureRow`, `ProcedureOccurrenceRow`, `MeasurementRow`, `ObservationRow`) representing all supported OMOP table records.
-- **`MappingEntry`**, **`Summary`**, and **`DroppedResource`** — new supporting types for per-coding mapping audit, aggregate resolution statistics, and details on resources that could not be shaped into OMOP rows.
-- **Typed HTTP error classes** — `BadRequestError`, `UnauthorizedError`, `InternalServerError`, and `ServiceUnavailableError` thrown on HTTP 400, 401, 500, and 503 responses from the fhir2omop endpoint.
-- **`Provider.AIDBOX`** — new `aidbox` provider constant and corresponding `Visitor.visitAidbox()` method added to the `Provider` enum.
+- **`Provider.AIDBOX`** — `"aidbox"` is now a supported value in the `Provider` enum (with a corresponding `Visitor.visitAidbox()` method).
 
 ## [17.4.0] - 2026-06-15
 ### Added
