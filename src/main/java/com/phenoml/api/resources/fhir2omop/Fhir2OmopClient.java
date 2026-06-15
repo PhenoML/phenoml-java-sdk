@@ -35,12 +35,15 @@ public class Fhir2OmopClient {
      * to the row it produced), <code>dropped</code> (resources that could not be shaped
      * into a row), <code>vocab_version</code> (the OMOP vocabulary release codes were
      * resolved against), and a small <code>summary</code> of the resolution outcomes.</p>
-     * <p>A <code>concept_id</code> of <code>0</code> means &quot;no matching standard concept&quot; (OMOP
-     * semantics) and is reported, not omitted — a coding with no match is
-     * <code>UNMAPPED</code>. Only the primary clinical coding is resolved;
+     * <p>A <code>concept_id</code> of <code>0</code> is reported, not omitted (OMOP &quot;no matching
+     * concept&quot; semantics): it covers both a coding with no standard match
+     * (<code>UNMAPPED</code>) and an unverified suggestion for a text-only resource
+     * (<code>UNCHECKED</code>). Only the primary clinical coding is resolved, so
      * <code>gender</code>/<code>race</code>/<code>ethnicity</code>/<code>visit</code>/<code>value</code>/<code>unit</code> <code>concept_id</code>s are
-     * always <code>0</code>. Each <code>*_source_value</code> carries the verbatim FHIR coding
-     * (<code>system#code</code>), and <code>*_type_concept_id</code> is set to <code>32817</code> (EHR).</p>
+     * always <code>0</code>; the one populated non-resolved concept is measurement
+     * <code>operator_concept_id</code>, set from a value comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>)
+     * rather than the resolver. Each <code>*_source_value</code> carries the verbatim FHIR
+     * coding (<code>system#code</code>), and <code>*_type_concept_id</code> is set to <code>32817</code> (EHR).</p>
      * <p>Medication codes are resolved whether they appear inline
      * (<code>medicationCodeableConcept</code>) or via a <code>medicationReference</code> to a contained,
      * relative (<code>Type/id</code>), or bundle-entry (<code>urn:uuid</code>) <code>Medication</code> resource.
@@ -64,12 +67,15 @@ public class Fhir2OmopClient {
      * to the row it produced), <code>dropped</code> (resources that could not be shaped
      * into a row), <code>vocab_version</code> (the OMOP vocabulary release codes were
      * resolved against), and a small <code>summary</code> of the resolution outcomes.</p>
-     * <p>A <code>concept_id</code> of <code>0</code> means &quot;no matching standard concept&quot; (OMOP
-     * semantics) and is reported, not omitted — a coding with no match is
-     * <code>UNMAPPED</code>. Only the primary clinical coding is resolved;
+     * <p>A <code>concept_id</code> of <code>0</code> is reported, not omitted (OMOP &quot;no matching
+     * concept&quot; semantics): it covers both a coding with no standard match
+     * (<code>UNMAPPED</code>) and an unverified suggestion for a text-only resource
+     * (<code>UNCHECKED</code>). Only the primary clinical coding is resolved, so
      * <code>gender</code>/<code>race</code>/<code>ethnicity</code>/<code>visit</code>/<code>value</code>/<code>unit</code> <code>concept_id</code>s are
-     * always <code>0</code>. Each <code>*_source_value</code> carries the verbatim FHIR coding
-     * (<code>system#code</code>), and <code>*_type_concept_id</code> is set to <code>32817</code> (EHR).</p>
+     * always <code>0</code>; the one populated non-resolved concept is measurement
+     * <code>operator_concept_id</code>, set from a value comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>)
+     * rather than the resolver. Each <code>*_source_value</code> carries the verbatim FHIR
+     * coding (<code>system#code</code>), and <code>*_type_concept_id</code> is set to <code>32817</code> (EHR).</p>
      * <p>Medication codes are resolved whether they appear inline
      * (<code>medicationCodeableConcept</code>) or via a <code>medicationReference</code> to a contained,
      * relative (<code>Type/id</code>), or bundle-entry (<code>urn:uuid</code>) <code>Medication</code> resource.

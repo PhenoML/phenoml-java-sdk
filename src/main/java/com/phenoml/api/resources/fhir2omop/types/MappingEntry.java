@@ -121,12 +121,10 @@ public final class MappingEntry {
     }
 
     /**
-     * @return The standard concept's code, when present. Populated only for an
-     * <code>UNCHECKED</code> suggestion (where the API normalized a text-only resource
-     * to a suggested code); omitted for codings resolved through concept
-     * resolution (<code>ALREADY_STANDARD</code> / <code>MAPPED</code> / <code>UNMAPPED</code>), which are
-     * identified by <code>target_vocabulary</code>, <code>target_name</code>, and the row's
-     * <code>*_concept_id</code> rather than by code.
+     * @return The standard concept's own code: the source code itself for an
+     * ALREADY_STANDARD row, the standard concept's code for a MAPPED row,
+     * or the suggested code for an UNCHECKED row. Omitted for UNMAPPED
+     * rows.
      */
     @JsonProperty("target_code")
     public Optional<String> getTargetCode() {
@@ -348,12 +346,10 @@ public final class MappingEntry {
         }
 
         /**
-         * <p>The standard concept's code, when present. Populated only for an
-         * <code>UNCHECKED</code> suggestion (where the API normalized a text-only resource
-         * to a suggested code); omitted for codings resolved through concept
-         * resolution (<code>ALREADY_STANDARD</code> / <code>MAPPED</code> / <code>UNMAPPED</code>), which are
-         * identified by <code>target_vocabulary</code>, <code>target_name</code>, and the row's
-         * <code>*_concept_id</code> rather than by code.</p>
+         * <p>The standard concept's own code: the source code itself for an
+         * ALREADY_STANDARD row, the standard concept's code for a MAPPED row,
+         * or the suggested code for an UNCHECKED row. Omitted for UNMAPPED
+         * rows.</p>
          */
         @JsonSetter(value = "target_code", nulls = Nulls.SKIP)
         public Builder targetCode(Optional<String> targetCode) {

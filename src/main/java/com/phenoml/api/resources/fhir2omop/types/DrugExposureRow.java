@@ -38,6 +38,8 @@ public final class DrugExposureRow {
 
     private final Optional<String> sig;
 
+    private final Optional<Long> visitOccurrenceId;
+
     private final Optional<String> drugSourceValue;
 
     private final Optional<Long> drugSourceConceptId;
@@ -54,6 +56,7 @@ public final class DrugExposureRow {
             Optional<Long> drugTypeConceptId,
             Optional<String> stopReason,
             Optional<String> sig,
+            Optional<Long> visitOccurrenceId,
             Optional<String> drugSourceValue,
             Optional<Long> drugSourceConceptId,
             Map<String, Object> additionalProperties) {
@@ -66,6 +69,7 @@ public final class DrugExposureRow {
         this.drugTypeConceptId = drugTypeConceptId;
         this.stopReason = stopReason;
         this.sig = sig;
+        this.visitOccurrenceId = visitOccurrenceId;
         this.drugSourceValue = drugSourceValue;
         this.drugSourceConceptId = drugSourceConceptId;
         this.additionalProperties = additionalProperties;
@@ -116,6 +120,11 @@ public final class DrugExposureRow {
         return sig;
     }
 
+    @JsonProperty("visit_occurrence_id")
+    public Optional<Long> getVisitOccurrenceId() {
+        return visitOccurrenceId;
+    }
+
     @JsonProperty("drug_source_value")
     public Optional<String> getDrugSourceValue() {
         return drugSourceValue;
@@ -147,6 +156,7 @@ public final class DrugExposureRow {
                 && drugTypeConceptId.equals(other.drugTypeConceptId)
                 && stopReason.equals(other.stopReason)
                 && sig.equals(other.sig)
+                && visitOccurrenceId.equals(other.visitOccurrenceId)
                 && drugSourceValue.equals(other.drugSourceValue)
                 && drugSourceConceptId.equals(other.drugSourceConceptId);
     }
@@ -163,6 +173,7 @@ public final class DrugExposureRow {
                 this.drugTypeConceptId,
                 this.stopReason,
                 this.sig,
+                this.visitOccurrenceId,
                 this.drugSourceValue,
                 this.drugSourceConceptId);
     }
@@ -196,6 +207,8 @@ public final class DrugExposureRow {
 
         private Optional<String> sig = Optional.empty();
 
+        private Optional<Long> visitOccurrenceId = Optional.empty();
+
         private Optional<String> drugSourceValue = Optional.empty();
 
         private Optional<Long> drugSourceConceptId = Optional.empty();
@@ -215,6 +228,7 @@ public final class DrugExposureRow {
             drugTypeConceptId(other.getDrugTypeConceptId());
             stopReason(other.getStopReason());
             sig(other.getSig());
+            visitOccurrenceId(other.getVisitOccurrenceId());
             drugSourceValue(other.getDrugSourceValue());
             drugSourceConceptId(other.getDrugSourceConceptId());
             return this;
@@ -319,6 +333,17 @@ public final class DrugExposureRow {
             return this;
         }
 
+        @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
+        public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
+            this.visitOccurrenceId = visitOccurrenceId;
+            return this;
+        }
+
+        public Builder visitOccurrenceId(Long visitOccurrenceId) {
+            this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
+            return this;
+        }
+
         @JsonSetter(value = "drug_source_value", nulls = Nulls.SKIP)
         public Builder drugSourceValue(Optional<String> drugSourceValue) {
             this.drugSourceValue = drugSourceValue;
@@ -352,6 +377,7 @@ public final class DrugExposureRow {
                     drugTypeConceptId,
                     stopReason,
                     sig,
+                    visitOccurrenceId,
                     drugSourceValue,
                     drugSourceConceptId,
                     additionalProperties);
