@@ -34,6 +34,8 @@ public final class MeasurementRow {
 
     private final Optional<Double> valueAsNumber;
 
+    private final Optional<Long> operatorConceptId;
+
     private final Optional<Long> valueAsConceptId;
 
     private final Optional<Long> unitConceptId;
@@ -60,6 +62,7 @@ public final class MeasurementRow {
             Optional<String> measurementDatetime,
             Optional<Long> measurementTypeConceptId,
             Optional<Double> valueAsNumber,
+            Optional<Long> operatorConceptId,
             Optional<Long> valueAsConceptId,
             Optional<Long> unitConceptId,
             Optional<Double> rangeLow,
@@ -76,6 +79,7 @@ public final class MeasurementRow {
         this.measurementDatetime = measurementDatetime;
         this.measurementTypeConceptId = measurementTypeConceptId;
         this.valueAsNumber = valueAsNumber;
+        this.operatorConceptId = operatorConceptId;
         this.valueAsConceptId = valueAsConceptId;
         this.unitConceptId = unitConceptId;
         this.rangeLow = rangeLow;
@@ -120,6 +124,14 @@ public final class MeasurementRow {
     @JsonProperty("value_as_number")
     public Optional<Double> getValueAsNumber() {
         return valueAsNumber;
+    }
+
+    /**
+     * @return OMOP &quot;Meas Value Operator&quot; standard concept qualifying value_as_number (&lt;, &lt;=, &gt;, &gt;=), parsed from a numeric-string value or a FHIR valueQuantity.comparator. 0 when no operator (a bare number).
+     */
+    @JsonProperty("operator_concept_id")
+    public Optional<Long> getOperatorConceptId() {
+        return operatorConceptId;
     }
 
     @JsonProperty("value_as_concept_id")
@@ -181,6 +193,7 @@ public final class MeasurementRow {
                 && measurementDatetime.equals(other.measurementDatetime)
                 && measurementTypeConceptId.equals(other.measurementTypeConceptId)
                 && valueAsNumber.equals(other.valueAsNumber)
+                && operatorConceptId.equals(other.operatorConceptId)
                 && valueAsConceptId.equals(other.valueAsConceptId)
                 && unitConceptId.equals(other.unitConceptId)
                 && rangeLow.equals(other.rangeLow)
@@ -201,6 +214,7 @@ public final class MeasurementRow {
                 this.measurementDatetime,
                 this.measurementTypeConceptId,
                 this.valueAsNumber,
+                this.operatorConceptId,
                 this.valueAsConceptId,
                 this.unitConceptId,
                 this.rangeLow,
@@ -236,6 +250,8 @@ public final class MeasurementRow {
 
         private Optional<Double> valueAsNumber = Optional.empty();
 
+        private Optional<Long> operatorConceptId = Optional.empty();
+
         private Optional<Long> valueAsConceptId = Optional.empty();
 
         private Optional<Long> unitConceptId = Optional.empty();
@@ -265,6 +281,7 @@ public final class MeasurementRow {
             measurementDatetime(other.getMeasurementDatetime());
             measurementTypeConceptId(other.getMeasurementTypeConceptId());
             valueAsNumber(other.getValueAsNumber());
+            operatorConceptId(other.getOperatorConceptId());
             valueAsConceptId(other.getValueAsConceptId());
             unitConceptId(other.getUnitConceptId());
             rangeLow(other.getRangeLow());
@@ -350,6 +367,20 @@ public final class MeasurementRow {
 
         public Builder valueAsNumber(Double valueAsNumber) {
             this.valueAsNumber = Optional.ofNullable(valueAsNumber);
+            return this;
+        }
+
+        /**
+         * <p>OMOP &quot;Meas Value Operator&quot; standard concept qualifying value_as_number (&lt;, &lt;=, &gt;, &gt;=), parsed from a numeric-string value or a FHIR valueQuantity.comparator. 0 when no operator (a bare number).</p>
+         */
+        @JsonSetter(value = "operator_concept_id", nulls = Nulls.SKIP)
+        public Builder operatorConceptId(Optional<Long> operatorConceptId) {
+            this.operatorConceptId = operatorConceptId;
+            return this;
+        }
+
+        public Builder operatorConceptId(Long operatorConceptId) {
+            this.operatorConceptId = Optional.ofNullable(operatorConceptId);
             return this;
         }
 
@@ -450,6 +481,7 @@ public final class MeasurementRow {
                     measurementDatetime,
                     measurementTypeConceptId,
                     valueAsNumber,
+                    operatorConceptId,
                     valueAsConceptId,
                     unitConceptId,
                     rangeLow,
