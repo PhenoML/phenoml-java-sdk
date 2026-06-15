@@ -1,3 +1,11 @@
+## [17.3.0] - 2026-06-15
+### Added
+- **`PhenomlClient.fhir2Omop().create()`** — new method (sync and async) posting a FHIR R4 resource or Bundle to `POST /fhir2omop/create` and returning typed OMOP CDM v5.4 rows in both `resolved` and `structural` modes.
+- **`Fhir2OmopClient` / `AsyncFhir2OmopClient`** — new synchronous and asynchronous client classes (plus `RawFhir2OmopClient` / `AsyncRawFhir2OmopClient` raw-response variants) exposing the `create(CreateOmopRequest)` endpoint.
+- **`CreateOmopRequest` / `CreateOmopResponse`** — new request/response types carrying `fhirResources` and returning `tables`, `mappings`, `dropped`, `summary`, and `mode` fields.
+- **`OmopTables`** and OMOP CDM v5.4 row types — new `PersonRow`, `ConditionOccurrenceRow`, `DrugExposureRow`, `MeasurementRow`, `ObservationRow`, `ProcedureOccurrenceRow`, and `VisitOccurrenceRow` classes aggregated under `OmopTables`.
+- **`MappingEntry` / `Summary` / `DroppedResource`** — new supporting types providing per-coding mapping status (`ALREADY_STANDARD`, `MAPPED`, `UNCHECKED`, `UNMAPPED`), aggregate summary statistics, and details on resources that could not be shaped into OMOP rows.
+
 ## 17.2.0 - 2026-06-09
 ### Added
 * **`ScanSummary.getResolvedVocabVersion()` / `getConceptResolverNote()` / `getConceptsBridged()` / `getConceptCandidatesTruncated()` / `getConstrueResolutions()`** — five resolver-telemetry getters added, reporting the OMOP vocabulary release used and where concept resolution was degraded, bridged, truncated, or fell back to (and billed) the construe tier.
