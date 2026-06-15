@@ -1,3 +1,12 @@
+## [17.3.0] - 2026-06-15
+### Added
+- **`Fhir2OmopClient` / `AsyncFhir2OmopClient`** — new sync and async clients exposing `create(CreateOmopRequest)` for `POST /fhir2omop/create`; call `withRawResponse()` to obtain the raw-response variants with full HTTP metadata.
+- **`PhenomlClient.fhir2Omop().create(...)`** — new top-level entry point posting a FHIR R4 resource or Bundle and returning typed OMOP CDM v5.4 rows in `resolved` (default) or `structural` mode.
+- **`CreateOmopRequest` / `CreateOmopResponse`** — request/response types for the fhir2omop create endpoint, with a fluent builder on the request and typed accessors for `success`, `message`, `mode`, `tables`, `report`, and `scanSummary` on the response.
+- **OMOP CDM v5.4 row types** — new typed table-row classes `PersonRow`, `ConditionOccurrenceRow`, `DrugExposureRow`, `MeasurementRow`, `ObservationRow`, `ProcedureOccurrenceRow`, and `VisitOccurrenceRow`, all collected in the `OmopTables` container.
+- **`MappingReportEntry` / `ScanSummary` / `DroppedResource`** — diagnostic and telemetry types providing per-coding mapping status, White Rabbit-style aggregate scan statistics, and a list of FHIR resources that could not be shaped into OMOP rows.
+- **`BadRequestError` / `UnauthorizedError` / `InternalServerError`** — typed exception classes (HTTP 400, 401, and 500) thrown by the fhir2omop clients, extending `PhenomlClientApiException`.
+
 ## 17.2.0 - 2026-06-09
 ### Added
 * **`ScanSummary.getResolvedVocabVersion()` / `getConceptResolverNote()` / `getConceptsBridged()` / `getConceptCandidatesTruncated()` / `getConstrueResolutions()`** — five resolver-telemetry getters added, reporting the OMOP vocabulary release used and where concept resolution was degraded, bridged, truncated, or fell back to (and billed) the construe tier.
