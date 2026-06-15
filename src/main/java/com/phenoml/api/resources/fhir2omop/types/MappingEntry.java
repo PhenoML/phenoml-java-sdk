@@ -18,13 +18,15 @@ import java.util.Objects;
 import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-@JsonDeserialize(builder = MappingReportEntry.Builder.class)
-public final class MappingReportEntry {
+@JsonDeserialize(builder = MappingEntry.Builder.class)
+public final class MappingEntry {
     private final Optional<String> resourceType;
 
     private final Optional<String> resourceId;
 
     private final Optional<String> omopTable;
+
+    private final Optional<Long> omopId;
 
     private final Optional<String> sourceSystem;
 
@@ -44,10 +46,11 @@ public final class MappingReportEntry {
 
     private final Map<String, Object> additionalProperties;
 
-    private MappingReportEntry(
+    private MappingEntry(
             Optional<String> resourceType,
             Optional<String> resourceId,
             Optional<String> omopTable,
+            Optional<Long> omopId,
             Optional<String> sourceSystem,
             Optional<String> sourceCode,
             Optional<String> sourceName,
@@ -60,6 +63,7 @@ public final class MappingReportEntry {
         this.resourceType = resourceType;
         this.resourceId = resourceId;
         this.omopTable = omopTable;
+        this.omopId = omopId;
         this.sourceSystem = sourceSystem;
         this.sourceCode = sourceCode;
         this.sourceName = sourceName;
@@ -86,6 +90,16 @@ public final class MappingReportEntry {
         return omopTable;
     }
 
+    /**
+     * @return The id of the OMOP row this coding produced (e.g. <code>condition_occurrence_id</code>),
+     * within <code>omop_table</code>. A resource with multiple codings yields one entry
+     * per coding, all sharing this id.
+     */
+    @JsonProperty("omop_id")
+    public Optional<Long> getOmopId() {
+        return omopId;
+    }
+
     @JsonProperty("source_system")
     public Optional<String> getSourceSystem() {
         return sourceSystem;
@@ -107,13 +121,12 @@ public final class MappingReportEntry {
     }
 
     /**
-     * @return Standard concept code. Set when a coding is matched by the structural
-     * (construe) tier — an already-standard code taken verbatim, or a
-     * construe-suggested code — which is every match in structural mode and,
-     * in resolved mode, codings for text-only resources or ones that fell back
-     * when the resolver was unavailable. Omitted for codings resolved directly
-     * by the concept-resolver service, which returns the standard concept's
-     * id, name, and vocabulary but not its <code>concept_code</code>.
+     * @return The standard concept's code, when present. Populated only for an
+     * <code>UNCHECKED</code> suggestion (where the API normalized a text-only resource
+     * to a suggested code); omitted for codings resolved through concept
+     * resolution (<code>ALREADY_STANDARD</code> / <code>MAPPED</code> / <code>UNMAPPED</code>), which are
+     * identified by <code>target_vocabulary</code>, <code>target_name</code>, and the row's
+     * <code>*_concept_id</code> rather than by code.
      */
     @JsonProperty("target_code")
     public Optional<String> getTargetCode() {
@@ -126,11 +139,11 @@ public final class MappingReportEntry {
     }
 
     /**
-     * @return ALREADY_STANDARD (source already in the target standard vocabulary),
-     * MAPPED (resolved to a standard concept via the OMOP &quot;Maps to&quot; crosswalk
-     * or UMLS-CUI bridge; resolved mode only), UNCHECKED (an unreviewed
-     * construe suggestion; structural / fallback only), or UNMAPPED (no
-     * candidate found).
+     * @return ALREADY_STANDARD (source coding is already a standard OMOP concept),
+     * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
+     * standard code was suggested — e.g. for a text-only resource — but not
+     * verified against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or
+     * UNMAPPED (no standard concept found).
      */
     @JsonProperty("mapping_status")
     public Optional<String> getMappingStatus() {
@@ -145,7 +158,7 @@ public final class MappingReportEntry {
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        return other instanceof MappingReportEntry && equalTo((MappingReportEntry) other);
+        return other instanceof MappingEntry && equalTo((MappingEntry) other);
     }
 
     @JsonAnyGetter
@@ -153,10 +166,11 @@ public final class MappingReportEntry {
         return this.additionalProperties;
     }
 
-    private boolean equalTo(MappingReportEntry other) {
+    private boolean equalTo(MappingEntry other) {
         return resourceType.equals(other.resourceType)
                 && resourceId.equals(other.resourceId)
                 && omopTable.equals(other.omopTable)
+                && omopId.equals(other.omopId)
                 && sourceSystem.equals(other.sourceSystem)
                 && sourceCode.equals(other.sourceCode)
                 && sourceName.equals(other.sourceName)
@@ -173,6 +187,7 @@ public final class MappingReportEntry {
                 this.resourceType,
                 this.resourceId,
                 this.omopTable,
+                this.omopId,
                 this.sourceSystem,
                 this.sourceCode,
                 this.sourceName,
@@ -200,6 +215,8 @@ public final class MappingReportEntry {
 
         private Optional<String> omopTable = Optional.empty();
 
+        private Optional<Long> omopId = Optional.empty();
+
         private Optional<String> sourceSystem = Optional.empty();
 
         private Optional<String> sourceCode = Optional.empty();
@@ -221,10 +238,11 @@ public final class MappingReportEntry {
 
         private Builder() {}
 
-        public Builder from(MappingReportEntry other) {
+        public Builder from(MappingEntry other) {
             resourceType(other.getResourceType());
             resourceId(other.getResourceId());
             omopTable(other.getOmopTable());
+            omopId(other.getOmopId());
             sourceSystem(other.getSourceSystem());
             sourceCode(other.getSourceCode());
             sourceName(other.getSourceName());
@@ -266,6 +284,22 @@ public final class MappingReportEntry {
 
         public Builder omopTable(String omopTable) {
             this.omopTable = Optional.ofNullable(omopTable);
+            return this;
+        }
+
+        /**
+         * <p>The id of the OMOP row this coding produced (e.g. <code>condition_occurrence_id</code>),
+         * within <code>omop_table</code>. A resource with multiple codings yields one entry
+         * per coding, all sharing this id.</p>
+         */
+        @JsonSetter(value = "omop_id", nulls = Nulls.SKIP)
+        public Builder omopId(Optional<Long> omopId) {
+            this.omopId = omopId;
+            return this;
+        }
+
+        public Builder omopId(Long omopId) {
+            this.omopId = Optional.ofNullable(omopId);
             return this;
         }
 
@@ -314,13 +348,12 @@ public final class MappingReportEntry {
         }
 
         /**
-         * <p>Standard concept code. Set when a coding is matched by the structural
-         * (construe) tier — an already-standard code taken verbatim, or a
-         * construe-suggested code — which is every match in structural mode and,
-         * in resolved mode, codings for text-only resources or ones that fell back
-         * when the resolver was unavailable. Omitted for codings resolved directly
-         * by the concept-resolver service, which returns the standard concept's
-         * id, name, and vocabulary but not its <code>concept_code</code>.</p>
+         * <p>The standard concept's code, when present. Populated only for an
+         * <code>UNCHECKED</code> suggestion (where the API normalized a text-only resource
+         * to a suggested code); omitted for codings resolved through concept
+         * resolution (<code>ALREADY_STANDARD</code> / <code>MAPPED</code> / <code>UNMAPPED</code>), which are
+         * identified by <code>target_vocabulary</code>, <code>target_name</code>, and the row's
+         * <code>*_concept_id</code> rather than by code.</p>
          */
         @JsonSetter(value = "target_code", nulls = Nulls.SKIP)
         public Builder targetCode(Optional<String> targetCode) {
@@ -345,11 +378,11 @@ public final class MappingReportEntry {
         }
 
         /**
-         * <p>ALREADY_STANDARD (source already in the target standard vocabulary),
-         * MAPPED (resolved to a standard concept via the OMOP &quot;Maps to&quot; crosswalk
-         * or UMLS-CUI bridge; resolved mode only), UNCHECKED (an unreviewed
-         * construe suggestion; structural / fallback only), or UNMAPPED (no
-         * candidate found).</p>
+         * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
+         * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
+         * standard code was suggested — e.g. for a text-only resource — but not
+         * verified against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or
+         * UNMAPPED (no standard concept found).</p>
          */
         @JsonSetter(value = "mapping_status", nulls = Nulls.SKIP)
         public Builder mappingStatus(Optional<String> mappingStatus) {
@@ -373,11 +406,12 @@ public final class MappingReportEntry {
             return this;
         }
 
-        public MappingReportEntry build() {
-            return new MappingReportEntry(
+        public MappingEntry build() {
+            return new MappingEntry(
                     resourceType,
                     resourceId,
                     omopTable,
+                    omopId,
                     sourceSystem,
                     sourceCode,
                     sourceName,

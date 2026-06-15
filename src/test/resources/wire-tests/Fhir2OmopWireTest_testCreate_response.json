@@ -1,7 +1,6 @@
 {
   "success": true,
-  "message": "FHIR resources mapped to OMOP CDM v5.4 with vocabulary concept resolution",
-  "mode": "resolved",
+  "message": "FHIR resources mapped to OMOP CDM v5.4",
   "tables": {
     "person": [
       {
@@ -54,11 +53,12 @@
       {}
     ]
   },
-  "report": [
+  "mappings": [
     {
       "resource_type": "Condition",
       "resource_id": "condition-1",
       "omop_table": "condition_occurrence",
+      "omop_id": 1,
       "source_system": "http://snomed.info/sct",
       "source_code": "44054006",
       "source_name": "Type 2 diabetes mellitus",
@@ -72,6 +72,7 @@
       "resource_type": "MedicationRequest",
       "resource_id": "medreq-1",
       "omop_table": "drug_exposure",
+      "omop_id": 1,
       "source_system": "http://www.nlm.nih.gov/research/umls/rxnorm",
       "source_code": "860975",
       "source_name": "metformin hydrochloride 500 MG",
@@ -82,33 +83,18 @@
       "note": "note"
     }
   ],
-  "scan_summary": {
-    "total_resources": 3,
-    "resource_counts": {
-      "Patient": 1,
-      "Condition": 1,
-      "MedicationRequest": 1
-    },
-    "tables_populated": {
-      "person": 1,
-      "condition_occurrence": 1,
-      "drug_exposure": 1
-    },
-    "coding_systems": {
-      "http://snomed.info/sct": 1,
-      "http://www.nlm.nih.gov/research/umls/rxnorm": 1
-    },
+  "dropped": [
+    {
+      "resource_type": "resource_type",
+      "resource_id": "resource_id",
+      "reason": "reason"
+    }
+  ],
+  "vocab_version": "v20240229",
+  "summary": {
     "codes_already_standard": 2,
     "codes_normalized": 0,
     "codes_unmapped": 0,
-    "off_vocab_rate": 0,
-    "dropped_resources": [
-      {}
-    ],
-    "resolved_vocab_version": "v20240229",
-    "concept_resolver_note": "concept_resolver_note",
-    "concepts_bridged": 1,
-    "concept_candidates_truncated": 1,
-    "construe_resolutions": 1
+    "off_vocab_rate": 0
   }
 }
