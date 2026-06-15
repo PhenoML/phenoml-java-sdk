@@ -44,7 +44,7 @@ public final class Summary {
     }
 
     /**
-     * @return Codings already a standard OMOP concept.
+     * @return Coded concepts already a standard OMOP concept (ALREADY_STANDARD).
      */
     @JsonProperty("codes_already_standard")
     public Optional<Integer> getCodesAlreadyStandard() {
@@ -52,7 +52,7 @@ public final class Summary {
     }
 
     /**
-     * @return Codings mapped or suggested to a standard concept (MAPPED or UNCHECKED).
+     * @return Coded concepts mapped or suggested to a standard concept (MAPPED or UNCHECKED).
      */
     @JsonProperty("codes_normalized")
     public Optional<Integer> getCodesNormalized() {
@@ -60,7 +60,7 @@ public final class Summary {
     }
 
     /**
-     * @return Codings with no standard concept found.
+     * @return Coded concepts with no standard concept found (UNMAPPED).
      */
     @JsonProperty("codes_unmapped")
     public Optional<Integer> getCodesUnmapped() {
@@ -131,7 +131,7 @@ public final class Summary {
         }
 
         /**
-         * <p>Codings already a standard OMOP concept.</p>
+         * <p>Coded concepts already a standard OMOP concept (ALREADY_STANDARD).</p>
          */
         @JsonSetter(value = "codes_already_standard", nulls = Nulls.SKIP)
         public Builder codesAlreadyStandard(Optional<Integer> codesAlreadyStandard) {
@@ -145,7 +145,7 @@ public final class Summary {
         }
 
         /**
-         * <p>Codings mapped or suggested to a standard concept (MAPPED or UNCHECKED).</p>
+         * <p>Coded concepts mapped or suggested to a standard concept (MAPPED or UNCHECKED).</p>
          */
         @JsonSetter(value = "codes_normalized", nulls = Nulls.SKIP)
         public Builder codesNormalized(Optional<Integer> codesNormalized) {
@@ -159,7 +159,7 @@ public final class Summary {
         }
 
         /**
-         * <p>Codings with no standard concept found.</p>
+         * <p>Coded concepts with no standard concept found (UNMAPPED).</p>
          */
         @JsonSetter(value = "codes_unmapped", nulls = Nulls.SKIP)
         public Builder codesUnmapped(Optional<Integer> codesUnmapped) {

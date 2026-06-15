@@ -34,6 +34,8 @@ public final class ConditionOccurrenceRow {
 
     private final Optional<Long> conditionTypeConceptId;
 
+    private final Optional<Long> visitOccurrenceId;
+
     private final Optional<String> conditionSourceValue;
 
     private final Optional<Long> conditionSourceConceptId;
@@ -50,6 +52,7 @@ public final class ConditionOccurrenceRow {
             Optional<String> conditionStartDatetime,
             Optional<String> conditionEndDate,
             Optional<Long> conditionTypeConceptId,
+            Optional<Long> visitOccurrenceId,
             Optional<String> conditionSourceValue,
             Optional<Long> conditionSourceConceptId,
             Optional<String> conditionStatusSourceValue,
@@ -61,6 +64,7 @@ public final class ConditionOccurrenceRow {
         this.conditionStartDatetime = conditionStartDatetime;
         this.conditionEndDate = conditionEndDate;
         this.conditionTypeConceptId = conditionTypeConceptId;
+        this.visitOccurrenceId = visitOccurrenceId;
         this.conditionSourceValue = conditionSourceValue;
         this.conditionSourceConceptId = conditionSourceConceptId;
         this.conditionStatusSourceValue = conditionStatusSourceValue;
@@ -102,6 +106,11 @@ public final class ConditionOccurrenceRow {
         return conditionTypeConceptId;
     }
 
+    @JsonProperty("visit_occurrence_id")
+    public Optional<Long> getVisitOccurrenceId() {
+        return visitOccurrenceId;
+    }
+
     @JsonProperty("condition_source_value")
     public Optional<String> getConditionSourceValue() {
         return conditionSourceValue;
@@ -136,6 +145,7 @@ public final class ConditionOccurrenceRow {
                 && conditionStartDatetime.equals(other.conditionStartDatetime)
                 && conditionEndDate.equals(other.conditionEndDate)
                 && conditionTypeConceptId.equals(other.conditionTypeConceptId)
+                && visitOccurrenceId.equals(other.visitOccurrenceId)
                 && conditionSourceValue.equals(other.conditionSourceValue)
                 && conditionSourceConceptId.equals(other.conditionSourceConceptId)
                 && conditionStatusSourceValue.equals(other.conditionStatusSourceValue);
@@ -151,6 +161,7 @@ public final class ConditionOccurrenceRow {
                 this.conditionStartDatetime,
                 this.conditionEndDate,
                 this.conditionTypeConceptId,
+                this.visitOccurrenceId,
                 this.conditionSourceValue,
                 this.conditionSourceConceptId,
                 this.conditionStatusSourceValue);
@@ -181,6 +192,8 @@ public final class ConditionOccurrenceRow {
 
         private Optional<Long> conditionTypeConceptId = Optional.empty();
 
+        private Optional<Long> visitOccurrenceId = Optional.empty();
+
         private Optional<String> conditionSourceValue = Optional.empty();
 
         private Optional<Long> conditionSourceConceptId = Optional.empty();
@@ -200,6 +213,7 @@ public final class ConditionOccurrenceRow {
             conditionStartDatetime(other.getConditionStartDatetime());
             conditionEndDate(other.getConditionEndDate());
             conditionTypeConceptId(other.getConditionTypeConceptId());
+            visitOccurrenceId(other.getVisitOccurrenceId());
             conditionSourceValue(other.getConditionSourceValue());
             conditionSourceConceptId(other.getConditionSourceConceptId());
             conditionStatusSourceValue(other.getConditionStatusSourceValue());
@@ -283,6 +297,17 @@ public final class ConditionOccurrenceRow {
             return this;
         }
 
+        @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
+        public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
+            this.visitOccurrenceId = visitOccurrenceId;
+            return this;
+        }
+
+        public Builder visitOccurrenceId(Long visitOccurrenceId) {
+            this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
+            return this;
+        }
+
         @JsonSetter(value = "condition_source_value", nulls = Nulls.SKIP)
         public Builder conditionSourceValue(Optional<String> conditionSourceValue) {
             this.conditionSourceValue = conditionSourceValue;
@@ -325,6 +350,7 @@ public final class ConditionOccurrenceRow {
                     conditionStartDatetime,
                     conditionEndDate,
                     conditionTypeConceptId,
+                    visitOccurrenceId,
                     conditionSourceValue,
                     conditionSourceConceptId,
                     conditionStatusSourceValue,
