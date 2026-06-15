@@ -1,3 +1,11 @@
+## [17.4.0] - 2026-06-15
+### Added
+- **`Fhir2OmopClient` / `AsyncFhir2OmopClient`** — new sync and async clients exposing `create(CreateOmopRequest)` and `create(CreateOmopRequest, RequestOptions)` to post a FHIR R4 resource or Bundle to `POST /fhir2omop/create` and return typed OMOP CDM v5.4 rows.
+- **`RawFhir2OmopClient` / `AsyncRawFhir2OmopClient`** — raw-response variants of the fhir2omop clients returning full HTTP metadata; accessible via `withRawResponse()` on the standard clients.
+- **`CreateOmopRequest` / `CreateOmopResponse`** — new request/response types; request carries `fhirResources`; response exposes `success`, `message`, `tables`, `mappings`, `dropped`, `vocabVersion`, and `summary`.
+- **`OmopTables`** and seven OMOP CDM v5.4 row types — new `PersonRow`, `VisitOccurrenceRow`, `ConditionOccurrenceRow`, `DrugExposureRow`, `ProcedureOccurrenceRow`, `MeasurementRow`, and `ObservationRow` classes aggregated under `OmopTables`.
+- **`MappingEntry`, `Summary`, and `DroppedResource`** — new supporting types providing per-coding mapping status, aggregate resolution statistics, and details on resources that could not be shaped into OMOP rows; `BadRequestError`, `UnauthorizedError`, `InternalServerError`, and `ServiceUnavailableError` typed exceptions also added for fhir2omop error handling.
+
 ## [17.3.0] - 2026-06-15
 ### Added
 - **`PhenomlClient.fhir2Omop().create()`** — new method (sync and async) posting a FHIR R4 resource or Bundle to `POST /fhir2omop/create` and returning typed OMOP CDM v5.4 rows in both `resolved` and `structural` modes.
