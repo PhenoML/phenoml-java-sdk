@@ -1,10 +1,12 @@
 ## [17.4.0] - 2026-06-15
 ### Added
-- **`Fhir2OmopClient` / `AsyncFhir2OmopClient`** — new sync and async clients exposing `create(CreateOmopRequest)` and `create(CreateOmopRequest, RequestOptions)` to post a FHIR R4 resource or Bundle to `POST /fhir2omop/create` and return typed OMOP CDM v5.4 rows.
-- **`RawFhir2OmopClient` / `AsyncRawFhir2OmopClient`** — raw-response variants of the fhir2omop clients returning full HTTP metadata; accessible via `withRawResponse()` on the standard clients.
-- **`CreateOmopRequest` / `CreateOmopResponse`** — new request/response types; request carries `fhirResources`; response exposes `success`, `message`, `tables`, `mappings`, `dropped`, `vocabVersion`, and `summary`.
-- **`OmopTables`** and seven OMOP CDM v5.4 row types — new `PersonRow`, `VisitOccurrenceRow`, `ConditionOccurrenceRow`, `DrugExposureRow`, `ProcedureOccurrenceRow`, `MeasurementRow`, and `ObservationRow` classes aggregated under `OmopTables`.
-- **`MappingEntry`, `Summary`, and `DroppedResource`** — new supporting types providing per-coding mapping status, aggregate resolution statistics, and details on resources that could not be shaped into OMOP rows; `BadRequestError`, `UnauthorizedError`, `InternalServerError`, and `ServiceUnavailableError` typed exceptions also added for fhir2omop error handling.
+- **`ConditionOccurrenceRow.getVisitOccurrenceId()`**, **`DrugExposureRow.getVisitOccurrenceId()`**, **`MeasurementRow.getVisitOccurrenceId()`**, **`ObservationRow.getVisitOccurrenceId()`**, and **`ProcedureOccurrenceRow.getVisitOccurrenceId()`** — new optional accessor linking each clinical OMOP row back to its `visit_occurrence` row.
+- **`MeasurementRow.getOperatorConceptId()`** — new optional accessor carrying the OMOP "Meas Value Operator" standard concept (`<`, `<=`, `>`, `>=`) parsed from a FHIR `valueQuantity.comparator` or numeric-string value; `0` when no operator is present.
+
+### Changed
+- **`MappingEntry.getTargetCode()`** — value semantics updated: now the standard concept's own code for `ALREADY_STANDARD`, `MAPPED`, and `UNCHECKED` rows; empty for `UNMAPPED` rows.
+- **`Summary`** — count-field docs clarify each total is counted once per resolved concept (not per coding), unlike `mappings`, which has one entry per coding.
+- **`PhenomlClient.fhir2Omop().create(...)` Javadoc** — clarifies that a clinical `concept_id` of `0` covers both `UNMAPPED` and `UNCHECKED`, and that `operator_concept_id` is the one non-zero non-resolved concept on measurement rows.
 
 ## [17.3.0] - 2026-06-15
 ### Added
