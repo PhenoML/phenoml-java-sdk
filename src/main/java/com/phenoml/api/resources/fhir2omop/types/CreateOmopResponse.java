@@ -25,30 +25,34 @@ public final class CreateOmopResponse {
 
     private final Optional<String> message;
 
-    private final Optional<String> mode;
-
     private final Optional<OmopTables> tables;
 
-    private final Optional<List<MappingReportEntry>> report;
+    private final Optional<List<MappingEntry>> mappings;
 
-    private final Optional<ScanSummary> scanSummary;
+    private final Optional<List<DroppedResource>> dropped;
+
+    private final Optional<String> vocabVersion;
+
+    private final Optional<Summary> summary;
 
     private final Map<String, Object> additionalProperties;
 
     private CreateOmopResponse(
             Optional<Boolean> success,
             Optional<String> message,
-            Optional<String> mode,
             Optional<OmopTables> tables,
-            Optional<List<MappingReportEntry>> report,
-            Optional<ScanSummary> scanSummary,
+            Optional<List<MappingEntry>> mappings,
+            Optional<List<DroppedResource>> dropped,
+            Optional<String> vocabVersion,
+            Optional<Summary> summary,
             Map<String, Object> additionalProperties) {
         this.success = success;
         this.message = message;
-        this.mode = mode;
         this.tables = tables;
-        this.report = report;
-        this.scanSummary = scanSummary;
+        this.mappings = mappings;
+        this.dropped = dropped;
+        this.vocabVersion = vocabVersion;
+        this.summary = summary;
         this.additionalProperties = additionalProperties;
     }
 
@@ -62,34 +66,40 @@ public final class CreateOmopResponse {
         return message;
     }
 
-    /**
-     * @return Resolution mode. <code>resolved</code> (default) means clinical <code>concept_id</code>s were
-     * filled by the concept-resolver service; <code>structural</code> means no resolver
-     * was configured, so all clinical <code>concept_id</code>s are <code>0</code>. Reflects which
-     * resolver is wired, not the path an individual coding took — per-coding
-     * degradation is surfaced in <code>scan_summary</code>, not the mode.
-     */
-    @JsonProperty("mode")
-    public Optional<String> getMode() {
-        return mode;
-    }
-
     @JsonProperty("tables")
     public Optional<OmopTables> getTables() {
         return tables;
     }
 
     /**
-     * @return One Usagi-shaped entry per source coding routed through concept resolution.
+     * @return One entry per source coding (or one entry for a text-only resource with no coding), describing how it resolved and linking back to the row it produced.
      */
-    @JsonProperty("report")
-    public Optional<List<MappingReportEntry>> getReport() {
-        return report;
+    @JsonProperty("mappings")
+    public Optional<List<MappingEntry>> getMappings() {
+        return mappings;
     }
 
-    @JsonProperty("scan_summary")
-    public Optional<ScanSummary> getScanSummary() {
-        return scanSummary;
+    /**
+     * @return Resources that could not be shaped into an OMOP row (rather than emitted as blank rows).
+     */
+    @JsonProperty("dropped")
+    public Optional<List<DroppedResource>> getDropped() {
+        return dropped;
+    }
+
+    /**
+     * @return The OMOP vocabulary release the clinical codes were resolved against
+     * (e.g. &quot;v20240229&quot;), for reproducibility. Present when at least one
+     * coded concept was resolved.
+     */
+    @JsonProperty("vocab_version")
+    public Optional<String> getVocabVersion() {
+        return vocabVersion;
+    }
+
+    @JsonProperty("summary")
+    public Optional<Summary> getSummary() {
+        return summary;
     }
 
     @java.lang.Override
@@ -106,15 +116,17 @@ public final class CreateOmopResponse {
     private boolean equalTo(CreateOmopResponse other) {
         return success.equals(other.success)
                 && message.equals(other.message)
-                && mode.equals(other.mode)
                 && tables.equals(other.tables)
-                && report.equals(other.report)
-                && scanSummary.equals(other.scanSummary);
+                && mappings.equals(other.mappings)
+                && dropped.equals(other.dropped)
+                && vocabVersion.equals(other.vocabVersion)
+                && summary.equals(other.summary);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.success, this.message, this.mode, this.tables, this.report, this.scanSummary);
+        return Objects.hash(
+                this.success, this.message, this.tables, this.mappings, this.dropped, this.vocabVersion, this.summary);
     }
 
     @java.lang.Override
@@ -132,13 +144,15 @@ public final class CreateOmopResponse {
 
         private Optional<String> message = Optional.empty();
 
-        private Optional<String> mode = Optional.empty();
-
         private Optional<OmopTables> tables = Optional.empty();
 
-        private Optional<List<MappingReportEntry>> report = Optional.empty();
+        private Optional<List<MappingEntry>> mappings = Optional.empty();
 
-        private Optional<ScanSummary> scanSummary = Optional.empty();
+        private Optional<List<DroppedResource>> dropped = Optional.empty();
+
+        private Optional<String> vocabVersion = Optional.empty();
+
+        private Optional<Summary> summary = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -148,10 +162,11 @@ public final class CreateOmopResponse {
         public Builder from(CreateOmopResponse other) {
             success(other.getSuccess());
             message(other.getMessage());
-            mode(other.getMode());
             tables(other.getTables());
-            report(other.getReport());
-            scanSummary(other.getScanSummary());
+            mappings(other.getMappings());
+            dropped(other.getDropped());
+            vocabVersion(other.getVocabVersion());
+            summary(other.getSummary());
             return this;
         }
 
@@ -177,24 +192,6 @@ public final class CreateOmopResponse {
             return this;
         }
 
-        /**
-         * <p>Resolution mode. <code>resolved</code> (default) means clinical <code>concept_id</code>s were
-         * filled by the concept-resolver service; <code>structural</code> means no resolver
-         * was configured, so all clinical <code>concept_id</code>s are <code>0</code>. Reflects which
-         * resolver is wired, not the path an individual coding took — per-coding
-         * degradation is surfaced in <code>scan_summary</code>, not the mode.</p>
-         */
-        @JsonSetter(value = "mode", nulls = Nulls.SKIP)
-        public Builder mode(Optional<String> mode) {
-            this.mode = mode;
-            return this;
-        }
-
-        public Builder mode(String mode) {
-            this.mode = Optional.ofNullable(mode);
-            return this;
-        }
-
         @JsonSetter(value = "tables", nulls = Nulls.SKIP)
         public Builder tables(Optional<OmopTables> tables) {
             this.tables = tables;
@@ -207,32 +204,63 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>One Usagi-shaped entry per source coding routed through concept resolution.</p>
+         * <p>One entry per source coding (or one entry for a text-only resource with no coding), describing how it resolved and linking back to the row it produced.</p>
          */
-        @JsonSetter(value = "report", nulls = Nulls.SKIP)
-        public Builder report(Optional<List<MappingReportEntry>> report) {
-            this.report = report;
+        @JsonSetter(value = "mappings", nulls = Nulls.SKIP)
+        public Builder mappings(Optional<List<MappingEntry>> mappings) {
+            this.mappings = mappings;
             return this;
         }
 
-        public Builder report(List<MappingReportEntry> report) {
-            this.report = Optional.ofNullable(report);
+        public Builder mappings(List<MappingEntry> mappings) {
+            this.mappings = Optional.ofNullable(mappings);
             return this;
         }
 
-        @JsonSetter(value = "scan_summary", nulls = Nulls.SKIP)
-        public Builder scanSummary(Optional<ScanSummary> scanSummary) {
-            this.scanSummary = scanSummary;
+        /**
+         * <p>Resources that could not be shaped into an OMOP row (rather than emitted as blank rows).</p>
+         */
+        @JsonSetter(value = "dropped", nulls = Nulls.SKIP)
+        public Builder dropped(Optional<List<DroppedResource>> dropped) {
+            this.dropped = dropped;
             return this;
         }
 
-        public Builder scanSummary(ScanSummary scanSummary) {
-            this.scanSummary = Optional.ofNullable(scanSummary);
+        public Builder dropped(List<DroppedResource> dropped) {
+            this.dropped = Optional.ofNullable(dropped);
+            return this;
+        }
+
+        /**
+         * <p>The OMOP vocabulary release the clinical codes were resolved against
+         * (e.g. &quot;v20240229&quot;), for reproducibility. Present when at least one
+         * coded concept was resolved.</p>
+         */
+        @JsonSetter(value = "vocab_version", nulls = Nulls.SKIP)
+        public Builder vocabVersion(Optional<String> vocabVersion) {
+            this.vocabVersion = vocabVersion;
+            return this;
+        }
+
+        public Builder vocabVersion(String vocabVersion) {
+            this.vocabVersion = Optional.ofNullable(vocabVersion);
+            return this;
+        }
+
+        @JsonSetter(value = "summary", nulls = Nulls.SKIP)
+        public Builder summary(Optional<Summary> summary) {
+            this.summary = summary;
+            return this;
+        }
+
+        public Builder summary(Summary summary) {
+            this.summary = Optional.ofNullable(summary);
             return this;
         }
 
         public CreateOmopResponse build() {
-            return new CreateOmopResponse(success, message, mode, tables, report, scanSummary, additionalProperties);
+            return new CreateOmopResponse(
+                    success, message, tables, mappings, dropped, vocabVersion, summary, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {

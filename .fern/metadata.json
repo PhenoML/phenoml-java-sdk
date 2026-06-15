@@ -1,7 +1,7 @@
 {
-  "cliVersion": "5.45.3",
+  "cliVersion": "5.49.0",
   "generatorName": "fernapi/fern-java-sdk",
-  "generatorVersion": "4.9.1",
+  "generatorVersion": "4.9.2",
   "generatorConfig": {
     "enable-inline-types": false,
     "client-class-name": "PhenomlClient",
@@ -10,10 +10,10 @@
     "enable-wire-tests": true,
     "publish-to": "central"
   },
-  "originGitCommit": "f96459701356d9f1fe1acbeab0f6f2eccc498046",
+  "originGitCommit": "5084e3096e5bd89bf2e86ea44d96e3407f6f5c6b",
   "originGitCommitIsDirty": true,
   "invokedBy": "ci",
   "requestedVersion": "AUTO",
   "ciProvider": "unknown",
-  "sdkVersion": "17.2.0"
+  "sdkVersion": "17.3.0"
 }
