@@ -34,6 +34,8 @@ public final class MeasurementRow {
 
     private final Optional<Double> valueAsNumber;
 
+    private final Optional<Long> operatorConceptId;
+
     private final Optional<Long> valueAsConceptId;
 
     private final Optional<Long> unitConceptId;
@@ -41,6 +43,8 @@ public final class MeasurementRow {
     private final Optional<Double> rangeLow;
 
     private final Optional<Double> rangeHigh;
+
+    private final Optional<Long> visitOccurrenceId;
 
     private final Optional<String> measurementSourceValue;
 
@@ -60,10 +64,12 @@ public final class MeasurementRow {
             Optional<String> measurementDatetime,
             Optional<Long> measurementTypeConceptId,
             Optional<Double> valueAsNumber,
+            Optional<Long> operatorConceptId,
             Optional<Long> valueAsConceptId,
             Optional<Long> unitConceptId,
             Optional<Double> rangeLow,
             Optional<Double> rangeHigh,
+            Optional<Long> visitOccurrenceId,
             Optional<String> measurementSourceValue,
             Optional<Long> measurementSourceConceptId,
             Optional<String> unitSourceValue,
@@ -76,10 +82,12 @@ public final class MeasurementRow {
         this.measurementDatetime = measurementDatetime;
         this.measurementTypeConceptId = measurementTypeConceptId;
         this.valueAsNumber = valueAsNumber;
+        this.operatorConceptId = operatorConceptId;
         this.valueAsConceptId = valueAsConceptId;
         this.unitConceptId = unitConceptId;
         this.rangeLow = rangeLow;
         this.rangeHigh = rangeHigh;
+        this.visitOccurrenceId = visitOccurrenceId;
         this.measurementSourceValue = measurementSourceValue;
         this.measurementSourceConceptId = measurementSourceConceptId;
         this.unitSourceValue = unitSourceValue;
@@ -122,6 +130,14 @@ public final class MeasurementRow {
         return valueAsNumber;
     }
 
+    /**
+     * @return OMOP &quot;Meas Value Operator&quot; standard concept qualifying value_as_number (&lt;, &lt;=, &gt;, &gt;=), parsed from a numeric-string value or a FHIR valueQuantity.comparator. 0 when no operator (a bare number).
+     */
+    @JsonProperty("operator_concept_id")
+    public Optional<Long> getOperatorConceptId() {
+        return operatorConceptId;
+    }
+
     @JsonProperty("value_as_concept_id")
     public Optional<Long> getValueAsConceptId() {
         return valueAsConceptId;
@@ -140,6 +156,11 @@ public final class MeasurementRow {
     @JsonProperty("range_high")
     public Optional<Double> getRangeHigh() {
         return rangeHigh;
+    }
+
+    @JsonProperty("visit_occurrence_id")
+    public Optional<Long> getVisitOccurrenceId() {
+        return visitOccurrenceId;
     }
 
     @JsonProperty("measurement_source_value")
@@ -181,10 +202,12 @@ public final class MeasurementRow {
                 && measurementDatetime.equals(other.measurementDatetime)
                 && measurementTypeConceptId.equals(other.measurementTypeConceptId)
                 && valueAsNumber.equals(other.valueAsNumber)
+                && operatorConceptId.equals(other.operatorConceptId)
                 && valueAsConceptId.equals(other.valueAsConceptId)
                 && unitConceptId.equals(other.unitConceptId)
                 && rangeLow.equals(other.rangeLow)
                 && rangeHigh.equals(other.rangeHigh)
+                && visitOccurrenceId.equals(other.visitOccurrenceId)
                 && measurementSourceValue.equals(other.measurementSourceValue)
                 && measurementSourceConceptId.equals(other.measurementSourceConceptId)
                 && unitSourceValue.equals(other.unitSourceValue)
@@ -201,10 +224,12 @@ public final class MeasurementRow {
                 this.measurementDatetime,
                 this.measurementTypeConceptId,
                 this.valueAsNumber,
+                this.operatorConceptId,
                 this.valueAsConceptId,
                 this.unitConceptId,
                 this.rangeLow,
                 this.rangeHigh,
+                this.visitOccurrenceId,
                 this.measurementSourceValue,
                 this.measurementSourceConceptId,
                 this.unitSourceValue,
@@ -236,6 +261,8 @@ public final class MeasurementRow {
 
         private Optional<Double> valueAsNumber = Optional.empty();
 
+        private Optional<Long> operatorConceptId = Optional.empty();
+
         private Optional<Long> valueAsConceptId = Optional.empty();
 
         private Optional<Long> unitConceptId = Optional.empty();
@@ -243,6 +270,8 @@ public final class MeasurementRow {
         private Optional<Double> rangeLow = Optional.empty();
 
         private Optional<Double> rangeHigh = Optional.empty();
+
+        private Optional<Long> visitOccurrenceId = Optional.empty();
 
         private Optional<String> measurementSourceValue = Optional.empty();
 
@@ -265,10 +294,12 @@ public final class MeasurementRow {
             measurementDatetime(other.getMeasurementDatetime());
             measurementTypeConceptId(other.getMeasurementTypeConceptId());
             valueAsNumber(other.getValueAsNumber());
+            operatorConceptId(other.getOperatorConceptId());
             valueAsConceptId(other.getValueAsConceptId());
             unitConceptId(other.getUnitConceptId());
             rangeLow(other.getRangeLow());
             rangeHigh(other.getRangeHigh());
+            visitOccurrenceId(other.getVisitOccurrenceId());
             measurementSourceValue(other.getMeasurementSourceValue());
             measurementSourceConceptId(other.getMeasurementSourceConceptId());
             unitSourceValue(other.getUnitSourceValue());
@@ -353,6 +384,20 @@ public final class MeasurementRow {
             return this;
         }
 
+        /**
+         * <p>OMOP &quot;Meas Value Operator&quot; standard concept qualifying value_as_number (&lt;, &lt;=, &gt;, &gt;=), parsed from a numeric-string value or a FHIR valueQuantity.comparator. 0 when no operator (a bare number).</p>
+         */
+        @JsonSetter(value = "operator_concept_id", nulls = Nulls.SKIP)
+        public Builder operatorConceptId(Optional<Long> operatorConceptId) {
+            this.operatorConceptId = operatorConceptId;
+            return this;
+        }
+
+        public Builder operatorConceptId(Long operatorConceptId) {
+            this.operatorConceptId = Optional.ofNullable(operatorConceptId);
+            return this;
+        }
+
         @JsonSetter(value = "value_as_concept_id", nulls = Nulls.SKIP)
         public Builder valueAsConceptId(Optional<Long> valueAsConceptId) {
             this.valueAsConceptId = valueAsConceptId;
@@ -394,6 +439,17 @@ public final class MeasurementRow {
 
         public Builder rangeHigh(Double rangeHigh) {
             this.rangeHigh = Optional.ofNullable(rangeHigh);
+            return this;
+        }
+
+        @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
+        public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
+            this.visitOccurrenceId = visitOccurrenceId;
+            return this;
+        }
+
+        public Builder visitOccurrenceId(Long visitOccurrenceId) {
+            this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
             return this;
         }
 
@@ -450,10 +506,12 @@ public final class MeasurementRow {
                     measurementDatetime,
                     measurementTypeConceptId,
                     valueAsNumber,
+                    operatorConceptId,
                     valueAsConceptId,
                     unitConceptId,
                     rangeLow,
                     rangeHigh,
+                    visitOccurrenceId,
                     measurementSourceValue,
                     measurementSourceConceptId,
                     unitSourceValue,

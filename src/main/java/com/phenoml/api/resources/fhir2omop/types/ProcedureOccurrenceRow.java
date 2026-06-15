@@ -32,6 +32,8 @@ public final class ProcedureOccurrenceRow {
 
     private final Optional<Long> procedureTypeConceptId;
 
+    private final Optional<Long> visitOccurrenceId;
+
     private final Optional<String> procedureSourceValue;
 
     private final Optional<Long> procedureSourceConceptId;
@@ -45,6 +47,7 @@ public final class ProcedureOccurrenceRow {
             Optional<String> procedureDate,
             Optional<String> procedureDatetime,
             Optional<Long> procedureTypeConceptId,
+            Optional<Long> visitOccurrenceId,
             Optional<String> procedureSourceValue,
             Optional<Long> procedureSourceConceptId,
             Map<String, Object> additionalProperties) {
@@ -54,6 +57,7 @@ public final class ProcedureOccurrenceRow {
         this.procedureDate = procedureDate;
         this.procedureDatetime = procedureDatetime;
         this.procedureTypeConceptId = procedureTypeConceptId;
+        this.visitOccurrenceId = visitOccurrenceId;
         this.procedureSourceValue = procedureSourceValue;
         this.procedureSourceConceptId = procedureSourceConceptId;
         this.additionalProperties = additionalProperties;
@@ -89,6 +93,11 @@ public final class ProcedureOccurrenceRow {
         return procedureTypeConceptId;
     }
 
+    @JsonProperty("visit_occurrence_id")
+    public Optional<Long> getVisitOccurrenceId() {
+        return visitOccurrenceId;
+    }
+
     @JsonProperty("procedure_source_value")
     public Optional<String> getProcedureSourceValue() {
         return procedureSourceValue;
@@ -117,6 +126,7 @@ public final class ProcedureOccurrenceRow {
                 && procedureDate.equals(other.procedureDate)
                 && procedureDatetime.equals(other.procedureDatetime)
                 && procedureTypeConceptId.equals(other.procedureTypeConceptId)
+                && visitOccurrenceId.equals(other.visitOccurrenceId)
                 && procedureSourceValue.equals(other.procedureSourceValue)
                 && procedureSourceConceptId.equals(other.procedureSourceConceptId);
     }
@@ -130,6 +140,7 @@ public final class ProcedureOccurrenceRow {
                 this.procedureDate,
                 this.procedureDatetime,
                 this.procedureTypeConceptId,
+                this.visitOccurrenceId,
                 this.procedureSourceValue,
                 this.procedureSourceConceptId);
     }
@@ -157,6 +168,8 @@ public final class ProcedureOccurrenceRow {
 
         private Optional<Long> procedureTypeConceptId = Optional.empty();
 
+        private Optional<Long> visitOccurrenceId = Optional.empty();
+
         private Optional<String> procedureSourceValue = Optional.empty();
 
         private Optional<Long> procedureSourceConceptId = Optional.empty();
@@ -173,6 +186,7 @@ public final class ProcedureOccurrenceRow {
             procedureDate(other.getProcedureDate());
             procedureDatetime(other.getProcedureDatetime());
             procedureTypeConceptId(other.getProcedureTypeConceptId());
+            visitOccurrenceId(other.getVisitOccurrenceId());
             procedureSourceValue(other.getProcedureSourceValue());
             procedureSourceConceptId(other.getProcedureSourceConceptId());
             return this;
@@ -244,6 +258,17 @@ public final class ProcedureOccurrenceRow {
             return this;
         }
 
+        @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
+        public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
+            this.visitOccurrenceId = visitOccurrenceId;
+            return this;
+        }
+
+        public Builder visitOccurrenceId(Long visitOccurrenceId) {
+            this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
+            return this;
+        }
+
         @JsonSetter(value = "procedure_source_value", nulls = Nulls.SKIP)
         public Builder procedureSourceValue(Optional<String> procedureSourceValue) {
             this.procedureSourceValue = procedureSourceValue;
@@ -274,6 +299,7 @@ public final class ProcedureOccurrenceRow {
                     procedureDate,
                     procedureDatetime,
                     procedureTypeConceptId,
+                    visitOccurrenceId,
                     procedureSourceValue,
                     procedureSourceConceptId,
                     additionalProperties);

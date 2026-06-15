@@ -40,6 +40,8 @@ public final class ObservationRow {
 
     private final Optional<Long> unitConceptId;
 
+    private final Optional<Long> visitOccurrenceId;
+
     private final Optional<String> observationSourceValue;
 
     private final Optional<Long> observationSourceConceptId;
@@ -61,6 +63,7 @@ public final class ObservationRow {
             Optional<String> valueAsString,
             Optional<Long> valueAsConceptId,
             Optional<Long> unitConceptId,
+            Optional<Long> visitOccurrenceId,
             Optional<String> observationSourceValue,
             Optional<Long> observationSourceConceptId,
             Optional<String> unitSourceValue,
@@ -76,6 +79,7 @@ public final class ObservationRow {
         this.valueAsString = valueAsString;
         this.valueAsConceptId = valueAsConceptId;
         this.unitConceptId = unitConceptId;
+        this.visitOccurrenceId = visitOccurrenceId;
         this.observationSourceValue = observationSourceValue;
         this.observationSourceConceptId = observationSourceConceptId;
         this.unitSourceValue = unitSourceValue;
@@ -133,6 +137,11 @@ public final class ObservationRow {
         return unitConceptId;
     }
 
+    @JsonProperty("visit_occurrence_id")
+    public Optional<Long> getVisitOccurrenceId() {
+        return visitOccurrenceId;
+    }
+
     @JsonProperty("observation_source_value")
     public Optional<String> getObservationSourceValue() {
         return observationSourceValue;
@@ -175,6 +184,7 @@ public final class ObservationRow {
                 && valueAsString.equals(other.valueAsString)
                 && valueAsConceptId.equals(other.valueAsConceptId)
                 && unitConceptId.equals(other.unitConceptId)
+                && visitOccurrenceId.equals(other.visitOccurrenceId)
                 && observationSourceValue.equals(other.observationSourceValue)
                 && observationSourceConceptId.equals(other.observationSourceConceptId)
                 && unitSourceValue.equals(other.unitSourceValue)
@@ -194,6 +204,7 @@ public final class ObservationRow {
                 this.valueAsString,
                 this.valueAsConceptId,
                 this.unitConceptId,
+                this.visitOccurrenceId,
                 this.observationSourceValue,
                 this.observationSourceConceptId,
                 this.unitSourceValue,
@@ -231,6 +242,8 @@ public final class ObservationRow {
 
         private Optional<Long> unitConceptId = Optional.empty();
 
+        private Optional<Long> visitOccurrenceId = Optional.empty();
+
         private Optional<String> observationSourceValue = Optional.empty();
 
         private Optional<Long> observationSourceConceptId = Optional.empty();
@@ -255,6 +268,7 @@ public final class ObservationRow {
             valueAsString(other.getValueAsString());
             valueAsConceptId(other.getValueAsConceptId());
             unitConceptId(other.getUnitConceptId());
+            visitOccurrenceId(other.getVisitOccurrenceId());
             observationSourceValue(other.getObservationSourceValue());
             observationSourceConceptId(other.getObservationSourceConceptId());
             unitSourceValue(other.getUnitSourceValue());
@@ -372,6 +386,17 @@ public final class ObservationRow {
             return this;
         }
 
+        @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
+        public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
+            this.visitOccurrenceId = visitOccurrenceId;
+            return this;
+        }
+
+        public Builder visitOccurrenceId(Long visitOccurrenceId) {
+            this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
+            return this;
+        }
+
         @JsonSetter(value = "observation_source_value", nulls = Nulls.SKIP)
         public Builder observationSourceValue(Optional<String> observationSourceValue) {
             this.observationSourceValue = observationSourceValue;
@@ -428,6 +453,7 @@ public final class ObservationRow {
                     valueAsString,
                     valueAsConceptId,
                     unitConceptId,
+                    visitOccurrenceId,
                     observationSourceValue,
                     observationSourceConceptId,
                     unitSourceValue,
