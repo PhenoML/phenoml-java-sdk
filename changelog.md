@@ -1,3 +1,12 @@
+## [17.6.0] - 2026-06-18
+### Added
+- **`Fhir2OmopClient` / `AsyncFhir2OmopClient`** — new synchronous and asynchronous clients (plus raw-response variants) accessible via `PhenomlClient.fhir2Omop()` and `AsyncPhenomlClient.fhir2Omop()`, exposing `create(CreateOmopRequest)` to convert a FHIR R4 resource or Bundle to OMOP CDM v5.4 rows via `POST /fhir2omop/create`.
+- **`CreateOmopRequest` / `CreateOmopResponse`** — new request/response types for the FHIR-to-OMOP conversion endpoint, carrying `fhirResources` and returning `tables`, `mappings`, `dropped`, `vocabVersion`, `summary`, `success`, and `message` fields.
+- **OMOP CDM v5.4 row types** — new `PersonRow`, `VisitOccurrenceRow`, `ConditionOccurrenceRow`, `DrugExposureRow`, `ProcedureOccurrenceRow`, `MeasurementRow`, and `ObservationRow` classes aggregated under `OmopTables`.
+- **`MappingEntry` / `Summary` / `DroppedResource`** — new supporting types describing per-coding resolution status (`ALREADY_STANDARD`, `MAPPED`, `UNCHECKED`, `UNMAPPED`), aggregate mapping statistics, and resources that could not be shaped into OMOP rows.
+- **`BadRequestError`, `UnauthorizedError`, `InternalServerError`, `ServiceUnavailableError`** — new typed exception classes extending `PhenomlClientApiException`, thrown for HTTP 400, 401, 500, and 503 responses from the FHIR-to-OMOP endpoint.
+- **`Provider.AIDBOX`** — `"aidbox"` is now a supported value in the `Provider` enum, with a corresponding `Visitor.visitAidbox()` method.
+
 ## [17.5.0] - 2026-06-15
 ### Added
 - **`Provider.AIDBOX`** — `"aidbox"` is now a supported value in the `Provider` enum (with a corresponding `Visitor.visitAidbox()` method).
