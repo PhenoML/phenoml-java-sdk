@@ -1,10 +1,11 @@
 ## [17.6.0] - 2026-06-18
 ### Added
-- **`PhenomlClient.fhir2Omop()` / `AsyncPhenomlClient.fhir2Omop()`** — new client accessors exposing the `POST /fhir2omop/create` endpoint that maps a FHIR R4 resource or Bundle into OMOP CDM v5.4 rows.
-- **`Fhir2OmopClient`**, **`AsyncFhir2OmopClient`**, **`RawFhir2OmopClient`**, and **`AsyncRawFhir2OmopClient`** — new synchronous, asynchronous, and raw-response client classes with a `create(CreateOmopRequest)` method returning a `CreateOmopResponse`.
-- **OMOP CDM v5.4 row and supporting types** — new `PersonRow`, `VisitOccurrenceRow`, `ConditionOccurrenceRow`, `DrugExposureRow`, `ProcedureOccurrenceRow`, `MeasurementRow`, and `ObservationRow` classes aggregated under `OmopTables`, plus `MappingEntry`, `Summary`, `CreateOmopResponse`, and `DroppedResource` supporting types.
-- **`ConflictError`** — new typed exception (HTTP 409) thrown by `RawChatClient` and `AsyncRawChatClient` when the agent chat endpoint returns a conflict response; `BadRequestError`, `UnauthorizedError`, `InternalServerError`, and `ServiceUnavailableError` are also thrown by `RawFhir2OmopClient`.
-- **`Provider.AIDBOX`** — `"aidbox"` added as a supported value in the `Provider` enum, with a corresponding `Visitor.visitAidbox()` method.
+- **`ConflictError`** — new typed exception thrown by `RawChatClient.send(...)`, `RawChatClient.stream(...)`, `AsyncRawChatClient.send(...)`, and `AsyncRawChatClient.stream(...)` for HTTP 409 responses when a session already has an active turn.
+
+### Changed
+- **`AgentChatRequest.getSessionId()` and `AgentStreamChatRequest.getSessionId()`** — Javadoc now states that only one request may be active per session at a time and overlapping turns return `409 Conflict`.
+- **`Fhir2OmopClient.create(...)` and `AsyncFhir2OmopClient.create(...)`** — Javadoc now lists the supported FHIR resource-to-OMOP table mappings and clarifies that unsupported resource types are accepted but ignored.
+- **`CreateOmopResponse.getDropped()`** — Javadoc now clarifies that only supported resources missing required subject/patient, code, or medication reference data appear in `dropped`; unsupported resource types are ignored.
 
 ## [17.5.0] - 2026-06-15
 ### Added
@@ -586,4 +587,3 @@ import com.phenoml.api.PhenomlClient;
 * Update documentation to reflect removal of active status filtering
 * Simplify agent creation workflow by removing active status requirement
 * 🌿 Generated with Fern
-
