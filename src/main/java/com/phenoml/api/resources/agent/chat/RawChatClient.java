@@ -19,6 +19,7 @@ import com.phenoml.api.resources.agent.chat.requests.AgentStreamChatRequest;
 import com.phenoml.api.resources.agent.chat.requests.ListMessagesRequest;
 import com.phenoml.api.resources.agent.chat.types.ListMessagesResponse;
 import com.phenoml.api.resources.agent.errors.BadRequestError;
+import com.phenoml.api.resources.agent.errors.ConflictError;
 import com.phenoml.api.resources.agent.errors.ForbiddenError;
 import com.phenoml.api.resources.agent.errors.GatewayTimeoutError;
 import com.phenoml.api.resources.agent.errors.InternalServerError;
@@ -109,6 +110,9 @@ public class RawChatClient {
                     case 404:
                         throw new NotFoundError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 409:
+                        throw new ConflictError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 500:
                         throw new InternalServerError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
@@ -198,6 +202,9 @@ public class RawChatClient {
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 404:
                         throw new NotFoundError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 409:
+                        throw new ConflictError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 500:
                         throw new InternalServerError(

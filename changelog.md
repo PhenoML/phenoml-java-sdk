@@ -1,3 +1,12 @@
+## [17.6.0] - 2026-06-18
+### Added
+- **`ConflictError`** — new typed exception thrown by `RawChatClient.send(...)`, `RawChatClient.stream(...)`, `AsyncRawChatClient.send(...)`, and `AsyncRawChatClient.stream(...)` for HTTP 409 responses when a session already has an active turn.
+
+### Changed
+- **`AgentChatRequest.getSessionId()` and `AgentStreamChatRequest.getSessionId()`** — Javadoc now states that only one request may be active per session at a time and overlapping turns return `409 Conflict`.
+- **`Fhir2OmopClient.create(...)` and `AsyncFhir2OmopClient.create(...)`** — Javadoc now lists the supported FHIR resource-to-OMOP table mappings and clarifies that unsupported resource types are accepted but ignored.
+- **`CreateOmopResponse.getDropped()`** — Javadoc now clarifies that only supported resources missing required subject/patient, code, or medication reference data appear in `dropped`; unsupported resource types are ignored.
+
 ## [17.5.0] - 2026-06-15
 ### Added
 - **`Provider.AIDBOX`** — `"aidbox"` is now a supported value in the `Provider` enum (with a corresponding `Visitor.visitAidbox()` method).
@@ -578,4 +587,3 @@ import com.phenoml.api.PhenomlClient;
 * Update documentation to reflect removal of active status filtering
 * Simplify agent creation workflow by removing active status requirement
 * 🌿 Generated with Fern
-

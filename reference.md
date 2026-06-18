@@ -486,7 +486,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 <dl>
 <dd>
 
-**sessionId:** `Optional<String>` — Optional session ID for conversation continuity
+**sessionId:** `Optional<String>` — Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.
     
 </dd>
 </dl>
@@ -605,7 +605,7 @@ Multiple FHIR provider integrations can be provided as comma-separated values.
 <dl>
 <dd>
 
-**sessionId:** `Optional<String>` — Optional session ID for conversation continuity
+**sessionId:** `Optional<String>` — Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.
     
 </dd>
 </dl>
@@ -3036,6 +3036,32 @@ Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows
 (person, visit_occurrence, condition_occurrence, drug_exposure,
 procedure_occurrence, measurement, observation).
 
+Resource support is intentionally limited to the OMOP tables returned by
+this endpoint:
+- `Patient` -> `person`
+- `Encounter` -> `visit_occurrence`
+- `Condition` -> `condition_occurrence`
+- `Procedure` -> `procedure_occurrence`
+- `MedicationRequest`, `MedicationStatement`, and
+  `MedicationAdministration` -> `drug_exposure`
+- `Immunization` -> `drug_exposure`
+- `Observation` with a numeric `valueQuantity`, `valueInteger`, or
+  numeric-looking `valueString` (for example `"<2"`) -> `measurement`
+- non-numeric `Observation` -> `observation`
+- `AllergyIntolerance` -> `observation`
+
+`Medication` is supported only as reference data for medication
+resources; it is not emitted as its own row because OMOP CDM has no
+Medication table. Other reference/admin resources such as `Practitioner`,
+`Organization`, `Location`, `Coverage`, and `Claim`, and clinical
+workflow/document resources such as `DiagnosticReport`, `ServiceRequest`,
+`CarePlan`, `DocumentReference`, `Composition`, `Specimen`, and
+`DeviceUseStatement`, are currently accepted in a Bundle but are not
+shaped into OMOP rows. Unsupported resource types are ignored rather than
+listed under `dropped`; `dropped` is reserved for supported resource types
+that were missing the subject/patient, code, or medication reference data
+needed to produce a valid row.
+
 Each resource's primary clinical coding is resolved to a standard OMOP
 `concept_id`. Alongside the OMOP rows grouped by table (`tables`), the
 response carries `mappings` (how each source coding resolved, linked back
@@ -3151,9 +3177,12 @@ client.fhir2Omop().create(
 **fhirResources:** `Map<String, Object>` 
 
 FHIR resources (single resource or Bundle). Must contain at least one
-Patient resource. Resources are mapped to OMOP rows; standalone
-Medication resources are consumed by medication references rather than
-mapped to their own table.
+Patient resource. Supported row-producing resources are Patient,
+Encounter, Condition, Procedure, MedicationRequest,
+MedicationStatement, MedicationAdministration, Immunization,
+Observation, and AllergyIntolerance. Standalone Medication resources
+are consumed by medication references rather than mapped to their own
+table. Other resource types are accepted but ignored.
     
 </dd>
 </dl>
