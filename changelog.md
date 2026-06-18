@@ -1,3 +1,11 @@
+## [17.6.0] - 2026-06-18
+### Added
+- **`PhenomlClient.fhir2Omop()` / `AsyncPhenomlClient.fhir2Omop()`** — new client accessors exposing the `POST /fhir2omop/create` endpoint that maps a FHIR R4 resource or Bundle into OMOP CDM v5.4 rows.
+- **`Fhir2OmopClient`**, **`AsyncFhir2OmopClient`**, **`RawFhir2OmopClient`**, and **`AsyncRawFhir2OmopClient`** — new synchronous, asynchronous, and raw-response client classes with a `create(CreateOmopRequest)` method returning a `CreateOmopResponse`.
+- **OMOP CDM v5.4 row and supporting types** — new `PersonRow`, `VisitOccurrenceRow`, `ConditionOccurrenceRow`, `DrugExposureRow`, `ProcedureOccurrenceRow`, `MeasurementRow`, and `ObservationRow` classes aggregated under `OmopTables`, plus `MappingEntry`, `Summary`, `CreateOmopResponse`, and `DroppedResource` supporting types.
+- **`ConflictError`** — new typed exception (HTTP 409) thrown by `RawChatClient` and `AsyncRawChatClient` when the agent chat endpoint returns a conflict response; `BadRequestError`, `UnauthorizedError`, `InternalServerError`, and `ServiceUnavailableError` are also thrown by `RawFhir2OmopClient`.
+- **`Provider.AIDBOX`** — `"aidbox"` added as a supported value in the `Provider` enum, with a corresponding `Visitor.visitAidbox()` method.
+
 ## [17.5.0] - 2026-06-15
 ### Added
 - **`Provider.AIDBOX`** — `"aidbox"` is now a supported value in the `Provider` enum (with a corresponding `Visitor.visitAidbox()` method).
