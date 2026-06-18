@@ -92,7 +92,7 @@ public final class AgentChatRequest {
     }
 
     /**
-     * @return Optional session ID for conversation continuity
+     * @return Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.
      */
     @JsonProperty("session_id")
     public Optional<String> getSessionId() {
@@ -204,7 +204,7 @@ public final class AgentChatRequest {
         _FinalStage context(String context);
 
         /**
-         * <p>Optional session ID for conversation continuity</p>
+         * <p>Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.</p>
          */
         _FinalStage sessionId(Optional<String> sessionId);
 
@@ -296,7 +296,7 @@ public final class AgentChatRequest {
         }
 
         /**
-         * <p>Optional session ID for conversation continuity</p>
+         * <p>Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -306,7 +306,7 @@ public final class AgentChatRequest {
         }
 
         /**
-         * <p>Optional session ID for conversation continuity</p>
+         * <p>Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "session_id", nulls = Nulls.SKIP)

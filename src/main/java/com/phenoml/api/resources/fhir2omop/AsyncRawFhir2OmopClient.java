@@ -41,6 +41,32 @@ public class AsyncRawFhir2OmopClient {
      * Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows
      * (person, visit_occurrence, condition_occurrence, drug_exposure,
      * procedure_occurrence, measurement, observation).
+     * <p>Resource support is intentionally limited to the OMOP tables returned by
+     * this endpoint:</p>
+     * <ul>
+     * <li><code>Patient</code> -&gt; <code>person</code></li>
+     * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
+     * <li><code>Condition</code> -&gt; <code>condition_occurrence</code></li>
+     * <li><code>Procedure</code> -&gt; <code>procedure_occurrence</code></li>
+     * <li><code>MedicationRequest</code>, <code>MedicationStatement</code>, and
+     * <code>MedicationAdministration</code> -&gt; <code>drug_exposure</code></li>
+     * <li><code>Immunization</code> -&gt; <code>drug_exposure</code></li>
+     * <li><code>Observation</code> with a numeric <code>valueQuantity</code>, <code>valueInteger</code>, or
+     * numeric-looking <code>valueString</code> (for example <code>&quot;&lt;2&quot;</code>) -&gt; <code>measurement</code></li>
+     * <li>non-numeric <code>Observation</code> -&gt; <code>observation</code></li>
+     * <li><code>AllergyIntolerance</code> -&gt; <code>observation</code></li>
+     * </ul>
+     * <p><code>Medication</code> is supported only as reference data for medication
+     * resources; it is not emitted as its own row because OMOP CDM has no
+     * Medication table. Other reference/admin resources such as <code>Practitioner</code>,
+     * <code>Organization</code>, <code>Location</code>, <code>Coverage</code>, and <code>Claim</code>, and clinical
+     * workflow/document resources such as <code>DiagnosticReport</code>, <code>ServiceRequest</code>,
+     * <code>CarePlan</code>, <code>DocumentReference</code>, <code>Composition</code>, <code>Specimen</code>, and
+     * <code>DeviceUseStatement</code>, are currently accepted in a Bundle but are not
+     * shaped into OMOP rows. Unsupported resource types are ignored rather than
+     * listed under <code>dropped</code>; <code>dropped</code> is reserved for supported resource types
+     * that were missing the subject/patient, code, or medication reference data
+     * needed to produce a valid row.</p>
      * <p>Each resource's primary clinical coding is resolved to a standard OMOP
      * <code>concept_id</code>. Alongside the OMOP rows grouped by table (<code>tables</code>), the
      * response carries <code>mappings</code> (how each source coding resolved, linked back
@@ -73,6 +99,32 @@ public class AsyncRawFhir2OmopClient {
      * Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows
      * (person, visit_occurrence, condition_occurrence, drug_exposure,
      * procedure_occurrence, measurement, observation).
+     * <p>Resource support is intentionally limited to the OMOP tables returned by
+     * this endpoint:</p>
+     * <ul>
+     * <li><code>Patient</code> -&gt; <code>person</code></li>
+     * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
+     * <li><code>Condition</code> -&gt; <code>condition_occurrence</code></li>
+     * <li><code>Procedure</code> -&gt; <code>procedure_occurrence</code></li>
+     * <li><code>MedicationRequest</code>, <code>MedicationStatement</code>, and
+     * <code>MedicationAdministration</code> -&gt; <code>drug_exposure</code></li>
+     * <li><code>Immunization</code> -&gt; <code>drug_exposure</code></li>
+     * <li><code>Observation</code> with a numeric <code>valueQuantity</code>, <code>valueInteger</code>, or
+     * numeric-looking <code>valueString</code> (for example <code>&quot;&lt;2&quot;</code>) -&gt; <code>measurement</code></li>
+     * <li>non-numeric <code>Observation</code> -&gt; <code>observation</code></li>
+     * <li><code>AllergyIntolerance</code> -&gt; <code>observation</code></li>
+     * </ul>
+     * <p><code>Medication</code> is supported only as reference data for medication
+     * resources; it is not emitted as its own row because OMOP CDM has no
+     * Medication table. Other reference/admin resources such as <code>Practitioner</code>,
+     * <code>Organization</code>, <code>Location</code>, <code>Coverage</code>, and <code>Claim</code>, and clinical
+     * workflow/document resources such as <code>DiagnosticReport</code>, <code>ServiceRequest</code>,
+     * <code>CarePlan</code>, <code>DocumentReference</code>, <code>Composition</code>, <code>Specimen</code>, and
+     * <code>DeviceUseStatement</code>, are currently accepted in a Bundle but are not
+     * shaped into OMOP rows. Unsupported resource types are ignored rather than
+     * listed under <code>dropped</code>; <code>dropped</code> is reserved for supported resource types
+     * that were missing the subject/patient, code, or medication reference data
+     * needed to produce a valid row.</p>
      * <p>Each resource's primary clinical coding is resolved to a standard OMOP
      * <code>concept_id</code>. Alongside the OMOP rows grouped by table (<code>tables</code>), the
      * response carries <code>mappings</code> (how each source coding resolved, linked back

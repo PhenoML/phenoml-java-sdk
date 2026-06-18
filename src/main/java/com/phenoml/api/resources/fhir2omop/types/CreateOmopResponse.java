@@ -80,7 +80,10 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return Resources that could not be shaped into an OMOP row (rather than emitted as blank rows).
+     * @return Supported resource instances that could not be shaped into an OMOP
+     * row because required subject/patient, code, or medication reference
+     * data was missing. Unsupported resource types are ignored and do not
+     * appear here.
      */
     @JsonProperty("dropped")
     public Optional<List<DroppedResource>> getDropped() {
@@ -218,7 +221,10 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>Resources that could not be shaped into an OMOP row (rather than emitted as blank rows).</p>
+         * <p>Supported resource instances that could not be shaped into an OMOP
+         * row because required subject/patient, code, or medication reference
+         * data was missing. Unsupported resource types are ignored and do not
+         * appear here.</p>
          */
         @JsonSetter(value = "dropped", nulls = Nulls.SKIP)
         public Builder dropped(Optional<List<DroppedResource>> dropped) {

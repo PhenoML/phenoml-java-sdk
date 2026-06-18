@@ -19,6 +19,7 @@ import com.phenoml.api.resources.agent.chat.requests.AgentStreamChatRequest;
 import com.phenoml.api.resources.agent.chat.requests.ListMessagesRequest;
 import com.phenoml.api.resources.agent.chat.types.ListMessagesResponse;
 import com.phenoml.api.resources.agent.errors.BadRequestError;
+import com.phenoml.api.resources.agent.errors.ConflictError;
 import com.phenoml.api.resources.agent.errors.ForbiddenError;
 import com.phenoml.api.resources.agent.errors.GatewayTimeoutError;
 import com.phenoml.api.resources.agent.errors.InternalServerError;
@@ -124,6 +125,11 @@ public class AsyncRawChatClient {
                                 return;
                             case 404:
                                 future.completeExceptionally(new NotFoundError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 409:
+                                future.completeExceptionally(new ConflictError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
@@ -241,6 +247,11 @@ public class AsyncRawChatClient {
                                 return;
                             case 404:
                                 future.completeExceptionally(new NotFoundError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 409:
+                                future.completeExceptionally(new ConflictError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
