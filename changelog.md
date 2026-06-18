@@ -1,3 +1,7 @@
+## [17.5.0] - 2026-06-15
+### Added
+- **`Provider.AIDBOX`** — `"aidbox"` is now a supported value in the `Provider` enum (with a corresponding `Visitor.visitAidbox()` method).
+
 ## [17.4.0] - 2026-06-15
 ### Added
 - **`ConditionOccurrenceRow.getVisitOccurrenceId()`**, **`DrugExposureRow.getVisitOccurrenceId()`**, **`MeasurementRow.getVisitOccurrenceId()`**, **`ObservationRow.getVisitOccurrenceId()`**, and **`ProcedureOccurrenceRow.getVisitOccurrenceId()`** — new optional accessor linking each clinical OMOP row back to its `visit_occurrence` row.

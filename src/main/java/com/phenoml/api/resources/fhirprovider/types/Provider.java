@@ -17,6 +17,8 @@ public final class Provider {
 
     public static final Provider CERNER = new Provider(Value.CERNER, "cerner");
 
+    public static final Provider AIDBOX = new Provider(Value.AIDBOX, "aidbox");
+
     public static final Provider ATHENAHEALTH = new Provider(Value.ATHENAHEALTH, "athenahealth");
 
     public static final Provider CANVAS = new Provider(Value.CANVAS, "canvas");
@@ -70,6 +72,8 @@ public final class Provider {
                 return visitor.visitPhenostore();
             case CERNER:
                 return visitor.visitCerner();
+            case AIDBOX:
+                return visitor.visitAidbox();
             case ATHENAHEALTH:
                 return visitor.visitAthenahealth();
             case CANVAS:
@@ -101,6 +105,8 @@ public final class Provider {
                 return PHENOSTORE;
             case "cerner":
                 return CERNER;
+            case "aidbox":
+                return AIDBOX;
             case "athenahealth":
                 return ATHENAHEALTH;
             case "canvas":
@@ -119,6 +125,8 @@ public final class Provider {
     }
 
     public enum Value {
+        AIDBOX,
+
         ATHENAHEALTH,
 
         CANVAS,
@@ -145,6 +153,8 @@ public final class Provider {
     }
 
     public interface Visitor<T> {
+        T visitAidbox();
+
         T visitAthenahealth();
 
         T visitCanvas();
