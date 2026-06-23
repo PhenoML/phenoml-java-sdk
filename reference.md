@@ -5490,6 +5490,7 @@ client.tools().mcpTools().delete("mcp_server_tool_id");
 </dl>
 </details>
 
+## Voice
 ## Workflows
 <details><summary><code>client.workflows.list() -> ListWorkflowsResponse</code></summary>
 <dl>
