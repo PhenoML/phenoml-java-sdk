@@ -1,3 +1,11 @@
+## [17.7.0] - 2026-06-23
+### Added
+- **`PhenomlClient.voice().voice().transcribe(...)`** — new sync method that uploads raw audio bytes (WAV, FLAC, MP3, or OGG/WebM Opus) to `POST /transcribe` and returns a `TranscribeResponse`, supporting up to ~5 minutes of audio per request.
+- **`AsyncPhenomlClient.voice().voice().transcribe(...)`** — new async method for the same voice transcription endpoint.
+- **`TranscribeRequest`** — new request type carrying raw audio bytes plus an optional BCP-47 `language` list.
+- **`TranscribeResponse.getTranscript()`** — new response accessor exposing the full transcript returned by the voice service.
+- **Voice service errors** — new typed exceptions (`BadRequestError`, `UnauthorizedError`, `PaymentRequiredError`, `ContentTooLargeError`, `BadGatewayError`, `ServiceUnavailableError`, `GatewayTimeoutError`) thrown by the voice service.
+
 ## [17.6.0] - 2026-06-18
 ### Added
 - **`ConflictError`** — new typed exception thrown by `RawChatClient.send(...)`, `RawChatClient.stream(...)`, `AsyncRawChatClient.send(...)`, and `AsyncRawChatClient.stream(...)` for HTTP 409 responses when a session already has an active turn.

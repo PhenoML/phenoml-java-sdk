@@ -15,6 +15,7 @@ import com.phenoml.api.resources.fhirprovider.FhirProviderClient;
 import com.phenoml.api.resources.lang2fhir.Lang2FhirClient;
 import com.phenoml.api.resources.summary.SummaryClient;
 import com.phenoml.api.resources.tools.ToolsClient;
+import com.phenoml.api.resources.voice.VoiceClient;
 import com.phenoml.api.resources.workflows.WorkflowsClient;
 import java.util.function.Supplier;
 
@@ -41,6 +42,8 @@ public class PhenomlClient {
 
     protected final Supplier<ToolsClient> toolsClient;
 
+    protected final Supplier<VoiceClient> voiceClient;
+
     protected final Supplier<WorkflowsClient> workflowsClient;
 
     public PhenomlClient(ClientOptions clientOptions) {
@@ -55,6 +58,7 @@ public class PhenomlClient {
         this.lang2FhirClient = Suppliers.memoize(() -> new Lang2FhirClient(clientOptions));
         this.summaryClient = Suppliers.memoize(() -> new SummaryClient(clientOptions));
         this.toolsClient = Suppliers.memoize(() -> new ToolsClient(clientOptions));
+        this.voiceClient = Suppliers.memoize(() -> new VoiceClient(clientOptions));
         this.workflowsClient = Suppliers.memoize(() -> new WorkflowsClient(clientOptions));
     }
 
@@ -96,6 +100,10 @@ public class PhenomlClient {
 
     public ToolsClient tools() {
         return this.toolsClient.get();
+    }
+
+    public VoiceClient voice() {
+        return this.voiceClient.get();
     }
 
     public WorkflowsClient workflows() {
