@@ -46,6 +46,8 @@ public final class MeasurementRow {
 
     private final Optional<Long> visitOccurrenceId;
 
+    private final Optional<Long> providerId;
+
     private final Optional<String> measurementSourceValue;
 
     private final Optional<Long> measurementSourceConceptId;
@@ -70,6 +72,7 @@ public final class MeasurementRow {
             Optional<Double> rangeLow,
             Optional<Double> rangeHigh,
             Optional<Long> visitOccurrenceId,
+            Optional<Long> providerId,
             Optional<String> measurementSourceValue,
             Optional<Long> measurementSourceConceptId,
             Optional<String> unitSourceValue,
@@ -88,6 +91,7 @@ public final class MeasurementRow {
         this.rangeLow = rangeLow;
         this.rangeHigh = rangeHigh;
         this.visitOccurrenceId = visitOccurrenceId;
+        this.providerId = providerId;
         this.measurementSourceValue = measurementSourceValue;
         this.measurementSourceConceptId = measurementSourceConceptId;
         this.unitSourceValue = unitSourceValue;
@@ -163,6 +167,11 @@ public final class MeasurementRow {
         return visitOccurrenceId;
     }
 
+    @JsonProperty("provider_id")
+    public Optional<Long> getProviderId() {
+        return providerId;
+    }
+
     @JsonProperty("measurement_source_value")
     public Optional<String> getMeasurementSourceValue() {
         return measurementSourceValue;
@@ -208,6 +217,7 @@ public final class MeasurementRow {
                 && rangeLow.equals(other.rangeLow)
                 && rangeHigh.equals(other.rangeHigh)
                 && visitOccurrenceId.equals(other.visitOccurrenceId)
+                && providerId.equals(other.providerId)
                 && measurementSourceValue.equals(other.measurementSourceValue)
                 && measurementSourceConceptId.equals(other.measurementSourceConceptId)
                 && unitSourceValue.equals(other.unitSourceValue)
@@ -230,6 +240,7 @@ public final class MeasurementRow {
                 this.rangeLow,
                 this.rangeHigh,
                 this.visitOccurrenceId,
+                this.providerId,
                 this.measurementSourceValue,
                 this.measurementSourceConceptId,
                 this.unitSourceValue,
@@ -273,6 +284,8 @@ public final class MeasurementRow {
 
         private Optional<Long> visitOccurrenceId = Optional.empty();
 
+        private Optional<Long> providerId = Optional.empty();
+
         private Optional<String> measurementSourceValue = Optional.empty();
 
         private Optional<Long> measurementSourceConceptId = Optional.empty();
@@ -300,6 +313,7 @@ public final class MeasurementRow {
             rangeLow(other.getRangeLow());
             rangeHigh(other.getRangeHigh());
             visitOccurrenceId(other.getVisitOccurrenceId());
+            providerId(other.getProviderId());
             measurementSourceValue(other.getMeasurementSourceValue());
             measurementSourceConceptId(other.getMeasurementSourceConceptId());
             unitSourceValue(other.getUnitSourceValue());
@@ -453,6 +467,17 @@ public final class MeasurementRow {
             return this;
         }
 
+        @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
+        public Builder providerId(Optional<Long> providerId) {
+            this.providerId = providerId;
+            return this;
+        }
+
+        public Builder providerId(Long providerId) {
+            this.providerId = Optional.ofNullable(providerId);
+            return this;
+        }
+
         @JsonSetter(value = "measurement_source_value", nulls = Nulls.SKIP)
         public Builder measurementSourceValue(Optional<String> measurementSourceValue) {
             this.measurementSourceValue = measurementSourceValue;
@@ -512,6 +537,7 @@ public final class MeasurementRow {
                     rangeLow,
                     rangeHigh,
                     visitOccurrenceId,
+                    providerId,
                     measurementSourceValue,
                     measurementSourceConceptId,
                     unitSourceValue,
