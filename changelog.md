@@ -1,3 +1,11 @@
+## [17.8.0] - 2026-06-23
+### Added
+- **`Fhir2OmopClient` / `AsyncFhir2OmopClient`** — new service clients accessible via `PhenomlClient.fhir2Omop()` / `AsyncPhenomlClient.fhir2Omop()`, exposing a `create(CreateOmopRequest)` method that maps a FHIR R4 resource or Bundle into OMOP CDM v5.4 rows via `POST /fhir2omop/create`.
+- **`VoiceClient` / `AsyncVoiceClient`** — new service clients accessible via `PhenomlClient.voice()` / `AsyncPhenomlClient.voice()`, exposing `transcribe(...)` methods that upload raw audio bytes (WAV, FLAC, MP3, OGG/WebM Opus) to `POST /transcribe` and return a `TranscribeResponse`.
+- **OMOP CDM response types** — new model classes `OmopTables`, `PersonRow`, `VisitOccurrenceRow`, `ConditionOccurrenceRow`, `DrugExposureRow`, `ProcedureOccurrenceRow`, `MeasurementRow`, `ObservationRow`, `ObservationPeriodRow`, `DeathRow`, `LocationRow`, `CareSiteRow`, `ProviderRow`, `MappingEntry`, `DroppedResource`, and `Summary` represent the full OMOP CDM v5.4 output of the FHIR-to-OMOP conversion.
+- **`ConflictError`** — new typed exception (HTTP 409) thrown by `RawChatClient.send(...)` and `RawChatClient.stream(...)` (sync and async) when a session already has an active turn.
+- **`Provider.AIDBOX`** — `"aidbox"` is now a supported constant in the `Provider` enum, including a `Value.AIDBOX` entry and `Visitor.visitAidbox()` method.
+
 ## [17.7.0] - 2026-06-23
 ### Added
 - **`PhenomlClient.voice().voice().transcribe(...)`** — new sync method that uploads raw audio bytes (WAV, FLAC, MP3, or OGG/WebM Opus) to `POST /transcribe` and returns a `TranscribeResponse`, supporting up to ~5 minutes of audio per request.
