@@ -4,21 +4,25 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  ARTIFACT_ID: phenoml-java-sdk
+
 jobs:
   compile:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Set up Java
         id: setup-jre
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           java-version: "11"
           distribution: "zulu"
           architecture: x64
+          cache: gradle
 
       - name: Compile
         run: ./gradlew compileJava
@@ -28,18 +32,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Set up Java
         id: setup-jre
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           java-version: "11"
           distribution: "zulu"
           architecture: x64
+          cache: gradle
 
       - name: Test
         run: ./gradlew test
+
   tag:
     needs: [ compile, test ]
     if: github.ref == 'refs/heads/main'
@@ -48,17 +54,26 @@ jobs:
       contents: write
     outputs:
       should_publish: ${{ steps.check.outputs.should_publish }}
+      version: ${{ steps.check.outputs.version }}
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
 
       - name: Extract version and check tag
         id: check
         run: |
+          set -euo pipefail
           VERSION=$(grep "^version = " build.gradle | sed "s/version = '\(.*\)'/\1/")
+          # build.gradle is repo-controlled but flows into downstream
+          # shell/URL/filesystem contexts; pin it to a safe charset before
+          # propagating as a job output.
+          if ! printf '%s' "$VERSION" | grep -Eq '^[A-Za-z0-9._+-]+$'; then
+            echo "Refusing to publish: version '$VERSION' contains unexpected characters" >&2
+            exit 1
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           if git ls-remote --tags origin | grep -q "refs/tags/$VERSION"; then
             echo "Tag $VERSION already exists, skipping"
@@ -72,7 +87,7 @@ jobs:
       # behind that would set should_publish=false on retry.
       - name: Verify bundled OpenAPI spec
         if: steps.check.outputs.should_publish == 'true'
-        uses: PhenoML/sdk-shared-actions/verify-openapi-spec@1.0.2
+        uses: PhenoML/sdk-shared-actions/verify-openapi-spec@1.0.3
         with:
           spec-path: src/main/resources/openapi/openapi.json
 
@@ -86,29 +101,175 @@ jobs:
             --title "${{ steps.check.outputs.version }}" \
             --generate-notes
 
-  publish:
+  # Isolated from publish secrets — Gradle and its plugin graph run here.
+  build-artifact:
     needs: [ compile, test, tag ]
     if: needs.tag.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Set up Java
-        id: setup-jre
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           java-version: "11"
           distribution: "zulu"
           architecture: x64
+          cache: gradle
 
-      - name: Publish to maven
+      - name: Build publishable artifacts
         run: |
-          ./gradlew sonatypeCentralUpload
+          ./gradlew \
+            assemble \
+            generatePomFileForMavenPublication \
+            generateMetadataFileForMavenPublication \
+            -x signMavenPublication
+
+      - name: Stage dist/ and generate SHA256SUMS
         env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-          MAVEN_SIGNATURE_KID: ${{ secrets.MAVEN_SIGNATURE_KID }}
-          MAVEN_SIGNATURE_SECRET_KEY: ${{ secrets.MAVEN_SIGNATURE_SECRET_KEY }}
-          MAVEN_SIGNATURE_PASSWORD: ${{ secrets.MAVEN_SIGNATURE_PASSWORD }}
+          VERSION: ${{ needs.tag.outputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp "build/libs/${ARTIFACT_ID}-${VERSION}.jar"             dist/
+          cp "build/libs/${ARTIFACT_ID}-${VERSION}-sources.jar"     dist/
+          cp "build/libs/${ARTIFACT_ID}-${VERSION}-javadoc.jar"     dist/
+          cp "build/publications/maven/pom-default.xml"             "dist/${ARTIFACT_ID}-${VERSION}.pom"
+          if [ -f build/publications/maven/module.json ]; then
+            cp build/publications/maven/module.json                 "dist/${ARTIFACT_ID}-${VERSION}.module"
+          fi
+          ( cd dist && sha256sum * > SHA256SUMS )
+          echo "Staged dist/:"
+          ls -la dist/
+
+      - name: Upload bundle artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: maven-bundle
+          path: dist/
+          retention-days: 1
+          if-no-files-found: error
+
+  # Holds the publish secrets. Only curl/jq/gpg from the runner image run here
+  # — no Java toolchain, no Gradle, no third-party actions beyond download-artifact.
+  publish:
+    needs: [ tag, build-artifact ]
+    runs-on: ubuntu-latest
+    environment: maven-production
+    permissions:
+      contents: read
+    env:
+      GROUP_ID: com.phenoml.maven
+      CENTRAL_API: https://central.sonatype.com/api/v1/publisher
+      VERSION: ${{ needs.tag.outputs.version }}
+      MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+      MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+      MAVEN_SIGNATURE_SECRET_KEY: ${{ secrets.MAVEN_SIGNATURE_SECRET_KEY }}
+      MAVEN_SIGNATURE_PASSWORD:   ${{ secrets.MAVEN_SIGNATURE_PASSWORD }}
+
+    steps:
+      - name: Download bundle artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: maven-bundle
+          path: dist
+
+      - name: Verify SHA256SUMS
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum -c SHA256SUMS
+          rm SHA256SUMS
+
+      - name: Import signing key into ephemeral GNUPGHOME
+        run: |
+          set -euo pipefail
+          GNUPGHOME="$(mktemp -d "$RUNNER_TEMP/gnupg.XXXXXX")"
+          chmod 700 "$GNUPGHOME"
+          # export so the import below lands in the ephemeral home; GITHUB_ENV
+          # carries it to the later signing step.
+          export GNUPGHOME
+          echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
+          printf '%s' "$MAVEN_SIGNATURE_SECRET_KEY" \
+            | gpg --batch --pinentry-mode loopback \
+                  --passphrase "$MAVEN_SIGNATURE_PASSWORD" \
+                  --import
+
+      - name: Sign artifacts and emit md5/sha1 sidecars
+        run: |
+          set -euo pipefail
+          cd dist
+          for f in *; do
+            [ -f "$f" ] || continue
+            gpg --batch --pinentry-mode loopback \
+                --passphrase "$MAVEN_SIGNATURE_PASSWORD" \
+                --detach-sign --armor \
+                --output "${f}.asc" \
+                "$f"
+            md5sum  "$f" | awk '{print $1}' > "${f}.md5"
+            sha1sum "$f" | awk '{print $1}' > "${f}.sha1"
+          done
+
+      - name: Assemble Central Portal bundle zip
+        run: |
+          set -euo pipefail
+          GROUP_PATH="$(echo "$GROUP_ID" | tr . /)"
+          DEST="bundle/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}"
+          mkdir -p "$DEST"
+          mv dist/* "$DEST/"
+          # zip from inside bundle/ and pass the top-level dir as the path so
+          # entries are flat (no leading "./") — the Portal validator expects
+          # entries rooted at the group path.
+          TOP_DIR="$(echo "$GROUP_PATH" | cut -d/ -f1)"
+          ( cd bundle && zip -r ../bundle.zip "$TOP_DIR" )
+          echo "Bundle contents:"
+          unzip -l bundle.zip
+
+      - name: Upload bundle to Central Portal
+        id: upload
+        run: |
+          set -euo pipefail
+          AUTH="$(printf '%s:%s' "$MAVEN_USERNAME" "$MAVEN_PASSWORD" | base64 -w 0)"
+          DEPLOYMENT_ID="$(curl --fail-with-body -sS -X POST \
+            -H "Authorization: Bearer ${AUTH}" \
+            -F "bundle=@bundle.zip;type=application/octet-stream" \
+            "${CENTRAL_API}/upload?name=${ARTIFACT_ID}-${VERSION}&publishingType=AUTOMATIC" \
+            | tr -d '"[:space:]')"
+          if [ -z "${DEPLOYMENT_ID}" ]; then
+            echo "Empty deployment id returned from Central Portal" >&2
+            exit 1
+          fi
+          echo "deployment_id=${DEPLOYMENT_ID}" >> "$GITHUB_OUTPUT"
+          echo "Upload accepted; deployment id: ${DEPLOYMENT_ID}"
+
+      - name: Poll deployment status until terminal
+        env:
+          DEPLOYMENT_ID: ${{ steps.upload.outputs.deployment_id }}
+        run: |
+          set -euo pipefail
+          AUTH="$(printf '%s:%s' "$MAVEN_USERNAME" "$MAVEN_PASSWORD" | base64 -w 0)"
+          for i in $(seq 1 60); do
+            BODY="$(curl --fail-with-body -sS -X POST \
+              -H "Authorization: Bearer ${AUTH}" \
+              "${CENTRAL_API}/status?id=${DEPLOYMENT_ID}")"
+            STATE="$(echo "${BODY}" | jq -r '.deploymentState')"
+            echo "[${i}] deploymentState=${STATE}"
+            case "${STATE}" in
+              PUBLISHED)
+                echo "Maven Central publish complete for deployment ${DEPLOYMENT_ID}"
+                exit 0
+                ;;
+              FAILED)
+                echo "Maven Central publish FAILED:" >&2
+                echo "${BODY}" | jq . >&2
+                exit 1
+                ;;
+            esac
+            sleep 30
+          done
+          echo "Timed out waiting for terminal deployment state" >&2
+          exit 1
