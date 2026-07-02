@@ -1,3 +1,18 @@
+## [17.8.0] - 2026-07-02
+### Added
+- **`RequestOptions.Builder.maxRetries(...)`** — new per-request retry override for sync/raw clients, allowing individual calls to use a different retry count than the client default.
+- **`Raw*Client` and `AsyncRaw*Client` classes** — new raw-response clients across resource groups, exposing response metadata alongside typed bodies.
+- **`CareSiteRow`, `DeathRow`, `LocationRow`, `ObservationPeriodRow`, and `ProviderRow`** — five new OMOP CDM v5.4 row types under `com.phenoml.api.resources.fhir2omop.types`.
+- **`OmopTables.getLocation()`, `getCareSite()`, `getProvider()`, `getDeath()`, and `getObservationPeriod()`** — new optional table accessors for the expanded FHIR-to-OMOP output.
+- **`CreateMultiResponseResourcesItem.getSourcePages()`** — new optional accessor containing 1-indexed source document page numbers for resources extracted by `/lang2fhir/document/multi`.
+
+### Changed
+- **`ConditionOccurrenceRow`, `DrugExposureRow`, `MeasurementRow`, `ObservationRow`, and `ProcedureOccurrenceRow`** — each gains an optional `getProviderId()` accessor linking clinical events to OMOP provider records.
+- **`VisitOccurrenceRow.getProviderId()` and `VisitOccurrenceRow.getCareSiteId()`** — new optional accessors linking visits to provider and care-site records.
+- **`PersonRow.getLocationId()`** — new optional accessor linking people to OMOP location records.
+- **`DateTimeDeserializer`** — now accepts space-separated date-times and RFC 1123 date strings in addition to ISO 8601 values.
+- **Successful-response deserialization failures** — now throw `PhenomlClientException` with a deserialization-specific message instead of being reported as generic network errors.
+
 ## [17.7.0] - 2026-06-23
 ### Added
 - **`PhenomlClient.voice().voice().transcribe(...)`** — new sync method that uploads raw audio bytes (WAV, FLAC, MP3, or OGG/WebM Opus) to `POST /transcribe` and returns a `TranscribeResponse`, supporting up to ~5 minutes of audio per request.
