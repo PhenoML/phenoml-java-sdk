@@ -171,7 +171,6 @@ public final class ListCodesResponse {
 
         /**
          * <p>Whether there are more results available</p>
-         * <p>Whether there are more results available</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

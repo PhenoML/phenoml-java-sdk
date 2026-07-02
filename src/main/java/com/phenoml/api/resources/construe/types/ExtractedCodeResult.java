@@ -251,7 +251,6 @@ public final class ExtractedCodeResult {
 
         /**
          * <p>The extracted code</p>
-         * <p>The extracted code</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -263,7 +262,6 @@ public final class ExtractedCodeResult {
 
         /**
          * <p>Short description of the code</p>
-         * <p>Short description of the code</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -274,7 +272,6 @@ public final class ExtractedCodeResult {
         }
 
         /**
-         * <p>Whether the code passed validation. Always true unless include_invalid is set to true, in which case invalid codes will have this set to false.</p>
          * <p>Whether the code passed validation. Always true unless include_invalid is set to true, in which case invalid codes will have this set to false.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

@@ -149,7 +149,6 @@ public final class ProfileUploadRequest {
 
         /**
          * <p>Base64 encoded JSON string of a FHIR StructureDefinition. The profile must include id, url, type, and a snapshot with elements. All metadata (version, resource type, identifier) is derived from the StructureDefinition itself. The lowercase id from the StructureDefinition becomes the profile's lookup key.</p>
-         * <p>Base64 encoded JSON string of a FHIR StructureDefinition. The profile must include id, url, type, and a snapshot with elements. All metadata (version, resource type, identifier) is derived from the StructureDefinition itself. The lowercase id from the StructureDefinition becomes the profile's lookup key.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

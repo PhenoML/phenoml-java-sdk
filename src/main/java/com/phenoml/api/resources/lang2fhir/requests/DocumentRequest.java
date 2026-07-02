@@ -171,7 +171,6 @@ public final class DocumentRequest {
 
         /**
          * <p>FHIR version to use</p>
-         * <p>FHIR version to use</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -183,7 +182,6 @@ public final class DocumentRequest {
 
         /**
          * <p>Type of FHIR resource to create. Accepts any FHIR resource type or US Core profile name.</p>
-         * <p>Type of FHIR resource to create. Accepts any FHIR resource type or US Core profile name.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -194,9 +192,6 @@ public final class DocumentRequest {
         }
 
         /**
-         * <p>Base64 encoded file content.
-         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg).
-         * File type is auto-detected from content magic bytes.</p>
          * <p>Base64 encoded file content.
          * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg).
          * File type is auto-detected from content magic bytes.</p>

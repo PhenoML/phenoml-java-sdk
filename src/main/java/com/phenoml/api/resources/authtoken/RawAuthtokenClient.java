@@ -11,6 +11,7 @@ import com.phenoml.api.core.PhenomlClientApiException;
 import com.phenoml.api.core.PhenomlClientException;
 import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.core.RetryInterceptor;
 import com.phenoml.api.resources.authtoken.errors.BadRequestError;
 import com.phenoml.api.resources.authtoken.errors.InternalServerError;
 import com.phenoml.api.resources.authtoken.errors.UnauthorizedError;
@@ -96,6 +97,15 @@ public class RawAuthtokenClient {
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
         }
+        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+            okhttpRequest = okhttpRequest
+                    .newBuilder()
+                    .tag(
+                            RetryInterceptor.MaxRetriesOverride.class,
+                            new RetryInterceptor.MaxRetriesOverride(
+                                    requestOptions.getMaxRetries().get()))
+                    .build();
+        }
         try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
@@ -121,6 +131,8 @@ public class RawAuthtokenClient {
             Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new PhenomlClientApiException(
                     "Error with status code " + response.code(), response.code(), errorBody, response);
+        } catch (JsonProcessingException e) {
+            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
         } catch (IOException e) {
             throw new PhenomlClientException("Network error executing HTTP request", e);
         }

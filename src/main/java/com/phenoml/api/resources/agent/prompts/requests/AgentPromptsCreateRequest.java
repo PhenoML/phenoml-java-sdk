@@ -196,7 +196,6 @@ public final class AgentPromptsCreateRequest {
 
         /**
          * <p>Prompt name</p>
-         * <p>Prompt name</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -207,7 +206,6 @@ public final class AgentPromptsCreateRequest {
         }
 
         /**
-         * <p>Prompt content</p>
          * <p>Prompt content</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

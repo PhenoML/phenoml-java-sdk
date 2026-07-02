@@ -141,7 +141,6 @@ public final class Citation {
 
         /**
          * <p>The exact text span containing evidence for the code</p>
-         * <p>The exact text span containing evidence for the code</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -153,7 +152,6 @@ public final class Citation {
 
         /**
          * <p>Starting byte offset in the original input text (0-indexed)</p>
-         * <p>Starting byte offset in the original input text (0-indexed)</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -164,7 +162,6 @@ public final class Citation {
         }
 
         /**
-         * <p>Ending byte offset (exclusive), such that input[begin_offset:end_offset] == text</p>
          * <p>Ending byte offset (exclusive), such that input[begin_offset:end_offset] == text</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

@@ -169,7 +169,6 @@ public final class PatchRequestBodyItem {
 
         /**
          * <p>The operation to perform</p>
-         * <p>The operation to perform</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -180,7 +179,6 @@ public final class PatchRequestBodyItem {
         }
 
         /**
-         * <p>JSON Pointer to the target location</p>
          * <p>JSON Pointer to the target location</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

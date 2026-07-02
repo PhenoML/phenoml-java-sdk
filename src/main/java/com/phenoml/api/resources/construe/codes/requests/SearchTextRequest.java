@@ -144,7 +144,6 @@ public final class SearchTextRequest {
 
         /**
          * <p>Search query (searches code IDs and descriptions)</p>
-         * <p>Search query (searches code IDs and descriptions)</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

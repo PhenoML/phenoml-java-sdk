@@ -201,7 +201,6 @@ public final class Lang2FhirAndCreateRequest {
 
         /**
          * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported US Core profile.</p>
-         * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported US Core profile.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -212,7 +211,6 @@ public final class Lang2FhirAndCreateRequest {
         }
 
         /**
-         * <p>Natural language text to convert to FHIR resource</p>
          * <p>Natural language text to convert to FHIR resource</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

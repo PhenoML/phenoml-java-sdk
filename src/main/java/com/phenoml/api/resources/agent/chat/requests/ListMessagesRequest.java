@@ -190,7 +190,6 @@ public final class ListMessagesRequest {
 
         /**
          * <p>Chat session ID</p>
-         * <p>Chat session ID</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
