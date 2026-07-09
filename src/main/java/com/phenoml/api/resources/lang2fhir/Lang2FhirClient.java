@@ -9,10 +9,10 @@ import com.phenoml.api.resources.lang2fhir.requests.CreateMultiRequest;
 import com.phenoml.api.resources.lang2fhir.requests.CreateRequest;
 import com.phenoml.api.resources.lang2fhir.requests.DocumentMultiRequest;
 import com.phenoml.api.resources.lang2fhir.requests.DocumentRequest;
-import com.phenoml.api.resources.lang2fhir.requests.ProfileUploadRequest;
 import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.DocumentMultiResponse;
+import com.phenoml.api.resources.lang2fhir.types.ProfileUploadRequest;
 import com.phenoml.api.resources.lang2fhir.types.SearchResponse;
 import com.phenoml.api.resources.lang2fhir.types.UploadProfileResponse;
 import java.util.Map;
@@ -97,7 +97,12 @@ public class Lang2FhirClient {
     }
 
     /**
-     * Upload a custom FHIR StructureDefinition profile for use with the lang2fhir service.
+     * <strong>Deprecated — use <code>POST /fhir/profiles</code> instead.</strong> This route continues to work
+     * and operates on the same custom profiles, so no migration is required; it
+     * will be removed in a future release. Note that <code>POST /fhir/profiles</code> does not
+     * accept <code>profile_context</code>; set implementation-guide context with
+     * <code>PUT /fhir/implementation-guides/{name}</code>.
+     * <p>Upload a custom FHIR StructureDefinition profile for use with the lang2fhir service.</p>
      * <p>All metadata is derived from the StructureDefinition JSON itself. The lowercase <code>id</code> field
      * from the StructureDefinition is used as the profile's unique identifier and lookup key.
      * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
@@ -113,7 +118,12 @@ public class Lang2FhirClient {
     }
 
     /**
-     * Upload a custom FHIR StructureDefinition profile for use with the lang2fhir service.
+     * <strong>Deprecated — use <code>POST /fhir/profiles</code> instead.</strong> This route continues to work
+     * and operates on the same custom profiles, so no migration is required; it
+     * will be removed in a future release. Note that <code>POST /fhir/profiles</code> does not
+     * accept <code>profile_context</code>; set implementation-guide context with
+     * <code>PUT /fhir/implementation-guides/{name}</code>.
+     * <p>Upload a custom FHIR StructureDefinition profile for use with the lang2fhir service.</p>
      * <p>All metadata is derived from the StructureDefinition JSON itself. The lowercase <code>id</code> field
      * from the StructureDefinition is used as the profile's unique identifier and lookup key.
      * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>

@@ -248,7 +248,6 @@ public final class AgentCreateRequest {
 
         /**
          * <p>Agent name</p>
-         * <p>Agent name</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -259,8 +258,6 @@ public final class AgentCreateRequest {
         }
 
         /**
-         * <p>FHIR provider ID(s) for this agent. Required.
-         * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.</p>
          * <p>FHIR provider ID(s) for this agent. Required.
          * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.</p>
          * @return Reference to {@code this} so that method calls can be chained together.

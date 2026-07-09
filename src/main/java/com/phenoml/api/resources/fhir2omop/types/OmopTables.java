@@ -21,7 +21,17 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = OmopTables.Builder.class)
 public final class OmopTables {
+    private final Optional<List<LocationRow>> location;
+
+    private final Optional<List<CareSiteRow>> careSite;
+
+    private final Optional<List<ProviderRow>> provider;
+
     private final Optional<List<PersonRow>> person;
+
+    private final Optional<List<DeathRow>> death;
+
+    private final Optional<List<ObservationPeriodRow>> observationPeriod;
 
     private final Optional<List<VisitOccurrenceRow>> visitOccurrence;
 
@@ -38,7 +48,12 @@ public final class OmopTables {
     private final Map<String, Object> additionalProperties;
 
     private OmopTables(
+            Optional<List<LocationRow>> location,
+            Optional<List<CareSiteRow>> careSite,
+            Optional<List<ProviderRow>> provider,
             Optional<List<PersonRow>> person,
+            Optional<List<DeathRow>> death,
+            Optional<List<ObservationPeriodRow>> observationPeriod,
             Optional<List<VisitOccurrenceRow>> visitOccurrence,
             Optional<List<ConditionOccurrenceRow>> conditionOccurrence,
             Optional<List<DrugExposureRow>> drugExposure,
@@ -46,7 +61,12 @@ public final class OmopTables {
             Optional<List<MeasurementRow>> measurement,
             Optional<List<ObservationRow>> observation,
             Map<String, Object> additionalProperties) {
+        this.location = location;
+        this.careSite = careSite;
+        this.provider = provider;
         this.person = person;
+        this.death = death;
+        this.observationPeriod = observationPeriod;
         this.visitOccurrence = visitOccurrence;
         this.conditionOccurrence = conditionOccurrence;
         this.drugExposure = drugExposure;
@@ -56,9 +76,34 @@ public final class OmopTables {
         this.additionalProperties = additionalProperties;
     }
 
+    @JsonProperty("location")
+    public Optional<List<LocationRow>> getLocation() {
+        return location;
+    }
+
+    @JsonProperty("care_site")
+    public Optional<List<CareSiteRow>> getCareSite() {
+        return careSite;
+    }
+
+    @JsonProperty("provider")
+    public Optional<List<ProviderRow>> getProvider() {
+        return provider;
+    }
+
     @JsonProperty("person")
     public Optional<List<PersonRow>> getPerson() {
         return person;
+    }
+
+    @JsonProperty("death")
+    public Optional<List<DeathRow>> getDeath() {
+        return death;
+    }
+
+    @JsonProperty("observation_period")
+    public Optional<List<ObservationPeriodRow>> getObservationPeriod() {
+        return observationPeriod;
     }
 
     @JsonProperty("visit_occurrence")
@@ -103,7 +148,12 @@ public final class OmopTables {
     }
 
     private boolean equalTo(OmopTables other) {
-        return person.equals(other.person)
+        return location.equals(other.location)
+                && careSite.equals(other.careSite)
+                && provider.equals(other.provider)
+                && person.equals(other.person)
+                && death.equals(other.death)
+                && observationPeriod.equals(other.observationPeriod)
                 && visitOccurrence.equals(other.visitOccurrence)
                 && conditionOccurrence.equals(other.conditionOccurrence)
                 && drugExposure.equals(other.drugExposure)
@@ -115,7 +165,12 @@ public final class OmopTables {
     @java.lang.Override
     public int hashCode() {
         return Objects.hash(
+                this.location,
+                this.careSite,
+                this.provider,
                 this.person,
+                this.death,
+                this.observationPeriod,
                 this.visitOccurrence,
                 this.conditionOccurrence,
                 this.drugExposure,
@@ -135,7 +190,17 @@ public final class OmopTables {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder {
+        private Optional<List<LocationRow>> location = Optional.empty();
+
+        private Optional<List<CareSiteRow>> careSite = Optional.empty();
+
+        private Optional<List<ProviderRow>> provider = Optional.empty();
+
         private Optional<List<PersonRow>> person = Optional.empty();
+
+        private Optional<List<DeathRow>> death = Optional.empty();
+
+        private Optional<List<ObservationPeriodRow>> observationPeriod = Optional.empty();
 
         private Optional<List<VisitOccurrenceRow>> visitOccurrence = Optional.empty();
 
@@ -155,13 +220,51 @@ public final class OmopTables {
         private Builder() {}
 
         public Builder from(OmopTables other) {
+            location(other.getLocation());
+            careSite(other.getCareSite());
+            provider(other.getProvider());
             person(other.getPerson());
+            death(other.getDeath());
+            observationPeriod(other.getObservationPeriod());
             visitOccurrence(other.getVisitOccurrence());
             conditionOccurrence(other.getConditionOccurrence());
             drugExposure(other.getDrugExposure());
             procedureOccurrence(other.getProcedureOccurrence());
             measurement(other.getMeasurement());
             observation(other.getObservation());
+            return this;
+        }
+
+        @JsonSetter(value = "location", nulls = Nulls.SKIP)
+        public Builder location(Optional<List<LocationRow>> location) {
+            this.location = location;
+            return this;
+        }
+
+        public Builder location(List<LocationRow> location) {
+            this.location = Optional.ofNullable(location);
+            return this;
+        }
+
+        @JsonSetter(value = "care_site", nulls = Nulls.SKIP)
+        public Builder careSite(Optional<List<CareSiteRow>> careSite) {
+            this.careSite = careSite;
+            return this;
+        }
+
+        public Builder careSite(List<CareSiteRow> careSite) {
+            this.careSite = Optional.ofNullable(careSite);
+            return this;
+        }
+
+        @JsonSetter(value = "provider", nulls = Nulls.SKIP)
+        public Builder provider(Optional<List<ProviderRow>> provider) {
+            this.provider = provider;
+            return this;
+        }
+
+        public Builder provider(List<ProviderRow> provider) {
+            this.provider = Optional.ofNullable(provider);
             return this;
         }
 
@@ -173,6 +276,28 @@ public final class OmopTables {
 
         public Builder person(List<PersonRow> person) {
             this.person = Optional.ofNullable(person);
+            return this;
+        }
+
+        @JsonSetter(value = "death", nulls = Nulls.SKIP)
+        public Builder death(Optional<List<DeathRow>> death) {
+            this.death = death;
+            return this;
+        }
+
+        public Builder death(List<DeathRow> death) {
+            this.death = Optional.ofNullable(death);
+            return this;
+        }
+
+        @JsonSetter(value = "observation_period", nulls = Nulls.SKIP)
+        public Builder observationPeriod(Optional<List<ObservationPeriodRow>> observationPeriod) {
+            this.observationPeriod = observationPeriod;
+            return this;
+        }
+
+        public Builder observationPeriod(List<ObservationPeriodRow> observationPeriod) {
+            this.observationPeriod = Optional.ofNullable(observationPeriod);
             return this;
         }
 
@@ -244,7 +369,12 @@ public final class OmopTables {
 
         public OmopTables build() {
             return new OmopTables(
+                    location,
+                    careSite,
+                    provider,
                     person,
+                    death,
+                    observationPeriod,
                     visitOccurrence,
                     conditionOccurrence,
                     drugExposure,

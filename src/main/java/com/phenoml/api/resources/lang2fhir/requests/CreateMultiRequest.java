@@ -226,7 +226,6 @@ public final class CreateMultiRequest {
 
         /**
          * <p>Natural language text containing multiple clinical concepts to extract</p>
-         * <p>Natural language text containing multiple clinical concepts to extract</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

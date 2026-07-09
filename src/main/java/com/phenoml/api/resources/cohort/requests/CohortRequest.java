@@ -99,7 +99,6 @@ public final class CohortRequest {
 
         /**
          * <p>Natural language text describing patient cohort criteria</p>
-         * <p>Natural language text describing patient cohort criteria</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

@@ -30,7 +30,7 @@ public final class LookupRequest {
     }
 
     /**
-     * @return Specific version of the code system
+     * @return Specific version of the code system, such as <code>umls-2026aa</code>.
      */
     @JsonProperty("version")
     public Optional<String> getVersion() {
@@ -81,7 +81,7 @@ public final class LookupRequest {
         }
 
         /**
-         * <p>Specific version of the code system</p>
+         * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
          */
         @JsonSetter(value = "version", nulls = Nulls.SKIP)
         public Builder version(Optional<String> version) {

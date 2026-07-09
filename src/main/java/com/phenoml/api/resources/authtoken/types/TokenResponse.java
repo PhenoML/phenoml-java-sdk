@@ -144,7 +144,6 @@ public final class TokenResponse {
 
         /**
          * <p>JWT access token for subsequent authenticated requests</p>
-         * <p>JWT access token for subsequent authenticated requests</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -156,7 +155,6 @@ public final class TokenResponse {
 
         /**
          * <p>Token type (always &quot;Bearer&quot;)</p>
-         * <p>Token type (always &quot;Bearer&quot;)</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -167,7 +165,6 @@ public final class TokenResponse {
         }
 
         /**
-         * <p>Token lifetime in seconds</p>
          * <p>Token lifetime in seconds</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

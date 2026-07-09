@@ -12,7 +12,9 @@ import com.phenoml.api.resources.construe.AsyncConstrueClient;
 import com.phenoml.api.resources.fhir.AsyncFhirClient;
 import com.phenoml.api.resources.fhir2omop.AsyncFhir2OmopClient;
 import com.phenoml.api.resources.fhirprovider.AsyncFhirProviderClient;
+import com.phenoml.api.resources.implementationguides.AsyncImplementationGuidesClient;
 import com.phenoml.api.resources.lang2fhir.AsyncLang2FhirClient;
+import com.phenoml.api.resources.profiles.AsyncProfilesClient;
 import com.phenoml.api.resources.summary.AsyncSummaryClient;
 import com.phenoml.api.resources.tools.AsyncToolsClient;
 import com.phenoml.api.resources.voice.AsyncVoiceClient;
@@ -36,7 +38,11 @@ public class AsyncPhenomlClient {
 
     protected final Supplier<AsyncFhirProviderClient> fhirProviderClient;
 
+    protected final Supplier<AsyncImplementationGuidesClient> implementationGuidesClient;
+
     protected final Supplier<AsyncLang2FhirClient> lang2FhirClient;
+
+    protected final Supplier<AsyncProfilesClient> profilesClient;
 
     protected final Supplier<AsyncSummaryClient> summaryClient;
 
@@ -55,7 +61,9 @@ public class AsyncPhenomlClient {
         this.fhirClient = Suppliers.memoize(() -> new AsyncFhirClient(clientOptions));
         this.fhir2OmopClient = Suppliers.memoize(() -> new AsyncFhir2OmopClient(clientOptions));
         this.fhirProviderClient = Suppliers.memoize(() -> new AsyncFhirProviderClient(clientOptions));
+        this.implementationGuidesClient = Suppliers.memoize(() -> new AsyncImplementationGuidesClient(clientOptions));
         this.lang2FhirClient = Suppliers.memoize(() -> new AsyncLang2FhirClient(clientOptions));
+        this.profilesClient = Suppliers.memoize(() -> new AsyncProfilesClient(clientOptions));
         this.summaryClient = Suppliers.memoize(() -> new AsyncSummaryClient(clientOptions));
         this.toolsClient = Suppliers.memoize(() -> new AsyncToolsClient(clientOptions));
         this.voiceClient = Suppliers.memoize(() -> new AsyncVoiceClient(clientOptions));
@@ -90,8 +98,16 @@ public class AsyncPhenomlClient {
         return this.fhirProviderClient.get();
     }
 
+    public AsyncImplementationGuidesClient implementationGuides() {
+        return this.implementationGuidesClient.get();
+    }
+
     public AsyncLang2FhirClient lang2Fhir() {
         return this.lang2FhirClient.get();
+    }
+
+    public AsyncProfilesClient profiles() {
+        return this.profilesClient.get();
     }
 
     public AsyncSummaryClient summary() {

@@ -36,6 +36,8 @@ public class AsyncCodesClient {
 
     /**
      * Converts natural language text into structured medical codes.
+     * <p>Pass <code>system.version</code> to select a specific code system version, for example
+     * <code>umls-2026aa</code> for UMLS 2026AA-backed systems.</p>
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ExtractCodesResult> extract(ExtractRequest request) {
@@ -44,6 +46,8 @@ public class AsyncCodesClient {
 
     /**
      * Converts natural language text into structured medical codes.
+     * <p>Pass <code>system.version</code> to select a specific code system version, for example
+     * <code>umls-2026aa</code> for UMLS 2026AA-backed systems.</p>
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ExtractCodesResult> extract(ExtractRequest request, RequestOptions requestOptions) {
