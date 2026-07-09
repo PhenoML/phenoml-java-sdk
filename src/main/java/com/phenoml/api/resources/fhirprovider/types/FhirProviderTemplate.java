@@ -270,7 +270,6 @@ public final class FhirProviderTemplate {
 
         /**
          * <p>Unique identifier for the FHIR provider</p>
-         * <p>Unique identifier for the FHIR provider</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -281,7 +280,6 @@ public final class FhirProviderTemplate {
         }
 
         /**
-         * <p>Display name for the FHIR provider</p>
          * <p>Display name for the FHIR provider</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
@@ -300,7 +298,6 @@ public final class FhirProviderTemplate {
         }
 
         /**
-         * <p>Timestamp when the provider was last updated</p>
          * <p>Timestamp when the provider was last updated</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

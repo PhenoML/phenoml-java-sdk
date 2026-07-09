@@ -249,7 +249,6 @@ public final class DocumentMultiRequest {
 
         /**
          * <p>FHIR version to use</p>
-         * <p>FHIR version to use</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -260,9 +259,6 @@ public final class DocumentMultiRequest {
         }
 
         /**
-         * <p>Base64 encoded file content.
-         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg).
-         * File type is auto-detected from content magic bytes.</p>
          * <p>Base64 encoded file content.
          * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg).
          * File type is auto-detected from content magic bytes.</p>

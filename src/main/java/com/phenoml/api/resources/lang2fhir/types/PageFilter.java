@@ -99,7 +99,6 @@ public final class PageFilter {
 
         /**
          * <p>Natural-language description of what IS relevant to the extraction goal. Pages that do not match are dropped from downstream FHIR extraction.</p>
-         * <p>Natural-language description of what IS relevant to the extraction goal. Pages that do not match are dropped from downstream FHIR extraction.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

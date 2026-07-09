@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,6 +29,8 @@ public final class CreateMultiResponseResourcesItem {
 
     private final Optional<String> originalText;
 
+    private final Optional<List<Integer>> sourcePages;
+
     private final Map<String, Object> additionalProperties;
 
     private CreateMultiResponseResourcesItem(
@@ -35,11 +38,13 @@ public final class CreateMultiResponseResourcesItem {
             Optional<String> resourceType,
             Optional<String> description,
             Optional<String> originalText,
+            Optional<List<Integer>> sourcePages,
             Map<String, Object> additionalProperties) {
         this.tempId = tempId;
         this.resourceType = resourceType;
         this.description = description;
         this.originalText = originalText;
+        this.sourcePages = sourcePages;
         this.additionalProperties = additionalProperties;
     }
 
@@ -75,6 +80,14 @@ public final class CreateMultiResponseResourcesItem {
         return originalText;
     }
 
+    /**
+     * @return 1-indexed source document page number(s) this resource was extracted from. Populated only by the /lang2fhir/document/multi endpoint; omitted when the source page could not be determined (e.g. raw-text create/multi, or a resource with no verbatim source text).
+     */
+    @JsonProperty("sourcePages")
+    public Optional<List<Integer>> getSourcePages() {
+        return sourcePages;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -90,12 +103,13 @@ public final class CreateMultiResponseResourcesItem {
         return tempId.equals(other.tempId)
                 && resourceType.equals(other.resourceType)
                 && description.equals(other.description)
-                && originalText.equals(other.originalText);
+                && originalText.equals(other.originalText)
+                && sourcePages.equals(other.sourcePages);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.tempId, this.resourceType, this.description, this.originalText);
+        return Objects.hash(this.tempId, this.resourceType, this.description, this.originalText, this.sourcePages);
     }
 
     @java.lang.Override
@@ -117,6 +131,8 @@ public final class CreateMultiResponseResourcesItem {
 
         private Optional<String> originalText = Optional.empty();
 
+        private Optional<List<Integer>> sourcePages = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -127,6 +143,7 @@ public final class CreateMultiResponseResourcesItem {
             resourceType(other.getResourceType());
             description(other.getDescription());
             originalText(other.getOriginalText());
+            sourcePages(other.getSourcePages());
             return this;
         }
 
@@ -186,9 +203,23 @@ public final class CreateMultiResponseResourcesItem {
             return this;
         }
 
+        /**
+         * <p>1-indexed source document page number(s) this resource was extracted from. Populated only by the /lang2fhir/document/multi endpoint; omitted when the source page could not be determined (e.g. raw-text create/multi, or a resource with no verbatim source text).</p>
+         */
+        @JsonSetter(value = "sourcePages", nulls = Nulls.SKIP)
+        public Builder sourcePages(Optional<List<Integer>> sourcePages) {
+            this.sourcePages = sourcePages;
+            return this;
+        }
+
+        public Builder sourcePages(List<Integer> sourcePages) {
+            this.sourcePages = Optional.ofNullable(sourcePages);
+            return this;
+        }
+
         public CreateMultiResponseResourcesItem build() {
             return new CreateMultiResponseResourcesItem(
-                    tempId, resourceType, description, originalText, additionalProperties);
+                    tempId, resourceType, description, originalText, sourcePages, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {

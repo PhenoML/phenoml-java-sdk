@@ -253,7 +253,6 @@ public final class AgentStreamChatRequest {
 
         /**
          * <p>The message to send to the agent</p>
-         * <p>The message to send to the agent</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -264,7 +263,6 @@ public final class AgentStreamChatRequest {
         }
 
         /**
-         * <p>The ID of the agent to chat with</p>
          * <p>The ID of the agent to chat with</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

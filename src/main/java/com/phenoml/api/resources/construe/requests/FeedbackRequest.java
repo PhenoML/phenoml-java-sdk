@@ -161,7 +161,6 @@ public final class FeedbackRequest {
 
         /**
          * <p>The natural language text that was used for code extraction</p>
-         * <p>The natural language text that was used for code extraction</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

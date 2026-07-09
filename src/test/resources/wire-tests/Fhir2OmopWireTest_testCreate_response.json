@@ -2,6 +2,15 @@
   "success": true,
   "message": "FHIR resources mapped to OMOP CDM v5.4",
   "tables": {
+    "location": [
+      {}
+    ],
+    "care_site": [
+      {}
+    ],
+    "provider": [
+      {}
+    ],
     "person": [
       {
         "person_id": 1,
@@ -15,6 +24,12 @@
         "person_source_value": "patient-1",
         "gender_source_value": "female"
       }
+    ],
+    "death": [
+      {}
+    ],
+    "observation_period": [
+      {}
     ],
     "visit_occurrence": [
       {}

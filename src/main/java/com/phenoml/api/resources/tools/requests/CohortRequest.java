@@ -176,7 +176,6 @@ public final class CohortRequest {
 
         /**
          * <p>Natural language text describing the patient cohort criteria</p>
-         * <p>Natural language text describing the patient cohort criteria</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -187,7 +186,6 @@ public final class CohortRequest {
         }
 
         /**
-         * <p>FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)</p>
          * <p>FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

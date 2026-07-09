@@ -259,7 +259,6 @@ public final class GetCodeSystemDetailResponse {
 
         /**
          * <p>Code system name</p>
-         * <p>Code system name</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -270,7 +269,6 @@ public final class GetCodeSystemDetailResponse {
         }
 
         /**
-         * <p>Code system version</p>
          * <p>Code system version</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
@@ -283,7 +281,6 @@ public final class GetCodeSystemDetailResponse {
 
         /**
          * <p>Total number of codes in the system</p>
-         * <p>Total number of codes in the system</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -294,7 +291,6 @@ public final class GetCodeSystemDetailResponse {
         }
 
         /**
-         * <p>Whether this is a built-in system (vs custom uploaded)</p>
          * <p>Whether this is a built-in system (vs custom uploaded)</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
@@ -312,12 +308,6 @@ public final class GetCodeSystemDetailResponse {
          * <li>&quot;ready&quot;: code system is ready for use</li>
          * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
          * </ul>
-         * <p>Processing status of the code system.</p>
-         * <ul>
-         * <li>&quot;processing&quot;: embeddings are being generated</li>
-         * <li>&quot;ready&quot;: code system is ready for use</li>
-         * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
-         * </ul>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -329,7 +319,6 @@ public final class GetCodeSystemDetailResponse {
 
         /**
          * <p>When the code system was created</p>
-         * <p>When the code system was created</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -340,7 +329,6 @@ public final class GetCodeSystemDetailResponse {
         }
 
         /**
-         * <p>When the code system was last updated</p>
          * <p>When the code system was last updated</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

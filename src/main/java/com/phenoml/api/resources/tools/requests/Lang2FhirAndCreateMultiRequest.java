@@ -200,7 +200,6 @@ public final class Lang2FhirAndCreateMultiRequest {
 
         /**
          * <p>Natural language text containing multiple clinical concepts to extract</p>
-         * <p>Natural language text containing multiple clinical concepts to extract</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -211,7 +210,6 @@ public final class Lang2FhirAndCreateMultiRequest {
         }
 
         /**
-         * <p>FHIR provider ID or name</p>
          * <p>FHIR provider ID or name</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

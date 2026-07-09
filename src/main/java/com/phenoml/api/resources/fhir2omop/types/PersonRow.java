@@ -36,6 +36,8 @@ public final class PersonRow {
 
     private final Optional<Long> ethnicityConceptId;
 
+    private final Optional<Long> locationId;
+
     private final Optional<String> personSourceValue;
 
     private final Optional<String> genderSourceValue;
@@ -55,6 +57,7 @@ public final class PersonRow {
             Optional<String> birthDatetime,
             Optional<Long> raceConceptId,
             Optional<Long> ethnicityConceptId,
+            Optional<Long> locationId,
             Optional<String> personSourceValue,
             Optional<String> genderSourceValue,
             Optional<String> raceSourceValue,
@@ -68,6 +71,7 @@ public final class PersonRow {
         this.birthDatetime = birthDatetime;
         this.raceConceptId = raceConceptId;
         this.ethnicityConceptId = ethnicityConceptId;
+        this.locationId = locationId;
         this.personSourceValue = personSourceValue;
         this.genderSourceValue = genderSourceValue;
         this.raceSourceValue = raceSourceValue;
@@ -115,6 +119,11 @@ public final class PersonRow {
         return ethnicityConceptId;
     }
 
+    @JsonProperty("location_id")
+    public Optional<Long> getLocationId() {
+        return locationId;
+    }
+
     @JsonProperty("person_source_value")
     public Optional<String> getPersonSourceValue() {
         return personSourceValue;
@@ -155,6 +164,7 @@ public final class PersonRow {
                 && birthDatetime.equals(other.birthDatetime)
                 && raceConceptId.equals(other.raceConceptId)
                 && ethnicityConceptId.equals(other.ethnicityConceptId)
+                && locationId.equals(other.locationId)
                 && personSourceValue.equals(other.personSourceValue)
                 && genderSourceValue.equals(other.genderSourceValue)
                 && raceSourceValue.equals(other.raceSourceValue)
@@ -172,6 +182,7 @@ public final class PersonRow {
                 this.birthDatetime,
                 this.raceConceptId,
                 this.ethnicityConceptId,
+                this.locationId,
                 this.personSourceValue,
                 this.genderSourceValue,
                 this.raceSourceValue,
@@ -205,6 +216,8 @@ public final class PersonRow {
 
         private Optional<Long> ethnicityConceptId = Optional.empty();
 
+        private Optional<Long> locationId = Optional.empty();
+
         private Optional<String> personSourceValue = Optional.empty();
 
         private Optional<String> genderSourceValue = Optional.empty();
@@ -227,6 +240,7 @@ public final class PersonRow {
             birthDatetime(other.getBirthDatetime());
             raceConceptId(other.getRaceConceptId());
             ethnicityConceptId(other.getEthnicityConceptId());
+            locationId(other.getLocationId());
             personSourceValue(other.getPersonSourceValue());
             genderSourceValue(other.getGenderSourceValue());
             raceSourceValue(other.getRaceSourceValue());
@@ -322,6 +336,17 @@ public final class PersonRow {
             return this;
         }
 
+        @JsonSetter(value = "location_id", nulls = Nulls.SKIP)
+        public Builder locationId(Optional<Long> locationId) {
+            this.locationId = locationId;
+            return this;
+        }
+
+        public Builder locationId(Long locationId) {
+            this.locationId = Optional.ofNullable(locationId);
+            return this;
+        }
+
         @JsonSetter(value = "person_source_value", nulls = Nulls.SKIP)
         public Builder personSourceValue(Optional<String> personSourceValue) {
             this.personSourceValue = personSourceValue;
@@ -376,6 +401,7 @@ public final class PersonRow {
                     birthDatetime,
                     raceConceptId,
                     ethnicityConceptId,
+                    locationId,
                     personSourceValue,
                     genderSourceValue,
                     raceSourceValue,
