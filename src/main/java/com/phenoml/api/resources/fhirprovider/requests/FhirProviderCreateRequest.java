@@ -185,7 +185,6 @@ public final class FhirProviderCreateRequest {
 
         /**
          * <p>Display name for the FHIR provider</p>
-         * <p>Display name for the FHIR provider</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -203,7 +202,6 @@ public final class FhirProviderCreateRequest {
         }
 
         /**
-         * <p>Base URL of the FHIR server</p>
          * <p>Base URL of the FHIR server</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

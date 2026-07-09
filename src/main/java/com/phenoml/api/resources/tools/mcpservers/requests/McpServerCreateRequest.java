@@ -120,7 +120,6 @@ public final class McpServerCreateRequest {
 
         /**
          * <p>Name of the MCP server</p>
-         * <p>Name of the MCP server</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -131,7 +130,6 @@ public final class McpServerCreateRequest {
         }
 
         /**
-         * <p>URL of the MCP server</p>
          * <p>URL of the MCP server</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

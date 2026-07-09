@@ -341,9 +341,6 @@ public final class UploadRequest {
          * <p>Name of the code system. Names are case-insensitive and stored uppercase.
          * Builtin system names (e.g. ICD-10-CM, SNOMED_CT_US_LITE, LOINC, CPT, etc.) are
          * reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidden.</p>
-         * <p>Name of the code system. Names are case-insensitive and stored uppercase.
-         * Builtin system names (e.g. ICD-10-CM, SNOMED_CT_US_LITE, LOINC, CPT, etc.) are
-         * reserved and cannot be used for custom uploads; attempts return HTTP 403 Forbidden.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -355,7 +352,6 @@ public final class UploadRequest {
 
         /**
          * <p>Version of the code system</p>
-         * <p>Version of the code system</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -366,7 +362,6 @@ public final class UploadRequest {
         }
 
         /**
-         * <p>Upload format</p>
          * <p>Upload format</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

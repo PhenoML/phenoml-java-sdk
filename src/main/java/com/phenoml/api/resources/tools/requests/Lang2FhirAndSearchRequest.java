@@ -224,7 +224,6 @@ public final class Lang2FhirAndSearchRequest {
 
         /**
          * <p>Natural language text to convert to FHIR search parameters</p>
-         * <p>Natural language text to convert to FHIR search parameters</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

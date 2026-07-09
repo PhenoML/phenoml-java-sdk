@@ -120,7 +120,6 @@ public final class CodeCategory {
 
         /**
          * <p>Identifier for the category term (e.g. an HPO URI).</p>
-         * <p>Identifier for the category term (e.g. an HPO URI).</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -131,7 +130,6 @@ public final class CodeCategory {
         }
 
         /**
-         * <p>Human-readable label for the category term.</p>
          * <p>Human-readable label for the category term.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

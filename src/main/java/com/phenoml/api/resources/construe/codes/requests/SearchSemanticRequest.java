@@ -144,7 +144,6 @@ public final class SearchSemanticRequest {
 
         /**
          * <p>Natural language text to find semantically similar codes for</p>
-         * <p>Natural language text to find semantically similar codes for</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
