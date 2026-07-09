@@ -120,7 +120,6 @@ public final class CodeSystemInfo {
 
         /**
          * <p>Code system name</p>
-         * <p>Code system name</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -131,7 +130,6 @@ public final class CodeSystemInfo {
         }
 
         /**
-         * <p>Code system version</p>
          * <p>Code system version</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

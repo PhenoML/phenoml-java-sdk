@@ -137,7 +137,6 @@ public final class ExtractRequest {
 
         /**
          * <p>Natural language text to extract codes from</p>
-         * <p>Natural language text to extract codes from</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

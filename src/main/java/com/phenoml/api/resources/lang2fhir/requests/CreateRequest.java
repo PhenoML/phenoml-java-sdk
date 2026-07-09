@@ -143,7 +143,6 @@ public final class CreateRequest {
 
         /**
          * <p>FHIR version to use</p>
-         * <p>FHIR version to use</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -155,7 +154,6 @@ public final class CreateRequest {
 
         /**
          * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported US Core profile. Recommended to use the supported US Core Profiles for validated results but you can also use any custom profile you've uploaded (if you're a develop or launch customer)</p>
-         * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported US Core profile. Recommended to use the supported US Core Profiles for validated results but you can also use any custom profile you've uploaded (if you're a develop or launch customer)</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -166,7 +164,6 @@ public final class CreateRequest {
         }
 
         /**
-         * <p>Natural language text to convert</p>
          * <p>Natural language text to convert</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

@@ -230,7 +230,6 @@ public final class UpdateWorkflowRequest {
 
         /**
          * <p>Human-readable name for the workflow</p>
-         * <p>Human-readable name for the workflow</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -241,7 +240,6 @@ public final class UpdateWorkflowRequest {
         }
 
         /**
-         * <p>Natural language instructions that define the workflow logic</p>
          * <p>Natural language instructions that define the workflow logic</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
@@ -254,7 +252,6 @@ public final class UpdateWorkflowRequest {
         }
 
         /**
-         * <p>FHIR provider ID(s) - must be valid UUID(s) from existing FHIR providers</p>
          * <p>FHIR provider ID(s) - must be valid UUID(s) from existing FHIR providers</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

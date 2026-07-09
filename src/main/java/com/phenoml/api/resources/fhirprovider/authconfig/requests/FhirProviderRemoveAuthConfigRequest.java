@@ -100,7 +100,6 @@ public final class FhirProviderRemoveAuthConfigRequest {
 
         /**
          * <p>ID of the auth configuration to remove</p>
-         * <p>ID of the auth configuration to remove</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

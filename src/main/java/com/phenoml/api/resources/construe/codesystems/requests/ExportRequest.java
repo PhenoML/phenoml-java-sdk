@@ -30,7 +30,7 @@ public final class ExportRequest {
     }
 
     /**
-     * @return Specific version of the code system. Required if multiple versions exist.
+     * @return Specific version of the custom code system.
      */
     @JsonProperty("version")
     public Optional<String> getVersion() {
@@ -81,7 +81,7 @@ public final class ExportRequest {
         }
 
         /**
-         * <p>Specific version of the code system. Required if multiple versions exist.</p>
+         * <p>Specific version of the custom code system.</p>
          */
         @JsonSetter(value = "version", nulls = Nulls.SKIP)
         public Builder version(Optional<String> version) {

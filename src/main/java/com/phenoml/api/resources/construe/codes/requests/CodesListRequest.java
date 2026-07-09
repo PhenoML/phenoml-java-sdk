@@ -40,7 +40,7 @@ public final class CodesListRequest {
     }
 
     /**
-     * @return Specific version of the code system. Required if multiple versions exist.
+     * @return Specific version of the code system, such as <code>umls-2026aa</code>.
      */
     @JsonProperty("version")
     public Optional<String> getVersion() {
@@ -113,7 +113,7 @@ public final class CodesListRequest {
         }
 
         /**
-         * <p>Specific version of the code system. Required if multiple versions exist.</p>
+         * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
          */
         @JsonSetter(value = "version", nulls = Nulls.SKIP)
         public Builder version(Optional<String> version) {
