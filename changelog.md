@@ -2,7 +2,7 @@
 ### Added
 - **`PhenomlClient.profiles()` / `AsyncPhenomlClient.profiles()`** — new client for managing custom FHIR StructureDefinition profiles via `POST /fhir/profiles`, exposing `list(...)`, `create(...)`, `get(...)`, `update(...)`, and `delete(...)` (plus `RawProfilesClient` / `AsyncRawProfilesClient`); backed by `ProfileSummary`, `ProfileGetResponse`, `ProfileListResponse`, `ProfileUploadRequest`, and `ProfileSummarySource`.
 - **`PhenomlClient.implementationGuides()` / `AsyncPhenomlClient.implementationGuides()`** — new client for managing FHIR implementation-guide context via `/fhir/implementation-guides`, exposing `list()`, `get(...)`, `update(...)`, and `delete(...)`; backed by `ImplementationGuideDetail`, `ImplementationGuideSummary`, and `ImplementationGuideListResponse`.
-- **`ClientOptions.Builder.initialRetryDelayMillis(...)`, `maxRetryDelayMillis(...)`, and `retryJitterFactor(...)`** — new client-level controls tuning the retry/reconnection backoff schedule.
+- **`ClientOptions.Builder.initialRetryDelayMillis(...)`, `maxRetryDelayMillis(...)`, and `retryJitterFactor(...)`** — new client-level controls tuning the HTTP retry backoff schedule (initial delay, max delay, and jitter).
 - **`RequestOptions.Builder.maxRetries(...)`** — new per-request retry override for sync/raw clients, allowing individual calls to use a different retry count than the client default.
 - **`Raw*Client` and `AsyncRaw*Client` classes** — new raw-response clients across resource groups, exposing response metadata alongside typed bodies.
 - **`CareSiteRow`, `DeathRow`, `LocationRow`, `ObservationPeriodRow`, and `ProviderRow`** — five new OMOP CDM v5.4 row types under `com.phenoml.api.resources.fhir2omop.types`.
