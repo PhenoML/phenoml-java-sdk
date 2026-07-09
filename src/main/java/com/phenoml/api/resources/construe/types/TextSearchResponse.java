@@ -151,7 +151,6 @@ public final class TextSearchResponse {
 
         /**
          * <p>Total number of matching results (may exceed results array due to pagination)</p>
-         * <p>Total number of matching results (may exceed results array due to pagination)</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

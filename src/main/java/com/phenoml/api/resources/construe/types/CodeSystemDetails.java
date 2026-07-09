@@ -166,7 +166,6 @@ public final class CodeSystemDetails {
 
         /**
          * <p>Code system name</p>
-         * <p>Code system name</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -177,7 +176,6 @@ public final class CodeSystemDetails {
         }
 
         /**
-         * <p>Code system version</p>
          * <p>Code system version</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
@@ -190,7 +188,6 @@ public final class CodeSystemDetails {
 
         /**
          * <p>Total number of codes in the system</p>
-         * <p>Total number of codes in the system</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -201,7 +198,6 @@ public final class CodeSystemDetails {
         }
 
         /**
-         * <p>Whether this is a built-in system (vs custom uploaded)</p>
          * <p>Whether this is a built-in system (vs custom uploaded)</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

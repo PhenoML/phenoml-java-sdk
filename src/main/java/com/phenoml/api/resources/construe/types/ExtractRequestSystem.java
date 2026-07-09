@@ -37,13 +37,16 @@ public final class ExtractRequestSystem {
      * @return Code system name. Can be a built-in system or a custom system name.
      * <p>Built-in systems:</p>
      * <ul>
-     * <li>SNOMED_CT_US_LITE - version 20240901</li>
-     * <li>RXNORM - version 11042024</li>
-     * <li>ICD-10-CM - version 2025</li>
-     * <li>ICD-10-PCS - version 2025</li>
-     * <li>LOINC - version 2.78</li>
-     * <li>HPO - version 2025</li>
-     * <li>CPT - version 2025</li>
+     * <li>CPT</li>
+     * <li>HCPCS</li>
+     * <li>HPO</li>
+     * <li>ICD-10</li>
+     * <li>ICD-10-CM</li>
+     * <li>ICD-10-PCS</li>
+     * <li>LOINC</li>
+     * <li>RXNORM</li>
+     * <li>SNOMED_CT_US</li>
+     * <li>SNOMED_CT_US_LITE</li>
      * </ul>
      * <p>Custom systems:</p>
      * <ul>
@@ -57,7 +60,7 @@ public final class ExtractRequestSystem {
     }
 
     /**
-     * @return Code system version. Must match the version available in your environment.
+     * @return Specific code system version.
      */
     @JsonProperty("version")
     public Optional<String> getVersion() {
@@ -114,13 +117,16 @@ public final class ExtractRequestSystem {
          * <p>Code system name. Can be a built-in system or a custom system name.</p>
          * <p>Built-in systems:</p>
          * <ul>
-         * <li>SNOMED_CT_US_LITE - version 20240901</li>
-         * <li>RXNORM - version 11042024</li>
-         * <li>ICD-10-CM - version 2025</li>
-         * <li>ICD-10-PCS - version 2025</li>
-         * <li>LOINC - version 2.78</li>
-         * <li>HPO - version 2025</li>
-         * <li>CPT - version 2025</li>
+         * <li>CPT</li>
+         * <li>HCPCS</li>
+         * <li>HPO</li>
+         * <li>ICD-10</li>
+         * <li>ICD-10-CM</li>
+         * <li>ICD-10-PCS</li>
+         * <li>LOINC</li>
+         * <li>RXNORM</li>
+         * <li>SNOMED_CT_US</li>
+         * <li>SNOMED_CT_US_LITE</li>
          * </ul>
          * <p>Custom systems:</p>
          * <ul>
@@ -140,7 +146,7 @@ public final class ExtractRequestSystem {
         }
 
         /**
-         * <p>Code system version. Must match the version available in your environment.</p>
+         * <p>Specific code system version.</p>
          */
         @JsonSetter(value = "version", nulls = Nulls.SKIP)
         public Builder version(Optional<String> version) {

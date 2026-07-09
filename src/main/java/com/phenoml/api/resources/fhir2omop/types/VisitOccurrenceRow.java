@@ -36,6 +36,10 @@ public final class VisitOccurrenceRow {
 
     private final Optional<Long> visitTypeConceptId;
 
+    private final Optional<Long> providerId;
+
+    private final Optional<Long> careSiteId;
+
     private final Optional<String> visitSourceValue;
 
     private final Map<String, Object> additionalProperties;
@@ -49,6 +53,8 @@ public final class VisitOccurrenceRow {
             Optional<String> visitEndDate,
             Optional<String> visitEndDatetime,
             Optional<Long> visitTypeConceptId,
+            Optional<Long> providerId,
+            Optional<Long> careSiteId,
             Optional<String> visitSourceValue,
             Map<String, Object> additionalProperties) {
         this.visitOccurrenceId = visitOccurrenceId;
@@ -59,6 +65,8 @@ public final class VisitOccurrenceRow {
         this.visitEndDate = visitEndDate;
         this.visitEndDatetime = visitEndDatetime;
         this.visitTypeConceptId = visitTypeConceptId;
+        this.providerId = providerId;
+        this.careSiteId = careSiteId;
         this.visitSourceValue = visitSourceValue;
         this.additionalProperties = additionalProperties;
     }
@@ -103,6 +111,16 @@ public final class VisitOccurrenceRow {
         return visitTypeConceptId;
     }
 
+    @JsonProperty("provider_id")
+    public Optional<Long> getProviderId() {
+        return providerId;
+    }
+
+    @JsonProperty("care_site_id")
+    public Optional<Long> getCareSiteId() {
+        return careSiteId;
+    }
+
     @JsonProperty("visit_source_value")
     public Optional<String> getVisitSourceValue() {
         return visitSourceValue;
@@ -128,6 +146,8 @@ public final class VisitOccurrenceRow {
                 && visitEndDate.equals(other.visitEndDate)
                 && visitEndDatetime.equals(other.visitEndDatetime)
                 && visitTypeConceptId.equals(other.visitTypeConceptId)
+                && providerId.equals(other.providerId)
+                && careSiteId.equals(other.careSiteId)
                 && visitSourceValue.equals(other.visitSourceValue);
     }
 
@@ -142,6 +162,8 @@ public final class VisitOccurrenceRow {
                 this.visitEndDate,
                 this.visitEndDatetime,
                 this.visitTypeConceptId,
+                this.providerId,
+                this.careSiteId,
                 this.visitSourceValue);
     }
 
@@ -172,6 +194,10 @@ public final class VisitOccurrenceRow {
 
         private Optional<Long> visitTypeConceptId = Optional.empty();
 
+        private Optional<Long> providerId = Optional.empty();
+
+        private Optional<Long> careSiteId = Optional.empty();
+
         private Optional<String> visitSourceValue = Optional.empty();
 
         @JsonAnySetter
@@ -188,6 +214,8 @@ public final class VisitOccurrenceRow {
             visitEndDate(other.getVisitEndDate());
             visitEndDatetime(other.getVisitEndDatetime());
             visitTypeConceptId(other.getVisitTypeConceptId());
+            providerId(other.getProviderId());
+            careSiteId(other.getCareSiteId());
             visitSourceValue(other.getVisitSourceValue());
             return this;
         }
@@ -280,6 +308,28 @@ public final class VisitOccurrenceRow {
             return this;
         }
 
+        @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
+        public Builder providerId(Optional<Long> providerId) {
+            this.providerId = providerId;
+            return this;
+        }
+
+        public Builder providerId(Long providerId) {
+            this.providerId = Optional.ofNullable(providerId);
+            return this;
+        }
+
+        @JsonSetter(value = "care_site_id", nulls = Nulls.SKIP)
+        public Builder careSiteId(Optional<Long> careSiteId) {
+            this.careSiteId = careSiteId;
+            return this;
+        }
+
+        public Builder careSiteId(Long careSiteId) {
+            this.careSiteId = Optional.ofNullable(careSiteId);
+            return this;
+        }
+
         @JsonSetter(value = "visit_source_value", nulls = Nulls.SKIP)
         public Builder visitSourceValue(Optional<String> visitSourceValue) {
             this.visitSourceValue = visitSourceValue;
@@ -301,6 +351,8 @@ public final class VisitOccurrenceRow {
                     visitEndDate,
                     visitEndDatetime,
                     visitTypeConceptId,
+                    providerId,
+                    careSiteId,
                     visitSourceValue,
                     additionalProperties);
         }

@@ -173,7 +173,6 @@ public final class GetCodeResponse {
 
         /**
          * <p>The code identifier</p>
-         * <p>The code identifier</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -184,7 +183,6 @@ public final class GetCodeResponse {
         }
 
         /**
-         * <p>Short description of the code</p>
          * <p>Short description of the code</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

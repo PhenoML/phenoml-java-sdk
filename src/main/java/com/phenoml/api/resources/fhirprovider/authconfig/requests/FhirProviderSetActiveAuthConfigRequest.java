@@ -100,7 +100,6 @@ public final class FhirProviderSetActiveAuthConfigRequest {
 
         /**
          * <p>ID of the auth configuration to set as active</p>
-         * <p>ID of the auth configuration to set as active</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

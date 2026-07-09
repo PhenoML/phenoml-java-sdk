@@ -170,11 +170,9 @@ public class ConstrueCodeSystemsWireTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(
-                new MockResponse()
-                        .setResponseCode(200)
-                        .setBody(
-                                "{\"systems\":[{\"name\":\"ICD-10-CM\",\"version\":\"2025\",\"code_count\":97584,\"builtin\":true},{\"name\":\"SNOMED_CT_US_LITE\",\"version\":\"20240901\",\"code_count\":102837,\"builtin\":true},{\"name\":\"RXNORM\",\"version\":\"11042024\",\"code_count\":257619,\"builtin\":true},{\"name\":\"LOINC\",\"version\":\"2.78\",\"code_count\":98123,\"builtin\":true},{\"name\":\"HPO\",\"version\":\"2025\",\"code_count\":19542,\"builtin\":true},{\"name\":\"CPT\",\"version\":\"2025\",\"code_count\":10192,\"builtin\":true},{\"name\":\"ICD-10-PCS\",\"version\":\"2025\",\"code_count\":78717,\"builtin\":true}]}"));
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(TestResources.loadResource("/wire-tests/ConstrueCodeSystemsWireTest_testList_response.json")));
         ListCodeSystemsResponse response = client.construe().codeSystems().list();
         // OAuth: consume the token request
         server.takeRequest();
@@ -191,53 +189,8 @@ public class ConstrueCodeSystemsWireTest {
         // Validate response body
         Assertions.assertNotNull(response, "Response should not be null");
         String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = ""
-                + "{\n"
-                + "  \"systems\": [\n"
-                + "    {\n"
-                + "      \"name\": \"ICD-10-CM\",\n"
-                + "      \"version\": \"2025\",\n"
-                + "      \"code_count\": 97584,\n"
-                + "      \"builtin\": true\n"
-                + "    },\n"
-                + "    {\n"
-                + "      \"name\": \"SNOMED_CT_US_LITE\",\n"
-                + "      \"version\": \"20240901\",\n"
-                + "      \"code_count\": 102837,\n"
-                + "      \"builtin\": true\n"
-                + "    },\n"
-                + "    {\n"
-                + "      \"name\": \"RXNORM\",\n"
-                + "      \"version\": \"11042024\",\n"
-                + "      \"code_count\": 257619,\n"
-                + "      \"builtin\": true\n"
-                + "    },\n"
-                + "    {\n"
-                + "      \"name\": \"LOINC\",\n"
-                + "      \"version\": \"2.78\",\n"
-                + "      \"code_count\": 98123,\n"
-                + "      \"builtin\": true\n"
-                + "    },\n"
-                + "    {\n"
-                + "      \"name\": \"HPO\",\n"
-                + "      \"version\": \"2025\",\n"
-                + "      \"code_count\": 19542,\n"
-                + "      \"builtin\": true\n"
-                + "    },\n"
-                + "    {\n"
-                + "      \"name\": \"CPT\",\n"
-                + "      \"version\": \"2025\",\n"
-                + "      \"code_count\": 10192,\n"
-                + "      \"builtin\": true\n"
-                + "    },\n"
-                + "    {\n"
-                + "      \"name\": \"ICD-10-PCS\",\n"
-                + "      \"version\": \"2025\",\n"
-                + "      \"code_count\": 78717,\n"
-                + "      \"builtin\": true\n"
-                + "    }\n"
-                + "  ]\n"
-                + "}";
+        String expectedResponseBody =
+                TestResources.loadResource("/wire-tests/ConstrueCodeSystemsWireTest_testList_response.json");
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
         Assertions.assertTrue(

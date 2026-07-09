@@ -46,7 +46,7 @@ public final class SearchTextRequest {
     }
 
     /**
-     * @return Specific version of the code system
+     * @return Specific version of the code system, such as <code>umls-2026aa</code>.
      */
     @JsonProperty("version")
     public Optional<String> getVersion() {
@@ -107,7 +107,7 @@ public final class SearchTextRequest {
         _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
         /**
-         * <p>Specific version of the code system</p>
+         * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
          */
         _FinalStage version(Optional<String> version);
 
@@ -144,7 +144,6 @@ public final class SearchTextRequest {
 
         /**
          * <p>Search query (searches code IDs and descriptions)</p>
-         * <p>Search query (searches code IDs and descriptions)</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -175,7 +174,7 @@ public final class SearchTextRequest {
         }
 
         /**
-         * <p>Specific version of the code system</p>
+         * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -185,7 +184,7 @@ public final class SearchTextRequest {
         }
 
         /**
-         * <p>Specific version of the code system</p>
+         * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "version", nulls = Nulls.SKIP)

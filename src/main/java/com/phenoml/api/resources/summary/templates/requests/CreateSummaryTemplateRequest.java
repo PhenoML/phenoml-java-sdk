@@ -228,7 +228,6 @@ public final class CreateSummaryTemplateRequest {
 
         /**
          * <p>Name of the template</p>
-         * <p>Name of the template</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -240,7 +239,6 @@ public final class CreateSummaryTemplateRequest {
 
         /**
          * <p>Example summary note to generate template from</p>
-         * <p>Example summary note to generate template from</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -251,7 +249,6 @@ public final class CreateSummaryTemplateRequest {
         }
 
         /**
-         * <p>Template mode (stored with the template)</p>
          * <p>Template mode (stored with the template)</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

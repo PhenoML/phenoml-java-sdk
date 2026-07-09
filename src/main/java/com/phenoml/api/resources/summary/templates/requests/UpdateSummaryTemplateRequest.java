@@ -188,7 +188,6 @@ public final class UpdateSummaryTemplateRequest {
 
         /**
          * <p>Updated template with placeholders</p>
-         * <p>Updated template with placeholders</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -199,7 +198,6 @@ public final class UpdateSummaryTemplateRequest {
         }
 
         /**
-         * <p>Template mode</p>
          * <p>Template mode</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

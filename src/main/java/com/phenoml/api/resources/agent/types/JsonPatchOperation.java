@@ -169,7 +169,6 @@ public final class JsonPatchOperation {
 
         /**
          * <p>The operation to be performed</p>
-         * <p>The operation to be performed</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -180,7 +179,6 @@ public final class JsonPatchOperation {
         }
 
         /**
-         * <p>A JSON Pointer string specifying a location within the target document</p>
          * <p>A JSON Pointer string specifying a location within the target document</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */

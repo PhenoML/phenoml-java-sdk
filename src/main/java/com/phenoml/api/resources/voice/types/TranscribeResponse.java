@@ -99,7 +99,6 @@ public final class TranscribeResponse {
 
         /**
          * <p>The full transcript of the audio.</p>
-         * <p>The full transcript of the audio.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
