@@ -1,3 +1,9 @@
+## [17.9.0] - 2026-07-10
+### Added
+- **`CodesClient.phenocr(...)` / `AsyncCodesClient.phenocr(...)`** — new alpha method that extracts medical codes from natural language clinical text via `POST /construe/phenocr`, returning `ExtractCodesResult`; also exposed on `RawCodesClient` and `AsyncRawCodesClient` for access to raw HTTP response metadata.
+- **`PhenoCrRequest`** — new staged-builder request type carrying the `text` to analyze and a `system` specifier; required by all `phenocr(...)` overloads.
+- **`PhenocrExtractRequestSystem`** — new staged-builder type specifying the target code system (`name`) and `version` for a phenocr extraction; supports HPO, ICD-10-CM, and SNOMED_CT_US.
+
 ## [17.8.0] - 2026-07-09
 ### Added
 - **`PhenomlClient.profiles()` / `AsyncPhenomlClient.profiles()`** — new client for managing custom FHIR StructureDefinition profiles via `POST /fhir/profiles`, exposing `list(...)`, `create(...)`, `get(...)`, `update(...)`, and `delete(...)` (plus `RawProfilesClient` / `AsyncRawProfilesClient`); backed by `ProfileSummary`, `ProfileGetResponse`, `ProfileListResponse`, `ProfileUploadRequest`, and `ProfileSummarySource`.
