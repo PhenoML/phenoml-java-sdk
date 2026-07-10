@@ -6,12 +6,14 @@ import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.construe.codes.requests.CodesListRequest;
 import com.phenoml.api.resources.construe.codes.requests.ExtractRequest;
 import com.phenoml.api.resources.construe.codes.requests.LookupRequest;
+import com.phenoml.api.resources.construe.codes.requests.PhenoCrRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchSemanticRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchTextRequest;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import com.phenoml.api.resources.construe.types.ExtractRequestSystem;
 import com.phenoml.api.resources.construe.types.GetCodeResponse;
 import com.phenoml.api.resources.construe.types.ListCodesResponse;
+import com.phenoml.api.resources.construe.types.PhenocrExtractRequestSystem;
 import com.phenoml.api.resources.construe.types.SemanticSearchResponse;
 import com.phenoml.api.resources.construe.types.TextSearchResponse;
 import okhttp3.mockwebserver.MockResponse;
@@ -113,6 +115,138 @@ public class ConstrueCodesWireTest {
         String actualResponseJson = objectMapper.writeValueAsString(response);
         String expectedResponseBody =
                 TestResources.loadResource("/wire-tests/ConstrueCodesWireTest_testExtract_response.json");
+        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+        Assertions.assertTrue(
+                jsonEquals(expectedResponseNode, actualResponseNode),
+                "Response body structure does not match expected");
+        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
+            String discriminator = null;
+            if (actualResponseNode.has("type"))
+                discriminator = actualResponseNode.get("type").asText();
+            else if (actualResponseNode.has("_type"))
+                discriminator = actualResponseNode.get("_type").asText();
+            else if (actualResponseNode.has("kind"))
+                discriminator = actualResponseNode.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualResponseNode.isNull()) {
+            Assertions.assertTrue(
+                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
+                    "response should be a valid JSON value");
+        }
+
+        if (actualResponseNode.isArray()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+        }
+        if (actualResponseNode.isObject()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+        }
+    }
+
+    @Test
+    public void testPhenocr() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"system\":{\"name\":\"SNOMED_CT_US_LITE\",\"version\":\"umls-2026aa\"},\"codes\":[{\"code\":\"195967001\",\"description\":\"Asthma\",\"valid\":true,\"reason\":\"reason\",\"is_ancestor\":true,\"citations\":[{\"text\":\"Patient has type 2 diabetes\",\"begin_offset\":0,\"end_offset\":27}],\"categories\":[{\"uri\":\"HP:0025142\",\"label\":\"Constitutional symptom\"}]}]}"));
+        ExtractCodesResult response = client.construe()
+                .codes()
+                .phenocr(PhenoCrRequest.builder()
+                        .text(
+                                "5-year-old male with seizures, severe intellectual disability, microcephaly, and hypotonia.")
+                        .system(PhenocrExtractRequestSystem.builder()
+                                .name("HPO")
+                                .version("umls-2026AA")
+                                .build())
+                        .build());
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("POST", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+        // Validate request body
+        String actualRequestBody = request.getBody().readUtf8();
+        String expectedRequestBody = ""
+                + "{\n"
+                + "  \"text\": \"5-year-old male with seizures, severe intellectual disability, microcephaly, and hypotonia.\",\n"
+                + "  \"system\": {\n"
+                + "    \"name\": \"HPO\",\n"
+                + "    \"version\": \"umls-2026AA\"\n"
+                + "  }\n"
+                + "}";
+        JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+        JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+        Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
+        if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+            String discriminator = null;
+            if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+            else if (actualJson.has("_type"))
+                discriminator = actualJson.get("_type").asText();
+            else if (actualJson.has("kind"))
+                discriminator = actualJson.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualJson.isNull()) {
+            Assertions.assertTrue(
+                    actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+                    "request should be a valid JSON value");
+        }
+
+        if (actualJson.isArray()) {
+            Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+        }
+        if (actualJson.isObject()) {
+            Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+        }
+
+        // Validate response body
+        Assertions.assertNotNull(response, "Response should not be null");
+        String actualResponseJson = objectMapper.writeValueAsString(response);
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"system\": {\n"
+                + "    \"name\": \"SNOMED_CT_US_LITE\",\n"
+                + "    \"version\": \"umls-2026aa\"\n"
+                + "  },\n"
+                + "  \"codes\": [\n"
+                + "    {\n"
+                + "      \"code\": \"195967001\",\n"
+                + "      \"description\": \"Asthma\",\n"
+                + "      \"valid\": true,\n"
+                + "      \"reason\": \"reason\",\n"
+                + "      \"is_ancestor\": true,\n"
+                + "      \"citations\": [\n"
+                + "        {\n"
+                + "          \"text\": \"Patient has type 2 diabetes\",\n"
+                + "          \"begin_offset\": 0,\n"
+                + "          \"end_offset\": 27\n"
+                + "        }\n"
+                + "      ],\n"
+                + "      \"categories\": [\n"
+                + "        {\n"
+                + "          \"uri\": \"HP:0025142\",\n"
+                + "          \"label\": \"Constitutional symptom\"\n"
+                + "        }\n"
+                + "      ]\n"
+                + "    }\n"
+                + "  ]\n"
+                + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
         Assertions.assertTrue(
