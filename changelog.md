@@ -1,3 +1,7 @@
+## [17.9.1] - 2026-07-10
+### Changed
+- **`ResponseDecompressionInterceptor`** — generated default-client interceptor for decoding compressed responses when callers set `Accept-Encoding` explicitly.
+
 ## [17.9.0] - 2026-07-10
 ### Added
 - **`CodesClient.phenocr(...)` / `AsyncCodesClient.phenocr(...)`** — new alpha method that extracts medical codes from natural language clinical text via `POST /construe/phenocr`, returning `ExtractCodesResult`; also exposed on `RawCodesClient` and `AsyncRawCodesClient` for access to raw HTTP response metadata.
