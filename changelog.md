@@ -1,7 +1,6 @@
 ## [17.9.1] - 2026-07-10
 ### Changed
 - **`ResponseDecompressionInterceptor`** — generated default-client interceptor for decoding compressed responses when callers set `Accept-Encoding` explicitly.
-- **Generator metadata** — regenerated with Fern CLI 5.68.0 and `fernapi/fern-java-sdk` 4.13.0; no API surface changes beyond the generated runtime update, version/header metadata, and bundled OpenAPI sync.
 
 ## [17.9.0] - 2026-07-10
 ### Added
