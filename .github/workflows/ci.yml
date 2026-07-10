@@ -279,6 +279,10 @@ jobs:
               FAILED)
                 echo "Maven Central publish FAILED:" >&2
                 echo "${BODY}" | jq . >&2
+                if curl -fsI "$POM_URL" >/dev/null; then
+                  echo "Maven Central artifact is available despite FAILED deployment state."
+                  exit 0
+                fi
                 exit 1
                 ;;
             esac
