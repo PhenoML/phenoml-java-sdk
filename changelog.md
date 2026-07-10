@@ -1,3 +1,10 @@
+## [17.9.1] - 2026-07-10
+### Fixed
+- **`ResponseDecompressionInterceptor`** — new default-client interceptor that transparently decodes `gzip`, `x-gzip`, and raw `deflate` responses when callers set `Accept-Encoding` explicitly.
+
+### Changed
+- **Generator metadata** — regenerated with Fern CLI 5.68.0 and `fernapi/fern-java-sdk` 4.13.0; no API surface changes beyond the version/header metadata and bundled OpenAPI sync.
+
 ## [17.9.0] - 2026-07-10
 ### Added
 - **`CodesClient.phenocr(...)` / `AsyncCodesClient.phenocr(...)`** — new alpha method that extracts medical codes from natural language clinical text via `POST /construe/phenocr`, returning `ExtractCodesResult`; also exposed on `RawCodesClient` and `AsyncRawCodesClient` for access to raw HTTP response metadata.

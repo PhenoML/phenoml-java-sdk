@@ -39,7 +39,7 @@ public class ResponseDecompressionInterceptor implements Interceptor {
         if (encoding.equalsIgnoreCase("gzip") || encoding.equalsIgnoreCase("x-gzip")) {
             decompressedSource = new GzipSource(body.source());
         } else if (encoding.equalsIgnoreCase("deflate")) {
-            decompressedSource = new InflaterSource(body.source(), new Inflater());
+            decompressedSource = new InflaterSource(body.source(), new Inflater(true));
         } else {
             return response;
         }
