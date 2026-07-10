@@ -226,6 +226,11 @@ jobs:
           DEPLOYMENT_ID="$(tr -d '"[:space:]' < "$RESPONSE_FILE")"
           if [ -z "${DEPLOYMENT_ID}" ]; then
             echo "Empty deployment id returned from Central Portal" >&2
+            if curl -fsI "$POM_URL" >/dev/null; then
+              echo "${GROUP_ID}:${ARTIFACT_ID}:${VERSION} is already available on Maven Central; continuing to finalization."
+              echo "deployment_id=already-published" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
             exit 1
           fi
           echo "deployment_id=${DEPLOYMENT_ID}" >> "$GITHUB_OUTPUT"
