@@ -245,12 +245,31 @@ jobs:
             echo "Maven Central artifact was already published."
             exit 0
           fi
+          GROUP_PATH="$(echo "$GROUP_ID" | tr . /)"
+          POM_URL="${MAVEN_CENTRAL_BASE}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.pom"
           AUTH="$(printf '%s:%s' "$MAVEN_USERNAME" "$MAVEN_PASSWORD" | base64 -w 0)"
           for i in $(seq 1 60); do
-            BODY="$(curl --fail-with-body -sS -X POST \
-              -H "Authorization: Bearer ${AUTH}" \
-              "${CENTRAL_API}/status?id=${DEPLOYMENT_ID}")"
-            STATE="$(echo "${BODY}" | jq -r '.deploymentState')"
+            if ! BODY="$(curl --fail-with-body -sS -X POST \
+                -H "Authorization: Bearer ${AUTH}" \
+                "${CENTRAL_API}/status?id=${DEPLOYMENT_ID}")"; then
+              echo "[${i}] Central Portal status request failed; retrying."
+              if curl -fsI "$POM_URL" >/dev/null; then
+                echo "Maven Central artifact is available despite deployment status request failure."
+                exit 0
+              fi
+              sleep 30
+              continue
+            fi
+            if ! STATE="$(echo "${BODY}" | jq -r '.deploymentState')"; then
+              echo "[${i}] Central Portal returned an invalid status response; retrying." >&2
+              echo "${BODY}" >&2
+              if curl -fsI "$POM_URL" >/dev/null; then
+                echo "Maven Central artifact is available despite invalid deployment status response."
+                exit 0
+              fi
+              sleep 30
+              continue
+            fi
             echo "[${i}] deploymentState=${STATE}"
             case "${STATE}" in
               PUBLISHED)
@@ -265,8 +284,6 @@ jobs:
             esac
             sleep 30
           done
-          GROUP_PATH="$(echo "$GROUP_ID" | tr . /)"
-          POM_URL="${MAVEN_CENTRAL_BASE}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.pom"
           if curl -fsI "$POM_URL" >/dev/null; then
             echo "Maven Central artifact is available despite deployment polling timeout."
             exit 0
