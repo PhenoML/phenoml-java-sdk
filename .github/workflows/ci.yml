@@ -4,8 +4,14 @@ on:
   push:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 env:
   ARTIFACT_ID: phenoml-java-sdk
+  GROUP_ID: com.phenoml.maven
+  MAVEN_CENTRAL_BASE: https://repo.maven.apache.org/maven2
 
 jobs:
   compile:
@@ -51,7 +57,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
-    uses: PhenoML/sdk-shared-actions/.github/workflows/sdk-release-gate.yml@1.1.1
+    uses: PhenoML/sdk-shared-actions/.github/workflows/sdk-release-gate.yml@1.2.0
     with:
       version-source: gradle
       version-path: build.gradle
@@ -119,8 +125,9 @@ jobs:
     environment: maven-production
     permissions:
       contents: read
+    outputs:
+      published: ${{ steps.verify.outputs.published }}
     env:
-      GROUP_ID: com.phenoml.maven
       CENTRAL_API: https://central.sonatype.com/api/v1/publisher
       VERSION: ${{ needs.release_gate.outputs.version }}
       MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
@@ -190,12 +197,33 @@ jobs:
         id: upload
         run: |
           set -euo pipefail
+          GROUP_PATH="$(echo "$GROUP_ID" | tr . /)"
+          POM_URL="${MAVEN_CENTRAL_BASE}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.pom"
           AUTH="$(printf '%s:%s' "$MAVEN_USERNAME" "$MAVEN_PASSWORD" | base64 -w 0)"
-          DEPLOYMENT_ID="$(curl --fail-with-body -sS -X POST \
-            -H "Authorization: Bearer ${AUTH}" \
-            -F "bundle=@bundle.zip;type=application/octet-stream" \
-            "${CENTRAL_API}/upload?name=${ARTIFACT_ID}-${VERSION}&publishingType=AUTOMATIC" \
-            | tr -d '"[:space:]')"
+          RESPONSE_FILE="$(mktemp)"
+          if ! HTTP_CODE="$(curl -sS -o "$RESPONSE_FILE" -w '%{http_code}' -X POST \
+              -H "Authorization: Bearer ${AUTH}" \
+              -F "bundle=@bundle.zip;type=application/octet-stream" \
+              "${CENTRAL_API}/upload?name=${ARTIFACT_ID}-${VERSION}&publishingType=AUTOMATIC")"; then
+            echo "Central Portal upload request failed." >&2
+            if curl -fsI "$POM_URL" >/dev/null; then
+              echo "${GROUP_ID}:${ARTIFACT_ID}:${VERSION} is already available on Maven Central; continuing to finalization."
+              echo "deployment_id=already-published" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            exit 1
+          fi
+          if [[ ! "$HTTP_CODE" =~ ^2 ]]; then
+            echo "Central Portal upload failed with HTTP ${HTTP_CODE}:" >&2
+            cat "$RESPONSE_FILE" >&2
+            if curl -fsI "$POM_URL" >/dev/null; then
+              echo "${GROUP_ID}:${ARTIFACT_ID}:${VERSION} is already available on Maven Central; continuing to finalization."
+              echo "deployment_id=already-published" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            exit 1
+          fi
+          DEPLOYMENT_ID="$(tr -d '"[:space:]' < "$RESPONSE_FILE")"
           if [ -z "${DEPLOYMENT_ID}" ]; then
             echo "Empty deployment id returned from Central Portal" >&2
             exit 1
@@ -208,6 +236,10 @@ jobs:
           DEPLOYMENT_ID: ${{ steps.upload.outputs.deployment_id }}
         run: |
           set -euo pipefail
+          if [ "$DEPLOYMENT_ID" = "already-published" ]; then
+            echo "Maven Central artifact was already published."
+            exit 0
+          fi
           AUTH="$(printf '%s:%s' "$MAVEN_USERNAME" "$MAVEN_PASSWORD" | base64 -w 0)"
           for i in $(seq 1 60); do
             BODY="$(curl --fail-with-body -sS -X POST \
@@ -228,15 +260,65 @@ jobs:
             esac
             sleep 30
           done
+          GROUP_PATH="$(echo "$GROUP_ID" | tr . /)"
+          POM_URL="${MAVEN_CENTRAL_BASE}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.pom"
+          if curl -fsI "$POM_URL" >/dev/null; then
+            echo "Maven Central artifact is available despite deployment polling timeout."
+            exit 0
+          fi
           echo "Timed out waiting for terminal deployment state" >&2
           exit 1
 
+      - name: Verify Maven Central artifact availability
+        id: verify
+        run: |
+          set -euo pipefail
+          GROUP_PATH="$(echo "$GROUP_ID" | tr . /)"
+          POM_URL="${MAVEN_CENTRAL_BASE}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.pom"
+          for i in $(seq 1 12); do
+            if curl -fsI "$POM_URL" >/dev/null; then
+              echo "published=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Maven Central artifact is not visible yet; retrying (${i}/12)."
+            sleep 10
+          done
+          echo "::error::${GROUP_ID}:${ARTIFACT_ID}:${VERSION} is not available on Maven Central."
+          exit 1
+
+  confirm_registry_release:
+    needs: [ release_gate ]
+    if: github.ref == 'refs/heads/main' && needs.release_gate.outputs.should_publish == 'false'
+    runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.verify.outputs.published }}
+
+    steps:
+      - name: Verify Maven Central artifact availability
+        id: verify
+        env:
+          VERSION: ${{ needs.release_gate.outputs.version }}
+        run: |
+          set -euo pipefail
+          GROUP_PATH="$(echo "$GROUP_ID" | tr . /)"
+          POM_URL="${MAVEN_CENTRAL_BASE}/${GROUP_PATH}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.pom"
+          for i in $(seq 1 12); do
+            if curl -fsI "$POM_URL" >/dev/null; then
+              echo "published=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Maven Central artifact is not visible yet; retrying (${i}/12)."
+            sleep 10
+          done
+          echo "::error::${GROUP_ID}:${ARTIFACT_ID}:${VERSION} is not available on Maven Central."
+          exit 1
+
   release_finalize:
-    needs: [ release_gate, publish ]
-    if: needs.release_gate.outputs.should_publish == 'true'
+    needs: [ release_gate, publish, confirm_registry_release ]
+    if: always() && needs.release_gate.result == 'success' && (needs.publish.outputs.published == 'true' || needs.confirm_registry_release.outputs.published == 'true')
     permissions:
       contents: write
-    uses: PhenoML/sdk-shared-actions/.github/workflows/sdk-release-finalize.yml@1.1.1
+    uses: PhenoML/sdk-shared-actions/.github/workflows/sdk-release-finalize.yml@1.2.0
     with:
       version-tag: ${{ needs.release_gate.outputs.version_tag }}
       origin-commit: ${{ needs.release_gate.outputs.origin_commit }}
