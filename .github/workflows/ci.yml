@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
       - name: Set up Java
         id: setup-jre
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
       - name: Set up Java
         id: setup-jre
@@ -46,72 +46,28 @@ jobs:
       - name: Test
         run: ./gradlew test
 
-  tag:
+  release_gate:
     needs: [ compile, test ]
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
     permissions:
-      contents: write
-    outputs:
-      should_publish: ${{ steps.check.outputs.should_publish }}
-      version: ${{ steps.check.outputs.version }}
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-        with:
-          fetch-depth: 0
-
-      - name: Extract version and check tag
-        id: check
-        run: |
-          set -euo pipefail
-          VERSION=$(grep "^version = " build.gradle | sed "s/version = '\(.*\)'/\1/")
-          # build.gradle is repo-controlled but flows into downstream
-          # shell/URL/filesystem contexts; pin it to a safe charset before
-          # propagating as a job output.
-          if ! printf '%s' "$VERSION" | grep -Eq '^[A-Za-z0-9._+-]+$'; then
-            echo "Refusing to publish: version '$VERSION' contains unexpected characters" >&2
-            exit 1
-          fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          if git ls-remote --tags origin | grep -q "refs/tags/$VERSION"; then
-            echo "Tag $VERSION already exists, skipping"
-            echo "should_publish=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "should_publish=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      # Gate the release on a valid bundled spec. Verifying before
-      # `gh release create` keeps a failed check from leaving a tag/release
-      # behind that would set should_publish=false on retry.
-      - name: Verify bundled OpenAPI spec
-        if: steps.check.outputs.should_publish == 'true'
-        uses: PhenoML/sdk-shared-actions/verify-openapi-spec@1.0.3
-        with:
-          spec-path: src/main/resources/openapi/openapi.json
-
-      - name: Create tag and GitHub release
-        if: steps.check.outputs.should_publish == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "${{ steps.check.outputs.version }}" \
-            --target "${{ github.sha }}" \
-            --title "${{ steps.check.outputs.version }}" \
-            --generate-notes
+      contents: read
+    uses: PhenoML/sdk-shared-actions/.github/workflows/sdk-release-gate.yml@1.1.0
+    with:
+      version-source: gradle
+      version-path: build.gradle
+      spec-path: src/main/resources/openapi/openapi.json
 
   # Isolated from publish secrets — Gradle and its plugin graph run here.
   build-artifact:
-    needs: [ compile, test, tag ]
-    if: needs.tag.outputs.should_publish == 'true'
+    needs: [ compile, test, release_gate ]
+    if: needs.release_gate.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
       - name: Set up Java
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
@@ -131,7 +87,7 @@ jobs:
 
       - name: Stage dist/ and generate SHA256SUMS
         env:
-          VERSION: ${{ needs.tag.outputs.version }}
+          VERSION: ${{ needs.release_gate.outputs.version }}
         run: |
           set -euo pipefail
           mkdir -p dist
@@ -142,7 +98,7 @@ jobs:
           if [ -f build/publications/maven/module.json ]; then
             cp build/publications/maven/module.json                 "dist/${ARTIFACT_ID}-${VERSION}.module"
           fi
-          ( cd dist && sha256sum * > SHA256SUMS )
+          ( cd dist && sha256sum ./* > SHA256SUMS )
           echo "Staged dist/:"
           ls -la dist/
 
@@ -157,7 +113,8 @@ jobs:
   # Holds the publish secrets. Only curl/jq/gpg from the runner image run here
   # — no Java toolchain, no Gradle, no third-party actions beyond download-artifact.
   publish:
-    needs: [ tag, build-artifact ]
+    needs: [ release_gate, build-artifact ]
+    if: needs.release_gate.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
     environment: maven-production
     permissions:
@@ -165,7 +122,7 @@ jobs:
     env:
       GROUP_ID: com.phenoml.maven
       CENTRAL_API: https://central.sonatype.com/api/v1/publisher
-      VERSION: ${{ needs.tag.outputs.version }}
+      VERSION: ${{ needs.release_gate.outputs.version }}
       MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
       MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
       MAVEN_SIGNATURE_SECRET_KEY: ${{ secrets.MAVEN_SIGNATURE_SECRET_KEY }}
@@ -273,3 +230,14 @@ jobs:
           done
           echo "Timed out waiting for terminal deployment state" >&2
           exit 1
+
+  release_finalize:
+    needs: [ release_gate, publish ]
+    if: needs.release_gate.outputs.should_publish == 'true'
+    permissions:
+      contents: write
+    uses: PhenoML/sdk-shared-actions/.github/workflows/sdk-release-finalize.yml@1.1.0
+    with:
+      version-tag: ${{ needs.release_gate.outputs.version_tag }}
+      origin-commit: ${{ needs.release_gate.outputs.origin_commit }}
+      origin-tag: ${{ needs.release_gate.outputs.origin_tag }}
