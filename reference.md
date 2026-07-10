@@ -1928,6 +1928,88 @@ client.construe().codes().extract(
 </dl>
 </details>
 
+<details><summary><code>client.construe.codes.phenocr(request) -> ExtractCodesResult</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**Alpha:** phenocr is an alpha feature. The API contract — request
+parameters and response shape — may change as its internals evolve, and
+results may vary between releases. Do not depend on it for production
+workloads yet.
+
+Extracts medical codes from natural language clinical text using phenocr.
+
+Supported code systems: HPO, ICD-10-CM, and SNOMED_CT_US. The code
+system name and version are both required.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.construe().codes().phenocr(
+    PhenoCrRequest
+        .builder()
+        .text("5-year-old male with seizures, severe intellectual disability, microcephaly, and hypotonia.")
+        .system(
+            PhenocrExtractRequestSystem
+                .builder()
+                .name("HPO")
+                .version("umls-2026AA")
+                .build()
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**text:** `String` — Natural language text to extract codes from
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**system:** `PhenocrExtractRequestSystem` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.construe.codes.list(codesystem) -> ListCodesResponse</code></summary>
 <dl>
 <dd>

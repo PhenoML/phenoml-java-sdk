@@ -8,6 +8,7 @@ import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.construe.codes.requests.CodesListRequest;
 import com.phenoml.api.resources.construe.codes.requests.ExtractRequest;
 import com.phenoml.api.resources.construe.codes.requests.LookupRequest;
+import com.phenoml.api.resources.construe.codes.requests.PhenoCrRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchSemanticRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchTextRequest;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
@@ -52,6 +53,32 @@ public class AsyncCodesClient {
      */
     public CompletableFuture<ExtractCodesResult> extract(ExtractRequest request, RequestOptions requestOptions) {
         return this.rawClient.extract(request, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * <strong>Alpha:</strong> phenocr is an alpha feature. The API contract — request
+     * parameters and response shape — may change as its internals evolve, and
+     * results may vary between releases. Do not depend on it for production
+     * workloads yet.
+     * <p>Extracts medical codes from natural language clinical text using phenocr.</p>
+     * <p>Supported code systems: HPO, ICD-10-CM, and SNOMED_CT_US. The code
+     * system name and version are both required.</p>
+     */
+    public CompletableFuture<ExtractCodesResult> phenocr(PhenoCrRequest request) {
+        return this.rawClient.phenocr(request).thenApply(response -> response.body());
+    }
+
+    /**
+     * <strong>Alpha:</strong> phenocr is an alpha feature. The API contract — request
+     * parameters and response shape — may change as its internals evolve, and
+     * results may vary between releases. Do not depend on it for production
+     * workloads yet.
+     * <p>Extracts medical codes from natural language clinical text using phenocr.</p>
+     * <p>Supported code systems: HPO, ICD-10-CM, and SNOMED_CT_US. The code
+     * system name and version are both required.</p>
+     */
+    public CompletableFuture<ExtractCodesResult> phenocr(PhenoCrRequest request, RequestOptions requestOptions) {
+        return this.rawClient.phenocr(request, requestOptions).thenApply(response -> response.body());
     }
 
     /**
