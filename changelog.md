@@ -1,3 +1,13 @@
+## [18.0.0] - 2026-07-11
+### Breaking Changes
+- **`OAuthTokenSupplier`** — constructor parameter `grantType` now accepts `Optional<String>` instead of nullable `String`; wrap direct constructor arguments with `Optional.ofNullable(...)` or use the client credentials builder.
+
+### Added
+- **`PhenomlClientBuilder._CredentialsAuth.grantType(Optional<String>)` and `AsyncPhenomlClientBuilder._CredentialsAuth.grantType(Optional<String>)`** — new overloads let client-credentials callers pass an explicitly optional grant type.
+
+### Fixed
+- **`ClientOptions`** — generated User-Agent no longer includes a colon in the Maven coordinate token, keeping the default header compatible with HTTP product-token grammar.
+
 ## [17.9.1] - 2026-07-10
 ### Changed
 - **`ResponseDecompressionInterceptor`** — generated default-client interceptor for decoding compressed responses when callers set `Accept-Encoding` explicitly.
