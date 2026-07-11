@@ -314,15 +314,20 @@ public class AsyncPhenomlClientBuilder {
 
         private final String clientSecret;
 
-        private String grantType = null;
+        private Optional<String> grantType = Optional.empty();
 
         _CredentialsAuth(String clientId, String clientSecret) {
             this.clientId = clientId;
             this.clientSecret = clientSecret;
         }
 
-        public _CredentialsAuth grantType(String grantType) {
+        public _CredentialsAuth grantType(Optional<String> grantType) {
             this.grantType = grantType;
+            return this;
+        }
+
+        public _CredentialsAuth grantType(String grantType) {
+            this.grantType = Optional.ofNullable(grantType);
             return this;
         }
 
