@@ -1,3 +1,10 @@
+## [17.9.2] - 2026-07-11
+### Changed
+- **`PhenomlClientBuilder._CredentialsAuth` and `AsyncPhenomlClientBuilder._CredentialsAuth`** — client-credentials grant type handling now uses `Optional<String>` internally while preserving the existing `grantType(String)` builder method.
+
+### Fixed
+- **`ClientOptions`** — generated User-Agent no longer includes a colon in the Maven coordinate token, keeping the default header compatible with HTTP product-token grammar.
+
 ## [17.9.1] - 2026-07-10
 ### Changed
 - **`ResponseDecompressionInterceptor`** — generated default-client interceptor for decoding compressed responses when callers set `Accept-Encoding` explicitly.
