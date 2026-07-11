@@ -8,6 +8,7 @@ import com.phenoml.api.resources.authtoken.requests.ClientCredentialsRequest;
 import com.phenoml.api.resources.authtoken.types.TokenResponse;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public final class OAuthTokenSupplier implements Supplier<String> {
@@ -17,7 +18,7 @@ public final class OAuthTokenSupplier implements Supplier<String> {
 
     private final String clientSecret;
 
-    private final String grantType;
+    private final Optional<String> grantType;
 
     private final AuthtokenClient authClient;
 
@@ -27,7 +28,8 @@ public final class OAuthTokenSupplier implements Supplier<String> {
 
     private volatile Instant expiresAt;
 
-    public OAuthTokenSupplier(String clientId, String clientSecret, String grantType, AuthtokenClient authClient) {
+    public OAuthTokenSupplier(
+            String clientId, String clientSecret, Optional<String> grantType, AuthtokenClient authClient) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.grantType = grantType;
