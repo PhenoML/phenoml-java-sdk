@@ -1,3 +1,5 @@
+## [17.9.3] - 2026-07-21
+
 ## [17.9.2] - 2026-07-11
 ### Changed
 - **`PhenomlClientBuilder._CredentialsAuth` and `AsyncPhenomlClientBuilder._CredentialsAuth`** — client-credentials grant type handling now uses `Optional<String>` internally while preserving the existing `grantType(String)` builder method.
