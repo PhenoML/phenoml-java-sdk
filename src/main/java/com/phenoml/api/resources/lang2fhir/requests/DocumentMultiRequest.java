@@ -69,7 +69,7 @@ public final class DocumentMultiRequest {
 
     /**
      * @return Base64 encoded file content.
-     * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg).
+     * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff).
      * File type is auto-detected from content magic bytes.
      */
     @JsonProperty("content")
@@ -168,7 +168,7 @@ public final class DocumentMultiRequest {
     public interface ContentStage {
         /**
          * <p>Base64 encoded file content.
-         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg).
+         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff).
          * File type is auto-detected from content magic bytes.</p>
          */
         _FinalStage content(@NotNull String content);
@@ -260,7 +260,7 @@ public final class DocumentMultiRequest {
 
         /**
          * <p>Base64 encoded file content.
-         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg).
+         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff).
          * File type is auto-detected from content magic bytes.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
