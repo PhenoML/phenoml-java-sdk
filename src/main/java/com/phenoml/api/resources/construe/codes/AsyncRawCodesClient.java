@@ -178,8 +178,8 @@ public class AsyncRawCodesClient {
      * results may vary between releases. Do not depend on it for production
      * workloads yet.
      * <p>Extracts medical codes from natural language clinical text using phenocr.</p>
-     * <p>Supported code systems: HPO, ICD-10-CM, and SNOMED_CT_US. The code
-     * system name and version are both required.</p>
+     * <p>Supported code systems: HPO, ICD-10-CM, RXNORM, and SNOMED_CT_US. The
+     * code system name and version are both required.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<ExtractCodesResult>> phenocr(PhenoCrRequest request) {
         return phenocr(request, null);
@@ -191,8 +191,8 @@ public class AsyncRawCodesClient {
      * results may vary between releases. Do not depend on it for production
      * workloads yet.
      * <p>Extracts medical codes from natural language clinical text using phenocr.</p>
-     * <p>Supported code systems: HPO, ICD-10-CM, and SNOMED_CT_US. The code
-     * system name and version are both required.</p>
+     * <p>Supported code systems: HPO, ICD-10-CM, RXNORM, and SNOMED_CT_US. The
+     * code system name and version are both required.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<ExtractCodesResult>> phenocr(
             PhenoCrRequest request, RequestOptions requestOptions) {

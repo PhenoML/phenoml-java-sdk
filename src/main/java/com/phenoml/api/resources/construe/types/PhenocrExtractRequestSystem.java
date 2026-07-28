@@ -32,7 +32,7 @@ public final class PhenocrExtractRequestSystem {
     }
 
     /**
-     * @return Code system name. Supported by phenocr: HPO, ICD-10-CM, SNOMED_CT_US.
+     * @return Code system name. Supported by phenocr: HPO, ICD-10-CM, RXNORM, SNOMED_CT_US.
      */
     @JsonProperty("name")
     public String getName() {
@@ -78,7 +78,7 @@ public final class PhenocrExtractRequestSystem {
 
     public interface NameStage {
         /**
-         * <p>Code system name. Supported by phenocr: HPO, ICD-10-CM, SNOMED_CT_US.</p>
+         * <p>Code system name. Supported by phenocr: HPO, ICD-10-CM, RXNORM, SNOMED_CT_US.</p>
          */
         VersionStage name(@NotNull String name);
 
@@ -119,7 +119,7 @@ public final class PhenocrExtractRequestSystem {
         }
 
         /**
-         * <p>Code system name. Supported by phenocr: HPO, ICD-10-CM, SNOMED_CT_US.</p>
+         * <p>Code system name. Supported by phenocr: HPO, ICD-10-CM, RXNORM, SNOMED_CT_US.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
