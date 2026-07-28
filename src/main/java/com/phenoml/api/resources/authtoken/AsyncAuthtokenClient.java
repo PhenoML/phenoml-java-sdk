@@ -30,7 +30,7 @@ public class AsyncAuthtokenClient {
      * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
      * Accepts client_id and client_secret in the request body (JSON or
      * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
-     * returns an access token with expiration information.
+     * returns an access token with token expiration information.
      */
     public CompletableFuture<TokenResponse> getToken() {
         return this.rawClient.getToken().thenApply(response -> response.body());
@@ -40,7 +40,7 @@ public class AsyncAuthtokenClient {
      * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
      * Accepts client_id and client_secret in the request body (JSON or
      * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
-     * returns an access token with expiration information.
+     * returns an access token with token expiration information.
      */
     public CompletableFuture<TokenResponse> getToken(RequestOptions requestOptions) {
         return this.rawClient.getToken(requestOptions).thenApply(response -> response.body());
@@ -50,7 +50,7 @@ public class AsyncAuthtokenClient {
      * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
      * Accepts client_id and client_secret in the request body (JSON or
      * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
-     * returns an access token with expiration information.
+     * returns an access token with token expiration information.
      */
     public CompletableFuture<TokenResponse> getToken(ClientCredentialsRequest request) {
         return this.rawClient.getToken(request).thenApply(response -> response.body());
@@ -60,7 +60,7 @@ public class AsyncAuthtokenClient {
      * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
      * Accepts client_id and client_secret in the request body (JSON or
      * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
-     * returns an access token with expiration information.
+     * returns an access token with token expiration information.
      */
     public CompletableFuture<TokenResponse> getToken(ClientCredentialsRequest request, RequestOptions requestOptions) {
         return this.rawClient.getToken(request, requestOptions).thenApply(response -> response.body());

@@ -1,3 +1,8 @@
+## [17.9.3] - 2026-07-28
+### Changed
+- **`DocumentRequest.getContent()` and `DocumentMultiRequest.getContent()`** — Javadoc now lists TIFF (`image/tiff`) among the supported file types for the `/lang2fhir/document` and `/lang2fhir/document/multi` endpoints, alongside PDF, PNG, and JPEG; the field type is unchanged.
+- **`PhenocrExtractRequestSystem.getName()`** — Javadoc now documents RXNORM as a supported phenocr code system (HPO, ICD-10-CM, RXNORM, SNOMED_CT_US); the field type is unchanged.
+
 ## [17.9.2] - 2026-07-11
 ### Changed
 - **`PhenomlClientBuilder._CredentialsAuth` and `AsyncPhenomlClientBuilder._CredentialsAuth`** — client-credentials grant type handling now uses `Optional<String>` internally while preserving the existing `grantType(String)` builder method.

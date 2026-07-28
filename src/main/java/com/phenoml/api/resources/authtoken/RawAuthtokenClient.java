@@ -37,7 +37,7 @@ public class RawAuthtokenClient {
      * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
      * Accepts client_id and client_secret in the request body (JSON or
      * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
-     * returns an access token with expiration information.
+     * returns an access token with token expiration information.
      */
     public PhenomlClientHttpResponse<TokenResponse> getToken() {
         return getToken(ClientCredentialsRequest.builder().build());
@@ -47,7 +47,7 @@ public class RawAuthtokenClient {
      * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
      * Accepts client_id and client_secret in the request body (JSON or
      * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
-     * returns an access token with expiration information.
+     * returns an access token with token expiration information.
      */
     public PhenomlClientHttpResponse<TokenResponse> getToken(RequestOptions requestOptions) {
         return getToken(ClientCredentialsRequest.builder().build(), requestOptions);
@@ -57,7 +57,7 @@ public class RawAuthtokenClient {
      * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
      * Accepts client_id and client_secret in the request body (JSON or
      * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
-     * returns an access token with expiration information.
+     * returns an access token with token expiration information.
      */
     public PhenomlClientHttpResponse<TokenResponse> getToken(ClientCredentialsRequest request) {
         return getToken(request, null);
@@ -67,7 +67,7 @@ public class RawAuthtokenClient {
      * OAuth 2.0 client credentials token endpoint (RFC 6749 §4.4).
      * Accepts client_id and client_secret in the request body (JSON or
      * form-encoded) or via Basic Auth header (RFC 6749 §2.3.1), and
-     * returns an access token with expiration information.
+     * returns an access token with token expiration information.
      */
     public PhenomlClientHttpResponse<TokenResponse> getToken(
             ClientCredentialsRequest request, RequestOptions requestOptions) {
