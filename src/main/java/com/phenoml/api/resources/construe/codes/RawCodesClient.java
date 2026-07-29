@@ -14,18 +14,22 @@ import com.phenoml.api.core.QueryStringMapper;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.RetryInterceptor;
 import com.phenoml.api.resources.construe.codes.requests.CodesListRequest;
+import com.phenoml.api.resources.construe.codes.requests.CrosswalkRequest;
 import com.phenoml.api.resources.construe.codes.requests.ExtractRequest;
 import com.phenoml.api.resources.construe.codes.requests.LookupRequest;
 import com.phenoml.api.resources.construe.codes.requests.PhenoCrRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchSemanticRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchTextRequest;
+import com.phenoml.api.resources.construe.errors.BadGatewayError;
 import com.phenoml.api.resources.construe.errors.BadRequestError;
+import com.phenoml.api.resources.construe.errors.ContentTooLargeError;
 import com.phenoml.api.resources.construe.errors.GatewayTimeoutError;
 import com.phenoml.api.resources.construe.errors.InternalServerError;
 import com.phenoml.api.resources.construe.errors.NotFoundError;
 import com.phenoml.api.resources.construe.errors.NotImplementedError;
 import com.phenoml.api.resources.construe.errors.ServiceUnavailableError;
 import com.phenoml.api.resources.construe.errors.UnauthorizedError;
+import com.phenoml.api.resources.construe.types.CrosswalkResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import com.phenoml.api.resources.construe.types.GetCodeResponse;
 import com.phenoml.api.resources.construe.types.ListCodesResponse;
@@ -226,6 +230,102 @@ public class RawCodesClient {
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 504:
                         throw new GatewayTimeoutError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            throw new PhenomlClientApiException(
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
+        } catch (JsonProcessingException e) {
+            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new PhenomlClientException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * Maps one source medical code to one or more target code-system URIs using
+     * shared UMLS CUIs. A successful response is HTTP 200 even when the source
+     * code or a target has no matches; inspect <code>reason_code</code> on the item and
+     * target entries for miss details.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+     */
+    public PhenomlClientHttpResponse<CrosswalkResponse> crosswalk(CrosswalkRequest request) {
+        return crosswalk(request, null);
+    }
+
+    /**
+     * Maps one source medical code to one or more target code-system URIs using
+     * shared UMLS CUIs. A successful response is HTTP 200 even when the source
+     * code or a target has no matches; inspect <code>reason_code</code> on the item and
+     * target entries for miss details.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+     */
+    public PhenomlClientHttpResponse<CrosswalkResponse> crosswalk(
+            CrosswalkRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("construe/codes/crosswalk");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
+        RequestBody body;
+        try {
+            body = RequestBody.create(
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+        } catch (JsonProcessingException e) {
+            throw new PhenomlClientException("Failed to serialize request", e);
+        }
+        Request okhttpRequest = new Request.Builder()
+                .url(httpUrl.build())
+                .method("POST", body)
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+            okhttpRequest = okhttpRequest
+                    .newBuilder()
+                    .tag(
+                            RetryInterceptor.MaxRetriesOverride.class,
+                            new RetryInterceptor.MaxRetriesOverride(
+                                    requestOptions.getMaxRetries().get()))
+                    .build();
+        }
+        try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+                return new PhenomlClientHttpResponse<>(
+                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, CrosswalkResponse.class), response);
+            }
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 413:
+                        throw new ContentTooLargeError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 501:
+                        throw new NotImplementedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 502:
+                        throw new BadGatewayError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 503:
+                        throw new ServiceUnavailableError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                 }
             } catch (JsonProcessingException ignored) {

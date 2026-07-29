@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.construe.codes.requests.CodesListRequest;
+import com.phenoml.api.resources.construe.codes.requests.CrosswalkRequest;
 import com.phenoml.api.resources.construe.codes.requests.ExtractRequest;
 import com.phenoml.api.resources.construe.codes.requests.LookupRequest;
 import com.phenoml.api.resources.construe.codes.requests.PhenoCrRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchSemanticRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchTextRequest;
+import com.phenoml.api.resources.construe.types.CrosswalkResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import com.phenoml.api.resources.construe.types.ExtractRequestSystem;
 import com.phenoml.api.resources.construe.types.GetCodeResponse;
@@ -16,6 +18,7 @@ import com.phenoml.api.resources.construe.types.ListCodesResponse;
 import com.phenoml.api.resources.construe.types.PhenocrExtractRequestSystem;
 import com.phenoml.api.resources.construe.types.SemanticSearchResponse;
 import com.phenoml.api.resources.construe.types.TextSearchResponse;
+import java.util.Arrays;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -242,6 +245,127 @@ public class ConstrueCodesWireTest {
                 + "        {\n"
                 + "          \"uri\": \"HP:0025142\",\n"
                 + "          \"label\": \"Constitutional symptom\"\n"
+                + "        }\n"
+                + "      ]\n"
+                + "    }\n"
+                + "  ]\n"
+                + "}";
+        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+        Assertions.assertTrue(
+                jsonEquals(expectedResponseNode, actualResponseNode),
+                "Response body structure does not match expected");
+        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
+            String discriminator = null;
+            if (actualResponseNode.has("type"))
+                discriminator = actualResponseNode.get("type").asText();
+            else if (actualResponseNode.has("_type"))
+                discriminator = actualResponseNode.get("_type").asText();
+            else if (actualResponseNode.has("kind"))
+                discriminator = actualResponseNode.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualResponseNode.isNull()) {
+            Assertions.assertTrue(
+                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
+                    "response should be a valid JSON value");
+        }
+
+        if (actualResponseNode.isArray()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+        }
+        if (actualResponseNode.isObject()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+        }
+    }
+
+    @Test
+    public void testCrosswalk() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"resolved_umls_release\":\"2026AA\",\"system\":\"http://hl7.org/fhir/sid/icd-10-cm\",\"code\":\"A02.24\",\"reason_code\":\"NO_SOURCE_CUI\",\"targets\":[{\"system\":\"http://human-phenotype-ontology.org\",\"reason_code\":\"NO_TARGET_MATCHES\",\"matches\":[{\"code\":\"HP:0005661\",\"display\":\"Salmonella infection\",\"cui\":\"C0036111\",\"suppress\":\"N\"}]}]}"));
+        CrosswalkResponse response = client.construe()
+                .codes()
+                .crosswalk(CrosswalkRequest.builder()
+                        .system("http://hl7.org/fhir/sid/icd-10-cm")
+                        .code("A02.24")
+                        .targets(Arrays.asList("http://human-phenotype-ontology.org"))
+                        .build());
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("POST", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+        // Validate request body
+        String actualRequestBody = request.getBody().readUtf8();
+        String expectedRequestBody = ""
+                + "{\n"
+                + "  \"system\": \"http://hl7.org/fhir/sid/icd-10-cm\",\n"
+                + "  \"code\": \"A02.24\",\n"
+                + "  \"targets\": [\n"
+                + "    \"http://human-phenotype-ontology.org\"\n"
+                + "  ]\n"
+                + "}";
+        JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+        JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+        Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
+        if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+            String discriminator = null;
+            if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+            else if (actualJson.has("_type"))
+                discriminator = actualJson.get("_type").asText();
+            else if (actualJson.has("kind"))
+                discriminator = actualJson.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualJson.isNull()) {
+            Assertions.assertTrue(
+                    actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+                    "request should be a valid JSON value");
+        }
+
+        if (actualJson.isArray()) {
+            Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+        }
+        if (actualJson.isObject()) {
+            Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+        }
+
+        // Validate response body
+        Assertions.assertNotNull(response, "Response should not be null");
+        String actualResponseJson = objectMapper.writeValueAsString(response);
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"resolved_umls_release\": \"2026AA\",\n"
+                + "  \"system\": \"http://hl7.org/fhir/sid/icd-10-cm\",\n"
+                + "  \"code\": \"A02.24\",\n"
+                + "  \"reason_code\": \"NO_SOURCE_CUI\",\n"
+                + "  \"targets\": [\n"
+                + "    {\n"
+                + "      \"system\": \"http://human-phenotype-ontology.org\",\n"
+                + "      \"reason_code\": \"NO_TARGET_MATCHES\",\n"
+                + "      \"matches\": [\n"
+                + "        {\n"
+                + "          \"code\": \"HP:0005661\",\n"
+                + "          \"display\": \"Salmonella infection\",\n"
+                + "          \"cui\": \"C0036111\",\n"
+                + "          \"suppress\": \"N\"\n"
                 + "        }\n"
                 + "      ]\n"
                 + "    }\n"

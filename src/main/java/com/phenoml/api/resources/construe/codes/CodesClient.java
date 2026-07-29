@@ -6,11 +6,13 @@ package com.phenoml.api.resources.construe.codes;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.construe.codes.requests.CodesListRequest;
+import com.phenoml.api.resources.construe.codes.requests.CrosswalkRequest;
 import com.phenoml.api.resources.construe.codes.requests.ExtractRequest;
 import com.phenoml.api.resources.construe.codes.requests.LookupRequest;
 import com.phenoml.api.resources.construe.codes.requests.PhenoCrRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchSemanticRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchTextRequest;
+import com.phenoml.api.resources.construe.types.CrosswalkResponse;
 import com.phenoml.api.resources.construe.types.ExtractCodesResult;
 import com.phenoml.api.resources.construe.types.GetCodeResponse;
 import com.phenoml.api.resources.construe.types.ListCodesResponse;
@@ -78,6 +80,28 @@ public class CodesClient {
      */
     public ExtractCodesResult phenocr(PhenoCrRequest request, RequestOptions requestOptions) {
         return this.rawClient.phenocr(request, requestOptions).body();
+    }
+
+    /**
+     * Maps one source medical code to one or more target code-system URIs using
+     * shared UMLS CUIs. A successful response is HTTP 200 even when the source
+     * code or a target has no matches; inspect <code>reason_code</code> on the item and
+     * target entries for miss details.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+     */
+    public CrosswalkResponse crosswalk(CrosswalkRequest request) {
+        return this.rawClient.crosswalk(request).body();
+    }
+
+    /**
+     * Maps one source medical code to one or more target code-system URIs using
+     * shared UMLS CUIs. A successful response is HTTP 200 even when the source
+     * code or a target has no matches; inspect <code>reason_code</code> on the item and
+     * target entries for miss details.
+     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+     */
+    public CrosswalkResponse crosswalk(CrosswalkRequest request, RequestOptions requestOptions) {
+        return this.rawClient.crosswalk(request, requestOptions).body();
     }
 
     /**
