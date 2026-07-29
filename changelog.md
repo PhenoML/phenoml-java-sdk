@@ -1,3 +1,14 @@
+## [17.10.0] - 2026-07-29
+### Added
+- **`CodesClient.crosswalk()` / `AsyncCodesClient.crosswalk()`** — new methods that map a source FHIR medical code to one or more target code-system URIs using shared UMLS CUIs.
+- **`CrosswalkRequest`** — new staged-builder request type accepting a required `system` and `code` plus an optional `targets` list.
+- **`CrosswalkResponse`**, **`CrosswalkTarget`**, and **`CrosswalkMatch`** — new response types representing the full crosswalk result hierarchy, from top-level UMLS metadata down to individual matched codes.
+- **`BadGatewayError`** and **`ContentTooLargeError`** — new exception classes (HTTP 502 and 413) thrown by the crosswalk endpoint.
+
+### Changed
+- **`PhenocrExtractRequestSystem.getName()` Javadoc** — RXNORM is now listed as a supported phenocr code system alongside HPO, ICD-10-CM, and SNOMED_CT_US.
+- **`DocumentRequest.getContent()` / `DocumentMultiRequest.getContent()` Javadoc** — TIFF (`image/tiff`) is now listed as a supported file type for document endpoints.
+
 ## [17.9.3] - 2026-07-28
 ### Changed
 - **`DocumentRequest.getContent()` and `DocumentMultiRequest.getContent()`** — Javadoc now lists TIFF (`image/tiff`) among the supported file types for the `/lang2fhir/document` and `/lang2fhir/document/multi` endpoints, alongside PDF, PNG, and JPEG; the field type is unchanged.
