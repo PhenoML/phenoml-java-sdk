@@ -2010,6 +2010,90 @@ client.construe().codes().phenocr(
 </dl>
 </details>
 
+<details><summary><code>client.construe.codes.crosswalk(request) -> CrosswalkResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Maps one source medical code to one or more target code-system URIs using
+shared UMLS CUIs. A successful response is HTTP 200 even when the source
+code or a target has no matches; inspect `reason_code` on the item and
+target entries for miss details.
+
+Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.construe().codes().crosswalk(
+    CrosswalkRequest
+        .builder()
+        .system("http://hl7.org/fhir/sid/icd-10-cm")
+        .code("A02.24")
+        .targets(
+            Arrays.asList("http://human-phenotype-ontology.org")
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**system:** `String` — Source FHIR code-system URI.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**code:** `String` — Source code to map.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targets:** `List<String>` — Target FHIR code-system URIs.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.construe.codes.list(codesystem) -> ListCodesResponse</code></summary>
 <dl>
 <dd>
