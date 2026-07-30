@@ -1,3 +1,5 @@
+## [17.10.1] - 2026-07-30
+
 ## [17.10.0] - 2026-07-29
 ### Added
 - **`CodesClient.crosswalk()` / `AsyncCodesClient.crosswalk()`** — new methods that map a source FHIR medical code to one or more target code-system URIs using shared UMLS CUIs.
