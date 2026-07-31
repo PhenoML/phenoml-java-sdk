@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,16 +23,33 @@ import java.util.Optional;
 public final class DocumentConfig {
     private final Optional<PageFilter> pageFilter;
 
+    private final Optional<List<SplitClassification>> splitClassifications;
+
     private final Map<String, Object> additionalProperties;
 
-    private DocumentConfig(Optional<PageFilter> pageFilter, Map<String, Object> additionalProperties) {
+    private DocumentConfig(
+            Optional<PageFilter> pageFilter,
+            Optional<List<SplitClassification>> splitClassifications,
+            Map<String, Object> additionalProperties) {
         this.pageFilter = pageFilter;
+        this.splitClassifications = splitClassifications;
         this.additionalProperties = additionalProperties;
     }
 
+    /**
+     * @return Deprecated. Use split_classifications instead.
+     */
     @JsonProperty("page_filter")
     public Optional<PageFilter> getPageFilter() {
         return pageFilter;
+    }
+
+    /**
+     * @return Optional per-page split classifications. Mutually exclusive with page_filter. This is a caller-defined list, not a fixed taxonomy: choose each classification id and write a natural-language description for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Pages matching operation=drop are removed before extraction. Pages matching operation=group are kept, and extracted resources attributed to those pages include the classification id in response metadata and FHIR meta.tag. Example ids such as clinical and admin are illustrative, not a fixed set.
+     */
+    @JsonProperty("split_classifications")
+    public Optional<List<SplitClassification>> getSplitClassifications() {
+        return splitClassifications;
     }
 
     @java.lang.Override
@@ -46,12 +64,12 @@ public final class DocumentConfig {
     }
 
     private boolean equalTo(DocumentConfig other) {
-        return pageFilter.equals(other.pageFilter);
+        return pageFilter.equals(other.pageFilter) && splitClassifications.equals(other.splitClassifications);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.pageFilter);
+        return Objects.hash(this.pageFilter, this.splitClassifications);
     }
 
     @java.lang.Override
@@ -67,6 +85,8 @@ public final class DocumentConfig {
     public static final class Builder {
         private Optional<PageFilter> pageFilter = Optional.empty();
 
+        private Optional<List<SplitClassification>> splitClassifications = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -74,9 +94,13 @@ public final class DocumentConfig {
 
         public Builder from(DocumentConfig other) {
             pageFilter(other.getPageFilter());
+            splitClassifications(other.getSplitClassifications());
             return this;
         }
 
+        /**
+         * <p>Deprecated. Use split_classifications instead.</p>
+         */
         @JsonSetter(value = "page_filter", nulls = Nulls.SKIP)
         public Builder pageFilter(Optional<PageFilter> pageFilter) {
             this.pageFilter = pageFilter;
@@ -88,8 +112,22 @@ public final class DocumentConfig {
             return this;
         }
 
+        /**
+         * <p>Optional per-page split classifications. Mutually exclusive with page_filter. This is a caller-defined list, not a fixed taxonomy: choose each classification id and write a natural-language description for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Pages matching operation=drop are removed before extraction. Pages matching operation=group are kept, and extracted resources attributed to those pages include the classification id in response metadata and FHIR meta.tag. Example ids such as clinical and admin are illustrative, not a fixed set.</p>
+         */
+        @JsonSetter(value = "split_classifications", nulls = Nulls.SKIP)
+        public Builder splitClassifications(Optional<List<SplitClassification>> splitClassifications) {
+            this.splitClassifications = splitClassifications;
+            return this;
+        }
+
+        public Builder splitClassifications(List<SplitClassification> splitClassifications) {
+            this.splitClassifications = Optional.ofNullable(splitClassifications);
+            return this;
+        }
+
         public DocumentConfig build() {
-            return new DocumentConfig(pageFilter, additionalProperties);
+            return new DocumentConfig(pageFilter, splitClassifications, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {
