@@ -95,7 +95,7 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
     }
 
     /**
-     * @return Per-page classifier decisions. Populated only when a page_filter was supplied in the request. Contains one entry per input page, including both kept and dropped pages.
+     * @return Per-page classifier decisions. Populated when page_filter or split_classifications was supplied in the request. Contains one entry per input page, including both kept and dropped pages.
      */
     @JsonProperty("page_classifications")
     public Optional<List<PageClassification>> getPageClassifications() {
@@ -237,7 +237,7 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
         }
 
         /**
-         * <p>Per-page classifier decisions. Populated only when a page_filter was supplied in the request. Contains one entry per input page, including both kept and dropped pages.</p>
+         * <p>Per-page classifier decisions. Populated when page_filter or split_classifications was supplied in the request. Contains one entry per input page, including both kept and dropped pages.</p>
          */
         @JsonSetter(value = "page_classifications", nulls = Nulls.SKIP)
         public Builder pageClassifications(Optional<List<PageClassification>> pageClassifications) {

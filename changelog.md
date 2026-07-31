@@ -1,3 +1,16 @@
+## [17.11.0] - 2026-07-31
+### Added
+- **`SplitClassification`** — new staged-builder type representing a caller-defined page classification rule with required `id`, `description`, and `operation` fields, used via `config.split_classifications` on the `documentMulti` endpoint.
+- **`SplitClassificationOperation`** — new enum-like type with `GROUP` (keep and label matching pages) and `DROP` (remove matching pages before extraction) values.
+- **`DocumentConfig.getSplitClassifications()` / `splitClassifications()`** — new optional builder method accepting a `List<SplitClassification>` to define custom per-page split classifications for the `/lang2fhir/document/multi` endpoint; mutually exclusive with `page_filter`.
+- **`CreateMultiResponseResourcesItem.getGroup()`** — new optional response field returning the split classification id assigned to an extracted resource.
+- **`PageClassification.getClassificationId()`** — new optional response field returning the split classification id assigned to a page when `split_classifications` was supplied in the request.
+
+### Changed
+- **`DocumentMultiResponse.getPageClassifications()`** — Javadoc updated to reflect population when either `page_filter` or `split_classifications` is supplied, not only `page_filter`.
+- **`ProfileUploadRequest.getStructureDefinition()` / `ProfilesClient.create()`** — Javadoc clarifies that omitting `id` from the StructureDefinition now assigns a random UUID rather than deriving one from the canonical URL path segment.
+- **`Lang2FhirClient` and async/raw variants** — Javadoc for `documentMulti()` updated to document the optional `config.split_classifications` parameter and its `group`/`drop` semantics.
+
 ## [17.10.0] - 2026-07-29
 ### Added
 - **`CodesClient.crosswalk()` / `AsyncCodesClient.crosswalk()`** — new methods that map a source FHIR medical code to one or more target code-system URIs using shared UMLS CUIs.

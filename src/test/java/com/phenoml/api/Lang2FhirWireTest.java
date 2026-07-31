@@ -10,11 +10,16 @@ import com.phenoml.api.resources.lang2fhir.requests.DocumentRequest;
 import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.CreateRequestResource;
+import com.phenoml.api.resources.lang2fhir.types.DocumentConfig;
 import com.phenoml.api.resources.lang2fhir.types.DocumentMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.ProfileUploadRequest;
 import com.phenoml.api.resources.lang2fhir.types.SearchResponse;
+import com.phenoml.api.resources.lang2fhir.types.SplitClassification;
+import com.phenoml.api.resources.lang2fhir.types.SplitClassificationOperation;
 import com.phenoml.api.resources.lang2fhir.types.UploadProfileResponse;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -596,6 +601,21 @@ public class Lang2FhirWireTest {
                         .version("R4")
                         .content("JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)")
                         .provider("medplum")
+                        .config(DocumentConfig.builder()
+                                .splitClassifications(Optional.of(Arrays.asList(
+                                        SplitClassification.builder()
+                                                .id("clinical")
+                                                .description(
+                                                        "Clinical notes, diagnoses, medications, observations, and patient demographics.")
+                                                .operation(SplitClassificationOperation.GROUP)
+                                                .build(),
+                                        SplitClassification.builder()
+                                                .id("admin")
+                                                .description(
+                                                        "Administrative boilerplate, insurance forms, and cover sheets.")
+                                                .operation(SplitClassificationOperation.DROP)
+                                                .build())))
+                                .build())
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -614,7 +634,21 @@ public class Lang2FhirWireTest {
                 + "{\n"
                 + "  \"version\": \"R4\",\n"
                 + "  \"content\": \"JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)\",\n"
-                + "  \"provider\": \"medplum\"\n"
+                + "  \"provider\": \"medplum\",\n"
+                + "  \"config\": {\n"
+                + "    \"split_classifications\": [\n"
+                + "      {\n"
+                + "        \"id\": \"clinical\",\n"
+                + "        \"description\": \"Clinical notes, diagnoses, medications, observations, and patient demographics.\",\n"
+                + "        \"operation\": \"group\"\n"
+                + "      },\n"
+                + "      {\n"
+                + "        \"id\": \"admin\",\n"
+                + "        \"description\": \"Administrative boilerplate, insurance forms, and cover sheets.\",\n"
+                + "        \"operation\": \"drop\"\n"
+                + "      }\n"
+                + "    ]\n"
+                + "  }\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
