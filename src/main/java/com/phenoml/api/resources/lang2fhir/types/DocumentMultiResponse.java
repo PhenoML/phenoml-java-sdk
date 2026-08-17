@@ -31,6 +31,8 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
 
     private final Optional<CreateMultiResponseValidation> validation;
 
+    private final Optional<ResourceReviewResult> resourceReview;
+
     private final Optional<List<PageClassification>> pageClassifications;
 
     private final Map<String, Object> additionalProperties;
@@ -41,6 +43,7 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
             Optional<CreateMultiResponseBundle> bundle,
             Optional<List<CreateMultiResponseResourcesItem>> resources,
             Optional<CreateMultiResponseValidation> validation,
+            Optional<ResourceReviewResult> resourceReview,
             Optional<List<PageClassification>> pageClassifications,
             Map<String, Object> additionalProperties) {
         this.success = success;
@@ -48,6 +51,7 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
         this.bundle = bundle;
         this.resources = resources;
         this.validation = validation;
+        this.resourceReview = resourceReview;
         this.pageClassifications = pageClassifications;
         this.additionalProperties = additionalProperties;
     }
@@ -94,8 +98,14 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
         return validation;
     }
 
+    @JsonProperty("resource_review")
+    @java.lang.Override
+    public Optional<ResourceReviewResult> getResourceReview() {
+        return resourceReview;
+    }
+
     /**
-     * @return Per-page classifier decisions. Populated only when a page_filter was supplied in the request. Contains one entry per input page, including both kept and dropped pages.
+     * @return Per-page classifier decisions. Populated when page_filter or split_classifications was supplied in the request. Contains one entry per input page, including both kept and dropped pages.
      */
     @JsonProperty("page_classifications")
     public Optional<List<PageClassification>> getPageClassifications() {
@@ -119,13 +129,20 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
                 && bundle.equals(other.bundle)
                 && resources.equals(other.resources)
                 && validation.equals(other.validation)
+                && resourceReview.equals(other.resourceReview)
                 && pageClassifications.equals(other.pageClassifications);
     }
 
     @java.lang.Override
     public int hashCode() {
         return Objects.hash(
-                this.success, this.message, this.bundle, this.resources, this.validation, this.pageClassifications);
+                this.success,
+                this.message,
+                this.bundle,
+                this.resources,
+                this.validation,
+                this.resourceReview,
+                this.pageClassifications);
     }
 
     @java.lang.Override
@@ -149,6 +166,8 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
 
         private Optional<CreateMultiResponseValidation> validation = Optional.empty();
 
+        private Optional<ResourceReviewResult> resourceReview = Optional.empty();
+
         private Optional<List<PageClassification>> pageClassifications = Optional.empty();
 
         @JsonAnySetter
@@ -162,6 +181,7 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
             bundle(other.getBundle());
             resources(other.getResources());
             validation(other.getValidation());
+            resourceReview(other.getResourceReview());
             pageClassifications(other.getPageClassifications());
             return this;
         }
@@ -236,8 +256,19 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
             return this;
         }
 
+        @JsonSetter(value = "resource_review", nulls = Nulls.SKIP)
+        public Builder resourceReview(Optional<ResourceReviewResult> resourceReview) {
+            this.resourceReview = resourceReview;
+            return this;
+        }
+
+        public Builder resourceReview(ResourceReviewResult resourceReview) {
+            this.resourceReview = Optional.ofNullable(resourceReview);
+            return this;
+        }
+
         /**
-         * <p>Per-page classifier decisions. Populated only when a page_filter was supplied in the request. Contains one entry per input page, including both kept and dropped pages.</p>
+         * <p>Per-page classifier decisions. Populated when page_filter or split_classifications was supplied in the request. Contains one entry per input page, including both kept and dropped pages.</p>
          */
         @JsonSetter(value = "page_classifications", nulls = Nulls.SKIP)
         public Builder pageClassifications(Optional<List<PageClassification>> pageClassifications) {
@@ -252,7 +283,14 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
 
         public DocumentMultiResponse build() {
             return new DocumentMultiResponse(
-                    success, message, bundle, resources, validation, pageClassifications, additionalProperties);
+                    success,
+                    message,
+                    bundle,
+                    resources,
+                    validation,
+                    resourceReview,
+                    pageClassifications,
+                    additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {
