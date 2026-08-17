@@ -1,3 +1,16 @@
+## [17.11.0] - 2026-08-17
+### Added
+- **`SplitClassification` / `SplitClassificationOperation`** — new staged-builder type and enum controlling per-page document classification with `GROUP` and `DROP` operations for the `/lang2fhir/document/multi` endpoint.
+- **`DocumentConfig.splitClassifications()` / `getSplitClassifications()`** — new optional builder method accepting a `List<SplitClassification>` for per-page split classification; mutually exclusive with `pageFilter`.
+- **`ResourceReview` / `ResourceReviewTarget`** — new request types for configuring a resource-review audit, specifying which FHIR resource types and field kinds to inspect.
+- **`ResourceReviewResult` / `ResourceReviewFlagged` / `ResourceReviewFinding`** — new response types surfacing flagged FHIR bundle resources and their individual field-level findings from a resource-review audit.
+- **`DocumentConfig.resourceReview()`**, **`ICreateMultiResponse.getResourceReview()`**, **`CreateMultiResponse.getResourceReview()`**, and **`DocumentMultiResponse.getResourceReview()`** — new methods to attach and retrieve `ResourceReviewResult` on document-multi requests and responses.
+- **`PageClassification.getClassificationId()`** and **`CreateMultiResponseResourcesItem.getGroup()`** — new optional fields carrying the split-classification ID assigned to each page and each extracted FHIR resource respectively.
+
+### Changed
+- **`documentMulti()` Javadoc** on `Lang2FhirClient`, `AsyncLang2FhirClient`, `RawLang2FhirClient`, and `AsyncRawLang2FhirClient` — updated to document the `config.split_classifications` feature including `group`/`drop` operations and per-page classification ID labelling.
+- **`ProfileUploadRequest.getStructureDefinition()` Javadoc** — clarifies that omitting `id` from the StructureDefinition causes a random UUID to be assigned as the profile lookup key.
+
 ## [17.10.0] - 2026-07-29
 ### Added
 - **`CodesClient.crosswalk()` / `AsyncCodesClient.crosswalk()`** — new methods that map a source FHIR medical code to one or more target code-system URIs using shared UMLS CUIs.
