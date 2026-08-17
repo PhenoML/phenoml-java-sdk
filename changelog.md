@@ -1,3 +1,14 @@
+## [17.11.0] - 2026-08-17
+### Added
+- **`ResourceReview` / `ResourceReviewFinding` / `ResourceReviewResult` / `ResourceReviewFlagged`** — new public types (with staged builders) representing per-field audit results and flagged resources returned by the document-multi endpoint.
+- **`ResourceReviewTarget`** — new staged-builder request type for specifying a FHIR `resourceType` and optional field kinds to audit during resource review.
+- **`SplitClassification` / `SplitClassificationOperation`** — new request types enabling caller-controlled per-page split classification with `drop` and `group` operations.
+- **`DocumentConfig.getSplitClassifications()` / `getResourceReview()`** — new optional builder fields on `DocumentConfig` for configuring split classifications and resource-level review on document-multi requests.
+- **`DocumentMultiResponse`, `CreateMultiResponse`, and `ICreateMultiResponse`** — extended with `getResourceReview()` returning an optional `ResourceReviewResult`, and `CreateMultiResponseResourcesItem` extended with `getGroup()` carrying the assigned split classification id.
+
+### Changed
+- **`ProfileUploadRequest.getStructureDefinition()` Javadoc** — clarifies that omitting `id` from the `StructureDefinition` now causes a random UUID to be assigned rather than deriving one from the canonical URL path segment.
+
 ## [17.10.0] - 2026-07-29
 ### Added
 - **`CodesClient.crosswalk()` / `AsyncCodesClient.crosswalk()`** — new methods that map a source FHIR medical code to one or more target code-system URIs using shared UMLS CUIs.
