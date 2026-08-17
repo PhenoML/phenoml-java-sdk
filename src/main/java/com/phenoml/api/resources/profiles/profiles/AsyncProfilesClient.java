@@ -83,10 +83,11 @@ public class AsyncProfilesClient {
 
     /**
      * Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
-     * object. All metadata (version, resource type, id, url) is derived from the
+     * object. Metadata such as version, resource type, and url is read from the
      * StructureDefinition; the lowercase StructureDefinition id becomes the
-     * profile's lookup key. Code system configuration is auto-extracted from the
-     * snapshot. Optionally group the profile under a named implementation guide.
+     * profile's lookup key. When id is omitted, a random UUID is assigned. Code
+     * system configuration is auto-extracted from the snapshot. Optionally group
+     * the profile under a named implementation guide.
      */
     public CompletableFuture<ProfileSummary> create(ProfileUploadRequest request) {
         return this.rawClient.create(request).thenApply(response -> response.body());
@@ -94,10 +95,11 @@ public class AsyncProfilesClient {
 
     /**
      * Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
-     * object. All metadata (version, resource type, id, url) is derived from the
+     * object. Metadata such as version, resource type, and url is read from the
      * StructureDefinition; the lowercase StructureDefinition id becomes the
-     * profile's lookup key. Code system configuration is auto-extracted from the
-     * snapshot. Optionally group the profile under a named implementation guide.
+     * profile's lookup key. When id is omitted, a random UUID is assigned. Code
+     * system configuration is auto-extracted from the snapshot. Optionally group
+     * the profile under a named implementation guide.
      */
     public CompletableFuture<ProfileSummary> create(ProfileUploadRequest request, RequestOptions requestOptions) {
         return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());

@@ -31,6 +31,8 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
 
     private final Optional<CreateMultiResponseValidation> validation;
 
+    private final Optional<ResourceReviewResult> resourceReview;
+
     private final Map<String, Object> additionalProperties;
 
     private CreateMultiResponse(
@@ -39,12 +41,14 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
             Optional<CreateMultiResponseBundle> bundle,
             Optional<List<CreateMultiResponseResourcesItem>> resources,
             Optional<CreateMultiResponseValidation> validation,
+            Optional<ResourceReviewResult> resourceReview,
             Map<String, Object> additionalProperties) {
         this.success = success;
         this.message = message;
         this.bundle = bundle;
         this.resources = resources;
         this.validation = validation;
+        this.resourceReview = resourceReview;
         this.additionalProperties = additionalProperties;
     }
 
@@ -90,6 +94,12 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
         return validation;
     }
 
+    @JsonProperty("resource_review")
+    @java.lang.Override
+    public Optional<ResourceReviewResult> getResourceReview() {
+        return resourceReview;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -106,12 +116,14 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
                 && message.equals(other.message)
                 && bundle.equals(other.bundle)
                 && resources.equals(other.resources)
-                && validation.equals(other.validation);
+                && validation.equals(other.validation)
+                && resourceReview.equals(other.resourceReview);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.success, this.message, this.bundle, this.resources, this.validation);
+        return Objects.hash(
+                this.success, this.message, this.bundle, this.resources, this.validation, this.resourceReview);
     }
 
     @java.lang.Override
@@ -135,6 +147,8 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
 
         private Optional<CreateMultiResponseValidation> validation = Optional.empty();
 
+        private Optional<ResourceReviewResult> resourceReview = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -146,6 +160,7 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
             bundle(other.getBundle());
             resources(other.getResources());
             validation(other.getValidation());
+            resourceReview(other.getResourceReview());
             return this;
         }
 
@@ -219,8 +234,20 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
             return this;
         }
 
+        @JsonSetter(value = "resource_review", nulls = Nulls.SKIP)
+        public Builder resourceReview(Optional<ResourceReviewResult> resourceReview) {
+            this.resourceReview = resourceReview;
+            return this;
+        }
+
+        public Builder resourceReview(ResourceReviewResult resourceReview) {
+            this.resourceReview = Optional.ofNullable(resourceReview);
+            return this;
+        }
+
         public CreateMultiResponse build() {
-            return new CreateMultiResponse(success, message, bundle, resources, validation, additionalProperties);
+            return new CreateMultiResponse(
+                    success, message, bundle, resources, validation, resourceReview, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {
