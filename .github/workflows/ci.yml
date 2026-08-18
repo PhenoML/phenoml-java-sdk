@@ -13,9 +13,13 @@ env:
   GROUP_ID: com.phenoml.maven
   MAVEN_CENTRAL_BASE: https://repo.maven.apache.org/maven2
 
+permissions: {}
+
 jobs:
   compile:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repo
@@ -28,7 +32,6 @@ jobs:
           java-version: "11"
           distribution: "zulu"
           architecture: x64
-          cache: gradle
 
       - name: Compile
         run: ./gradlew compileJava
@@ -36,6 +39,8 @@ jobs:
   test:
     needs: [ compile ]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repo
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
@@ -47,7 +52,6 @@ jobs:
           java-version: "11"
           distribution: "zulu"
           architecture: x64
-          cache: gradle
 
       - name: Test
         run: ./gradlew test
@@ -81,7 +85,6 @@ jobs:
           java-version: "11"
           distribution: "zulu"
           architecture: x64
-          cache: gradle
 
       - name: Build publishable artifacts
         run: |
