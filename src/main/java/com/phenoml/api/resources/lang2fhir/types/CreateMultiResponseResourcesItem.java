@@ -29,6 +29,8 @@ public final class CreateMultiResponseResourcesItem {
 
     private final Optional<String> originalText;
 
+    private final Optional<String> group;
+
     private final Optional<List<Integer>> sourcePages;
 
     private final Map<String, Object> additionalProperties;
@@ -38,12 +40,14 @@ public final class CreateMultiResponseResourcesItem {
             Optional<String> resourceType,
             Optional<String> description,
             Optional<String> originalText,
+            Optional<String> group,
             Optional<List<Integer>> sourcePages,
             Map<String, Object> additionalProperties) {
         this.tempId = tempId;
         this.resourceType = resourceType;
         this.description = description;
         this.originalText = originalText;
+        this.group = group;
         this.sourcePages = sourcePages;
         this.additionalProperties = additionalProperties;
     }
@@ -81,6 +85,14 @@ public final class CreateMultiResponseResourcesItem {
     }
 
     /**
+     * @return Split classification id assigned to this resource by the /lang2fhir/document/multi endpoint. Omitted when the resource came only from ungrouped pages or raw-text create/multi.
+     */
+    @JsonProperty("group")
+    public Optional<String> getGroup() {
+        return group;
+    }
+
+    /**
      * @return 1-indexed source document page number(s) this resource was extracted from. Populated only by the /lang2fhir/document/multi endpoint; omitted when the source page could not be determined (e.g. raw-text create/multi, or a resource with no verbatim source text).
      */
     @JsonProperty("sourcePages")
@@ -104,12 +116,14 @@ public final class CreateMultiResponseResourcesItem {
                 && resourceType.equals(other.resourceType)
                 && description.equals(other.description)
                 && originalText.equals(other.originalText)
+                && group.equals(other.group)
                 && sourcePages.equals(other.sourcePages);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.tempId, this.resourceType, this.description, this.originalText, this.sourcePages);
+        return Objects.hash(
+                this.tempId, this.resourceType, this.description, this.originalText, this.group, this.sourcePages);
     }
 
     @java.lang.Override
@@ -131,6 +145,8 @@ public final class CreateMultiResponseResourcesItem {
 
         private Optional<String> originalText = Optional.empty();
 
+        private Optional<String> group = Optional.empty();
+
         private Optional<List<Integer>> sourcePages = Optional.empty();
 
         @JsonAnySetter
@@ -143,6 +159,7 @@ public final class CreateMultiResponseResourcesItem {
             resourceType(other.getResourceType());
             description(other.getDescription());
             originalText(other.getOriginalText());
+            group(other.getGroup());
             sourcePages(other.getSourcePages());
             return this;
         }
@@ -204,6 +221,20 @@ public final class CreateMultiResponseResourcesItem {
         }
 
         /**
+         * <p>Split classification id assigned to this resource by the /lang2fhir/document/multi endpoint. Omitted when the resource came only from ungrouped pages or raw-text create/multi.</p>
+         */
+        @JsonSetter(value = "group", nulls = Nulls.SKIP)
+        public Builder group(Optional<String> group) {
+            this.group = group;
+            return this;
+        }
+
+        public Builder group(String group) {
+            this.group = Optional.ofNullable(group);
+            return this;
+        }
+
+        /**
          * <p>1-indexed source document page number(s) this resource was extracted from. Populated only by the /lang2fhir/document/multi endpoint; omitted when the source page could not be determined (e.g. raw-text create/multi, or a resource with no verbatim source text).</p>
          */
         @JsonSetter(value = "sourcePages", nulls = Nulls.SKIP)
@@ -219,7 +250,7 @@ public final class CreateMultiResponseResourcesItem {
 
         public CreateMultiResponseResourcesItem build() {
             return new CreateMultiResponseResourcesItem(
-                    tempId, resourceType, description, originalText, sourcePages, additionalProperties);
+                    tempId, resourceType, description, originalText, group, sourcePages, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {
