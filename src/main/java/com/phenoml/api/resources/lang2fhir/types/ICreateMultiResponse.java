@@ -16,4 +16,6 @@ public interface ICreateMultiResponse {
     Optional<List<CreateMultiResponseResourcesItem>> getResources();
 
     Optional<CreateMultiResponseValidation> getValidation();
+
+    Optional<ResourceReviewResult> getResourceReview();
 }
