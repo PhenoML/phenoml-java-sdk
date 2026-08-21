@@ -9,6 +9,14 @@
         "fullUrl": "urn:uuid:patient-001",
         "resource": {
           "resourceType": "Patient",
+          "meta": {
+            "tag": [
+              {
+                "system": "https://phenoml.com/fhir/split-classification",
+                "code": "clinical"
+              }
+            ]
+          },
           "name": [
             {
               "given": [
@@ -29,6 +37,14 @@
         "fullUrl": "urn:uuid:condition-001",
         "resource": {
           "resourceType": "Condition",
+          "meta": {
+            "tag": [
+              {
+                "system": "https://phenoml.com/fhir/split-classification",
+                "code": "clinical"
+              }
+            ]
+          },
           "code": {
             "text": "Type 2 Diabetes Mellitus"
           },
@@ -45,6 +61,14 @@
         "fullUrl": "urn:uuid:medication-001",
         "resource": {
           "resourceType": "MedicationRequest",
+          "meta": {
+            "tag": [
+              {
+                "system": "https://phenoml.com/fhir/split-classification",
+                "code": "clinical"
+              }
+            ]
+          },
           "medicationCodeableConcept": {
             "text": "Metformin 500mg"
           },
@@ -65,6 +89,7 @@
       "resourceType": "Patient",
       "description": "John Doe, born 1979-03-15",
       "originalText": "John Doe, DOB 1979-03-15",
+      "group": "clinical",
       "sourcePages": [
         1
       ]
@@ -74,6 +99,7 @@
       "resourceType": "Condition",
       "description": "Type 2 Diabetes Mellitus diagnosis",
       "originalText": "diagnosed with Type 2 Diabetes",
+      "group": "clinical",
       "sourcePages": [
         1
       ]
@@ -83,6 +109,7 @@
       "resourceType": "MedicationRequest",
       "description": "Metformin 500mg prescription",
       "originalText": "Prescribed Metformin 500mg",
+      "group": "clinical",
       "sourcePages": [
         2
       ]
@@ -96,11 +123,40 @@
     "attempts": 1,
     "summary": "summary"
   },
+  "resource_review": {
+    "flagged": [
+      {
+        "tempId": "urn:uuid:a842c4bc-f6cb-4555-9741-ac3aec4ef0b8",
+        "resourceType": "Condition",
+        "findings": [
+          {
+            "fieldPath": "onsetDateTime",
+            "value": "2024-01-15",
+            "supported": false,
+            "rationale": "Date is the visit date, not when the condition began."
+          }
+        ]
+      }
+    ]
+  },
   "page_classifications": [
     {
       "page_number": 1,
       "include": true,
-      "reason": "clinical notes with diagnoses"
+      "classification_id": "clinical",
+      "reason": "clinical demographics and diagnosis"
+    },
+    {
+      "page_number": 2,
+      "include": true,
+      "classification_id": "clinical",
+      "reason": "clinical medication details"
+    },
+    {
+      "page_number": 3,
+      "include": false,
+      "classification_id": "admin",
+      "reason": "administrative cover sheet"
     }
   ]
 }

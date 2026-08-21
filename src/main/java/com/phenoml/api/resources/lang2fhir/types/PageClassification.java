@@ -24,6 +24,8 @@ public final class PageClassification {
 
     private final Optional<Boolean> include;
 
+    private final Optional<String> classificationId;
+
     private final Optional<String> reason;
 
     private final Map<String, Object> additionalProperties;
@@ -31,10 +33,12 @@ public final class PageClassification {
     private PageClassification(
             Optional<Integer> pageNumber,
             Optional<Boolean> include,
+            Optional<String> classificationId,
             Optional<String> reason,
             Map<String, Object> additionalProperties) {
         this.pageNumber = pageNumber;
         this.include = include;
+        this.classificationId = classificationId;
         this.reason = reason;
         this.additionalProperties = additionalProperties;
     }
@@ -53,6 +57,14 @@ public final class PageClassification {
     @JsonProperty("include")
     public Optional<Boolean> getInclude() {
         return include;
+    }
+
+    /**
+     * @return Split classification id assigned to the page. Omitted or empty for the ungrouped/default bucket.
+     */
+    @JsonProperty("classification_id")
+    public Optional<String> getClassificationId() {
+        return classificationId;
     }
 
     /**
@@ -75,12 +87,15 @@ public final class PageClassification {
     }
 
     private boolean equalTo(PageClassification other) {
-        return pageNumber.equals(other.pageNumber) && include.equals(other.include) && reason.equals(other.reason);
+        return pageNumber.equals(other.pageNumber)
+                && include.equals(other.include)
+                && classificationId.equals(other.classificationId)
+                && reason.equals(other.reason);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.pageNumber, this.include, this.reason);
+        return Objects.hash(this.pageNumber, this.include, this.classificationId, this.reason);
     }
 
     @java.lang.Override
@@ -98,6 +113,8 @@ public final class PageClassification {
 
         private Optional<Boolean> include = Optional.empty();
 
+        private Optional<String> classificationId = Optional.empty();
+
         private Optional<String> reason = Optional.empty();
 
         @JsonAnySetter
@@ -108,6 +125,7 @@ public final class PageClassification {
         public Builder from(PageClassification other) {
             pageNumber(other.getPageNumber());
             include(other.getInclude());
+            classificationId(other.getClassificationId());
             reason(other.getReason());
             return this;
         }
@@ -141,6 +159,20 @@ public final class PageClassification {
         }
 
         /**
+         * <p>Split classification id assigned to the page. Omitted or empty for the ungrouped/default bucket.</p>
+         */
+        @JsonSetter(value = "classification_id", nulls = Nulls.SKIP)
+        public Builder classificationId(Optional<String> classificationId) {
+            this.classificationId = classificationId;
+            return this;
+        }
+
+        public Builder classificationId(String classificationId) {
+            this.classificationId = Optional.ofNullable(classificationId);
+            return this;
+        }
+
+        /**
          * <p>Short LLM-generated explanation of the decision.</p>
          */
         @JsonSetter(value = "reason", nulls = Nulls.SKIP)
@@ -155,7 +187,7 @@ public final class PageClassification {
         }
 
         public PageClassification build() {
-            return new PageClassification(pageNumber, include, reason, additionalProperties);
+            return new PageClassification(pageNumber, include, classificationId, reason, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {

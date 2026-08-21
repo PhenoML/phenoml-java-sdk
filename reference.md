@@ -4514,6 +4514,8 @@ Automatically detects Patient, Condition, MedicationRequest, Observation, and ot
 Resources are linked with proper references (e.g., Conditions reference the Patient).
 
 **Patient identifier handling.** US Core requires `Patient.identifier` (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with `system: "urn:phenoml:lang2fhir-generated-id"` and a UUID `value` so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.
+
+**Split classifications (optional).** `config.split_classifications` is a caller-defined list, not a fixed taxonomy. Choose each classification `id` and write a natural-language `description` for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Classifications with `operation: "group"` keep matching pages and label resources extracted from those pages; classifications with `operation: "drop"` remove matching pages before extraction. The `clinical` and `admin` ids in the example are illustrative, not a fixed set.
 </dd>
 </dl>
 </dd>
@@ -4534,6 +4536,29 @@ client.lang2Fhir().documentMulti(
         .version("R4")
         .content("JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)")
         .provider("medplum")
+        .config(
+            DocumentConfig
+                .builder()
+                .splitClassifications(
+                    Optional.of(
+                        Arrays.asList(
+                            SplitClassification
+                                .builder()
+                                .id("clinical")
+                                .description("Clinical notes, diagnoses, medications, observations, and patient demographics.")
+                                .operation(SplitClassificationOperation.GROUP)
+                                .build(),
+                            SplitClassification
+                                .builder()
+                                .id("admin")
+                                .description("Administrative boilerplate, insurance forms, and cover sheets.")
+                                .operation(SplitClassificationOperation.DROP)
+                                .build()
+                        )
+                    )
+                )
+                .build()
+        )
         .build()
 );
 ```
@@ -4694,10 +4719,11 @@ client.profiles().profiles().list(
 <dd>
 
 Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
-object. All metadata (version, resource type, id, url) is derived from the
+object. Metadata such as version, resource type, and url is read from the
 StructureDefinition; the lowercase StructureDefinition id becomes the
-profile's lookup key. Code system configuration is auto-extracted from the
-snapshot. Optionally group the profile under a named implementation guide.
+profile's lookup key. When id is omitted, a random UUID is assigned. Code
+system configuration is auto-extracted from the snapshot. Optionally group
+the profile under a named implementation guide.
 </dd>
 </dl>
 </dd>

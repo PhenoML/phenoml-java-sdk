@@ -1,3 +1,17 @@
+## [17.11.0] - 2026-08-21
+### Added
+- **`ResourceReview` / `ResourceReviewTarget` / `ResourceReviewTargetFieldsItem`** — new request-config types for auditing extracted FHIR resources by specifying which resource types and field kinds (`codes`, `dates`) to check.
+- **`ResourceReviewResult` / `ResourceReviewFlagged` / `ResourceReviewFinding`** — new response types representing the top-level resource-review outcome, individual flagged FHIR resources, and per-field findings with `fieldPath`, `value`, `supported`, and `rationale`.
+- **`ResourceReviewFindingFieldKind`** — new enum-like type with `CODES` and `DATES` constants and a `Visitor` interface for exhaustive field-kind handling.
+- **`SplitClassification` / `SplitClassificationOperation`** — new types for defining caller-controlled per-page split groups with `id`, `description`, and a `drop` or `group` operation.
+- **`DocumentConfig.splitClassifications()` / `DocumentConfig.resourceReview()`** — new optional builder fields for configuring split classifications and resource review on the document-multi endpoint.
+- **`ICreateMultiResponse.getResourceReview()` / `DocumentMultiResponse.getResourceReview()` / `CreateMultiResponse.getResourceReview()`** — new optional `ResourceReviewResult` field returned in multi-extraction responses when resource review is configured.
+- **`CreateMultiResponseResourcesItem.getGroup()`** — new optional `String` field carrying the split-classification id assigned to each extracted resource.
+- **`PageClassification.getClassificationId()`** — new optional `String` field indicating which split classification was assigned to a page.
+
+### Changed
+- **`ProfileUploadRequest.getStructureDefinition()` Javadoc** — clarifies that omitting `id` from the StructureDefinition causes a random UUID to be assigned rather than deriving it from the canonical URL path segment.
+
 ## [17.10.0] - 2026-07-29
 ### Added
 - **`CodesClient.crosswalk()` / `AsyncCodesClient.crosswalk()`** — new methods that map a source FHIR medical code to one or more target code-system URIs using shared UMLS CUIs.
