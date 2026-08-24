@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiRequestDetectionEffort;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiRequestValidationMethod;
+import com.phenoml.api.resources.lang2fhir.types.ResourceReview;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -35,6 +36,8 @@ public final class CreateMultiRequest {
 
     private final Optional<CreateMultiRequestValidationMethod> validationMethod;
 
+    private final Optional<ResourceReview> resourceReview;
+
     private final Map<String, Object> additionalProperties;
 
     private CreateMultiRequest(
@@ -44,6 +47,7 @@ public final class CreateMultiRequest {
             Optional<String> implementationGuide,
             Optional<CreateMultiRequestDetectionEffort> detectionEffort,
             Optional<CreateMultiRequestValidationMethod> validationMethod,
+            Optional<ResourceReview> resourceReview,
             Map<String, Object> additionalProperties) {
         this.text = text;
         this.version = version;
@@ -51,6 +55,7 @@ public final class CreateMultiRequest {
         this.implementationGuide = implementationGuide;
         this.detectionEffort = detectionEffort;
         this.validationMethod = validationMethod;
+        this.resourceReview = resourceReview;
         this.additionalProperties = additionalProperties;
     }
 
@@ -102,6 +107,11 @@ public final class CreateMultiRequest {
         return validationMethod;
     }
 
+    @JsonProperty("resource_review")
+    public Optional<ResourceReview> getResourceReview() {
+        return resourceReview;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -119,7 +129,8 @@ public final class CreateMultiRequest {
                 && provider.equals(other.provider)
                 && implementationGuide.equals(other.implementationGuide)
                 && detectionEffort.equals(other.detectionEffort)
-                && validationMethod.equals(other.validationMethod);
+                && validationMethod.equals(other.validationMethod)
+                && resourceReview.equals(other.resourceReview);
     }
 
     @java.lang.Override
@@ -130,7 +141,8 @@ public final class CreateMultiRequest {
                 this.provider,
                 this.implementationGuide,
                 this.detectionEffort,
-                this.validationMethod);
+                this.validationMethod,
+                this.resourceReview);
     }
 
     @java.lang.Override
@@ -192,11 +204,17 @@ public final class CreateMultiRequest {
         _FinalStage validationMethod(Optional<CreateMultiRequestValidationMethod> validationMethod);
 
         _FinalStage validationMethod(CreateMultiRequestValidationMethod validationMethod);
+
+        _FinalStage resourceReview(Optional<ResourceReview> resourceReview);
+
+        _FinalStage resourceReview(ResourceReview resourceReview);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder implements TextStage, _FinalStage {
         private String text;
+
+        private Optional<ResourceReview> resourceReview = Optional.empty();
 
         private Optional<CreateMultiRequestValidationMethod> validationMethod = Optional.empty();
 
@@ -221,6 +239,7 @@ public final class CreateMultiRequest {
             implementationGuide(other.getImplementationGuide());
             detectionEffort(other.getDetectionEffort());
             validationMethod(other.getValidationMethod());
+            resourceReview(other.getResourceReview());
             return this;
         }
 
@@ -232,6 +251,19 @@ public final class CreateMultiRequest {
         @JsonSetter("text")
         public _FinalStage text(@NotNull String text) {
             this.text = Objects.requireNonNull(text, "text must not be null");
+            return this;
+        }
+
+        @java.lang.Override
+        public _FinalStage resourceReview(ResourceReview resourceReview) {
+            this.resourceReview = Optional.ofNullable(resourceReview);
+            return this;
+        }
+
+        @java.lang.Override
+        @JsonSetter(value = "resource_review", nulls = Nulls.SKIP)
+        public _FinalStage resourceReview(Optional<ResourceReview> resourceReview) {
+            this.resourceReview = resourceReview;
             return this;
         }
 
@@ -344,6 +376,7 @@ public final class CreateMultiRequest {
                     implementationGuide,
                     detectionEffort,
                     validationMethod,
+                    resourceReview,
                     additionalProperties);
         }
 
