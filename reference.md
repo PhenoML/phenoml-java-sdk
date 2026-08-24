@@ -4245,6 +4245,14 @@ client.lang2Fhir().createMulti(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**resourceReview:** `Optional<ResourceReview>` 
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
