@@ -1,3 +1,11 @@
+## [17.12.0] - 2026-08-24
+### Added
+- **`SplitClassification` / `SplitClassificationOperation`** — new types for defining caller-controlled per-page split groups with `id`, `description`, and a `group` or `drop` operation.
+- **`ResourceReview` / `ResourceReviewTarget` / `ResourceReviewResult` / `ResourceReviewFlagged` / `ResourceReviewFinding`** — new types for the opt-in faithfulness audit that checks whether extracted FHIR resource fields are supported by the source document.
+- **`DocumentConfig.splitClassifications()` / `DocumentConfig.resourceReview()`** — new optional builder fields for configuring split classifications and resource review on the document-multi endpoint.
+- **`CreateMultiRequest.getResourceReview()` / `resourceReview()`** — new optional `ResourceReview` builder field on the single-document multi request.
+- **`CreateMultiResponseResourcesItem.getGroup()`** and **`PageClassification.getClassificationId()`** — new optional `String` fields carrying the split-classification id assigned to each extracted resource and page, respectively.
+
 ## [17.11.0] - 2026-08-21
 ### Added
 - **`ResourceReview` / `ResourceReviewTarget` / `ResourceReviewTargetFieldsItem`** — new request-config types for auditing extracted FHIR resources by specifying which resource types and field kinds (`codes`, `dates`) to check.
