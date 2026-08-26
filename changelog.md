@@ -1,3 +1,12 @@
+## [17.13.0] - 2026-08-26
+### Added
+- **`PatientReference`** — new type with required `system` (identifier namespace) and `value` (identifier value) fields, constructed via a staged builder.
+- **`CreateMultiRequest.getPatientReference()` / `patientReference()`** — new optional builder field for attaching a patient identifier to text-based multi-extraction requests.
+- **`DocumentMultiRequest.getPatientReference()` / `patientReference()`** — new optional builder field for attaching a patient identifier to document-based multi-extraction requests.
+
+### Changed
+- **`ResourceReview`** — now honored by the `/lang2fhir/create/multi` endpoint in addition to `/lang2fhir/document/multi`; the `targets` array is also now constrained to between 1 and 25 items.
+
 ## [17.12.0] - 2026-08-24
 ### Added
 - **`SplitClassification` / `SplitClassificationOperation`** — new types for defining caller-controlled per-page split groups with `id`, `description`, and a `group` or `drop` operation.
