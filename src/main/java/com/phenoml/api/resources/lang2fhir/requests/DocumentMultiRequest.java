@@ -15,6 +15,7 @@ import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.lang2fhir.types.DocumentConfig;
 import com.phenoml.api.resources.lang2fhir.types.DocumentMultiRequestDetectionEffort;
 import com.phenoml.api.resources.lang2fhir.types.DocumentMultiRequestValidationMethod;
+import com.phenoml.api.resources.lang2fhir.types.PatientReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -30,6 +31,8 @@ public final class DocumentMultiRequest {
 
     private final Optional<String> provider;
 
+    private final Optional<PatientReference> patientReference;
+
     private final Optional<String> implementationGuide;
 
     private final Optional<DocumentMultiRequestDetectionEffort> detectionEffort;
@@ -44,6 +47,7 @@ public final class DocumentMultiRequest {
             String version,
             String content,
             Optional<String> provider,
+            Optional<PatientReference> patientReference,
             Optional<String> implementationGuide,
             Optional<DocumentMultiRequestDetectionEffort> detectionEffort,
             Optional<DocumentMultiRequestValidationMethod> validationMethod,
@@ -52,6 +56,7 @@ public final class DocumentMultiRequest {
         this.version = version;
         this.content = content;
         this.provider = provider;
+        this.patientReference = patientReference;
         this.implementationGuide = implementationGuide;
         this.detectionEffort = detectionEffort;
         this.validationMethod = validationMethod;
@@ -83,6 +88,11 @@ public final class DocumentMultiRequest {
     @JsonProperty("provider")
     public Optional<String> getProvider() {
         return provider;
+    }
+
+    @JsonProperty("patient_reference")
+    public Optional<PatientReference> getPatientReference() {
+        return patientReference;
     }
 
     /**
@@ -129,6 +139,7 @@ public final class DocumentMultiRequest {
         return version.equals(other.version)
                 && content.equals(other.content)
                 && provider.equals(other.provider)
+                && patientReference.equals(other.patientReference)
                 && implementationGuide.equals(other.implementationGuide)
                 && detectionEffort.equals(other.detectionEffort)
                 && validationMethod.equals(other.validationMethod)
@@ -141,6 +152,7 @@ public final class DocumentMultiRequest {
                 this.version,
                 this.content,
                 this.provider,
+                this.patientReference,
                 this.implementationGuide,
                 this.detectionEffort,
                 this.validationMethod,
@@ -188,6 +200,10 @@ public final class DocumentMultiRequest {
 
         _FinalStage provider(String provider);
 
+        _FinalStage patientReference(Optional<PatientReference> patientReference);
+
+        _FinalStage patientReference(PatientReference patientReference);
+
         /**
          * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
          */
@@ -228,6 +244,8 @@ public final class DocumentMultiRequest {
 
         private Optional<String> implementationGuide = Optional.empty();
 
+        private Optional<PatientReference> patientReference = Optional.empty();
+
         private Optional<String> provider = Optional.empty();
 
         @JsonAnySetter
@@ -240,6 +258,7 @@ public final class DocumentMultiRequest {
             version(other.getVersion());
             content(other.getContent());
             provider(other.getProvider());
+            patientReference(other.getPatientReference());
             implementationGuide(other.getImplementationGuide());
             detectionEffort(other.getDetectionEffort());
             validationMethod(other.getValidationMethod());
@@ -344,6 +363,19 @@ public final class DocumentMultiRequest {
             return this;
         }
 
+        @java.lang.Override
+        public _FinalStage patientReference(PatientReference patientReference) {
+            this.patientReference = Optional.ofNullable(patientReference);
+            return this;
+        }
+
+        @java.lang.Override
+        @JsonSetter(value = "patient_reference", nulls = Nulls.SKIP)
+        public _FinalStage patientReference(Optional<PatientReference> patientReference) {
+            this.patientReference = patientReference;
+            return this;
+        }
+
         /**
          * <p>Optional FHIR provider name for provider-specific profiles</p>
          * @return Reference to {@code this} so that method calls can be chained together.
@@ -370,6 +402,7 @@ public final class DocumentMultiRequest {
                     version,
                     content,
                     provider,
+                    patientReference,
                     implementationGuide,
                     detectionEffort,
                     validationMethod,

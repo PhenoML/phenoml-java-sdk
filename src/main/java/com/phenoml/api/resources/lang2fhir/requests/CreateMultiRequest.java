@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiRequestDetectionEffort;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiRequestValidationMethod;
+import com.phenoml.api.resources.lang2fhir.types.PatientReference;
 import com.phenoml.api.resources.lang2fhir.types.ResourceReview;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,8 @@ public final class CreateMultiRequest {
 
     private final Optional<String> provider;
 
+    private final Optional<PatientReference> patientReference;
+
     private final Optional<String> implementationGuide;
 
     private final Optional<CreateMultiRequestDetectionEffort> detectionEffort;
@@ -44,6 +47,7 @@ public final class CreateMultiRequest {
             String text,
             Optional<String> version,
             Optional<String> provider,
+            Optional<PatientReference> patientReference,
             Optional<String> implementationGuide,
             Optional<CreateMultiRequestDetectionEffort> detectionEffort,
             Optional<CreateMultiRequestValidationMethod> validationMethod,
@@ -52,6 +56,7 @@ public final class CreateMultiRequest {
         this.text = text;
         this.version = version;
         this.provider = provider;
+        this.patientReference = patientReference;
         this.implementationGuide = implementationGuide;
         this.detectionEffort = detectionEffort;
         this.validationMethod = validationMethod;
@@ -81,6 +86,11 @@ public final class CreateMultiRequest {
     @JsonProperty("provider")
     public Optional<String> getProvider() {
         return provider;
+    }
+
+    @JsonProperty("patient_reference")
+    public Optional<PatientReference> getPatientReference() {
+        return patientReference;
     }
 
     /**
@@ -127,6 +137,7 @@ public final class CreateMultiRequest {
         return text.equals(other.text)
                 && version.equals(other.version)
                 && provider.equals(other.provider)
+                && patientReference.equals(other.patientReference)
                 && implementationGuide.equals(other.implementationGuide)
                 && detectionEffort.equals(other.detectionEffort)
                 && validationMethod.equals(other.validationMethod)
@@ -139,6 +150,7 @@ public final class CreateMultiRequest {
                 this.text,
                 this.version,
                 this.provider,
+                this.patientReference,
                 this.implementationGuide,
                 this.detectionEffort,
                 this.validationMethod,
@@ -184,6 +196,10 @@ public final class CreateMultiRequest {
 
         _FinalStage provider(String provider);
 
+        _FinalStage patientReference(Optional<PatientReference> patientReference);
+
+        _FinalStage patientReference(PatientReference patientReference);
+
         /**
          * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
          */
@@ -222,6 +238,8 @@ public final class CreateMultiRequest {
 
         private Optional<String> implementationGuide = Optional.empty();
 
+        private Optional<PatientReference> patientReference = Optional.empty();
+
         private Optional<String> provider = Optional.empty();
 
         private Optional<String> version = Optional.empty();
@@ -236,6 +254,7 @@ public final class CreateMultiRequest {
             text(other.getText());
             version(other.getVersion());
             provider(other.getProvider());
+            patientReference(other.getPatientReference());
             implementationGuide(other.getImplementationGuide());
             detectionEffort(other.getDetectionEffort());
             validationMethod(other.getValidationMethod());
@@ -327,6 +346,19 @@ public final class CreateMultiRequest {
             return this;
         }
 
+        @java.lang.Override
+        public _FinalStage patientReference(PatientReference patientReference) {
+            this.patientReference = Optional.ofNullable(patientReference);
+            return this;
+        }
+
+        @java.lang.Override
+        @JsonSetter(value = "patient_reference", nulls = Nulls.SKIP)
+        public _FinalStage patientReference(Optional<PatientReference> patientReference) {
+            this.patientReference = patientReference;
+            return this;
+        }
+
         /**
          * <p>Optional FHIR provider name for provider-specific profiles</p>
          * @return Reference to {@code this} so that method calls can be chained together.
@@ -373,6 +405,7 @@ public final class CreateMultiRequest {
                     text,
                     version,
                     provider,
+                    patientReference,
                     implementationGuide,
                     detectionEffort,
                     validationMethod,
