@@ -4225,6 +4225,14 @@ client.lang2Fhir().createMulti(
 <dl>
 <dd>
 
+**patientReference:** `Optional<PatientReference>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **implementationGuide:** `Optional<String>` — Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.
     
 </dd>
@@ -4604,6 +4612,14 @@ File type is auto-detected from content magic bytes.
 <dd>
 
 **provider:** `Optional<String>` — Optional FHIR provider name for provider-specific profiles
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**patientReference:** `Optional<PatientReference>` 
     
 </dd>
 </dl>
