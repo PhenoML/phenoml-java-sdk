@@ -1,3 +1,21 @@
+## [18.0.0] - 2026-08-27
+### Breaking Changes
+- **`ProfileGetResponse` and `ProfileSummary` getters** — return types changed from `Optional<T>` to bare `T` (e.g., `getId()`, `getSource()`, `getUrl()`, `getCreatedAt()`, etc.); remove any `.get()`, `.orElse()`, or `.isPresent()` unwrapping calls and use the value directly.
+- **`ProfileGetResponse.builder()` and `ProfileSummary.builder()`** — now return a staged `IdStage` builder instead of the free-form `Builder`; update call sites to supply required fields in the enforced order via the staged builder chain.
+- **`IProfileSummary`** — all previously `Optional<T>` getter contracts changed to bare `T`, and three new required methods (`getCanonical()`, `getStatus()`, `getDate()`) were added; any class implementing this interface must be updated.
+- **`ProfileListResponse.getProfiles()`** — return type changed from `Optional<List<ProfileSummary>>` to `List<ProfileSummary>`; remove Optional unwrapping at call sites.
+
+### Added
+- **`ProfileGetResponse.getCanonical()` / `ProfileSummary.getCanonical()`** — new required `String` field carrying the canonical profile reference, including the version pin when present.
+- **`ProfileGetResponse.getStatus()` / `getDate()` / `ProfileSummary.getStatus()` / `getDate()`** — new optional `String` fields exposing the StructureDefinition publication status and authored date.
+- **`VersionsClient`, `AsyncVersionsClient`, and `RawVersionsClient`** — new sub-clients for managing immutable retained StructureDefinition versions on custom FHIR profiles, accessible via `ProfilesClient.versions()` / `AsyncProfilesClient.versions()`; expose `list()`, `create()`, `get()`, and `delete()` operations.
+- **`ProfileVersionListResponse`** — new response type returned by `VersionsClient.list()` containing all retained versions for a given profile.
+- **`ConflictError`** — new HTTP 409 exception thrown by `ProfilesClient.update()` and `VersionsClient.create()` when a version conflict is detected.
+
+### Changed
+- **`ProfilesClient.list()` / `RawProfilesClient.list()` / `AsyncRawProfilesClient.list()`** — Javadoc updated to document pinned (`url|version`) vs. unpinned (`url`) filter behaviour.
+- **`ProfilesClient.update()` / `RawProfilesClient.update()`** — Javadoc updated to clarify retained-version and canonical-URL constraints.
+
 ## [17.13.0] - 2026-08-26
 ### Added
 - **`PatientReference`** — new staged-builder type with required `system` (identifier namespace) and `value` (identifier value) fields for supplying a structured patient identifier on extraction requests.
