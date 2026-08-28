@@ -4683,7 +4683,12 @@ JSON is omitted from each entry; fetch a single profile by id to retrieve it.
 The `url` query parameter filters by canonical URL. The canonical URL is the
 stable key other platform features use to reference a profile (FHIR's
 `meta.profile`, `baseDefinition`), since StructureDefinition ids are only
-unique within a package. A non-matching filter returns an empty list, not a 404.
+unique within a package. An unpinned `url` filter returns metadata for
+the profile's current StructureDefinition. Pinned `url|version` filters
+resolve a retained version when present; otherwise they can fall back to
+the profile's current StructureDefinition, whose content can change
+through the profile update endpoint. A non-matching filter returns an
+empty list, not a 404.
 </dd>
 </dl>
 </dd>
@@ -4718,7 +4723,7 @@ client.profiles().profiles().list(
 <dl>
 <dd>
 
-**url:** `Optional<String>` — Filter by canonical URL. Accepts the FHIR pinned form `url|version` (split on the last `|`); the bare form matches the current version.
+**url:** `Optional<String>` — Filter by canonical URL. Accepts the FHIR pinned form `url|version`; without a version pin, returns the profile's current StructureDefinition metadata.
     
 </dd>
 </dl>
@@ -4745,9 +4750,8 @@ client.profiles().profiles().list(
 Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
 object. Metadata such as version, resource type, and url is read from the
 StructureDefinition; the lowercase StructureDefinition id becomes the
-profile's lookup key. When id is omitted, a random UUID is assigned. Code
-system configuration is auto-extracted from the snapshot. Optionally group
-the profile under a named implementation guide.
+profile's lookup key. When id is omitted, a random UUID is assigned.
+Optionally group the profile under a named implementation guide.
 </dd>
 </dl>
 </dd>
@@ -4767,9 +4771,28 @@ client.profiles().profiles().create(
         .builder()
         .structureDefinition(
             new HashMap<String, Object>() {{
-                put("key", "value");
+                put("resourceType", "StructureDefinition");
+                put("id", "custom-patient");
+                put("url", "http://phenoml.com/fhir/StructureDefinition/custom-patient");
+                put("name", "CustomPatient");
+                put("status", "active");
+                put("fhirVersion", "4.0.1");
+                put("kind", "resource");
+                put("abstract", false);
+                put("type", "Patient");
+                put("baseDefinition", "http://hl7.org/fhir/StructureDefinition/Patient");
+                put("derivation", "constraint");
+                put("snapshot", new 
+                HashMap<String, Object>() {{put("element", new ArrayList<Object>(Arrays.asList(new 
+                    HashMap<String, Object>() {{put("id", "Patient");
+                        put("path", "Patient");
+                        put("min", 0);
+                        put("max", "*");
+                    }})));
+                }});
             }}
         )
+        .implementationGuide("acme-cardiology")
         .build()
 );
 ```
@@ -4810,7 +4833,8 @@ client.profiles().profiles().create(
 <dl>
 <dd>
 
-Returns a single custom profile by id, including its full StructureDefinition JSON.
+Returns a single custom profile by id, including its full StructureDefinition
+JSON.
 </dd>
 </dl>
 </dd>
@@ -4868,10 +4892,12 @@ Replaces an existing custom profile with a new StructureDefinition. The
 `id` path parameter is authoritative: if the StructureDefinition includes
 an `id` it must match the path parameter, and if it omits one the path
 parameter is used. The FHIR resource type of the profile cannot change.
-Code system configuration is
-re-derived from the new StructureDefinition. When `implementation_guide` is
-omitted, the profile keeps its existing implementation guide. The instance
-stores a single version per canonical URL, so this replaces it in place.
+When `implementation_guide` is omitted, the profile keeps its existing
+implementation guide. A retained version string is allowed only when
+re-submitting the profile's current version with an unchanged
+StructureDefinition; otherwise it returns a conflict. While the profile
+has retained versions, its
+canonical URL cannot be changed.
 </dd>
 </dl>
 </dd>
@@ -4892,9 +4918,28 @@ client.profiles().profiles().update(
         .builder()
         .structureDefinition(
             new HashMap<String, Object>() {{
-                put("key", "value");
+                put("resourceType", "StructureDefinition");
+                put("id", "custom-patient");
+                put("url", "http://phenoml.com/fhir/StructureDefinition/custom-patient");
+                put("name", "CustomPatient");
+                put("status", "active");
+                put("fhirVersion", "4.0.1");
+                put("kind", "resource");
+                put("abstract", false);
+                put("type", "Patient");
+                put("baseDefinition", "http://hl7.org/fhir/StructureDefinition/Patient");
+                put("derivation", "constraint");
+                put("snapshot", new 
+                HashMap<String, Object>() {{put("element", new ArrayList<Object>(Arrays.asList(new 
+                    HashMap<String, Object>() {{put("id", "Patient");
+                        put("path", "Patient");
+                        put("min", 0);
+                        put("max", "*");
+                    }})));
+                }});
             }}
         )
+        .implementationGuide("acme-cardiology")
         .build()
 );
 ```
@@ -4943,7 +4988,9 @@ client.profiles().profiles().update(
 <dl>
 <dd>
 
-Permanently deletes a custom profile by id.
+Permanently deletes a custom profile by id. This also deletes all retained
+versions for that profile so the canonical URL can be reused by a later
+upload.
 </dd>
 </dl>
 </dd>
@@ -4974,6 +5021,266 @@ client.profiles().profiles().delete("custom-patient");
 <dd>
 
 **id:** `String` — The lowercase StructureDefinition id of the custom profile.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Profiles Versions
+<details><summary><code>client.profiles.versions.list(id) -> ProfileVersionListResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns retained versions for a custom profile.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.profiles().versions().list("custom-patient");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The lowercase StructureDefinition id of the custom profile.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.profiles.versions.create(id, request) -> ProfileSummary</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Adds an immutable StructureDefinition version to a custom profile. If
+the profile does not exist, it is created from the submitted version.
+The StructureDefinition must include a non-empty `version`; its
+canonical URL and resource type must match the profile when one already
+exists. If it includes an `id`, that id must match the path parameter;
+if it omits `id`, the path parameter is used. Profiles created through
+this endpoint are grouped under `custom`. Posting the profile's current
+StructureDefinition unchanged retains it as a version.
+Version strings may contain letters, numbers, and the punctuation
+characters `.`, `_`, `~`, `+`, and `-`; they cannot be exactly `.` or
+`..`. Each profile can retain up to 250 versions; delete old
+versions before adding more.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.profiles().versions().create(
+    "custom-patient",
+    new HashMap<String, Object>() {{
+        put("key", "value");
+    }}
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The lowercase StructureDefinition id of the custom profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `Map<String, Object>` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.profiles.versions.get(id, version) -> ProfileGetResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns metadata and the full StructureDefinition for one retained
+version. The returned StructureDefinition's id is the profile id. The
+path version is the authored `StructureDefinition.version` value.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.profiles().versions().get("custom-patient", "2.0.0");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The lowercase StructureDefinition id of the custom profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `String` — The authored StructureDefinition.version. It may contain letters, numbers, and the punctuation characters `.`, `_`, `~`, `+`, and `-`; it cannot be exactly `.` or `..`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.profiles.versions.delete(id, version)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes one retained version from a custom profile. The path
+version is the authored `StructureDefinition.version` value.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.profiles().versions().delete("custom-patient", "2.0.0");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The lowercase StructureDefinition id of the custom profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `String` — The authored StructureDefinition.version. It may contain letters, numbers, and the punctuation characters `.`, `_`, `~`, `+`, and `-`; it cannot be exactly `.` or `..`.
     
 </dd>
 </dl>

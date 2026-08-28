@@ -1,3 +1,17 @@
+## [18.0.0] - 2026-08-28
+### Breaking Changes
+- **`ProfileGetResponse` and `ProfileSummary` getters** — all getters that previously returned `Optional<T>` (e.g. `getId()`, `getSource()`, `getUrl()`, `getVersion()`, `getFhirVersion()`, `getCreatedAt()`, `getUpdatedAt()`, etc.) now return the unwrapped type directly; remove any `.get()` / `.orElse()` unwrapping at call sites.
+- **`ProfileGetResponse.builder()` and `ProfileSummary.builder()`** — now return a staged `IdStage` interface instead of a plain `Builder`; update any code that stored or passed a `Builder` reference to use the new staged-builder interfaces (`IdStage` → … → `_FinalStage`).
+- **`ProfileListResponse.getProfiles()`** — changed return type from `Optional<List<ProfileSummary>>` to `List<ProfileSummary>`; remove `Optional` unwrapping at call sites and replace the `Optional`-accepting `Builder.profiles()` overload with a plain `List<ProfileSummary>`.
+- **`IProfileSummary`** — all getters now return bare types instead of `Optional<T>`, and a new required method `getCanonical()` (returns `String`) has been added; custom implementations must remove `Optional` wrapping and implement `getCanonical()`.
+
+### Added
+- **`getCanonical()`, `getStatus()`, and `getDate()`** — new fields on `ProfileGetResponse`, `ProfileSummary`, and `IProfileSummary` carrying the canonical profile reference, FHIR publication status, and authored publication date respectively.
+- **`VersionsClient` / `AsyncVersionsClient` / `RawVersionsClient`** — new clients for managing immutable StructureDefinition versions pinned to a custom profile, exposing `list()`, `create()`, `get()`, and `delete()` operations; accessible via `ProfilesClient.versions()` and `AsyncProfilesClient.versions()`.
+- **`ProfileVersionListResponse`** — new response type wrapping the `List<ProfileSummary>` returned by `VersionsClient.list()`.
+- **`ConflictError`** — new HTTP 409 exception thrown by `ProfilesClient.update()`, `AsyncProfilesClient.update()`, and `VersionsClient.create()` on retained-version conflicts.
+- **`ProfileListResponse.Builder.addProfiles()` / `addAllProfiles()`** — new convenience builder methods for appending individual or multiple `ProfileSummary` items.
+
 ## [17.13.0] - 2026-08-26
 ### Added
 - **`PatientReference`** — new staged-builder type with required `system` (identifier namespace) and `value` (identifier value) fields for supplying a structured patient identifier on extraction requests.
