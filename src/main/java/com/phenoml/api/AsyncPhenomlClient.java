@@ -14,6 +14,7 @@ import com.phenoml.api.resources.fhir2omop.AsyncFhir2OmopClient;
 import com.phenoml.api.resources.fhirprovider.AsyncFhirProviderClient;
 import com.phenoml.api.resources.implementationguides.AsyncImplementationGuidesClient;
 import com.phenoml.api.resources.lang2fhir.AsyncLang2FhirClient;
+import com.phenoml.api.resources.lang2fhirbatch.AsyncLang2FhirBatchClient;
 import com.phenoml.api.resources.profiles.AsyncProfilesClient;
 import com.phenoml.api.resources.summary.AsyncSummaryClient;
 import com.phenoml.api.resources.tools.AsyncToolsClient;
@@ -42,6 +43,8 @@ public class AsyncPhenomlClient {
 
     protected final Supplier<AsyncLang2FhirClient> lang2FhirClient;
 
+    protected final Supplier<AsyncLang2FhirBatchClient> lang2FhirBatchClient;
+
     protected final Supplier<AsyncProfilesClient> profilesClient;
 
     protected final Supplier<AsyncSummaryClient> summaryClient;
@@ -63,6 +66,7 @@ public class AsyncPhenomlClient {
         this.fhirProviderClient = Suppliers.memoize(() -> new AsyncFhirProviderClient(clientOptions));
         this.implementationGuidesClient = Suppliers.memoize(() -> new AsyncImplementationGuidesClient(clientOptions));
         this.lang2FhirClient = Suppliers.memoize(() -> new AsyncLang2FhirClient(clientOptions));
+        this.lang2FhirBatchClient = Suppliers.memoize(() -> new AsyncLang2FhirBatchClient(clientOptions));
         this.profilesClient = Suppliers.memoize(() -> new AsyncProfilesClient(clientOptions));
         this.summaryClient = Suppliers.memoize(() -> new AsyncSummaryClient(clientOptions));
         this.toolsClient = Suppliers.memoize(() -> new AsyncToolsClient(clientOptions));
@@ -104,6 +108,10 @@ public class AsyncPhenomlClient {
 
     public AsyncLang2FhirClient lang2Fhir() {
         return this.lang2FhirClient.get();
+    }
+
+    public AsyncLang2FhirBatchClient lang2FhirBatch() {
+        return this.lang2FhirBatchClient.get();
     }
 
     public AsyncProfilesClient profiles() {
