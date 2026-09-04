@@ -4663,6 +4663,544 @@ File type is auto-detected from content magic bytes.
 </dl>
 </details>
 
+## Lang2FhirBatch
+<details><summary><code>client.lang2FhirBatch.list() -> JobListResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a page of the instance's batch jobs, newest first, without
+per-job counts. Jobs are shared across the instance's credentials, so
+this lists every batch job on the instance, not just the calling
+credential's.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.lang2FhirBatch().list(
+    ListRequest
+        .builder()
+        .cursor("cursor")
+        .limit(1)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**cursor:** `Optional<String>` — Opaque pagination cursor from a previous page's next_cursor.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Page size. Defaults to 20; values above 100 are clamped to 100.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.lang2FhirBatch.create(request) -> BatchJob</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Opens an empty batch job. Items arrive on later upload calls and the set
+is sealed at finalize.
+
+Supplying `request_id` makes the create idempotent on that token: a
+retried submit whose response was lost returns the original job rather
+than opening a second one. This dedupe is scoped to the calling
+credential.
+
+An instance may hold at most 4 active (pending or processing) jobs at
+once; a create past that limit returns `409`. The limit is instance-wide
+— jobs are shared across the instance's credentials — so another
+credential's jobs count against it.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.lang2FhirBatch().create(
+    CreateBatchRequest
+        .builder()
+        .requestId("submit-2025-09-02-batch-001")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**requestId:** `Optional<String>` 
+
+Optional client idempotency token. A retried create with the same
+token returns the original job instead of opening a second one.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.lang2FhirBatch.uploadItem(jobId, request) -> UploadItemResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Stores one item of a job from a multipart upload. A batch's items arrive
+one per request. The item carries **either** a `document` extraction
+(whose input file rides as raw bytes in the `file` part) **or** a
+`create` extraction (JSON only, no file).
+
+The upload enforces these rules:
+- Set **exactly one** of `document` or `create`. Setting both, or
+  neither, is a `400`.
+- When `document` is set, `file` is **required** — it supplies the
+  document's binary content (PDF or image).
+- When `create` is set, `file` is **forbidden** — a create item carries
+  no file.
+- `document` and `create` must each be a JSON **object**.
+
+Only the item's structure is checked here: the fields inside `document`
+or `create` are not validated at upload. A body that is well-formed JSON
+but not a valid request for its endpoint is still accepted with `202`
+and fails later during processing, recorded as an item `error`. A
+wrong-typed field the endpoint cannot decode fails as `invalid_input`; a
+body that decodes but the pipeline rejects (for example, a missing
+required field) fails as `processing_failed`.
+
+Supplying `request_id` makes the upload idempotent on that token. A
+re-upload under the same token overwrites the same item rather than
+adding a second, so a client that lost an upload's response can safely
+re-send it. The response's `deduplicated` is `true` only when the
+re-uploaded payload matches the one already stored; a same-token upload
+with a changed payload overwrites in place and returns `false`.
+
+Set a `request_id` on **every** upload: re-sending under the same token
+is the only way to repair a lost or incomplete upload, including the one
+a finalize `409` reports. Without one, a re-send adds a new item instead
+of replacing the missing one, and the job cannot be finalized.
+
+Uploads are rejected once the job has been finalized (`409`), once it
+holds its 500-item limit (`409`), or when the item is too large (`413` —
+see the raw-file limit in the API description).
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.lang2FhirBatch().uploadItem(
+    "job_id",
+    null,
+    UploadItemRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**jobId:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.lang2FhirBatch.finalize(jobId) -> BatchJob</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Seals the job's item set and starts processing. Takes no request body.
+Finalize is idempotent: a retried finalize succeeds again.
+
+If a previous upload did not complete, finalize returns a `409`; re-send
+the missing upload (with the same `request_id`), then finalize.
+Finalizing a job with no items is a `400`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.lang2FhirBatch().finalize("job_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**jobId:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.lang2FhirBatch.get(jobId) -> JobDetailResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a job's record, its per-status item counts, and one page of
+per-item statuses.
+
+Items are listed in a stable order that is not upload order and is the
+same across pages. Match each entry to your own records by its `id`
+(your correlation label) or `item_id` (from the upload response),
+never by position.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.lang2FhirBatch().get(
+    "job_id",
+    GetRequest
+        .builder()
+        .cursor("cursor")
+        .limit(1)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**jobId:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `Optional<String>` — Opaque pagination cursor from a previous page's next_cursor.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Page size for the item-status page. Defaults to 20; values above 100 are clamped to 100.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.lang2FhirBatch.getResults(jobId) -> ResultsPageResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+A lighter status page. Returns the same per-item status entries as
+`GET /lang2fhir/batch/{job_id}`, but without the job record or counts,
+and the entries carry `result_size` rather than any result content. Use
+each entry's `item_id` to fetch that item's result from
+`GET /lang2fhir/batch/{job_id}/results/{item_id}`.
+
+Entries are listed in a stable order that is not upload order and is
+the same across pages. Match each entry to your own records by its `id`
+(your correlation label) or `item_id` (from the upload response),
+never by position.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.lang2FhirBatch().getResults(
+    "job_id",
+    GetResultsRequest
+        .builder()
+        .cursor("cursor")
+        .limit(1)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**jobId:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `Optional<String>` — Opaque pagination cursor from a previous page's next_cursor.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Page size. Defaults to 20; values above 100 are clamped to 100.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.lang2FhirBatch.getResult(jobId, itemId) -> Map&amp;lt;String, Object&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Streams one item's stored result bytes verbatim as `application/json`.
+The body is the response the item's synchronous multi endpoint would have
+returned — a `DocumentMultiResponse` for a document item or a
+`CreateMultiResponse` for a create item.
+
+Only a succeeded item has a result: an item that has not succeeded
+(pending, processing, or failed) is a `409`, and a result that has
+expired is a `404`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.lang2FhirBatch().getResult("job_id", "item_id");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**jobId:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**itemId:** `String` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Profiles
 <details><summary><code>client.profiles.profiles.list() -> ProfileListResponse</code></summary>
 <dl>
@@ -4683,7 +5221,12 @@ JSON is omitted from each entry; fetch a single profile by id to retrieve it.
 The `url` query parameter filters by canonical URL. The canonical URL is the
 stable key other platform features use to reference a profile (FHIR's
 `meta.profile`, `baseDefinition`), since StructureDefinition ids are only
-unique within a package. A non-matching filter returns an empty list, not a 404.
+unique within a package. An unpinned `url` filter returns metadata for
+the profile's current StructureDefinition. Pinned `url|version` filters
+resolve a retained version when present; otherwise they can fall back to
+the profile's current StructureDefinition, whose content can change
+through the profile update endpoint. A non-matching filter returns an
+empty list, not a 404.
 </dd>
 </dl>
 </dd>
@@ -4718,7 +5261,7 @@ client.profiles().profiles().list(
 <dl>
 <dd>
 
-**url:** `Optional<String>` — Filter by canonical URL. Accepts the FHIR pinned form `url|version` (split on the last `|`); the bare form matches the current version.
+**url:** `Optional<String>` — Filter by canonical URL. Accepts the FHIR pinned form `url|version`; without a version pin, returns the profile's current StructureDefinition metadata.
     
 </dd>
 </dl>
@@ -4745,9 +5288,8 @@ client.profiles().profiles().list(
 Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
 object. Metadata such as version, resource type, and url is read from the
 StructureDefinition; the lowercase StructureDefinition id becomes the
-profile's lookup key. When id is omitted, a random UUID is assigned. Code
-system configuration is auto-extracted from the snapshot. Optionally group
-the profile under a named implementation guide.
+profile's lookup key. When id is omitted, a random UUID is assigned.
+Optionally group the profile under a named implementation guide.
 </dd>
 </dl>
 </dd>
@@ -4767,9 +5309,28 @@ client.profiles().profiles().create(
         .builder()
         .structureDefinition(
             new HashMap<String, Object>() {{
-                put("key", "value");
+                put("resourceType", "StructureDefinition");
+                put("id", "custom-patient");
+                put("url", "http://phenoml.com/fhir/StructureDefinition/custom-patient");
+                put("name", "CustomPatient");
+                put("status", "active");
+                put("fhirVersion", "4.0.1");
+                put("kind", "resource");
+                put("abstract", false);
+                put("type", "Patient");
+                put("baseDefinition", "http://hl7.org/fhir/StructureDefinition/Patient");
+                put("derivation", "constraint");
+                put("snapshot", new 
+                HashMap<String, Object>() {{put("element", new ArrayList<Object>(Arrays.asList(new 
+                    HashMap<String, Object>() {{put("id", "Patient");
+                        put("path", "Patient");
+                        put("min", 0);
+                        put("max", "*");
+                    }})));
+                }});
             }}
         )
+        .implementationGuide("acme-cardiology")
         .build()
 );
 ```
@@ -4810,7 +5371,8 @@ client.profiles().profiles().create(
 <dl>
 <dd>
 
-Returns a single custom profile by id, including its full StructureDefinition JSON.
+Returns a single custom profile by id, including its full StructureDefinition
+JSON.
 </dd>
 </dl>
 </dd>
@@ -4868,10 +5430,12 @@ Replaces an existing custom profile with a new StructureDefinition. The
 `id` path parameter is authoritative: if the StructureDefinition includes
 an `id` it must match the path parameter, and if it omits one the path
 parameter is used. The FHIR resource type of the profile cannot change.
-Code system configuration is
-re-derived from the new StructureDefinition. When `implementation_guide` is
-omitted, the profile keeps its existing implementation guide. The instance
-stores a single version per canonical URL, so this replaces it in place.
+When `implementation_guide` is omitted, the profile keeps its existing
+implementation guide. A retained version string is allowed only when
+re-submitting the profile's current version with an unchanged
+StructureDefinition; otherwise it returns a conflict. While the profile
+has retained versions, its
+canonical URL cannot be changed.
 </dd>
 </dl>
 </dd>
@@ -4892,9 +5456,28 @@ client.profiles().profiles().update(
         .builder()
         .structureDefinition(
             new HashMap<String, Object>() {{
-                put("key", "value");
+                put("resourceType", "StructureDefinition");
+                put("id", "custom-patient");
+                put("url", "http://phenoml.com/fhir/StructureDefinition/custom-patient");
+                put("name", "CustomPatient");
+                put("status", "active");
+                put("fhirVersion", "4.0.1");
+                put("kind", "resource");
+                put("abstract", false);
+                put("type", "Patient");
+                put("baseDefinition", "http://hl7.org/fhir/StructureDefinition/Patient");
+                put("derivation", "constraint");
+                put("snapshot", new 
+                HashMap<String, Object>() {{put("element", new ArrayList<Object>(Arrays.asList(new 
+                    HashMap<String, Object>() {{put("id", "Patient");
+                        put("path", "Patient");
+                        put("min", 0);
+                        put("max", "*");
+                    }})));
+                }});
             }}
         )
+        .implementationGuide("acme-cardiology")
         .build()
 );
 ```
@@ -4943,7 +5526,9 @@ client.profiles().profiles().update(
 <dl>
 <dd>
 
-Permanently deletes a custom profile by id.
+Permanently deletes a custom profile by id. This also deletes all retained
+versions for that profile so the canonical URL can be reused by a later
+upload.
 </dd>
 </dl>
 </dd>
@@ -4974,6 +5559,266 @@ client.profiles().profiles().delete("custom-patient");
 <dd>
 
 **id:** `String` — The lowercase StructureDefinition id of the custom profile.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Profiles Versions
+<details><summary><code>client.profiles.versions.list(id) -> ProfileVersionListResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns retained versions for a custom profile.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.profiles().versions().list("custom-patient");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The lowercase StructureDefinition id of the custom profile.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.profiles.versions.create(id, request) -> ProfileSummary</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Adds an immutable StructureDefinition version to a custom profile. If
+the profile does not exist, it is created from the submitted version.
+The StructureDefinition must include a non-empty `version`; its
+canonical URL and resource type must match the profile when one already
+exists. If it includes an `id`, that id must match the path parameter;
+if it omits `id`, the path parameter is used. Profiles created through
+this endpoint are grouped under `custom`. Posting the profile's current
+StructureDefinition unchanged retains it as a version.
+Version strings may contain letters, numbers, and the punctuation
+characters `.`, `_`, `~`, `+`, and `-`; they cannot be exactly `.` or
+`..`. Each profile can retain up to 250 versions; delete old
+versions before adding more.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.profiles().versions().create(
+    "custom-patient",
+    new HashMap<String, Object>() {{
+        put("key", "value");
+    }}
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The lowercase StructureDefinition id of the custom profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `Map<String, Object>` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.profiles.versions.get(id, version) -> ProfileGetResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns metadata and the full StructureDefinition for one retained
+version. The returned StructureDefinition's id is the profile id. The
+path version is the authored `StructureDefinition.version` value.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.profiles().versions().get("custom-patient", "2.0.0");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The lowercase StructureDefinition id of the custom profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `String` — The authored StructureDefinition.version. It may contain letters, numbers, and the punctuation characters `.`, `_`, `~`, `+`, and `-`; it cannot be exactly `.` or `..`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.profiles.versions.delete(id, version)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes one retained version from a custom profile. The path
+version is the authored `StructureDefinition.version` value.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.profiles().versions().delete("custom-patient", "2.0.0");
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The lowercase StructureDefinition id of the custom profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**version:** `String` — The authored StructureDefinition.version. It may contain letters, numbers, and the punctuation characters `.`, `_`, `~`, `+`, and `-`; it cannot be exactly `.` or `..`.
     
 </dd>
 </dl>

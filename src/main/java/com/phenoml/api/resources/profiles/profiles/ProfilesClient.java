@@ -35,7 +35,12 @@ public class ProfilesClient {
      * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
      * stable key other platform features use to reference a profile (FHIR's
      * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
-     * unique within a package. A non-matching filter returns an empty list, not a 404.</p>
+     * unique within a package. An unpinned <code>url</code> filter returns metadata for
+     * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
+     * resolve a retained version when present; otherwise they can fall back to
+     * the profile's current StructureDefinition, whose content can change
+     * through the profile update endpoint. A non-matching filter returns an
+     * empty list, not a 404.</p>
      */
     public ProfileListResponse list() {
         return this.rawClient.list().body();
@@ -48,7 +53,12 @@ public class ProfilesClient {
      * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
      * stable key other platform features use to reference a profile (FHIR's
      * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
-     * unique within a package. A non-matching filter returns an empty list, not a 404.</p>
+     * unique within a package. An unpinned <code>url</code> filter returns metadata for
+     * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
+     * resolve a retained version when present; otherwise they can fall back to
+     * the profile's current StructureDefinition, whose content can change
+     * through the profile update endpoint. A non-matching filter returns an
+     * empty list, not a 404.</p>
      */
     public ProfileListResponse list(RequestOptions requestOptions) {
         return this.rawClient.list(requestOptions).body();
@@ -61,7 +71,12 @@ public class ProfilesClient {
      * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
      * stable key other platform features use to reference a profile (FHIR's
      * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
-     * unique within a package. A non-matching filter returns an empty list, not a 404.</p>
+     * unique within a package. An unpinned <code>url</code> filter returns metadata for
+     * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
+     * resolve a retained version when present; otherwise they can fall back to
+     * the profile's current StructureDefinition, whose content can change
+     * through the profile update endpoint. A non-matching filter returns an
+     * empty list, not a 404.</p>
      */
     public ProfileListResponse list(ListRequest request) {
         return this.rawClient.list(request).body();
@@ -74,7 +89,12 @@ public class ProfilesClient {
      * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
      * stable key other platform features use to reference a profile (FHIR's
      * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
-     * unique within a package. A non-matching filter returns an empty list, not a 404.</p>
+     * unique within a package. An unpinned <code>url</code> filter returns metadata for
+     * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
+     * resolve a retained version when present; otherwise they can fall back to
+     * the profile's current StructureDefinition, whose content can change
+     * through the profile update endpoint. A non-matching filter returns an
+     * empty list, not a 404.</p>
      */
     public ProfileListResponse list(ListRequest request, RequestOptions requestOptions) {
         return this.rawClient.list(request, requestOptions).body();
@@ -84,9 +104,8 @@ public class ProfilesClient {
      * Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
      * object. Metadata such as version, resource type, and url is read from the
      * StructureDefinition; the lowercase StructureDefinition id becomes the
-     * profile's lookup key. When id is omitted, a random UUID is assigned. Code
-     * system configuration is auto-extracted from the snapshot. Optionally group
-     * the profile under a named implementation guide.
+     * profile's lookup key. When id is omitted, a random UUID is assigned.
+     * Optionally group the profile under a named implementation guide.
      */
     public ProfileSummary create(ProfileUploadRequest request) {
         return this.rawClient.create(request).body();
@@ -96,23 +115,24 @@ public class ProfilesClient {
      * Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
      * object. Metadata such as version, resource type, and url is read from the
      * StructureDefinition; the lowercase StructureDefinition id becomes the
-     * profile's lookup key. When id is omitted, a random UUID is assigned. Code
-     * system configuration is auto-extracted from the snapshot. Optionally group
-     * the profile under a named implementation guide.
+     * profile's lookup key. When id is omitted, a random UUID is assigned.
+     * Optionally group the profile under a named implementation guide.
      */
     public ProfileSummary create(ProfileUploadRequest request, RequestOptions requestOptions) {
         return this.rawClient.create(request, requestOptions).body();
     }
 
     /**
-     * Returns a single custom profile by id, including its full StructureDefinition JSON.
+     * Returns a single custom profile by id, including its full StructureDefinition
+     * JSON.
      */
     public ProfileGetResponse get(String id) {
         return this.rawClient.get(id).body();
     }
 
     /**
-     * Returns a single custom profile by id, including its full StructureDefinition JSON.
+     * Returns a single custom profile by id, including its full StructureDefinition
+     * JSON.
      */
     public ProfileGetResponse get(String id, RequestOptions requestOptions) {
         return this.rawClient.get(id, requestOptions).body();
@@ -123,10 +143,12 @@ public class ProfilesClient {
      * <code>id</code> path parameter is authoritative: if the StructureDefinition includes
      * an <code>id</code> it must match the path parameter, and if it omits one the path
      * parameter is used. The FHIR resource type of the profile cannot change.
-     * Code system configuration is
-     * re-derived from the new StructureDefinition. When <code>implementation_guide</code> is
-     * omitted, the profile keeps its existing implementation guide. The instance
-     * stores a single version per canonical URL, so this replaces it in place.
+     * When <code>implementation_guide</code> is omitted, the profile keeps its existing
+     * implementation guide. A retained version string is allowed only when
+     * re-submitting the profile's current version with an unchanged
+     * StructureDefinition; otherwise it returns a conflict. While the profile
+     * has retained versions, its
+     * canonical URL cannot be changed.
      */
     public ProfileSummary update(String id, ProfileUploadRequest request) {
         return this.rawClient.update(id, request).body();
@@ -137,24 +159,30 @@ public class ProfilesClient {
      * <code>id</code> path parameter is authoritative: if the StructureDefinition includes
      * an <code>id</code> it must match the path parameter, and if it omits one the path
      * parameter is used. The FHIR resource type of the profile cannot change.
-     * Code system configuration is
-     * re-derived from the new StructureDefinition. When <code>implementation_guide</code> is
-     * omitted, the profile keeps its existing implementation guide. The instance
-     * stores a single version per canonical URL, so this replaces it in place.
+     * When <code>implementation_guide</code> is omitted, the profile keeps its existing
+     * implementation guide. A retained version string is allowed only when
+     * re-submitting the profile's current version with an unchanged
+     * StructureDefinition; otherwise it returns a conflict. While the profile
+     * has retained versions, its
+     * canonical URL cannot be changed.
      */
     public ProfileSummary update(String id, ProfileUploadRequest request, RequestOptions requestOptions) {
         return this.rawClient.update(id, request, requestOptions).body();
     }
 
     /**
-     * Permanently deletes a custom profile by id.
+     * Permanently deletes a custom profile by id. This also deletes all retained
+     * versions for that profile so the canonical URL can be reused by a later
+     * upload.
      */
     public void delete(String id) {
         this.rawClient.delete(id).body();
     }
 
     /**
-     * Permanently deletes a custom profile by id.
+     * Permanently deletes a custom profile by id. This also deletes all retained
+     * versions for that profile so the canonical URL can be reused by a later
+     * upload.
      */
     public void delete(String id, RequestOptions requestOptions) {
         this.rawClient.delete(id, requestOptions).body();
