@@ -1,3 +1,5 @@
+## [17.13.1] - 2026-09-04
+
 ## [17.13.0] - 2026-08-26
 ### Added
 - **`PatientReference`** — new staged-builder type with required `system` (identifier namespace) and `value` (identifier value) fields for supplying a structured patient identifier on extraction requests.
