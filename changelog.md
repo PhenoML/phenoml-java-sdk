@@ -1,3 +1,15 @@
+## [18.0.0] - 2026-09-09
+### Breaking Changes
+- **`ProfileSummary` and `ProfileGetResponse`** — `getId()`, `getSource()`, `getResourceType()`, `getUrl()`, `getVersion()`, `getFhirVersion()`, `getImplementationGuide()`, `getCreatedAt()`, and `getUpdatedAt()` now return required values instead of `Optional`; remove `Optional` handling for these accessors.
+- **`ProfileListResponse.getProfiles()`** — changed from `Optional<List<ProfileSummary>>` to `List<ProfileSummary>`; remove `Optional` handling for this accessor.
+- **`ProfileGetResponse.getStructureDefinition()`** — changed from `Optional<Map<String, Object>>` to `Map<String, Object>`; remove `Optional` handling for this accessor.
+
+### Added
+- **`PhenomlClient.lang2FhirBatch()` and `AsyncPhenomlClient.lang2FhirBatch()`** — new clients for batch FHIR extraction, supporting `create()`, `uploadItem()`, `finalize()`, `cancel()`, `get()`, `getResults()`, `getResult()`, and `list()` across the job lifecycle.
+- **`BatchJob`, `BatchItemStatus`, `BatchCounts`, `BatchError`, `JobDetailResponse`, `JobListResponse`, `ResultsPageResponse`, and `UploadItemResponse`** — new models supporting the batch extraction API.
+- **`ProfilesClient.versions()` and `AsyncProfilesClient.versions()`** — new clients for immutable StructureDefinition versions, with `list()`, `create()`, `get()`, and `delete()` methods.
+- **`ProfileSummary.getStatus()`, `getDate()`, and `getCanonical()`** — new optional accessors exposing each profile's publication status, authored date, and canonical URL; profile update and batch methods can now throw `ConflictError` for HTTP 409 responses.
+
 ## [17.13.0] - 2026-08-26
 ### Added
 - **`PatientReference`** — new staged-builder type with required `system` (identifier namespace) and `value` (identifier value) fields for supplying a structured patient identifier on extraction requests.
