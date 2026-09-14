@@ -27,6 +27,10 @@ public final class ImplementationGuideSummary implements IImplementationGuideSum
 
     private final Optional<Integer> profileCount;
 
+    private final Optional<String> canonicalUrl;
+
+    private final Optional<Integer> versionCount;
+
     private final Optional<OffsetDateTime> createdAt;
 
     private final Optional<OffsetDateTime> updatedAt;
@@ -37,12 +41,16 @@ public final class ImplementationGuideSummary implements IImplementationGuideSum
             Optional<String> name,
             Optional<String> profileContext,
             Optional<Integer> profileCount,
+            Optional<String> canonicalUrl,
+            Optional<Integer> versionCount,
             Optional<OffsetDateTime> createdAt,
             Optional<OffsetDateTime> updatedAt,
             Map<String, Object> additionalProperties) {
         this.name = name;
         this.profileContext = profileContext;
         this.profileCount = profileCount;
+        this.canonicalUrl = canonicalUrl;
+        this.versionCount = versionCount;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.additionalProperties = additionalProperties;
@@ -73,6 +81,24 @@ public final class ImplementationGuideSummary implements IImplementationGuideSum
     @java.lang.Override
     public Optional<Integer> getProfileCount() {
         return profileCount;
+    }
+
+    /**
+     * @return Canonical FHIR ImplementationGuide URL, when the family has an exact package.
+     */
+    @JsonProperty("canonical_url")
+    @java.lang.Override
+    public Optional<String> getCanonicalUrl() {
+        return canonicalUrl;
+    }
+
+    /**
+     * @return Number of retained exact package versions.
+     */
+    @JsonProperty("version_count")
+    @java.lang.Override
+    public Optional<Integer> getVersionCount() {
+        return versionCount;
     }
 
     /**
@@ -108,13 +134,22 @@ public final class ImplementationGuideSummary implements IImplementationGuideSum
         return name.equals(other.name)
                 && profileContext.equals(other.profileContext)
                 && profileCount.equals(other.profileCount)
+                && canonicalUrl.equals(other.canonicalUrl)
+                && versionCount.equals(other.versionCount)
                 && createdAt.equals(other.createdAt)
                 && updatedAt.equals(other.updatedAt);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.name, this.profileContext, this.profileCount, this.createdAt, this.updatedAt);
+        return Objects.hash(
+                this.name,
+                this.profileContext,
+                this.profileCount,
+                this.canonicalUrl,
+                this.versionCount,
+                this.createdAt,
+                this.updatedAt);
     }
 
     @java.lang.Override
@@ -134,6 +169,10 @@ public final class ImplementationGuideSummary implements IImplementationGuideSum
 
         private Optional<Integer> profileCount = Optional.empty();
 
+        private Optional<String> canonicalUrl = Optional.empty();
+
+        private Optional<Integer> versionCount = Optional.empty();
+
         private Optional<OffsetDateTime> createdAt = Optional.empty();
 
         private Optional<OffsetDateTime> updatedAt = Optional.empty();
@@ -147,6 +186,8 @@ public final class ImplementationGuideSummary implements IImplementationGuideSum
             name(other.getName());
             profileContext(other.getProfileContext());
             profileCount(other.getProfileCount());
+            canonicalUrl(other.getCanonicalUrl());
+            versionCount(other.getVersionCount());
             createdAt(other.getCreatedAt());
             updatedAt(other.getUpdatedAt());
             return this;
@@ -195,6 +236,34 @@ public final class ImplementationGuideSummary implements IImplementationGuideSum
         }
 
         /**
+         * <p>Canonical FHIR ImplementationGuide URL, when the family has an exact package.</p>
+         */
+        @JsonSetter(value = "canonical_url", nulls = Nulls.SKIP)
+        public Builder canonicalUrl(Optional<String> canonicalUrl) {
+            this.canonicalUrl = canonicalUrl;
+            return this;
+        }
+
+        public Builder canonicalUrl(String canonicalUrl) {
+            this.canonicalUrl = Optional.ofNullable(canonicalUrl);
+            return this;
+        }
+
+        /**
+         * <p>Number of retained exact package versions.</p>
+         */
+        @JsonSetter(value = "version_count", nulls = Nulls.SKIP)
+        public Builder versionCount(Optional<Integer> versionCount) {
+            this.versionCount = versionCount;
+            return this;
+        }
+
+        public Builder versionCount(Integer versionCount) {
+            this.versionCount = Optional.ofNullable(versionCount);
+            return this;
+        }
+
+        /**
          * <p>Present only for guides that have stored metadata (a profile_context has been set). Omitted for guides that exist solely because a profile references them.</p>
          */
         @JsonSetter(value = "created_at", nulls = Nulls.SKIP)
@@ -224,7 +293,14 @@ public final class ImplementationGuideSummary implements IImplementationGuideSum
 
         public ImplementationGuideSummary build() {
             return new ImplementationGuideSummary(
-                    name, profileContext, profileCount, createdAt, updatedAt, additionalProperties);
+                    name,
+                    profileContext,
+                    profileCount,
+                    canonicalUrl,
+                    versionCount,
+                    createdAt,
+                    updatedAt,
+                    additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {
