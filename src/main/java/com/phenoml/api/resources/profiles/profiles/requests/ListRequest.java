@@ -30,7 +30,7 @@ public final class ListRequest {
     }
 
     /**
-     * @return Filter by canonical URL. Accepts the FHIR pinned form <code>url|version</code> (split on the last <code>|</code>); the bare form matches the current version.
+     * @return Filter by canonical URL. Accepts the FHIR pinned form <code>url|version</code>; without a version pin, returns the profile's current StructureDefinition metadata.
      */
     @JsonProperty("url")
     public Optional<String> getUrl() {
@@ -81,7 +81,7 @@ public final class ListRequest {
         }
 
         /**
-         * <p>Filter by canonical URL. Accepts the FHIR pinned form <code>url|version</code> (split on the last <code>|</code>); the bare form matches the current version.</p>
+         * <p>Filter by canonical URL. Accepts the FHIR pinned form <code>url|version</code>; without a version pin, returns the profile's current StructureDefinition metadata.</p>
          */
         @JsonSetter(value = "url", nulls = Nulls.SKIP)
         public Builder url(Optional<String> url) {
