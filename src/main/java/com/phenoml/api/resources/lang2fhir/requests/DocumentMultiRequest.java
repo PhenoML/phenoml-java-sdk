@@ -74,8 +74,11 @@ public final class DocumentMultiRequest {
 
     /**
      * @return Base64 encoded file content.
-     * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff).
+     * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
+     * RTF and XML/C-CDA uploads are available on dedicated instances only.
      * File type is auto-detected from content magic bytes.
+     * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
+     * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.
      */
     @JsonProperty("content")
     public String getContent() {
@@ -180,8 +183,11 @@ public final class DocumentMultiRequest {
     public interface ContentStage {
         /**
          * <p>Base64 encoded file content.
-         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff).
-         * File type is auto-detected from content magic bytes.</p>
+         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
+         * RTF and XML/C-CDA uploads are available on dedicated instances only.
+         * File type is auto-detected from content magic bytes.
+         * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
+         * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.</p>
          */
         _FinalStage content(@NotNull String content);
     }
@@ -279,8 +285,11 @@ public final class DocumentMultiRequest {
 
         /**
          * <p>Base64 encoded file content.
-         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff).
-         * File type is auto-detected from content magic bytes.</p>
+         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
+         * RTF and XML/C-CDA uploads are available on dedicated instances only.
+         * File type is auto-detected from content magic bytes.
+         * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
+         * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
