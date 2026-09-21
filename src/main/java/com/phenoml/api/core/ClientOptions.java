@@ -47,10 +47,10 @@ public final class ClientOptions {
         this.headers.putAll(headers);
         this.headers.putAll(new HashMap<String, String>() {
             {
-                put("User-Agent", "com.phenoml.maven.phenoml-java-sdk/17.13.0");
+                put("User-Agent", "com.phenoml.maven.phenoml-java-sdk/0.0.0-fern-placeholder");
                 put("X-Fern-Language", "JAVA");
-                put("X-Fern-SDK-Name", "com.phenoml.fern:api-sdk");
-                put("X-Fern-SDK-Version", "17.13.0");
+                put("X-Fern-SDK-Name", "com.phenoml.maven:phenoml-java-sdk");
+                put("X-Fern-SDK-Version", "0.0.0-fern-placeholder");
             }
         });
         this.headerSuppliers = headerSuppliers;
@@ -153,7 +153,9 @@ public final class ClientOptions {
         }
 
         public Builder addHeader(String key, String value) {
-            this.headers.put(key, value);
+            if (value != null) {
+                this.headers.put(key, value);
+            }
             return this;
         }
 

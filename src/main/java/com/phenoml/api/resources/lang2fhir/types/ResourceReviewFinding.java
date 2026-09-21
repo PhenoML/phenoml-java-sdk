@@ -28,6 +28,8 @@ public final class ResourceReviewFinding {
 
     private final Optional<Boolean> supported;
 
+    private final Optional<Boolean> unaudited;
+
     private final Optional<String> rationale;
 
     private final Map<String, Object> additionalProperties;
@@ -37,12 +39,14 @@ public final class ResourceReviewFinding {
             Optional<String> fieldPath,
             Optional<String> value,
             Optional<Boolean> supported,
+            Optional<Boolean> unaudited,
             Optional<String> rationale,
             Map<String, Object> additionalProperties) {
         this.fieldKind = fieldKind;
         this.fieldPath = fieldPath;
         this.value = value;
         this.supported = supported;
+        this.unaudited = unaudited;
         this.rationale = rationale;
         this.additionalProperties = additionalProperties;
     }
@@ -66,11 +70,19 @@ public final class ResourceReviewFinding {
     }
 
     /**
-     * @return Always false for a flagged finding.
+     * @return False when the reviewer found the field unsupported. Do not treat this field as a verdict when unaudited is true.
      */
     @JsonProperty("supported")
     public Optional<Boolean> getSupported() {
         return supported;
+    }
+
+    /**
+     * @return True when the reviewer did not return a verdict for this field; the resource was quarantined without treating the finding as evidence that the value is unsupported.
+     */
+    @JsonProperty("unaudited")
+    public Optional<Boolean> getUnaudited() {
+        return unaudited;
     }
 
     /**
@@ -97,12 +109,13 @@ public final class ResourceReviewFinding {
                 && fieldPath.equals(other.fieldPath)
                 && value.equals(other.value)
                 && supported.equals(other.supported)
+                && unaudited.equals(other.unaudited)
                 && rationale.equals(other.rationale);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.fieldKind, this.fieldPath, this.value, this.supported, this.rationale);
+        return Objects.hash(this.fieldKind, this.fieldPath, this.value, this.supported, this.unaudited, this.rationale);
     }
 
     @java.lang.Override
@@ -124,6 +137,8 @@ public final class ResourceReviewFinding {
 
         private Optional<Boolean> supported = Optional.empty();
 
+        private Optional<Boolean> unaudited = Optional.empty();
+
         private Optional<String> rationale = Optional.empty();
 
         @JsonAnySetter
@@ -136,6 +151,7 @@ public final class ResourceReviewFinding {
             fieldPath(other.getFieldPath());
             value(other.getValue());
             supported(other.getSupported());
+            unaudited(other.getUnaudited());
             rationale(other.getRationale());
             return this;
         }
@@ -177,7 +193,7 @@ public final class ResourceReviewFinding {
         }
 
         /**
-         * <p>Always false for a flagged finding.</p>
+         * <p>False when the reviewer found the field unsupported. Do not treat this field as a verdict when unaudited is true.</p>
          */
         @JsonSetter(value = "supported", nulls = Nulls.SKIP)
         public Builder supported(Optional<Boolean> supported) {
@@ -187,6 +203,20 @@ public final class ResourceReviewFinding {
 
         public Builder supported(Boolean supported) {
             this.supported = Optional.ofNullable(supported);
+            return this;
+        }
+
+        /**
+         * <p>True when the reviewer did not return a verdict for this field; the resource was quarantined without treating the finding as evidence that the value is unsupported.</p>
+         */
+        @JsonSetter(value = "unaudited", nulls = Nulls.SKIP)
+        public Builder unaudited(Optional<Boolean> unaudited) {
+            this.unaudited = unaudited;
+            return this;
+        }
+
+        public Builder unaudited(Boolean unaudited) {
+            this.unaudited = Optional.ofNullable(unaudited);
             return this;
         }
 
@@ -205,7 +235,8 @@ public final class ResourceReviewFinding {
         }
 
         public ResourceReviewFinding build() {
-            return new ResourceReviewFinding(fieldKind, fieldPath, value, supported, rationale, additionalProperties);
+            return new ResourceReviewFinding(
+                    fieldKind, fieldPath, value, supported, unaudited, rationale, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {

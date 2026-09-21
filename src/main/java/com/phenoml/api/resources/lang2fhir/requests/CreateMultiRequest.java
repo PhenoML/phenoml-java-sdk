@@ -94,7 +94,7 @@ public final class CreateMultiRequest {
     }
 
     /**
-     * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.
+     * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.
      */
     @JsonProperty("implementation_guide")
     public Optional<String> getImplementationGuide() {
@@ -201,7 +201,7 @@ public final class CreateMultiRequest {
         _FinalStage patientReference(PatientReference patientReference);
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
          */
         _FinalStage implementationGuide(Optional<String> implementationGuide);
 
@@ -327,7 +327,7 @@ public final class CreateMultiRequest {
         }
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -337,7 +337,7 @@ public final class CreateMultiRequest {
         }
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
