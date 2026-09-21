@@ -26,116 +26,188 @@ public class Fhir2OmopClient {
     }
 
     /**
-     * Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows
-     * (person, visit_occurrence, condition_occurrence, drug_exposure,
-     * procedure_occurrence, measurement, observation).
-     * <p>Resource support is intentionally limited to the OMOP tables returned by
-     * this endpoint:</p>
+     * Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows,
+     * grouped by destination table in <code>tables</code>.
+     * <p>Current resource coverage:</p>
      * <ul>
-     * <li><code>Patient</code> -&gt; <code>person</code></li>
+     * <li><code>Patient</code> -&gt; <code>person</code>; <code>deceased[x]</code> can also produce <code>death</code>, and the
+     * first address can produce <code>location</code></li>
+     * <li><code>observation_period</code> -&gt; one derived row per person with dated visit,
+     * clinical, or death rows, spanning those dates</li>
+     * <li><code>Location</code> -&gt; <code>location</code> and <code>care_site</code></li>
+     * <li><code>Organization</code> -&gt; <code>care_site</code>; its first address can produce <code>location</code></li>
+     * <li><code>HealthcareService</code> -&gt; <code>care_site</code></li>
+     * <li><code>Practitioner</code> and <code>PractitionerRole</code> -&gt; <code>provider</code></li>
      * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
      * <li><code>Condition</code> -&gt; <code>condition_occurrence</code></li>
      * <li><code>Procedure</code> -&gt; <code>procedure_occurrence</code></li>
      * <li><code>MedicationRequest</code>, <code>MedicationStatement</code>, and
      * <code>MedicationAdministration</code> -&gt; <code>drug_exposure</code></li>
      * <li><code>Immunization</code> -&gt; <code>drug_exposure</code></li>
-     * <li><code>Observation</code> with a numeric <code>valueQuantity</code>, <code>valueInteger</code>, or
-     * numeric-looking <code>valueString</code> (for example <code>&quot;&lt;2&quot;</code>) -&gt; <code>measurement</code></li>
-     * <li>non-numeric <code>Observation</code> -&gt; <code>observation</code></li>
+     * <li><code>Observation</code> -&gt; <code>measurement</code> or <code>observation</code>. For coded
+     * Observations, the resolved OMOP concept domain selects the table; value
+     * form only breaks ties. For text-only Observations, numeric values route
+     * to <code>measurement</code> and nonnumeric values to <code>observation</code>.</li>
      * <li><code>AllergyIntolerance</code> -&gt; <code>observation</code></li>
      * </ul>
-     * <p><code>Medication</code> is supported only as reference data for medication
-     * resources; it is not emitted as its own row because OMOP CDM has no
-     * Medication table. Other reference/admin resources such as <code>Practitioner</code>,
-     * <code>Organization</code>, <code>Location</code>, <code>Coverage</code>, and <code>Claim</code>, and clinical
-     * workflow/document resources such as <code>DiagnosticReport</code>, <code>ServiceRequest</code>,
-     * <code>CarePlan</code>, <code>DocumentReference</code>, <code>Composition</code>, <code>Specimen</code>, and
-     * <code>DeviceUseStatement</code>, are currently accepted in a Bundle but are not
-     * shaped into OMOP rows. Unsupported resource types are ignored rather than
-     * listed under <code>dropped</code>; <code>dropped</code> is reserved for supported resource types
-     * that were missing the subject/patient, code, or medication reference data
-     * needed to produce a valid row.</p>
-     * <p>Each resource's primary clinical coding is resolved to a standard OMOP
-     * <code>concept_id</code>. Alongside the OMOP rows grouped by table (<code>tables</code>), the
-     * response carries <code>mappings</code> (how each source coding resolved, linked back
-     * to the row it produced), <code>dropped</code> (resources that could not be shaped
-     * into a row), <code>vocab_version</code> (the OMOP vocabulary release codes were
-     * resolved against), and a small <code>summary</code> of the resolution outcomes.</p>
+     * <p><code>Medication</code> is reference data for medication resources; it does not
+     * create its own row because OMOP CDM has no Medication table. Administrative
+     * linkages (provider, care site, and location) are best-effort and limited to
+     * references supplied in the request. Their supporting concepts, including
+     * provider specialty, country, and place of service, are not mapped.</p>
+     * <p><code>DiagnosticReport</code>, <code>ServiceRequest</code>, <code>CarePlan</code>, <code>DocumentReference</code>,
+     * <code>Composition</code>, <code>Specimen</code>, <code>DeviceUseStatement</code>, <code>Coverage</code>, <code>Claim</code>, and
+     * other unsupported resource types are accepted in a Bundle but ignored: they
+     * create no row and no <code>dropped</code> entry. <code>dropped</code> is reserved for supported
+     * row-producing resources that could not be shaped because the subject/patient,
+     * clinical code/text, or medication data was not usable. A single-Patient
+     * Bundle can attribute a supported clinical resource with a missing or
+     * unresolvable subject to that sole person; in a multi-Patient Bundle, that
+     * resource is dropped instead.</p>
+     * <p>Coded Observation routing is selected from the resolved OMOP concept
+     * domain. Numeric and nonnumeric <code>value[x]</code> forms establish the preferred
+     * target only when the code is valid for both tables. A text-only
+     * Observation has no resolver target, so numeric values route to
+     * <code>measurement</code> and nonnumeric values to <code>observation</code>. Numeric values
+     * populate <code>value_as_number</code> in the selected row; nonnumeric values
+     * populate <code>value_as_string</code> for an <code>observation</code> or <code>value_source_value</code>
+     * for a <code>measurement</code>. <code>valueCodeableConcept</code> remains source text and does
+     * not populate <code>value_as_concept_id</code>; other unsupported <code>value[x]</code> forms
+     * and Observation components do not populate separate converted values. A
+     * numeric comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) is represented only by a
+     * measurement's <code>operator_concept_id</code>; units remain source text and have
+     * <code>unit_concept_id</code> of <code>0</code>.</p>
+     * <p>A single standard OMOP <code>concept_id</code> is selected for each clinical row
+     * after considering all of the resource's supplied codings. Alongside the
+     * OMOP rows grouped by table (<code>tables</code>), the response carries <code>mappings</code>
+     * (an entry for every source coding, linked back to the row it produced),
+     * <code>dropped</code> (resources that could not be shaped into a row),
+     * <code>vocab_version</code> (the OMOP vocabulary release codes were resolved
+     * against), and a small <code>summary</code> of the resolution outcomes.</p>
      * <p>A <code>concept_id</code> of <code>0</code> is reported, not omitted (OMOP &quot;no matching
      * concept&quot; semantics): it covers both a coding with no standard match
      * (<code>UNMAPPED</code>) and an unverified suggestion for a text-only resource
-     * (<code>UNCHECKED</code>). Only the primary clinical coding is resolved, so
-     * <code>gender</code>/<code>race</code>/<code>ethnicity</code>/<code>visit</code>/<code>value</code>/<code>unit</code> <code>concept_id</code>s are
-     * always <code>0</code>; the one populated non-resolved concept is measurement
+     * (<code>UNCHECKED</code>). Demographic, visit, categorical-value, and unit concept
+     * fields currently remain <code>0</code>; the one populated non-resolved concept is
+     * measurement
      * <code>operator_concept_id</code>, set from a value comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>)
-     * rather than the resolver. Each <code>*_source_value</code> carries the verbatim FHIR
-     * coding (<code>system#code</code>), and <code>*_type_concept_id</code> is set to <code>32817</code> (EHR).</p>
+     * rather than terminology resolution. Clinical <code>*_source_value</code> fields
+     * preserve the selected FHIR coding (<code>system#code</code>, or <code>code</code> when no
+     * system is supplied), falling back to source text for text-only resources.
+     * Other <code>*_source_value</code> fields preserve row-specific raw source values,
+     * such as resource identifiers, names, units, or status codes, and
+     * <code>*_type_concept_id</code> is set to <code>32817</code> (EHR).</p>
      * <p>Medication codes are resolved whether they appear inline
      * (<code>medicationCodeableConcept</code>) or via a <code>medicationReference</code> to a contained,
      * relative (<code>Type/id</code>), or bundle-entry (<code>urn:uuid</code>) <code>Medication</code> resource.
      * Resources that cannot be shaped into a row — a medication with no usable
      * code, resolvable reference, or display, or any clinical resource whose
      * subject/patient reference cannot be tied to a person — are reported under
-     * <code>dropped</code> rather than emitted as blank rows. The
-     * bundle must contain at least one Patient resource.</p>
+     * <code>dropped</code> rather than emitted as blank rows. The Bundle must contain at
+     * least one Patient resource.</p>
+     * <p>All row IDs start at <code>1</code> for each request and are not stable or global.
+     * For clinical conversion rows whose resource supplies an <code>id</code>, <code>mappings</code>
+     * associates each row with that source FHIR resource ID. A <code>person</code> row
+     * retains the Patient ID or its first identifier value in
+     * <code>person_source_value</code>, when present; other reference and derived rows do
+     * not uniformly carry a FHIR resource ID. Input resources without those
+     * source identifiers cannot be correlated across responses from the
+     * returned rows alone. Consumers combining responses need to establish
+     * their own stable keys and remap every primary and foreign key together.</p>
      */
     public CreateOmopResponse create(CreateOmopRequest request) {
         return this.rawClient.create(request).body();
     }
 
     /**
-     * Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows
-     * (person, visit_occurrence, condition_occurrence, drug_exposure,
-     * procedure_occurrence, measurement, observation).
-     * <p>Resource support is intentionally limited to the OMOP tables returned by
-     * this endpoint:</p>
+     * Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows,
+     * grouped by destination table in <code>tables</code>.
+     * <p>Current resource coverage:</p>
      * <ul>
-     * <li><code>Patient</code> -&gt; <code>person</code></li>
+     * <li><code>Patient</code> -&gt; <code>person</code>; <code>deceased[x]</code> can also produce <code>death</code>, and the
+     * first address can produce <code>location</code></li>
+     * <li><code>observation_period</code> -&gt; one derived row per person with dated visit,
+     * clinical, or death rows, spanning those dates</li>
+     * <li><code>Location</code> -&gt; <code>location</code> and <code>care_site</code></li>
+     * <li><code>Organization</code> -&gt; <code>care_site</code>; its first address can produce <code>location</code></li>
+     * <li><code>HealthcareService</code> -&gt; <code>care_site</code></li>
+     * <li><code>Practitioner</code> and <code>PractitionerRole</code> -&gt; <code>provider</code></li>
      * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
      * <li><code>Condition</code> -&gt; <code>condition_occurrence</code></li>
      * <li><code>Procedure</code> -&gt; <code>procedure_occurrence</code></li>
      * <li><code>MedicationRequest</code>, <code>MedicationStatement</code>, and
      * <code>MedicationAdministration</code> -&gt; <code>drug_exposure</code></li>
      * <li><code>Immunization</code> -&gt; <code>drug_exposure</code></li>
-     * <li><code>Observation</code> with a numeric <code>valueQuantity</code>, <code>valueInteger</code>, or
-     * numeric-looking <code>valueString</code> (for example <code>&quot;&lt;2&quot;</code>) -&gt; <code>measurement</code></li>
-     * <li>non-numeric <code>Observation</code> -&gt; <code>observation</code></li>
+     * <li><code>Observation</code> -&gt; <code>measurement</code> or <code>observation</code>. For coded
+     * Observations, the resolved OMOP concept domain selects the table; value
+     * form only breaks ties. For text-only Observations, numeric values route
+     * to <code>measurement</code> and nonnumeric values to <code>observation</code>.</li>
      * <li><code>AllergyIntolerance</code> -&gt; <code>observation</code></li>
      * </ul>
-     * <p><code>Medication</code> is supported only as reference data for medication
-     * resources; it is not emitted as its own row because OMOP CDM has no
-     * Medication table. Other reference/admin resources such as <code>Practitioner</code>,
-     * <code>Organization</code>, <code>Location</code>, <code>Coverage</code>, and <code>Claim</code>, and clinical
-     * workflow/document resources such as <code>DiagnosticReport</code>, <code>ServiceRequest</code>,
-     * <code>CarePlan</code>, <code>DocumentReference</code>, <code>Composition</code>, <code>Specimen</code>, and
-     * <code>DeviceUseStatement</code>, are currently accepted in a Bundle but are not
-     * shaped into OMOP rows. Unsupported resource types are ignored rather than
-     * listed under <code>dropped</code>; <code>dropped</code> is reserved for supported resource types
-     * that were missing the subject/patient, code, or medication reference data
-     * needed to produce a valid row.</p>
-     * <p>Each resource's primary clinical coding is resolved to a standard OMOP
-     * <code>concept_id</code>. Alongside the OMOP rows grouped by table (<code>tables</code>), the
-     * response carries <code>mappings</code> (how each source coding resolved, linked back
-     * to the row it produced), <code>dropped</code> (resources that could not be shaped
-     * into a row), <code>vocab_version</code> (the OMOP vocabulary release codes were
-     * resolved against), and a small <code>summary</code> of the resolution outcomes.</p>
+     * <p><code>Medication</code> is reference data for medication resources; it does not
+     * create its own row because OMOP CDM has no Medication table. Administrative
+     * linkages (provider, care site, and location) are best-effort and limited to
+     * references supplied in the request. Their supporting concepts, including
+     * provider specialty, country, and place of service, are not mapped.</p>
+     * <p><code>DiagnosticReport</code>, <code>ServiceRequest</code>, <code>CarePlan</code>, <code>DocumentReference</code>,
+     * <code>Composition</code>, <code>Specimen</code>, <code>DeviceUseStatement</code>, <code>Coverage</code>, <code>Claim</code>, and
+     * other unsupported resource types are accepted in a Bundle but ignored: they
+     * create no row and no <code>dropped</code> entry. <code>dropped</code> is reserved for supported
+     * row-producing resources that could not be shaped because the subject/patient,
+     * clinical code/text, or medication data was not usable. A single-Patient
+     * Bundle can attribute a supported clinical resource with a missing or
+     * unresolvable subject to that sole person; in a multi-Patient Bundle, that
+     * resource is dropped instead.</p>
+     * <p>Coded Observation routing is selected from the resolved OMOP concept
+     * domain. Numeric and nonnumeric <code>value[x]</code> forms establish the preferred
+     * target only when the code is valid for both tables. A text-only
+     * Observation has no resolver target, so numeric values route to
+     * <code>measurement</code> and nonnumeric values to <code>observation</code>. Numeric values
+     * populate <code>value_as_number</code> in the selected row; nonnumeric values
+     * populate <code>value_as_string</code> for an <code>observation</code> or <code>value_source_value</code>
+     * for a <code>measurement</code>. <code>valueCodeableConcept</code> remains source text and does
+     * not populate <code>value_as_concept_id</code>; other unsupported <code>value[x]</code> forms
+     * and Observation components do not populate separate converted values. A
+     * numeric comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) is represented only by a
+     * measurement's <code>operator_concept_id</code>; units remain source text and have
+     * <code>unit_concept_id</code> of <code>0</code>.</p>
+     * <p>A single standard OMOP <code>concept_id</code> is selected for each clinical row
+     * after considering all of the resource's supplied codings. Alongside the
+     * OMOP rows grouped by table (<code>tables</code>), the response carries <code>mappings</code>
+     * (an entry for every source coding, linked back to the row it produced),
+     * <code>dropped</code> (resources that could not be shaped into a row),
+     * <code>vocab_version</code> (the OMOP vocabulary release codes were resolved
+     * against), and a small <code>summary</code> of the resolution outcomes.</p>
      * <p>A <code>concept_id</code> of <code>0</code> is reported, not omitted (OMOP &quot;no matching
      * concept&quot; semantics): it covers both a coding with no standard match
      * (<code>UNMAPPED</code>) and an unverified suggestion for a text-only resource
-     * (<code>UNCHECKED</code>). Only the primary clinical coding is resolved, so
-     * <code>gender</code>/<code>race</code>/<code>ethnicity</code>/<code>visit</code>/<code>value</code>/<code>unit</code> <code>concept_id</code>s are
-     * always <code>0</code>; the one populated non-resolved concept is measurement
+     * (<code>UNCHECKED</code>). Demographic, visit, categorical-value, and unit concept
+     * fields currently remain <code>0</code>; the one populated non-resolved concept is
+     * measurement
      * <code>operator_concept_id</code>, set from a value comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>)
-     * rather than the resolver. Each <code>*_source_value</code> carries the verbatim FHIR
-     * coding (<code>system#code</code>), and <code>*_type_concept_id</code> is set to <code>32817</code> (EHR).</p>
+     * rather than terminology resolution. Clinical <code>*_source_value</code> fields
+     * preserve the selected FHIR coding (<code>system#code</code>, or <code>code</code> when no
+     * system is supplied), falling back to source text for text-only resources.
+     * Other <code>*_source_value</code> fields preserve row-specific raw source values,
+     * such as resource identifiers, names, units, or status codes, and
+     * <code>*_type_concept_id</code> is set to <code>32817</code> (EHR).</p>
      * <p>Medication codes are resolved whether they appear inline
      * (<code>medicationCodeableConcept</code>) or via a <code>medicationReference</code> to a contained,
      * relative (<code>Type/id</code>), or bundle-entry (<code>urn:uuid</code>) <code>Medication</code> resource.
      * Resources that cannot be shaped into a row — a medication with no usable
      * code, resolvable reference, or display, or any clinical resource whose
      * subject/patient reference cannot be tied to a person — are reported under
-     * <code>dropped</code> rather than emitted as blank rows. The
-     * bundle must contain at least one Patient resource.</p>
+     * <code>dropped</code> rather than emitted as blank rows. The Bundle must contain at
+     * least one Patient resource.</p>
+     * <p>All row IDs start at <code>1</code> for each request and are not stable or global.
+     * For clinical conversion rows whose resource supplies an <code>id</code>, <code>mappings</code>
+     * associates each row with that source FHIR resource ID. A <code>person</code> row
+     * retains the Patient ID or its first identifier value in
+     * <code>person_source_value</code>, when present; other reference and derived rows do
+     * not uniformly carry a FHIR resource ID. Input resources without those
+     * source identifiers cannot be correlated across responses from the
+     * returned rows alone. Consumers combining responses need to establish
+     * their own stable keys and remap every primary and foreign key together.</p>
      */
     public CreateOmopResponse create(CreateOmopRequest request, RequestOptions requestOptions) {
         return this.rawClient.create(request, requestOptions).body();

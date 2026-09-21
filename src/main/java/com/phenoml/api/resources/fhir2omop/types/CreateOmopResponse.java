@@ -91,9 +91,9 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return The OMOP vocabulary release the clinical codes were resolved against
-     * (e.g. &quot;v20240229&quot;), for reproducibility. Present when at least one
-     * coded concept was resolved.
+     * @return The OMOP vocabulary release returned for coded concept resolution
+     * (for example, &quot;v20240229&quot;), for reproducibility. It is generally
+     * absent for requests containing only text-only resources.
      */
     @JsonProperty("vocab_version")
     public Optional<String> getVocabVersion() {
@@ -238,9 +238,9 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>The OMOP vocabulary release the clinical codes were resolved against
-         * (e.g. &quot;v20240229&quot;), for reproducibility. Present when at least one
-         * coded concept was resolved.</p>
+         * <p>The OMOP vocabulary release returned for coded concept resolution
+         * (for example, &quot;v20240229&quot;), for reproducibility. It is generally
+         * absent for requests containing only text-only resources.</p>
          */
         @JsonSetter(value = "vocab_version", nulls = Nulls.SKIP)
         public Builder vocabVersion(Optional<String> vocabVersion) {
