@@ -74,8 +74,11 @@ public final class DocumentMultiRequest {
 
     /**
      * @return Base64 encoded file content.
-     * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff).
+     * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
+     * RTF and XML/C-CDA uploads are available on dedicated instances only.
      * File type is auto-detected from content magic bytes.
+     * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
+     * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.
      */
     @JsonProperty("content")
     public String getContent() {
@@ -96,7 +99,7 @@ public final class DocumentMultiRequest {
     }
 
     /**
-     * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.
+     * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.
      */
     @JsonProperty("implementation_guide")
     public Optional<String> getImplementationGuide() {
@@ -180,8 +183,11 @@ public final class DocumentMultiRequest {
     public interface ContentStage {
         /**
          * <p>Base64 encoded file content.
-         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff).
-         * File type is auto-detected from content magic bytes.</p>
+         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
+         * RTF and XML/C-CDA uploads are available on dedicated instances only.
+         * File type is auto-detected from content magic bytes.
+         * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
+         * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.</p>
          */
         _FinalStage content(@NotNull String content);
     }
@@ -205,7 +211,7 @@ public final class DocumentMultiRequest {
         _FinalStage patientReference(PatientReference patientReference);
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
          */
         _FinalStage implementationGuide(Optional<String> implementationGuide);
 
@@ -279,8 +285,11 @@ public final class DocumentMultiRequest {
 
         /**
          * <p>Base64 encoded file content.
-         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff).
-         * File type is auto-detected from content magic bytes.</p>
+         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
+         * RTF and XML/C-CDA uploads are available on dedicated instances only.
+         * File type is auto-detected from content magic bytes.
+         * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
+         * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -344,7 +353,7 @@ public final class DocumentMultiRequest {
         }
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -354,7 +363,7 @@ public final class DocumentMultiRequest {
         }
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)

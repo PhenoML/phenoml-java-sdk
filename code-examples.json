@@ -2,8 +2,8 @@
   "metadata": {
     "language": "java",
     "packageName": "com.phenoml.maven:phenoml-java-sdk",
-    "sdkVersion": "17.13.0",
-    "specCommit": "4a08550f5db230949c7423d0ce5aa7055e8f0d65",
+    "sdkVersion": "18.0.0",
+    "specCommit": "a3d094b53a1372d4dd35555e155cd5e182b881c6",
     "generatorName": "fernapi/fern-java-sdk"
   },
   "renderRules": {
@@ -3222,6 +3222,216 @@
         }
       }
     },
+    "POST /lang2fhir/batch": {
+      "httpMethod": "POST",
+      "httpPath": "/lang2fhir/batch",
+      "request": {
+        "body": {
+          "request_id": "submit-2025-09-02-batch-001"
+        }
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().create(CreateBatchRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "request_id",
+              "fieldTemplate": ".requestId({{value}})",
+              "kind": "string",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "GET /lang2fhir/batch": {
+      "httpMethod": "GET",
+      "httpPath": "/lang2fhir/batch",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().list(ListRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "cursor",
+              "fieldTemplate": ".cursor({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "limit",
+              "fieldTemplate": ".limit({{value}})",
+              "kind": "number",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "POST /lang2fhir/batch/{job_id}/items": {
+      "httpMethod": "POST",
+      "httpPath": "/lang2fhir/batch/{job_id}/items",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().uploadItem({{job_id}})",
+        "params": [
+          {
+            "name": "job_id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "POST /lang2fhir/batch/{job_id}/finalize": {
+      "httpMethod": "POST",
+      "httpPath": "/lang2fhir/batch/{job_id}/finalize",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().finalize({{job_id}})",
+        "params": [
+          {
+            "name": "job_id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "POST /lang2fhir/batch/{job_id}/cancel": {
+      "httpMethod": "POST",
+      "httpPath": "/lang2fhir/batch/{job_id}/cancel",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().cancel({{job_id}})",
+        "params": [
+          {
+            "name": "job_id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "GET /lang2fhir/batch/{job_id}": {
+      "httpMethod": "GET",
+      "httpPath": "/lang2fhir/batch/{job_id}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().get({{job_id}}, GetRequest.builder(){{__body__}}.build())",
+        "params": [
+          {
+            "name": "job_id",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "cursor",
+              "fieldTemplate": ".cursor({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "limit",
+              "fieldTemplate": ".limit({{value}})",
+              "kind": "number",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "GET /lang2fhir/batch/{job_id}/results": {
+      "httpMethod": "GET",
+      "httpPath": "/lang2fhir/batch/{job_id}/results",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().getResults({{job_id}}, GetResultsRequest.builder(){{__body__}}.build())",
+        "params": [
+          {
+            "name": "job_id",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "cursor",
+              "fieldTemplate": ".cursor({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "limit",
+              "fieldTemplate": ".limit({{value}})",
+              "kind": "number",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "GET /lang2fhir/batch/{job_id}/results/{item_id}": {
+      "httpMethod": "GET",
+      "httpPath": "/lang2fhir/batch/{job_id}/results/{item_id}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().getResult({{job_id}}, {{item_id}})",
+        "params": [
+          {
+            "name": "job_id",
+            "kind": "string"
+          },
+          {
+            "name": "item_id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
     "POST /cohort": {
       "httpMethod": "POST",
       "httpPath": "/cohort",
@@ -3335,7 +3545,10 @@
                 "auto",
                 "appointment",
                 "condition-encounter-diagnosis",
+                "familymemberhistory",
+                "medicationadministration",
                 "medicationrequest",
+                "medicationstatement",
                 "careplan",
                 "condition-problems-health-concerns",
                 "coverage",
@@ -3641,7 +3854,7 @@
         "body": {
           "version": "R4",
           "resource": "questionnaire",
-          "content": "JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)"
+          "content": "JVBERi0xLjQKJeLjz9MK...(base64-encoded document bytes)"
         }
       },
       "response": {
@@ -3807,7 +4020,7 @@
       "request": {
         "body": {
           "version": "R4",
-          "content": "JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)",
+          "content": "JVBERi0xLjQKJeLjz9MK...(base64-encoded document bytes)",
           "provider": "medplum",
           "config": {
             "split_classifications": [
@@ -4574,6 +4787,140 @@
         ]
       }
     },
+    "POST /fhir/implementation-guides/{name}/versions": {
+      "httpMethod": "POST",
+      "httpPath": "/fhir/implementation-guides/{name}/versions",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.implementationGuides().implementationguides().createVersion({{name}}, CreateCanonicalImplementationGuideRequest.builder(){{__body__}}.build())",
+        "params": [
+          {
+            "name": "name",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "implementation_guide",
+              "fieldTemplate": ".implementationGuide({{value}})",
+              "kind": "object",
+              "required": true,
+              "nested": {
+                "fieldSeparator": "",
+                "fields": [
+                  {
+                    "jsonKey": "resourceType",
+                    "fieldTemplate": ".resourceType({{value}})",
+                    "kind": "enum",
+                    "required": true,
+                    "enumValues": [
+                      "ImplementationGuide"
+                    ]
+                  },
+                  {
+                    "jsonKey": "url",
+                    "fieldTemplate": ".url({{value}})",
+                    "kind": "string",
+                    "required": true
+                  },
+                  {
+                    "jsonKey": "version",
+                    "fieldTemplate": ".version({{value}})",
+                    "kind": "string",
+                    "required": true
+                  },
+                  {
+                    "jsonKey": "id",
+                    "fieldTemplate": ".id({{value}})",
+                    "kind": "string",
+                    "required": false
+                  },
+                  {
+                    "jsonKey": "name",
+                    "fieldTemplate": ".name({{value}})",
+                    "kind": "string",
+                    "required": false
+                  },
+                  {
+                    "jsonKey": "status",
+                    "fieldTemplate": ".status({{value}})",
+                    "kind": "string",
+                    "required": false
+                  },
+                  {
+                    "jsonKey": "packageId",
+                    "fieldTemplate": ".packageId({{value}})",
+                    "kind": "string",
+                    "required": false
+                  },
+                  {
+                    "jsonKey": "fhirVersion",
+                    "fieldTemplate": ".fhirVersion({{value}})",
+                    "kind": "list",
+                    "required": false,
+                    "items": {
+                      "jsonKey": "",
+                      "fieldTemplate": "{{value}}",
+                      "kind": "string",
+                      "required": true
+                    }
+                  }
+                ],
+                "wrap": "FHIRImplementationGuide.builder(){{__body__}}.build()"
+              }
+            },
+            {
+              "jsonKey": "profile_refs",
+              "fieldTemplate": ".profileRefs({{value}})",
+              "kind": "list",
+              "required": true,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "string",
+                "required": true
+              }
+            },
+            {
+              "jsonKey": "profile_context",
+              "fieldTemplate": ".profileContext({{value}})",
+              "kind": "string",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "GET /fhir/implementation-guides/{name}/versions/{version}": {
+      "httpMethod": "GET",
+      "httpPath": "/fhir/implementation-guides/{name}/versions/{version}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.implementationGuides().implementationguides().getVersion({{name}}, {{version}})",
+        "params": [
+          {
+            "name": "name",
+            "kind": "string"
+          },
+          {
+            "name": "version",
+            "kind": "string"
+          }
+        ]
+      }
+    },
     "GET /fhir/profiles": {
       "httpMethod": "GET",
       "httpPath": "/fhir/profiles",
@@ -4699,6 +5046,102 @@
         "params": [
           {
             "name": "id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "GET /fhir/profiles/{id}/versions": {
+      "httpMethod": "GET",
+      "httpPath": "/fhir/profiles/{id}/versions",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.profiles().versions().list({{id}})",
+        "params": [
+          {
+            "name": "id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "POST /fhir/profiles/{id}/versions": {
+      "httpMethod": "POST",
+      "httpPath": "/fhir/profiles/{id}/versions",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.profiles().versions().create({{id}}, {{__body__}})",
+        "params": [
+          {
+            "name": "id",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "",
+              "fieldTemplate": "{{value}}",
+              "kind": "object",
+              "required": true,
+              "passthroughBody": true
+            }
+          ]
+        }
+      }
+    },
+    "GET /fhir/profiles/{id}/versions/{version}": {
+      "httpMethod": "GET",
+      "httpPath": "/fhir/profiles/{id}/versions/{version}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.profiles().versions().get({{id}}, {{version}})",
+        "params": [
+          {
+            "name": "id",
+            "kind": "string"
+          },
+          {
+            "name": "version",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "DELETE /fhir/profiles/{id}/versions/{version}": {
+      "httpMethod": "DELETE",
+      "httpPath": "/fhir/profiles/{id}/versions/{version}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.profiles().versions().delete({{id}}, {{version}})",
+        "params": [
+          {
+            "name": "id",
+            "kind": "string"
+          },
+          {
+            "name": "version",
             "kind": "string"
           }
         ]

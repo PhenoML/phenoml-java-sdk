@@ -13,6 +13,10 @@ public interface IImplementationGuideSummary {
 
     Optional<Integer> getProfileCount();
 
+    Optional<String> getCanonicalUrl();
+
+    Optional<Integer> getVersionCount();
+
     Optional<OffsetDateTime> getCreatedAt();
 
     Optional<OffsetDateTime> getUpdatedAt();

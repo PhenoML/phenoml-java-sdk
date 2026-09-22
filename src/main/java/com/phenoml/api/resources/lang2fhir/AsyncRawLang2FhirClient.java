@@ -528,7 +528,7 @@ public class AsyncRawLang2FhirClient {
     }
 
     /**
-     * Extracts text from a document (PDF or image) and converts it into a structured FHIR resource.
+     * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into a structured FHIR resource.
      * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> document(DocumentRequest request) {
@@ -536,7 +536,7 @@ public class AsyncRawLang2FhirClient {
     }
 
     /**
-     * Extracts text from a document (PDF or image) and converts it into a structured FHIR resource.
+     * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into a structured FHIR resource.
      * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> document(
@@ -601,6 +601,11 @@ public class AsyncRawLang2FhirClient {
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
+                            case 403:
+                                future.completeExceptionally(new ForbiddenError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
                             case 404:
                                 future.completeExceptionally(new NotFoundError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
@@ -651,7 +656,7 @@ public class AsyncRawLang2FhirClient {
     }
 
     /**
-     * Extracts text from a document (PDF or image) and converts it into multiple FHIR resources,
+     * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into multiple FHIR resources,
      * returned as a transaction Bundle. Combines document text extraction with multi-resource detection.
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
@@ -664,7 +669,7 @@ public class AsyncRawLang2FhirClient {
     }
 
     /**
-     * Extracts text from a document (PDF or image) and converts it into multiple FHIR resources,
+     * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into multiple FHIR resources,
      * returned as a transaction Bundle. Combines document text extraction with multi-resource detection.
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
@@ -729,6 +734,11 @@ public class AsyncRawLang2FhirClient {
                                 return;
                             case 401:
                                 future.completeExceptionally(new UnauthorizedError(
+                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                                        response));
+                                return;
+                            case 403:
+                                future.completeExceptionally(new ForbiddenError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
