@@ -2,6 +2,7 @@
 ### Breaking Changes
 - **`MappingEntry.getMappingStatus()` / `.mappingStatus(...)`** — now use `MappingEntryMappingStatus` instead of `String`; use `.toString()` where an existing response consumer needs the original string value, and use the enum constants when constructing values.
 - **`PhenomlClientBuilder._CredentialsAuth.grantType(...)` / `AsyncPhenomlClientBuilder._CredentialsAuth.grantType(...)`** — removed custom OAuth grant-type configuration; remove these calls because client-credentials authentication now always uses `client_credentials`.
+- **`ProfileSummary` / `ProfileGetResponse`** — `id`, `source`, `resourceType`, `url`, `version`, `canonical`, `fhirVersion`, `implementationGuide`, `createdAt`, and `updatedAt` now return required values instead of `Optional`; their builders now require those values. `ProfileListResponse.getProfiles()` and `ProfileGetResponse.getStructureDefinition()` are likewise required.
 
 ### Added
 - **`PhenomlClient.lang2FhirBatch()` / `AsyncPhenomlClient.lang2FhirBatch()`** — add Java SDK support for the existing batch FHIR-extraction lifecycle: create jobs, upload items, finalize or cancel jobs, and retrieve statuses and results.
@@ -14,6 +15,9 @@
 - **`Fhir2OmopClient.create(...)` / `AsyncFhir2OmopClient.create(...)`** — now map additional administrative FHIR resources and document the expanded OMOP conversion semantics.
 - **`DocumentRequest.getContent()` / `DocumentMultiRequest.getContent()`** — now support RTF and XML/C-CDA documents in addition to PDF and image inputs, subject to the documented dedicated-instance and size limits.
 - **`PhenomlClientBuilder.instanceUrl(...)` / `AsyncPhenomlClientBuilder.instanceUrl(...)`** — no longer replace an explicitly selected non-default environment.
+
+### Fixed
+- **`ProfilesClient.update(...)` / `.delete(...)`** — now throw the typed `ConflictError` when the service returns HTTP 409.
 
 ## [17.13.1] - 2026-09-21
 
