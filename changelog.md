@@ -4,7 +4,7 @@
 - **`PhenomlClientBuilder._CredentialsAuth.grantType(...)` / `AsyncPhenomlClientBuilder._CredentialsAuth.grantType(...)`** — removed custom OAuth grant-type configuration; remove these calls because client-credentials authentication now always uses `client_credentials`.
 
 ### Added
-- **`PhenomlClient.lang2FhirBatch()` / `AsyncPhenomlClient.lang2FhirBatch()`** — provide the batch FHIR-extraction lifecycle: create jobs, upload items, finalize or cancel jobs, and retrieve statuses and results.
+- **`PhenomlClient.lang2FhirBatch()` / `AsyncPhenomlClient.lang2FhirBatch()`** — add Java SDK support for the existing batch FHIR-extraction lifecycle: create jobs, upload items, finalize or cancel jobs, and retrieve statuses and results.
 - **`PhenomlClient.implementationGuides().implementationGuides().createVersion(...)` / `.getVersion(...)`** — publish and retrieve exact canonical implementation-guide packages using `FhirImplementationGuide`, `CreateCanonicalImplementationGuideRequest`, and `ImplementationGuideVersionDetail`.
 - **`PhenomlClient.profiles().versions()` / `AsyncPhenomlClient.profiles().versions()`** — manage retained StructureDefinition versions with list, create, get, and delete operations.
 - **`ResourceReviewResult.getRemediated()`** — surfaces resources retained after unsupported codings are safely removed, alongside the existing quarantined resources.
