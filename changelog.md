@@ -1,3 +1,20 @@
+## [18.0.0] - 2026-09-22
+### Breaking Changes
+- **`MappingEntry.getMappingStatus()` / `.mappingStatus(...)`** — now use `MappingEntryMappingStatus` instead of `String`; update manually constructed values to the corresponding enum constants.
+- **`PhenomlClientBuilder._CredentialsAuth.grantType(...)` / `AsyncPhenomlClientBuilder._CredentialsAuth.grantType(...)`** — removed custom OAuth grant-type configuration; remove these calls because client-credentials authentication now always uses `client_credentials`.
+
+### Added
+- **`PhenomlClient.lang2FhirBatch()` / `AsyncPhenomlClient.lang2FhirBatch()`** — provide the batch FHIR-extraction lifecycle: create jobs, upload items, finalize or cancel jobs, and retrieve statuses and results.
+- **`PhenomlClient.implementationGuides().implementationGuides().createVersion(...)` / `.getVersion(...)`** — publish and retrieve exact canonical implementation-guide packages using `FhirImplementationGuide`, `CreateCanonicalImplementationGuideRequest`, and `ImplementationGuideVersionDetail`.
+- **`PhenomlClient.profiles().versions()` / `AsyncPhenomlClient.profiles().versions()`** — manage retained StructureDefinition versions with list, create, get, and delete operations.
+- **`ResourceReviewResult.getRemediated()`** — surfaces resources retained after unsupported codings are safely removed, alongside the existing quarantined resources.
+- **`CreateRequestResource`** — adds `FAMILYMEMBERHISTORY`, `MEDICATIONADMINISTRATION`, and `MEDICATIONSTATEMENT` extraction profiles.
+
+### Changed
+- **`Fhir2OmopClient.create(...)` / `AsyncFhir2OmopClient.create(...)`** — now map additional administrative FHIR resources and document the expanded OMOP conversion semantics.
+- **`DocumentRequest.getContent()` / `DocumentMultiRequest.getContent()`** — now support RTF and XML/C-CDA documents in addition to PDF and image inputs, subject to the documented dedicated-instance and size limits.
+- **`PhenomlClientBuilder.instanceUrl(...)` / `AsyncPhenomlClientBuilder.instanceUrl(...)`** — no longer replace an explicitly selected non-default environment.
+
 ## [17.13.1] - 2026-09-21
 
 ## [17.13.0] - 2026-08-26
