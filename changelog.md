@@ -1,6 +1,6 @@
 ## [18.0.0] - 2026-09-22
 ### Breaking Changes
-- **`MappingEntry.getMappingStatus()` / `.mappingStatus(...)`** — now use `MappingEntryMappingStatus` instead of `String`; use `.toString()` where an existing response consumer needs the original string value, and use the enum constants when constructing values.
+- **`MappingEntry.getMappingStatus()` / `.mappingStatus(...)`** — now use `Optional<MappingEntryMappingStatus>` instead of `Optional<String>`; use `getMappingStatus().map(MappingEntryMappingStatus::toString)` where an existing response consumer needs the original optional string value, and use the enum constants when constructing values.
 - **`PhenomlClientBuilder._CredentialsAuth.grantType(...)` / `AsyncPhenomlClientBuilder._CredentialsAuth.grantType(...)`** — removed custom OAuth grant-type configuration; remove these calls because client-credentials authentication now always uses `client_credentials`.
 - **`ProfileSummary` / `ProfileGetResponse`** — `id`, `source`, `resourceType`, `url`, `version`, `canonical`, `fhirVersion`, `implementationGuide`, `createdAt`, and `updatedAt` now return required values instead of `Optional`; their builders now require those values. `ProfileListResponse.getProfiles()` and `ProfileGetResponse.getStructureDefinition()` are likewise required.
 
