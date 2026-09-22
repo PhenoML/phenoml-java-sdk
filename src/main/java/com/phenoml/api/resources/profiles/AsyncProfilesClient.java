@@ -5,6 +5,7 @@ package com.phenoml.api.resources.profiles;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.Suppliers;
+import com.phenoml.api.resources.profiles.versions.AsyncVersionsClient;
 import java.util.function.Supplier;
 
 public class AsyncProfilesClient {
@@ -12,13 +13,20 @@ public class AsyncProfilesClient {
 
     protected final Supplier<com.phenoml.api.resources.profiles.profiles.AsyncProfilesClient> profilesClient;
 
+    protected final Supplier<AsyncVersionsClient> versionsClient;
+
     public AsyncProfilesClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
         this.profilesClient = Suppliers.memoize(
                 () -> new com.phenoml.api.resources.profiles.profiles.AsyncProfilesClient(clientOptions));
+        this.versionsClient = Suppliers.memoize(() -> new AsyncVersionsClient(clientOptions));
     }
 
     public com.phenoml.api.resources.profiles.profiles.AsyncProfilesClient profiles() {
         return this.profilesClient.get();
+    }
+
+    public AsyncVersionsClient versions() {
+        return this.versionsClient.get();
     }
 }

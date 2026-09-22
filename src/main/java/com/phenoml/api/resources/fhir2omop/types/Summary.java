@@ -44,7 +44,7 @@ public final class Summary {
     }
 
     /**
-     * @return Coded concepts already a standard OMOP concept (ALREADY_STANDARD).
+     * @return Resolution outcomes already a standard OMOP concept (ALREADY_STANDARD).
      */
     @JsonProperty("codes_already_standard")
     public Optional<Integer> getCodesAlreadyStandard() {
@@ -52,7 +52,7 @@ public final class Summary {
     }
 
     /**
-     * @return Coded concepts mapped or suggested to a standard concept (MAPPED or UNCHECKED).
+     * @return Resolution outcomes mapped or suggested to a standard concept (MAPPED or UNCHECKED).
      */
     @JsonProperty("codes_normalized")
     public Optional<Integer> getCodesNormalized() {
@@ -60,7 +60,7 @@ public final class Summary {
     }
 
     /**
-     * @return Coded concepts with no standard concept found (UNMAPPED).
+     * @return Resolution outcomes with no standard concept found (UNMAPPED).
      */
     @JsonProperty("codes_unmapped")
     public Optional<Integer> getCodesUnmapped() {
@@ -68,7 +68,7 @@ public final class Summary {
     }
 
     /**
-     * @return Share of coded concepts not already standard ((normalized + unmapped) / total).
+     * @return Share of resolution outcomes not already standard ((normalized + unmapped) / total).
      */
     @JsonProperty("off_vocab_rate")
     public Optional<Double> getOffVocabRate() {
@@ -131,7 +131,7 @@ public final class Summary {
         }
 
         /**
-         * <p>Coded concepts already a standard OMOP concept (ALREADY_STANDARD).</p>
+         * <p>Resolution outcomes already a standard OMOP concept (ALREADY_STANDARD).</p>
          */
         @JsonSetter(value = "codes_already_standard", nulls = Nulls.SKIP)
         public Builder codesAlreadyStandard(Optional<Integer> codesAlreadyStandard) {
@@ -145,7 +145,7 @@ public final class Summary {
         }
 
         /**
-         * <p>Coded concepts mapped or suggested to a standard concept (MAPPED or UNCHECKED).</p>
+         * <p>Resolution outcomes mapped or suggested to a standard concept (MAPPED or UNCHECKED).</p>
          */
         @JsonSetter(value = "codes_normalized", nulls = Nulls.SKIP)
         public Builder codesNormalized(Optional<Integer> codesNormalized) {
@@ -159,7 +159,7 @@ public final class Summary {
         }
 
         /**
-         * <p>Coded concepts with no standard concept found (UNMAPPED).</p>
+         * <p>Resolution outcomes with no standard concept found (UNMAPPED).</p>
          */
         @JsonSetter(value = "codes_unmapped", nulls = Nulls.SKIP)
         public Builder codesUnmapped(Optional<Integer> codesUnmapped) {
@@ -173,7 +173,7 @@ public final class Summary {
         }
 
         /**
-         * <p>Share of coded concepts not already standard ((normalized + unmapped) / total).</p>
+         * <p>Share of resolution outcomes not already standard ((normalized + unmapped) / total).</p>
          */
         @JsonSetter(value = "off_vocab_rate", nulls = Nulls.SKIP)
         public Builder offVocabRate(Optional<Double> offVocabRate) {
