@@ -1,6 +1,6 @@
 ## [18.0.0] - 2026-09-22
 ### Breaking Changes
-- **`MappingEntry.getMappingStatus()` / `.mappingStatus(...)`** — now use `MappingEntryMappingStatus` instead of `String`; update manually constructed values to the corresponding enum constants.
+- **`MappingEntry.getMappingStatus()` / `.mappingStatus(...)`** — now use `MappingEntryMappingStatus` instead of `String`; use `.toString()` where an existing response consumer needs the original string value, and use the enum constants when constructing values.
 - **`PhenomlClientBuilder._CredentialsAuth.grantType(...)` / `AsyncPhenomlClientBuilder._CredentialsAuth.grantType(...)`** — removed custom OAuth grant-type configuration; remove these calls because client-credentials authentication now always uses `client_credentials`.
 
 ### Added
