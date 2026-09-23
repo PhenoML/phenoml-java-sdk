@@ -14,6 +14,7 @@ import com.phenoml.api.resources.fhir2omop.Fhir2OmopClient;
 import com.phenoml.api.resources.fhirprovider.FhirProviderClient;
 import com.phenoml.api.resources.implementationguides.ImplementationGuidesClient;
 import com.phenoml.api.resources.lang2fhir.Lang2FhirClient;
+import com.phenoml.api.resources.lang2fhirbatch.Lang2FhirBatchClient;
 import com.phenoml.api.resources.profiles.ProfilesClient;
 import com.phenoml.api.resources.summary.SummaryClient;
 import com.phenoml.api.resources.tools.ToolsClient;
@@ -21,7 +22,7 @@ import com.phenoml.api.resources.voice.VoiceClient;
 import com.phenoml.api.resources.workflows.WorkflowsClient;
 import java.util.function.Supplier;
 
-public class PhenomlClient {
+public class PhenomlClient implements AutoCloseable {
     protected final ClientOptions clientOptions;
 
     protected final Supplier<AgentClient> agentClient;
@@ -41,6 +42,8 @@ public class PhenomlClient {
     protected final Supplier<ImplementationGuidesClient> implementationGuidesClient;
 
     protected final Supplier<Lang2FhirClient> lang2FhirClient;
+
+    protected final Supplier<Lang2FhirBatchClient> lang2FhirBatchClient;
 
     protected final Supplier<ProfilesClient> profilesClient;
 
@@ -63,6 +66,7 @@ public class PhenomlClient {
         this.fhirProviderClient = Suppliers.memoize(() -> new FhirProviderClient(clientOptions));
         this.implementationGuidesClient = Suppliers.memoize(() -> new ImplementationGuidesClient(clientOptions));
         this.lang2FhirClient = Suppliers.memoize(() -> new Lang2FhirClient(clientOptions));
+        this.lang2FhirBatchClient = Suppliers.memoize(() -> new Lang2FhirBatchClient(clientOptions));
         this.profilesClient = Suppliers.memoize(() -> new ProfilesClient(clientOptions));
         this.summaryClient = Suppliers.memoize(() -> new SummaryClient(clientOptions));
         this.toolsClient = Suppliers.memoize(() -> new ToolsClient(clientOptions));
@@ -106,6 +110,10 @@ public class PhenomlClient {
         return this.lang2FhirClient.get();
     }
 
+    public Lang2FhirBatchClient lang2FhirBatch() {
+        return this.lang2FhirBatchClient.get();
+    }
+
     public ProfilesClient profiles() {
         return this.profilesClient.get();
     }
@@ -124,6 +132,15 @@ public class PhenomlClient {
 
     public WorkflowsClient workflows() {
         return this.workflowsClient.get();
+    }
+
+    /**
+     * Releases resources owned by this client. See {@code ClientOptions.close()} for what is
+     * and is not released.
+     */
+    @Override
+    public void close() {
+        this.clientOptions.close();
     }
 
     /**
