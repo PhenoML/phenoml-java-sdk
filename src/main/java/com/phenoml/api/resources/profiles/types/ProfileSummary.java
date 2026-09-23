@@ -17,46 +17,59 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ProfileSummary.Builder.class)
 public final class ProfileSummary implements IProfileSummary {
-    private final Optional<String> id;
+    private final String id;
 
-    private final Optional<ProfileSummarySource> source;
+    private final ProfileSummarySource source;
 
-    private final Optional<String> resourceType;
+    private final String resourceType;
 
-    private final Optional<String> url;
+    private final String url;
 
-    private final Optional<String> version;
+    private final String version;
 
-    private final Optional<String> fhirVersion;
+    private final Optional<String> status;
 
-    private final Optional<String> implementationGuide;
+    private final Optional<String> date;
 
-    private final Optional<OffsetDateTime> createdAt;
+    private final String canonical;
 
-    private final Optional<OffsetDateTime> updatedAt;
+    private final String fhirVersion;
+
+    private final String implementationGuide;
+
+    private final OffsetDateTime createdAt;
+
+    private final OffsetDateTime updatedAt;
 
     private final Map<String, Object> additionalProperties;
 
     private ProfileSummary(
-            Optional<String> id,
-            Optional<ProfileSummarySource> source,
-            Optional<String> resourceType,
-            Optional<String> url,
-            Optional<String> version,
-            Optional<String> fhirVersion,
-            Optional<String> implementationGuide,
-            Optional<OffsetDateTime> createdAt,
-            Optional<OffsetDateTime> updatedAt,
+            String id,
+            ProfileSummarySource source,
+            String resourceType,
+            String url,
+            String version,
+            Optional<String> status,
+            Optional<String> date,
+            String canonical,
+            String fhirVersion,
+            String implementationGuide,
+            OffsetDateTime createdAt,
+            OffsetDateTime updatedAt,
             Map<String, Object> additionalProperties) {
         this.id = id;
         this.source = source;
         this.resourceType = resourceType;
         this.url = url;
         this.version = version;
+        this.status = status;
+        this.date = date;
+        this.canonical = canonical;
         this.fhirVersion = fhirVersion;
         this.implementationGuide = implementationGuide;
         this.createdAt = createdAt;
@@ -69,15 +82,15 @@ public final class ProfileSummary implements IProfileSummary {
      */
     @JsonProperty("id")
     @java.lang.Override
-    public Optional<String> getId() {
+    public String getId() {
         return id;
     }
 
     /**
-     * @return The profile's origin. Listings currently return only custom (uploaded) profiles, so this is always &quot;custom&quot; today; built-in (US Core / R4 base) profiles would be surfaced via an opt-in parameter in a future release, not by changing the default behavior.
+     * @return The profile's origin. Profile management responses currently return custom (uploaded) profiles, so this is always &quot;custom&quot; today.
      */
     @JsonProperty("source")
-    public Optional<ProfileSummarySource> getSource() {
+    public ProfileSummarySource getSource() {
         return source;
     }
 
@@ -86,7 +99,7 @@ public final class ProfileSummary implements IProfileSummary {
      */
     @JsonProperty("resource_type")
     @java.lang.Override
-    public Optional<String> getResourceType() {
+    public String getResourceType() {
         return resourceType;
     }
 
@@ -95,7 +108,7 @@ public final class ProfileSummary implements IProfileSummary {
      */
     @JsonProperty("url")
     @java.lang.Override
-    public Optional<String> getUrl() {
+    public String getUrl() {
         return url;
     }
 
@@ -104,8 +117,35 @@ public final class ProfileSummary implements IProfileSummary {
      */
     @JsonProperty("version")
     @java.lang.Override
-    public Optional<String> getVersion() {
+    public String getVersion() {
         return version;
+    }
+
+    /**
+     * @return The publication status from StructureDefinition.status. Expected FHIR values include <code>draft</code>, <code>active</code>, <code>retired</code>, and <code>unknown</code>; the server preserves authored strings.
+     */
+    @JsonProperty("status")
+    @java.lang.Override
+    public Optional<String> getStatus() {
+        return status;
+    }
+
+    /**
+     * @return The authored publication date from StructureDefinition.date, when present. This is a FHIR dateTime string and may be less precise than a full timestamp.
+     */
+    @JsonProperty("date")
+    @java.lang.Override
+    public Optional<String> getDate() {
+        return date;
+    }
+
+    /**
+     * @return The canonical profile reference, including the version pin when present.
+     */
+    @JsonProperty("canonical")
+    @java.lang.Override
+    public String getCanonical() {
+        return canonical;
     }
 
     /**
@@ -113,7 +153,7 @@ public final class ProfileSummary implements IProfileSummary {
      */
     @JsonProperty("fhir_version")
     @java.lang.Override
-    public Optional<String> getFhirVersion() {
+    public String getFhirVersion() {
         return fhirVersion;
     }
 
@@ -122,19 +162,22 @@ public final class ProfileSummary implements IProfileSummary {
      */
     @JsonProperty("implementation_guide")
     @java.lang.Override
-    public Optional<String> getImplementationGuide() {
+    public String getImplementationGuide() {
         return implementationGuide;
     }
 
     @JsonProperty("created_at")
     @java.lang.Override
-    public Optional<OffsetDateTime> getCreatedAt() {
+    public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
 
+    /**
+     * @return Last update timestamp for the profile's current StructureDefinition. For retained versions, this equals <code>created_at</code>.
+     */
     @JsonProperty("updated_at")
     @java.lang.Override
-    public Optional<OffsetDateTime> getUpdatedAt() {
+    public OffsetDateTime getUpdatedAt() {
         return updatedAt;
     }
 
@@ -155,6 +198,9 @@ public final class ProfileSummary implements IProfileSummary {
                 && resourceType.equals(other.resourceType)
                 && url.equals(other.url)
                 && version.equals(other.version)
+                && status.equals(other.status)
+                && date.equals(other.date)
+                && canonical.equals(other.canonical)
                 && fhirVersion.equals(other.fhirVersion)
                 && implementationGuide.equals(other.implementationGuide)
                 && createdAt.equals(other.createdAt)
@@ -169,6 +215,9 @@ public final class ProfileSummary implements IProfileSummary {
                 this.resourceType,
                 this.url,
                 this.version,
+                this.status,
+                this.date,
+                this.canonical,
                 this.fhirVersion,
                 this.implementationGuide,
                 this.createdAt,
@@ -180,41 +229,153 @@ public final class ProfileSummary implements IProfileSummary {
         return ObjectMappers.stringify(this);
     }
 
-    public static Builder builder() {
+    public static IdStage builder() {
         return new Builder();
     }
 
+    public interface IdStage {
+        /**
+         * <p>The lowercase StructureDefinition id, used as the profile's lookup key.</p>
+         */
+        SourceStage id(@NotNull String id);
+
+        Builder from(ProfileSummary other);
+    }
+
+    public interface SourceStage {
+        /**
+         * <p>The profile's origin. Profile management responses currently return custom (uploaded) profiles, so this is always &quot;custom&quot; today.</p>
+         */
+        ResourceTypeStage source(@NotNull ProfileSummarySource source);
+    }
+
+    public interface ResourceTypeStage {
+        /**
+         * <p>The FHIR resource type from the StructureDefinition.</p>
+         */
+        UrlStage resourceType(@NotNull String resourceType);
+    }
+
+    public interface UrlStage {
+        /**
+         * <p>The canonical URL from the StructureDefinition.</p>
+         */
+        VersionStage url(@NotNull String url);
+    }
+
+    public interface VersionStage {
+        /**
+         * <p>The version from the StructureDefinition.version field.</p>
+         */
+        CanonicalStage version(@NotNull String version);
+    }
+
+    public interface CanonicalStage {
+        /**
+         * <p>The canonical profile reference, including the version pin when present.</p>
+         */
+        FhirVersionStage canonical(@NotNull String canonical);
+    }
+
+    public interface FhirVersionStage {
+        /**
+         * <p>The base FHIR version the StructureDefinition targets.</p>
+         */
+        ImplementationGuideStage fhirVersion(@NotNull String fhirVersion);
+    }
+
+    public interface ImplementationGuideStage {
+        /**
+         * <p>The implementation guide the profile belongs to.</p>
+         */
+        CreatedAtStage implementationGuide(@NotNull String implementationGuide);
+    }
+
+    public interface CreatedAtStage {
+        UpdatedAtStage createdAt(@NotNull OffsetDateTime createdAt);
+    }
+
+    public interface UpdatedAtStage {
+        /**
+         * <p>Last update timestamp for the profile's current StructureDefinition. For retained versions, this equals <code>created_at</code>.</p>
+         */
+        _FinalStage updatedAt(@NotNull OffsetDateTime updatedAt);
+    }
+
+    public interface _FinalStage {
+        ProfileSummary build();
+
+        _FinalStage additionalProperty(String key, Object value);
+
+        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+        /**
+         * <p>The publication status from StructureDefinition.status. Expected FHIR values include <code>draft</code>, <code>active</code>, <code>retired</code>, and <code>unknown</code>; the server preserves authored strings.</p>
+         */
+        _FinalStage status(Optional<String> status);
+
+        _FinalStage status(String status);
+
+        /**
+         * <p>The authored publication date from StructureDefinition.date, when present. This is a FHIR dateTime string and may be less precise than a full timestamp.</p>
+         */
+        _FinalStage date(Optional<String> date);
+
+        _FinalStage date(String date);
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> id = Optional.empty();
+    public static final class Builder
+            implements IdStage,
+                    SourceStage,
+                    ResourceTypeStage,
+                    UrlStage,
+                    VersionStage,
+                    CanonicalStage,
+                    FhirVersionStage,
+                    ImplementationGuideStage,
+                    CreatedAtStage,
+                    UpdatedAtStage,
+                    _FinalStage {
+        private String id;
 
-        private Optional<ProfileSummarySource> source = Optional.empty();
+        private ProfileSummarySource source;
 
-        private Optional<String> resourceType = Optional.empty();
+        private String resourceType;
 
-        private Optional<String> url = Optional.empty();
+        private String url;
 
-        private Optional<String> version = Optional.empty();
+        private String version;
 
-        private Optional<String> fhirVersion = Optional.empty();
+        private String canonical;
 
-        private Optional<String> implementationGuide = Optional.empty();
+        private String fhirVersion;
 
-        private Optional<OffsetDateTime> createdAt = Optional.empty();
+        private String implementationGuide;
 
-        private Optional<OffsetDateTime> updatedAt = Optional.empty();
+        private OffsetDateTime createdAt;
+
+        private OffsetDateTime updatedAt;
+
+        private Optional<String> date = Optional.empty();
+
+        private Optional<String> status = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
 
+        @java.lang.Override
         public Builder from(ProfileSummary other) {
             id(other.getId());
             source(other.getSource());
             resourceType(other.getResourceType());
             url(other.getUrl());
             version(other.getVersion());
+            status(other.getStatus());
+            date(other.getDate());
+            canonical(other.getCanonical());
             fhirVersion(other.getFhirVersion());
             implementationGuide(other.getImplementationGuide());
             createdAt(other.getCreatedAt());
@@ -224,124 +385,152 @@ public final class ProfileSummary implements IProfileSummary {
 
         /**
          * <p>The lowercase StructureDefinition id, used as the profile's lookup key.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @JsonSetter(value = "id", nulls = Nulls.SKIP)
-        public Builder id(Optional<String> id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder id(String id) {
-            this.id = Optional.ofNullable(id);
+        @java.lang.Override
+        @JsonSetter("id")
+        public SourceStage id(@NotNull String id) {
+            this.id = Objects.requireNonNull(id, "id must not be null");
             return this;
         }
 
         /**
-         * <p>The profile's origin. Listings currently return only custom (uploaded) profiles, so this is always &quot;custom&quot; today; built-in (US Core / R4 base) profiles would be surfaced via an opt-in parameter in a future release, not by changing the default behavior.</p>
+         * <p>The profile's origin. Profile management responses currently return custom (uploaded) profiles, so this is always &quot;custom&quot; today.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @JsonSetter(value = "source", nulls = Nulls.SKIP)
-        public Builder source(Optional<ProfileSummarySource> source) {
-            this.source = source;
-            return this;
-        }
-
-        public Builder source(ProfileSummarySource source) {
-            this.source = Optional.ofNullable(source);
+        @java.lang.Override
+        @JsonSetter("source")
+        public ResourceTypeStage source(@NotNull ProfileSummarySource source) {
+            this.source = Objects.requireNonNull(source, "source must not be null");
             return this;
         }
 
         /**
          * <p>The FHIR resource type from the StructureDefinition.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @JsonSetter(value = "resource_type", nulls = Nulls.SKIP)
-        public Builder resourceType(Optional<String> resourceType) {
-            this.resourceType = resourceType;
-            return this;
-        }
-
-        public Builder resourceType(String resourceType) {
-            this.resourceType = Optional.ofNullable(resourceType);
+        @java.lang.Override
+        @JsonSetter("resource_type")
+        public UrlStage resourceType(@NotNull String resourceType) {
+            this.resourceType = Objects.requireNonNull(resourceType, "resourceType must not be null");
             return this;
         }
 
         /**
          * <p>The canonical URL from the StructureDefinition.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @JsonSetter(value = "url", nulls = Nulls.SKIP)
-        public Builder url(Optional<String> url) {
-            this.url = url;
-            return this;
-        }
-
-        public Builder url(String url) {
-            this.url = Optional.ofNullable(url);
+        @java.lang.Override
+        @JsonSetter("url")
+        public VersionStage url(@NotNull String url) {
+            this.url = Objects.requireNonNull(url, "url must not be null");
             return this;
         }
 
         /**
          * <p>The version from the StructureDefinition.version field.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @JsonSetter(value = "version", nulls = Nulls.SKIP)
-        public Builder version(Optional<String> version) {
-            this.version = version;
+        @java.lang.Override
+        @JsonSetter("version")
+        public CanonicalStage version(@NotNull String version) {
+            this.version = Objects.requireNonNull(version, "version must not be null");
             return this;
         }
 
-        public Builder version(String version) {
-            this.version = Optional.ofNullable(version);
+        /**
+         * <p>The canonical profile reference, including the version pin when present.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        @JsonSetter("canonical")
+        public FhirVersionStage canonical(@NotNull String canonical) {
+            this.canonical = Objects.requireNonNull(canonical, "canonical must not be null");
             return this;
         }
 
         /**
          * <p>The base FHIR version the StructureDefinition targets.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @JsonSetter(value = "fhir_version", nulls = Nulls.SKIP)
-        public Builder fhirVersion(Optional<String> fhirVersion) {
-            this.fhirVersion = fhirVersion;
-            return this;
-        }
-
-        public Builder fhirVersion(String fhirVersion) {
-            this.fhirVersion = Optional.ofNullable(fhirVersion);
+        @java.lang.Override
+        @JsonSetter("fhir_version")
+        public ImplementationGuideStage fhirVersion(@NotNull String fhirVersion) {
+            this.fhirVersion = Objects.requireNonNull(fhirVersion, "fhirVersion must not be null");
             return this;
         }
 
         /**
          * <p>The implementation guide the profile belongs to.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
          */
-        @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
-        public Builder implementationGuide(Optional<String> implementationGuide) {
-            this.implementationGuide = implementationGuide;
+        @java.lang.Override
+        @JsonSetter("implementation_guide")
+        public CreatedAtStage implementationGuide(@NotNull String implementationGuide) {
+            this.implementationGuide =
+                    Objects.requireNonNull(implementationGuide, "implementationGuide must not be null");
             return this;
         }
 
-        public Builder implementationGuide(String implementationGuide) {
-            this.implementationGuide = Optional.ofNullable(implementationGuide);
+        @java.lang.Override
+        @JsonSetter("created_at")
+        public UpdatedAtStage createdAt(@NotNull OffsetDateTime createdAt) {
+            this.createdAt = Objects.requireNonNull(createdAt, "createdAt must not be null");
             return this;
         }
 
-        @JsonSetter(value = "created_at", nulls = Nulls.SKIP)
-        public Builder createdAt(Optional<OffsetDateTime> createdAt) {
-            this.createdAt = createdAt;
+        /**
+         * <p>Last update timestamp for the profile's current StructureDefinition. For retained versions, this equals <code>created_at</code>.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        @JsonSetter("updated_at")
+        public _FinalStage updatedAt(@NotNull OffsetDateTime updatedAt) {
+            this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
             return this;
         }
 
-        public Builder createdAt(OffsetDateTime createdAt) {
-            this.createdAt = Optional.ofNullable(createdAt);
+        /**
+         * <p>The authored publication date from StructureDefinition.date, when present. This is a FHIR dateTime string and may be less precise than a full timestamp.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage date(String date) {
+            this.date = Optional.ofNullable(date);
             return this;
         }
 
-        @JsonSetter(value = "updated_at", nulls = Nulls.SKIP)
-        public Builder updatedAt(Optional<OffsetDateTime> updatedAt) {
-            this.updatedAt = updatedAt;
+        /**
+         * <p>The authored publication date from StructureDefinition.date, when present. This is a FHIR dateTime string and may be less precise than a full timestamp.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "date", nulls = Nulls.SKIP)
+        public _FinalStage date(Optional<String> date) {
+            this.date = date;
             return this;
         }
 
-        public Builder updatedAt(OffsetDateTime updatedAt) {
-            this.updatedAt = Optional.ofNullable(updatedAt);
+        /**
+         * <p>The publication status from StructureDefinition.status. Expected FHIR values include <code>draft</code>, <code>active</code>, <code>retired</code>, and <code>unknown</code>; the server preserves authored strings.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage status(String status) {
+            this.status = Optional.ofNullable(status);
             return this;
         }
 
+        /**
+         * <p>The publication status from StructureDefinition.status. Expected FHIR values include <code>draft</code>, <code>active</code>, <code>retired</code>, and <code>unknown</code>; the server preserves authored strings.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "status", nulls = Nulls.SKIP)
+        public _FinalStage status(Optional<String> status) {
+            this.status = status;
+            return this;
+        }
+
+        @java.lang.Override
         public ProfileSummary build() {
             return new ProfileSummary(
                     id,
@@ -349,6 +538,9 @@ public final class ProfileSummary implements IProfileSummary {
                     resourceType,
                     url,
                     version,
+                    status,
+                    date,
+                    canonical,
                     fhirVersion,
                     implementationGuide,
                     createdAt,
@@ -356,11 +548,13 @@ public final class ProfileSummary implements IProfileSummary {
                     additionalProperties);
         }
 
+        @java.lang.Override
         public Builder additionalProperty(String key, Object value) {
             this.additionalProperties.put(key, value);
             return this;
         }
 
+        @java.lang.Override
         public Builder additionalProperties(Map<String, Object> additionalProperties) {
             this.additionalProperties.putAll(additionalProperties);
             return this;
