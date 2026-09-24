@@ -66,7 +66,7 @@ public final class ResourceReviewFlagged {
     }
 
     /**
-     * @return The unsupported fields that caused the resource to be flagged.
+     * @return The findings that caused the resource to be quarantined.
      */
     @JsonProperty("findings")
     public Optional<List<ResourceReviewFinding>> getFindings() {
@@ -168,7 +168,7 @@ public final class ResourceReviewFlagged {
         }
 
         /**
-         * <p>The unsupported fields that caused the resource to be flagged.</p>
+         * <p>The findings that caused the resource to be quarantined.</p>
          */
         @JsonSetter(value = "findings", nulls = Nulls.SKIP)
         public Builder findings(Optional<List<ResourceReviewFinding>> findings) {
