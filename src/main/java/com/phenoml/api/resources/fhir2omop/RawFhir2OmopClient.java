@@ -35,116 +35,292 @@ public class RawFhir2OmopClient {
     }
 
     /**
-     * Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows
-     * (person, visit_occurrence, condition_occurrence, drug_exposure,
-     * procedure_occurrence, measurement, observation).
-     * <p>Resource support is intentionally limited to the OMOP tables returned by
-     * this endpoint:</p>
+     * Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows,
+     * grouped by destination table in <code>tables</code>.
+     * <p>Standards basis: <a href="https://hl7.org/fhir/R4/">FHIR R4 (v4.0.1)</a> defines
+     * the accepted source elements and <a href="https://ohdsi.github.io/CommonDataModel/cdm54.html">OMOP CDM
+     * v5.4</a> defines the
+     * output columns. The published <a href="https://hl7.org/fhir/uv/omop/">Vulcan FHIR-to-OMOP IG
+     * v1.0.0</a> is an informative FHIR R5
+     * baseline; this endpoint documents and implements the equivalent R4
+     * source elements, rather than accepting R5-only fields.</p>
+     * <p>This response is a source-faithful mapping result, not a complete CDM
+     * load pipeline. CDM v5.4 requires <code>drug_exposure_end_date</code>; when a FHIR
+     * medication source supplies neither an explicit end nor a safe
+     * instantaneous-event interpretation, the response leaves the end absent
+     * rather than inferring it from a validity period, quantity, dose, or
+     * refill count. A downstream ETL must apply its own documented duration
+     * policy before loading such rows into a strictly conformant CDM instance.</p>
+     * <p>Current resource coverage:</p>
      * <ul>
-     * <li><code>Patient</code> -&gt; <code>person</code></li>
+     * <li><code>Patient</code> -&gt; <code>person</code>; <code>deceased[x]</code> can also produce <code>death</code>, and the
+     * first address can produce <code>location</code></li>
+     * <li><code>observation_period</code> -&gt; one request-local derived row per person with
+     * valid dated visit, clinical, or death rows, spanning those dates; this
+     * is not enrollment or capture-completeness evidence</li>
+     * <li><code>Location</code> -&gt; <code>location</code> and <code>care_site</code></li>
+     * <li><code>Organization</code> -&gt; <code>care_site</code>; its first address can produce <code>location</code></li>
+     * <li><code>HealthcareService</code> -&gt; <code>care_site</code></li>
+     * <li><code>Practitioner</code> and <code>PractitionerRole</code> -&gt; <code>provider</code></li>
      * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
      * <li><code>Condition</code> -&gt; <code>condition_occurrence</code></li>
      * <li><code>Procedure</code> -&gt; <code>procedure_occurrence</code></li>
      * <li><code>MedicationRequest</code>, <code>MedicationStatement</code>, and
      * <code>MedicationAdministration</code> -&gt; <code>drug_exposure</code></li>
      * <li><code>Immunization</code> -&gt; <code>drug_exposure</code></li>
-     * <li><code>Observation</code> with a numeric <code>valueQuantity</code>, <code>valueInteger</code>, or
-     * numeric-looking <code>valueString</code> (for example <code>&quot;&lt;2&quot;</code>) -&gt; <code>measurement</code></li>
-     * <li>non-numeric <code>Observation</code> -&gt; <code>observation</code></li>
+     * <li><code>Observation</code> -&gt; <code>measurement</code> or <code>observation</code>. For coded
+     * Observations, the resolved OMOP concept domain selects the table; value
+     * form only breaks ties. For text-only Observations, numeric values route
+     * to <code>measurement</code> and nonnumeric values to <code>observation</code>.</li>
      * <li><code>AllergyIntolerance</code> -&gt; <code>observation</code></li>
      * </ul>
-     * <p><code>Medication</code> is supported only as reference data for medication
-     * resources; it is not emitted as its own row because OMOP CDM has no
-     * Medication table. Other reference/admin resources such as <code>Practitioner</code>,
-     * <code>Organization</code>, <code>Location</code>, <code>Coverage</code>, and <code>Claim</code>, and clinical
-     * workflow/document resources such as <code>DiagnosticReport</code>, <code>ServiceRequest</code>,
-     * <code>CarePlan</code>, <code>DocumentReference</code>, <code>Composition</code>, <code>Specimen</code>, and
-     * <code>DeviceUseStatement</code>, are currently accepted in a Bundle but are not
-     * shaped into OMOP rows. Unsupported resource types are ignored rather than
-     * listed under <code>dropped</code>; <code>dropped</code> is reserved for supported resource types
-     * that were missing the subject/patient, code, or medication reference data
-     * needed to produce a valid row.</p>
-     * <p>Each resource's primary clinical coding is resolved to a standard OMOP
-     * <code>concept_id</code>. Alongside the OMOP rows grouped by table (<code>tables</code>), the
-     * response carries <code>mappings</code> (how each source coding resolved, linked back
-     * to the row it produced), <code>dropped</code> (resources that could not be shaped
-     * into a row), <code>vocab_version</code> (the OMOP vocabulary release codes were
-     * resolved against), and a small <code>summary</code> of the resolution outcomes.</p>
+     * <p><code>Medication</code> is reference data for medication resources; it does not
+     * create its own row because OMOP CDM has no Medication table. Administrative
+     * linkages (provider, care site, and location) are best-effort and limited to
+     * references supplied in the request. Their supporting concepts, including
+     * provider specialty, country, and place of service, are not mapped.</p>
+     * <p><code>DiagnosticReport</code>, <code>ServiceRequest</code>, <code>CarePlan</code>, <code>DocumentReference</code>,
+     * <code>Composition</code>, <code>Specimen</code>, <code>DeviceUseStatement</code>, <code>Coverage</code>, <code>Claim</code>, and
+     * other unsupported resource types are accepted in a Bundle but ignored: they
+     * create no row and no <code>dropped</code> entry. <code>dropped</code> is reserved for supported
+     * row-producing resources that could not be shaped because the subject/patient,
+     * clinical code/text, or medication data was not usable. A single-Patient
+     * Bundle can attribute a supported clinical resource with a missing or
+     * unresolvable subject to that sole person; in a multi-Patient Bundle, that
+     * resource is dropped instead.</p>
+     * <p>Coded Observation routing is selected from the resolved OMOP concept
+     * domain. Numeric and nonnumeric <code>value[x]</code> forms establish the preferred
+     * target only when the code is valid for both tables. A text-only
+     * Observation has no resolver target, so numeric values route to
+     * <code>measurement</code> and nonnumeric values to <code>observation</code>. Numeric values
+     * populate <code>value_as_number</code> in the selected row; nonnumeric values
+     * populate <code>value_as_string</code> for an <code>observation</code> or <code>value_source_value</code>
+     * for a <code>measurement</code>. <code>valueCodeableConcept</code> remains source text and does
+     * not populate <code>value_as_concept_id</code>; other unsupported <code>value[x]</code> forms
+     * and Observation components do not populate separate converted values. A
+     * numeric comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) is represented only by a
+     * measurement's <code>operator_concept_id</code>; units remain source text and have
+     * <code>unit_concept_id</code> of <code>0</code>.</p>
+     * <p>A standard OMOP <code>concept_id</code> is selected for each primary clinical coding
+     * after considering all of the resource's supplied codings. An unambiguous
+     * coded medication route is resolved independently to
+     * <code>drug_exposure.route_concept_id</code>. Alongside the OMOP rows grouped by
+     * table (<code>tables</code>), the response carries <code>mappings</code> (an entry for every
+     * supported source coding that is sent to resolution, linked back to the
+     * row it produced),
+     * <code>dropped</code> (resources that could not be shaped into a row),
+     * <code>vocab_version</code> (the OMOP vocabulary release codes were resolved
+     * against), and a small <code>summary</code> of the resolution outcomes.</p>
      * <p>A <code>concept_id</code> of <code>0</code> is reported, not omitted (OMOP &quot;no matching
      * concept&quot; semantics): it covers both a coding with no standard match
      * (<code>UNMAPPED</code>) and an unverified suggestion for a text-only resource
-     * (<code>UNCHECKED</code>). Only the primary clinical coding is resolved, so
-     * <code>gender</code>/<code>race</code>/<code>ethnicity</code>/<code>visit</code>/<code>value</code>/<code>unit</code> <code>concept_id</code>s are
-     * always <code>0</code>; the one populated non-resolved concept is measurement
+     * (<code>UNCHECKED</code>). Demographic, visit, categorical-value, and unit concept
+     * fields currently remain <code>0</code>; the one populated non-resolved concept is
+     * measurement
      * <code>operator_concept_id</code>, set from a value comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>)
-     * rather than the resolver. Each <code>*_source_value</code> carries the verbatim FHIR
-     * coding (<code>system#code</code>), and <code>*_type_concept_id</code> is set to <code>32817</code> (EHR).</p>
+     * rather than terminology resolution. Clinical <code>*_source_value</code> fields
+     * preserve the selected FHIR coding (<code>system#code</code>, or <code>code</code> when no
+     * system is supplied), falling back to source text for text-only resources.
+     * Known OID-form coding systems are accepted as either FHIR OID URNs (for
+     * example, <code>urn:oid:2.16.840.1.113883.6.1</code> for LOINC) or bare OIDs, and
+     * are normalized to their canonical system URLs before terminology
+     * resolution. <code>*_source_value</code> and <code>mappings[].source_system</code> report that
+     * canonical URL, so the OID and URL forms produce the same mapping. An
+     * unknown OID is not rewritten and may be <code>UNMAPPED</code>.
+     * Other <code>*_source_value</code> fields preserve row-specific raw source values,
+     * such as resource identifiers, names, units, or status codes.
+     * <code>MedicationRequest</code> uses <code>32838</code> (EHR prescription) for
+     * <code>drug_type_concept_id</code>; other current resources use <code>32817</code> (EHR). This
+     * is a coarse provenance policy: it does not infer patient-reported,
+     * medication-history, or other more-specific type concepts from FHIR
+     * status fields.</p>
+     * <p>Direct FHIR R4 timing and medication detail policy:</p>
+     * <ul>
+     * <li><code>MedicationStatement.effectiveDateTime</code> and <code>effectivePeriod.start</code>
+     * populate drug start fields; <code>effectivePeriod.end</code> also populates drug
+     * end date/datetime and <code>verbatim_end_date</code>. <code>dateAsserted</code> is recorded
+     * time, not exposure timing.</li>
+     * <li><code>MedicationAdministration.effectiveDateTime</code> is a single-event,
+     * same-day exposure; an explicit <code>effectivePeriod.end</code> populates
+     * source-supported end and verbatim-end fields. A start-only
+     * administration period keeps its start and leaves the end absent.
+     * <code>Immunization.occurrenceDateTime</code> is also a single-event, same-day
+     * exposure.</li>
+     * <li><code>MedicationRequest.authoredOn</code> is an order-date start fallback, not
+     * proof of administration. Direct allowed repeats, whole-day expected
+     * supply, and all non-empty dosage text are preserved; its validity
+     * period is not exposure duration.</li>
+     * <li>Coded dosage routes and <code>Immunization.route</code> are target-validated in
+     * the OMOP Route domain. Conflicting routes are left unset; route
+     * codings shared by every dosage instruction identify the same route.
+     * <code>Immunization.lotNumber</code> is preserved; its <code>expirationDate</code> is not an
+     * exposure end.</li>
+     * <li><code>Condition.abatementDateTime</code> and <code>abatementPeriod.end</code> populate
+     * <code>condition_end_date</code>. Core CDM v5.4 has no procedure-end column.</li>
+     * </ul>
      * <p>Medication codes are resolved whether they appear inline
      * (<code>medicationCodeableConcept</code>) or via a <code>medicationReference</code> to a contained,
      * relative (<code>Type/id</code>), or bundle-entry (<code>urn:uuid</code>) <code>Medication</code> resource.
      * Resources that cannot be shaped into a row — a medication with no usable
      * code, resolvable reference, or display, or any clinical resource whose
      * subject/patient reference cannot be tied to a person — are reported under
-     * <code>dropped</code> rather than emitted as blank rows. The
-     * bundle must contain at least one Patient resource.</p>
+     * <code>dropped</code> rather than emitted as blank rows. The Bundle must contain at
+     * least one Patient resource.</p>
+     * <p>All row IDs start at <code>1</code> for each request and are not stable or global.
+     * For clinical conversion rows whose resource supplies an <code>id</code>, <code>mappings</code>
+     * associates each row with that source FHIR resource ID. A <code>person</code> row
+     * retains the Patient ID or its first identifier value in
+     * <code>person_source_value</code>, when present; other reference and derived rows do
+     * not uniformly carry a FHIR resource ID. Input resources without those
+     * source identifiers cannot be correlated across responses from the
+     * returned rows alone. Consumers combining responses need to establish
+     * their own stable keys and remap every primary and foreign key together.</p>
      */
     public PhenomlClientHttpResponse<CreateOmopResponse> create(CreateOmopRequest request) {
         return create(request, null);
     }
 
     /**
-     * Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows
-     * (person, visit_occurrence, condition_occurrence, drug_exposure,
-     * procedure_occurrence, measurement, observation).
-     * <p>Resource support is intentionally limited to the OMOP tables returned by
-     * this endpoint:</p>
+     * Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows,
+     * grouped by destination table in <code>tables</code>.
+     * <p>Standards basis: <a href="https://hl7.org/fhir/R4/">FHIR R4 (v4.0.1)</a> defines
+     * the accepted source elements and <a href="https://ohdsi.github.io/CommonDataModel/cdm54.html">OMOP CDM
+     * v5.4</a> defines the
+     * output columns. The published <a href="https://hl7.org/fhir/uv/omop/">Vulcan FHIR-to-OMOP IG
+     * v1.0.0</a> is an informative FHIR R5
+     * baseline; this endpoint documents and implements the equivalent R4
+     * source elements, rather than accepting R5-only fields.</p>
+     * <p>This response is a source-faithful mapping result, not a complete CDM
+     * load pipeline. CDM v5.4 requires <code>drug_exposure_end_date</code>; when a FHIR
+     * medication source supplies neither an explicit end nor a safe
+     * instantaneous-event interpretation, the response leaves the end absent
+     * rather than inferring it from a validity period, quantity, dose, or
+     * refill count. A downstream ETL must apply its own documented duration
+     * policy before loading such rows into a strictly conformant CDM instance.</p>
+     * <p>Current resource coverage:</p>
      * <ul>
-     * <li><code>Patient</code> -&gt; <code>person</code></li>
+     * <li><code>Patient</code> -&gt; <code>person</code>; <code>deceased[x]</code> can also produce <code>death</code>, and the
+     * first address can produce <code>location</code></li>
+     * <li><code>observation_period</code> -&gt; one request-local derived row per person with
+     * valid dated visit, clinical, or death rows, spanning those dates; this
+     * is not enrollment or capture-completeness evidence</li>
+     * <li><code>Location</code> -&gt; <code>location</code> and <code>care_site</code></li>
+     * <li><code>Organization</code> -&gt; <code>care_site</code>; its first address can produce <code>location</code></li>
+     * <li><code>HealthcareService</code> -&gt; <code>care_site</code></li>
+     * <li><code>Practitioner</code> and <code>PractitionerRole</code> -&gt; <code>provider</code></li>
      * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
      * <li><code>Condition</code> -&gt; <code>condition_occurrence</code></li>
      * <li><code>Procedure</code> -&gt; <code>procedure_occurrence</code></li>
      * <li><code>MedicationRequest</code>, <code>MedicationStatement</code>, and
      * <code>MedicationAdministration</code> -&gt; <code>drug_exposure</code></li>
      * <li><code>Immunization</code> -&gt; <code>drug_exposure</code></li>
-     * <li><code>Observation</code> with a numeric <code>valueQuantity</code>, <code>valueInteger</code>, or
-     * numeric-looking <code>valueString</code> (for example <code>&quot;&lt;2&quot;</code>) -&gt; <code>measurement</code></li>
-     * <li>non-numeric <code>Observation</code> -&gt; <code>observation</code></li>
+     * <li><code>Observation</code> -&gt; <code>measurement</code> or <code>observation</code>. For coded
+     * Observations, the resolved OMOP concept domain selects the table; value
+     * form only breaks ties. For text-only Observations, numeric values route
+     * to <code>measurement</code> and nonnumeric values to <code>observation</code>.</li>
      * <li><code>AllergyIntolerance</code> -&gt; <code>observation</code></li>
      * </ul>
-     * <p><code>Medication</code> is supported only as reference data for medication
-     * resources; it is not emitted as its own row because OMOP CDM has no
-     * Medication table. Other reference/admin resources such as <code>Practitioner</code>,
-     * <code>Organization</code>, <code>Location</code>, <code>Coverage</code>, and <code>Claim</code>, and clinical
-     * workflow/document resources such as <code>DiagnosticReport</code>, <code>ServiceRequest</code>,
-     * <code>CarePlan</code>, <code>DocumentReference</code>, <code>Composition</code>, <code>Specimen</code>, and
-     * <code>DeviceUseStatement</code>, are currently accepted in a Bundle but are not
-     * shaped into OMOP rows. Unsupported resource types are ignored rather than
-     * listed under <code>dropped</code>; <code>dropped</code> is reserved for supported resource types
-     * that were missing the subject/patient, code, or medication reference data
-     * needed to produce a valid row.</p>
-     * <p>Each resource's primary clinical coding is resolved to a standard OMOP
-     * <code>concept_id</code>. Alongside the OMOP rows grouped by table (<code>tables</code>), the
-     * response carries <code>mappings</code> (how each source coding resolved, linked back
-     * to the row it produced), <code>dropped</code> (resources that could not be shaped
-     * into a row), <code>vocab_version</code> (the OMOP vocabulary release codes were
-     * resolved against), and a small <code>summary</code> of the resolution outcomes.</p>
+     * <p><code>Medication</code> is reference data for medication resources; it does not
+     * create its own row because OMOP CDM has no Medication table. Administrative
+     * linkages (provider, care site, and location) are best-effort and limited to
+     * references supplied in the request. Their supporting concepts, including
+     * provider specialty, country, and place of service, are not mapped.</p>
+     * <p><code>DiagnosticReport</code>, <code>ServiceRequest</code>, <code>CarePlan</code>, <code>DocumentReference</code>,
+     * <code>Composition</code>, <code>Specimen</code>, <code>DeviceUseStatement</code>, <code>Coverage</code>, <code>Claim</code>, and
+     * other unsupported resource types are accepted in a Bundle but ignored: they
+     * create no row and no <code>dropped</code> entry. <code>dropped</code> is reserved for supported
+     * row-producing resources that could not be shaped because the subject/patient,
+     * clinical code/text, or medication data was not usable. A single-Patient
+     * Bundle can attribute a supported clinical resource with a missing or
+     * unresolvable subject to that sole person; in a multi-Patient Bundle, that
+     * resource is dropped instead.</p>
+     * <p>Coded Observation routing is selected from the resolved OMOP concept
+     * domain. Numeric and nonnumeric <code>value[x]</code> forms establish the preferred
+     * target only when the code is valid for both tables. A text-only
+     * Observation has no resolver target, so numeric values route to
+     * <code>measurement</code> and nonnumeric values to <code>observation</code>. Numeric values
+     * populate <code>value_as_number</code> in the selected row; nonnumeric values
+     * populate <code>value_as_string</code> for an <code>observation</code> or <code>value_source_value</code>
+     * for a <code>measurement</code>. <code>valueCodeableConcept</code> remains source text and does
+     * not populate <code>value_as_concept_id</code>; other unsupported <code>value[x]</code> forms
+     * and Observation components do not populate separate converted values. A
+     * numeric comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) is represented only by a
+     * measurement's <code>operator_concept_id</code>; units remain source text and have
+     * <code>unit_concept_id</code> of <code>0</code>.</p>
+     * <p>A standard OMOP <code>concept_id</code> is selected for each primary clinical coding
+     * after considering all of the resource's supplied codings. An unambiguous
+     * coded medication route is resolved independently to
+     * <code>drug_exposure.route_concept_id</code>. Alongside the OMOP rows grouped by
+     * table (<code>tables</code>), the response carries <code>mappings</code> (an entry for every
+     * supported source coding that is sent to resolution, linked back to the
+     * row it produced),
+     * <code>dropped</code> (resources that could not be shaped into a row),
+     * <code>vocab_version</code> (the OMOP vocabulary release codes were resolved
+     * against), and a small <code>summary</code> of the resolution outcomes.</p>
      * <p>A <code>concept_id</code> of <code>0</code> is reported, not omitted (OMOP &quot;no matching
      * concept&quot; semantics): it covers both a coding with no standard match
      * (<code>UNMAPPED</code>) and an unverified suggestion for a text-only resource
-     * (<code>UNCHECKED</code>). Only the primary clinical coding is resolved, so
-     * <code>gender</code>/<code>race</code>/<code>ethnicity</code>/<code>visit</code>/<code>value</code>/<code>unit</code> <code>concept_id</code>s are
-     * always <code>0</code>; the one populated non-resolved concept is measurement
+     * (<code>UNCHECKED</code>). Demographic, visit, categorical-value, and unit concept
+     * fields currently remain <code>0</code>; the one populated non-resolved concept is
+     * measurement
      * <code>operator_concept_id</code>, set from a value comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>)
-     * rather than the resolver. Each <code>*_source_value</code> carries the verbatim FHIR
-     * coding (<code>system#code</code>), and <code>*_type_concept_id</code> is set to <code>32817</code> (EHR).</p>
+     * rather than terminology resolution. Clinical <code>*_source_value</code> fields
+     * preserve the selected FHIR coding (<code>system#code</code>, or <code>code</code> when no
+     * system is supplied), falling back to source text for text-only resources.
+     * Known OID-form coding systems are accepted as either FHIR OID URNs (for
+     * example, <code>urn:oid:2.16.840.1.113883.6.1</code> for LOINC) or bare OIDs, and
+     * are normalized to their canonical system URLs before terminology
+     * resolution. <code>*_source_value</code> and <code>mappings[].source_system</code> report that
+     * canonical URL, so the OID and URL forms produce the same mapping. An
+     * unknown OID is not rewritten and may be <code>UNMAPPED</code>.
+     * Other <code>*_source_value</code> fields preserve row-specific raw source values,
+     * such as resource identifiers, names, units, or status codes.
+     * <code>MedicationRequest</code> uses <code>32838</code> (EHR prescription) for
+     * <code>drug_type_concept_id</code>; other current resources use <code>32817</code> (EHR). This
+     * is a coarse provenance policy: it does not infer patient-reported,
+     * medication-history, or other more-specific type concepts from FHIR
+     * status fields.</p>
+     * <p>Direct FHIR R4 timing and medication detail policy:</p>
+     * <ul>
+     * <li><code>MedicationStatement.effectiveDateTime</code> and <code>effectivePeriod.start</code>
+     * populate drug start fields; <code>effectivePeriod.end</code> also populates drug
+     * end date/datetime and <code>verbatim_end_date</code>. <code>dateAsserted</code> is recorded
+     * time, not exposure timing.</li>
+     * <li><code>MedicationAdministration.effectiveDateTime</code> is a single-event,
+     * same-day exposure; an explicit <code>effectivePeriod.end</code> populates
+     * source-supported end and verbatim-end fields. A start-only
+     * administration period keeps its start and leaves the end absent.
+     * <code>Immunization.occurrenceDateTime</code> is also a single-event, same-day
+     * exposure.</li>
+     * <li><code>MedicationRequest.authoredOn</code> is an order-date start fallback, not
+     * proof of administration. Direct allowed repeats, whole-day expected
+     * supply, and all non-empty dosage text are preserved; its validity
+     * period is not exposure duration.</li>
+     * <li>Coded dosage routes and <code>Immunization.route</code> are target-validated in
+     * the OMOP Route domain. Conflicting routes are left unset; route
+     * codings shared by every dosage instruction identify the same route.
+     * <code>Immunization.lotNumber</code> is preserved; its <code>expirationDate</code> is not an
+     * exposure end.</li>
+     * <li><code>Condition.abatementDateTime</code> and <code>abatementPeriod.end</code> populate
+     * <code>condition_end_date</code>. Core CDM v5.4 has no procedure-end column.</li>
+     * </ul>
      * <p>Medication codes are resolved whether they appear inline
      * (<code>medicationCodeableConcept</code>) or via a <code>medicationReference</code> to a contained,
      * relative (<code>Type/id</code>), or bundle-entry (<code>urn:uuid</code>) <code>Medication</code> resource.
      * Resources that cannot be shaped into a row — a medication with no usable
      * code, resolvable reference, or display, or any clinical resource whose
      * subject/patient reference cannot be tied to a person — are reported under
-     * <code>dropped</code> rather than emitted as blank rows. The
-     * bundle must contain at least one Patient resource.</p>
+     * <code>dropped</code> rather than emitted as blank rows. The Bundle must contain at
+     * least one Patient resource.</p>
+     * <p>All row IDs start at <code>1</code> for each request and are not stable or global.
+     * For clinical conversion rows whose resource supplies an <code>id</code>, <code>mappings</code>
+     * associates each row with that source FHIR resource ID. A <code>person</code> row
+     * retains the Patient ID or its first identifier value in
+     * <code>person_source_value</code>, when present; other reference and derived rows do
+     * not uniformly carry a FHIR resource ID. Input resources without those
+     * source identifiers cannot be correlated across responses from the
+     * returned rows alone. Consumers combining responses need to establish
+     * their own stable keys and remap every primary and foreign key together.</p>
      */
     public PhenomlClientHttpResponse<CreateOmopResponse> create(
             CreateOmopRequest request, RequestOptions requestOptions) {

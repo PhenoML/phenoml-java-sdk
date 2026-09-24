@@ -72,7 +72,7 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return One entry per source coding (or one entry for a text-only resource with no coding), describing how it resolved and linking back to the row it produced.
+     * @return One entry per supported source coding (or one entry for a text-only primary resource with no coding), describing how it resolved and linking back to the row it produced. A coded route is a separate entry linked to its medication or vaccine row.
      */
     @JsonProperty("mappings")
     public Optional<List<MappingEntry>> getMappings() {
@@ -91,9 +91,9 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return The OMOP vocabulary release the clinical codes were resolved against
-     * (e.g. &quot;v20240229&quot;), for reproducibility. Present when at least one
-     * coded concept was resolved.
+     * @return The OMOP vocabulary release returned for coded concept resolution
+     * (for example, &quot;v20240229&quot;), for reproducibility. It is generally
+     * absent for requests containing only text-only resources.
      */
     @JsonProperty("vocab_version")
     public Optional<String> getVocabVersion() {
@@ -207,7 +207,7 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>One entry per source coding (or one entry for a text-only resource with no coding), describing how it resolved and linking back to the row it produced.</p>
+         * <p>One entry per supported source coding (or one entry for a text-only primary resource with no coding), describing how it resolved and linking back to the row it produced. A coded route is a separate entry linked to its medication or vaccine row.</p>
          */
         @JsonSetter(value = "mappings", nulls = Nulls.SKIP)
         public Builder mappings(Optional<List<MappingEntry>> mappings) {
@@ -238,9 +238,9 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>The OMOP vocabulary release the clinical codes were resolved against
-         * (e.g. &quot;v20240229&quot;), for reproducibility. Present when at least one
-         * coded concept was resolved.</p>
+         * <p>The OMOP vocabulary release returned for coded concept resolution
+         * (for example, &quot;v20240229&quot;), for reproducibility. It is generally
+         * absent for requests containing only text-only resources.</p>
          */
         @JsonSetter(value = "vocab_version", nulls = Nulls.SKIP)
         public Builder vocabVersion(Optional<String> vocabVersion) {

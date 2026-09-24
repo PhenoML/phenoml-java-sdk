@@ -32,11 +32,23 @@ public final class DrugExposureRow {
 
     private final Optional<String> drugExposureEndDate;
 
+    private final Optional<String> drugExposureEndDatetime;
+
+    private final Optional<String> verbatimEndDate;
+
     private final Optional<Long> drugTypeConceptId;
 
     private final Optional<String> stopReason;
 
+    private final Optional<Long> refills;
+
+    private final Optional<Long> daysSupply;
+
     private final Optional<String> sig;
+
+    private final Optional<Long> routeConceptId;
+
+    private final Optional<String> lotNumber;
 
     private final Optional<Long> visitOccurrenceId;
 
@@ -45,6 +57,8 @@ public final class DrugExposureRow {
     private final Optional<String> drugSourceValue;
 
     private final Optional<Long> drugSourceConceptId;
+
+    private final Optional<String> routeSourceValue;
 
     private final Map<String, Object> additionalProperties;
 
@@ -55,13 +69,20 @@ public final class DrugExposureRow {
             Optional<String> drugExposureStartDate,
             Optional<String> drugExposureStartDatetime,
             Optional<String> drugExposureEndDate,
+            Optional<String> drugExposureEndDatetime,
+            Optional<String> verbatimEndDate,
             Optional<Long> drugTypeConceptId,
             Optional<String> stopReason,
+            Optional<Long> refills,
+            Optional<Long> daysSupply,
             Optional<String> sig,
+            Optional<Long> routeConceptId,
+            Optional<String> lotNumber,
             Optional<Long> visitOccurrenceId,
             Optional<Long> providerId,
             Optional<String> drugSourceValue,
             Optional<Long> drugSourceConceptId,
+            Optional<String> routeSourceValue,
             Map<String, Object> additionalProperties) {
         this.drugExposureId = drugExposureId;
         this.personId = personId;
@@ -69,13 +90,20 @@ public final class DrugExposureRow {
         this.drugExposureStartDate = drugExposureStartDate;
         this.drugExposureStartDatetime = drugExposureStartDatetime;
         this.drugExposureEndDate = drugExposureEndDate;
+        this.drugExposureEndDatetime = drugExposureEndDatetime;
+        this.verbatimEndDate = verbatimEndDate;
         this.drugTypeConceptId = drugTypeConceptId;
         this.stopReason = stopReason;
+        this.refills = refills;
+        this.daysSupply = daysSupply;
         this.sig = sig;
+        this.routeConceptId = routeConceptId;
+        this.lotNumber = lotNumber;
         this.visitOccurrenceId = visitOccurrenceId;
         this.providerId = providerId;
         this.drugSourceValue = drugSourceValue;
         this.drugSourceConceptId = drugSourceConceptId;
+        this.routeSourceValue = routeSourceValue;
         this.additionalProperties = additionalProperties;
     }
 
@@ -94,19 +122,44 @@ public final class DrugExposureRow {
         return drugConceptId;
     }
 
+    /**
+     * @return Date from the resource-specific direct timing source, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn.
+     */
     @JsonProperty("drug_exposure_start_date")
     public Optional<String> getDrugExposureStartDate() {
         return drugExposureStartDate;
     }
 
+    /**
+     * @return Date-time precision from the resource-specific direct timing source when supplied.
+     */
     @JsonProperty("drug_exposure_start_datetime")
     public Optional<String> getDrugExposureStartDatetime() {
         return drugExposureStartDatetime;
     }
 
+    /**
+     * @return Explicit FHIR Period end, or same-day inferred end for a structured instantaneous administration or immunization. Omitted when no source-supported end is available.
+     */
     @JsonProperty("drug_exposure_end_date")
     public Optional<String> getDrugExposureEndDate() {
         return drugExposureEndDate;
+    }
+
+    /**
+     * @return Date-time precision from an explicit FHIR Period end or a structured instantaneous administration or immunization.
+     */
+    @JsonProperty("drug_exposure_end_datetime")
+    public Optional<String> getDrugExposureEndDatetime() {
+        return drugExposureEndDatetime;
+    }
+
+    /**
+     * @return Date from an explicit FHIR Period.end only; inferred same-day ends are not verbatim source values.
+     */
+    @JsonProperty("verbatim_end_date")
+    public Optional<String> getVerbatimEndDate() {
+        return verbatimEndDate;
     }
 
     @JsonProperty("drug_type_concept_id")
@@ -119,9 +172,44 @@ public final class DrugExposureRow {
         return stopReason;
     }
 
+    /**
+     * @return Direct MedicationRequest.dispenseRequest.numberOfRepeatsAllowed value, when supplied.
+     */
+    @JsonProperty("refills")
+    public Optional<Long> getRefills() {
+        return refills;
+    }
+
+    /**
+     * @return Direct positive whole-day MedicationRequest.dispenseRequest.expectedSupplyDuration; no dose or quantity conversion is applied.
+     */
+    @JsonProperty("days_supply")
+    public Optional<Long> getDaysSupply() {
+        return daysSupply;
+    }
+
+    /**
+     * @return Newline-joined non-empty FHIR Dosage.text instructions in source order.
+     */
     @JsonProperty("sig")
     public Optional<String> getSig() {
         return sig;
+    }
+
+    /**
+     * @return Target-valid OMOP Route concept for an unambiguous coded FHIR route; <code>0</code> for an unmapped coded route, omitted for absent, text-only, or conflicting routes.
+     */
+    @JsonProperty("route_concept_id")
+    public Optional<Long> getRouteConceptId() {
+        return routeConceptId;
+    }
+
+    /**
+     * @return Direct FHIR R4 Immunization.lotNumber value.
+     */
+    @JsonProperty("lot_number")
+    public Optional<String> getLotNumber() {
+        return lotNumber;
     }
 
     @JsonProperty("visit_occurrence_id")
@@ -144,6 +232,14 @@ public final class DrugExposureRow {
         return drugSourceConceptId;
     }
 
+    /**
+     * @return Selected source coding or text for an unambiguous FHIR route.
+     */
+    @JsonProperty("route_source_value")
+    public Optional<String> getRouteSourceValue() {
+        return routeSourceValue;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -162,13 +258,20 @@ public final class DrugExposureRow {
                 && drugExposureStartDate.equals(other.drugExposureStartDate)
                 && drugExposureStartDatetime.equals(other.drugExposureStartDatetime)
                 && drugExposureEndDate.equals(other.drugExposureEndDate)
+                && drugExposureEndDatetime.equals(other.drugExposureEndDatetime)
+                && verbatimEndDate.equals(other.verbatimEndDate)
                 && drugTypeConceptId.equals(other.drugTypeConceptId)
                 && stopReason.equals(other.stopReason)
+                && refills.equals(other.refills)
+                && daysSupply.equals(other.daysSupply)
                 && sig.equals(other.sig)
+                && routeConceptId.equals(other.routeConceptId)
+                && lotNumber.equals(other.lotNumber)
                 && visitOccurrenceId.equals(other.visitOccurrenceId)
                 && providerId.equals(other.providerId)
                 && drugSourceValue.equals(other.drugSourceValue)
-                && drugSourceConceptId.equals(other.drugSourceConceptId);
+                && drugSourceConceptId.equals(other.drugSourceConceptId)
+                && routeSourceValue.equals(other.routeSourceValue);
     }
 
     @java.lang.Override
@@ -180,13 +283,20 @@ public final class DrugExposureRow {
                 this.drugExposureStartDate,
                 this.drugExposureStartDatetime,
                 this.drugExposureEndDate,
+                this.drugExposureEndDatetime,
+                this.verbatimEndDate,
                 this.drugTypeConceptId,
                 this.stopReason,
+                this.refills,
+                this.daysSupply,
                 this.sig,
+                this.routeConceptId,
+                this.lotNumber,
                 this.visitOccurrenceId,
                 this.providerId,
                 this.drugSourceValue,
-                this.drugSourceConceptId);
+                this.drugSourceConceptId,
+                this.routeSourceValue);
     }
 
     @java.lang.Override
@@ -212,11 +322,23 @@ public final class DrugExposureRow {
 
         private Optional<String> drugExposureEndDate = Optional.empty();
 
+        private Optional<String> drugExposureEndDatetime = Optional.empty();
+
+        private Optional<String> verbatimEndDate = Optional.empty();
+
         private Optional<Long> drugTypeConceptId = Optional.empty();
 
         private Optional<String> stopReason = Optional.empty();
 
+        private Optional<Long> refills = Optional.empty();
+
+        private Optional<Long> daysSupply = Optional.empty();
+
         private Optional<String> sig = Optional.empty();
+
+        private Optional<Long> routeConceptId = Optional.empty();
+
+        private Optional<String> lotNumber = Optional.empty();
 
         private Optional<Long> visitOccurrenceId = Optional.empty();
 
@@ -225,6 +347,8 @@ public final class DrugExposureRow {
         private Optional<String> drugSourceValue = Optional.empty();
 
         private Optional<Long> drugSourceConceptId = Optional.empty();
+
+        private Optional<String> routeSourceValue = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -238,13 +362,20 @@ public final class DrugExposureRow {
             drugExposureStartDate(other.getDrugExposureStartDate());
             drugExposureStartDatetime(other.getDrugExposureStartDatetime());
             drugExposureEndDate(other.getDrugExposureEndDate());
+            drugExposureEndDatetime(other.getDrugExposureEndDatetime());
+            verbatimEndDate(other.getVerbatimEndDate());
             drugTypeConceptId(other.getDrugTypeConceptId());
             stopReason(other.getStopReason());
+            refills(other.getRefills());
+            daysSupply(other.getDaysSupply());
             sig(other.getSig());
+            routeConceptId(other.getRouteConceptId());
+            lotNumber(other.getLotNumber());
             visitOccurrenceId(other.getVisitOccurrenceId());
             providerId(other.getProviderId());
             drugSourceValue(other.getDrugSourceValue());
             drugSourceConceptId(other.getDrugSourceConceptId());
+            routeSourceValue(other.getRouteSourceValue());
             return this;
         }
 
@@ -281,6 +412,9 @@ public final class DrugExposureRow {
             return this;
         }
 
+        /**
+         * <p>Date from the resource-specific direct timing source, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn.</p>
+         */
         @JsonSetter(value = "drug_exposure_start_date", nulls = Nulls.SKIP)
         public Builder drugExposureStartDate(Optional<String> drugExposureStartDate) {
             this.drugExposureStartDate = drugExposureStartDate;
@@ -292,6 +426,9 @@ public final class DrugExposureRow {
             return this;
         }
 
+        /**
+         * <p>Date-time precision from the resource-specific direct timing source when supplied.</p>
+         */
         @JsonSetter(value = "drug_exposure_start_datetime", nulls = Nulls.SKIP)
         public Builder drugExposureStartDatetime(Optional<String> drugExposureStartDatetime) {
             this.drugExposureStartDatetime = drugExposureStartDatetime;
@@ -303,6 +440,9 @@ public final class DrugExposureRow {
             return this;
         }
 
+        /**
+         * <p>Explicit FHIR Period end, or same-day inferred end for a structured instantaneous administration or immunization. Omitted when no source-supported end is available.</p>
+         */
         @JsonSetter(value = "drug_exposure_end_date", nulls = Nulls.SKIP)
         public Builder drugExposureEndDate(Optional<String> drugExposureEndDate) {
             this.drugExposureEndDate = drugExposureEndDate;
@@ -311,6 +451,34 @@ public final class DrugExposureRow {
 
         public Builder drugExposureEndDate(String drugExposureEndDate) {
             this.drugExposureEndDate = Optional.ofNullable(drugExposureEndDate);
+            return this;
+        }
+
+        /**
+         * <p>Date-time precision from an explicit FHIR Period end or a structured instantaneous administration or immunization.</p>
+         */
+        @JsonSetter(value = "drug_exposure_end_datetime", nulls = Nulls.SKIP)
+        public Builder drugExposureEndDatetime(Optional<String> drugExposureEndDatetime) {
+            this.drugExposureEndDatetime = drugExposureEndDatetime;
+            return this;
+        }
+
+        public Builder drugExposureEndDatetime(String drugExposureEndDatetime) {
+            this.drugExposureEndDatetime = Optional.ofNullable(drugExposureEndDatetime);
+            return this;
+        }
+
+        /**
+         * <p>Date from an explicit FHIR Period.end only; inferred same-day ends are not verbatim source values.</p>
+         */
+        @JsonSetter(value = "verbatim_end_date", nulls = Nulls.SKIP)
+        public Builder verbatimEndDate(Optional<String> verbatimEndDate) {
+            this.verbatimEndDate = verbatimEndDate;
+            return this;
+        }
+
+        public Builder verbatimEndDate(String verbatimEndDate) {
+            this.verbatimEndDate = Optional.ofNullable(verbatimEndDate);
             return this;
         }
 
@@ -336,6 +504,37 @@ public final class DrugExposureRow {
             return this;
         }
 
+        /**
+         * <p>Direct MedicationRequest.dispenseRequest.numberOfRepeatsAllowed value, when supplied.</p>
+         */
+        @JsonSetter(value = "refills", nulls = Nulls.SKIP)
+        public Builder refills(Optional<Long> refills) {
+            this.refills = refills;
+            return this;
+        }
+
+        public Builder refills(Long refills) {
+            this.refills = Optional.ofNullable(refills);
+            return this;
+        }
+
+        /**
+         * <p>Direct positive whole-day MedicationRequest.dispenseRequest.expectedSupplyDuration; no dose or quantity conversion is applied.</p>
+         */
+        @JsonSetter(value = "days_supply", nulls = Nulls.SKIP)
+        public Builder daysSupply(Optional<Long> daysSupply) {
+            this.daysSupply = daysSupply;
+            return this;
+        }
+
+        public Builder daysSupply(Long daysSupply) {
+            this.daysSupply = Optional.ofNullable(daysSupply);
+            return this;
+        }
+
+        /**
+         * <p>Newline-joined non-empty FHIR Dosage.text instructions in source order.</p>
+         */
         @JsonSetter(value = "sig", nulls = Nulls.SKIP)
         public Builder sig(Optional<String> sig) {
             this.sig = sig;
@@ -344,6 +543,34 @@ public final class DrugExposureRow {
 
         public Builder sig(String sig) {
             this.sig = Optional.ofNullable(sig);
+            return this;
+        }
+
+        /**
+         * <p>Target-valid OMOP Route concept for an unambiguous coded FHIR route; <code>0</code> for an unmapped coded route, omitted for absent, text-only, or conflicting routes.</p>
+         */
+        @JsonSetter(value = "route_concept_id", nulls = Nulls.SKIP)
+        public Builder routeConceptId(Optional<Long> routeConceptId) {
+            this.routeConceptId = routeConceptId;
+            return this;
+        }
+
+        public Builder routeConceptId(Long routeConceptId) {
+            this.routeConceptId = Optional.ofNullable(routeConceptId);
+            return this;
+        }
+
+        /**
+         * <p>Direct FHIR R4 Immunization.lotNumber value.</p>
+         */
+        @JsonSetter(value = "lot_number", nulls = Nulls.SKIP)
+        public Builder lotNumber(Optional<String> lotNumber) {
+            this.lotNumber = lotNumber;
+            return this;
+        }
+
+        public Builder lotNumber(String lotNumber) {
+            this.lotNumber = Optional.ofNullable(lotNumber);
             return this;
         }
 
@@ -391,6 +618,20 @@ public final class DrugExposureRow {
             return this;
         }
 
+        /**
+         * <p>Selected source coding or text for an unambiguous FHIR route.</p>
+         */
+        @JsonSetter(value = "route_source_value", nulls = Nulls.SKIP)
+        public Builder routeSourceValue(Optional<String> routeSourceValue) {
+            this.routeSourceValue = routeSourceValue;
+            return this;
+        }
+
+        public Builder routeSourceValue(String routeSourceValue) {
+            this.routeSourceValue = Optional.ofNullable(routeSourceValue);
+            return this;
+        }
+
         public DrugExposureRow build() {
             return new DrugExposureRow(
                     drugExposureId,
@@ -399,13 +640,20 @@ public final class DrugExposureRow {
                     drugExposureStartDate,
                     drugExposureStartDatetime,
                     drugExposureEndDate,
+                    drugExposureEndDatetime,
+                    verbatimEndDate,
                     drugTypeConceptId,
                     stopReason,
+                    refills,
+                    daysSupply,
                     sig,
+                    routeConceptId,
+                    lotNumber,
                     visitOccurrenceId,
                     providerId,
                     drugSourceValue,
                     drugSourceConceptId,
+                    routeSourceValue,
                     additionalProperties);
         }
 

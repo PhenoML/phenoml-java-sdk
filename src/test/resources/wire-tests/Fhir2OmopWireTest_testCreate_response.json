@@ -53,7 +53,7 @@
         "drug_concept_id": 40163924,
         "drug_exposure_start_date": "2024-01-16",
         "drug_exposure_start_datetime": "2024-01-16",
-        "drug_type_concept_id": 32817,
+        "drug_type_concept_id": 32838,
         "drug_source_value": "http://www.nlm.nih.gov/research/umls/rxnorm#860975",
         "drug_source_concept_id": 40163924
       }
