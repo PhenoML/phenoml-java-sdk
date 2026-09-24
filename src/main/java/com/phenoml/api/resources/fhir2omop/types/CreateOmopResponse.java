@@ -31,6 +31,8 @@ public final class CreateOmopResponse {
 
     private final Optional<List<DroppedResource>> dropped;
 
+    private final Optional<List<ReferenceDiagnostic>> diagnostics;
+
     private final Optional<String> vocabVersion;
 
     private final Optional<Summary> summary;
@@ -43,6 +45,7 @@ public final class CreateOmopResponse {
             Optional<OmopTables> tables,
             Optional<List<MappingEntry>> mappings,
             Optional<List<DroppedResource>> dropped,
+            Optional<List<ReferenceDiagnostic>> diagnostics,
             Optional<String> vocabVersion,
             Optional<Summary> summary,
             Map<String, Object> additionalProperties) {
@@ -51,6 +54,7 @@ public final class CreateOmopResponse {
         this.tables = tables;
         this.mappings = mappings;
         this.dropped = dropped;
+        this.diagnostics = diagnostics;
         this.vocabVersion = vocabVersion;
         this.summary = summary;
         this.additionalProperties = additionalProperties;
@@ -72,7 +76,7 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return One entry per source coding (or one entry for a text-only resource with no coding), describing how it resolved and linking back to the row it produced.
+     * @return One entry per supported source coding (or one entry for a text-only primary resource with no coding), describing how it resolved and linking back to the row it produced. A coded route is a separate entry linked to its medication or vaccine row.
      */
     @JsonProperty("mappings")
     public Optional<List<MappingEntry>> getMappings() {
@@ -81,9 +85,9 @@ public final class CreateOmopResponse {
 
     /**
      * @return Supported resource instances that could not be shaped into an OMOP
-     * row because required subject/patient, code, or medication reference
-     * data was missing. Unsupported resource types are ignored and do not
-     * appear here.
+     * row because required clinical data was missing, or an explicit
+     * subject/patient reference was unresolved, ambiguous, or unsupported.
+     * Unsupported resource types are ignored and do not appear here.
      */
     @JsonProperty("dropped")
     public Optional<List<DroppedResource>> getDropped() {
@@ -91,9 +95,22 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return The OMOP vocabulary release the clinical codes were resolved against
-     * (e.g. &quot;v20240229&quot;), for reproducibility. Present when at least one
-     * coded concept was resolved.
+     * @return Explanations for explicit references that could not safely produce
+     * an OMOP link, or explicit subject/patient references that caused a
+     * clinical row to be dropped. Missing optional references are normal
+     * and do not produce a diagnostic. References resolve only against
+     * resources supplied in this request. Outcomes distinguish unresolved,
+     * ambiguous, conflicting, and unsupported references.
+     */
+    @JsonProperty("diagnostics")
+    public Optional<List<ReferenceDiagnostic>> getDiagnostics() {
+        return diagnostics;
+    }
+
+    /**
+     * @return The OMOP vocabulary release returned for coded concept resolution
+     * (for example, &quot;v20240229&quot;), for reproducibility. It is generally
+     * absent for requests containing only text-only resources.
      */
     @JsonProperty("vocab_version")
     public Optional<String> getVocabVersion() {
@@ -122,6 +139,7 @@ public final class CreateOmopResponse {
                 && tables.equals(other.tables)
                 && mappings.equals(other.mappings)
                 && dropped.equals(other.dropped)
+                && diagnostics.equals(other.diagnostics)
                 && vocabVersion.equals(other.vocabVersion)
                 && summary.equals(other.summary);
     }
@@ -129,7 +147,14 @@ public final class CreateOmopResponse {
     @java.lang.Override
     public int hashCode() {
         return Objects.hash(
-                this.success, this.message, this.tables, this.mappings, this.dropped, this.vocabVersion, this.summary);
+                this.success,
+                this.message,
+                this.tables,
+                this.mappings,
+                this.dropped,
+                this.diagnostics,
+                this.vocabVersion,
+                this.summary);
     }
 
     @java.lang.Override
@@ -153,6 +178,8 @@ public final class CreateOmopResponse {
 
         private Optional<List<DroppedResource>> dropped = Optional.empty();
 
+        private Optional<List<ReferenceDiagnostic>> diagnostics = Optional.empty();
+
         private Optional<String> vocabVersion = Optional.empty();
 
         private Optional<Summary> summary = Optional.empty();
@@ -168,6 +195,7 @@ public final class CreateOmopResponse {
             tables(other.getTables());
             mappings(other.getMappings());
             dropped(other.getDropped());
+            diagnostics(other.getDiagnostics());
             vocabVersion(other.getVocabVersion());
             summary(other.getSummary());
             return this;
@@ -207,7 +235,7 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>One entry per source coding (or one entry for a text-only resource with no coding), describing how it resolved and linking back to the row it produced.</p>
+         * <p>One entry per supported source coding (or one entry for a text-only primary resource with no coding), describing how it resolved and linking back to the row it produced. A coded route is a separate entry linked to its medication or vaccine row.</p>
          */
         @JsonSetter(value = "mappings", nulls = Nulls.SKIP)
         public Builder mappings(Optional<List<MappingEntry>> mappings) {
@@ -222,9 +250,9 @@ public final class CreateOmopResponse {
 
         /**
          * <p>Supported resource instances that could not be shaped into an OMOP
-         * row because required subject/patient, code, or medication reference
-         * data was missing. Unsupported resource types are ignored and do not
-         * appear here.</p>
+         * row because required clinical data was missing, or an explicit
+         * subject/patient reference was unresolved, ambiguous, or unsupported.
+         * Unsupported resource types are ignored and do not appear here.</p>
          */
         @JsonSetter(value = "dropped", nulls = Nulls.SKIP)
         public Builder dropped(Optional<List<DroppedResource>> dropped) {
@@ -238,9 +266,28 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>The OMOP vocabulary release the clinical codes were resolved against
-         * (e.g. &quot;v20240229&quot;), for reproducibility. Present when at least one
-         * coded concept was resolved.</p>
+         * <p>Explanations for explicit references that could not safely produce
+         * an OMOP link, or explicit subject/patient references that caused a
+         * clinical row to be dropped. Missing optional references are normal
+         * and do not produce a diagnostic. References resolve only against
+         * resources supplied in this request. Outcomes distinguish unresolved,
+         * ambiguous, conflicting, and unsupported references.</p>
+         */
+        @JsonSetter(value = "diagnostics", nulls = Nulls.SKIP)
+        public Builder diagnostics(Optional<List<ReferenceDiagnostic>> diagnostics) {
+            this.diagnostics = diagnostics;
+            return this;
+        }
+
+        public Builder diagnostics(List<ReferenceDiagnostic> diagnostics) {
+            this.diagnostics = Optional.ofNullable(diagnostics);
+            return this;
+        }
+
+        /**
+         * <p>The OMOP vocabulary release returned for coded concept resolution
+         * (for example, &quot;v20240229&quot;), for reproducibility. It is generally
+         * absent for requests containing only text-only resources.</p>
          */
         @JsonSetter(value = "vocab_version", nulls = Nulls.SKIP)
         public Builder vocabVersion(Optional<String> vocabVersion) {
@@ -266,7 +313,15 @@ public final class CreateOmopResponse {
 
         public CreateOmopResponse build() {
             return new CreateOmopResponse(
-                    success, message, tables, mappings, dropped, vocabVersion, summary, additionalProperties);
+                    success,
+                    message,
+                    tables,
+                    mappings,
+                    dropped,
+                    diagnostics,
+                    vocabVersion,
+                    summary,
+                    additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {
