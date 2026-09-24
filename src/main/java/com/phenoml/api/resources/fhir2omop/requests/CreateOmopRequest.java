@@ -32,11 +32,12 @@ public final class CreateOmopRequest {
     /**
      * @return FHIR resources (single resource or Bundle). Must contain at least one
      * Patient resource. Supported row-producing resources are Patient,
-     * Encounter, Condition, Procedure, MedicationRequest,
+     * Location, Organization, HealthcareService, Practitioner,
+     * PractitionerRole, Encounter, Condition, Procedure, MedicationRequest,
      * MedicationStatement, MedicationAdministration, Immunization,
      * Observation, and AllergyIntolerance. Standalone Medication resources
      * are consumed by medication references rather than mapped to their own
-     * table. Other resource types are accepted but ignored.
+     * table. Unsupported resource types are accepted in a Bundle but ignored.
      */
     @JsonProperty("fhir_resources")
     public Map<String, Object> getFhirResources() {
@@ -89,11 +90,12 @@ public final class CreateOmopRequest {
         /**
          * <p>FHIR resources (single resource or Bundle). Must contain at least one
          * Patient resource. Supported row-producing resources are Patient,
-         * Encounter, Condition, Procedure, MedicationRequest,
+         * Location, Organization, HealthcareService, Practitioner,
+         * PractitionerRole, Encounter, Condition, Procedure, MedicationRequest,
          * MedicationStatement, MedicationAdministration, Immunization,
          * Observation, and AllergyIntolerance. Standalone Medication resources
          * are consumed by medication references rather than mapped to their own
-         * table. Other resource types are accepted but ignored.</p>
+         * table. Unsupported resource types are accepted in a Bundle but ignored.</p>
          */
         @JsonSetter(value = "fhir_resources", nulls = Nulls.SKIP)
         public Builder fhirResources(Map<String, Object> fhirResources) {

@@ -3,10 +3,14 @@ package com.phenoml.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.resources.implementationguides.implementationguides.requests.CreateCanonicalImplementationGuideRequest;
 import com.phenoml.api.resources.implementationguides.implementationguides.requests.UpdateImplementationGuideRequest;
+import com.phenoml.api.resources.implementationguides.types.FhirImplementationGuide;
 import com.phenoml.api.resources.implementationguides.types.ImplementationGuideDetail;
 import com.phenoml.api.resources.implementationguides.types.ImplementationGuideListResponse;
 import com.phenoml.api.resources.implementationguides.types.ImplementationGuideSummary;
+import com.phenoml.api.resources.implementationguides.types.ImplementationGuideVersionDetail;
+import java.util.Arrays;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -44,7 +48,7 @@ public class ImplementationGuidesImplementationGuidesWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"implementation_guides\":[{\"name\":\"acme-cardiology\",\"profile_context\":\"When the text mentions phenotypic features, prefer the hpo-observation profile over Condition.\",\"profile_count\":3,\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}]}"));
+                                "{\"implementation_guides\":[{\"name\":\"acme-cardiology\",\"profile_context\":\"When the text mentions phenotypic features, prefer the hpo-observation profile over Condition.\",\"profile_count\":3,\"canonical_url\":\"canonical_url\",\"version_count\":1,\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}]}"));
         ImplementationGuideListResponse response =
                 client.implementationGuides().implementationGuides().list();
         // OAuth: consume the token request
@@ -69,6 +73,8 @@ public class ImplementationGuidesImplementationGuidesWireTest {
                 + "      \"name\": \"acme-cardiology\",\n"
                 + "      \"profile_context\": \"When the text mentions phenotypic features, prefer the hpo-observation profile over Condition.\",\n"
                 + "      \"profile_count\": 3,\n"
+                + "      \"canonical_url\": \"canonical_url\",\n"
+                + "      \"version_count\": 1,\n"
                 + "      \"created_at\": \"2024-01-15T09:30:00Z\",\n"
                 + "      \"updated_at\": \"2024-01-15T09:30:00Z\"\n"
                 + "    }\n"
@@ -115,7 +121,7 @@ public class ImplementationGuidesImplementationGuidesWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"name\":\"acme-cardiology\",\"profile_context\":\"When the text mentions phenotypic features, prefer the hpo-observation profile over Condition.\",\"profile_count\":3,\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\",\"profiles\":[\"custom-patient\",\"acme-vital-signs\"]}"));
+                                "{\"name\":\"acme-cardiology\",\"profile_context\":\"When the text mentions phenotypic features, prefer the hpo-observation profile over Condition.\",\"profile_count\":3,\"canonical_url\":\"canonical_url\",\"version_count\":1,\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\",\"profiles\":[\"custom-patient\",\"acme-vital-signs\"]}"));
         ImplementationGuideDetail response =
                 client.implementationGuides().implementationGuides().get("acme-cardiology");
         // OAuth: consume the token request
@@ -138,6 +144,8 @@ public class ImplementationGuidesImplementationGuidesWireTest {
                 + "  \"name\": \"acme-cardiology\",\n"
                 + "  \"profile_context\": \"When the text mentions phenotypic features, prefer the hpo-observation profile over Condition.\",\n"
                 + "  \"profile_count\": 3,\n"
+                + "  \"canonical_url\": \"canonical_url\",\n"
+                + "  \"version_count\": 1,\n"
                 + "  \"created_at\": \"2024-01-15T09:30:00Z\",\n"
                 + "  \"updated_at\": \"2024-01-15T09:30:00Z\",\n"
                 + "  \"profiles\": [\n"
@@ -186,7 +194,7 @@ public class ImplementationGuidesImplementationGuidesWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"name\":\"acme-cardiology\",\"profile_context\":\"When the text mentions phenotypic features, prefer the hpo-observation profile over Condition.\",\"profile_count\":3,\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}"));
+                                "{\"name\":\"acme-cardiology\",\"profile_context\":\"When the text mentions phenotypic features, prefer the hpo-observation profile over Condition.\",\"profile_count\":3,\"canonical_url\":\"canonical_url\",\"version_count\":1,\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}"));
         ImplementationGuideSummary response = client.implementationGuides()
                 .implementationGuides()
                 .update(
@@ -241,6 +249,8 @@ public class ImplementationGuidesImplementationGuidesWireTest {
                 + "  \"name\": \"acme-cardiology\",\n"
                 + "  \"profile_context\": \"When the text mentions phenotypic features, prefer the hpo-observation profile over Condition.\",\n"
                 + "  \"profile_count\": 3,\n"
+                + "  \"canonical_url\": \"canonical_url\",\n"
+                + "  \"version_count\": 1,\n"
                 + "  \"created_at\": \"2024-01-15T09:30:00Z\",\n"
                 + "  \"updated_at\": \"2024-01-15T09:30:00Z\"\n"
                 + "}";
@@ -294,6 +304,226 @@ public class ImplementationGuidesImplementationGuidesWireTest {
                 "Bearer test-token",
                 request.getHeader("Authorization"),
                 "OAuth Authorization header should contain Bearer token from OAuth flow");
+    }
+
+    @Test
+    public void testCreateVersion() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"name\":\"name\",\"url\":\"url\",\"version\":\"version\",\"profile_context\":\"profile_context\",\"profiles\":[\"profiles\"],\"profile_refs\":[\"profile_refs\"],\"implementation_guide\":{\"resourceType\":\"ImplementationGuide\",\"id\":\"id\",\"url\":\"url\",\"version\":\"version\",\"name\":\"name\",\"status\":\"status\",\"packageId\":\"packageId\",\"fhirVersion\":[\"fhirVersion\"]},\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}"));
+        ImplementationGuideVersionDetail response = client.implementationGuides()
+                .implementationGuides()
+                .createVersion(
+                        "name",
+                        CreateCanonicalImplementationGuideRequest.builder()
+                                .implementationGuide(FhirImplementationGuide.builder()
+                                        .url("url")
+                                        .version("version")
+                                        .build())
+                                .profileRefs(Arrays.asList("profile_refs"))
+                                .build());
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("POST", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+        // Validate request body
+        String actualRequestBody = request.getBody().readUtf8();
+        String expectedRequestBody = ""
+                + "{\n"
+                + "  \"implementation_guide\": {\n"
+                + "    \"resourceType\": \"ImplementationGuide\",\n"
+                + "    \"url\": \"url\",\n"
+                + "    \"version\": \"version\"\n"
+                + "  },\n"
+                + "  \"profile_refs\": [\n"
+                + "    \"profile_refs\"\n"
+                + "  ]\n"
+                + "}";
+        JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+        JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+        Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
+        if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+            String discriminator = null;
+            if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+            else if (actualJson.has("_type"))
+                discriminator = actualJson.get("_type").asText();
+            else if (actualJson.has("kind"))
+                discriminator = actualJson.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualJson.isNull()) {
+            Assertions.assertTrue(
+                    actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+                    "request should be a valid JSON value");
+        }
+
+        if (actualJson.isArray()) {
+            Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+        }
+        if (actualJson.isObject()) {
+            Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+        }
+
+        // Validate response body
+        Assertions.assertNotNull(response, "Response should not be null");
+        String actualResponseJson = objectMapper.writeValueAsString(response);
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"name\": \"name\",\n"
+                + "  \"url\": \"url\",\n"
+                + "  \"version\": \"version\",\n"
+                + "  \"profile_context\": \"profile_context\",\n"
+                + "  \"profiles\": [\n"
+                + "    \"profiles\"\n"
+                + "  ],\n"
+                + "  \"profile_refs\": [\n"
+                + "    \"profile_refs\"\n"
+                + "  ],\n"
+                + "  \"implementation_guide\": {\n"
+                + "    \"resourceType\": \"ImplementationGuide\",\n"
+                + "    \"id\": \"id\",\n"
+                + "    \"url\": \"url\",\n"
+                + "    \"version\": \"version\",\n"
+                + "    \"name\": \"name\",\n"
+                + "    \"status\": \"status\",\n"
+                + "    \"packageId\": \"packageId\",\n"
+                + "    \"fhirVersion\": [\n"
+                + "      \"fhirVersion\"\n"
+                + "    ]\n"
+                + "  },\n"
+                + "  \"created_at\": \"2024-01-15T09:30:00Z\",\n"
+                + "  \"updated_at\": \"2024-01-15T09:30:00Z\"\n"
+                + "}";
+        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+        Assertions.assertTrue(
+                jsonEquals(expectedResponseNode, actualResponseNode),
+                "Response body structure does not match expected");
+        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
+            String discriminator = null;
+            if (actualResponseNode.has("type"))
+                discriminator = actualResponseNode.get("type").asText();
+            else if (actualResponseNode.has("_type"))
+                discriminator = actualResponseNode.get("_type").asText();
+            else if (actualResponseNode.has("kind"))
+                discriminator = actualResponseNode.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualResponseNode.isNull()) {
+            Assertions.assertTrue(
+                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
+                    "response should be a valid JSON value");
+        }
+
+        if (actualResponseNode.isArray()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+        }
+        if (actualResponseNode.isObject()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+        }
+    }
+
+    @Test
+    public void testGetVersion() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"name\":\"name\",\"url\":\"url\",\"version\":\"version\",\"profile_context\":\"profile_context\",\"profiles\":[\"profiles\"],\"profile_refs\":[\"profile_refs\"],\"implementation_guide\":{\"resourceType\":\"ImplementationGuide\",\"id\":\"id\",\"url\":\"url\",\"version\":\"version\",\"name\":\"name\",\"status\":\"status\",\"packageId\":\"packageId\",\"fhirVersion\":[\"fhirVersion\"]},\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}"));
+        ImplementationGuideVersionDetail response =
+                client.implementationGuides().implementationGuides().getVersion("name", "1.0.0");
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("GET", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate response body
+        Assertions.assertNotNull(response, "Response should not be null");
+        String actualResponseJson = objectMapper.writeValueAsString(response);
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"name\": \"name\",\n"
+                + "  \"url\": \"url\",\n"
+                + "  \"version\": \"version\",\n"
+                + "  \"profile_context\": \"profile_context\",\n"
+                + "  \"profiles\": [\n"
+                + "    \"profiles\"\n"
+                + "  ],\n"
+                + "  \"profile_refs\": [\n"
+                + "    \"profile_refs\"\n"
+                + "  ],\n"
+                + "  \"implementation_guide\": {\n"
+                + "    \"resourceType\": \"ImplementationGuide\",\n"
+                + "    \"id\": \"id\",\n"
+                + "    \"url\": \"url\",\n"
+                + "    \"version\": \"version\",\n"
+                + "    \"name\": \"name\",\n"
+                + "    \"status\": \"status\",\n"
+                + "    \"packageId\": \"packageId\",\n"
+                + "    \"fhirVersion\": [\n"
+                + "      \"fhirVersion\"\n"
+                + "    ]\n"
+                + "  },\n"
+                + "  \"created_at\": \"2024-01-15T09:30:00Z\",\n"
+                + "  \"updated_at\": \"2024-01-15T09:30:00Z\"\n"
+                + "}";
+        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+        Assertions.assertTrue(
+                jsonEquals(expectedResponseNode, actualResponseNode),
+                "Response body structure does not match expected");
+        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
+            String discriminator = null;
+            if (actualResponseNode.has("type"))
+                discriminator = actualResponseNode.get("type").asText();
+            else if (actualResponseNode.has("_type"))
+                discriminator = actualResponseNode.get("_type").asText();
+            else if (actualResponseNode.has("kind"))
+                discriminator = actualResponseNode.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualResponseNode.isNull()) {
+            Assertions.assertTrue(
+                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
+                    "response should be a valid JSON value");
+        }
+
+        if (actualResponseNode.isArray()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+        }
+        if (actualResponseNode.isObject()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+        }
     }
 
     /**
