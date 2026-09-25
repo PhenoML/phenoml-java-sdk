@@ -40,7 +40,7 @@ public final class MappingEntry {
 
     private final Optional<String> targetName;
 
-    private final Optional<String> mappingStatus;
+    private final Optional<MappingEntryMappingStatus> mappingStatus;
 
     private final Optional<String> note;
 
@@ -57,7 +57,7 @@ public final class MappingEntry {
             Optional<String> targetVocabulary,
             Optional<String> targetCode,
             Optional<String> targetName,
-            Optional<String> mappingStatus,
+            Optional<MappingEntryMappingStatus> mappingStatus,
             Optional<String> note,
             Map<String, Object> additionalProperties) {
         this.resourceType = resourceType;
@@ -144,7 +144,7 @@ public final class MappingEntry {
      * UNMAPPED (no standard concept found).
      */
     @JsonProperty("mapping_status")
-    public Optional<String> getMappingStatus() {
+    public Optional<MappingEntryMappingStatus> getMappingStatus() {
         return mappingStatus;
     }
 
@@ -227,7 +227,7 @@ public final class MappingEntry {
 
         private Optional<String> targetName = Optional.empty();
 
-        private Optional<String> mappingStatus = Optional.empty();
+        private Optional<MappingEntryMappingStatus> mappingStatus = Optional.empty();
 
         private Optional<String> note = Optional.empty();
 
@@ -381,12 +381,12 @@ public final class MappingEntry {
          * UNMAPPED (no standard concept found).</p>
          */
         @JsonSetter(value = "mapping_status", nulls = Nulls.SKIP)
-        public Builder mappingStatus(Optional<String> mappingStatus) {
+        public Builder mappingStatus(Optional<MappingEntryMappingStatus> mappingStatus) {
             this.mappingStatus = mappingStatus;
             return this;
         }
 
-        public Builder mappingStatus(String mappingStatus) {
+        public Builder mappingStatus(MappingEntryMappingStatus mappingStatus) {
             this.mappingStatus = Optional.ofNullable(mappingStatus);
             return this;
         }
