@@ -15,6 +15,7 @@ import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiRequestDetectionEffort;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiRequestValidationMethod;
 import com.phenoml.api.resources.lang2fhir.types.PatientReference;
+import com.phenoml.api.resources.lang2fhir.types.PrimaryPatient;
 import com.phenoml.api.resources.lang2fhir.types.ResourceReview;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,8 @@ public final class CreateMultiRequest {
     private final Optional<String> version;
 
     private final Optional<String> provider;
+
+    private final Optional<PrimaryPatient> primaryPatient;
 
     private final Optional<PatientReference> patientReference;
 
@@ -47,6 +50,7 @@ public final class CreateMultiRequest {
             String text,
             Optional<String> version,
             Optional<String> provider,
+            Optional<PrimaryPatient> primaryPatient,
             Optional<PatientReference> patientReference,
             Optional<String> implementationGuide,
             Optional<CreateMultiRequestDetectionEffort> detectionEffort,
@@ -56,6 +60,7 @@ public final class CreateMultiRequest {
         this.text = text;
         this.version = version;
         this.provider = provider;
+        this.primaryPatient = primaryPatient;
         this.patientReference = patientReference;
         this.implementationGuide = implementationGuide;
         this.detectionEffort = detectionEffort;
@@ -88,13 +93,21 @@ public final class CreateMultiRequest {
         return provider;
     }
 
+    @JsonProperty("primary_patient")
+    public Optional<PrimaryPatient> getPrimaryPatient() {
+        return primaryPatient;
+    }
+
+    /**
+     * @return Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.
+     */
     @JsonProperty("patient_reference")
     public Optional<PatientReference> getPatientReference() {
         return patientReference;
     }
 
     /**
-     * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.
+     * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.
      */
     @JsonProperty("implementation_guide")
     public Optional<String> getImplementationGuide() {
@@ -137,6 +150,7 @@ public final class CreateMultiRequest {
         return text.equals(other.text)
                 && version.equals(other.version)
                 && provider.equals(other.provider)
+                && primaryPatient.equals(other.primaryPatient)
                 && patientReference.equals(other.patientReference)
                 && implementationGuide.equals(other.implementationGuide)
                 && detectionEffort.equals(other.detectionEffort)
@@ -150,6 +164,7 @@ public final class CreateMultiRequest {
                 this.text,
                 this.version,
                 this.provider,
+                this.primaryPatient,
                 this.patientReference,
                 this.implementationGuide,
                 this.detectionEffort,
@@ -196,12 +211,19 @@ public final class CreateMultiRequest {
 
         _FinalStage provider(String provider);
 
+        _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient);
+
+        _FinalStage primaryPatient(PrimaryPatient primaryPatient);
+
+        /**
+         * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
+         */
         _FinalStage patientReference(Optional<PatientReference> patientReference);
 
         _FinalStage patientReference(PatientReference patientReference);
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
          */
         _FinalStage implementationGuide(Optional<String> implementationGuide);
 
@@ -240,6 +262,8 @@ public final class CreateMultiRequest {
 
         private Optional<PatientReference> patientReference = Optional.empty();
 
+        private Optional<PrimaryPatient> primaryPatient = Optional.empty();
+
         private Optional<String> provider = Optional.empty();
 
         private Optional<String> version = Optional.empty();
@@ -254,6 +278,7 @@ public final class CreateMultiRequest {
             text(other.getText());
             version(other.getVersion());
             provider(other.getProvider());
+            primaryPatient(other.getPrimaryPatient());
             patientReference(other.getPatientReference());
             implementationGuide(other.getImplementationGuide());
             detectionEffort(other.getDetectionEffort());
@@ -327,7 +352,7 @@ public final class CreateMultiRequest {
         }
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -337,7 +362,7 @@ public final class CreateMultiRequest {
         }
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside US Core profiles during resource detection. US Core is always the base layer; custom IG profiles are additive.</p>
+         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
@@ -346,16 +371,36 @@ public final class CreateMultiRequest {
             return this;
         }
 
+        /**
+         * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
         @java.lang.Override
         public _FinalStage patientReference(PatientReference patientReference) {
             this.patientReference = Optional.ofNullable(patientReference);
             return this;
         }
 
+        /**
+         * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
+         */
         @java.lang.Override
         @JsonSetter(value = "patient_reference", nulls = Nulls.SKIP)
         public _FinalStage patientReference(Optional<PatientReference> patientReference) {
             this.patientReference = patientReference;
+            return this;
+        }
+
+        @java.lang.Override
+        public _FinalStage primaryPatient(PrimaryPatient primaryPatient) {
+            this.primaryPatient = Optional.ofNullable(primaryPatient);
+            return this;
+        }
+
+        @java.lang.Override
+        @JsonSetter(value = "primary_patient", nulls = Nulls.SKIP)
+        public _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient) {
+            this.primaryPatient = primaryPatient;
             return this;
         }
 
@@ -405,6 +450,7 @@ public final class CreateMultiRequest {
                     text,
                     version,
                     provider,
+                    primaryPatient,
                     patientReference,
                     implementationGuide,
                     detectionEffort,
