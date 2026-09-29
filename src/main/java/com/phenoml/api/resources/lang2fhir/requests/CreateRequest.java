@@ -45,7 +45,7 @@ public final class CreateRequest {
     }
 
     /**
-     * @return Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported US Core profile. Recommended to use the supported US Core Profiles for validated results but you can also use any custom profile you've uploaded (if you're a develop or launch customer)
+     * @return Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources; you can also use any custom profile you've uploaded (if you're a develop or launch customer).
      */
     @JsonProperty("resource")
     public CreateRequestResource getResource() {
@@ -100,7 +100,7 @@ public final class CreateRequest {
 
     public interface ResourceStage {
         /**
-         * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported US Core profile. Recommended to use the supported US Core Profiles for validated results but you can also use any custom profile you've uploaded (if you're a develop or launch customer)</p>
+         * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources; you can also use any custom profile you've uploaded (if you're a develop or launch customer).</p>
          */
         TextStage resource(@NotNull CreateRequestResource resource);
     }
@@ -153,7 +153,7 @@ public final class CreateRequest {
         }
 
         /**
-         * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported US Core profile. Recommended to use the supported US Core Profiles for validated results but you can also use any custom profile you've uploaded (if you're a develop or launch customer)</p>
+         * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources; you can also use any custom profile you've uploaded (if you're a develop or launch customer).</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
