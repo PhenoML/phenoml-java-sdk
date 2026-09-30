@@ -12,6 +12,12 @@ public final class CreateRequestResource {
 
     public static final CreateRequestResource VITAL_SIGNS = new CreateRequestResource(Value.VITAL_SIGNS, "vital-signs");
 
+    public static final CreateRequestResource MEDICATIONSTATEMENT =
+            new CreateRequestResource(Value.MEDICATIONSTATEMENT, "medicationstatement");
+
+    public static final CreateRequestResource MEDICATIONADMINISTRATION =
+            new CreateRequestResource(Value.MEDICATIONADMINISTRATION, "medicationadministration");
+
     public static final CreateRequestResource SIMPLE_OBSERVATION =
             new CreateRequestResource(Value.SIMPLE_OBSERVATION, "simple-observation");
 
@@ -30,6 +36,9 @@ public final class CreateRequestResource {
             new CreateRequestResource(Value.OBSERVATION_CLINICAL_RESULT, "observation-clinical-result");
 
     public static final CreateRequestResource CAREPLAN = new CreateRequestResource(Value.CAREPLAN, "careplan");
+
+    public static final CreateRequestResource FAMILYMEMBERHISTORY =
+            new CreateRequestResource(Value.FAMILYMEMBERHISTORY, "familymemberhistory");
 
     public static final CreateRequestResource SERVICEREQUEST =
             new CreateRequestResource(Value.SERVICEREQUEST, "servicerequest");
@@ -87,6 +96,10 @@ public final class CreateRequestResource {
                 return visitor.visitMedicationrequest();
             case VITAL_SIGNS:
                 return visitor.visitVitalSigns();
+            case MEDICATIONSTATEMENT:
+                return visitor.visitMedicationstatement();
+            case MEDICATIONADMINISTRATION:
+                return visitor.visitMedicationadministration();
             case SIMPLE_OBSERVATION:
                 return visitor.visitSimpleObservation();
             case QUESTIONNAIRE:
@@ -101,6 +114,8 @@ public final class CreateRequestResource {
                 return visitor.visitObservationClinicalResult();
             case CAREPLAN:
                 return visitor.visitCareplan();
+            case FAMILYMEMBERHISTORY:
+                return visitor.visitFamilymemberhistory();
             case SERVICEREQUEST:
                 return visitor.visitServicerequest();
             case COVERAGE:
@@ -130,6 +145,10 @@ public final class CreateRequestResource {
                 return MEDICATIONREQUEST;
             case "vital-signs":
                 return VITAL_SIGNS;
+            case "medicationstatement":
+                return MEDICATIONSTATEMENT;
+            case "medicationadministration":
+                return MEDICATIONADMINISTRATION;
             case "simple-observation":
                 return SIMPLE_OBSERVATION;
             case "questionnaire":
@@ -144,6 +163,8 @@ public final class CreateRequestResource {
                 return OBSERVATION_CLINICAL_RESULT;
             case "careplan":
                 return CAREPLAN;
+            case "familymemberhistory":
+                return FAMILYMEMBERHISTORY;
             case "servicerequest":
                 return SERVICEREQUEST;
             case "coverage":
@@ -172,7 +193,13 @@ public final class CreateRequestResource {
 
         CONDITION_ENCOUNTER_DIAGNOSIS,
 
+        FAMILYMEMBERHISTORY,
+
+        MEDICATIONADMINISTRATION,
+
         MEDICATIONREQUEST,
+
+        MEDICATIONSTATEMENT,
 
         CAREPLAN,
 
@@ -210,7 +237,13 @@ public final class CreateRequestResource {
 
         T visitConditionEncounterDiagnosis();
 
+        T visitFamilymemberhistory();
+
+        T visitMedicationadministration();
+
         T visitMedicationrequest();
+
+        T visitMedicationstatement();
 
         T visitCareplan();
 
