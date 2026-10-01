@@ -18,7 +18,6 @@
         "year_of_birth": 1985,
         "month_of_birth": 7,
         "day_of_birth": 22,
-        "birth_datetime": "1985-07-22",
         "race_concept_id": 0,
         "ethnicity_concept_id": 0,
         "person_source_value": "patient-1",
@@ -29,7 +28,13 @@
       {}
     ],
     "observation_period": [
-      {}
+      {
+        "observation_period_id": 1,
+        "person_id": 1,
+        "observation_period_start_date": "2024-01-15",
+        "observation_period_end_date": "2024-01-16",
+        "period_type_concept_id": 32817
+      }
     ],
     "visit_occurrence": [
       {}
@@ -40,9 +45,8 @@
         "person_id": 1,
         "condition_concept_id": 201826,
         "condition_start_date": "2024-01-15",
-        "condition_start_datetime": "2024-01-15",
         "condition_type_concept_id": 32817,
-        "condition_source_value": "http://snomed.info/sct#44054006",
+        "condition_source_value": "44054006",
         "condition_source_concept_id": 201826
       }
     ],
@@ -52,9 +56,8 @@
         "person_id": 1,
         "drug_concept_id": 40163924,
         "drug_exposure_start_date": "2024-01-16",
-        "drug_exposure_start_datetime": "2024-01-16",
-        "drug_type_concept_id": 32817,
-        "drug_source_value": "http://www.nlm.nih.gov/research/umls/rxnorm#860975",
+        "drug_type_concept_id": 32838,
+        "drug_source_value": "860975",
         "drug_source_concept_id": 40163924
       }
     ],
@@ -74,6 +77,7 @@
       "resource_id": "condition-1",
       "omop_table": "condition_occurrence",
       "omop_id": 1,
+      "omop_field": "condition_concept_id",
       "source_system": "http://snomed.info/sct",
       "source_code": "44054006",
       "source_name": "Type 2 diabetes mellitus",
@@ -81,6 +85,7 @@
       "target_code": "44054006",
       "target_name": "Type 2 diabetes mellitus",
       "mapping_status": "ALREADY_STANDARD",
+      "selected": true,
       "note": "note"
     },
     {
@@ -88,6 +93,7 @@
       "resource_id": "medreq-1",
       "omop_table": "drug_exposure",
       "omop_id": 1,
+      "omop_field": "drug_concept_id",
       "source_system": "http://www.nlm.nih.gov/research/umls/rxnorm",
       "source_code": "860975",
       "source_name": "metformin hydrochloride 500 MG",
@@ -95,13 +101,49 @@
       "target_code": "860975",
       "target_name": "metformin hydrochloride 500 MG",
       "mapping_status": "ALREADY_STANDARD",
+      "selected": true,
       "note": "note"
+    }
+  ],
+  "provider_role_contexts": [
+    {
+      "provider_id": 1000000,
+      "role_source_value": "role_source_value",
+      "practitioner_reference": "practitioner_reference",
+      "practitioner_identifier": {
+        "value": "value"
+      },
+      "role_codes": [
+        {}
+      ],
+      "specialties": [
+        {}
+      ],
+      "care_sites": [
+        {
+          "path": "path",
+          "reference": "reference"
+        }
+      ],
+      "active": true,
+      "period_start": "period_start",
+      "period_end": "period_end"
     }
   ],
   "dropped": [
     {
       "resource_type": "resource_type",
       "resource_id": "resource_id",
+      "reason": "reason"
+    }
+  ],
+  "diagnostics": [
+    {
+      "resource_type": "resource_type",
+      "resource_id": "resource_id",
+      "path": "path",
+      "reference": "reference",
+      "outcome": "UNRESOLVED",
       "reason": "reason"
     }
   ],

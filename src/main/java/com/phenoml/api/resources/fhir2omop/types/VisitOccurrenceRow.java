@@ -86,6 +86,9 @@ public final class VisitOccurrenceRow {
         return visitConceptId;
     }
 
+    /**
+     * @return Date from Encounter.period.start.
+     */
     @JsonProperty("visit_start_date")
     public Optional<String> getVisitStartDate() {
         return visitStartDate;
@@ -96,6 +99,9 @@ public final class VisitOccurrenceRow {
         return visitStartDatetime;
     }
 
+    /**
+     * @return Date from Encounter.period.end.
+     */
     @JsonProperty("visit_end_date")
     public Optional<String> getVisitEndDate() {
         return visitEndDate;
@@ -253,6 +259,9 @@ public final class VisitOccurrenceRow {
             return this;
         }
 
+        /**
+         * <p>Date from Encounter.period.start.</p>
+         */
         @JsonSetter(value = "visit_start_date", nulls = Nulls.SKIP)
         public Builder visitStartDate(Optional<String> visitStartDate) {
             this.visitStartDate = visitStartDate;
@@ -275,6 +284,9 @@ public final class VisitOccurrenceRow {
             return this;
         }
 
+        /**
+         * <p>Date from Encounter.period.end.</p>
+         */
         @JsonSetter(value = "visit_end_date", nulls = Nulls.SKIP)
         public Builder visitEndDate(Optional<String> visitEndDate) {
             this.visitEndDate = visitEndDate;
