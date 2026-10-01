@@ -100,6 +100,9 @@ public final class ConditionOccurrenceRow {
         return conditionStartDatetime;
     }
 
+    /**
+     * @return Date from FHIR R4 Condition.abatementDateTime or abatementPeriod.end when supplied.
+     */
     @JsonProperty("condition_end_date")
     public Optional<String> getConditionEndDate() {
         return conditionEndDate;
@@ -289,6 +292,9 @@ public final class ConditionOccurrenceRow {
             return this;
         }
 
+        /**
+         * <p>Date from FHIR R4 Condition.abatementDateTime or abatementPeriod.end when supplied.</p>
+         */
         @JsonSetter(value = "condition_end_date", nulls = Nulls.SKIP)
         public Builder conditionEndDate(Optional<String> conditionEndDate) {
             this.conditionEndDate = conditionEndDate;

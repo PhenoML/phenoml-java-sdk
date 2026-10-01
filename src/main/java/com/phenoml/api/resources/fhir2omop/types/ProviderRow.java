@@ -119,6 +119,9 @@ public final class ProviderRow {
         return genderConceptId;
     }
 
+    /**
+     * @return The source practitioner identity. A Practitioner contained by a PractitionerRole is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code> so identical local contained IDs do not collide; an id-less parent uses an explicitly marked response-local role ordinal such as <code>@role-index:1</code>.
+     */
     @JsonProperty("provider_source_value")
     public Optional<String> getProviderSourceValue() {
         return providerSourceValue;
@@ -336,6 +339,9 @@ public final class ProviderRow {
             return this;
         }
 
+        /**
+         * <p>The source practitioner identity. A Practitioner contained by a PractitionerRole is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code> so identical local contained IDs do not collide; an id-less parent uses an explicitly marked response-local role ordinal such as <code>@role-index:1</code>.</p>
+         */
         @JsonSetter(value = "provider_source_value", nulls = Nulls.SKIP)
         public Builder providerSourceValue(Optional<String> providerSourceValue) {
             this.providerSourceValue = providerSourceValue;
