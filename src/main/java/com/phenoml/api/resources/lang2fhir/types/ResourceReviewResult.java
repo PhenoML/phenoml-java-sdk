@@ -23,20 +23,33 @@ import java.util.Optional;
 public final class ResourceReviewResult {
     private final Optional<List<ResourceReviewFlagged>> flagged;
 
+    private final Optional<List<ResourceReviewRemediated>> remediated;
+
     private final Map<String, Object> additionalProperties;
 
     private ResourceReviewResult(
-            Optional<List<ResourceReviewFlagged>> flagged, Map<String, Object> additionalProperties) {
+            Optional<List<ResourceReviewFlagged>> flagged,
+            Optional<List<ResourceReviewRemediated>> remediated,
+            Map<String, Object> additionalProperties) {
         this.flagged = flagged;
+        this.remediated = remediated;
         this.additionalProperties = additionalProperties;
     }
 
     /**
-     * @return Resources pulled from the bundle because a reviewed field was not supported by the source.
+     * @return Resources pulled from the bundle because an unsupported finding could not be safely repaired.
      */
     @JsonProperty("flagged")
     public Optional<List<ResourceReviewFlagged>> getFlagged() {
         return flagged;
+    }
+
+    /**
+     * @return Resources retained in the bundle after unsupported codings were safely removed.
+     */
+    @JsonProperty("remediated")
+    public Optional<List<ResourceReviewRemediated>> getRemediated() {
+        return remediated;
     }
 
     @java.lang.Override
@@ -51,12 +64,12 @@ public final class ResourceReviewResult {
     }
 
     private boolean equalTo(ResourceReviewResult other) {
-        return flagged.equals(other.flagged);
+        return flagged.equals(other.flagged) && remediated.equals(other.remediated);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.flagged);
+        return Objects.hash(this.flagged, this.remediated);
     }
 
     @java.lang.Override
@@ -72,6 +85,8 @@ public final class ResourceReviewResult {
     public static final class Builder {
         private Optional<List<ResourceReviewFlagged>> flagged = Optional.empty();
 
+        private Optional<List<ResourceReviewRemediated>> remediated = Optional.empty();
+
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -79,11 +94,12 @@ public final class ResourceReviewResult {
 
         public Builder from(ResourceReviewResult other) {
             flagged(other.getFlagged());
+            remediated(other.getRemediated());
             return this;
         }
 
         /**
-         * <p>Resources pulled from the bundle because a reviewed field was not supported by the source.</p>
+         * <p>Resources pulled from the bundle because an unsupported finding could not be safely repaired.</p>
          */
         @JsonSetter(value = "flagged", nulls = Nulls.SKIP)
         public Builder flagged(Optional<List<ResourceReviewFlagged>> flagged) {
@@ -96,8 +112,22 @@ public final class ResourceReviewResult {
             return this;
         }
 
+        /**
+         * <p>Resources retained in the bundle after unsupported codings were safely removed.</p>
+         */
+        @JsonSetter(value = "remediated", nulls = Nulls.SKIP)
+        public Builder remediated(Optional<List<ResourceReviewRemediated>> remediated) {
+            this.remediated = remediated;
+            return this;
+        }
+
+        public Builder remediated(List<ResourceReviewRemediated> remediated) {
+            this.remediated = Optional.ofNullable(remediated);
+            return this;
+        }
+
         public ResourceReviewResult build() {
-            return new ResourceReviewResult(flagged, additionalProperties);
+            return new ResourceReviewResult(flagged, remediated, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {
