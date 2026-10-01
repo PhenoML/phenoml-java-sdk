@@ -57,11 +57,17 @@ public final class ObservationPeriodRow {
         return personId;
     }
 
+    /**
+     * @return Request-local earliest valid clinical, visit, or death date; not enrollment evidence.
+     */
     @JsonProperty("observation_period_start_date")
     public Optional<String> getObservationPeriodStartDate() {
         return observationPeriodStartDate;
     }
 
+    /**
+     * @return Request-local latest valid clinical, visit, or death date, including supported clinical end dates; not enrollment evidence.
+     */
     @JsonProperty("observation_period_end_date")
     public Optional<String> getObservationPeriodEndDate() {
         return observationPeriodEndDate;
@@ -158,6 +164,9 @@ public final class ObservationPeriodRow {
             return this;
         }
 
+        /**
+         * <p>Request-local earliest valid clinical, visit, or death date; not enrollment evidence.</p>
+         */
         @JsonSetter(value = "observation_period_start_date", nulls = Nulls.SKIP)
         public Builder observationPeriodStartDate(Optional<String> observationPeriodStartDate) {
             this.observationPeriodStartDate = observationPeriodStartDate;
@@ -169,6 +178,9 @@ public final class ObservationPeriodRow {
             return this;
         }
 
+        /**
+         * <p>Request-local latest valid clinical, visit, or death date, including supported clinical end dates; not enrollment evidence.</p>
+         */
         @JsonSetter(value = "observation_period_end_date", nulls = Nulls.SKIP)
         public Builder observationPeriodEndDate(Optional<String> observationPeriodEndDate) {
             this.observationPeriodEndDate = observationPeriodEndDate;

@@ -8,6 +8,8 @@ import com.phenoml.api.resources.profiles.types.ProfileGetResponse;
 import com.phenoml.api.resources.profiles.types.ProfileListResponse;
 import com.phenoml.api.resources.profiles.types.ProfileSummary;
 import com.phenoml.api.resources.profiles.types.ProfileUploadRequest;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -46,7 +48,7 @@ public class ProfilesProfilesWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"profiles\":[{\"id\":\"custom-patient\",\"source\":\"custom\",\"resource_type\":\"Patient\",\"url\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\"version\":\"1.0.0\",\"fhir_version\":\"4.0.1\",\"implementation_guide\":\"acme-cardiology\",\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}]}"));
+                                "{\"profiles\":[{\"id\":\"custom-patient\",\"source\":\"custom\",\"resource_type\":\"Patient\",\"url\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\"version\":\"1.0.0\",\"status\":\"active\",\"date\":\"2026-08-24\",\"canonical\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient|1.0.0\",\"fhir_version\":\"4.0.1\",\"implementation_guide\":\"acme-cardiology\",\"created_at\":\"2026-08-24T15:04:05Z\",\"updated_at\":\"2026-08-25T16:04:05Z\"}]}"));
         ProfileListResponse response = client.profiles()
                 .profiles()
                 .list(ListRequest.builder()
@@ -76,10 +78,13 @@ public class ProfilesProfilesWireTest {
                 + "      \"resource_type\": \"Patient\",\n"
                 + "      \"url\": \"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\n"
                 + "      \"version\": \"1.0.0\",\n"
+                + "      \"status\": \"active\",\n"
+                + "      \"date\": \"2026-08-24\",\n"
+                + "      \"canonical\": \"http://phenoml.com/fhir/StructureDefinition/custom-patient|1.0.0\",\n"
                 + "      \"fhir_version\": \"4.0.1\",\n"
                 + "      \"implementation_guide\": \"acme-cardiology\",\n"
-                + "      \"created_at\": \"2024-01-15T09:30:00Z\",\n"
-                + "      \"updated_at\": \"2024-01-15T09:30:00Z\"\n"
+                + "      \"created_at\": \"2026-08-24T15:04:05Z\",\n"
+                + "      \"updated_at\": \"2026-08-25T16:04:05Z\"\n"
                 + "    }\n"
                 + "  ]\n"
                 + "}";
@@ -124,15 +129,40 @@ public class ProfilesProfilesWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"id\":\"custom-patient\",\"source\":\"custom\",\"resource_type\":\"Patient\",\"url\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\"version\":\"1.0.0\",\"fhir_version\":\"4.0.1\",\"implementation_guide\":\"acme-cardiology\",\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}"));
+                                "{\"id\":\"custom-patient\",\"source\":\"custom\",\"resource_type\":\"Patient\",\"url\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\"version\":\"1.0.0\",\"status\":\"active\",\"date\":\"2026-08-24\",\"canonical\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient|1.0.0\",\"fhir_version\":\"4.0.1\",\"implementation_guide\":\"acme-cardiology\",\"created_at\":\"2026-08-24T15:04:05Z\",\"updated_at\":\"2026-08-25T16:04:05Z\"}"));
         ProfileSummary response = client.profiles()
                 .profiles()
                 .create(ProfileUploadRequest.builder()
                         .structureDefinition(new HashMap<String, Object>() {
                             {
-                                put("key", "value");
+                                put("resourceType", "StructureDefinition");
+                                put("id", "custom-patient");
+                                put("url", "http://phenoml.com/fhir/StructureDefinition/custom-patient");
+                                put("name", "CustomPatient");
+                                put("status", "active");
+                                put("fhirVersion", "4.0.1");
+                                put("kind", "resource");
+                                put("abstract", false);
+                                put("type", "Patient");
+                                put("baseDefinition", "http://hl7.org/fhir/StructureDefinition/Patient");
+                                put("derivation", "constraint");
+                                put("snapshot", new HashMap<String, Object>() {
+                                    {
+                                        put(
+                                                "element",
+                                                new ArrayList<Object>(Arrays.asList(new HashMap<String, Object>() {
+                                                    {
+                                                        put("id", "Patient");
+                                                        put("path", "Patient");
+                                                        put("min", 0);
+                                                        put("max", "*");
+                                                    }
+                                                })));
+                                    }
+                                });
                             }
                         })
+                        .implementationGuide("acme-cardiology")
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -147,8 +177,33 @@ public class ProfilesProfilesWireTest {
                 "OAuth Authorization header should contain Bearer token from OAuth flow");
         // Validate request body
         String actualRequestBody = request.getBody().readUtf8();
-        String expectedRequestBody =
-                "" + "{\n" + "  \"structure_definition\": {\n" + "    \"key\": \"value\"\n" + "  }\n" + "}";
+        String expectedRequestBody = ""
+                + "{\n"
+                + "  \"structure_definition\": {\n"
+                + "    \"resourceType\": \"StructureDefinition\",\n"
+                + "    \"id\": \"custom-patient\",\n"
+                + "    \"url\": \"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\n"
+                + "    \"name\": \"CustomPatient\",\n"
+                + "    \"status\": \"active\",\n"
+                + "    \"fhirVersion\": \"4.0.1\",\n"
+                + "    \"kind\": \"resource\",\n"
+                + "    \"abstract\": false,\n"
+                + "    \"type\": \"Patient\",\n"
+                + "    \"baseDefinition\": \"http://hl7.org/fhir/StructureDefinition/Patient\",\n"
+                + "    \"derivation\": \"constraint\",\n"
+                + "    \"snapshot\": {\n"
+                + "      \"element\": [\n"
+                + "        {\n"
+                + "          \"id\": \"Patient\",\n"
+                + "          \"path\": \"Patient\",\n"
+                + "          \"min\": 0,\n"
+                + "          \"max\": \"*\"\n"
+                + "        }\n"
+                + "      ]\n"
+                + "    }\n"
+                + "  },\n"
+                + "  \"implementation_guide\": \"acme-cardiology\"\n"
+                + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
         Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
@@ -186,10 +241,13 @@ public class ProfilesProfilesWireTest {
                 + "  \"resource_type\": \"Patient\",\n"
                 + "  \"url\": \"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\n"
                 + "  \"version\": \"1.0.0\",\n"
+                + "  \"status\": \"active\",\n"
+                + "  \"date\": \"2026-08-24\",\n"
+                + "  \"canonical\": \"http://phenoml.com/fhir/StructureDefinition/custom-patient|1.0.0\",\n"
                 + "  \"fhir_version\": \"4.0.1\",\n"
                 + "  \"implementation_guide\": \"acme-cardiology\",\n"
-                + "  \"created_at\": \"2024-01-15T09:30:00Z\",\n"
-                + "  \"updated_at\": \"2024-01-15T09:30:00Z\"\n"
+                + "  \"created_at\": \"2026-08-24T15:04:05Z\",\n"
+                + "  \"updated_at\": \"2026-08-25T16:04:05Z\"\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
@@ -232,7 +290,7 @@ public class ProfilesProfilesWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"id\":\"custom-patient\",\"source\":\"custom\",\"resource_type\":\"Patient\",\"url\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\"version\":\"1.0.0\",\"fhir_version\":\"4.0.1\",\"implementation_guide\":\"acme-cardiology\",\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\",\"structure_definition\":{\"key\":\"value\"}}"));
+                                "{\"id\":\"custom-patient\",\"source\":\"custom\",\"resource_type\":\"Patient\",\"url\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\"version\":\"1.0.0\",\"status\":\"active\",\"date\":\"2026-08-24\",\"canonical\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient|1.0.0\",\"fhir_version\":\"4.0.1\",\"implementation_guide\":\"acme-cardiology\",\"created_at\":\"2026-08-24T15:04:05Z\",\"updated_at\":\"2026-08-25T16:04:05Z\",\"structure_definition\":{\"resourceType\":\"StructureDefinition\",\"id\":\"custom-patient\",\"url\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\"version\":\"1.0.0\",\"name\":\"CustomPatient\",\"status\":\"active\",\"fhirVersion\":\"4.0.1\",\"kind\":\"resource\",\"abstract\":false,\"type\":\"Patient\",\"baseDefinition\":\"http://hl7.org/fhir/StructureDefinition/Patient\",\"derivation\":\"constraint\",\"snapshot\":{\"element\":[{\"id\":\"Patient\",\"path\":\"Patient\",\"min\":0,\"max\":\"*\"}]}}}"));
         ProfileGetResponse response = client.profiles().profiles().get("custom-patient");
         // OAuth: consume the token request
         server.takeRequest();
@@ -256,12 +314,36 @@ public class ProfilesProfilesWireTest {
                 + "  \"resource_type\": \"Patient\",\n"
                 + "  \"url\": \"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\n"
                 + "  \"version\": \"1.0.0\",\n"
+                + "  \"status\": \"active\",\n"
+                + "  \"date\": \"2026-08-24\",\n"
+                + "  \"canonical\": \"http://phenoml.com/fhir/StructureDefinition/custom-patient|1.0.0\",\n"
                 + "  \"fhir_version\": \"4.0.1\",\n"
                 + "  \"implementation_guide\": \"acme-cardiology\",\n"
-                + "  \"created_at\": \"2024-01-15T09:30:00Z\",\n"
-                + "  \"updated_at\": \"2024-01-15T09:30:00Z\",\n"
+                + "  \"created_at\": \"2026-08-24T15:04:05Z\",\n"
+                + "  \"updated_at\": \"2026-08-25T16:04:05Z\",\n"
                 + "  \"structure_definition\": {\n"
-                + "    \"key\": \"value\"\n"
+                + "    \"resourceType\": \"StructureDefinition\",\n"
+                + "    \"id\": \"custom-patient\",\n"
+                + "    \"url\": \"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\n"
+                + "    \"version\": \"1.0.0\",\n"
+                + "    \"name\": \"CustomPatient\",\n"
+                + "    \"status\": \"active\",\n"
+                + "    \"fhirVersion\": \"4.0.1\",\n"
+                + "    \"kind\": \"resource\",\n"
+                + "    \"abstract\": false,\n"
+                + "    \"type\": \"Patient\",\n"
+                + "    \"baseDefinition\": \"http://hl7.org/fhir/StructureDefinition/Patient\",\n"
+                + "    \"derivation\": \"constraint\",\n"
+                + "    \"snapshot\": {\n"
+                + "      \"element\": [\n"
+                + "        {\n"
+                + "          \"id\": \"Patient\",\n"
+                + "          \"path\": \"Patient\",\n"
+                + "          \"min\": 0,\n"
+                + "          \"max\": \"*\"\n"
+                + "        }\n"
+                + "      ]\n"
+                + "    }\n"
                 + "  }\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
@@ -305,7 +387,7 @@ public class ProfilesProfilesWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"id\":\"custom-patient\",\"source\":\"custom\",\"resource_type\":\"Patient\",\"url\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\"version\":\"1.0.0\",\"fhir_version\":\"4.0.1\",\"implementation_guide\":\"acme-cardiology\",\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\"}"));
+                                "{\"id\":\"custom-patient\",\"source\":\"custom\",\"resource_type\":\"Patient\",\"url\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\"version\":\"1.0.0\",\"status\":\"active\",\"date\":\"2026-08-24\",\"canonical\":\"http://phenoml.com/fhir/StructureDefinition/custom-patient|1.0.0\",\"fhir_version\":\"4.0.1\",\"implementation_guide\":\"acme-cardiology\",\"created_at\":\"2026-08-24T15:04:05Z\",\"updated_at\":\"2026-08-25T16:04:05Z\"}"));
         ProfileSummary response = client.profiles()
                 .profiles()
                 .update(
@@ -313,9 +395,35 @@ public class ProfilesProfilesWireTest {
                         ProfileUploadRequest.builder()
                                 .structureDefinition(new HashMap<String, Object>() {
                                     {
-                                        put("key", "value");
+                                        put("resourceType", "StructureDefinition");
+                                        put("id", "custom-patient");
+                                        put("url", "http://phenoml.com/fhir/StructureDefinition/custom-patient");
+                                        put("name", "CustomPatient");
+                                        put("status", "active");
+                                        put("fhirVersion", "4.0.1");
+                                        put("kind", "resource");
+                                        put("abstract", false);
+                                        put("type", "Patient");
+                                        put("baseDefinition", "http://hl7.org/fhir/StructureDefinition/Patient");
+                                        put("derivation", "constraint");
+                                        put("snapshot", new HashMap<String, Object>() {
+                                            {
+                                                put(
+                                                        "element",
+                                                        new ArrayList<Object>(
+                                                                Arrays.asList(new HashMap<String, Object>() {
+                                                                    {
+                                                                        put("id", "Patient");
+                                                                        put("path", "Patient");
+                                                                        put("min", 0);
+                                                                        put("max", "*");
+                                                                    }
+                                                                })));
+                                            }
+                                        });
                                     }
                                 })
+                                .implementationGuide("acme-cardiology")
                                 .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -330,8 +438,33 @@ public class ProfilesProfilesWireTest {
                 "OAuth Authorization header should contain Bearer token from OAuth flow");
         // Validate request body
         String actualRequestBody = request.getBody().readUtf8();
-        String expectedRequestBody =
-                "" + "{\n" + "  \"structure_definition\": {\n" + "    \"key\": \"value\"\n" + "  }\n" + "}";
+        String expectedRequestBody = ""
+                + "{\n"
+                + "  \"structure_definition\": {\n"
+                + "    \"resourceType\": \"StructureDefinition\",\n"
+                + "    \"id\": \"custom-patient\",\n"
+                + "    \"url\": \"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\n"
+                + "    \"name\": \"CustomPatient\",\n"
+                + "    \"status\": \"active\",\n"
+                + "    \"fhirVersion\": \"4.0.1\",\n"
+                + "    \"kind\": \"resource\",\n"
+                + "    \"abstract\": false,\n"
+                + "    \"type\": \"Patient\",\n"
+                + "    \"baseDefinition\": \"http://hl7.org/fhir/StructureDefinition/Patient\",\n"
+                + "    \"derivation\": \"constraint\",\n"
+                + "    \"snapshot\": {\n"
+                + "      \"element\": [\n"
+                + "        {\n"
+                + "          \"id\": \"Patient\",\n"
+                + "          \"path\": \"Patient\",\n"
+                + "          \"min\": 0,\n"
+                + "          \"max\": \"*\"\n"
+                + "        }\n"
+                + "      ]\n"
+                + "    }\n"
+                + "  },\n"
+                + "  \"implementation_guide\": \"acme-cardiology\"\n"
+                + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
         Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
@@ -369,10 +502,13 @@ public class ProfilesProfilesWireTest {
                 + "  \"resource_type\": \"Patient\",\n"
                 + "  \"url\": \"http://phenoml.com/fhir/StructureDefinition/custom-patient\",\n"
                 + "  \"version\": \"1.0.0\",\n"
+                + "  \"status\": \"active\",\n"
+                + "  \"date\": \"2026-08-24\",\n"
+                + "  \"canonical\": \"http://phenoml.com/fhir/StructureDefinition/custom-patient|1.0.0\",\n"
                 + "  \"fhir_version\": \"4.0.1\",\n"
                 + "  \"implementation_guide\": \"acme-cardiology\",\n"
-                + "  \"created_at\": \"2024-01-15T09:30:00Z\",\n"
-                + "  \"updated_at\": \"2024-01-15T09:30:00Z\"\n"
+                + "  \"created_at\": \"2026-08-24T15:04:05Z\",\n"
+                + "  \"updated_at\": \"2026-08-25T16:04:05Z\"\n"
                 + "}";
         JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
         JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
