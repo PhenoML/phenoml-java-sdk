@@ -20,7 +20,6 @@ import com.phenoml.api.resources.construe.codes.requests.LookupRequest;
 import com.phenoml.api.resources.construe.codes.requests.PhenoCrRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchSemanticRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchTextRequest;
-import com.phenoml.api.resources.construe.errors.BadGatewayError;
 import com.phenoml.api.resources.construe.errors.BadRequestError;
 import com.phenoml.api.resources.construe.errors.ContentTooLargeError;
 import com.phenoml.api.resources.construe.errors.GatewayTimeoutError;
@@ -318,14 +317,8 @@ public class RawCodesClient {
                     case 413:
                         throw new ContentTooLargeError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 501:
-                        throw new NotImplementedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 502:
-                        throw new BadGatewayError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 503:
-                        throw new ServiceUnavailableError(
+                    case 500:
+                        throw new InternalServerError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                 }
             } catch (JsonProcessingException ignored) {
@@ -342,7 +335,7 @@ public class RawCodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public PhenomlClientHttpResponse<ListCodesResponse> list(String codesystem) {
@@ -350,7 +343,7 @@ public class RawCodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public PhenomlClientHttpResponse<ListCodesResponse> list(String codesystem, RequestOptions requestOptions) {
@@ -358,7 +351,7 @@ public class RawCodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public PhenomlClientHttpResponse<ListCodesResponse> list(String codesystem, CodesListRequest request) {
@@ -366,7 +359,7 @@ public class RawCodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public PhenomlClientHttpResponse<ListCodesResponse> list(
@@ -447,7 +440,7 @@ public class RawCodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public PhenomlClientHttpResponse<GetCodeResponse> lookup(String codesystem, String codeId) {
@@ -455,7 +448,7 @@ public class RawCodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public PhenomlClientHttpResponse<GetCodeResponse> lookup(
@@ -464,7 +457,7 @@ public class RawCodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public PhenomlClientHttpResponse<GetCodeResponse> lookup(String codesystem, String codeId, LookupRequest request) {
@@ -472,7 +465,7 @@ public class RawCodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public PhenomlClientHttpResponse<GetCodeResponse> lookup(

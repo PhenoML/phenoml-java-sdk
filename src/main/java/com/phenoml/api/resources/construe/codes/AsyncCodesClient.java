@@ -106,7 +106,7 @@ public class AsyncCodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ListCodesResponse> list(String codesystem) {
@@ -114,7 +114,7 @@ public class AsyncCodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ListCodesResponse> list(String codesystem, RequestOptions requestOptions) {
@@ -122,7 +122,7 @@ public class AsyncCodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ListCodesResponse> list(String codesystem, CodesListRequest request) {
@@ -130,7 +130,7 @@ public class AsyncCodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ListCodesResponse> list(
@@ -139,7 +139,7 @@ public class AsyncCodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<GetCodeResponse> lookup(String codesystem, String codeId) {
@@ -147,7 +147,7 @@ public class AsyncCodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<GetCodeResponse> lookup(String codesystem, String codeId, RequestOptions requestOptions) {
@@ -155,7 +155,7 @@ public class AsyncCodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<GetCodeResponse> lookup(String codesystem, String codeId, LookupRequest request) {
@@ -163,7 +163,7 @@ public class AsyncCodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<GetCodeResponse> lookup(

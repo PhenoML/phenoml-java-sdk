@@ -60,6 +60,9 @@ public final class DeathRow {
         return personId;
     }
 
+    /**
+     * @return Date from Patient.deceasedDateTime; unset for a boolean-only or partial value.
+     */
     @JsonProperty("death_date")
     public Optional<String> getDeathDate() {
         return deathDate;
@@ -175,6 +178,9 @@ public final class DeathRow {
             return this;
         }
 
+        /**
+         * <p>Date from Patient.deceasedDateTime; unset for a boolean-only or partial value.</p>
+         */
         @JsonSetter(value = "death_date", nulls = Nulls.SKIP)
         public Builder deathDate(Optional<String> deathDate) {
             this.deathDate = deathDate;
