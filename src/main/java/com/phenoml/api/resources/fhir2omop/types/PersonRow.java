@@ -38,6 +38,10 @@ public final class PersonRow {
 
     private final Optional<Long> locationId;
 
+    private final Optional<Long> providerId;
+
+    private final Optional<Long> careSiteId;
+
     private final Optional<String> personSourceValue;
 
     private final Optional<String> genderSourceValue;
@@ -58,6 +62,8 @@ public final class PersonRow {
             Optional<Long> raceConceptId,
             Optional<Long> ethnicityConceptId,
             Optional<Long> locationId,
+            Optional<Long> providerId,
+            Optional<Long> careSiteId,
             Optional<String> personSourceValue,
             Optional<String> genderSourceValue,
             Optional<String> raceSourceValue,
@@ -72,6 +78,8 @@ public final class PersonRow {
         this.raceConceptId = raceConceptId;
         this.ethnicityConceptId = ethnicityConceptId;
         this.locationId = locationId;
+        this.providerId = providerId;
+        this.careSiteId = careSiteId;
         this.personSourceValue = personSourceValue;
         this.genderSourceValue = genderSourceValue;
         this.raceSourceValue = raceSourceValue;
@@ -89,21 +97,33 @@ public final class PersonRow {
         return genderConceptId;
     }
 
+    /**
+     * @return Year from Patient.birthDate.
+     */
     @JsonProperty("year_of_birth")
     public Optional<Integer> getYearOfBirth() {
         return yearOfBirth;
     }
 
+    /**
+     * @return Month from Patient.birthDate, when it supplies one.
+     */
     @JsonProperty("month_of_birth")
     public Optional<Integer> getMonthOfBirth() {
         return monthOfBirth;
     }
 
+    /**
+     * @return Day from Patient.birthDate, when it supplies one.
+     */
     @JsonProperty("day_of_birth")
     public Optional<Integer> getDayOfBirth() {
         return dayOfBirth;
     }
 
+    /**
+     * @return Not set; Patient.birthDate has no time of day.
+     */
     @JsonProperty("birth_datetime")
     public Optional<String> getBirthDatetime() {
         return birthDatetime;
@@ -122,6 +142,16 @@ public final class PersonRow {
     @JsonProperty("location_id")
     public Optional<Long> getLocationId() {
         return locationId;
+    }
+
+    @JsonProperty("provider_id")
+    public Optional<Long> getProviderId() {
+        return providerId;
+    }
+
+    @JsonProperty("care_site_id")
+    public Optional<Long> getCareSiteId() {
+        return careSiteId;
     }
 
     @JsonProperty("person_source_value")
@@ -165,6 +195,8 @@ public final class PersonRow {
                 && raceConceptId.equals(other.raceConceptId)
                 && ethnicityConceptId.equals(other.ethnicityConceptId)
                 && locationId.equals(other.locationId)
+                && providerId.equals(other.providerId)
+                && careSiteId.equals(other.careSiteId)
                 && personSourceValue.equals(other.personSourceValue)
                 && genderSourceValue.equals(other.genderSourceValue)
                 && raceSourceValue.equals(other.raceSourceValue)
@@ -183,6 +215,8 @@ public final class PersonRow {
                 this.raceConceptId,
                 this.ethnicityConceptId,
                 this.locationId,
+                this.providerId,
+                this.careSiteId,
                 this.personSourceValue,
                 this.genderSourceValue,
                 this.raceSourceValue,
@@ -218,6 +252,10 @@ public final class PersonRow {
 
         private Optional<Long> locationId = Optional.empty();
 
+        private Optional<Long> providerId = Optional.empty();
+
+        private Optional<Long> careSiteId = Optional.empty();
+
         private Optional<String> personSourceValue = Optional.empty();
 
         private Optional<String> genderSourceValue = Optional.empty();
@@ -241,6 +279,8 @@ public final class PersonRow {
             raceConceptId(other.getRaceConceptId());
             ethnicityConceptId(other.getEthnicityConceptId());
             locationId(other.getLocationId());
+            providerId(other.getProviderId());
+            careSiteId(other.getCareSiteId());
             personSourceValue(other.getPersonSourceValue());
             genderSourceValue(other.getGenderSourceValue());
             raceSourceValue(other.getRaceSourceValue());
@@ -270,6 +310,9 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>Year from Patient.birthDate.</p>
+         */
         @JsonSetter(value = "year_of_birth", nulls = Nulls.SKIP)
         public Builder yearOfBirth(Optional<Integer> yearOfBirth) {
             this.yearOfBirth = yearOfBirth;
@@ -281,6 +324,9 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>Month from Patient.birthDate, when it supplies one.</p>
+         */
         @JsonSetter(value = "month_of_birth", nulls = Nulls.SKIP)
         public Builder monthOfBirth(Optional<Integer> monthOfBirth) {
             this.monthOfBirth = monthOfBirth;
@@ -292,6 +338,9 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>Day from Patient.birthDate, when it supplies one.</p>
+         */
         @JsonSetter(value = "day_of_birth", nulls = Nulls.SKIP)
         public Builder dayOfBirth(Optional<Integer> dayOfBirth) {
             this.dayOfBirth = dayOfBirth;
@@ -303,6 +352,9 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>Not set; Patient.birthDate has no time of day.</p>
+         */
         @JsonSetter(value = "birth_datetime", nulls = Nulls.SKIP)
         public Builder birthDatetime(Optional<String> birthDatetime) {
             this.birthDatetime = birthDatetime;
@@ -344,6 +396,28 @@ public final class PersonRow {
 
         public Builder locationId(Long locationId) {
             this.locationId = Optional.ofNullable(locationId);
+            return this;
+        }
+
+        @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
+        public Builder providerId(Optional<Long> providerId) {
+            this.providerId = providerId;
+            return this;
+        }
+
+        public Builder providerId(Long providerId) {
+            this.providerId = Optional.ofNullable(providerId);
+            return this;
+        }
+
+        @JsonSetter(value = "care_site_id", nulls = Nulls.SKIP)
+        public Builder careSiteId(Optional<Long> careSiteId) {
+            this.careSiteId = careSiteId;
+            return this;
+        }
+
+        public Builder careSiteId(Long careSiteId) {
+            this.careSiteId = Optional.ofNullable(careSiteId);
             return this;
         }
 
@@ -402,6 +476,8 @@ public final class PersonRow {
                     raceConceptId,
                     ethnicityConceptId,
                     locationId,
+                    providerId,
+                    careSiteId,
                     personSourceValue,
                     genderSourceValue,
                     raceSourceValue,
