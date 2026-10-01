@@ -5,10 +5,12 @@ package com.phenoml.api.resources.implementationguides.implementationguides;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.resources.implementationguides.implementationguides.requests.CreateCanonicalImplementationGuideRequest;
 import com.phenoml.api.resources.implementationguides.implementationguides.requests.UpdateImplementationGuideRequest;
 import com.phenoml.api.resources.implementationguides.types.ImplementationGuideDetail;
 import com.phenoml.api.resources.implementationguides.types.ImplementationGuideListResponse;
 import com.phenoml.api.resources.implementationguides.types.ImplementationGuideSummary;
+import com.phenoml.api.resources.implementationguides.types.ImplementationGuideVersionDetail;
 
 public class ImplementationGuidesClient {
     protected final ClientOptions clientOptions;
@@ -103,24 +105,48 @@ public class ImplementationGuidesClient {
     }
 
     /**
-     * Deletes the stored metadata for an implementation guide — its
-     * profile_context and timestamps. Member profiles keep their
-     * implementation_guide assignment, so a guide still referenced by at least
-     * one profile continues to appear in listings, just without context or
-     * timestamps.
+     * Deletes the stored name-level metadata and any exact canonical package
+     * versions beneath the guide. Legacy member profile assignments are not
+     * changed.
      */
     public void delete(String name) {
         this.rawClient.delete(name).body();
     }
 
     /**
-     * Deletes the stored metadata for an implementation guide — its
-     * profile_context and timestamps. Member profiles keep their
-     * implementation_guide assignment, so a guide still referenced by at least
-     * one profile continues to appear in listings, just without context or
-     * timestamps.
+     * Deletes the stored name-level metadata and any exact canonical package
+     * versions beneath the guide. Legacy member profile assignments are not
+     * changed.
      */
     public void delete(String name, RequestOptions requestOptions) {
         this.rawClient.delete(name, requestOptions).body();
+    }
+
+    /**
+     * Publishes an exact package beneath this guide family. PR 2 temporarily
+     * permits one exact package version per guide family; publishing another
+     * version returns <code>409 Conflict</code> until multi-version package support lands.
+     */
+    public ImplementationGuideVersionDetail createVersion(
+            String name, CreateCanonicalImplementationGuideRequest request) {
+        return this.rawClient.createVersion(name, request).body();
+    }
+
+    /**
+     * Publishes an exact package beneath this guide family. PR 2 temporarily
+     * permits one exact package version per guide family; publishing another
+     * version returns <code>409 Conflict</code> until multi-version package support lands.
+     */
+    public ImplementationGuideVersionDetail createVersion(
+            String name, CreateCanonicalImplementationGuideRequest request, RequestOptions requestOptions) {
+        return this.rawClient.createVersion(name, request, requestOptions).body();
+    }
+
+    public ImplementationGuideVersionDetail getVersion(String name, String version) {
+        return this.rawClient.getVersion(name, version).body();
+    }
+
+    public ImplementationGuideVersionDetail getVersion(String name, String version, RequestOptions requestOptions) {
+        return this.rawClient.getVersion(name, version, requestOptions).body();
     }
 }
