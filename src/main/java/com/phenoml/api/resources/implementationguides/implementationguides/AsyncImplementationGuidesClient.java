@@ -5,10 +5,12 @@ package com.phenoml.api.resources.implementationguides.implementationguides;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.resources.implementationguides.implementationguides.requests.CreateCanonicalImplementationGuideRequest;
 import com.phenoml.api.resources.implementationguides.implementationguides.requests.UpdateImplementationGuideRequest;
 import com.phenoml.api.resources.implementationguides.types.ImplementationGuideDetail;
 import com.phenoml.api.resources.implementationguides.types.ImplementationGuideListResponse;
 import com.phenoml.api.resources.implementationguides.types.ImplementationGuideSummary;
+import com.phenoml.api.resources.implementationguides.types.ImplementationGuideVersionDetail;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncImplementationGuidesClient {
@@ -104,24 +106,49 @@ public class AsyncImplementationGuidesClient {
     }
 
     /**
-     * Deletes the stored metadata for an implementation guide — its
-     * profile_context and timestamps. Member profiles keep their
-     * implementation_guide assignment, so a guide still referenced by at least
-     * one profile continues to appear in listings, just without context or
-     * timestamps.
+     * Deletes the stored name-level metadata and any exact canonical package
+     * versions beneath the guide. Legacy member profile assignments are not
+     * changed.
      */
     public CompletableFuture<Void> delete(String name) {
         return this.rawClient.delete(name).thenApply(response -> response.body());
     }
 
     /**
-     * Deletes the stored metadata for an implementation guide — its
-     * profile_context and timestamps. Member profiles keep their
-     * implementation_guide assignment, so a guide still referenced by at least
-     * one profile continues to appear in listings, just without context or
-     * timestamps.
+     * Deletes the stored name-level metadata and any exact canonical package
+     * versions beneath the guide. Legacy member profile assignments are not
+     * changed.
      */
     public CompletableFuture<Void> delete(String name, RequestOptions requestOptions) {
         return this.rawClient.delete(name, requestOptions).thenApply(response -> response.body());
+    }
+
+    /**
+     * Publishes an exact package beneath this guide family. PR 2 temporarily
+     * permits one exact package version per guide family; publishing another
+     * version returns <code>409 Conflict</code> until multi-version package support lands.
+     */
+    public CompletableFuture<ImplementationGuideVersionDetail> createVersion(
+            String name, CreateCanonicalImplementationGuideRequest request) {
+        return this.rawClient.createVersion(name, request).thenApply(response -> response.body());
+    }
+
+    /**
+     * Publishes an exact package beneath this guide family. PR 2 temporarily
+     * permits one exact package version per guide family; publishing another
+     * version returns <code>409 Conflict</code> until multi-version package support lands.
+     */
+    public CompletableFuture<ImplementationGuideVersionDetail> createVersion(
+            String name, CreateCanonicalImplementationGuideRequest request, RequestOptions requestOptions) {
+        return this.rawClient.createVersion(name, request, requestOptions).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<ImplementationGuideVersionDetail> getVersion(String name, String version) {
+        return this.rawClient.getVersion(name, version).thenApply(response -> response.body());
+    }
+
+    public CompletableFuture<ImplementationGuideVersionDetail> getVersion(
+            String name, String version, RequestOptions requestOptions) {
+        return this.rawClient.getVersion(name, version, requestOptions).thenApply(response -> response.body());
     }
 }
