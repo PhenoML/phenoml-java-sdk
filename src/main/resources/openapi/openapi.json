@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Phenoml API",
-    "version": "ad167690bedbaeab8e5b1c348ecf2d0eb50bbc0f"
+    "version": "ee6d39dbcdc5b13ac2e5bfdaac5c2980b7cda595"
   },
   "x-services": [
     {
@@ -3274,7 +3274,7 @@
       "post": {
         "operationId": "fhir2omop_create",
         "summary": "Map FHIR resources to OMOP CDM v5.4",
-        "description": "Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows,\ngrouped by destination table in `tables`.\n\nStandards basis: [FHIR R4 (v4.0.1)](https://hl7.org/fhir/R4/) defines\nthe accepted source elements and [OMOP CDM\nv5.4](https://ohdsi.github.io/CommonDataModel/cdm54.html) defines the\noutput columns. The published [Vulcan FHIR-to-OMOP IG\nv1.0.0](https://hl7.org/fhir/uv/omop/) is an informative FHIR R5\nbaseline; this endpoint documents and implements the equivalent R4\nsource elements, rather than accepting R5-only fields.\n\nThis response is a source-faithful mapping result, not a complete CDM\nload pipeline. CDM v5.4 requires `drug_exposure_end_date`; when a FHIR\nmedication source supplies neither an explicit end nor a safe\ninstantaneous-event interpretation, the response leaves the end absent\nrather than inferring it from a validity period, quantity, dose, or\nrefill count. A downstream ETL must apply its own documented duration\npolicy before loading such rows into a strictly conformant CDM instance.\n\nCurrent resource coverage:\n- `Patient` -> `person`; `deceased[x]` can also produce `death`, and the\n  first address can produce `location`\n- `observation_period` -> one request-local derived row per person with\n  valid dated visit, clinical, or death rows, spanning those dates; this\n  is not enrollment or capture-completeness evidence\n- `Location` -> `location` and `care_site`\n- `Organization` -> `care_site`; its first address can produce `location`\n- `HealthcareService` -> `care_site`\n- `Practitioner` and `PractitionerRole` -> `provider`\n- `Encounter` -> `visit_occurrence`\n- `Condition` -> `condition_occurrence`\n- `Procedure` -> `procedure_occurrence`\n- `MedicationRequest`, `MedicationStatement`, and\n  `MedicationAdministration` -> `drug_exposure`\n- `Immunization` -> `drug_exposure`\n- `Observation` -> `measurement` or `observation`. For coded\n  Observations, the resolved OMOP concept domain selects the table; value\n  form only breaks ties. For text-only Observations, numeric values route\n  to `measurement` and nonnumeric values to `observation`.\n- `AllergyIntolerance` -> `observation`\n\n`Medication` is reference data for medication resources; it does not\ncreate its own row because OMOP CDM has no Medication table. Administrative\nlinkages (provider, care site, and location) are best-effort and limited to\nreferences supplied in the request. `Patient.managingOrganization` is a\nrecord custodian, not a care-delivery site. Provider specialty is not\nmapped. Recorded `Practitioner.gender` is distinct from Person\ndemographics: `male` and `female` resolve to validated OMOP Gender\nconcepts in `provider.gender_concept_id`; `other`, `unknown`, and absent\ngender remain unmapped. `Address.country` is resolved to `location.country_concept_id`,\nand CMS Place of Service codings in `Location.type` are resolved to\n`care_site.place_of_service_concept_id`.\nA `PractitionerRole` that identifies one supplied `Practitioner` aliases\nthat canonical provider: by a top-level structural reference, a\nparent-contained `#id` reference, or an exact `identifier.system` and\n`identifier.value` match against a top-level Practitioner. No remote\nidentifier lookup is performed. When `Reference.type` is present it must\nbe `Practitioner`; duplicate contained IDs and identifier matches are\nambiguous. An explicit reference that is unresolved, ambiguous, or\nunsupported retains a role-fallback provider row and is returned in\n`diagnostics`. `provider_role_contexts` preserves role-specific\nspecialty and care-site context that a canonical OMOP provider row cannot\nrepresent together.\n\n`DiagnosticReport`, `ServiceRequest`, `CarePlan`, `DocumentReference`,\n`Composition`, `Specimen`, `DeviceUseStatement`, `Coverage`, `Claim`, and\nother unsupported resource types are accepted in a Bundle but ignored: they\ncreate no row and no `dropped` entry. `dropped` is reserved for supported\nrow-producing resources that could not be shaped because the subject/patient,\nclinical code/text, or medication data was not usable. A single-Patient\nBundle uses the sole Patient only when `subject`/`patient` is absent. An\nexplicit subject/patient reference that is unresolved, ambiguous, or\nunsupported drops the clinical resource in every request scope.\n\nCoded Observation routing is selected from the resolved OMOP concept\ndomain. Numeric and nonnumeric `value[x]` forms establish the preferred\ntarget only when the code is valid for both tables. A text-only\nObservation has no resolver target, so numeric values route to\n`measurement` and nonnumeric values to `observation`. Numeric values\npopulate `value_as_number` in the selected row; other non-coded values\npopulate `value_as_string` for an `observation` or `value_source_value`\nfor a `measurement`. Coded `valueCodeableConcept` values are resolved\nagainst the selected row's `value_as_concept_id` and use the selected\nbare code in `value_source_value`, leaving an `observation`'s\n`value_as_string` empty; unmapped or target-invalid coded values remain\n`0`.\nOther unsupported `value[x]` forms and Observation components do not\npopulate separate converted values. A\nnumeric comparator (`<`, `<=`, `>`, `>=`) is represented only by a\nmeasurement's `operator_concept_id`; units remain source text and have\n`unit_concept_id` of `0`.\n\nA standard OMOP `concept_id` is selected for each primary clinical coding\nafter considering all of the resource's supplied codings. An unambiguous\ncoded medication route is resolved independently to\n`drug_exposure.route_concept_id`. Alongside the OMOP rows grouped by\ntable (`tables`), the response carries `mappings` (an entry for every\nsupported source coding that is sent to resolution, linked back to the\nrow it produced),\n`provider_role_contexts` (source role details linked to provider rows),\n`dropped` (resources that could not be shaped into a row),\n`diagnostics` (explicit references that could not safely create a link),\n`vocab_version` (the OMOP vocabulary release codes were resolved\nagainst), and a small `summary` of the resolution outcomes.\n\nA `concept_id` of `0` is reported, not omitted (OMOP \"no matching\nconcept\" semantics): it covers both a coding with no standard match\n(`UNMAPPED`) and an unverified suggestion for a text-only resource\n(`UNCHECKED`). Person demographic, visit, and unit concept fields\ncurrently remain `0`; Provider recorded gender follows the policy above.\nCoded Observation values may populate `value_as_concept_id`;\nmeasurement `operator_concept_id` is set from a value comparator\n(`<`, `<=`, `>`, `>=`) rather than terminology resolution. Clinical\n`*_source_value` fields contain the selected FHIR code (or source text\nfor text-only resources).\nThe corresponding selected `mappings` entry preserves the coding system\nand full source-coding provenance.\nKnown OID-form coding systems are accepted as either FHIR OID URNs (for\nexample, `urn:oid:2.16.840.1.113883.6.1` for LOINC) or bare OIDs, and\nare normalized to their canonical system URLs before terminology\nresolution. `mappings[].source_system` reports that canonical URL, so the\nOID and URL forms produce the same mapping. An unknown OID is not\nrewritten and may be `UNMAPPED`.\nOther `*_source_value` fields preserve row-specific raw source values,\nsuch as resource identifiers, names, units, or status codes.\n`MedicationRequest` uses `32838` (EHR prescription) for\n`drug_type_concept_id`; other current resources use `32817` (EHR). This\nis a coarse provenance policy: it does not infer patient-reported,\nmedication-history, or other more-specific type concepts from FHIR\nstatus fields.\n\nDirect FHIR R4 timing and medication detail policy:\n- `MedicationStatement.effectiveDateTime` and `effectivePeriod.start`\n  populate drug start fields; `effectivePeriod.end` also populates drug\n  end date/datetime and `verbatim_end_date`. `dateAsserted` is recorded\n  time, not exposure timing.\n- `MedicationAdministration.effectiveDateTime` is a single-event,\n  same-day exposure; an explicit `effectivePeriod.end` populates\n  source-supported end and verbatim-end fields. A start-only\n  administration period keeps its start and leaves the end absent.\n  `Immunization.occurrenceDateTime` is also a single-event, same-day\n  exposure.\n- `MedicationRequest.authoredOn` is an order-date start fallback, not\n  proof of administration. Direct allowed repeats, whole-day expected\n  supply, and all non-empty dosage text are preserved; its validity\n  period is not exposure duration.\n- Coded dosage routes and `Immunization.route` are target-validated in\n  the OMOP Route domain. Conflicting routes are left unset; route\n  codings shared by every dosage instruction identify the same route.\n  `Immunization.lotNumber` is preserved; its `expirationDate` is not an\n  exposure end.\n- `Condition.abatementDateTime` and `abatementPeriod.end` populate\n  `condition_end_date`. Core CDM v5.4 has no procedure-end column.\n\nMedication codes are resolved whether they appear inline\n(`medicationCodeableConcept`) or via a `medicationReference` to a contained,\nrelative (`Type/id`), or bundle-entry (`urn:uuid`) `Medication` resource.\nA reference that resolves to another resource type is dropped even when it\nsupplies display text; an unresolved or display-only reference may use\nits display as text-only medication input.\nResources that cannot be shaped into a row \u2014 a medication with no usable\ncode, resolvable reference, or display, or any clinical resource whose\nsubject/patient reference cannot be tied to a person \u2014 are reported under\n`dropped` rather than emitted as blank rows. The Bundle must contain at\nleast one Patient resource.\n\nStructural references resolve only to top-level resources supplied in the\nrequest, by `Type/id` or an exactly matching Bundle `fullUrl` (including\n`urn:uuid`). Contained references are supported for medication code lookup\nand `PractitionerRole.practitioner` enrichment; the latter also supports\nexact request-local identifier matching without a remote lookup. Every\nnonzero structural foreign key targets a row in the same response. Missing\noptional links remain null without a diagnostic; an explicit optional\nreference that is unresolved, ambiguous, conflicting with the row's\nperson, or unsupported remains null and is returned in `diagnostics` with\nits source path and outcome.\n\nAll row IDs start at `1` for each request and are not stable or global.\nFor clinical conversion rows whose resource supplies an `id`, `mappings`\nassociates each row with that source FHIR resource ID. A `person` row\nretains the Patient ID or its first identifier value in\n`person_source_value`, when present; other reference and derived rows do\nnot uniformly carry a FHIR resource ID. Input resources without those\nsource identifiers cannot be correlated across responses from the\nreturned rows alone. Consumers combining responses need to establish\ntheir own stable keys and remap every primary and foreign key together.\n",
+        "description": "Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows,\ngrouped by destination table in `tables`.\n\nStandards basis: [FHIR R4 (v4.0.1)](https://hl7.org/fhir/R4/) defines\nthe accepted source elements and [OMOP CDM\nv5.4](https://ohdsi.github.io/CommonDataModel/cdm54.html) defines the\noutput columns. The published [Vulcan FHIR-to-OMOP IG\nv1.0.0](https://hl7.org/fhir/uv/omop/) is an informative FHIR R5\nbaseline; this endpoint documents and implements the equivalent R4\nsource elements, rather than accepting R5-only fields.\n\nThis response is a mapping result, not a complete CDM load pipeline.\nWhen a source cannot supply a field that CDM v5.4 requires, the row is\nstill returned with that field unset; the value is not inferred. Common\ncases are `year_of_birth` without a usable `birthDate`,\n`drug_exposure_end_date` without an explicit end or single-event timing,\nand a required event date (such as `condition_start_date`,\n`procedure_date`, or `death_date`) whose source has no timing with at\nleast day precision. Apply your own policy to such rows before loading\nthem into a strictly conformant CDM instance.\n\nCurrent resource coverage:\n- `Patient` -> `person`; `deceased[x]` can also produce `death`, and the\n  first address can produce `location`\n- `observation_period` -> one request-local derived row per person,\n  spanning the populated dates of that person's visit, clinical, and\n  death rows; this is not enrollment or capture-completeness evidence\n- `Location` -> `location` and `care_site`\n- `Organization` -> `care_site`; its first address can produce `location`\n- `HealthcareService` -> `care_site`\n- `Practitioner` and `PractitionerRole` -> `provider`\n- `Encounter` -> `visit_occurrence`\n- `Condition` -> `condition_occurrence`\n- `Procedure` -> `procedure_occurrence`\n- `MedicationRequest`, `MedicationStatement`, and\n  `MedicationAdministration` -> `drug_exposure`\n- `Immunization` -> `drug_exposure`\n- `Observation` -> `measurement` or `observation`. For coded\n  Observations, the resolved OMOP concept domain selects the table; value\n  form only breaks ties. For text-only Observations, numeric values route\n  to `measurement` and nonnumeric values to `observation`.\n- `AllergyIntolerance` -> `observation`\n\n`Medication` is reference data for medication resources; it does not\ncreate its own row because OMOP CDM has no Medication table. Administrative\nlinkages (provider, care site, and location) are best-effort and limited to\nreferences supplied in the request. `Patient.managingOrganization` is a\nrecord custodian, not a care-delivery site. Provider specialty is not\nmapped. Recorded `Practitioner.gender` is distinct from Person\ndemographics: `male` and `female` resolve to validated OMOP Gender\nconcepts in `provider.gender_concept_id`; `other`, `unknown`, and absent\ngender remain unmapped. `Address.country` is resolved to `location.country_concept_id`,\nand CMS Place of Service codings in `Location.type` are resolved to\n`care_site.place_of_service_concept_id`.\nA `PractitionerRole` that identifies one supplied `Practitioner` aliases\nthat canonical provider: by a top-level structural reference, a\nparent-contained `#id` reference, or an exact `identifier.system` and\n`identifier.value` match against a top-level Practitioner. No remote\nidentifier lookup is performed. When `Reference.type` is present it must\nbe `Practitioner`; duplicate contained IDs and identifier matches are\nambiguous. An explicit reference that is unresolved, ambiguous, or\nunsupported retains a role-fallback provider row and is returned in\n`diagnostics`. `provider_role_contexts` preserves role-specific\nspecialty and care-site context that a canonical OMOP provider row cannot\nrepresent together.\n\n`DiagnosticReport`, `ServiceRequest`, `CarePlan`, `DocumentReference`,\n`Composition`, `Specimen`, `DeviceUseStatement`, `Coverage`, `Claim`, and\nother unsupported resource types are accepted in a Bundle but ignored: they\ncreate no row and no `dropped` entry. `dropped` is reserved for supported\nrow-producing resources that could not be shaped because the subject/patient,\nclinical code/text, or medication data was not usable. A single-Patient\nBundle uses the sole Patient only when `subject`/`patient` is absent. An\nexplicit subject/patient reference that is unresolved, ambiguous, or\nunsupported drops the clinical resource in every request scope.\n\nCoded Observation routing is selected from the resolved OMOP concept\ndomain. Numeric and nonnumeric `value[x]` forms establish the preferred\ntarget only when the code is valid for both tables. A text-only\nObservation has no resolver target, so numeric values route to\n`measurement` and nonnumeric values to `observation`. Numeric values\npopulate `value_as_number` in the selected row; other non-coded values\npopulate `value_as_string` for an `observation` or `value_source_value`\nfor a `measurement`. Coded `valueCodeableConcept` values are resolved\nagainst the selected row's `value_as_concept_id` and use the selected\nbare code in `value_source_value`, leaving an `observation`'s\n`value_as_string` empty; unmapped or target-invalid coded values remain\n`0`.\nOther unsupported `value[x]` forms and Observation components do not\npopulate separate converted values. A\nnumeric comparator (`<`, `<=`, `>`, `>=`) is represented only by a\nmeasurement's `operator_concept_id`; units remain source text and have\n`unit_concept_id` of `0`.\n\nA standard OMOP `concept_id` is selected for each primary clinical coding\nafter considering all of the resource's supplied codings. An unambiguous\ncoded medication route is resolved independently to\n`drug_exposure.route_concept_id`. Alongside the OMOP rows grouped by\ntable (`tables`), the response carries `mappings` (an entry for every\nsupported source coding that is sent to resolution, linked back to the\nrow it produced),\n`provider_role_contexts` (source role details linked to provider rows),\n`dropped` (resources that could not be shaped into a row),\n`diagnostics` (explicit references that could not safely create a link),\n`vocab_version` (the OMOP vocabulary release codes were resolved\nagainst), and a small `summary` of the resolution outcomes.\n\nA `concept_id` of `0` is reported, not omitted (OMOP \"no matching\nconcept\" semantics): it covers both a coding with no standard match\n(`UNMAPPED`) and an unverified suggestion for a text-only resource\n(`UNCHECKED`). Person demographic, visit, and unit concept fields\ncurrently remain `0`; Provider recorded gender follows the policy above.\nCoded Observation values may populate `value_as_concept_id`;\nmeasurement `operator_concept_id` is set from a value comparator\n(`<`, `<=`, `>`, `>=`) rather than terminology resolution. Clinical\n`*_source_value` fields contain the selected FHIR code (or source text\nfor text-only resources).\nThe corresponding selected `mappings` entry preserves the coding system\nand full source-coding provenance.\nKnown OID-form coding systems are accepted as either FHIR OID URNs (for\nexample, `urn:oid:2.16.840.1.113883.6.1` for LOINC) or bare OIDs, and\nare normalized to their canonical system URLs before terminology\nresolution. `mappings[].source_system` reports that canonical URL, so the\nOID and URL forms produce the same mapping. An unknown OID is not\nrewritten and may be `UNMAPPED`.\nOther `*_source_value` fields preserve row-specific raw source values,\nsuch as resource identifiers, names, units, or status codes.\n`MedicationRequest` uses `32838` (EHR prescription) for\n`drug_type_concept_id`; other current resources use `32817` (EHR). This\nis a coarse provenance policy: it does not infer patient-reported,\nmedication-history, or other more-specific type concepts from FHIR\nstatus fields.\n\nDates and datetimes:\n- A `*_date` is the calendar date (`YYYY-MM-DD`) of a source value with\n  at least day precision. A `*_datetime` is set only when that value\n  has a time of day, as local time without a UTC offset\n  (`YYYY-MM-DDTHH:MM:SS`, with fractional seconds to microseconds when\n  supplied): `2024-01-15T23:30:00-05:00` becomes `2024-01-15T23:30:00`.\n  A datetime without a timezone is read as local time.\n- A partial date (`2024` or `2024-03`) leaves both columns unset. It\n  still counts as that source's value, so later sources in the list\n  below are not used.\n- Free-text timing (such as `onsetString`), `Age` and `Range` forms, and\n  values that are not dates are ignored, so a later source in the list\n  is used if there is one.\n- Other than the sources below and the same-day ends of single-event\n  medication records, no date is imputed: partial dates are not\n  completed, and a row is not dated from another resource such as its\n  Encounter.\n- Date values never cause a request to be rejected, and the response\n  does not report which date elements were unusable.\n\nTiming sources, in priority order where several are listed:\n- `Patient`: `birthDate` sets `year_of_birth`, `month_of_birth`, and\n  `day_of_birth` from the parts it supplies; `birth_datetime` is not\n  set. `deceasedDateTime` sets the `death` dates.\n- `Practitioner`: `birthDate` sets the provider's `year_of_birth`.\n- `Encounter`: `period.start` and `period.end`.\n- `Condition`: start from `onsetDateTime` or `onsetPeriod.start`, then\n  `recordedDate` (when the condition was recorded, not when it began);\n  end from `abatementDateTime` or `abatementPeriod.end`.\n- `Procedure`: start from `performedDateTime` or\n  `performedPeriod.start`; end from `performedPeriod.end` only.\n- `Observation`: `effectiveDateTime`, `effectivePeriod.start`, or\n  `effectiveInstant`.\n- `AllergyIntolerance`: `recordedDate`, then `onsetDateTime` or\n  `onsetPeriod.start`.\n- `MedicationStatement`: start from `effectiveDateTime` or\n  `effectivePeriod.start`; end and `verbatim_end_date` from\n  `effectivePeriod.end`. `dateAsserted` records when the statement was\n  made and is not used.\n- `MedicationAdministration`: an `effectiveDateTime` is a single event\n  that sets both start and end; an `effectivePeriod` sets the start\n  and, when present, the end and `verbatim_end_date`.\n- `Immunization`: `occurrenceDateTime` is a single event that sets both\n  start and end; `expirationDate` is not used.\n- `MedicationRequest`: `authoredOn`, the order date, sets the start; it\n  is not evidence of administration. No end is set, and the validity\n  period is not used as an exposure duration.\n- Differences from the Vulcan maps: `birth_datetime` is not set from\n  `birthDate`, Condition also reads `onsetPeriod.start`, and\n  AllergyIntolerance falls back to its onset when `recordedDate` is\n  missing.\n\nMedication details:\n- For `MedicationRequest`, `dispenseRequest.numberOfRepeatsAllowed` sets\n  `refills` and a whole-day `expectedSupplyDuration` sets `days_supply`.\n- All non-empty dosage text is preserved in `sig`.\n- Coded dosage routes and `Immunization.route` are target-validated in\n  the OMOP Route domain. Conflicting routes are left unset; route\n  codings shared by every dosage instruction identify the same route.\n- `Immunization.lotNumber` is preserved in `lot_number`.\n\nMedication codes are resolved whether they appear inline\n(`medicationCodeableConcept`) or via a `medicationReference` to a contained,\nrelative (`Type/id`), or bundle-entry (`urn:uuid`) `Medication` resource.\nA reference that resolves to another resource type is dropped even when it\nsupplies display text; an unresolved or display-only reference may use\nits display as text-only medication input.\nResources that cannot be shaped into a row \u2014 a medication with no usable\ncode, resolvable reference, or display, or any clinical resource whose\nsubject/patient reference cannot be tied to a person \u2014 are reported under\n`dropped` rather than emitted as blank rows. The Bundle must contain at\nleast one Patient resource.\n\nStructural references resolve only to top-level resources supplied in the\nrequest, by `Type/id` or an exactly matching Bundle `fullUrl` (including\n`urn:uuid`). Contained references are supported for medication code lookup\nand `PractitionerRole.practitioner` enrichment; the latter also supports\nexact request-local identifier matching without a remote lookup. Every\nnonzero structural foreign key targets a row in the same response. Missing\noptional links remain unset without a diagnostic; an explicit optional\nreference that is unresolved, ambiguous, conflicting with the row's\nperson, or unsupported remains unset and is returned in `diagnostics`\nwith its source path and outcome.\n\nAll row IDs start at `1` for each request and are not stable or global.\nFor clinical conversion rows whose resource supplies an `id`, `mappings`\nassociates each row with that source FHIR resource ID. A `person` row\nretains the Patient ID or its first identifier value in\n`person_source_value`, when present; other reference and derived rows do\nnot uniformly carry a FHIR resource ID. Input resources without those\nsource identifiers cannot be correlated across responses from the\nreturned rows alone. Consumers combining responses need to establish\ntheir own stable keys and remap every primary and foreign key together.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -3418,11 +3418,19 @@
                             "year_of_birth": 1985,
                             "month_of_birth": 7,
                             "day_of_birth": 22,
-                            "birth_datetime": "1985-07-22",
                             "race_concept_id": 0,
                             "ethnicity_concept_id": 0,
                             "person_source_value": "patient-1",
                             "gender_source_value": "female"
+                          }
+                        ],
+                        "observation_period": [
+                          {
+                            "observation_period_id": 1,
+                            "person_id": 1,
+                            "observation_period_start_date": "2024-01-15",
+                            "observation_period_end_date": "2024-01-16",
+                            "period_type_concept_id": 32817
                           }
                         ],
                         "condition_occurrence": [
@@ -3431,7 +3439,6 @@
                             "person_id": 1,
                             "condition_concept_id": 201826,
                             "condition_start_date": "2024-01-15",
-                            "condition_start_datetime": "2024-01-15",
                             "condition_type_concept_id": 32817,
                             "condition_source_value": "44054006",
                             "condition_source_concept_id": 201826
@@ -3443,7 +3450,6 @@
                             "person_id": 1,
                             "drug_concept_id": 40163924,
                             "drug_exposure_start_date": "2024-01-16",
-                            "drug_exposure_start_datetime": "2024-01-16",
                             "drug_type_concept_id": 32838,
                             "drug_source_value": "860975",
                             "drug_source_concept_id": 40163924
@@ -10472,7 +10478,7 @@
           },
           "dropped": {
             "type": "array",
-            "description": "Supported resource instances that could not be shaped into an OMOP\nrow because required clinical data was missing, or an explicit\nsubject/patient reference was unresolved, ambiguous, or unsupported.\nUnsupported resource types are ignored and do not appear here.\n",
+            "description": "Supported resource instances that could not be shaped into an OMOP\nrow because the subject/patient, clinical code or text, or medication\ndata was missing or unusable, including an explicit subject/patient\nreference that was unresolved, ambiguous, or unsupported. A resource\nthat lacks only a date or another CDM-required field is returned as a\nrow instead. Unsupported resource types are ignored and do not appear\nhere.\n",
             "items": {
               "$ref": "#/components/schemas/fhir2omop_DroppedResource"
             }
@@ -10495,7 +10501,7 @@
       },
       "fhir2omop_OmopTables": {
         "type": "object",
-        "description": "OMOP CDM v5.4 rows grouped by destination table. IDs are sequential and\nscoped to one response; they are not stable keys across requests.\n",
+        "description": "OMOP CDM v5.4 rows grouped by destination table. IDs are sequential and\nscoped to one response; they are not stable keys across requests.\nFields with no value are unset (omitted from the row), except concept\nIDs reported as `0`. Each `*_datetime` comes from the same source as its\n`*_date` and is set only when that source has a time of day.\n",
         "properties": {
           "location": {
             "type": "array",
@@ -10667,7 +10673,8 @@
             "format": "int64"
           },
           "year_of_birth": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Year from Practitioner.birthDate."
           },
           "gender_concept_id": {
             "type": "integer",
@@ -10823,16 +10830,20 @@
             "format": "int64"
           },
           "year_of_birth": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Year from Patient.birthDate."
           },
           "month_of_birth": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Month from Patient.birthDate, when it supplies one."
           },
           "day_of_birth": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Day from Patient.birthDate, when it supplies one."
           },
           "birth_datetime": {
-            "type": "string"
+            "type": "string",
+            "description": "Not set; Patient.birthDate has no time of day."
           },
           "race_concept_id": {
             "type": "integer",
@@ -10876,7 +10887,8 @@
             "format": "int64"
           },
           "death_date": {
-            "type": "string"
+            "type": "string",
+            "description": "Date from Patient.deceasedDateTime; unset for a boolean-only or partial value."
           },
           "death_datetime": {
             "type": "string"
@@ -10911,11 +10923,11 @@
           },
           "observation_period_start_date": {
             "type": "string",
-            "description": "Request-local earliest valid clinical, visit, or death date; not enrollment evidence."
+            "description": "Earliest populated date among the person's visit, clinical, and death rows in this request; not enrollment evidence."
           },
           "observation_period_end_date": {
             "type": "string",
-            "description": "Request-local latest valid clinical, visit, or death date, including supported clinical end dates; not enrollment evidence."
+            "description": "Latest populated date, including end dates, among the person's visit, clinical, and death rows in this request; not enrollment evidence."
           },
           "period_type_concept_id": {
             "type": "integer",
@@ -10939,13 +10951,15 @@
             "format": "int64"
           },
           "visit_start_date": {
-            "type": "string"
+            "type": "string",
+            "description": "Date from Encounter.period.start."
           },
           "visit_start_datetime": {
             "type": "string"
           },
           "visit_end_date": {
-            "type": "string"
+            "type": "string",
+            "description": "Date from Encounter.period.end."
           },
           "visit_end_datetime": {
             "type": "string"
@@ -10983,14 +10997,18 @@
             "format": "int64"
           },
           "condition_start_date": {
-            "type": "string"
+            "type": "string",
+            "description": "Date from Condition.onsetDateTime or onsetPeriod.start, otherwise Condition.recordedDate."
           },
           "condition_start_datetime": {
             "type": "string"
           },
           "condition_end_date": {
             "type": "string",
-            "description": "Date from FHIR R4 Condition.abatementDateTime or abatementPeriod.end when supplied."
+            "description": "Date from Condition.abatementDateTime or abatementPeriod.end."
+          },
+          "condition_end_datetime": {
+            "type": "string"
           },
           "condition_type_concept_id": {
             "type": "integer",
@@ -11033,19 +11051,17 @@
           },
           "drug_exposure_start_date": {
             "type": "string",
-            "description": "Date from the resource-specific direct timing source, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn."
+            "description": "Date from the resource's timing source, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn."
           },
           "drug_exposure_start_datetime": {
-            "type": "string",
-            "description": "Date-time precision from the resource-specific direct timing source when supplied."
+            "type": "string"
           },
           "drug_exposure_end_date": {
             "type": "string",
-            "description": "Explicit FHIR Period end, or same-day inferred end for a structured instantaneous administration or immunization. Omitted when no source-supported end is available."
+            "description": "Date from an explicit FHIR Period end, or the same day as the start for a single-event administration or immunization. Unset when the source supplies neither."
           },
           "drug_exposure_end_datetime": {
-            "type": "string",
-            "description": "Date-time precision from an explicit FHIR Period end or a structured instantaneous administration or immunization."
+            "type": "string"
           },
           "verbatim_end_date": {
             "type": "string",
@@ -11118,9 +11134,17 @@
             "format": "int64"
           },
           "procedure_date": {
-            "type": "string"
+            "type": "string",
+            "description": "Date from Procedure.performedDateTime or performedPeriod.start."
           },
           "procedure_datetime": {
+            "type": "string"
+          },
+          "procedure_end_date": {
+            "type": "string",
+            "description": "Date from Procedure.performedPeriod.end."
+          },
+          "procedure_end_datetime": {
             "type": "string"
           },
           "procedure_type_concept_id": {
@@ -11160,7 +11184,8 @@
             "format": "int64"
           },
           "measurement_date": {
-            "type": "string"
+            "type": "string",
+            "description": "Date from Observation.effectiveDateTime, effectivePeriod.start, or effectiveInstant."
           },
           "measurement_datetime": {
             "type": "string"
@@ -11233,7 +11258,8 @@
             "format": "int64"
           },
           "observation_date": {
-            "type": "string"
+            "type": "string",
+            "description": "For an Observation, date from effectiveDateTime, effectivePeriod.start, or effectiveInstant. For an AllergyIntolerance, date from recordedDate, otherwise onsetDateTime or onsetPeriod.start."
           },
           "observation_datetime": {
             "type": "string"
