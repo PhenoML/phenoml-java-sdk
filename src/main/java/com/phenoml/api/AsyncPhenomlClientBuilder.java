@@ -176,7 +176,15 @@ public class AsyncPhenomlClientBuilder {
     protected void setEnvironment(ClientOptions.Builder builder) {
         if (this.instanceUrl != null) {
             String _instanceUrl = this.instanceUrl != null ? this.instanceUrl : "experiment.app.pheno.ml";
-            this.environment = Environment.custom("https://{instanceUrl}".replace("{instanceUrl}", _instanceUrl));
+            String _urlTemplate = null;
+            if (this.environment == null) {
+                _urlTemplate = "https://{instanceUrl}";
+            } else if (this.environment.equals(Environment.DEFAULT)) {
+                _urlTemplate = "https://{instanceUrl}";
+            }
+            if (_urlTemplate != null) {
+                this.environment = Environment.custom(_urlTemplate.replace("{instanceUrl}", _instanceUrl));
+            }
         }
         builder.environment(this.environment);
     }
@@ -314,21 +322,9 @@ public class AsyncPhenomlClientBuilder {
 
         private final String clientSecret;
 
-        private Optional<String> grantType = Optional.empty();
-
         _CredentialsAuth(String clientId, String clientSecret) {
             this.clientId = clientId;
             this.clientSecret = clientSecret;
-        }
-
-        public _CredentialsAuth grantType(Optional<String> grantType) {
-            this.grantType = grantType;
-            return this;
-        }
-
-        public _CredentialsAuth grantType(String grantType) {
-            this.grantType = Optional.ofNullable(grantType);
-            return this;
         }
 
         @Override
@@ -337,7 +333,7 @@ public class AsyncPhenomlClientBuilder {
             ClientOptions baseOptions = buildClientOptions();
             AuthtokenClient authClient = new AuthtokenClient(baseOptions);
             OAuthTokenSupplier oAuthTokenSupplier =
-                    new OAuthTokenSupplier(this.clientId, this.clientSecret, this.grantType, authClient);
+                    new OAuthTokenSupplier(this.clientId, this.clientSecret, authClient);
             ClientOptions finalOptions = ClientOptions.Builder.from(baseOptions)
                     .addHeader("Authorization", oAuthTokenSupplier)
                     .build();

@@ -30,6 +30,10 @@ public final class ProcedureOccurrenceRow {
 
     private final Optional<String> procedureDatetime;
 
+    private final Optional<String> procedureEndDate;
+
+    private final Optional<String> procedureEndDatetime;
+
     private final Optional<Long> procedureTypeConceptId;
 
     private final Optional<Long> visitOccurrenceId;
@@ -48,6 +52,8 @@ public final class ProcedureOccurrenceRow {
             Optional<Long> procedureConceptId,
             Optional<String> procedureDate,
             Optional<String> procedureDatetime,
+            Optional<String> procedureEndDate,
+            Optional<String> procedureEndDatetime,
             Optional<Long> procedureTypeConceptId,
             Optional<Long> visitOccurrenceId,
             Optional<Long> providerId,
@@ -59,6 +65,8 @@ public final class ProcedureOccurrenceRow {
         this.procedureConceptId = procedureConceptId;
         this.procedureDate = procedureDate;
         this.procedureDatetime = procedureDatetime;
+        this.procedureEndDate = procedureEndDate;
+        this.procedureEndDatetime = procedureEndDatetime;
         this.procedureTypeConceptId = procedureTypeConceptId;
         this.visitOccurrenceId = visitOccurrenceId;
         this.providerId = providerId;
@@ -82,6 +90,9 @@ public final class ProcedureOccurrenceRow {
         return procedureConceptId;
     }
 
+    /**
+     * @return Date from Procedure.performedDateTime or performedPeriod.start.
+     */
     @JsonProperty("procedure_date")
     public Optional<String> getProcedureDate() {
         return procedureDate;
@@ -90,6 +101,19 @@ public final class ProcedureOccurrenceRow {
     @JsonProperty("procedure_datetime")
     public Optional<String> getProcedureDatetime() {
         return procedureDatetime;
+    }
+
+    /**
+     * @return Date from Procedure.performedPeriod.end.
+     */
+    @JsonProperty("procedure_end_date")
+    public Optional<String> getProcedureEndDate() {
+        return procedureEndDate;
+    }
+
+    @JsonProperty("procedure_end_datetime")
+    public Optional<String> getProcedureEndDatetime() {
+        return procedureEndDatetime;
     }
 
     @JsonProperty("procedure_type_concept_id")
@@ -134,6 +158,8 @@ public final class ProcedureOccurrenceRow {
                 && procedureConceptId.equals(other.procedureConceptId)
                 && procedureDate.equals(other.procedureDate)
                 && procedureDatetime.equals(other.procedureDatetime)
+                && procedureEndDate.equals(other.procedureEndDate)
+                && procedureEndDatetime.equals(other.procedureEndDatetime)
                 && procedureTypeConceptId.equals(other.procedureTypeConceptId)
                 && visitOccurrenceId.equals(other.visitOccurrenceId)
                 && providerId.equals(other.providerId)
@@ -149,6 +175,8 @@ public final class ProcedureOccurrenceRow {
                 this.procedureConceptId,
                 this.procedureDate,
                 this.procedureDatetime,
+                this.procedureEndDate,
+                this.procedureEndDatetime,
                 this.procedureTypeConceptId,
                 this.visitOccurrenceId,
                 this.providerId,
@@ -177,6 +205,10 @@ public final class ProcedureOccurrenceRow {
 
         private Optional<String> procedureDatetime = Optional.empty();
 
+        private Optional<String> procedureEndDate = Optional.empty();
+
+        private Optional<String> procedureEndDatetime = Optional.empty();
+
         private Optional<Long> procedureTypeConceptId = Optional.empty();
 
         private Optional<Long> visitOccurrenceId = Optional.empty();
@@ -198,6 +230,8 @@ public final class ProcedureOccurrenceRow {
             procedureConceptId(other.getProcedureConceptId());
             procedureDate(other.getProcedureDate());
             procedureDatetime(other.getProcedureDatetime());
+            procedureEndDate(other.getProcedureEndDate());
+            procedureEndDatetime(other.getProcedureEndDatetime());
             procedureTypeConceptId(other.getProcedureTypeConceptId());
             visitOccurrenceId(other.getVisitOccurrenceId());
             providerId(other.getProviderId());
@@ -239,6 +273,9 @@ public final class ProcedureOccurrenceRow {
             return this;
         }
 
+        /**
+         * <p>Date from Procedure.performedDateTime or performedPeriod.start.</p>
+         */
         @JsonSetter(value = "procedure_date", nulls = Nulls.SKIP)
         public Builder procedureDate(Optional<String> procedureDate) {
             this.procedureDate = procedureDate;
@@ -258,6 +295,31 @@ public final class ProcedureOccurrenceRow {
 
         public Builder procedureDatetime(String procedureDatetime) {
             this.procedureDatetime = Optional.ofNullable(procedureDatetime);
+            return this;
+        }
+
+        /**
+         * <p>Date from Procedure.performedPeriod.end.</p>
+         */
+        @JsonSetter(value = "procedure_end_date", nulls = Nulls.SKIP)
+        public Builder procedureEndDate(Optional<String> procedureEndDate) {
+            this.procedureEndDate = procedureEndDate;
+            return this;
+        }
+
+        public Builder procedureEndDate(String procedureEndDate) {
+            this.procedureEndDate = Optional.ofNullable(procedureEndDate);
+            return this;
+        }
+
+        @JsonSetter(value = "procedure_end_datetime", nulls = Nulls.SKIP)
+        public Builder procedureEndDatetime(Optional<String> procedureEndDatetime) {
+            this.procedureEndDatetime = procedureEndDatetime;
+            return this;
+        }
+
+        public Builder procedureEndDatetime(String procedureEndDatetime) {
+            this.procedureEndDatetime = Optional.ofNullable(procedureEndDatetime);
             return this;
         }
 
@@ -323,6 +385,8 @@ public final class ProcedureOccurrenceRow {
                     procedureConceptId,
                     procedureDate,
                     procedureDatetime,
+                    procedureEndDate,
+                    procedureEndDatetime,
                     procedureTypeConceptId,
                     visitOccurrenceId,
                     providerId,
