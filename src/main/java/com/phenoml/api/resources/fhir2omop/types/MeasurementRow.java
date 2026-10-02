@@ -114,6 +114,9 @@ public final class MeasurementRow {
         return measurementConceptId;
     }
 
+    /**
+     * @return Date from Observation.effectiveDateTime, effectivePeriod.start, or effectiveInstant.
+     */
     @JsonProperty("measurement_date")
     public Optional<String> getMeasurementDate() {
         return measurementDate;
@@ -354,6 +357,9 @@ public final class MeasurementRow {
             return this;
         }
 
+        /**
+         * <p>Date from Observation.effectiveDateTime, effectivePeriod.start, or effectiveInstant.</p>
+         */
         @JsonSetter(value = "measurement_date", nulls = Nulls.SKIP)
         public Builder measurementDate(Optional<String> measurementDate) {
             this.measurementDate = measurementDate;

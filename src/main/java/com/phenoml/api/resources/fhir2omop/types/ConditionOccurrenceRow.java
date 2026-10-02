@@ -32,6 +32,8 @@ public final class ConditionOccurrenceRow {
 
     private final Optional<String> conditionEndDate;
 
+    private final Optional<String> conditionEndDatetime;
+
     private final Optional<Long> conditionTypeConceptId;
 
     private final Optional<Long> visitOccurrenceId;
@@ -53,6 +55,7 @@ public final class ConditionOccurrenceRow {
             Optional<String> conditionStartDate,
             Optional<String> conditionStartDatetime,
             Optional<String> conditionEndDate,
+            Optional<String> conditionEndDatetime,
             Optional<Long> conditionTypeConceptId,
             Optional<Long> visitOccurrenceId,
             Optional<Long> providerId,
@@ -66,6 +69,7 @@ public final class ConditionOccurrenceRow {
         this.conditionStartDate = conditionStartDate;
         this.conditionStartDatetime = conditionStartDatetime;
         this.conditionEndDate = conditionEndDate;
+        this.conditionEndDatetime = conditionEndDatetime;
         this.conditionTypeConceptId = conditionTypeConceptId;
         this.visitOccurrenceId = visitOccurrenceId;
         this.providerId = providerId;
@@ -90,6 +94,9 @@ public final class ConditionOccurrenceRow {
         return conditionConceptId;
     }
 
+    /**
+     * @return Date from Condition.onsetDateTime or onsetPeriod.start, otherwise Condition.recordedDate.
+     */
     @JsonProperty("condition_start_date")
     public Optional<String> getConditionStartDate() {
         return conditionStartDate;
@@ -100,9 +107,17 @@ public final class ConditionOccurrenceRow {
         return conditionStartDatetime;
     }
 
+    /**
+     * @return Date from Condition.abatementDateTime or abatementPeriod.end.
+     */
     @JsonProperty("condition_end_date")
     public Optional<String> getConditionEndDate() {
         return conditionEndDate;
+    }
+
+    @JsonProperty("condition_end_datetime")
+    public Optional<String> getConditionEndDatetime() {
+        return conditionEndDatetime;
     }
 
     @JsonProperty("condition_type_concept_id")
@@ -153,6 +168,7 @@ public final class ConditionOccurrenceRow {
                 && conditionStartDate.equals(other.conditionStartDate)
                 && conditionStartDatetime.equals(other.conditionStartDatetime)
                 && conditionEndDate.equals(other.conditionEndDate)
+                && conditionEndDatetime.equals(other.conditionEndDatetime)
                 && conditionTypeConceptId.equals(other.conditionTypeConceptId)
                 && visitOccurrenceId.equals(other.visitOccurrenceId)
                 && providerId.equals(other.providerId)
@@ -170,6 +186,7 @@ public final class ConditionOccurrenceRow {
                 this.conditionStartDate,
                 this.conditionStartDatetime,
                 this.conditionEndDate,
+                this.conditionEndDatetime,
                 this.conditionTypeConceptId,
                 this.visitOccurrenceId,
                 this.providerId,
@@ -201,6 +218,8 @@ public final class ConditionOccurrenceRow {
 
         private Optional<String> conditionEndDate = Optional.empty();
 
+        private Optional<String> conditionEndDatetime = Optional.empty();
+
         private Optional<Long> conditionTypeConceptId = Optional.empty();
 
         private Optional<Long> visitOccurrenceId = Optional.empty();
@@ -225,6 +244,7 @@ public final class ConditionOccurrenceRow {
             conditionStartDate(other.getConditionStartDate());
             conditionStartDatetime(other.getConditionStartDatetime());
             conditionEndDate(other.getConditionEndDate());
+            conditionEndDatetime(other.getConditionEndDatetime());
             conditionTypeConceptId(other.getConditionTypeConceptId());
             visitOccurrenceId(other.getVisitOccurrenceId());
             providerId(other.getProviderId());
@@ -267,6 +287,9 @@ public final class ConditionOccurrenceRow {
             return this;
         }
 
+        /**
+         * <p>Date from Condition.onsetDateTime or onsetPeriod.start, otherwise Condition.recordedDate.</p>
+         */
         @JsonSetter(value = "condition_start_date", nulls = Nulls.SKIP)
         public Builder conditionStartDate(Optional<String> conditionStartDate) {
             this.conditionStartDate = conditionStartDate;
@@ -289,6 +312,9 @@ public final class ConditionOccurrenceRow {
             return this;
         }
 
+        /**
+         * <p>Date from Condition.abatementDateTime or abatementPeriod.end.</p>
+         */
         @JsonSetter(value = "condition_end_date", nulls = Nulls.SKIP)
         public Builder conditionEndDate(Optional<String> conditionEndDate) {
             this.conditionEndDate = conditionEndDate;
@@ -297,6 +323,17 @@ public final class ConditionOccurrenceRow {
 
         public Builder conditionEndDate(String conditionEndDate) {
             this.conditionEndDate = Optional.ofNullable(conditionEndDate);
+            return this;
+        }
+
+        @JsonSetter(value = "condition_end_datetime", nulls = Nulls.SKIP)
+        public Builder conditionEndDatetime(Optional<String> conditionEndDatetime) {
+            this.conditionEndDatetime = conditionEndDatetime;
+            return this;
+        }
+
+        public Builder conditionEndDatetime(String conditionEndDatetime) {
+            this.conditionEndDatetime = Optional.ofNullable(conditionEndDatetime);
             return this;
         }
 
@@ -374,6 +411,7 @@ public final class ConditionOccurrenceRow {
                     conditionStartDate,
                     conditionStartDatetime,
                     conditionEndDate,
+                    conditionEndDatetime,
                     conditionTypeConceptId,
                     visitOccurrenceId,
                     providerId,
