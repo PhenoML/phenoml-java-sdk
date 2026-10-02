@@ -12,26 +12,26 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.phenoml.api.core.ObjectMappers;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ProfileListResponse.Builder.class)
 public final class ProfileListResponse {
-    private final Optional<List<ProfileSummary>> profiles;
+    private final List<ProfileSummary> profiles;
 
     private final Map<String, Object> additionalProperties;
 
-    private ProfileListResponse(Optional<List<ProfileSummary>> profiles, Map<String, Object> additionalProperties) {
+    private ProfileListResponse(List<ProfileSummary> profiles, Map<String, Object> additionalProperties) {
         this.profiles = profiles;
         this.additionalProperties = additionalProperties;
     }
 
     @JsonProperty("profiles")
-    public Optional<List<ProfileSummary>> getProfiles() {
+    public List<ProfileSummary> getProfiles() {
         return profiles;
     }
 
@@ -66,7 +66,7 @@ public final class ProfileListResponse {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder {
-        private Optional<List<ProfileSummary>> profiles = Optional.empty();
+        private List<ProfileSummary> profiles = new ArrayList<>();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -79,13 +79,23 @@ public final class ProfileListResponse {
         }
 
         @JsonSetter(value = "profiles", nulls = Nulls.SKIP)
-        public Builder profiles(Optional<List<ProfileSummary>> profiles) {
-            this.profiles = profiles;
+        public Builder profiles(List<ProfileSummary> profiles) {
+            this.profiles.clear();
+            if (profiles != null) {
+                this.profiles.addAll(profiles);
+            }
             return this;
         }
 
-        public Builder profiles(List<ProfileSummary> profiles) {
-            this.profiles = Optional.ofNullable(profiles);
+        public Builder addProfiles(ProfileSummary profiles) {
+            this.profiles.add(profiles);
+            return this;
+        }
+
+        public Builder addAllProfiles(List<ProfileSummary> profiles) {
+            if (profiles != null) {
+                this.profiles.addAll(profiles);
+            }
             return this;
         }
 

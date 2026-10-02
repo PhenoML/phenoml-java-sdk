@@ -487,7 +487,7 @@ public class Lang2FhirWireTest {
                 .document(DocumentRequest.builder()
                         .version("R4")
                         .resource("questionnaire")
-                        .content("JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)")
+                        .content("JVBERi0xLjQKJeLjz9MK...(base64-encoded document bytes)")
                         .build());
         // OAuth: consume the token request
         server.takeRequest();
@@ -506,7 +506,7 @@ public class Lang2FhirWireTest {
                 + "{\n"
                 + "  \"version\": \"R4\",\n"
                 + "  \"resource\": \"questionnaire\",\n"
-                + "  \"content\": \"JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)\"\n"
+                + "  \"content\": \"JVBERi0xLjQKJeLjz9MK...(base64-encoded document bytes)\"\n"
                 + "}";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);
         JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
@@ -599,7 +599,7 @@ public class Lang2FhirWireTest {
         DocumentMultiResponse response = client.lang2Fhir()
                 .documentMulti(DocumentMultiRequest.builder()
                         .version("R4")
-                        .content("JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)")
+                        .content("JVBERi0xLjQKJeLjz9MK...(base64-encoded document bytes)")
                         .provider("medplum")
                         .config(DocumentConfig.builder()
                                 .splitClassifications(Optional.of(Arrays.asList(
@@ -633,7 +633,7 @@ public class Lang2FhirWireTest {
         String expectedRequestBody = ""
                 + "{\n"
                 + "  \"version\": \"R4\",\n"
-                + "  \"content\": \"JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)\",\n"
+                + "  \"content\": \"JVBERi0xLjQKJeLjz9MK...(base64-encoded document bytes)\",\n"
                 + "  \"provider\": \"medplum\",\n"
                 + "  \"config\": {\n"
                 + "    \"split_classifications\": [\n"

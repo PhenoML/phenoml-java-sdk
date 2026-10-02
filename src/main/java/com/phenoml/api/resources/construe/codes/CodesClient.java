@@ -57,10 +57,9 @@ public class CodesClient {
     }
 
     /**
-     * <strong>Alpha:</strong> phenocr is an alpha feature. The API contract — request
-     * parameters and response shape — may change as its internals evolve, and
-     * results may vary between releases. Do not depend on it for production
-     * workloads yet.
+     * <strong>Alpha:</strong> phenocr is an alpha feature. Request parameters, response
+     * shape, and results may change between releases. Do not depend on it for
+     * production workloads yet.
      * <p>Extracts medical codes from natural language clinical text using phenocr.</p>
      * <p>Supported code systems: HPO, ICD-10-CM, RXNORM, and SNOMED_CT_US. The
      * code system name and version are both required.</p>
@@ -70,10 +69,9 @@ public class CodesClient {
     }
 
     /**
-     * <strong>Alpha:</strong> phenocr is an alpha feature. The API contract — request
-     * parameters and response shape — may change as its internals evolve, and
-     * results may vary between releases. Do not depend on it for production
-     * workloads yet.
+     * <strong>Alpha:</strong> phenocr is an alpha feature. Request parameters, response
+     * shape, and results may change between releases. Do not depend on it for
+     * production workloads yet.
      * <p>Extracts medical codes from natural language clinical text using phenocr.</p>
      * <p>Supported code systems: HPO, ICD-10-CM, RXNORM, and SNOMED_CT_US. The
      * code system name and version are both required.</p>
@@ -105,7 +103,7 @@ public class CodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public ListCodesResponse list(String codesystem) {
@@ -113,7 +111,7 @@ public class CodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public ListCodesResponse list(String codesystem, RequestOptions requestOptions) {
@@ -121,7 +119,7 @@ public class CodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public ListCodesResponse list(String codesystem, CodesListRequest request) {
@@ -129,7 +127,7 @@ public class CodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public ListCodesResponse list(String codesystem, CodesListRequest request, RequestOptions requestOptions) {
@@ -137,7 +135,7 @@ public class CodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public GetCodeResponse lookup(String codesystem, String codeId) {
@@ -145,7 +143,7 @@ public class CodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public GetCodeResponse lookup(String codesystem, String codeId, RequestOptions requestOptions) {
@@ -153,7 +151,7 @@ public class CodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public GetCodeResponse lookup(String codesystem, String codeId, LookupRequest request) {
@@ -161,7 +159,7 @@ public class CodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public GetCodeResponse lookup(
