@@ -139,14 +139,14 @@ public class RawCodeSystemsClient {
     }
 
     /**
-     * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
+     * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
     public PhenomlClientHttpResponse<ListCodeSystemsResponse> list() {
         return list(null);
     }
 
     /**
-     * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
+     * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
     public PhenomlClientHttpResponse<ListCodeSystemsResponse> list(RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())

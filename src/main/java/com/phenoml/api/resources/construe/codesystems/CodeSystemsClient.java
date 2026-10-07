@@ -53,14 +53,14 @@ public class CodeSystemsClient {
     }
 
     /**
-     * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
+     * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
     public ListCodeSystemsResponse list() {
         return this.rawClient.list().body();
     }
 
     /**
-     * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
+     * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
     public ListCodeSystemsResponse list(RequestOptions requestOptions) {
         return this.rawClient.list(requestOptions).body();
