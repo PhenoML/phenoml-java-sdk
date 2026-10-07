@@ -2,8 +2,8 @@
   "metadata": {
     "language": "java",
     "packageName": "com.phenoml.maven:phenoml-java-sdk",
-    "sdkVersion": "17.13.0",
-    "specCommit": "4a08550f5db230949c7423d0ce5aa7055e8f0d65",
+    "sdkVersion": "17.13.1",
+    "specCommit": "d2786fd25be43b8c35e250f79c4d914720f0bf94",
     "generatorName": "fernapi/fern-java-sdk"
   },
   "renderRules": {
@@ -2432,15 +2432,26 @@
             "person": [
               {
                 "person_id": 1,
-                "gender_concept_id": 0,
+                "gender_concept_id": 8532,
                 "year_of_birth": 1985,
                 "month_of_birth": 7,
                 "day_of_birth": 22,
-                "birth_datetime": "1985-07-22",
                 "race_concept_id": 0,
                 "ethnicity_concept_id": 0,
                 "person_source_value": "patient-1",
-                "gender_source_value": "female"
+                "gender_source_value": "female",
+                "gender_source_concept_id": 0,
+                "race_source_concept_id": 0,
+                "ethnicity_source_concept_id": 0
+              }
+            ],
+            "observation_period": [
+              {
+                "observation_period_id": 1,
+                "person_id": 1,
+                "observation_period_start_date": "2024-01-15",
+                "observation_period_end_date": "2024-01-16",
+                "period_type_concept_id": 32817
               }
             ],
             "condition_occurrence": [
@@ -2449,9 +2460,8 @@
                 "person_id": 1,
                 "condition_concept_id": 201826,
                 "condition_start_date": "2024-01-15",
-                "condition_start_datetime": "2024-01-15",
                 "condition_type_concept_id": 32817,
-                "condition_source_value": "http://snomed.info/sct#44054006",
+                "condition_source_value": "44054006",
                 "condition_source_concept_id": 201826
               }
             ],
@@ -2461,18 +2471,34 @@
                 "person_id": 1,
                 "drug_concept_id": 40163924,
                 "drug_exposure_start_date": "2024-01-16",
-                "drug_exposure_start_datetime": "2024-01-16",
-                "drug_type_concept_id": 32817,
-                "drug_source_value": "http://www.nlm.nih.gov/research/umls/rxnorm#860975",
+                "drug_type_concept_id": 32838,
+                "drug_source_value": "860975",
                 "drug_source_concept_id": 40163924
               }
             ]
           },
           "mappings": [
             {
+              "resource_type": "Patient",
+              "resource_id": "patient-1",
+              "omop_table": "person",
+              "omop_field": "gender_concept_id",
+              "omop_id": 1,
+              "source_system": "http://hl7.org/fhir/administrative-gender",
+              "source_code": "female",
+              "source_name": "female",
+              "target_vocabulary": "Gender",
+              "target_code": "F",
+              "target_name": "FEMALE",
+              "mapping_status": "MAPPED",
+              "selected": true,
+              "note": "FHIR administrative gender; assumed sex at birth"
+            },
+            {
               "resource_type": "Condition",
               "resource_id": "condition-1",
               "omop_table": "condition_occurrence",
+              "omop_field": "condition_concept_id",
               "omop_id": 1,
               "source_system": "http://snomed.info/sct",
               "source_code": "44054006",
@@ -2480,12 +2506,14 @@
               "target_vocabulary": "SNOMED",
               "target_code": "44054006",
               "target_name": "Type 2 diabetes mellitus",
-              "mapping_status": "ALREADY_STANDARD"
+              "mapping_status": "ALREADY_STANDARD",
+              "selected": true
             },
             {
               "resource_type": "MedicationRequest",
               "resource_id": "medreq-1",
               "omop_table": "drug_exposure",
+              "omop_field": "drug_concept_id",
               "omop_id": 1,
               "source_system": "http://www.nlm.nih.gov/research/umls/rxnorm",
               "source_code": "860975",
@@ -2493,15 +2521,16 @@
               "target_vocabulary": "RXNORM",
               "target_code": "860975",
               "target_name": "metformin hydrochloride 500 MG",
-              "mapping_status": "ALREADY_STANDARD"
+              "mapping_status": "ALREADY_STANDARD",
+              "selected": true
             }
           ],
-          "vocab_version": "v20240229",
+          "vocab_version": "v20260227",
           "summary": {
             "codes_already_standard": 2,
-            "codes_normalized": 0,
+            "codes_normalized": 1,
             "codes_unmapped": 0,
-            "off_vocab_rate": 0
+            "off_vocab_rate": 0.3333333333333333
           }
         }
       },
@@ -2516,6 +2545,12 @@
               "fieldTemplate": ".fhirResources({{value}})",
               "kind": "object",
               "required": true
+            },
+            {
+              "jsonKey": "vocab_version",
+              "fieldTemplate": ".vocabVersion({{value}})",
+              "kind": "string",
+              "required": false
             }
           ]
         }
@@ -3222,6 +3257,216 @@
         }
       }
     },
+    "POST /lang2fhir/batch": {
+      "httpMethod": "POST",
+      "httpPath": "/lang2fhir/batch",
+      "request": {
+        "body": {
+          "request_id": "submit-2025-09-02-batch-001"
+        }
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().create(CreateBatchRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "request_id",
+              "fieldTemplate": ".requestId({{value}})",
+              "kind": "string",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "GET /lang2fhir/batch": {
+      "httpMethod": "GET",
+      "httpPath": "/lang2fhir/batch",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().list(ListRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "cursor",
+              "fieldTemplate": ".cursor({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "limit",
+              "fieldTemplate": ".limit({{value}})",
+              "kind": "number",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "POST /lang2fhir/batch/{job_id}/items": {
+      "httpMethod": "POST",
+      "httpPath": "/lang2fhir/batch/{job_id}/items",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().uploadItem({{job_id}})",
+        "params": [
+          {
+            "name": "job_id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "POST /lang2fhir/batch/{job_id}/finalize": {
+      "httpMethod": "POST",
+      "httpPath": "/lang2fhir/batch/{job_id}/finalize",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().finalize({{job_id}})",
+        "params": [
+          {
+            "name": "job_id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "POST /lang2fhir/batch/{job_id}/cancel": {
+      "httpMethod": "POST",
+      "httpPath": "/lang2fhir/batch/{job_id}/cancel",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().cancel({{job_id}})",
+        "params": [
+          {
+            "name": "job_id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "GET /lang2fhir/batch/{job_id}": {
+      "httpMethod": "GET",
+      "httpPath": "/lang2fhir/batch/{job_id}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().get({{job_id}}, GetRequest.builder(){{__body__}}.build())",
+        "params": [
+          {
+            "name": "job_id",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "cursor",
+              "fieldTemplate": ".cursor({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "limit",
+              "fieldTemplate": ".limit({{value}})",
+              "kind": "number",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "GET /lang2fhir/batch/{job_id}/results": {
+      "httpMethod": "GET",
+      "httpPath": "/lang2fhir/batch/{job_id}/results",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().getResults({{job_id}}, GetResultsRequest.builder(){{__body__}}.build())",
+        "params": [
+          {
+            "name": "job_id",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "cursor",
+              "fieldTemplate": ".cursor({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "limit",
+              "fieldTemplate": ".limit({{value}})",
+              "kind": "number",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "GET /lang2fhir/batch/{job_id}/results/{item_id}": {
+      "httpMethod": "GET",
+      "httpPath": "/lang2fhir/batch/{job_id}/results/{item_id}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2FhirBatch().getResult({{job_id}}, {{item_id}})",
+        "params": [
+          {
+            "name": "job_id",
+            "kind": "string"
+          },
+          {
+            "name": "item_id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
     "POST /cohort": {
       "httpMethod": "POST",
       "httpPath": "/cohort",
@@ -3335,7 +3580,10 @@
                 "auto",
                 "appointment",
                 "condition-encounter-diagnosis",
+                "familymemberhistory",
+                "medicationadministration",
                 "medicationrequest",
+                "medicationstatement",
                 "careplan",
                 "condition-problems-health-concerns",
                 "coverage",
@@ -3450,6 +3698,90 @@
               "fieldTemplate": ".provider({{value}})",
               "kind": "string",
               "required": false
+            },
+            {
+              "jsonKey": "primary_patient",
+              "fieldTemplate": ".primaryPatient({{value}})",
+              "kind": "object",
+              "required": false,
+              "nested": {
+                "fieldSeparator": "",
+                "fields": [
+                  {
+                    "jsonKey": "identifier",
+                    "fieldTemplate": ".identifier({{value}})",
+                    "kind": "object",
+                    "required": false,
+                    "nested": {
+                      "fieldSeparator": "",
+                      "fields": [
+                        {
+                          "jsonKey": "system",
+                          "fieldTemplate": ".system({{value}})",
+                          "kind": "string",
+                          "required": true
+                        },
+                        {
+                          "jsonKey": "value",
+                          "fieldTemplate": ".value({{value}})",
+                          "kind": "string",
+                          "required": true
+                        }
+                      ],
+                      "wrap": "PatientReference.builder(){{__body__}}.build()"
+                    }
+                  },
+                  {
+                    "jsonKey": "name",
+                    "fieldTemplate": ".name({{value}})",
+                    "kind": "object",
+                    "required": false,
+                    "nested": {
+                      "fieldSeparator": "",
+                      "fields": [
+                        {
+                          "jsonKey": "family",
+                          "fieldTemplate": ".family({{value}})",
+                          "kind": "string",
+                          "required": false
+                        },
+                        {
+                          "jsonKey": "given",
+                          "fieldTemplate": ".given({{value}})",
+                          "kind": "list",
+                          "required": false,
+                          "items": {
+                            "jsonKey": "",
+                            "fieldTemplate": "{{value}}",
+                            "kind": "string",
+                            "required": true
+                          }
+                        }
+                      ],
+                      "wrap": "PrimaryPatientName.builder(){{__body__}}.build()"
+                    }
+                  },
+                  {
+                    "jsonKey": "birthDate",
+                    "fieldTemplate": ".birthDate({{value}})",
+                    "kind": "string",
+                    "required": false
+                  },
+                  {
+                    "jsonKey": "gender",
+                    "fieldTemplate": ".gender({{value}})",
+                    "kind": "enum",
+                    "required": false,
+                    "enumValues": [
+                      "male",
+                      "female",
+                      "other",
+                      "unknown"
+                    ]
+                  }
+                ],
+                "wrap": "PrimaryPatient.builder(){{__body__}}.build()"
+              }
             },
             {
               "jsonKey": "patient_reference",
@@ -3641,7 +3973,7 @@
         "body": {
           "version": "R4",
           "resource": "questionnaire",
-          "content": "JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)"
+          "content": "JVBERi0xLjQKJeLjz9MK...(base64-encoded document bytes)"
         }
       },
       "response": {
@@ -3807,7 +4139,7 @@
       "request": {
         "body": {
           "version": "R4",
-          "content": "JVBERi0xLjQKJeLjz9MK...(base64-encoded PDF or image bytes)",
+          "content": "JVBERi0xLjQKJeLjz9MK...(base64-encoded document bytes)",
           "provider": "medplum",
           "config": {
             "split_classifications": [
@@ -3988,6 +4320,90 @@
               "fieldTemplate": ".provider({{value}})",
               "kind": "string",
               "required": false
+            },
+            {
+              "jsonKey": "primary_patient",
+              "fieldTemplate": ".primaryPatient({{value}})",
+              "kind": "object",
+              "required": false,
+              "nested": {
+                "fieldSeparator": "",
+                "fields": [
+                  {
+                    "jsonKey": "identifier",
+                    "fieldTemplate": ".identifier({{value}})",
+                    "kind": "object",
+                    "required": false,
+                    "nested": {
+                      "fieldSeparator": "",
+                      "fields": [
+                        {
+                          "jsonKey": "system",
+                          "fieldTemplate": ".system({{value}})",
+                          "kind": "string",
+                          "required": true
+                        },
+                        {
+                          "jsonKey": "value",
+                          "fieldTemplate": ".value({{value}})",
+                          "kind": "string",
+                          "required": true
+                        }
+                      ],
+                      "wrap": "PatientReference.builder(){{__body__}}.build()"
+                    }
+                  },
+                  {
+                    "jsonKey": "name",
+                    "fieldTemplate": ".name({{value}})",
+                    "kind": "object",
+                    "required": false,
+                    "nested": {
+                      "fieldSeparator": "",
+                      "fields": [
+                        {
+                          "jsonKey": "family",
+                          "fieldTemplate": ".family({{value}})",
+                          "kind": "string",
+                          "required": false
+                        },
+                        {
+                          "jsonKey": "given",
+                          "fieldTemplate": ".given({{value}})",
+                          "kind": "list",
+                          "required": false,
+                          "items": {
+                            "jsonKey": "",
+                            "fieldTemplate": "{{value}}",
+                            "kind": "string",
+                            "required": true
+                          }
+                        }
+                      ],
+                      "wrap": "PrimaryPatientName.builder(){{__body__}}.build()"
+                    }
+                  },
+                  {
+                    "jsonKey": "birthDate",
+                    "fieldTemplate": ".birthDate({{value}})",
+                    "kind": "string",
+                    "required": false
+                  },
+                  {
+                    "jsonKey": "gender",
+                    "fieldTemplate": ".gender({{value}})",
+                    "kind": "enum",
+                    "required": false,
+                    "enumValues": [
+                      "male",
+                      "female",
+                      "other",
+                      "unknown"
+                    ]
+                  }
+                ],
+                "wrap": "PrimaryPatient.builder(){{__body__}}.build()"
+              }
             },
             {
               "jsonKey": "patient_reference",
@@ -4574,6 +4990,140 @@
         ]
       }
     },
+    "POST /fhir/implementation-guides/{name}/versions": {
+      "httpMethod": "POST",
+      "httpPath": "/fhir/implementation-guides/{name}/versions",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.implementationGuides().implementationguides().createVersion({{name}}, CreateCanonicalImplementationGuideRequest.builder(){{__body__}}.build())",
+        "params": [
+          {
+            "name": "name",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "implementation_guide",
+              "fieldTemplate": ".implementationGuide({{value}})",
+              "kind": "object",
+              "required": true,
+              "nested": {
+                "fieldSeparator": "",
+                "fields": [
+                  {
+                    "jsonKey": "resourceType",
+                    "fieldTemplate": ".resourceType({{value}})",
+                    "kind": "enum",
+                    "required": true,
+                    "enumValues": [
+                      "ImplementationGuide"
+                    ]
+                  },
+                  {
+                    "jsonKey": "url",
+                    "fieldTemplate": ".url({{value}})",
+                    "kind": "string",
+                    "required": true
+                  },
+                  {
+                    "jsonKey": "version",
+                    "fieldTemplate": ".version({{value}})",
+                    "kind": "string",
+                    "required": true
+                  },
+                  {
+                    "jsonKey": "id",
+                    "fieldTemplate": ".id({{value}})",
+                    "kind": "string",
+                    "required": false
+                  },
+                  {
+                    "jsonKey": "name",
+                    "fieldTemplate": ".name({{value}})",
+                    "kind": "string",
+                    "required": false
+                  },
+                  {
+                    "jsonKey": "status",
+                    "fieldTemplate": ".status({{value}})",
+                    "kind": "string",
+                    "required": false
+                  },
+                  {
+                    "jsonKey": "packageId",
+                    "fieldTemplate": ".packageId({{value}})",
+                    "kind": "string",
+                    "required": false
+                  },
+                  {
+                    "jsonKey": "fhirVersion",
+                    "fieldTemplate": ".fhirVersion({{value}})",
+                    "kind": "list",
+                    "required": false,
+                    "items": {
+                      "jsonKey": "",
+                      "fieldTemplate": "{{value}}",
+                      "kind": "string",
+                      "required": true
+                    }
+                  }
+                ],
+                "wrap": "FHIRImplementationGuide.builder(){{__body__}}.build()"
+              }
+            },
+            {
+              "jsonKey": "profile_refs",
+              "fieldTemplate": ".profileRefs({{value}})",
+              "kind": "list",
+              "required": true,
+              "items": {
+                "jsonKey": "",
+                "fieldTemplate": "{{value}}",
+                "kind": "string",
+                "required": true
+              }
+            },
+            {
+              "jsonKey": "profile_context",
+              "fieldTemplate": ".profileContext({{value}})",
+              "kind": "string",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "GET /fhir/implementation-guides/{name}/versions/{version}": {
+      "httpMethod": "GET",
+      "httpPath": "/fhir/implementation-guides/{name}/versions/{version}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.implementationGuides().implementationguides().getVersion({{name}}, {{version}})",
+        "params": [
+          {
+            "name": "name",
+            "kind": "string"
+          },
+          {
+            "name": "version",
+            "kind": "string"
+          }
+        ]
+      }
+    },
     "GET /fhir/profiles": {
       "httpMethod": "GET",
       "httpPath": "/fhir/profiles",
@@ -4699,6 +5249,102 @@
         "params": [
           {
             "name": "id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "GET /fhir/profiles/{id}/versions": {
+      "httpMethod": "GET",
+      "httpPath": "/fhir/profiles/{id}/versions",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.profiles().versions().list({{id}})",
+        "params": [
+          {
+            "name": "id",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "POST /fhir/profiles/{id}/versions": {
+      "httpMethod": "POST",
+      "httpPath": "/fhir/profiles/{id}/versions",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.profiles().versions().create({{id}}, {{__body__}})",
+        "params": [
+          {
+            "name": "id",
+            "kind": "string"
+          }
+        ],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "",
+              "fieldTemplate": "{{value}}",
+              "kind": "object",
+              "required": true,
+              "passthroughBody": true
+            }
+          ]
+        }
+      }
+    },
+    "GET /fhir/profiles/{id}/versions/{version}": {
+      "httpMethod": "GET",
+      "httpPath": "/fhir/profiles/{id}/versions/{version}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.profiles().versions().get({{id}}, {{version}})",
+        "params": [
+          {
+            "name": "id",
+            "kind": "string"
+          },
+          {
+            "name": "version",
+            "kind": "string"
+          }
+        ]
+      }
+    },
+    "DELETE /fhir/profiles/{id}/versions/{version}": {
+      "httpMethod": "DELETE",
+      "httpPath": "/fhir/profiles/{id}/versions/{version}",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.profiles().versions().delete({{id}}, {{version}})",
+        "params": [
+          {
+            "name": "id",
+            "kind": "string"
+          },
+          {
+            "name": "version",
             "kind": "string"
           }
         ]
