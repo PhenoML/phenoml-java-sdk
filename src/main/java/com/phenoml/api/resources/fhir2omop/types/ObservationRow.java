@@ -106,6 +106,9 @@ public final class ObservationRow {
         return observationConceptId;
     }
 
+    /**
+     * @return For an Observation, date from effectiveDateTime, effectivePeriod.start, or effectiveInstant. For an AllergyIntolerance, date from recordedDate, otherwise onsetDateTime or onsetPeriod.start.
+     */
     @JsonProperty("observation_date")
     public Optional<String> getObservationDate() {
         return observationDate;
@@ -323,6 +326,9 @@ public final class ObservationRow {
             return this;
         }
 
+        /**
+         * <p>For an Observation, date from effectiveDateTime, effectivePeriod.start, or effectiveInstant. For an AllergyIntolerance, date from recordedDate, otherwise onsetDateTime or onsetPeriod.start.</p>
+         */
         @JsonSetter(value = "observation_date", nulls = Nulls.SKIP)
         public Builder observationDate(Optional<String> observationDate) {
             this.observationDate = observationDate;

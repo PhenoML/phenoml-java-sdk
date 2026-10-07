@@ -16,27 +16,46 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateOmopRequest.Builder.class)
 public final class CreateOmopRequest {
+    private final Optional<String> vocabVersion;
+
     private final Map<String, Object> fhirResources;
 
     private final Map<String, Object> additionalProperties;
 
-    private CreateOmopRequest(Map<String, Object> fhirResources, Map<String, Object> additionalProperties) {
+    private CreateOmopRequest(
+            Optional<String> vocabVersion,
+            Map<String, Object> fhirResources,
+            Map<String, Object> additionalProperties) {
+        this.vocabVersion = vocabVersion;
         this.fhirResources = fhirResources;
         this.additionalProperties = additionalProperties;
     }
 
     /**
+     * @return OMOP vocabulary release to use for coded concept resolution. If
+     * omitted or empty, the API uses its default release. Specify a
+     * release explicitly when reproducibility matters. The response's
+     * <code>vocab_version</code>, when present, identifies the release used.
+     */
+    @JsonProperty("vocab_version")
+    public Optional<String> getVocabVersion() {
+        return vocabVersion;
+    }
+
+    /**
      * @return FHIR resources (single resource or Bundle). Must contain at least one
      * Patient resource. Supported row-producing resources are Patient,
-     * Encounter, Condition, Procedure, MedicationRequest,
+     * Location, Organization, HealthcareService, Practitioner,
+     * PractitionerRole, Encounter, Condition, Procedure, MedicationRequest,
      * MedicationStatement, MedicationAdministration, Immunization,
      * Observation, and AllergyIntolerance. Standalone Medication resources
      * are consumed by medication references rather than mapped to their own
-     * table. Other resource types are accepted but ignored.
+     * table. Unsupported resource types are accepted in a Bundle but ignored.
      */
     @JsonProperty("fhir_resources")
     public Map<String, Object> getFhirResources() {
@@ -55,12 +74,12 @@ public final class CreateOmopRequest {
     }
 
     private boolean equalTo(CreateOmopRequest other) {
-        return fhirResources.equals(other.fhirResources);
+        return vocabVersion.equals(other.vocabVersion) && fhirResources.equals(other.fhirResources);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.fhirResources);
+        return Objects.hash(this.vocabVersion, this.fhirResources);
     }
 
     @java.lang.Override
@@ -74,6 +93,8 @@ public final class CreateOmopRequest {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder {
+        private Optional<String> vocabVersion = Optional.empty();
+
         private Map<String, Object> fhirResources = new LinkedHashMap<>();
 
         @JsonAnySetter
@@ -82,18 +103,37 @@ public final class CreateOmopRequest {
         private Builder() {}
 
         public Builder from(CreateOmopRequest other) {
+            vocabVersion(other.getVocabVersion());
             fhirResources(other.getFhirResources());
+            return this;
+        }
+
+        /**
+         * <p>OMOP vocabulary release to use for coded concept resolution. If
+         * omitted or empty, the API uses its default release. Specify a
+         * release explicitly when reproducibility matters. The response's
+         * <code>vocab_version</code>, when present, identifies the release used.</p>
+         */
+        @JsonSetter(value = "vocab_version", nulls = Nulls.SKIP)
+        public Builder vocabVersion(Optional<String> vocabVersion) {
+            this.vocabVersion = vocabVersion;
+            return this;
+        }
+
+        public Builder vocabVersion(String vocabVersion) {
+            this.vocabVersion = Optional.ofNullable(vocabVersion);
             return this;
         }
 
         /**
          * <p>FHIR resources (single resource or Bundle). Must contain at least one
          * Patient resource. Supported row-producing resources are Patient,
-         * Encounter, Condition, Procedure, MedicationRequest,
+         * Location, Organization, HealthcareService, Practitioner,
+         * PractitionerRole, Encounter, Condition, Procedure, MedicationRequest,
          * MedicationStatement, MedicationAdministration, Immunization,
          * Observation, and AllergyIntolerance. Standalone Medication resources
          * are consumed by medication references rather than mapped to their own
-         * table. Other resource types are accepted but ignored.</p>
+         * table. Unsupported resource types are accepted in a Bundle but ignored.</p>
          */
         @JsonSetter(value = "fhir_resources", nulls = Nulls.SKIP)
         public Builder fhirResources(Map<String, Object> fhirResources) {
@@ -117,7 +157,7 @@ public final class CreateOmopRequest {
         }
 
         public CreateOmopRequest build() {
-            return new CreateOmopRequest(fhirResources, additionalProperties);
+            return new CreateOmopRequest(vocabVersion, fhirResources, additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {
