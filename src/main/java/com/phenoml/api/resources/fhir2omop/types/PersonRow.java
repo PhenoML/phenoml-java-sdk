@@ -38,13 +38,23 @@ public final class PersonRow {
 
     private final Optional<Long> locationId;
 
+    private final Optional<Long> providerId;
+
+    private final Optional<Long> careSiteId;
+
     private final Optional<String> personSourceValue;
 
     private final Optional<String> genderSourceValue;
 
+    private final Optional<Long> genderSourceConceptId;
+
     private final Optional<String> raceSourceValue;
 
+    private final Optional<Long> raceSourceConceptId;
+
     private final Optional<String> ethnicitySourceValue;
+
+    private final Optional<Long> ethnicitySourceConceptId;
 
     private final Map<String, Object> additionalProperties;
 
@@ -58,10 +68,15 @@ public final class PersonRow {
             Optional<Long> raceConceptId,
             Optional<Long> ethnicityConceptId,
             Optional<Long> locationId,
+            Optional<Long> providerId,
+            Optional<Long> careSiteId,
             Optional<String> personSourceValue,
             Optional<String> genderSourceValue,
+            Optional<Long> genderSourceConceptId,
             Optional<String> raceSourceValue,
+            Optional<Long> raceSourceConceptId,
             Optional<String> ethnicitySourceValue,
+            Optional<Long> ethnicitySourceConceptId,
             Map<String, Object> additionalProperties) {
         this.personId = personId;
         this.genderConceptId = genderConceptId;
@@ -72,10 +87,15 @@ public final class PersonRow {
         this.raceConceptId = raceConceptId;
         this.ethnicityConceptId = ethnicityConceptId;
         this.locationId = locationId;
+        this.providerId = providerId;
+        this.careSiteId = careSiteId;
         this.personSourceValue = personSourceValue;
         this.genderSourceValue = genderSourceValue;
+        this.genderSourceConceptId = genderSourceConceptId;
         this.raceSourceValue = raceSourceValue;
+        this.raceSourceConceptId = raceSourceConceptId;
         this.ethnicitySourceValue = ethnicitySourceValue;
+        this.ethnicitySourceConceptId = ethnicitySourceConceptId;
         this.additionalProperties = additionalProperties;
     }
 
@@ -84,36 +104,57 @@ public final class PersonRow {
         return personId;
     }
 
+    /**
+     * @return Standard OMOP Gender concept for sex at birth, from US Core birth sex when supplied, otherwise from Patient <code>gender</code> <code>male</code> or <code>female</code>. <code>0</code> for absent, unknown, other, unsupported, or conflicting values.
+     */
     @JsonProperty("gender_concept_id")
     public Optional<Long> getGenderConceptId() {
         return genderConceptId;
     }
 
+    /**
+     * @return Year from Patient.birthDate.
+     */
     @JsonProperty("year_of_birth")
     public Optional<Integer> getYearOfBirth() {
         return yearOfBirth;
     }
 
+    /**
+     * @return Month from Patient.birthDate, when it supplies one.
+     */
     @JsonProperty("month_of_birth")
     public Optional<Integer> getMonthOfBirth() {
         return monthOfBirth;
     }
 
+    /**
+     * @return Day from Patient.birthDate, when it supplies one.
+     */
     @JsonProperty("day_of_birth")
     public Optional<Integer> getDayOfBirth() {
         return dayOfBirth;
     }
 
+    /**
+     * @return Not set; Patient.birthDate has no time of day.
+     */
     @JsonProperty("birth_datetime")
     public Optional<String> getBirthDatetime() {
         return birthDatetime;
     }
 
+    /**
+     * @return Standard OMOP Race concept from a US Core race OMB category; <code>1546847</code> (More than one race) when more than one distinct race resolves, with each race in an <code>observation</code> row. <code>0</code> when no category resolves.
+     */
     @JsonProperty("race_concept_id")
     public Optional<Long> getRaceConceptId() {
         return raceConceptId;
     }
 
+    /**
+     * @return Standard OMOP Ethnicity concept from the US Core ethnicity OMB category. <code>0</code> when absent, unresolved, or conflicting; never derived from race.
+     */
     @JsonProperty("ethnicity_concept_id")
     public Optional<Long> getEthnicityConceptId() {
         return ethnicityConceptId;
@@ -124,24 +165,67 @@ public final class PersonRow {
         return locationId;
     }
 
+    @JsonProperty("provider_id")
+    public Optional<Long> getProviderId() {
+        return providerId;
+    }
+
+    @JsonProperty("care_site_id")
+    public Optional<Long> getCareSiteId() {
+        return careSiteId;
+    }
+
     @JsonProperty("person_source_value")
     public Optional<String> getPersonSourceValue() {
         return personSourceValue;
     }
 
+    /**
+     * @return The selected sex-at-birth source code: the US Core birth sex <code>valueCode</code>, or Patient <code>gender</code> when no birth sex is supplied. Conflicting birth sex values are joined with <code>|</code>; empty when the birth sex has no <code>valueCode</code>.
+     */
     @JsonProperty("gender_source_value")
     public Optional<String> getGenderSourceValue() {
         return genderSourceValue;
     }
 
+    /**
+     * @return OMOP source concept of the selected sex-at-birth code, when that code is itself an OMOP source concept; <code>0</code> otherwise, as for FHIR administrative gender codes.
+     */
+    @JsonProperty("gender_source_concept_id")
+    public Optional<Long> getGenderSourceConceptId() {
+        return genderSourceConceptId;
+    }
+
+    /**
+     * @return Every supplied US Core race category and detailed code, joined with <code>|</code> in source order, or the extension text when no code is supplied.
+     */
     @JsonProperty("race_source_value")
     public Optional<String> getRaceSourceValue() {
         return raceSourceValue;
     }
 
+    /**
+     * @return OMOP source concept of a single resolved race code, when that code is itself an OMOP source concept; <code>0</code> otherwise, including when more than one race resolves.
+     */
+    @JsonProperty("race_source_concept_id")
+    public Optional<Long> getRaceSourceConceptId() {
+        return raceSourceConceptId;
+    }
+
+    /**
+     * @return Every supplied US Core ethnicity category and detailed code, joined with <code>|</code> in source order, or the extension text when no code is supplied.
+     */
     @JsonProperty("ethnicity_source_value")
     public Optional<String> getEthnicitySourceValue() {
         return ethnicitySourceValue;
+    }
+
+    /**
+     * @return OMOP source concept of the resolved ethnicity code, when that code is itself an OMOP source concept; <code>0</code> otherwise.
+     */
+    @JsonProperty("ethnicity_source_concept_id")
+    public Optional<Long> getEthnicitySourceConceptId() {
+        return ethnicitySourceConceptId;
     }
 
     @java.lang.Override
@@ -165,10 +249,15 @@ public final class PersonRow {
                 && raceConceptId.equals(other.raceConceptId)
                 && ethnicityConceptId.equals(other.ethnicityConceptId)
                 && locationId.equals(other.locationId)
+                && providerId.equals(other.providerId)
+                && careSiteId.equals(other.careSiteId)
                 && personSourceValue.equals(other.personSourceValue)
                 && genderSourceValue.equals(other.genderSourceValue)
+                && genderSourceConceptId.equals(other.genderSourceConceptId)
                 && raceSourceValue.equals(other.raceSourceValue)
-                && ethnicitySourceValue.equals(other.ethnicitySourceValue);
+                && raceSourceConceptId.equals(other.raceSourceConceptId)
+                && ethnicitySourceValue.equals(other.ethnicitySourceValue)
+                && ethnicitySourceConceptId.equals(other.ethnicitySourceConceptId);
     }
 
     @java.lang.Override
@@ -183,10 +272,15 @@ public final class PersonRow {
                 this.raceConceptId,
                 this.ethnicityConceptId,
                 this.locationId,
+                this.providerId,
+                this.careSiteId,
                 this.personSourceValue,
                 this.genderSourceValue,
+                this.genderSourceConceptId,
                 this.raceSourceValue,
-                this.ethnicitySourceValue);
+                this.raceSourceConceptId,
+                this.ethnicitySourceValue,
+                this.ethnicitySourceConceptId);
     }
 
     @java.lang.Override
@@ -218,13 +312,23 @@ public final class PersonRow {
 
         private Optional<Long> locationId = Optional.empty();
 
+        private Optional<Long> providerId = Optional.empty();
+
+        private Optional<Long> careSiteId = Optional.empty();
+
         private Optional<String> personSourceValue = Optional.empty();
 
         private Optional<String> genderSourceValue = Optional.empty();
 
+        private Optional<Long> genderSourceConceptId = Optional.empty();
+
         private Optional<String> raceSourceValue = Optional.empty();
 
+        private Optional<Long> raceSourceConceptId = Optional.empty();
+
         private Optional<String> ethnicitySourceValue = Optional.empty();
+
+        private Optional<Long> ethnicitySourceConceptId = Optional.empty();
 
         @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
@@ -241,10 +345,15 @@ public final class PersonRow {
             raceConceptId(other.getRaceConceptId());
             ethnicityConceptId(other.getEthnicityConceptId());
             locationId(other.getLocationId());
+            providerId(other.getProviderId());
+            careSiteId(other.getCareSiteId());
             personSourceValue(other.getPersonSourceValue());
             genderSourceValue(other.getGenderSourceValue());
+            genderSourceConceptId(other.getGenderSourceConceptId());
             raceSourceValue(other.getRaceSourceValue());
+            raceSourceConceptId(other.getRaceSourceConceptId());
             ethnicitySourceValue(other.getEthnicitySourceValue());
+            ethnicitySourceConceptId(other.getEthnicitySourceConceptId());
             return this;
         }
 
@@ -259,6 +368,9 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>Standard OMOP Gender concept for sex at birth, from US Core birth sex when supplied, otherwise from Patient <code>gender</code> <code>male</code> or <code>female</code>. <code>0</code> for absent, unknown, other, unsupported, or conflicting values.</p>
+         */
         @JsonSetter(value = "gender_concept_id", nulls = Nulls.SKIP)
         public Builder genderConceptId(Optional<Long> genderConceptId) {
             this.genderConceptId = genderConceptId;
@@ -270,6 +382,9 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>Year from Patient.birthDate.</p>
+         */
         @JsonSetter(value = "year_of_birth", nulls = Nulls.SKIP)
         public Builder yearOfBirth(Optional<Integer> yearOfBirth) {
             this.yearOfBirth = yearOfBirth;
@@ -281,6 +396,9 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>Month from Patient.birthDate, when it supplies one.</p>
+         */
         @JsonSetter(value = "month_of_birth", nulls = Nulls.SKIP)
         public Builder monthOfBirth(Optional<Integer> monthOfBirth) {
             this.monthOfBirth = monthOfBirth;
@@ -292,6 +410,9 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>Day from Patient.birthDate, when it supplies one.</p>
+         */
         @JsonSetter(value = "day_of_birth", nulls = Nulls.SKIP)
         public Builder dayOfBirth(Optional<Integer> dayOfBirth) {
             this.dayOfBirth = dayOfBirth;
@@ -303,6 +424,9 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>Not set; Patient.birthDate has no time of day.</p>
+         */
         @JsonSetter(value = "birth_datetime", nulls = Nulls.SKIP)
         public Builder birthDatetime(Optional<String> birthDatetime) {
             this.birthDatetime = birthDatetime;
@@ -314,6 +438,9 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>Standard OMOP Race concept from a US Core race OMB category; <code>1546847</code> (More than one race) when more than one distinct race resolves, with each race in an <code>observation</code> row. <code>0</code> when no category resolves.</p>
+         */
         @JsonSetter(value = "race_concept_id", nulls = Nulls.SKIP)
         public Builder raceConceptId(Optional<Long> raceConceptId) {
             this.raceConceptId = raceConceptId;
@@ -325,6 +452,9 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>Standard OMOP Ethnicity concept from the US Core ethnicity OMB category. <code>0</code> when absent, unresolved, or conflicting; never derived from race.</p>
+         */
         @JsonSetter(value = "ethnicity_concept_id", nulls = Nulls.SKIP)
         public Builder ethnicityConceptId(Optional<Long> ethnicityConceptId) {
             this.ethnicityConceptId = ethnicityConceptId;
@@ -347,6 +477,28 @@ public final class PersonRow {
             return this;
         }
 
+        @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
+        public Builder providerId(Optional<Long> providerId) {
+            this.providerId = providerId;
+            return this;
+        }
+
+        public Builder providerId(Long providerId) {
+            this.providerId = Optional.ofNullable(providerId);
+            return this;
+        }
+
+        @JsonSetter(value = "care_site_id", nulls = Nulls.SKIP)
+        public Builder careSiteId(Optional<Long> careSiteId) {
+            this.careSiteId = careSiteId;
+            return this;
+        }
+
+        public Builder careSiteId(Long careSiteId) {
+            this.careSiteId = Optional.ofNullable(careSiteId);
+            return this;
+        }
+
         @JsonSetter(value = "person_source_value", nulls = Nulls.SKIP)
         public Builder personSourceValue(Optional<String> personSourceValue) {
             this.personSourceValue = personSourceValue;
@@ -358,6 +510,9 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>The selected sex-at-birth source code: the US Core birth sex <code>valueCode</code>, or Patient <code>gender</code> when no birth sex is supplied. Conflicting birth sex values are joined with <code>|</code>; empty when the birth sex has no <code>valueCode</code>.</p>
+         */
         @JsonSetter(value = "gender_source_value", nulls = Nulls.SKIP)
         public Builder genderSourceValue(Optional<String> genderSourceValue) {
             this.genderSourceValue = genderSourceValue;
@@ -369,6 +524,23 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>OMOP source concept of the selected sex-at-birth code, when that code is itself an OMOP source concept; <code>0</code> otherwise, as for FHIR administrative gender codes.</p>
+         */
+        @JsonSetter(value = "gender_source_concept_id", nulls = Nulls.SKIP)
+        public Builder genderSourceConceptId(Optional<Long> genderSourceConceptId) {
+            this.genderSourceConceptId = genderSourceConceptId;
+            return this;
+        }
+
+        public Builder genderSourceConceptId(Long genderSourceConceptId) {
+            this.genderSourceConceptId = Optional.ofNullable(genderSourceConceptId);
+            return this;
+        }
+
+        /**
+         * <p>Every supplied US Core race category and detailed code, joined with <code>|</code> in source order, or the extension text when no code is supplied.</p>
+         */
         @JsonSetter(value = "race_source_value", nulls = Nulls.SKIP)
         public Builder raceSourceValue(Optional<String> raceSourceValue) {
             this.raceSourceValue = raceSourceValue;
@@ -380,6 +552,23 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>OMOP source concept of a single resolved race code, when that code is itself an OMOP source concept; <code>0</code> otherwise, including when more than one race resolves.</p>
+         */
+        @JsonSetter(value = "race_source_concept_id", nulls = Nulls.SKIP)
+        public Builder raceSourceConceptId(Optional<Long> raceSourceConceptId) {
+            this.raceSourceConceptId = raceSourceConceptId;
+            return this;
+        }
+
+        public Builder raceSourceConceptId(Long raceSourceConceptId) {
+            this.raceSourceConceptId = Optional.ofNullable(raceSourceConceptId);
+            return this;
+        }
+
+        /**
+         * <p>Every supplied US Core ethnicity category and detailed code, joined with <code>|</code> in source order, or the extension text when no code is supplied.</p>
+         */
         @JsonSetter(value = "ethnicity_source_value", nulls = Nulls.SKIP)
         public Builder ethnicitySourceValue(Optional<String> ethnicitySourceValue) {
             this.ethnicitySourceValue = ethnicitySourceValue;
@@ -388,6 +577,20 @@ public final class PersonRow {
 
         public Builder ethnicitySourceValue(String ethnicitySourceValue) {
             this.ethnicitySourceValue = Optional.ofNullable(ethnicitySourceValue);
+            return this;
+        }
+
+        /**
+         * <p>OMOP source concept of the resolved ethnicity code, when that code is itself an OMOP source concept; <code>0</code> otherwise.</p>
+         */
+        @JsonSetter(value = "ethnicity_source_concept_id", nulls = Nulls.SKIP)
+        public Builder ethnicitySourceConceptId(Optional<Long> ethnicitySourceConceptId) {
+            this.ethnicitySourceConceptId = ethnicitySourceConceptId;
+            return this;
+        }
+
+        public Builder ethnicitySourceConceptId(Long ethnicitySourceConceptId) {
+            this.ethnicitySourceConceptId = Optional.ofNullable(ethnicitySourceConceptId);
             return this;
         }
 
@@ -402,10 +605,15 @@ public final class PersonRow {
                     raceConceptId,
                     ethnicityConceptId,
                     locationId,
+                    providerId,
+                    careSiteId,
                     personSourceValue,
                     genderSourceValue,
+                    genderSourceConceptId,
                     raceSourceValue,
+                    raceSourceConceptId,
                     ethnicitySourceValue,
+                    ethnicitySourceConceptId,
                     additionalProperties);
         }
 
