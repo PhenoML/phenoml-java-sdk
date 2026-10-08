@@ -20,9 +20,7 @@ import com.phenoml.api.resources.construe.codes.requests.LookupRequest;
 import com.phenoml.api.resources.construe.codes.requests.PhenoCrRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchSemanticRequest;
 import com.phenoml.api.resources.construe.codes.requests.SearchTextRequest;
-import com.phenoml.api.resources.construe.errors.BadGatewayError;
 import com.phenoml.api.resources.construe.errors.BadRequestError;
-import com.phenoml.api.resources.construe.errors.ContentTooLargeError;
 import com.phenoml.api.resources.construe.errors.GatewayTimeoutError;
 import com.phenoml.api.resources.construe.errors.InternalServerError;
 import com.phenoml.api.resources.construe.errors.NotFoundError;
@@ -177,10 +175,9 @@ public class AsyncRawCodesClient {
     }
 
     /**
-     * <strong>Alpha:</strong> phenocr is an alpha feature. The API contract — request
-     * parameters and response shape — may change as its internals evolve, and
-     * results may vary between releases. Do not depend on it for production
-     * workloads yet.
+     * <strong>Alpha:</strong> phenocr is an alpha feature. Request parameters, response
+     * shape, and results may change between releases. Do not depend on it for
+     * production workloads yet.
      * <p>Extracts medical codes from natural language clinical text using phenocr.</p>
      * <p>Supported code systems: HPO, ICD-10-CM, RXNORM, and SNOMED_CT_US. The
      * code system name and version are both required.</p>
@@ -190,10 +187,9 @@ public class AsyncRawCodesClient {
     }
 
     /**
-     * <strong>Alpha:</strong> phenocr is an alpha feature. The API contract — request
-     * parameters and response shape — may change as its internals evolve, and
-     * results may vary between releases. Do not depend on it for production
-     * workloads yet.
+     * <strong>Alpha:</strong> phenocr is an alpha feature. Request parameters, response
+     * shape, and results may change between releases. Do not depend on it for
+     * production workloads yet.
      * <p>Extracts medical codes from natural language clinical text using phenocr.</p>
      * <p>Supported code systems: HPO, ICD-10-CM, RXNORM, and SNOMED_CT_US. The
      * code system name and version are both required.</p>
@@ -382,23 +378,8 @@ public class AsyncRawCodesClient {
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
-                            case 413:
-                                future.completeExceptionally(new ContentTooLargeError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 501:
-                                future.completeExceptionally(new NotImplementedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 502:
-                                future.completeExceptionally(new BadGatewayError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 503:
-                                future.completeExceptionally(new ServiceUnavailableError(
+                            case 500:
+                                future.completeExceptionally(new InternalServerError(
                                         ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
                                         response));
                                 return;
@@ -427,7 +408,7 @@ public class AsyncRawCodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<ListCodesResponse>> list(String codesystem) {
@@ -435,7 +416,7 @@ public class AsyncRawCodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<ListCodesResponse>> list(
@@ -444,7 +425,7 @@ public class AsyncRawCodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<ListCodesResponse>> list(
@@ -453,7 +434,7 @@ public class AsyncRawCodesClient {
     }
 
     /**
-     * Returns a paginated list of all codes in the specified code system from the terminology server.
+     * Returns a paginated list of all codes in the specified code system.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<ListCodesResponse>> list(
@@ -557,7 +538,7 @@ public class AsyncRawCodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<GetCodeResponse>> lookup(String codesystem, String codeId) {
@@ -565,7 +546,7 @@ public class AsyncRawCodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<GetCodeResponse>> lookup(
@@ -574,7 +555,7 @@ public class AsyncRawCodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<GetCodeResponse>> lookup(
@@ -583,7 +564,7 @@ public class AsyncRawCodesClient {
     }
 
     /**
-     * Looks up a specific code in the terminology server and returns its details.
+     * Looks up a specific code and returns its details.
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<GetCodeResponse>> lookup(

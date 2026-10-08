@@ -109,16 +109,25 @@ public final class ProviderRow {
         return careSiteId;
     }
 
+    /**
+     * @return Year from Practitioner.birthDate.
+     */
     @JsonProperty("year_of_birth")
     public Optional<Integer> getYearOfBirth() {
         return yearOfBirth;
     }
 
+    /**
+     * @return For recorded <code>Practitioner.gender</code>, <code>male</code> and <code>female</code> resolve to validated OMOP Gender concepts. <code>other</code>, <code>unknown</code>, and absent values remain <code>0</code>.
+     */
     @JsonProperty("gender_concept_id")
     public Optional<Long> getGenderConceptId() {
         return genderConceptId;
     }
 
+    /**
+     * @return The source practitioner identity. A Practitioner contained by a PractitionerRole is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code> so identical local contained IDs do not collide; an id-less parent uses an explicitly marked response-local role ordinal such as <code>@role-index:1</code>.
+     */
     @JsonProperty("provider_source_value")
     public Optional<String> getProviderSourceValue() {
         return providerSourceValue;
@@ -134,11 +143,17 @@ public final class ProviderRow {
         return specialtySourceConceptId;
     }
 
+    /**
+     * @return The recorded FHIR administrative-gender value for this Provider.
+     */
     @JsonProperty("gender_source_value")
     public Optional<String> getGenderSourceValue() {
         return genderSourceValue;
     }
 
+    /**
+     * @return Remains <code>0</code> for FHIR administrative-gender enum-policy results.
+     */
     @JsonProperty("gender_source_concept_id")
     public Optional<Long> getGenderSourceConceptId() {
         return genderSourceConceptId;
@@ -314,6 +329,9 @@ public final class ProviderRow {
             return this;
         }
 
+        /**
+         * <p>Year from Practitioner.birthDate.</p>
+         */
         @JsonSetter(value = "year_of_birth", nulls = Nulls.SKIP)
         public Builder yearOfBirth(Optional<Integer> yearOfBirth) {
             this.yearOfBirth = yearOfBirth;
@@ -325,6 +343,9 @@ public final class ProviderRow {
             return this;
         }
 
+        /**
+         * <p>For recorded <code>Practitioner.gender</code>, <code>male</code> and <code>female</code> resolve to validated OMOP Gender concepts. <code>other</code>, <code>unknown</code>, and absent values remain <code>0</code>.</p>
+         */
         @JsonSetter(value = "gender_concept_id", nulls = Nulls.SKIP)
         public Builder genderConceptId(Optional<Long> genderConceptId) {
             this.genderConceptId = genderConceptId;
@@ -336,6 +357,9 @@ public final class ProviderRow {
             return this;
         }
 
+        /**
+         * <p>The source practitioner identity. A Practitioner contained by a PractitionerRole is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code> so identical local contained IDs do not collide; an id-less parent uses an explicitly marked response-local role ordinal such as <code>@role-index:1</code>.</p>
+         */
         @JsonSetter(value = "provider_source_value", nulls = Nulls.SKIP)
         public Builder providerSourceValue(Optional<String> providerSourceValue) {
             this.providerSourceValue = providerSourceValue;
@@ -369,6 +393,9 @@ public final class ProviderRow {
             return this;
         }
 
+        /**
+         * <p>The recorded FHIR administrative-gender value for this Provider.</p>
+         */
         @JsonSetter(value = "gender_source_value", nulls = Nulls.SKIP)
         public Builder genderSourceValue(Optional<String> genderSourceValue) {
             this.genderSourceValue = genderSourceValue;
@@ -380,6 +407,9 @@ public final class ProviderRow {
             return this;
         }
 
+        /**
+         * <p>Remains <code>0</code> for FHIR administrative-gender enum-policy results.</p>
+         */
         @JsonSetter(value = "gender_source_concept_id", nulls = Nulls.SKIP)
         public Builder genderSourceConceptId(Optional<Long> genderSourceConceptId) {
             this.genderSourceConceptId = genderSourceConceptId;
