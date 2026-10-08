@@ -171,14 +171,14 @@ public class AsyncRawCodeSystemsClient {
     }
 
     /**
-     * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
+     * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
     public CompletableFuture<PhenomlClientHttpResponse<ListCodeSystemsResponse>> list() {
         return list(null);
     }
 
     /**
-     * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
+     * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
     public CompletableFuture<PhenomlClientHttpResponse<ListCodeSystemsResponse>> list(RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())

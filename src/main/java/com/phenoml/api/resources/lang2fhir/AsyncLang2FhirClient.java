@@ -37,6 +37,7 @@ public class AsyncLang2FhirClient {
 
     /**
      * Converts natural language text into a structured FHIR resource.
+     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
      * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<Map<String, Object>> create(CreateRequest request) {
@@ -45,6 +46,7 @@ public class AsyncLang2FhirClient {
 
     /**
      * Converts natural language text into a structured FHIR resource.
+     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
      * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<Map<String, Object>> create(CreateRequest request, RequestOptions requestOptions) {
@@ -55,6 +57,7 @@ public class AsyncLang2FhirClient {
      * Analyzes natural language text and extracts multiple FHIR resources, returning them as a transaction Bundle.
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
      * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<CreateMultiResponse> createMulti(CreateMultiRequest request) {
@@ -65,6 +68,7 @@ public class AsyncLang2FhirClient {
      * Analyzes natural language text and extracts multiple FHIR resources, returning them as a transaction Bundle.
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
      * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<CreateMultiResponse> createMulti(
@@ -142,7 +146,8 @@ public class AsyncLang2FhirClient {
     }
 
     /**
-     * Extracts text from a document (PDF or image) and converts it into a structured FHIR resource.
+     * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into a structured FHIR resource.
+     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
      * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<Map<String, Object>> document(DocumentRequest request) {
@@ -150,7 +155,8 @@ public class AsyncLang2FhirClient {
     }
 
     /**
-     * Extracts text from a document (PDF or image) and converts it into a structured FHIR resource.
+     * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into a structured FHIR resource.
+     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
      * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<Map<String, Object>> document(DocumentRequest request, RequestOptions requestOptions) {
@@ -158,10 +164,11 @@ public class AsyncLang2FhirClient {
     }
 
     /**
-     * Extracts text from a document (PDF or image) and converts it into multiple FHIR resources,
+     * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into multiple FHIR resources,
      * returned as a transaction Bundle. Combines document text extraction with multi-resource detection.
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
      * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      * <p><strong>Split classifications (optional).</strong> <code>config.split_classifications</code> is a caller-defined list, not a fixed taxonomy. Choose each classification <code>id</code> and write a natural-language <code>description</code> for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Classifications with <code>operation: &quot;group&quot;</code> keep matching pages and label resources extracted from those pages; classifications with <code>operation: &quot;drop&quot;</code> remove matching pages before extraction. The <code>clinical</code> and <code>admin</code> ids in the example are illustrative, not a fixed set.</p>
      */
@@ -170,10 +177,11 @@ public class AsyncLang2FhirClient {
     }
 
     /**
-     * Extracts text from a document (PDF or image) and converts it into multiple FHIR resources,
+     * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into multiple FHIR resources,
      * returned as a transaction Bundle. Combines document text extraction with multi-resource detection.
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
+     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
      * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      * <p><strong>Split classifications (optional).</strong> <code>config.split_classifications</code> is a caller-defined list, not a fixed taxonomy. Choose each classification <code>id</code> and write a natural-language <code>description</code> for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Classifications with <code>operation: &quot;group&quot;</code> keep matching pages and label resources extracted from those pages; classifications with <code>operation: &quot;drop&quot;</code> remove matching pages before extraction. The <code>clinical</code> and <code>admin</code> ids in the example are illustrative, not a fixed set.</p>
      */

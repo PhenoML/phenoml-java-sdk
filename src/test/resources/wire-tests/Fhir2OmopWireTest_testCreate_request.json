@@ -35,6 +35,7 @@
           "resourceType": "MedicationRequest",
           "id": "medreq-1",
           "status": "active",
+          "intent": "order",
           "subject": {
             "reference": "Patient/patient-1"
           },
