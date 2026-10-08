@@ -1,4 +1,39 @@
-## [17.13.1] - 2026-10-08
+## [18.0.0] - 2026-10-08
+### Breaking Changes
+- **`com.phenoml.api.resources.construe.errors.BadGatewayError`, `construe.errors.ContentTooLargeError`, `fhir2omop.errors.ServiceUnavailableError`, and `voice.errors.ContentTooLargeError`** — removed error classes under `com.phenoml.api.resources`; replace their imports and catches with `PhenomlClientApiException` and inspect `statusCode()`.
+- **`MappingEntry.getMappingStatus()` / `.mappingStatus(...)`** — now use `MappingEntryMappingStatus` instead of `String`; compare enum constants or use `toString()` when a string is needed.
+- **`MappingEntry.builder()`** — now returns a staged builder requiring `.selected(boolean)` before optional fields and `.build()`; update manually constructed mappings and fixtures.
+- **`ProfileSummary`, `IProfileSummary`, and `ProfileGetResponse`** — profile identity, source, resource type, URL, version, FHIR version, implementation guide, and timestamps now have direct getters instead of `Optional` getters, and staged builders require these fields plus `canonical`; remove Optional operations and supply the required values when constructing profiles.
+- **`ProfileListResponse.getProfiles()` and `ProfileGetResponse.getStructureDefinition()`** — now return `List<ProfileSummary>` and `Map<String, Object>` directly; remove Optional unwrapping and update builder calls that supplied Optional values.
+- **`PhenomlClientBuilder._CredentialsAuth.grantType(...)` and `AsyncPhenomlClientBuilder._CredentialsAuth.grantType(...)`** — removed both grant-type overloads; delete these calls because credential authentication always uses `client_credentials`.
+- **`IImplementationGuideSummary.getCanonicalUrl()` and `.getVersionCount()`** — add required interface methods; custom implementations must provide these accessors.
+- **`OAuthTokenSupplier(...)`** — removes the `Optional<String> grantType` constructor parameter; pass client ID, client secret, and auth client only.
+
+### Added
+- **`PhenomlClient.lang2FhirBatch()` and `AsyncPhenomlClient.lang2FhirBatch()`** — add the complete asynchronous batch-extraction job API with create, uploadItem, finalize, cancel, get, getResults, getResult, and list methods plus batch request/response models; uploads must use the overload accepting `UploadItemRequest` to supply the required JSON companion fields.
+- **`client.profiles().versions()`** — adds sync, async, and raw clients for listing, creating, retrieving, and deleting retained StructureDefinition versions, with `ProfileVersionListResponse` and profile HTTP 409 errors.
+- **`CreateOmopRequest.vocabVersion(...)`** — accepts an optional OMOP vocabulary release for reproducible coded-concept resolution.
+- **`CreateOmopResponse.getProviderRoleContexts()` and `.getDiagnostics()`** — add practitioner-role provenance and reference-resolution diagnostics with `ProviderRoleContext`, its supporting types, `Coding`, and `ReferenceDiagnostic`.
+- **`MappingEntry.getOmopField()`, `PersonRow`, `DrugExposureRow`, `ConditionOccurrenceRow`, and `ProcedureOccurrenceRow`** — add concept-field provenance, person provider/care-site and demographic source-concept fields, drug route/refill/supply/lot/end-date fields, and condition/procedure end timestamps.
+- **`client.implementationGuides().implementationGuides().createVersion(...)` and `.getVersion(...)`** — create and retrieve exact canonical implementation-guide packages using `CreateCanonicalImplementationGuideRequest`, `FhirImplementationGuide`, and `ImplementationGuideVersionDetail`, with implementation-guide HTTP 409 errors.
+- **`ImplementationGuideSummary.getCanonicalUrl()` and `.getVersionCount()`** — expose an implementation-guide family's canonical URL and retained version count on summary and detail models.
+- **`CreateMultiRequest.primaryPatient(...)` and `DocumentMultiRequest.primaryPatient(...)`** — accept optional `PrimaryPatient` / `PrimaryPatientName` context with identifier, name, birth date, and gender to identify the primary patient.
+- **`CreateRequestResource`** — adds `FAMILYMEMBERHISTORY`, `MEDICATIONADMINISTRATION`, and `MEDICATIONSTATEMENT` extraction targets.
+- **`ResourceReviewResult.getRemediated()`, `ResourceReviewRemediated`, and `ResourceReviewFinding.getUnaudited()`** — report safe coding removals and distinguish fields without an audit verdict.
+- **`ProfileSummary.getStatus()`, `.getDate()`, and `.getCanonical()`** — expose profile publication status, authored date, and canonical URL, also available on `ProfileGetResponse`.
+- **`PhenomlClient.close()` and `AsyncPhenomlClient.close()`** — implement `AutoCloseable` for releasing SDK-owned OkHttp resources while leaving caller-supplied HTTP clients running.
+
+### Changed
+- **`Fhir2OmopClient.create(...)` / `Summary`** — documentation now describes expanded resource coverage, source-supported dates, clinical-event eligibility, demographic resolution, and outcome-based summary counts; conversion remains server-side.
+- **`CreateMultiRequest.patientReference(...)`, `DocumentMultiRequest.patientReference(...)`, and Lang2FHIR `detectionEffort(...)` fields** — marked deprecated with existing call sites retained; use `PrimaryPatient.identifier(...)` for patient identifiers and do not combine it with `patientReference`.
+- **`Lang2FhirClient.document(...)` and `.documentMulti(...)`** — documentation adds dedicated-instance TIFF, RTF, and XML/C-CDA support, a 20 MiB decoded-file limit, and a 1 MiB extracted-text limit for RTF/XML.
+- **`ResourceReview`** — documentation describes retaining resources after safe removal of unsupported codings and quarantining findings that cannot be safely repaired; read retained resources from the returned bundle.
+- **`CodesClient.crosswalk(...)` and `VoiceClient.create(...)`** — undocumented status responses now fall back to `PhenomlClientApiException`; update status-specific catch logic, including crosswalk HTTP 501/502/503 and voice HTTP 413.
+
+### Fixed
+- **`PhenomlClientBuilder.instanceUrl(...)` and `AsyncPhenomlClientBuilder.instanceUrl(...)`** — preserve an explicitly supplied non-default environment when an instance hostname is also provided.
+- **`OAuthTokenSupplier`** — credential-based token refresh explicitly sends `grant_type=client_credentials`.
+- **`ClientOptions`** — the SDK name header now identifies the published Maven artifact and null header values are omitted.
 
 ## [17.13.0] - 2026-08-26
 ### Added
