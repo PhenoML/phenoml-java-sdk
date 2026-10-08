@@ -111,6 +111,7 @@ public class Fhir2OmopWireTest {
                                                                 put("resourceType", "MedicationRequest");
                                                                 put("id", "medreq-1");
                                                                 put("status", "active");
+                                                                put("intent", "order");
                                                                 put("subject", new HashMap<String, Object>() {
                                                                     {
                                                                         put("reference", "Patient/patient-1");

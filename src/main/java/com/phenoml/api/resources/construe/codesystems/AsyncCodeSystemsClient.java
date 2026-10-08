@@ -54,14 +54,14 @@ public class AsyncCodeSystemsClient {
     }
 
     /**
-     * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
+     * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
     public CompletableFuture<ListCodeSystemsResponse> list() {
         return this.rawClient.list().thenApply(response -> response.body());
     }
 
     /**
-     * Returns the terminology server's catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
+     * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
     public CompletableFuture<ListCodeSystemsResponse> list(RequestOptions requestOptions) {
         return this.rawClient.list(requestOptions).thenApply(response -> response.body());

@@ -15,7 +15,6 @@ import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.RetryInterceptor;
 import com.phenoml.api.resources.voice.errors.BadGatewayError;
 import com.phenoml.api.resources.voice.errors.BadRequestError;
-import com.phenoml.api.resources.voice.errors.ContentTooLargeError;
 import com.phenoml.api.resources.voice.errors.GatewayTimeoutError;
 import com.phenoml.api.resources.voice.errors.PaymentRequiredError;
 import com.phenoml.api.resources.voice.errors.ServiceUnavailableError;
@@ -44,11 +43,12 @@ public class RawVoiceClient {
      * Transcribes an uploaded audio recording and returns the transcript.
      * Send the raw audio bytes as the request body; the audio format is
      * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
-     * <p>Supports up to ~5 minutes of audio per request. This limit is on audio
-     * duration regardless of file size or format, so a compressed recording
-     * within the size limit can still be rejected for being too long. Pair the
-     * transcript with a downstream text step (e.g. <code>POST /lang2fhir/create</code>)
-     * to turn it into a FHIR resource.</p>
+     * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
+     * minutes of audio per request. This duration limit is independent of file
+     * size or format, so a compressed recording within the body-size limit can
+     * still be rejected for being too long. Pair the transcript with a
+     * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
+     * FHIR resource.</p>
      */
     public PhenomlClientHttpResponse<TranscribeResponse> transcribe(byte[] body) {
         return transcribe(TranscribeRequest.builder().body(body).build());
@@ -58,11 +58,12 @@ public class RawVoiceClient {
      * Transcribes an uploaded audio recording and returns the transcript.
      * Send the raw audio bytes as the request body; the audio format is
      * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
-     * <p>Supports up to ~5 minutes of audio per request. This limit is on audio
-     * duration regardless of file size or format, so a compressed recording
-     * within the size limit can still be rejected for being too long. Pair the
-     * transcript with a downstream text step (e.g. <code>POST /lang2fhir/create</code>)
-     * to turn it into a FHIR resource.</p>
+     * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
+     * minutes of audio per request. This duration limit is independent of file
+     * size or format, so a compressed recording within the body-size limit can
+     * still be rejected for being too long. Pair the transcript with a
+     * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
+     * FHIR resource.</p>
      */
     public PhenomlClientHttpResponse<TranscribeResponse> transcribe(byte[] body, RequestOptions requestOptions) {
         return transcribe(TranscribeRequest.builder().body(body).build(), requestOptions);
@@ -72,11 +73,12 @@ public class RawVoiceClient {
      * Transcribes an uploaded audio recording and returns the transcript.
      * Send the raw audio bytes as the request body; the audio format is
      * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
-     * <p>Supports up to ~5 minutes of audio per request. This limit is on audio
-     * duration regardless of file size or format, so a compressed recording
-     * within the size limit can still be rejected for being too long. Pair the
-     * transcript with a downstream text step (e.g. <code>POST /lang2fhir/create</code>)
-     * to turn it into a FHIR resource.</p>
+     * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
+     * minutes of audio per request. This duration limit is independent of file
+     * size or format, so a compressed recording within the body-size limit can
+     * still be rejected for being too long. Pair the transcript with a
+     * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
+     * FHIR resource.</p>
      */
     public PhenomlClientHttpResponse<TranscribeResponse> transcribe(TranscribeRequest request) {
         return transcribe(request, null);
@@ -86,11 +88,12 @@ public class RawVoiceClient {
      * Transcribes an uploaded audio recording and returns the transcript.
      * Send the raw audio bytes as the request body; the audio format is
      * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
-     * <p>Supports up to ~5 minutes of audio per request. This limit is on audio
-     * duration regardless of file size or format, so a compressed recording
-     * within the size limit can still be rejected for being too long. Pair the
-     * transcript with a downstream text step (e.g. <code>POST /lang2fhir/create</code>)
-     * to turn it into a FHIR resource.</p>
+     * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
+     * minutes of audio per request. This duration limit is independent of file
+     * size or format, so a compressed recording within the body-size limit can
+     * still be rejected for being too long. Pair the transcript with a
+     * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
+     * FHIR resource.</p>
      */
     public PhenomlClientHttpResponse<TranscribeResponse> transcribe(
             TranscribeRequest request, RequestOptions requestOptions) {
@@ -145,9 +148,6 @@ public class RawVoiceClient {
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 402:
                         throw new PaymentRequiredError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 413:
-                        throw new ContentTooLargeError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 502:
                         throw new BadGatewayError(
