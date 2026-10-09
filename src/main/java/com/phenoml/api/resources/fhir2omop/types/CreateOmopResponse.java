@@ -121,10 +121,20 @@ public final class CreateOmopResponse {
      * Missing optional references are normal and do not produce a diagnostic.
      * References resolve only against resources supplied in this request.
      * Outcomes distinguish unresolved, ambiguous, conflicting, and unsupported
-     * references. Patient demographic extensions that conflict, or a birth
-     * sex without <code>valueCode</code>, are also reported here; their <code>path</code> is
+     * conditions as defined in <code>ReferenceDiagnostic.outcome</code>. Patient
+     * demographic extensions that conflict, or a birth sex without
+     * <code>valueCode</code>, are also reported here; their <code>path</code> is
      * <code>extension:birthsex</code> or <code>extension:ethnicity</code> and they have no
-     * <code>reference</code>.
+     * <code>reference</code>. Practitioner identity conflicts that prevent merging also
+     * have no <code>reference</code>: their paths are <code>name</code>, <code>gender</code>, <code>birthDate</code>, or
+     * <code>identifier</code>, their outcome is <code>CONFLICTING</code>, and <code>omop_table: provider</code>
+     * together with <code>omop_id</code> identifies the affected row. For a conflicting
+     * NPI group, every member is flagged, including members missing the conflicting attribute.
+     * The reason identifies the differing mapped attribute and explains why
+     * the entire group remains separate, rather than asserting that each
+     * member individually supplied a conflicting value.
+     * Multiple distinct NPIs on one Practitioner are also diagnosed at
+     * <code>identifier</code> with <code>omop_table: provider</code> and the retained row's <code>omop_id</code>.
      */
     @JsonProperty("diagnostics")
     public Optional<List<ReferenceDiagnostic>> getDiagnostics() {
@@ -323,10 +333,20 @@ public final class CreateOmopResponse {
          * Missing optional references are normal and do not produce a diagnostic.
          * References resolve only against resources supplied in this request.
          * Outcomes distinguish unresolved, ambiguous, conflicting, and unsupported
-         * references. Patient demographic extensions that conflict, or a birth
-         * sex without <code>valueCode</code>, are also reported here; their <code>path</code> is
+         * conditions as defined in <code>ReferenceDiagnostic.outcome</code>. Patient
+         * demographic extensions that conflict, or a birth sex without
+         * <code>valueCode</code>, are also reported here; their <code>path</code> is
          * <code>extension:birthsex</code> or <code>extension:ethnicity</code> and they have no
-         * <code>reference</code>.</p>
+         * <code>reference</code>. Practitioner identity conflicts that prevent merging also
+         * have no <code>reference</code>: their paths are <code>name</code>, <code>gender</code>, <code>birthDate</code>, or
+         * <code>identifier</code>, their outcome is <code>CONFLICTING</code>, and <code>omop_table: provider</code>
+         * together with <code>omop_id</code> identifies the affected row. For a conflicting
+         * NPI group, every member is flagged, including members missing the conflicting attribute.
+         * The reason identifies the differing mapped attribute and explains why
+         * the entire group remains separate, rather than asserting that each
+         * member individually supplied a conflicting value.
+         * Multiple distinct NPIs on one Practitioner are also diagnosed at
+         * <code>identifier</code> with <code>omop_table: provider</code> and the retained row's <code>omop_id</code>.</p>
          */
         @JsonSetter(value = "diagnostics", nulls = Nulls.SKIP)
         public Builder diagnostics(Optional<List<ReferenceDiagnostic>> diagnostics) {
