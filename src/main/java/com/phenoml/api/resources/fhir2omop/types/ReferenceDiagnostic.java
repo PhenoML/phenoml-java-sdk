@@ -24,6 +24,10 @@ public final class ReferenceDiagnostic {
 
     private final Optional<String> resourceId;
 
+    private final Optional<String> omopTable;
+
+    private final Optional<Long> omopId;
+
     private final Optional<String> path;
 
     private final Optional<String> reference;
@@ -37,6 +41,8 @@ public final class ReferenceDiagnostic {
     private ReferenceDiagnostic(
             Optional<String> resourceType,
             Optional<String> resourceId,
+            Optional<String> omopTable,
+            Optional<Long> omopId,
             Optional<String> path,
             Optional<String> reference,
             Optional<ReferenceDiagnosticOutcome> outcome,
@@ -44,6 +50,8 @@ public final class ReferenceDiagnostic {
             Map<String, Object> additionalProperties) {
         this.resourceType = resourceType;
         this.resourceId = resourceId;
+        this.omopTable = omopTable;
+        this.omopId = omopId;
         this.path = path;
         this.reference = reference;
         this.outcome = outcome;
@@ -59,6 +67,22 @@ public final class ReferenceDiagnostic {
     @JsonProperty("resource_id")
     public Optional<String> getResourceId() {
         return resourceId;
+    }
+
+    /**
+     * @return Table containing the affected row in this response. Present together with omop_id when that row is emitted.
+     */
+    @JsonProperty("omop_table")
+    public Optional<String> getOmopTable() {
+        return omopTable;
+    }
+
+    /**
+     * @return Primary key of the affected row within omop_table in this response. Present together with omop_table when that row is emitted.
+     */
+    @JsonProperty("omop_id")
+    public Optional<Long> getOmopId() {
+        return omopId;
     }
 
     /**
@@ -101,6 +125,8 @@ public final class ReferenceDiagnostic {
     private boolean equalTo(ReferenceDiagnostic other) {
         return resourceType.equals(other.resourceType)
                 && resourceId.equals(other.resourceId)
+                && omopTable.equals(other.omopTable)
+                && omopId.equals(other.omopId)
                 && path.equals(other.path)
                 && reference.equals(other.reference)
                 && outcome.equals(other.outcome)
@@ -109,7 +135,15 @@ public final class ReferenceDiagnostic {
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.resourceType, this.resourceId, this.path, this.reference, this.outcome, this.reason);
+        return Objects.hash(
+                this.resourceType,
+                this.resourceId,
+                this.omopTable,
+                this.omopId,
+                this.path,
+                this.reference,
+                this.outcome,
+                this.reason);
     }
 
     @java.lang.Override
@@ -127,6 +161,10 @@ public final class ReferenceDiagnostic {
 
         private Optional<String> resourceId = Optional.empty();
 
+        private Optional<String> omopTable = Optional.empty();
+
+        private Optional<Long> omopId = Optional.empty();
+
         private Optional<String> path = Optional.empty();
 
         private Optional<String> reference = Optional.empty();
@@ -143,6 +181,8 @@ public final class ReferenceDiagnostic {
         public Builder from(ReferenceDiagnostic other) {
             resourceType(other.getResourceType());
             resourceId(other.getResourceId());
+            omopTable(other.getOmopTable());
+            omopId(other.getOmopId());
             path(other.getPath());
             reference(other.getReference());
             outcome(other.getOutcome());
@@ -169,6 +209,34 @@ public final class ReferenceDiagnostic {
 
         public Builder resourceId(String resourceId) {
             this.resourceId = Optional.ofNullable(resourceId);
+            return this;
+        }
+
+        /**
+         * <p>Table containing the affected row in this response. Present together with omop_id when that row is emitted.</p>
+         */
+        @JsonSetter(value = "omop_table", nulls = Nulls.SKIP)
+        public Builder omopTable(Optional<String> omopTable) {
+            this.omopTable = omopTable;
+            return this;
+        }
+
+        public Builder omopTable(String omopTable) {
+            this.omopTable = Optional.ofNullable(omopTable);
+            return this;
+        }
+
+        /**
+         * <p>Primary key of the affected row within omop_table in this response. Present together with omop_table when that row is emitted.</p>
+         */
+        @JsonSetter(value = "omop_id", nulls = Nulls.SKIP)
+        public Builder omopId(Optional<Long> omopId) {
+            this.omopId = omopId;
+            return this;
+        }
+
+        public Builder omopId(Long omopId) {
+            this.omopId = Optional.ofNullable(omopId);
             return this;
         }
 
@@ -224,7 +292,15 @@ public final class ReferenceDiagnostic {
 
         public ReferenceDiagnostic build() {
             return new ReferenceDiagnostic(
-                    resourceType, resourceId, path, reference, outcome, reason, additionalProperties);
+                    resourceType,
+                    resourceId,
+                    omopTable,
+                    omopId,
+                    path,
+                    reference,
+                    outcome,
+                    reason,
+                    additionalProperties);
         }
 
         public Builder additionalProperty(String key, Object value) {

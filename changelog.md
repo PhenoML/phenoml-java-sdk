@@ -1,3 +1,8 @@
+## [18.1.0] - 2026-10-09
+### Added
+- **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
+- **`ReferenceDiagnostic.Builder.omopTable(...)` and `.omopId(...)`** — builder setters (both `Optional<T>` and direct-value overloads) for the new OMOP row-linkage fields.
+
 ## [18.0.0] - 2026-10-08
 ### Breaking Changes
 - **`com.phenoml.api.resources.construe.errors.BadGatewayError`, `construe.errors.ContentTooLargeError`, `fhir2omop.errors.ServiceUnavailableError`, and `voice.errors.ContentTooLargeError`** — removed error classes under `com.phenoml.api.resources`; replace their imports and catches with `PhenomlClientApiException` and inspect `statusCode()`.
