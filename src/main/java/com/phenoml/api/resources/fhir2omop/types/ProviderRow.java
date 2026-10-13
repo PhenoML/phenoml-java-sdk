@@ -89,6 +89,9 @@ public final class ProviderRow {
         return providerName;
     }
 
+    /**
+     * @return Single distinct non-empty source NPI. Omitted when the Practitioner has multiple distinct NPIs.
+     */
     @JsonProperty("npi")
     public Optional<String> getNpi() {
         return npi;
@@ -126,7 +129,22 @@ public final class ProviderRow {
     }
 
     /**
-     * @return The source practitioner identity. A Practitioner contained by a PractitionerRole is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code> so identical local contained IDs do not collide; an id-less parent uses an explicitly marked response-local role ordinal such as <code>@role-index:1</code>.
+     * @return The single distinct source NPI, when present. Compatible providers
+     * can use this value as a cross-request deduplication key; row IDs are
+     * per response, and the API does not merge across requests. Conflicting
+     * NPI groups retain separate rows sharing this value. Preserve rows
+     * flagged by identity diagnostics using <code>omop_table: provider</code> and
+     * <code>omop_id</code>, and check identity compatibility across responses before
+     * deduplicating.
+     * Without one unambiguous NPI, this is the source practitioner identity.
+     * Multiple distinct NPIs leave <code>npi</code> unset and use the resource ID,
+     * full URL, or an explicitly marked response-local provider ordinal
+     * such as <code>@provider-index:1</code> when neither is supplied.
+     * A Practitioner contained by a PractitionerRole without one unambiguous
+     * NPI is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code>
+     * so identical local contained IDs do not collide; an id-less parent
+     * uses an explicitly marked response-local role ordinal such as
+     * <code>@role-index:1</code>.
      */
     @JsonProperty("provider_source_value")
     public Optional<String> getProviderSourceValue() {
@@ -285,6 +303,9 @@ public final class ProviderRow {
             return this;
         }
 
+        /**
+         * <p>Single distinct non-empty source NPI. Omitted when the Practitioner has multiple distinct NPIs.</p>
+         */
         @JsonSetter(value = "npi", nulls = Nulls.SKIP)
         public Builder npi(Optional<String> npi) {
             this.npi = npi;
@@ -358,7 +379,22 @@ public final class ProviderRow {
         }
 
         /**
-         * <p>The source practitioner identity. A Practitioner contained by a PractitionerRole is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code> so identical local contained IDs do not collide; an id-less parent uses an explicitly marked response-local role ordinal such as <code>@role-index:1</code>.</p>
+         * <p>The single distinct source NPI, when present. Compatible providers
+         * can use this value as a cross-request deduplication key; row IDs are
+         * per response, and the API does not merge across requests. Conflicting
+         * NPI groups retain separate rows sharing this value. Preserve rows
+         * flagged by identity diagnostics using <code>omop_table: provider</code> and
+         * <code>omop_id</code>, and check identity compatibility across responses before
+         * deduplicating.
+         * Without one unambiguous NPI, this is the source practitioner identity.
+         * Multiple distinct NPIs leave <code>npi</code> unset and use the resource ID,
+         * full URL, or an explicitly marked response-local provider ordinal
+         * such as <code>@provider-index:1</code> when neither is supplied.
+         * A Practitioner contained by a PractitionerRole without one unambiguous
+         * NPI is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code>
+         * so identical local contained IDs do not collide; an id-less parent
+         * uses an explicitly marked response-local role ordinal such as
+         * <code>@role-index:1</code>.</p>
          */
         @JsonSetter(value = "provider_source_value", nulls = Nulls.SKIP)
         public Builder providerSourceValue(Optional<String> providerSourceValue) {
