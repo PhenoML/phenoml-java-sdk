@@ -46,6 +46,8 @@ public final class MappingEntry {
 
     private final boolean selected;
 
+    private final Optional<MappingResolution> resolution;
+
     private final Optional<String> note;
 
     private final Map<String, Object> additionalProperties;
@@ -64,6 +66,7 @@ public final class MappingEntry {
             Optional<String> targetName,
             Optional<MappingEntryMappingStatus> mappingStatus,
             boolean selected,
+            Optional<MappingResolution> resolution,
             Optional<String> note,
             Map<String, Object> additionalProperties) {
         this.resourceType = resourceType;
@@ -79,6 +82,7 @@ public final class MappingEntry {
         this.targetName = targetName;
         this.mappingStatus = mappingStatus;
         this.selected = selected;
+        this.resolution = resolution;
         this.note = note;
         this.additionalProperties = additionalProperties;
     }
@@ -157,7 +161,8 @@ public final class MappingEntry {
      * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
      * standard code was suggested for a text-only resource but not verified
      * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
-     * (no standard concept found).
+     * (no target concept selected, including missing mappings,
+     * target-domain mismatches, and ambiguity).
      */
     @JsonProperty("mapping_status")
     public Optional<MappingEntryMappingStatus> getMappingStatus() {
@@ -170,6 +175,11 @@ public final class MappingEntry {
     @JsonProperty("selected")
     public boolean getSelected() {
         return selected;
+    }
+
+    @JsonProperty("resolution")
+    public Optional<MappingResolution> getResolution() {
+        return resolution;
     }
 
     /**
@@ -221,6 +231,7 @@ public final class MappingEntry {
                 && targetName.equals(other.targetName)
                 && mappingStatus.equals(other.mappingStatus)
                 && selected == other.selected
+                && resolution.equals(other.resolution)
                 && note.equals(other.note);
     }
 
@@ -240,6 +251,7 @@ public final class MappingEntry {
                 this.targetName,
                 this.mappingStatus,
                 this.selected,
+                this.resolution,
                 this.note);
     }
 
@@ -331,11 +343,16 @@ public final class MappingEntry {
          * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
          * standard code was suggested for a text-only resource but not verified
          * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
-         * (no standard concept found).</p>
+         * (no target concept selected, including missing mappings,
+         * target-domain mismatches, and ambiguity).</p>
          */
         _FinalStage mappingStatus(Optional<MappingEntryMappingStatus> mappingStatus);
 
         _FinalStage mappingStatus(MappingEntryMappingStatus mappingStatus);
+
+        _FinalStage resolution(Optional<MappingResolution> resolution);
+
+        _FinalStage resolution(MappingResolution resolution);
 
         /**
          * <p>Additional context for the entry. A coded route is noted as
@@ -366,6 +383,8 @@ public final class MappingEntry {
         private boolean selected;
 
         private Optional<String> note = Optional.empty();
+
+        private Optional<MappingResolution> resolution = Optional.empty();
 
         private Optional<MappingEntryMappingStatus> mappingStatus = Optional.empty();
 
@@ -411,6 +430,7 @@ public final class MappingEntry {
             targetName(other.getTargetName());
             mappingStatus(other.getMappingStatus());
             selected(other.getSelected());
+            resolution(other.getResolution());
             note(other.getNote());
             return this;
         }
@@ -478,12 +498,26 @@ public final class MappingEntry {
             return this;
         }
 
+        @java.lang.Override
+        public _FinalStage resolution(MappingResolution resolution) {
+            this.resolution = Optional.ofNullable(resolution);
+            return this;
+        }
+
+        @java.lang.Override
+        @JsonSetter(value = "resolution", nulls = Nulls.SKIP)
+        public _FinalStage resolution(Optional<MappingResolution> resolution) {
+            this.resolution = resolution;
+            return this;
+        }
+
         /**
          * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
          * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
          * standard code was suggested for a text-only resource but not verified
          * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
-         * (no standard concept found).</p>
+         * (no target concept selected, including missing mappings,
+         * target-domain mismatches, and ambiguity).</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -497,7 +531,8 @@ public final class MappingEntry {
          * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
          * standard code was suggested for a text-only resource but not verified
          * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
-         * (no standard concept found).</p>
+         * (no target concept selected, including missing mappings,
+         * target-domain mismatches, and ambiguity).</p>
          */
         @java.lang.Override
         @JsonSetter(value = "mapping_status", nulls = Nulls.SKIP)
@@ -696,6 +731,7 @@ public final class MappingEntry {
                     targetName,
                     mappingStatus,
                     selected,
+                    resolution,
                     note,
                     additionalProperties);
         }
