@@ -1,3 +1,16 @@
+## [18.2.0] - 2026-10-14
+### Added
+- **`MappingResolution`**, **`MappingPath`**, **`MappingResolutionStatus`**, **`MappingResolutionReasonCode`**, **`MappingResolutionVia`**, and **`MappingPathMappingStatus`** — new types and enums describing the full vocabulary resolution outcome (status, reason code, strategy, and per-path details) for OMOP mappings.
+- **`MappingEntry.getResolution()` and `MappingEntry.Builder.resolution(...)`** — new optional `MappingResolution` field surfacing structured resolution provenance for coded UCUM unit mappings and other supported codings.
+- **`MeasurementRow.getUnitSourceConceptId()` and `MeasurementRow.Builder.unitSourceConceptId(...)`** — new optional field and builder overloads returning the OMOP source concept ID for `Quantity.system/code`; absent units return `null`, unmatched supplied units return `0`.
+- **Practitioner NPI deduplication** — within a single FHIR-to-OMOP request, Practitioners sharing a distinct NPI now merge into one provider row when identity attributes agree; conflicts produce `CONFLICTING` diagnostics tagged with `omop_table: provider`.
+- **UCUM unit resolution** — coded UCUM units (`http://unitsofmeasure.org`) now resolve to standard OMOP Unit concepts using the vocabulary release selected by `vocab_version`; absent `unit_concept_id` values return `null` instead of `0`.
+
+### Changed
+- **`MappingEntry.getMappingStatus()` documentation** — the `UNMAPPED` status description is updated to clarify it covers missing mappings, target-domain mismatches, and ambiguity.
+- **`Fhir2OmopClient` Javadoc** — expanded to document Quantity unit resolution behavior, OID handling for unit systems, Practitioner NPI merging rules, and diagnostics coverage of Practitioner identity conflicts.
+- **`MeasurementRow`, `ObservationRow`, and `ReferenceDiagnostic` Javadoc** — expanded on `getUnitConceptId()`, `getUnitSourceValue()`, `getOutcome()`, and `getReason()` to document UCUM mapping semantics, source-value derivation rules, and all `ReferenceDiagnosticOutcome` enum values.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
