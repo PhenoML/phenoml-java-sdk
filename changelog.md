@@ -1,3 +1,16 @@
+## [18.2.0] - 2026-10-14
+### Added
+- **`MappingResolution`** — new response type exposing vocabulary resolution outcome for an OMOP mapping entry, including status, reason code, path provenance, and truncation flag.
+- **`MappingPath`** — new type describing a single mapping path to a selected OMOP concept, with source concept ID, vocabulary, code, and CUI fields.
+- **`MappingResolutionStatus`, `MappingResolutionReasonCode`, `MappingResolutionVia`, and `MappingPathMappingStatus`** — new enums covering resolution outcomes, machine-readable failure reasons, and path traversal strategies.
+- **`MappingEntry.getResolution()` and `MappingEntry.Builder.resolution(...)`** — new optional `MappingResolution` field on mapping entries, with builder overloads accepting `MappingResolution` directly or as `Optional<MappingResolution>`.
+- **`MeasurementRow.getUnitSourceConceptId()` and `MeasurementRow.Builder.unitSourceConceptId(...)`** — new optional field returning the OMOP source concept ID for the FHIR `Quantity.system/code`, with `Optional<Long>` and direct-value builder overloads.
+
+### Changed
+- **`Fhir2OmopClient.create()` unit handling** — coded UCUM units now resolve to standard OMOP `unit_concept_id` values; absent `unit_concept_id` now returns `null` instead of `0`; `unit_source_value` now contains `Quantity.code` rather than human-readable text.
+- **`Fhir2OmopClient.create()` Practitioner deduplication** — Practitioners sharing one unambiguous NPI are now merged into a single provider row; identity conflicts emit `CONFLICTING` diagnostics linked by `omop_table: provider` and `omop_id`.
+- **`MappingEntry.getMappingStatus()` `UNMAPPED` description** — clarified to cover target-domain mismatches and ambiguity in addition to missing mappings.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.

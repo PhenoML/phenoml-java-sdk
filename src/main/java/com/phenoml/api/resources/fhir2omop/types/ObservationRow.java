@@ -139,6 +139,9 @@ public final class ObservationRow {
         return valueAsConceptId;
     }
 
+    /**
+     * @return Valid standard Unit concept for coded UCUM; 0 for supplied but unmapped units, null for absent units. Always present in JSON.
+     */
     @JsonProperty("unit_concept_id")
     public Optional<Long> getUnitConceptId() {
         return unitConceptId;
@@ -164,6 +167,9 @@ public final class ObservationRow {
         return observationSourceConceptId;
     }
 
+    /**
+     * @return Original Quantity.code if supplied, otherwise Quantity.unit; human-readable unit text is preserved in the unit mapping's source_name.
+     */
     @JsonProperty("unit_source_value")
     public Optional<String> getUnitSourceValue() {
         return unitSourceValue;
@@ -395,6 +401,9 @@ public final class ObservationRow {
             return this;
         }
 
+        /**
+         * <p>Valid standard Unit concept for coded UCUM; 0 for supplied but unmapped units, null for absent units. Always present in JSON.</p>
+         */
         @JsonSetter(value = "unit_concept_id", nulls = Nulls.SKIP)
         public Builder unitConceptId(Optional<Long> unitConceptId) {
             this.unitConceptId = unitConceptId;
@@ -450,6 +459,9 @@ public final class ObservationRow {
             return this;
         }
 
+        /**
+         * <p>Original Quantity.code if supplied, otherwise Quantity.unit; human-readable unit text is preserved in the unit mapping's source_name.</p>
+         */
         @JsonSetter(value = "unit_source_value", nulls = Nulls.SKIP)
         public Builder unitSourceValue(Optional<String> unitSourceValue) {
             this.unitSourceValue = unitSourceValue;
