@@ -91,7 +91,7 @@ public final class ProcedureOccurrenceRow {
     }
 
     /**
-     * @return Date from Procedure.performedDateTime or performedPeriod.start.
+     * @return Start date selected by the source resource's timing rules. For a Procedure, performedDateTime or performedPeriod.start; see the endpoint's timing sources for other resources.
      */
     @JsonProperty("procedure_date")
     public Optional<String> getProcedureDate() {
@@ -104,7 +104,7 @@ public final class ProcedureOccurrenceRow {
     }
 
     /**
-     * @return Date from Procedure.performedPeriod.end.
+     * @return End date selected by the source resource's timing rules, when available. For a Procedure, performedPeriod.end; see the endpoint's timing sources for other resources.
      */
     @JsonProperty("procedure_end_date")
     public Optional<String> getProcedureEndDate() {
@@ -274,7 +274,7 @@ public final class ProcedureOccurrenceRow {
         }
 
         /**
-         * <p>Date from Procedure.performedDateTime or performedPeriod.start.</p>
+         * <p>Start date selected by the source resource's timing rules. For a Procedure, performedDateTime or performedPeriod.start; see the endpoint's timing sources for other resources.</p>
          */
         @JsonSetter(value = "procedure_date", nulls = Nulls.SKIP)
         public Builder procedureDate(Optional<String> procedureDate) {
@@ -299,7 +299,7 @@ public final class ProcedureOccurrenceRow {
         }
 
         /**
-         * <p>Date from Procedure.performedPeriod.end.</p>
+         * <p>End date selected by the source resource's timing rules, when available. For a Procedure, performedPeriod.end; see the endpoint's timing sources for other resources.</p>
          */
         @JsonSetter(value = "procedure_end_date", nulls = Nulls.SKIP)
         public Builder procedureEndDate(Optional<String> procedureEndDate) {
