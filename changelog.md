@@ -1,3 +1,15 @@
+## [18.2.0] - 2026-10-14
+### Added
+- **`MappingResolution`** — new response type surfacing the vocabulary resolution outcome for an OMOP mapping entry, including status, reason code, resolution path, and truncation flag, with a staged builder.
+- **`MappingResolutionStatus`**, **`MappingResolutionReasonCode`**, and **`MappingResolutionVia`** — new enums describing whether a source coding was successfully mapped, the machine-readable failure reason, and the resolution strategy (direct or UMLS bridge).
+- **`MappingPath`** — new type representing a single hop in the resolution path, exposing source concept ID, vocabulary, code, and CUI, with a staged builder.
+- **`MappingEntry.getResolution()`** — new optional `MappingResolution` field (with builder support) describing how a source coding was resolved during FHIR-to-OMOP conversion.
+- **`MeasurementRow.getUnitSourceConceptId()`** — new optional field (with builder support) carrying the OMOP source concept ID for the coded UCUM unit.
+
+### Changed
+- **`MappingEntry.getMappingStatus()` and `MappingEntry.getNote()` Javadoc** — expanded to cover target-domain mismatches, ambiguity, output table details, and `DOMAIN_MISMATCH` outcomes beyond simple missing mappings.
+- **`MeasurementRow.getMeasurementDate()` Javadoc** — updated to reflect that the start date is selected by timing rules across multiple resource types, not only Observation.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
