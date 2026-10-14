@@ -80,7 +80,19 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return One entry per supported source coding from a resource that shaped a row (or one entry for a text-only primary resource with no coding), describing how it resolved and linking back to the row it produced. A coded route or Observation valueCodeableConcept is a separate entry linked to its medication, vaccine, or observation row. A Patient demographic code links to its person row, or to its <code>observation</code> race row when the person has more than one race.
+     * @return One entry per supported source coding from a resource that shaped a
+     * row, plus entries for text-only primary resources and supplied
+     * Quantity units without coding, describing each resolution outcome
+     * and linking it to its row.
+     * A coded route or Observation valueCodeableConcept is a separate
+     * entry linked to the output row. Observation values returned outside
+     * <code>measurement</code> / <code>observation</code> are preserved here without concept
+     * resolution or a corresponding row column.
+     * For Observations returned as measurement or observation rows, each
+     * supplied Quantity unit has a separate entry linked to that row;
+     * absent units have no entry.
+     * A Patient demographic code links to its person row, or to its
+     * <code>observation</code> race row when the person has more than one race.
      */
     @JsonProperty("mappings")
     public Optional<List<MappingEntry>> getMappings() {
@@ -121,10 +133,20 @@ public final class CreateOmopResponse {
      * Missing optional references are normal and do not produce a diagnostic.
      * References resolve only against resources supplied in this request.
      * Outcomes distinguish unresolved, ambiguous, conflicting, and unsupported
-     * references. Patient demographic extensions that conflict, or a birth
-     * sex without <code>valueCode</code>, are also reported here; their <code>path</code> is
+     * conditions as defined in <code>ReferenceDiagnostic.outcome</code>. Patient
+     * demographic extensions that conflict, or a birth sex without
+     * <code>valueCode</code>, are also reported here; their <code>path</code> is
      * <code>extension:birthsex</code> or <code>extension:ethnicity</code> and they have no
-     * <code>reference</code>.
+     * <code>reference</code>. Practitioner identity conflicts that prevent merging also
+     * have no <code>reference</code>: their paths are <code>name</code>, <code>gender</code>, <code>birthDate</code>, or
+     * <code>identifier</code>, their outcome is <code>CONFLICTING</code>, and <code>omop_table: provider</code>
+     * together with <code>omop_id</code> identifies the affected row. For a conflicting
+     * NPI group, every member is flagged, including members missing the conflicting attribute.
+     * The reason identifies the differing mapped attribute and explains why
+     * the entire group remains separate, rather than asserting that each
+     * member individually supplied a conflicting value.
+     * Multiple distinct NPIs on one Practitioner are also diagnosed at
+     * <code>identifier</code> with <code>omop_table: provider</code> and the retained row's <code>omop_id</code>.
      */
     @JsonProperty("diagnostics")
     public Optional<List<ReferenceDiagnostic>> getDiagnostics() {
@@ -133,7 +155,7 @@ public final class CreateOmopResponse {
 
     /**
      * @return The OMOP vocabulary release used for coded concept resolution
-     * (for example, &quot;v20260227&quot;), for reproducibility. Omitted when no
+     * (for example, &quot;v20260829&quot;), for reproducibility. Omitted when no
      * vocabulary resolution was performed.
      */
     @JsonProperty("vocab_version")
@@ -264,7 +286,19 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>One entry per supported source coding from a resource that shaped a row (or one entry for a text-only primary resource with no coding), describing how it resolved and linking back to the row it produced. A coded route or Observation valueCodeableConcept is a separate entry linked to its medication, vaccine, or observation row. A Patient demographic code links to its person row, or to its <code>observation</code> race row when the person has more than one race.</p>
+         * <p>One entry per supported source coding from a resource that shaped a
+         * row, plus entries for text-only primary resources and supplied
+         * Quantity units without coding, describing each resolution outcome
+         * and linking it to its row.
+         * A coded route or Observation valueCodeableConcept is a separate
+         * entry linked to the output row. Observation values returned outside
+         * <code>measurement</code> / <code>observation</code> are preserved here without concept
+         * resolution or a corresponding row column.
+         * For Observations returned as measurement or observation rows, each
+         * supplied Quantity unit has a separate entry linked to that row;
+         * absent units have no entry.
+         * A Patient demographic code links to its person row, or to its
+         * <code>observation</code> race row when the person has more than one race.</p>
          */
         @JsonSetter(value = "mappings", nulls = Nulls.SKIP)
         public Builder mappings(Optional<List<MappingEntry>> mappings) {
@@ -323,10 +357,20 @@ public final class CreateOmopResponse {
          * Missing optional references are normal and do not produce a diagnostic.
          * References resolve only against resources supplied in this request.
          * Outcomes distinguish unresolved, ambiguous, conflicting, and unsupported
-         * references. Patient demographic extensions that conflict, or a birth
-         * sex without <code>valueCode</code>, are also reported here; their <code>path</code> is
+         * conditions as defined in <code>ReferenceDiagnostic.outcome</code>. Patient
+         * demographic extensions that conflict, or a birth sex without
+         * <code>valueCode</code>, are also reported here; their <code>path</code> is
          * <code>extension:birthsex</code> or <code>extension:ethnicity</code> and they have no
-         * <code>reference</code>.</p>
+         * <code>reference</code>. Practitioner identity conflicts that prevent merging also
+         * have no <code>reference</code>: their paths are <code>name</code>, <code>gender</code>, <code>birthDate</code>, or
+         * <code>identifier</code>, their outcome is <code>CONFLICTING</code>, and <code>omop_table: provider</code>
+         * together with <code>omop_id</code> identifies the affected row. For a conflicting
+         * NPI group, every member is flagged, including members missing the conflicting attribute.
+         * The reason identifies the differing mapped attribute and explains why
+         * the entire group remains separate, rather than asserting that each
+         * member individually supplied a conflicting value.
+         * Multiple distinct NPIs on one Practitioner are also diagnosed at
+         * <code>identifier</code> with <code>omop_table: provider</code> and the retained row's <code>omop_id</code>.</p>
          */
         @JsonSetter(value = "diagnostics", nulls = Nulls.SKIP)
         public Builder diagnostics(Optional<List<ReferenceDiagnostic>> diagnostics) {
@@ -341,7 +385,7 @@ public final class CreateOmopResponse {
 
         /**
          * <p>The OMOP vocabulary release used for coded concept resolution
-         * (for example, &quot;v20260227&quot;), for reproducibility. Omitted when no
+         * (for example, &quot;v20260829&quot;), for reproducibility. Omitted when no
          * vocabulary resolution was performed.</p>
          */
         @JsonSetter(value = "vocab_version", nulls = Nulls.SKIP)
