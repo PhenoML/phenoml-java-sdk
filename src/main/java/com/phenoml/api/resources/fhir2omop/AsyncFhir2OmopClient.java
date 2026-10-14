@@ -55,24 +55,68 @@ public class AsyncFhir2OmopClient {
      * first address can produce <code>location</code>, and more than one supplied race
      * produces <code>observation</code> race rows (see Patient demographics below)</li>
      * <li><code>observation_period</code> -&gt; one request-local derived row per person,
-     * spanning the populated dates of that person's visit, clinical, and
-     * death rows; this is not enrollment or capture-completeness evidence</li>
+     * spanning dates from that person's visit, clinical, and death records,
+     * including source end dates even when the output table has no end column;
+     * this is not enrollment or capture-completeness evidence</li>
      * <li><code>Location</code> -&gt; <code>location</code> and <code>care_site</code></li>
      * <li><code>Organization</code> -&gt; <code>care_site</code>; its first address can produce <code>location</code></li>
      * <li><code>HealthcareService</code> -&gt; <code>care_site</code></li>
      * <li><code>Practitioner</code> and <code>PractitionerRole</code> -&gt; <code>provider</code></li>
      * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
-     * <li><code>Condition</code> -&gt; <code>condition_occurrence</code></li>
-     * <li><code>Procedure</code> -&gt; <code>procedure_occurrence</code></li>
+     * <li><code>Condition</code> -&gt; domain-selected clinical table; default <code>condition_occurrence</code></li>
+     * <li><code>Procedure</code> -&gt; domain-selected clinical table; default <code>procedure_occurrence</code></li>
      * <li><code>MedicationRequest</code>, <code>MedicationStatement</code>, and
-     * <code>MedicationAdministration</code> -&gt; <code>drug_exposure</code></li>
-     * <li><code>Immunization</code> -&gt; <code>drug_exposure</code></li>
-     * <li><code>Observation</code> -&gt; <code>measurement</code> or <code>observation</code>. For coded
-     * Observations, the resolved OMOP concept domain selects the table; value
-     * form only breaks ties. For text-only Observations, numeric values route
+     * <code>MedicationAdministration</code> -&gt; domain-selected clinical table; default <code>drug_exposure</code></li>
+     * <li><code>Immunization</code> -&gt; domain-selected clinical table; default <code>drug_exposure</code></li>
+     * <li><code>Observation</code> -&gt; domain-selected clinical table. Numeric values prefer
+     * <code>measurement</code> and other values prefer <code>observation</code> when the code is
+     * valid for both tables.
+     * For text-only Observations, numeric values route
      * to <code>measurement</code> and nonnumeric values to <code>observation</code>.</li>
-     * <li><code>AllergyIntolerance</code> -&gt; <code>observation</code></li>
+     * <li><code>AllergyIntolerance</code> -&gt; domain-selected clinical table excluding
+     * <code>drug_exposure</code>; default <code>observation</code></li>
      * </ul>
+     * <p>Clinical placement follows the informative Vulcan IG's vocabulary-driven
+     * domain assignment. Supported destinations are <code>condition_occurrence</code>,
+     * <code>procedure_occurrence</code>, <code>drug_exposure</code>, <code>measurement</code>, and <code>observation</code>.
+     * Coded clinical records are returned in the table corresponding to the
+     * domain of their mapped OMOP standard concept. The source resource
+     * determines eligibility, field values, and the default table when no
+     * supported mapping is available.
+     * Allergy substance codes must not create drug exposures.</p>
+     * <p>For example, a Condition coded with ICD10CM <code>Z79.4</code> can produce a mapped
+     * <code>observation</code> row. <code>Z86.73</code> and ICD-O-3 <code>8140/3</code> also map to concepts in
+     * the Observation domain. Use <code>mappings.omop_table</code> and <code>mappings.omop_id</code>
+     * to locate each result; the FHIR resource type alone does not determine
+     * the output table.</p>
+     * <p>Clinical rows include available person/visit/provider links, concept and
+     * source concept IDs, source value, source type provenance, and start
+     * timing. Dates follow the source resource's timing rules below, regardless
+     * of the output table. For example, a Condition follows its
+     * <code>onset[x]</code> / <code>recordedDate</code> timing rule even when returned as an
+     * <code>observation</code>. End dates are populated only in tables with end columns;
+     * they also contribute to the request-local observation period when the
+     * output table has no end column.</p>
+     * <p>Source-specific fields are populated only for the corresponding source
+     * and destination: Condition status in <code>condition_occurrence</code>, medication
+     * dosage/supply and Immunization lot details in <code>drug_exposure</code>, and
+     * Observation values/units/ranges in <code>measurement</code> or <code>observation</code> where
+     * those columns exist. Mapping notes explain the output table and which
+     * fields are populated. Coded medication/immunization routes on rows outside
+     * <code>drug_exposure</code>, and Observation values on rows outside <code>measurement</code> /
+     * <code>observation</code>, are retained in <code>mappings</code> linked to the output row, with
+     * <code>omop_field</code> omitted and <code>selected: false</code>. Coded routes are checked
+     * against the OMOP Route domain; those Observation values are preserved
+     * without concept resolution.</p>
+     * <p>Device and Note destinations are unsupported. If no standard concept
+     * valid for a supported destination is found, the resource produces a row
+     * in its default table with concept and source concept IDs of <code>0</code> and
+     * <code>UNMAPPED</code> status. A <code>DOMAIN_MISMATCH</code> outcome is identified in the mapping
+     * note. For example, a Procedure coded with HCPCS <code>C5271</code> produces a partial
+     * <code>procedure_occurrence</code> row because its mapped domain is Device. Text-only
+     * inputs use their default tables. A resource produces one clinical row
+     * even when its code has multiple vocabulary mapping targets. Vocabulary
+     * <code>Maps to value</code> mappings are not applied.</p>
      * <p><code>Medication</code> is reference data for medication resources; it does not
      * create its own row because OMOP CDM has no Medication table. Administrative
      * linkages (provider, care site, and location) are best-effort and limited to
@@ -84,15 +128,45 @@ public class AsyncFhir2OmopClient {
      * gender remain unmapped. <code>Address.country</code> is resolved to <code>location.country_concept_id</code>,
      * and CMS Place of Service codings in <code>Location.type</code> are resolved to
      * <code>care_site.place_of_service_concept_id</code>.
+     * Within one request, Practitioners with the same single distinct non-empty
+     * NPI under <code>http://hl7.org/fhir/sid/us-npi</code> merge into one provider row only
+     * when all supplied mapped identity attributes in the entire NPI group agree.
+     * This includes Practitioners contained in valid role references. System and
+     * value matches are exact; other identifier systems and names do not trigger
+     * a merge. Missing attributes can enrich a compatible merged row.
+     * Compatibility compares the name rendered from each Practitioner's first
+     * <code>name</code> entry, its gender, its first non-empty DEA identifier, and its parsed
+     * birth year. Differences in birth month/day within one year do not conflict.
+     * Rendered names are compared exactly: <code>Jane Smith</code> and <code>Dr. Jane Smith</code>
+     * conflict even when they share an NPI.
+     * If any of these attributes conflict, every resource in that NPI group stays
+     * separate, including resources missing the conflicting attribute. Source
+     * attributes and unambiguous structural reference links are preserved; no
+     * conflicting value is selected. Each affected row has <code>CONFLICTING</code>
+     * diagnostics at <code>name</code>, <code>gender</code>, <code>identifier</code>, or <code>birthDate</code>, linked by
+     * <code>omop_table: provider</code> and <code>omop_id</code>. All source gender mappings link to
+     * their retained or merged provider row.
+     * Repeated copies of one NPI on a resource are allowed. A resource with
+     * multiple distinct NPIs stays separate, leaves <code>npi</code> unset, preserves its
+     * source-resource identity in <code>provider_source_value</code>, and reports a
+     * <code>CONFLICTING</code> diagnostic at <code>identifier</code> linked by
+     * <code>omop_table: provider</code> and <code>omop_id</code>.
+     * Row IDs are per response. The API does not merge across requests. For a
+     * Practitioner with one NPI, <code>provider_source_value</code> is that NPI, even when
+     * its group conflicts. Consumers can use it to deduplicate compatible
+     * providers across requests, but must preserve rows flagged by identity
+     * conflict diagnostics and check compatibility across responses. Without
+     * one unambiguous NPI, source-resource identity is preserved without a
+     * person-level deduplication guarantee.
      * A <code>PractitionerRole</code> that identifies one supplied <code>Practitioner</code> aliases
      * that canonical provider: by a top-level structural reference, a
      * parent-contained <code>#id</code> reference, or an exact <code>identifier.system</code> and
      * <code>identifier.value</code> match against a top-level Practitioner. No remote
      * identifier lookup is performed. When <code>Reference.type</code> is present it must
-     * be <code>Practitioner</code>; duplicate contained IDs and identifier matches are
-     * ambiguous. An explicit reference that is unresolved, ambiguous, or
-     * unsupported retains a role-fallback provider row and is returned in
-     * <code>diagnostics</code>. <code>provider_role_contexts</code> preserves role-specific
+     * be <code>Practitioner</code>; duplicate contained IDs and identifier matches to
+     * different canonical providers are ambiguous. An explicit reference that
+     * is unresolved, ambiguous, or unsupported retains a role-fallback provider
+     * row and is returned in <code>diagnostics</code>. <code>provider_role_contexts</code> preserves role-specific
      * specialty and care-site context that a canonical OMOP provider row cannot
      * represent together.</p>
      * <p>Patient demographics:</p>
@@ -170,9 +244,9 @@ public class AsyncFhir2OmopClient {
      * reference that is unresolved, ambiguous, or unsupported drops the clinical
      * resource in every request scope.</p>
      * <p>Eligibility distinguishes clinical validity, performed/taken evidence, and
-     * administrative workflow state. Checks run before terminology resolution;
-     * entered-in-error and explicitly non-performed events never produce a positive
-     * clinical-event row, and an unrecognized required status fails closed. Condition
+     * administrative workflow state. Entered-in-error and explicitly
+     * non-performed events never produce a positive clinical-event row, and
+     * an unrecognized required status fails closed. Condition
      * requires absent or confirmed canonical-HL7 <code>verificationStatus</code>; clinical course is not a
      * diagnosis-role mapping. Procedures accept completed or stopped events.
      * Medication requests are prescription evidence only: <code>doNotPerform</code>, drafts,
@@ -192,27 +266,74 @@ public class AsyncFhir2OmopClient {
      * accepts arrived, triaged, in-progress, onleave, or finished status, but drops
      * planned, cancelled, entered-in-error, unknown, and missing statuses. An eligible
      * encounter without <code>Period.end</code> remains a partial visit; no end date is invented.</p>
-     * <p>Coded Observation routing is selected from the resolved OMOP concept
-     * domain. Numeric and nonnumeric <code>value[x]</code> forms establish the preferred
-     * target only when the code is valid for both tables. A text-only
-     * Observation has no resolver target, so numeric values route to
-     * <code>measurement</code> and nonnumeric values to <code>observation</code>. Numeric values
-     * populate <code>value_as_number</code> in the selected row; other non-coded values
+     * <p>The mapped OMOP concept's domain determines the clinical output table.
+     * For Observations, numeric and nonnumeric <code>value[x]</code> forms determine the
+     * preferred table only when the code is valid for both <code>measurement</code> and
+     * <code>observation</code>. Text-only Observations produce <code>measurement</code> rows for
+     * numeric values and <code>observation</code> rows for other values. In these two
+     * tables, numeric values populate <code>value_as_number</code>; other non-coded values
      * populate <code>value_as_string</code> for an <code>observation</code> or <code>value_source_value</code>
      * for a <code>measurement</code>. Coded <code>valueCodeableConcept</code> values are resolved
-     * against the selected row's <code>value_as_concept_id</code> and use the selected
+     * against <code>value_as_concept_id</code> in these tables and use the selected
      * bare code in <code>value_source_value</code>, leaving an <code>observation</code>'s
      * <code>value_as_string</code> empty; unmapped or target-invalid coded values remain
-     * <code>0</code>.
+     * <code>0</code>. Active standard concepts from any OMOP domain are valid for
+     * <code>value_as_concept_id</code> per CDM 5.4. For example, a blood-culture Measurement
+     * can record <em>Staphylococcus aureus</em> as its coded result, even though the
+     * organism concept belongs to OMOP's Observation domain.
+     * For other clinical output tables, Observation values are retained only
+     * in <code>mappings</code>, without concept resolution or an <code>omop_field</code>, and with
+     * <code>selected: false</code>.
      * Other unsupported <code>value[x]</code> forms and Observation components do not
      * populate separate converted values. A
      * numeric comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) is represented only by a
-     * measurement's <code>operator_concept_id</code>; units remain source text and have
-     * <code>unit_concept_id</code> of <code>0</code>.</p>
+     * measurement's <code>operator_concept_id</code>.</p>
+     * <p>For Observations returned as <code>measurement</code> or <code>observation</code> rows,
+     * Quantity units resolve independently against the table's
+     * <code>unit_concept_id</code>. Other clinical output tables have no unit columns;
+     * their units are not resolved or included as separate mapping outcomes.
+     * Only coded UCUM (<code>http://unitsofmeasure.org</code> or its
+     * OID <code>2.16.840.1.113883.6.8</code>, bare or <code>urn:oid:</code>) is supported. Codes are
+     * case-sensitive: no spelling aliases, text-only guesses, or numeric
+     * conversion are applied. Coded UCUM units map to valid standard OMOP
+     * Unit concepts using the release selected by <code>vocab_version</code> (default
+     * <code>v20260227</code> when omitted or empty). Mappings are direct or follow an
+     * active OMOP <code>Maps to</code> relationship; UCUM units do not use a UMLS bridge.
+     * Unknown codes,
+     * vocabulary gaps, text-only units, missing coding, and unsupported
+     * systems keep the row and use <code>0</code>; absent units use JSON <code>null</code> (the
+     * field is present). Explicit dimensionless code <code>1</code> is a supplied unit
+     * and resolves or remains <code>0</code>; it is never treated as absent.
+     * <code>unit_source_value</code> contains Quantity.code when supplied, otherwise
+     * Quantity.unit. A separate unit <code>mappings</code> entry preserves the original
+     * Quantity.system/code in <code>source_system</code>/<code>source_code</code> and the exact
+     * human-readable Quantity.unit in <code>source_name</code>, with its own outcome.
+     * Quantity.unit provides display text and does not affect unit matching.
+     * Measurement also returns nullable <code>unit_source_concept_id</code>, identifying
+     * the OMOP source concept for Quantity.system/code when available,
+     * otherwise <code>0</code> for a supplied unit.
+     * Observation has no such column. Resolving a unit does not change
+     * numeric values, comparators, or reference ranges.
+     * Supported coded UCUM units include <code>resolution</code> in their mappings,
+     * whether the unit resolves or remains unmapped:
+     * its outcome and reason code distinguish vocabulary gaps, target-domain
+     * mismatches, and ambiguity. Unresolved or ambiguous units retain the row
+     * with concept ID <code>0</code>. Resolved mappings retain the selected concept's
+     * direct or crosswalk provenance. Text-only units, units with missing
+     * coding, and unsupported unit systems omit <code>resolution</code>; their <code>note</code>
+     * explains the unmapped outcome.</p>
+     * <p>Compatibility: absent <code>unit_concept_id</code> values previously returned <code>0</code>
+     * and now return <code>null</code>. Coded units use their code in <code>unit_source_value</code>
+     * rather than their human-readable text; the text remains in <code>mappings</code>.
+     * The Measurement <code>unit_source_concept_id</code> field is new.</p>
      * <p>A standard OMOP <code>concept_id</code> is selected for each eligible primary clinical coding
      * after considering all of the resource's supplied codings. An unambiguous
-     * coded medication route is resolved independently to
-     * <code>drug_exposure.route_concept_id</code>. Alongside the OMOP rows grouped by
+     * coded medication or immunization route is checked independently against
+     * the OMOP Route domain. For <code>drug_exposure</code> rows, <code>route_concept_id</code>
+     * contains the resolved concept ID, or <code>0</code> if unmapped; for other output
+     * tables the route is reported only in
+     * <code>mappings</code>, without <code>omop_field</code> and with <code>selected: false</code>.
+     * Alongside the OMOP rows grouped by
      * table (<code>tables</code>), the response carries <code>mappings</code> (an entry for every
      * supported source coding from a resource that shaped a row, linked back to
      * that row; some, such
@@ -220,28 +341,30 @@ public class AsyncFhir2OmopClient {
      * <code>provider_role_contexts</code> (source role details linked to provider rows),
      * <code>dropped</code> (resources that could not be shaped into a row),
      * <code>diagnostics</code> (explicit references that could not safely create a link,
-     * and conflicting or unsupported Patient demographic extensions),
+     * conflicting Practitioner identity attributes, conflicting or unsupported
+     * Patient demographic extensions, and conflicting Encounter classifications),
      * <code>vocab_version</code> (the OMOP vocabulary release codes were resolved
      * against), and a small <code>summary</code> of the resolution outcomes.</p>
      * <p>A <code>concept_id</code> of <code>0</code> is reported, not omitted (OMOP &quot;no matching
      * concept&quot; semantics): it covers both a coding with no standard match
      * (<code>UNMAPPED</code>) and an unverified suggestion for a text-only resource
-     * (<code>UNCHECKED</code>). Visit and unit concept fields currently remain <code>0</code>;
-     * Person demographics and Provider recorded gender follow the policies
-     * above. Coded Observation values may populate <code>value_as_concept_id</code>.
-     * Concepts set by a fixed convention rather than terminology resolution
-     * are measurement <code>operator_concept_id</code>, set from a value comparator (<code>&lt;</code>,
-     * <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>), and the multiple-race concepts described above. Clinical
-     * <code>*_source_value</code> fields contain the selected FHIR code (or source text
-     * for text-only resources).
+     * (<code>UNCHECKED</code>). Supported <code>Encounter.class</code> or <code>Encounter.type</code> values
+     * may populate <code>visit_concept_id</code>. Person demographics and Provider
+     * recorded gender follow the policies above.
+     * Coded Observation values may populate <code>value_as_concept_id</code>.
+     * Measurement <code>operator_concept_id</code> represents a value comparator (<code>&lt;</code>,
+     * <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>); multiple-race concepts follow the conventions described
+     * above. Clinical <code>*_source_value</code> fields contain the selected FHIR code
+     * (or source text for text-only resources).
      * The corresponding selected <code>mappings</code> entry preserves the coding system
      * and full source-coding provenance.
      * Known OID-form coding systems are accepted as either FHIR OID URNs (for
      * example, <code>urn:oid:2.16.840.1.113883.6.1</code> for LOINC) or bare OIDs, and
-     * are normalized to their canonical system URLs before terminology
-     * resolution. <code>mappings[].source_system</code> reports that canonical URL, so the
-     * OID and URL forms produce the same mapping. An unknown OID is not
-     * rewritten and may be <code>UNMAPPED</code>.
+     * produce the same mappings as their canonical system URLs. Coding
+     * mappings report that canonical URL in <code>source_system</code>; Quantity unit
+     * mappings preserve the original Quantity.system, including OID spelling.
+     * An unknown OID remains unchanged in <code>source_system</code> and may be
+     * <code>UNMAPPED</code>.
      * Other <code>*_source_value</code> fields preserve row-specific raw source values,
      * such as resource identifiers, names, units, or status codes.
      * <code>MedicationRequest</code> uses <code>32838</code> (EHR prescription) for
@@ -272,7 +395,10 @@ public class AsyncFhir2OmopClient {
      * MedicationAdministration is an eligibility exception: it needs a supplied
      * effective start as evidence that administration began.</li>
      * </ul>
-     * <p>Timing sources, in priority order where several are listed:</p>
+     * <p>Timing sources, in priority order where several are listed. These rules
+     * apply regardless of the clinical output table; end dates are populated
+     * only where the table has an end column, and <code>verbatim_end_date</code> is set
+     * only for medication resources returned as <code>drug_exposure</code> rows:</p>
      * <ul>
      * <li><code>Patient</code>: <code>birthDate</code> sets <code>year_of_birth</code>, <code>month_of_birth</code>, and
      * <code>day_of_birth</code> from the parts it supplies; <code>birth_datetime</code> is not
@@ -305,7 +431,7 @@ public class AsyncFhir2OmopClient {
      * AllergyIntolerance falls back to its onset when <code>recordedDate</code> is
      * missing.</li>
      * </ul>
-     * <p>Medication details:</p>
+     * <p>Medication details for resources returned as <code>drug_exposure</code> rows:</p>
      * <ul>
      * <li>For <code>MedicationRequest</code>, <code>dispenseRequest.numberOfRepeatsAllowed</code> sets
      * <code>refills</code> and a whole-day <code>expectedSupplyDuration</code> sets <code>days_supply</code>.</li>
@@ -314,6 +440,51 @@ public class AsyncFhir2OmopClient {
      * the OMOP Route domain. Conflicting routes are left unset; route
      * codings shared by every dosage instruction identify the same route.</li>
      * <li><code>Immunization.lotNumber</code> is preserved in <code>lot_number</code>.</li>
+     * </ul>
+     * <p>Encounter details:</p>
+     * <ul>
+     * <li>
+     * <p>Encounter classifications must supply both <code>Coding.system</code> and
+     * <code>Coding.code</code> to map to a standard OMOP Visit concept. For HL7
+     * encounter class codes with system
+     * <code>http://terminology.hl7.org/CodeSystem/v3-ActCode</code> or
+     * <code>http://hl7.org/fhir/v3/ActCode</code>, the supported mappings are:</p>
+     * <ul>
+     * <li><code>IMP</code> (inpatient encounter) -&gt; 9201 (Inpatient Visit)</li>
+     * <li><code>AMB</code> (ambulatory encounter) -&gt; 9202 (Outpatient Visit)</li>
+     * <li><code>EMER</code> (emergency encounter) -&gt; 9203 (Emergency Room Visit)</li>
+     * <li><code>VR</code> (virtual encounter) -&gt; 722455 (Telehealth)</li>
+     * <li><code>HH</code> (home health encounter) -&gt; 581476 (Home Visit)</li>
+     * </ul>
+     * <p><code>OBSENC</code> (observation encounter) has no direct class mapping. Other
+     * class or type codes can be used when they have a valid standard OMOP
+     * Visit mapping in the selected vocabulary release. Unsupported
+     * classifications retain <code>visit_concept_id</code> of <code>0</code> unless a supported
+     * type supplies the Visit as described below; they never default to
+     * outpatient.</p>
+     * </li>
+     * <li>
+     * <p>A mapped <code>Encounter.class</code> determines <code>visit_concept_id</code>. A mapped
+     * type that disagrees with it produces a <code>CONFLICTING</code> diagnostic with
+     * path <code>class/type</code>, while the class mapping remains selected.
+     * If class is missing or unmapped, type supplies the Visit only when
+     * all mapped type classifications agree on the same standard Visit
+     * concept. Codings within one type CodeableConcept are alternative
+     * encodings of that classification. When separate type classifications
+     * map to different Visit concepts, no type is selected,
+     * <code>visit_concept_id</code> remains <code>0</code>, and a <code>CONFLICTING</code> diagnostic has
+     * path <code>type</code>.</p>
+     * </li>
+     * <li>
+     * <p><code>visit_source_value</code> contains the selected class or type code;
+     * <code>mappings</code> preserves its coding system and identifies which
+     * classification was selected. <code>visit_source_concept_id</code> identifies
+     * the selected original source coding's OMOP concept when available,
+     * and is <code>0</code> otherwise, including for the HL7 encounter class codes
+     * listed above. Each eligible Encounter produces one Visit;
+     * <code>classHistory</code>, <code>partOf</code>, and admission/discharge concepts are not
+     * mapped.</p>
+     * </li>
      * </ul>
      * <p>Medication codes are resolved whether they appear inline
      * (<code>medicationCodeableConcept</code>) or via a <code>medicationReference</code> to a contained,
@@ -379,24 +550,68 @@ public class AsyncFhir2OmopClient {
      * first address can produce <code>location</code>, and more than one supplied race
      * produces <code>observation</code> race rows (see Patient demographics below)</li>
      * <li><code>observation_period</code> -&gt; one request-local derived row per person,
-     * spanning the populated dates of that person's visit, clinical, and
-     * death rows; this is not enrollment or capture-completeness evidence</li>
+     * spanning dates from that person's visit, clinical, and death records,
+     * including source end dates even when the output table has no end column;
+     * this is not enrollment or capture-completeness evidence</li>
      * <li><code>Location</code> -&gt; <code>location</code> and <code>care_site</code></li>
      * <li><code>Organization</code> -&gt; <code>care_site</code>; its first address can produce <code>location</code></li>
      * <li><code>HealthcareService</code> -&gt; <code>care_site</code></li>
      * <li><code>Practitioner</code> and <code>PractitionerRole</code> -&gt; <code>provider</code></li>
      * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
-     * <li><code>Condition</code> -&gt; <code>condition_occurrence</code></li>
-     * <li><code>Procedure</code> -&gt; <code>procedure_occurrence</code></li>
+     * <li><code>Condition</code> -&gt; domain-selected clinical table; default <code>condition_occurrence</code></li>
+     * <li><code>Procedure</code> -&gt; domain-selected clinical table; default <code>procedure_occurrence</code></li>
      * <li><code>MedicationRequest</code>, <code>MedicationStatement</code>, and
-     * <code>MedicationAdministration</code> -&gt; <code>drug_exposure</code></li>
-     * <li><code>Immunization</code> -&gt; <code>drug_exposure</code></li>
-     * <li><code>Observation</code> -&gt; <code>measurement</code> or <code>observation</code>. For coded
-     * Observations, the resolved OMOP concept domain selects the table; value
-     * form only breaks ties. For text-only Observations, numeric values route
+     * <code>MedicationAdministration</code> -&gt; domain-selected clinical table; default <code>drug_exposure</code></li>
+     * <li><code>Immunization</code> -&gt; domain-selected clinical table; default <code>drug_exposure</code></li>
+     * <li><code>Observation</code> -&gt; domain-selected clinical table. Numeric values prefer
+     * <code>measurement</code> and other values prefer <code>observation</code> when the code is
+     * valid for both tables.
+     * For text-only Observations, numeric values route
      * to <code>measurement</code> and nonnumeric values to <code>observation</code>.</li>
-     * <li><code>AllergyIntolerance</code> -&gt; <code>observation</code></li>
+     * <li><code>AllergyIntolerance</code> -&gt; domain-selected clinical table excluding
+     * <code>drug_exposure</code>; default <code>observation</code></li>
      * </ul>
+     * <p>Clinical placement follows the informative Vulcan IG's vocabulary-driven
+     * domain assignment. Supported destinations are <code>condition_occurrence</code>,
+     * <code>procedure_occurrence</code>, <code>drug_exposure</code>, <code>measurement</code>, and <code>observation</code>.
+     * Coded clinical records are returned in the table corresponding to the
+     * domain of their mapped OMOP standard concept. The source resource
+     * determines eligibility, field values, and the default table when no
+     * supported mapping is available.
+     * Allergy substance codes must not create drug exposures.</p>
+     * <p>For example, a Condition coded with ICD10CM <code>Z79.4</code> can produce a mapped
+     * <code>observation</code> row. <code>Z86.73</code> and ICD-O-3 <code>8140/3</code> also map to concepts in
+     * the Observation domain. Use <code>mappings.omop_table</code> and <code>mappings.omop_id</code>
+     * to locate each result; the FHIR resource type alone does not determine
+     * the output table.</p>
+     * <p>Clinical rows include available person/visit/provider links, concept and
+     * source concept IDs, source value, source type provenance, and start
+     * timing. Dates follow the source resource's timing rules below, regardless
+     * of the output table. For example, a Condition follows its
+     * <code>onset[x]</code> / <code>recordedDate</code> timing rule even when returned as an
+     * <code>observation</code>. End dates are populated only in tables with end columns;
+     * they also contribute to the request-local observation period when the
+     * output table has no end column.</p>
+     * <p>Source-specific fields are populated only for the corresponding source
+     * and destination: Condition status in <code>condition_occurrence</code>, medication
+     * dosage/supply and Immunization lot details in <code>drug_exposure</code>, and
+     * Observation values/units/ranges in <code>measurement</code> or <code>observation</code> where
+     * those columns exist. Mapping notes explain the output table and which
+     * fields are populated. Coded medication/immunization routes on rows outside
+     * <code>drug_exposure</code>, and Observation values on rows outside <code>measurement</code> /
+     * <code>observation</code>, are retained in <code>mappings</code> linked to the output row, with
+     * <code>omop_field</code> omitted and <code>selected: false</code>. Coded routes are checked
+     * against the OMOP Route domain; those Observation values are preserved
+     * without concept resolution.</p>
+     * <p>Device and Note destinations are unsupported. If no standard concept
+     * valid for a supported destination is found, the resource produces a row
+     * in its default table with concept and source concept IDs of <code>0</code> and
+     * <code>UNMAPPED</code> status. A <code>DOMAIN_MISMATCH</code> outcome is identified in the mapping
+     * note. For example, a Procedure coded with HCPCS <code>C5271</code> produces a partial
+     * <code>procedure_occurrence</code> row because its mapped domain is Device. Text-only
+     * inputs use their default tables. A resource produces one clinical row
+     * even when its code has multiple vocabulary mapping targets. Vocabulary
+     * <code>Maps to value</code> mappings are not applied.</p>
      * <p><code>Medication</code> is reference data for medication resources; it does not
      * create its own row because OMOP CDM has no Medication table. Administrative
      * linkages (provider, care site, and location) are best-effort and limited to
@@ -408,15 +623,45 @@ public class AsyncFhir2OmopClient {
      * gender remain unmapped. <code>Address.country</code> is resolved to <code>location.country_concept_id</code>,
      * and CMS Place of Service codings in <code>Location.type</code> are resolved to
      * <code>care_site.place_of_service_concept_id</code>.
+     * Within one request, Practitioners with the same single distinct non-empty
+     * NPI under <code>http://hl7.org/fhir/sid/us-npi</code> merge into one provider row only
+     * when all supplied mapped identity attributes in the entire NPI group agree.
+     * This includes Practitioners contained in valid role references. System and
+     * value matches are exact; other identifier systems and names do not trigger
+     * a merge. Missing attributes can enrich a compatible merged row.
+     * Compatibility compares the name rendered from each Practitioner's first
+     * <code>name</code> entry, its gender, its first non-empty DEA identifier, and its parsed
+     * birth year. Differences in birth month/day within one year do not conflict.
+     * Rendered names are compared exactly: <code>Jane Smith</code> and <code>Dr. Jane Smith</code>
+     * conflict even when they share an NPI.
+     * If any of these attributes conflict, every resource in that NPI group stays
+     * separate, including resources missing the conflicting attribute. Source
+     * attributes and unambiguous structural reference links are preserved; no
+     * conflicting value is selected. Each affected row has <code>CONFLICTING</code>
+     * diagnostics at <code>name</code>, <code>gender</code>, <code>identifier</code>, or <code>birthDate</code>, linked by
+     * <code>omop_table: provider</code> and <code>omop_id</code>. All source gender mappings link to
+     * their retained or merged provider row.
+     * Repeated copies of one NPI on a resource are allowed. A resource with
+     * multiple distinct NPIs stays separate, leaves <code>npi</code> unset, preserves its
+     * source-resource identity in <code>provider_source_value</code>, and reports a
+     * <code>CONFLICTING</code> diagnostic at <code>identifier</code> linked by
+     * <code>omop_table: provider</code> and <code>omop_id</code>.
+     * Row IDs are per response. The API does not merge across requests. For a
+     * Practitioner with one NPI, <code>provider_source_value</code> is that NPI, even when
+     * its group conflicts. Consumers can use it to deduplicate compatible
+     * providers across requests, but must preserve rows flagged by identity
+     * conflict diagnostics and check compatibility across responses. Without
+     * one unambiguous NPI, source-resource identity is preserved without a
+     * person-level deduplication guarantee.
      * A <code>PractitionerRole</code> that identifies one supplied <code>Practitioner</code> aliases
      * that canonical provider: by a top-level structural reference, a
      * parent-contained <code>#id</code> reference, or an exact <code>identifier.system</code> and
      * <code>identifier.value</code> match against a top-level Practitioner. No remote
      * identifier lookup is performed. When <code>Reference.type</code> is present it must
-     * be <code>Practitioner</code>; duplicate contained IDs and identifier matches are
-     * ambiguous. An explicit reference that is unresolved, ambiguous, or
-     * unsupported retains a role-fallback provider row and is returned in
-     * <code>diagnostics</code>. <code>provider_role_contexts</code> preserves role-specific
+     * be <code>Practitioner</code>; duplicate contained IDs and identifier matches to
+     * different canonical providers are ambiguous. An explicit reference that
+     * is unresolved, ambiguous, or unsupported retains a role-fallback provider
+     * row and is returned in <code>diagnostics</code>. <code>provider_role_contexts</code> preserves role-specific
      * specialty and care-site context that a canonical OMOP provider row cannot
      * represent together.</p>
      * <p>Patient demographics:</p>
@@ -494,9 +739,9 @@ public class AsyncFhir2OmopClient {
      * reference that is unresolved, ambiguous, or unsupported drops the clinical
      * resource in every request scope.</p>
      * <p>Eligibility distinguishes clinical validity, performed/taken evidence, and
-     * administrative workflow state. Checks run before terminology resolution;
-     * entered-in-error and explicitly non-performed events never produce a positive
-     * clinical-event row, and an unrecognized required status fails closed. Condition
+     * administrative workflow state. Entered-in-error and explicitly
+     * non-performed events never produce a positive clinical-event row, and
+     * an unrecognized required status fails closed. Condition
      * requires absent or confirmed canonical-HL7 <code>verificationStatus</code>; clinical course is not a
      * diagnosis-role mapping. Procedures accept completed or stopped events.
      * Medication requests are prescription evidence only: <code>doNotPerform</code>, drafts,
@@ -516,27 +761,74 @@ public class AsyncFhir2OmopClient {
      * accepts arrived, triaged, in-progress, onleave, or finished status, but drops
      * planned, cancelled, entered-in-error, unknown, and missing statuses. An eligible
      * encounter without <code>Period.end</code> remains a partial visit; no end date is invented.</p>
-     * <p>Coded Observation routing is selected from the resolved OMOP concept
-     * domain. Numeric and nonnumeric <code>value[x]</code> forms establish the preferred
-     * target only when the code is valid for both tables. A text-only
-     * Observation has no resolver target, so numeric values route to
-     * <code>measurement</code> and nonnumeric values to <code>observation</code>. Numeric values
-     * populate <code>value_as_number</code> in the selected row; other non-coded values
+     * <p>The mapped OMOP concept's domain determines the clinical output table.
+     * For Observations, numeric and nonnumeric <code>value[x]</code> forms determine the
+     * preferred table only when the code is valid for both <code>measurement</code> and
+     * <code>observation</code>. Text-only Observations produce <code>measurement</code> rows for
+     * numeric values and <code>observation</code> rows for other values. In these two
+     * tables, numeric values populate <code>value_as_number</code>; other non-coded values
      * populate <code>value_as_string</code> for an <code>observation</code> or <code>value_source_value</code>
      * for a <code>measurement</code>. Coded <code>valueCodeableConcept</code> values are resolved
-     * against the selected row's <code>value_as_concept_id</code> and use the selected
+     * against <code>value_as_concept_id</code> in these tables and use the selected
      * bare code in <code>value_source_value</code>, leaving an <code>observation</code>'s
      * <code>value_as_string</code> empty; unmapped or target-invalid coded values remain
-     * <code>0</code>.
+     * <code>0</code>. Active standard concepts from any OMOP domain are valid for
+     * <code>value_as_concept_id</code> per CDM 5.4. For example, a blood-culture Measurement
+     * can record <em>Staphylococcus aureus</em> as its coded result, even though the
+     * organism concept belongs to OMOP's Observation domain.
+     * For other clinical output tables, Observation values are retained only
+     * in <code>mappings</code>, without concept resolution or an <code>omop_field</code>, and with
+     * <code>selected: false</code>.
      * Other unsupported <code>value[x]</code> forms and Observation components do not
      * populate separate converted values. A
      * numeric comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) is represented only by a
-     * measurement's <code>operator_concept_id</code>; units remain source text and have
-     * <code>unit_concept_id</code> of <code>0</code>.</p>
+     * measurement's <code>operator_concept_id</code>.</p>
+     * <p>For Observations returned as <code>measurement</code> or <code>observation</code> rows,
+     * Quantity units resolve independently against the table's
+     * <code>unit_concept_id</code>. Other clinical output tables have no unit columns;
+     * their units are not resolved or included as separate mapping outcomes.
+     * Only coded UCUM (<code>http://unitsofmeasure.org</code> or its
+     * OID <code>2.16.840.1.113883.6.8</code>, bare or <code>urn:oid:</code>) is supported. Codes are
+     * case-sensitive: no spelling aliases, text-only guesses, or numeric
+     * conversion are applied. Coded UCUM units map to valid standard OMOP
+     * Unit concepts using the release selected by <code>vocab_version</code> (default
+     * <code>v20260227</code> when omitted or empty). Mappings are direct or follow an
+     * active OMOP <code>Maps to</code> relationship; UCUM units do not use a UMLS bridge.
+     * Unknown codes,
+     * vocabulary gaps, text-only units, missing coding, and unsupported
+     * systems keep the row and use <code>0</code>; absent units use JSON <code>null</code> (the
+     * field is present). Explicit dimensionless code <code>1</code> is a supplied unit
+     * and resolves or remains <code>0</code>; it is never treated as absent.
+     * <code>unit_source_value</code> contains Quantity.code when supplied, otherwise
+     * Quantity.unit. A separate unit <code>mappings</code> entry preserves the original
+     * Quantity.system/code in <code>source_system</code>/<code>source_code</code> and the exact
+     * human-readable Quantity.unit in <code>source_name</code>, with its own outcome.
+     * Quantity.unit provides display text and does not affect unit matching.
+     * Measurement also returns nullable <code>unit_source_concept_id</code>, identifying
+     * the OMOP source concept for Quantity.system/code when available,
+     * otherwise <code>0</code> for a supplied unit.
+     * Observation has no such column. Resolving a unit does not change
+     * numeric values, comparators, or reference ranges.
+     * Supported coded UCUM units include <code>resolution</code> in their mappings,
+     * whether the unit resolves or remains unmapped:
+     * its outcome and reason code distinguish vocabulary gaps, target-domain
+     * mismatches, and ambiguity. Unresolved or ambiguous units retain the row
+     * with concept ID <code>0</code>. Resolved mappings retain the selected concept's
+     * direct or crosswalk provenance. Text-only units, units with missing
+     * coding, and unsupported unit systems omit <code>resolution</code>; their <code>note</code>
+     * explains the unmapped outcome.</p>
+     * <p>Compatibility: absent <code>unit_concept_id</code> values previously returned <code>0</code>
+     * and now return <code>null</code>. Coded units use their code in <code>unit_source_value</code>
+     * rather than their human-readable text; the text remains in <code>mappings</code>.
+     * The Measurement <code>unit_source_concept_id</code> field is new.</p>
      * <p>A standard OMOP <code>concept_id</code> is selected for each eligible primary clinical coding
      * after considering all of the resource's supplied codings. An unambiguous
-     * coded medication route is resolved independently to
-     * <code>drug_exposure.route_concept_id</code>. Alongside the OMOP rows grouped by
+     * coded medication or immunization route is checked independently against
+     * the OMOP Route domain. For <code>drug_exposure</code> rows, <code>route_concept_id</code>
+     * contains the resolved concept ID, or <code>0</code> if unmapped; for other output
+     * tables the route is reported only in
+     * <code>mappings</code>, without <code>omop_field</code> and with <code>selected: false</code>.
+     * Alongside the OMOP rows grouped by
      * table (<code>tables</code>), the response carries <code>mappings</code> (an entry for every
      * supported source coding from a resource that shaped a row, linked back to
      * that row; some, such
@@ -544,28 +836,30 @@ public class AsyncFhir2OmopClient {
      * <code>provider_role_contexts</code> (source role details linked to provider rows),
      * <code>dropped</code> (resources that could not be shaped into a row),
      * <code>diagnostics</code> (explicit references that could not safely create a link,
-     * and conflicting or unsupported Patient demographic extensions),
+     * conflicting Practitioner identity attributes, conflicting or unsupported
+     * Patient demographic extensions, and conflicting Encounter classifications),
      * <code>vocab_version</code> (the OMOP vocabulary release codes were resolved
      * against), and a small <code>summary</code> of the resolution outcomes.</p>
      * <p>A <code>concept_id</code> of <code>0</code> is reported, not omitted (OMOP &quot;no matching
      * concept&quot; semantics): it covers both a coding with no standard match
      * (<code>UNMAPPED</code>) and an unverified suggestion for a text-only resource
-     * (<code>UNCHECKED</code>). Visit and unit concept fields currently remain <code>0</code>;
-     * Person demographics and Provider recorded gender follow the policies
-     * above. Coded Observation values may populate <code>value_as_concept_id</code>.
-     * Concepts set by a fixed convention rather than terminology resolution
-     * are measurement <code>operator_concept_id</code>, set from a value comparator (<code>&lt;</code>,
-     * <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>), and the multiple-race concepts described above. Clinical
-     * <code>*_source_value</code> fields contain the selected FHIR code (or source text
-     * for text-only resources).
+     * (<code>UNCHECKED</code>). Supported <code>Encounter.class</code> or <code>Encounter.type</code> values
+     * may populate <code>visit_concept_id</code>. Person demographics and Provider
+     * recorded gender follow the policies above.
+     * Coded Observation values may populate <code>value_as_concept_id</code>.
+     * Measurement <code>operator_concept_id</code> represents a value comparator (<code>&lt;</code>,
+     * <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>); multiple-race concepts follow the conventions described
+     * above. Clinical <code>*_source_value</code> fields contain the selected FHIR code
+     * (or source text for text-only resources).
      * The corresponding selected <code>mappings</code> entry preserves the coding system
      * and full source-coding provenance.
      * Known OID-form coding systems are accepted as either FHIR OID URNs (for
      * example, <code>urn:oid:2.16.840.1.113883.6.1</code> for LOINC) or bare OIDs, and
-     * are normalized to their canonical system URLs before terminology
-     * resolution. <code>mappings[].source_system</code> reports that canonical URL, so the
-     * OID and URL forms produce the same mapping. An unknown OID is not
-     * rewritten and may be <code>UNMAPPED</code>.
+     * produce the same mappings as their canonical system URLs. Coding
+     * mappings report that canonical URL in <code>source_system</code>; Quantity unit
+     * mappings preserve the original Quantity.system, including OID spelling.
+     * An unknown OID remains unchanged in <code>source_system</code> and may be
+     * <code>UNMAPPED</code>.
      * Other <code>*_source_value</code> fields preserve row-specific raw source values,
      * such as resource identifiers, names, units, or status codes.
      * <code>MedicationRequest</code> uses <code>32838</code> (EHR prescription) for
@@ -596,7 +890,10 @@ public class AsyncFhir2OmopClient {
      * MedicationAdministration is an eligibility exception: it needs a supplied
      * effective start as evidence that administration began.</li>
      * </ul>
-     * <p>Timing sources, in priority order where several are listed:</p>
+     * <p>Timing sources, in priority order where several are listed. These rules
+     * apply regardless of the clinical output table; end dates are populated
+     * only where the table has an end column, and <code>verbatim_end_date</code> is set
+     * only for medication resources returned as <code>drug_exposure</code> rows:</p>
      * <ul>
      * <li><code>Patient</code>: <code>birthDate</code> sets <code>year_of_birth</code>, <code>month_of_birth</code>, and
      * <code>day_of_birth</code> from the parts it supplies; <code>birth_datetime</code> is not
@@ -629,7 +926,7 @@ public class AsyncFhir2OmopClient {
      * AllergyIntolerance falls back to its onset when <code>recordedDate</code> is
      * missing.</li>
      * </ul>
-     * <p>Medication details:</p>
+     * <p>Medication details for resources returned as <code>drug_exposure</code> rows:</p>
      * <ul>
      * <li>For <code>MedicationRequest</code>, <code>dispenseRequest.numberOfRepeatsAllowed</code> sets
      * <code>refills</code> and a whole-day <code>expectedSupplyDuration</code> sets <code>days_supply</code>.</li>
@@ -638,6 +935,51 @@ public class AsyncFhir2OmopClient {
      * the OMOP Route domain. Conflicting routes are left unset; route
      * codings shared by every dosage instruction identify the same route.</li>
      * <li><code>Immunization.lotNumber</code> is preserved in <code>lot_number</code>.</li>
+     * </ul>
+     * <p>Encounter details:</p>
+     * <ul>
+     * <li>
+     * <p>Encounter classifications must supply both <code>Coding.system</code> and
+     * <code>Coding.code</code> to map to a standard OMOP Visit concept. For HL7
+     * encounter class codes with system
+     * <code>http://terminology.hl7.org/CodeSystem/v3-ActCode</code> or
+     * <code>http://hl7.org/fhir/v3/ActCode</code>, the supported mappings are:</p>
+     * <ul>
+     * <li><code>IMP</code> (inpatient encounter) -&gt; 9201 (Inpatient Visit)</li>
+     * <li><code>AMB</code> (ambulatory encounter) -&gt; 9202 (Outpatient Visit)</li>
+     * <li><code>EMER</code> (emergency encounter) -&gt; 9203 (Emergency Room Visit)</li>
+     * <li><code>VR</code> (virtual encounter) -&gt; 722455 (Telehealth)</li>
+     * <li><code>HH</code> (home health encounter) -&gt; 581476 (Home Visit)</li>
+     * </ul>
+     * <p><code>OBSENC</code> (observation encounter) has no direct class mapping. Other
+     * class or type codes can be used when they have a valid standard OMOP
+     * Visit mapping in the selected vocabulary release. Unsupported
+     * classifications retain <code>visit_concept_id</code> of <code>0</code> unless a supported
+     * type supplies the Visit as described below; they never default to
+     * outpatient.</p>
+     * </li>
+     * <li>
+     * <p>A mapped <code>Encounter.class</code> determines <code>visit_concept_id</code>. A mapped
+     * type that disagrees with it produces a <code>CONFLICTING</code> diagnostic with
+     * path <code>class/type</code>, while the class mapping remains selected.
+     * If class is missing or unmapped, type supplies the Visit only when
+     * all mapped type classifications agree on the same standard Visit
+     * concept. Codings within one type CodeableConcept are alternative
+     * encodings of that classification. When separate type classifications
+     * map to different Visit concepts, no type is selected,
+     * <code>visit_concept_id</code> remains <code>0</code>, and a <code>CONFLICTING</code> diagnostic has
+     * path <code>type</code>.</p>
+     * </li>
+     * <li>
+     * <p><code>visit_source_value</code> contains the selected class or type code;
+     * <code>mappings</code> preserves its coding system and identifies which
+     * classification was selected. <code>visit_source_concept_id</code> identifies
+     * the selected original source coding's OMOP concept when available,
+     * and is <code>0</code> otherwise, including for the HL7 encounter class codes
+     * listed above. Each eligible Encounter produces one Visit;
+     * <code>classHistory</code>, <code>partOf</code>, and admission/discharge concepts are not
+     * mapped.</p>
+     * </li>
      * </ul>
      * <p>Medication codes are resolved whether they appear inline
      * (<code>medicationCodeableConcept</code>) or via a <code>medicationReference</code> to a contained,

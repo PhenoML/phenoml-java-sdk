@@ -1,3 +1,15 @@
+## [18.2.0] - 2026-10-14
+### Added
+- **`MappingResolution`** — new response type describing the vocabulary resolution outcome for an OMOP mapping, including status, optional reason code, resolution strategy, ordered path steps, and a truncation flag.
+- **`MappingPath`** — new type representing a single step in a concept-mapping path, exposing mapping status, source concept ID, source vocabulary, source code, and optional UMLS CUI.
+- **`MappingResolutionStatus`**, **`MappingResolutionReasonCode`**, **`MappingResolutionVia`**, and **`MappingPathMappingStatus`** — new enums with visitor support covering all known resolution outcomes, failure reasons, bridge strategies, and path statuses.
+- **`MappingEntry.getResolution()` / `.resolution(...)`** — new optional field and builder setter exposing a `MappingResolution` alongside the existing mapping status.
+- **`MeasurementRow.getUnitSourceConceptId()` / `.unitSourceConceptId(...)`** and **`VisitOccurrenceRow.getVisitSourceConceptId()` / `.visitSourceConceptId(...)`** — new optional OMOP source concept ID fields on measurement and visit occurrence rows.
+
+### Changed
+- **`MappingEntry.getMappingStatus()` UNMAPPED description** — expanded to cover target-domain mismatches, ambiguity, and source information retained without concept resolution, in addition to missing mappings.
+- **`MeasurementRow.getMeasurementDate()` documentation** — broadened to cover timing sources for resource types beyond Observation.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.

@@ -58,7 +58,7 @@ public final class ObservationPeriodRow {
     }
 
     /**
-     * @return Earliest populated date among the person's visit, clinical, and death rows in this request; not enrollment evidence.
+     * @return Earliest date selected by the source timing rules from the person's visit, clinical, and death records in this request; not enrollment evidence.
      */
     @JsonProperty("observation_period_start_date")
     public Optional<String> getObservationPeriodStartDate() {
@@ -66,7 +66,7 @@ public final class ObservationPeriodRow {
     }
 
     /**
-     * @return Latest populated date, including end dates, among the person's visit, clinical, and death rows in this request; not enrollment evidence.
+     * @return Latest date selected by the source timing rules from the person's visit, clinical, and death records in this request, including source end dates even when the output table has no end column; not enrollment evidence.
      */
     @JsonProperty("observation_period_end_date")
     public Optional<String> getObservationPeriodEndDate() {
@@ -165,7 +165,7 @@ public final class ObservationPeriodRow {
         }
 
         /**
-         * <p>Earliest populated date among the person's visit, clinical, and death rows in this request; not enrollment evidence.</p>
+         * <p>Earliest date selected by the source timing rules from the person's visit, clinical, and death records in this request; not enrollment evidence.</p>
          */
         @JsonSetter(value = "observation_period_start_date", nulls = Nulls.SKIP)
         public Builder observationPeriodStartDate(Optional<String> observationPeriodStartDate) {
@@ -179,7 +179,7 @@ public final class ObservationPeriodRow {
         }
 
         /**
-         * <p>Latest populated date, including end dates, among the person's visit, clinical, and death rows in this request; not enrollment evidence.</p>
+         * <p>Latest date selected by the source timing rules from the person's visit, clinical, and death records in this request, including source end dates even when the output table has no end column; not enrollment evidence.</p>
          */
         @JsonSetter(value = "observation_period_end_date", nulls = Nulls.SKIP)
         public Builder observationPeriodEndDate(Optional<String> observationPeriodEndDate) {

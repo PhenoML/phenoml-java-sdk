@@ -123,7 +123,7 @@ public final class DrugExposureRow {
     }
 
     /**
-     * @return Date from the resource's timing source, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn.
+     * @return Start date selected by the source resource's timing rules, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn; see the endpoint's timing sources for all supported resources.
      */
     @JsonProperty("drug_exposure_start_date")
     public Optional<String> getDrugExposureStartDate() {
@@ -136,7 +136,7 @@ public final class DrugExposureRow {
     }
 
     /**
-     * @return Date from an explicit FHIR Period end, or the same day as the start for a single-event administration or immunization. Unset when the source supplies neither.
+     * @return End date selected by the source resource's timing rules, when available. For medication resources, an explicit effectivePeriod.end or the start date of a single-event administration or immunization; see the endpoint's timing sources for other resources.
      */
     @JsonProperty("drug_exposure_end_date")
     public Optional<String> getDrugExposureEndDate() {
@@ -407,7 +407,7 @@ public final class DrugExposureRow {
         }
 
         /**
-         * <p>Date from the resource's timing source, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn.</p>
+         * <p>Start date selected by the source resource's timing rules, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn; see the endpoint's timing sources for all supported resources.</p>
          */
         @JsonSetter(value = "drug_exposure_start_date", nulls = Nulls.SKIP)
         public Builder drugExposureStartDate(Optional<String> drugExposureStartDate) {
@@ -432,7 +432,7 @@ public final class DrugExposureRow {
         }
 
         /**
-         * <p>Date from an explicit FHIR Period end, or the same day as the start for a single-event administration or immunization. Unset when the source supplies neither.</p>
+         * <p>End date selected by the source resource's timing rules, when available. For medication resources, an explicit effectivePeriod.end or the start date of a single-event administration or immunization; see the endpoint's timing sources for other resources.</p>
          */
         @JsonSetter(value = "drug_exposure_end_date", nulls = Nulls.SKIP)
         public Builder drugExposureEndDate(Optional<String> drugExposureEndDate) {
