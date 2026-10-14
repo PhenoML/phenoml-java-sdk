@@ -1,3 +1,17 @@
+## [18.2.0] - 2026-10-14
+### Added
+- **`MappingResolution`** — new response type surfacing vocabulary resolution outcome for an OMOP mapping entry, including status, reason code, resolution path(s), and truncation flag.
+- **`MappingPath`** — new type describing a single mapping path to the selected standard concept, with source concept ID, vocabulary, code, and CUI accessors.
+- **`MappingResolutionStatus`, `MappingResolutionReasonCode`, `MappingResolutionVia`, and `MappingPathMappingStatus`** — new open-value enums covering resolution outcomes, machine-readable failure reason codes, bridge strategies, and per-path statuses.
+- **`MappingEntry.getResolution()` / `resolution(...)`** — new optional `MappingResolution` field (and builder setter) providing detailed outcome provenance for coded UCUM unit and concept mappings.
+- **`MeasurementRow.getUnitSourceConceptId()`** — new optional field returning the OMOP source concept ID for `Quantity.system/code`, with two new builder overloads (`Optional<Long>` and direct `Long`).
+
+### Changed
+- **`Fhir2OmopClient.create()`** — Practitioners sharing a distinct NPI under `http://hl7.org/fhir/sid/us-npi` now merge into a single provider row; conflicts emit `CONFLICTING` diagnostics tagged with `omop_table: provider`.
+- **`Fhir2OmopClient.create()` UCUM unit resolution** — coded UCUM units now resolve to standard OMOP Unit concepts; absent `unit_concept_id` returns `null` instead of `0`, `unit_source_value` now carries `Quantity.code` rather than human-readable text, and `MeasurementRow` includes `unit_source_concept_id`.
+- **`MappingEntryMappingStatus.UNMAPPED`** — documentation clarified to cover target-domain mismatches and ambiguity in addition to missing concept mappings.
+- **`MeasurementRow`, `ObservationRow`, and `ReferenceDiagnostic`** — Javadoc expanded on unit and outcome fields to document UCUM mapping semantics, source-value derivation rules, and all `ReferenceDiagnosticOutcome` enum values.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
