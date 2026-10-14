@@ -38,8 +38,8 @@ public final class CreateOmopRequest {
 
     /**
      * @return OMOP vocabulary release to use for coded concept resolution. If
-     * omitted or empty, the API uses its default release. Specify a
-     * release explicitly when reproducibility matters. The response's
+     * omitted or empty, the API uses its default release (<code>v20260829</code>).
+     * Specify a release explicitly when reproducibility matters. The response's
      * <code>vocab_version</code>, when present, identifies the release used.
      */
     @JsonProperty("vocab_version")
@@ -110,8 +110,8 @@ public final class CreateOmopRequest {
 
         /**
          * <p>OMOP vocabulary release to use for coded concept resolution. If
-         * omitted or empty, the API uses its default release. Specify a
-         * release explicitly when reproducibility matters. The response's
+         * omitted or empty, the API uses its default release (<code>v20260829</code>).
+         * Specify a release explicitly when reproducibility matters. The response's
          * <code>vocab_version</code>, when present, identifies the release used.</p>
          */
         @JsonSetter(value = "vocab_version", nulls = Nulls.SKIP)

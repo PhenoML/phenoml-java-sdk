@@ -52,6 +52,8 @@ public final class MeasurementRow {
 
     private final Optional<Long> measurementSourceConceptId;
 
+    private final Optional<Long> unitSourceConceptId;
+
     private final Optional<String> unitSourceValue;
 
     private final Optional<String> valueSourceValue;
@@ -75,6 +77,7 @@ public final class MeasurementRow {
             Optional<Long> providerId,
             Optional<String> measurementSourceValue,
             Optional<Long> measurementSourceConceptId,
+            Optional<Long> unitSourceConceptId,
             Optional<String> unitSourceValue,
             Optional<String> valueSourceValue,
             Map<String, Object> additionalProperties) {
@@ -94,6 +97,7 @@ public final class MeasurementRow {
         this.providerId = providerId;
         this.measurementSourceValue = measurementSourceValue;
         this.measurementSourceConceptId = measurementSourceConceptId;
+        this.unitSourceConceptId = unitSourceConceptId;
         this.unitSourceValue = unitSourceValue;
         this.valueSourceValue = valueSourceValue;
         this.additionalProperties = additionalProperties;
@@ -150,6 +154,9 @@ public final class MeasurementRow {
         return valueAsConceptId;
     }
 
+    /**
+     * @return Valid standard Unit concept for coded UCUM; 0 for supplied but unmapped units, null for absent units. Always present in JSON.
+     */
     @JsonProperty("unit_concept_id")
     public Optional<Long> getUnitConceptId() {
         return unitConceptId;
@@ -185,6 +192,17 @@ public final class MeasurementRow {
         return measurementSourceConceptId;
     }
 
+    /**
+     * @return OMOP source concept ID corresponding to Quantity.system/code; 0 for supplied units without a matching source concept, null for absent units. Always present in JSON.
+     */
+    @JsonProperty("unit_source_concept_id")
+    public Optional<Long> getUnitSourceConceptId() {
+        return unitSourceConceptId;
+    }
+
+    /**
+     * @return Original Quantity.code if supplied, otherwise Quantity.unit; human-readable unit text is preserved in the unit mapping's source_name.
+     */
     @JsonProperty("unit_source_value")
     public Optional<String> getUnitSourceValue() {
         return unitSourceValue;
@@ -223,6 +241,7 @@ public final class MeasurementRow {
                 && providerId.equals(other.providerId)
                 && measurementSourceValue.equals(other.measurementSourceValue)
                 && measurementSourceConceptId.equals(other.measurementSourceConceptId)
+                && unitSourceConceptId.equals(other.unitSourceConceptId)
                 && unitSourceValue.equals(other.unitSourceValue)
                 && valueSourceValue.equals(other.valueSourceValue);
     }
@@ -246,6 +265,7 @@ public final class MeasurementRow {
                 this.providerId,
                 this.measurementSourceValue,
                 this.measurementSourceConceptId,
+                this.unitSourceConceptId,
                 this.unitSourceValue,
                 this.valueSourceValue);
     }
@@ -293,6 +313,8 @@ public final class MeasurementRow {
 
         private Optional<Long> measurementSourceConceptId = Optional.empty();
 
+        private Optional<Long> unitSourceConceptId = Optional.empty();
+
         private Optional<String> unitSourceValue = Optional.empty();
 
         private Optional<String> valueSourceValue = Optional.empty();
@@ -319,6 +341,7 @@ public final class MeasurementRow {
             providerId(other.getProviderId());
             measurementSourceValue(other.getMeasurementSourceValue());
             measurementSourceConceptId(other.getMeasurementSourceConceptId());
+            unitSourceConceptId(other.getUnitSourceConceptId());
             unitSourceValue(other.getUnitSourceValue());
             valueSourceValue(other.getValueSourceValue());
             return this;
@@ -429,6 +452,9 @@ public final class MeasurementRow {
             return this;
         }
 
+        /**
+         * <p>Valid standard Unit concept for coded UCUM; 0 for supplied but unmapped units, null for absent units. Always present in JSON.</p>
+         */
         @JsonSetter(value = "unit_concept_id", nulls = Nulls.SKIP)
         public Builder unitConceptId(Optional<Long> unitConceptId) {
             this.unitConceptId = unitConceptId;
@@ -506,6 +532,23 @@ public final class MeasurementRow {
             return this;
         }
 
+        /**
+         * <p>OMOP source concept ID corresponding to Quantity.system/code; 0 for supplied units without a matching source concept, null for absent units. Always present in JSON.</p>
+         */
+        @JsonSetter(value = "unit_source_concept_id", nulls = Nulls.SKIP)
+        public Builder unitSourceConceptId(Optional<Long> unitSourceConceptId) {
+            this.unitSourceConceptId = unitSourceConceptId;
+            return this;
+        }
+
+        public Builder unitSourceConceptId(Long unitSourceConceptId) {
+            this.unitSourceConceptId = Optional.ofNullable(unitSourceConceptId);
+            return this;
+        }
+
+        /**
+         * <p>Original Quantity.code if supplied, otherwise Quantity.unit; human-readable unit text is preserved in the unit mapping's source_name.</p>
+         */
         @JsonSetter(value = "unit_source_value", nulls = Nulls.SKIP)
         public Builder unitSourceValue(Optional<String> unitSourceValue) {
             this.unitSourceValue = unitSourceValue;
@@ -546,6 +589,7 @@ public final class MeasurementRow {
                     providerId,
                     measurementSourceValue,
                     measurementSourceConceptId,
+                    unitSourceConceptId,
                     unitSourceValue,
                     valueSourceValue,
                     additionalProperties);
