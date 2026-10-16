@@ -68,10 +68,25 @@
       {}
     ],
     "measurement": [
-      {}
+      {
+        "unit_concept_id": null,
+        "unit_source_concept_id": null
+      }
+    ],
+    "specimen": [
+      {
+        "specimen_id": 1000000,
+        "person_id": 1000000,
+        "specimen_concept_id": 1000000,
+        "specimen_type_concept_id": 1000000,
+        "unit_concept_id": null,
+        "anatomic_site_concept_id": null
+      }
     ],
     "observation": [
-      {}
+      {
+        "unit_concept_id": null
+      }
     ]
   },
   "mappings": [
@@ -89,6 +104,9 @@
       "target_name": "FEMALE",
       "mapping_status": "MAPPED",
       "selected": true,
+      "resolution": {
+        "status": "RESOLVED"
+      },
       "note": "FHIR administrative gender; assumed sex at birth"
     },
     {
@@ -105,6 +123,9 @@
       "target_name": "Type 2 diabetes mellitus",
       "mapping_status": "ALREADY_STANDARD",
       "selected": true,
+      "resolution": {
+        "status": "RESOLVED"
+      },
       "note": "note"
     },
     {
@@ -121,7 +142,27 @@
       "target_name": "metformin hydrochloride 500 MG",
       "mapping_status": "ALREADY_STANDARD",
       "selected": true,
+      "resolution": {
+        "status": "RESOLVED"
+      },
       "note": "note"
+    }
+  ],
+  "specimen_source_contexts": [
+    {
+      "specimen_id": 1000000,
+      "resource_id": "resource_id",
+      "full_url": "full_url",
+      "status": "available",
+      "identifiers": [
+        {
+          "value": "value"
+        }
+      ],
+      "accession_identifier": {
+        "value": "value"
+      },
+      "source_id_path": "source_id_path"
     }
   ],
   "provider_role_contexts": [
@@ -168,7 +209,7 @@
       "reason": "reason"
     }
   ],
-  "vocab_version": "v20260227",
+  "vocab_version": "v20260829",
   "summary": {
     "codes_already_standard": 2,
     "codes_normalized": 1,
