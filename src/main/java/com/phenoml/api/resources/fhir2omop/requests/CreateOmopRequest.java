@@ -38,8 +38,8 @@ public final class CreateOmopRequest {
 
     /**
      * @return OMOP vocabulary release to use for coded concept resolution. If
-     * omitted or empty, the API uses its default release. Specify a
-     * release explicitly when reproducibility matters. The response's
+     * omitted or empty, the API uses its default release (<code>v20260829</code>).
+     * Specify a release explicitly when reproducibility matters. The response's
      * <code>vocab_version</code>, when present, identifies the release used.
      */
     @JsonProperty("vocab_version")
@@ -51,9 +51,9 @@ public final class CreateOmopRequest {
      * @return FHIR resources (single resource or Bundle). Must contain at least one
      * Patient resource. Supported row-producing resources are Patient,
      * Location, Organization, HealthcareService, Practitioner,
-     * PractitionerRole, Encounter, Condition, Procedure, MedicationRequest,
-     * MedicationStatement, MedicationAdministration, Immunization,
-     * Observation, and AllergyIntolerance. Standalone Medication resources
+     * PractitionerRole, Encounter, Specimen, Condition, Procedure,
+     * MedicationRequest, MedicationStatement, MedicationAdministration,
+     * Immunization, Observation, and AllergyIntolerance. Standalone Medication resources
      * are consumed by medication references rather than mapped to their own
      * table. Unsupported resource types are accepted in a Bundle but ignored.
      */
@@ -110,8 +110,8 @@ public final class CreateOmopRequest {
 
         /**
          * <p>OMOP vocabulary release to use for coded concept resolution. If
-         * omitted or empty, the API uses its default release. Specify a
-         * release explicitly when reproducibility matters. The response's
+         * omitted or empty, the API uses its default release (<code>v20260829</code>).
+         * Specify a release explicitly when reproducibility matters. The response's
          * <code>vocab_version</code>, when present, identifies the release used.</p>
          */
         @JsonSetter(value = "vocab_version", nulls = Nulls.SKIP)
@@ -129,9 +129,9 @@ public final class CreateOmopRequest {
          * <p>FHIR resources (single resource or Bundle). Must contain at least one
          * Patient resource. Supported row-producing resources are Patient,
          * Location, Organization, HealthcareService, Practitioner,
-         * PractitionerRole, Encounter, Condition, Procedure, MedicationRequest,
-         * MedicationStatement, MedicationAdministration, Immunization,
-         * Observation, and AllergyIntolerance. Standalone Medication resources
+         * PractitionerRole, Encounter, Specimen, Condition, Procedure,
+         * MedicationRequest, MedicationStatement, MedicationAdministration,
+         * Immunization, Observation, and AllergyIntolerance. Standalone Medication resources
          * are consumed by medication references rather than mapped to their own
          * table. Unsupported resource types are accepted in a Bundle but ignored.</p>
          */

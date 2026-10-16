@@ -1,3 +1,39 @@
+## [18.2.0] - 2026-10-16
+### Added
+
+- **`CreateOmopResponse.getSpecimenSourceContexts()` and `.specimenSourceContexts(...)`** — new optional field returning `Optional<List<SpecimenSourceContext>>` with source identities, availability status, and collection timing for emitted specimens, linked by request-local `specimen_id`.
+- **`MappingEntry.getResolution()` and `.resolution(...)`** — new optional `MappingResolution` field on each mapping entry providing per-entry concept resolution detail; also exposed on the `_FinalStage` builder interface.
+- **`MeasurementRow.getUnitSourceConceptId()` and `.unitSourceConceptId(...)`** — new optional `Long` field carrying the OMOP source concept ID for the supplied Quantity unit (0 for unmapped, null for absent).
+- **`VisitOccurrenceRow.getVisitSourceConceptId()`** — new optional `Long` field exposing the OMOP source concept ID for the selected `Encounter.class` or `Encounter.type` coding; returns `0` when the source coding has no OMOP source concept (including standard HL7 encounter class codes).
+- **`VisitOccurrenceRow.Builder.visitSourceConceptId(...)`** — builder setters (both `Optional<Long>` and direct `Long` overloads) for the new visit source concept field.
+- **`Fhir2OmopClient.create(...)` — `Specimen` support** — `Specimen` resources now produce `specimen` rows when an explicitly resolvable top-level Patient subject is present; missing collection date or material retains a partial row with linked diagnostics rather than being dropped.
+- **`Fhir2OmopClient.create(...)` — Encounter `visit_concept_id` resolution** — `Encounter.class` and `Encounter.type` codings now map to standard OMOP Visit concepts (`IMP`→9201, `AMB`→9202, `EMER`→9203, `VR`→722455, `HH`→581476); conflicting class/type classifications produce `CONFLICTING` diagnostics.
+- **`Fhir2OmopClient.create(...)` — UCUM unit resolution** — Observation `unit_concept_id` and `unit_source_concept_id` are now resolved against the OMOP Unit domain using coded UCUM systems; absent units return `null` instead of `0`.
+- **`MappingPath`** — new type exposing individual concept-mapping path steps (MAPPED or POLICY_MAPPED) with `mappingStatus`, `sourceConceptId`, `sourceVocabulary`, `sourceCode`, and `cui` fields, accessible via `MappingEntry`.
+- **`Specimen` support in `CreateOmopRequest`** — Specimen is now a supported row-producing FHIR resource; the FHIR-to-OMOP response includes a new `specimen_source_contexts` array (analogous to `provider_role_contexts`) identifying the source Specimen resource for each output row.
+- **`ObservationRow.getUnitConceptId()` and `.getUnitSourceValue()`** — now carry Javadoc clarifying that `unit_concept_id` is always present in JSON (0 for unmapped, null for absent) and that `unit_source_value` preserves the original `Quantity.code` or `Quantity.unit`.
+- **`ProviderRow.getNpi()`** — now documented as the single distinct source NPI, usable as a cross-request deduplication key when unambiguous.
+- **`MappingResolution`** — new response type exposing vocabulary resolution outcome (`MappingResolutionStatus`), machine-readable reason codes (`MappingResolutionReasonCode`), resolution path (`MappingResolutionVia`), mapping paths, and a truncation flag for FHIR-to-OMOP concept lookups.
+- **`MappingResolutionStatus`** — enum-like type with values `RESOLVED`, `UNRESOLVED`, `DOMAIN_MISMATCH`, and `AMBIGUOUS` describing the overall concept resolution outcome.
+- **`MappingResolutionReasonCode`** — enum-like type with values `NO_SOURCE_CODE`, `NO_OMOP_SOURCE_CONCEPT`, `NO_STANDARD_MAP`, `AMBIGUOUS`, `DOMAIN_MISMATCH`, `UNSUPPORTED_SYSTEM`, and `UNSUPPORTED_CODE` providing machine-readable explanations for unresolved mappings.
+- **`MappingResolutionVia`** and **`MappingPathMappingStatus`** — supporting types identifying how a concept was reached (`DIRECT` or `UMLS_BRIDGE`) and the per-path mapping status (`ALREADY_STANDARD`, `MAPPED`, `POLICY_MAPPED`).
+- **`OmopTables.getSpecimen()` and `OmopTables.Builder.specimen(...)`** — expose an optional list of `SpecimenRow` records in the OMOP tables response alongside existing clinical table outputs.
+- **`SpecimenCollectionPeriod`** — new type exposing the original `collectedPeriod.start` and `collectedPeriod.end` strings from a FHIR Specimen resource, without precision completion or substitution.
+- **`SpecimenCollectionTiming`** — new type grouping specimen date provenance fields (`collectedDateTime`, `collectedPeriod`, `receivedTime`, and `selectedPath`) so callers can inspect which date path was used to populate `specimen_date`.
+- **`SpecimenIdentifier`** — new staged-builder type with a required `value` and optional `system` field representing a FHIR specimen identifier on OMOP responses.
+- **`SpecimenRow`** — new OMOP CDM 5.4 specimen domain type under `com.phenoml.api.resources.fhir2omop.types` that captures material concept, collection date/time, quantity, unit, anatomic site, and source identity fields produced during FHIR-to-OMOP conversion, with a staged builder for safe construction.
+- **`SpecimenSourceContext`** — new response model under `com.phenoml.api.resources.fhir2omop.types` that surfaces FHIR Specimen provenance alongside an OMOP `specimen_id`, including optional `resourceId`, `fullUrl`, `identifiers`, `accessionIdentifier`, `sourceIdPath`, and `collectionTiming` fields.
+- **`SpecimenSourceContextStatus`** — new typed enum representing the original FHIR `Specimen.status` value (`available`, `unavailable`, `unsatisfactory`) with an open `UNKNOWN` fallback for forward compatibility; accessible via `SpecimenSourceContext.getStatus()`.
+
+### Changed
+
+- **`CreateOmopResponse.getDiagnostics()` and `getDropped()`** — documentation expanded to cover Specimen missing/unusable dates and material, Practitioner identity conflicts (name, gender, birthDate, identifier), multiple distinct NPIs, and conflicting Encounter classifications.
+- **`MappingEntry.getMappingStatus()`, `.getSelected()`, and `.getNote()`** — documentation updated to reflect specimen site entries, Quantity unit entries, domain-mismatch outcomes, and entries that preserve source information without populating a row column.
+- **`Fhir2OmopClient.create(...)` — Vulcan IG domain-driven clinical placement** — Condition, Procedure, Medication*, Immunization, and AllergyIntolerance resources now route to the OMOP table matching their mapped concept's domain rather than a fixed table; the previous default table is used when no supported domain mapping is found.
+- **`Fhir2OmopClient.create(...)` — Practitioner NPI deduplication** — Practitioners sharing a single distinct NPI are merged into one provider row when all mapped identity attributes agree; conflicting attributes keep separate rows and emit `CONFLICTING` diagnostics linked by `omop_table: provider` and `omop_id`.
+- **Date-field documentation across `ConditionOccurrenceRow`, `DrugExposureRow`, `ObservationPeriodRow`, `ObservationRow`, and `ProcedureOccurrenceRow`** — Javadoc on start/end date getters now references the endpoint's unified timing-source rules rather than listing individual FHIR element paths.
+- **`CreateOmopRequest.getVocabVersion()` documentation** — now names `v20260829` as the API's current default vocabulary release when `vocab_version` is omitted.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
