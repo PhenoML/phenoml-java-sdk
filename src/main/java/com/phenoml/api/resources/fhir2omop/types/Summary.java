@@ -60,7 +60,7 @@ public final class Summary {
     }
 
     /**
-     * @return Resolution outcomes with no standard concept found (UNMAPPED).
+     * @return Resolution outcomes with no standard concept valid for the destination selected (UNMAPPED).
      */
     @JsonProperty("codes_unmapped")
     public Optional<Integer> getCodesUnmapped() {
@@ -159,7 +159,7 @@ public final class Summary {
         }
 
         /**
-         * <p>Resolution outcomes with no standard concept found (UNMAPPED).</p>
+         * <p>Resolution outcomes with no standard concept valid for the destination selected (UNMAPPED).</p>
          */
         @JsonSetter(value = "codes_unmapped", nulls = Nulls.SKIP)
         public Builder codesUnmapped(Optional<Integer> codesUnmapped) {

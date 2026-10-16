@@ -1,3 +1,33 @@
+## [18.2.0] - 2026-10-16
+### Added
+
+- **`CreateOmopResponse.getSpecimenSourceContexts()` and `.specimenSourceContexts(...)`** — new optional field returning `Optional<List<SpecimenSourceContext>>` with source identities, availability status, and collection timing for every emitted specimen, linked by request-local `specimen_id`.
+- **`MappingEntry.getResolution()` and `.resolution(...)`** — new optional field returning `Optional<MappingResolution>` with structured concept-resolution detail for each mapping entry, including domain-mismatch and source-preservation outcomes.
+- **`MeasurementRow.getUnitSourceConceptId()` and `.unitSourceConceptId(...)`** — new optional field returning `Optional<Long>` for the OMOP source concept ID corresponding to the supplied Quantity `system`/`code`; `0` for unmapped units, `null` for absent units.
+- **`VisitOccurrenceRow.getVisitSourceConceptId()`** — new optional `Long` field exposing the OMOP source concept for the selected `Encounter.class` or `Encounter.type` coding; returns `0` when the source coding has no OMOP source concept (including standard HL7 encounter class codes).
+- **`VisitOccurrenceRow.Builder.visitSourceConceptId(...)`** — builder setters (both `Optional<Long>` and direct-value overloads) for the new visit source concept field.
+- **`MappingPath` and `MappingPathMappingStatus`** — new types exposing per-path mapping provenance on each `MappingEntry`, including `mappingStatus`, `sourceConceptId`, `sourceVocabulary`, `sourceCode`, and `cui` (UMLS bridge identifier).
+- **`Specimen` FHIR resource support** — `CreateOmopRequest` now lists `Specimen` as a supported row-producing resource; the OMOP response includes a `specimen` table and a `specimen_source_contexts` array alongside existing provider and role contexts.
+- **`ReferenceDiagnostic.omopTable()` and `omopId()`** — new optional fields identifying the affected output row (table name and primary key) within the current response when a reference diagnostic is emitted alongside an OMOP row.
+- **`MappingResolution`** — new response type exposing vocabulary resolution outcome (`MappingResolutionStatus`), an optional machine-readable reason code (`MappingResolutionReasonCode`), resolution method (`MappingResolutionVia`), mapping paths, and a truncation flag for FHIR-to-OMOP concept lookups.
+- **`MappingResolutionStatus`**, **`MappingResolutionReasonCode`**, and **`MappingResolutionVia`** — supporting enum types for `MappingResolution` covering outcomes (`RESOLVED`, `UNRESOLVED`, `DOMAIN_MISMATCH`, `AMBIGUOUS`), reason codes (`NO_SOURCE_CODE`, `NO_OMOP_SOURCE_CONCEPT`, `NO_STANDARD_MAP`, `AMBIGUOUS`, `DOMAIN_MISMATCH`, `UNSUPPORTED_SYSTEM`, `UNSUPPORTED_CODE`), and resolution methods (`DIRECT`, `UMLS_BRIDGE`).
+- **`MappingPathMappingStatus`** — new enum type with `ALREADY_STANDARD`, `MAPPED`, and `POLICY_MAPPED` values describing the mapping status of individual concept paths.
+- **`OmopTables.getSpecimen()` and `OmopTables.Builder.specimen(...)`** — adds `SpecimenRow` list support to the OMOP output tables, enabling specimen data to be read from FHIR-to-OMOP responses.
+- **`ReferenceDiagnostic.getOutcome()` and `.getReason()`** — enriched documentation describing the semantics of each diagnostic outcome (`UNRESOLVED`, `AMBIGUOUS`, `CONFLICTING`, `UNSUPPORTED`) and the purpose of the reason field.
+- **`SpecimenCollectionPeriod`** — new response type exposing the original `collectedPeriod.start` and `collectedPeriod.end` strings from a FHIR Specimen resource, preserved without precision completion.
+- **`SpecimenCollectionTiming`** — new response type capturing raw and resolved specimen collection timing provenance, including `collectedDateTime`, `collectedPeriod`, `receivedTime`, and `selectedPath` fields.
+- **`SpecimenIdentifier`** — new response type with a required `value` and optional `system` field representing a FHIR specimen identifier, built via a staged builder.
+- **`SpecimenRow`** — new OMOP CDM 5.4 specimen domain type returned by the FHIR-to-OMOP API, carrying specimen concept IDs, collection date and datetime, quantity, unit concept, anatomic site concept, source ID, and source value fields, with a staged builder for safe construction.
+- **`SpecimenSourceContext`** — new response type under `fhir2omop` that surfaces FHIR Specimen provenance alongside an OMOP `specimen_id`, including optional `resourceId`, `fullUrl`, `identifiers`, `accessionIdentifier`, `sourceIdPath`, and `collectionTiming` fields.
+- **`SpecimenSourceContextStatus`** — new enum type representing the original FHIR `Specimen.status` value (`available`, `unavailable`, `unsatisfactory`) with an `UNKNOWN` fallback for forward compatibility; supports the visitor pattern via `visit(Visitor<T>)`.
+
+### Changed
+
+- **`CreateOmopResponse.getDiagnostics()`** — documentation expanded to cover Specimen missing/unusable collection dates, material, subject, and status; Practitioner identity conflicts (name, gender, birthDate, identifier) with `CONFLICTING` outcome and `omop_table: provider`; and conflicting Encounter classifications at `class/type` or `type`.
+- **`MappingEntry.getMappingStatus()` and `.getNote()`** — documentation updated to clarify that `UNMAPPED` now includes target-domain mismatches, ambiguity, and source-information-retained entries, and that `note` describes the output table, populated fields, and `DOMAIN_MISMATCH` outcomes.
+- **`ProviderRow.getNpi()` and `getProviderSourceValue()`** — Javadoc clarifies that `npi` contains the single distinct source NPI and can be used as a cross-request deduplication key; `providerSourceValue` falls back to resource ID or an ordinal when no unambiguous NPI is present.
+- **Date field documentation across `ConditionOccurrenceRow`, `DrugExposureRow`, `ObservationPeriodRow`, `ObservationRow`, and `ProcedureOccurrenceRow`** — start/end date getters now reference generalised timing-source rules and link to the endpoint's timing-sources reference rather than listing only Condition- or Procedure-specific paths.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
