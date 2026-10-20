@@ -139,7 +139,6 @@ public final class UploadItemRequest {
 
         private Optional<String> id = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -232,6 +231,17 @@ public final class UploadItemRequest {
 
         public UploadItemRequest build() {
             return new UploadItemRequest(document, create, requestId, id, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("document")
+                    || key.equalsIgnoreCase("create")
+                    || key.equalsIgnoreCase("request_id")
+                    || key.equalsIgnoreCase("id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

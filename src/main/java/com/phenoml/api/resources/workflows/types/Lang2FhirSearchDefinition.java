@@ -138,7 +138,6 @@ public final class Lang2FhirSearchDefinition {
 
         private Optional<Map<String, String>> runtimePlaceholders = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -230,6 +229,18 @@ public final class Lang2FhirSearchDefinition {
                     requiredFields,
                     runtimePlaceholders,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("original_query")
+                    || key.equalsIgnoreCase("resource_type")
+                    || key.equalsIgnoreCase("search_parameters")
+                    || key.equalsIgnoreCase("required_fields")
+                    || key.equalsIgnoreCase("runtime_placeholders")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

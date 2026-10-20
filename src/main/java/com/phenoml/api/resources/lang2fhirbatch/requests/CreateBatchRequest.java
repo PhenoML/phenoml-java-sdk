@@ -72,7 +72,6 @@ public final class CreateBatchRequest {
     public static final class Builder {
         private Optional<String> requestId = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -100,6 +99,14 @@ public final class CreateBatchRequest {
 
         public CreateBatchRequest build() {
             return new CreateBatchRequest(requestId, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("request_id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

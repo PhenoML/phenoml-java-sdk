@@ -79,7 +79,6 @@ public final class CreateMultiResponseBundleEntryItemRequest {
 
         private Optional<String> url = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -114,6 +113,14 @@ public final class CreateMultiResponseBundleEntryItemRequest {
 
         public CreateMultiResponseBundleEntryItemRequest build() {
             return new CreateMultiResponseBundleEntryItemRequest(method, url, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("method") || key.equalsIgnoreCase("url")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

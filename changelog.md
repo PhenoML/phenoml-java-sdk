@@ -1,3 +1,21 @@
+## [18.2.0] - 2026-10-20
+### Added
+- **`SpecimenRow`, `SpecimenSourceContext`, `SpecimenCollectionTiming`, and related types** — new OMOP CDM 5.4 Specimen domain support across the FHIR-to-OMOP pipeline, including collection timing provenance, source context, and status.
+- **`MappingResolution`, `MappingPath`, and companion enums** — new types exposing structured OMOP concept-mapping resolution detail (status, reason code, resolution pathway, and ordered paths) alongside existing `mappingStatus` fields.
+- **`QuantityTransformation` and supporting types** — new response model describing how FHIR medication quantities are mapped to OMOP `drug_exposure` rows, including outcome, policy, evidence, and unit fields; accompanied by `QuantityEvidence`, `QuantityStrength`, `QuantityUnit`, and related enums.
+- **`RowForReview` and `RowForReviewReasonsItem`** — new response model identifying OMOP rows requiring human review, surfaced via `CreateOmopResponse.getRowsForReview()` and `Summary.getRowsForReview()`.
+- **`RequestOptions.addBodyProperty()` / `.bodyProperties()`** — new builder methods that inject arbitrary properties into JSON or form-urlencoded request bodies; multipart bodies are not supported.
+- **`RetryInterceptor.newAsyncCall()` and `RetryInterceptor.AsyncCall`** — new async HTTP call factory and interface that schedules retry backoff on a daemon thread, removing retrying calls from OkHttp's per-host concurrency limit.
+- **`CreateRequestResource.PHENOML_HPO_PHENOTYPIC_OBSERVATION` and `PHENOML_HPO_CONDITION`** — two new HPO-specific extraction targets for lang2fhir requests.
+- See full changelog for all changes
+
+### Changed
+- **`@JsonAnySetter` guard logic on all builder types** — known field names are now filtered before being stored in `additionalProperties` during JSON deserialization, preventing duplicate storage across all request and response builders.
+- **`ObservationPeriodRow`, `ObservationRow`, `ProcedureOccurrenceRow`, and `ProviderRow` Javadoc** — documentation updated to reflect expanded source-timing rules, UCUM unit-concept semantics, and NPI deduplication semantics.
+
+### Fixed
+- **`@JsonAnySetter` deserialization on agent builder types** — known field names such as `message`, `session_id`, and `agent_id` are no longer accidentally captured as additional properties.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.

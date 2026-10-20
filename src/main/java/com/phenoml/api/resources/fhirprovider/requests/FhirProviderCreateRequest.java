@@ -168,7 +168,6 @@ public final class FhirProviderCreateRequest {
 
         private Optional<String> description = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -242,6 +241,18 @@ public final class FhirProviderCreateRequest {
         @java.lang.Override
         public FhirProviderCreateRequest build() {
             return new FhirProviderCreateRequest(name, description, provider, baseUrl, auth, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("provider")
+                    || key.equalsIgnoreCase("base_url")
+                    || key.equalsIgnoreCase("auth")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override
