@@ -2,8 +2,8 @@
   "metadata": {
     "language": "java",
     "packageName": "com.phenoml.maven:phenoml-java-sdk",
-    "sdkVersion": "18.1.0",
-    "specCommit": "49f1258330df448935b5304a1d8c405a2834d227",
+    "sdkVersion": "18.1.1",
+    "specCommit": "ddf9d368679a65de88aafb05840703f790100796",
     "generatorName": "fernapi/fern-java-sdk"
   },
   "renderRules": {
@@ -365,28 +365,6 @@
             }
           ]
         }
-      }
-    },
-    "DELETE /agent/{id}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/agent/{id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Agent deleted successfully"
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().delete({{id}})",
-        "params": [
-          {
-            "name": "id",
-            "kind": "string"
-          }
-        ]
       }
     },
     "PATCH /agent/{id}": {
@@ -1018,28 +996,6 @@
         }
       }
     },
-    "DELETE /agent/prompts/{id}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/agent/prompts/{id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Prompt deleted successfully"
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().prompts().delete({{id}})",
-        "params": [
-          {
-            "name": "id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
     "POST /v2/auth/token": {
       "httpMethod": "POST",
       "httpPath": "/v2/auth/token",
@@ -1590,38 +1546,6 @@
       },
       "render": {
         "callTemplate": "client.construe().codeSystems().find({{codesystem}}, FindRequest.builder(){{__body__}}.build())",
-        "params": [
-          {
-            "name": "codesystem",
-            "kind": "string"
-          }
-        ],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "version",
-              "fieldTemplate": ".version({{value}})",
-              "kind": "string",
-              "required": false
-            }
-          ]
-        }
-      }
-    },
-    "DELETE /construe/codes/systems/{codesystem}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/construe/codes/systems/{codesystem}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "message": "code system deleted successfully"
-        }
-      },
-      "render": {
-        "callTemplate": "client.construe().codeSystems().delete({{codesystem}}, DeleteRequest.builder(){{__body__}}.build())",
         "params": [
           {
             "name": "codesystem",
@@ -2526,7 +2450,7 @@
               "selected": true
             }
           ],
-          "vocab_version": "v20260227",
+          "vocab_version": "v20260829",
           "summary": {
             "codes_already_standard": 2,
             "codes_normalized": 1,
@@ -2740,40 +2664,6 @@
             }
           ]
         }
-      }
-    },
-    "DELETE /fhir-provider/{fhir_provider_id}/fhir/{fhir_path}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/fhir-provider/{fhir_provider_id}/fhir/{fhir_path}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "resourceType": "OperationOutcome",
-          "issue": [
-            {
-              "severity": "information",
-              "code": "informational",
-              "details": {
-                "text": "Resource deleted successfully"
-              }
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.fhir().delete({{fhir_provider_id}}, {{fhir_path}})",
-        "params": [
-          {
-            "name": "fhir_provider_id",
-            "kind": "string"
-          },
-          {
-            "name": "fhir_path",
-            "kind": "string"
-          }
-        ]
       }
     },
     "POST /fhir-provider/{fhir_provider_id}/fhir": {
@@ -3052,28 +2942,6 @@
         ]
       }
     },
-    "DELETE /fhir-provider/{fhir_provider_id}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/fhir-provider/{fhir_provider_id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Fhir provider deleted successfully"
-        }
-      },
-      "render": {
-        "callTemplate": "client.fhirProvider().delete({{fhir_provider_id}})",
-        "params": [
-          {
-            "name": "fhir_provider_id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
     "PATCH /fhir-provider/{fhir_provider_id}/add-auth-config": {
       "httpMethod": "PATCH",
       "httpPath": "/fhir-provider/{fhir_provider_id}/add-auth-config",
@@ -3327,44 +3195,6 @@
       },
       "render": {
         "callTemplate": "client.lang2FhirBatch().uploadItem({{job_id}})",
-        "params": [
-          {
-            "name": "job_id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
-    "POST /lang2fhir/batch/{job_id}/finalize": {
-      "httpMethod": "POST",
-      "httpPath": "/lang2fhir/batch/{job_id}/finalize",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": null
-      },
-      "render": {
-        "callTemplate": "client.lang2FhirBatch().finalize({{job_id}})",
-        "params": [
-          {
-            "name": "job_id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
-    "POST /lang2fhir/batch/{job_id}/cancel": {
-      "httpMethod": "POST",
-      "httpPath": "/lang2fhir/batch/{job_id}/cancel",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": null
-      },
-      "render": {
-        "callTemplate": "client.lang2FhirBatch().cancel({{job_id}})",
         "params": [
           {
             "name": "job_id",
@@ -4808,28 +4638,6 @@
         }
       }
     },
-    "DELETE /fhir2summary/template/{id}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/fhir2summary/template/{id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Template deleted successfully"
-        }
-      },
-      "render": {
-        "callTemplate": "client.summary().templates().delete({{id}})",
-        "params": [
-          {
-            "name": "id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
     "POST /fhir2summary/create": {
       "httpMethod": "POST",
       "httpPath": "/fhir2summary/create",
@@ -4970,25 +4778,6 @@
             }
           ]
         }
-      }
-    },
-    "DELETE /fhir/implementation-guides/{name}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/fhir/implementation-guides/{name}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": null
-      },
-      "render": {
-        "callTemplate": "client.implementationGuides().implementationguides().delete({{name}})",
-        "params": [
-          {
-            "name": "name",
-            "kind": "string"
-          }
-        ]
       }
     },
     "POST /fhir/implementation-guides/{name}/versions": {
@@ -5236,25 +5025,6 @@
         }
       }
     },
-    "DELETE /fhir/profiles/{id}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/fhir/profiles/{id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": null
-      },
-      "render": {
-        "callTemplate": "client.profiles().profiles().delete({{id}})",
-        "params": [
-          {
-            "name": "id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
     "GET /fhir/profiles/{id}/versions": {
       "httpMethod": "GET",
       "httpPath": "/fhir/profiles/{id}/versions",
@@ -5316,29 +5086,6 @@
       },
       "render": {
         "callTemplate": "client.profiles().versions().get({{id}}, {{version}})",
-        "params": [
-          {
-            "name": "id",
-            "kind": "string"
-          },
-          {
-            "name": "version",
-            "kind": "string"
-          }
-        ]
-      }
-    },
-    "DELETE /fhir/profiles/{id}/versions/{version}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/fhir/profiles/{id}/versions/{version}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": null
-      },
-      "render": {
-        "callTemplate": "client.profiles().versions().delete({{id}}, {{version}})",
         "params": [
           {
             "name": "id",
@@ -5801,28 +5548,6 @@
         ]
       }
     },
-    "DELETE /tools/mcp-server/{mcp_server_id}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/tools/mcp-server/{mcp_server_id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "MCP Server Configuration and Tools deleted successfully"
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().mcpServers().delete({{mcp_server_id}})",
-        "params": [
-          {
-            "name": "mcp_server_id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
     "GET /tools/mcp-server/{mcp_server_id}/list": {
       "httpMethod": "GET",
       "httpPath": "/tools/mcp-server/{mcp_server_id}/list",
@@ -5892,28 +5617,6 @@
       },
       "render": {
         "callTemplate": "client.tools().mcpTools().get({{mcp_server_tool_id}})",
-        "params": [
-          {
-            "name": "mcp_server_tool_id",
-            "kind": "string"
-          }
-        ]
-      }
-    },
-    "DELETE /tools/mcp-server/tool/{mcp_server_tool_id}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/tools/mcp-server/tool/{mcp_server_tool_id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "MCP Server tool deleted successfully"
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().mcpTools().delete({{mcp_server_tool_id}})",
         "params": [
           {
             "name": "mcp_server_tool_id",
@@ -6272,28 +5975,6 @@
             }
           ]
         }
-      }
-    },
-    "DELETE /workflows/{id}": {
-      "httpMethod": "DELETE",
-      "httpPath": "/workflows/{id}",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Workflow deleted successfully"
-        }
-      },
-      "render": {
-        "callTemplate": "client.workflows().delete({{id}})",
-        "params": [
-          {
-            "name": "id",
-            "kind": "string"
-          }
-        ]
       }
     },
     "POST /workflows/{id}/execute": {
