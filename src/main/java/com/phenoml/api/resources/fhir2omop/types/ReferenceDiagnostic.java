@@ -101,11 +101,32 @@ public final class ReferenceDiagnostic {
         return reference;
     }
 
+    /**
+     * @return UNRESOLVED: a source value needed to populate a field is missing,
+     * such as specimen material or collection start, or a supported
+     * reference cannot resolve to a resource or emitted target supplied
+     * in this request.
+     * AMBIGUOUS: a reference or identifier matches multiple possible
+     * targets. Identifier-only <code>PractitionerRole.practitioner</code> references
+     * are unambiguous when all matches map to one canonical provider.
+     * Literal references matching multiple source resources remain
+     * ambiguous even if those Practitioners merge into one provider.
+     * CONFLICTING: supplied values or relationships cannot be combined
+     * under the mapping policy, such as differing mapped provider identity
+     * attributes, multiple distinct NPIs on one Practitioner, conflicting
+     * Patient demographic extensions, or an Encounter belonging to a
+     * different patient.
+     * UNSUPPORTED: a supplied reference form, resource type, or value
+     * shape is outside the supported mapping policy.
+     */
     @JsonProperty("outcome")
     public Optional<ReferenceDiagnosticOutcome> getOutcome() {
         return outcome;
     }
 
+    /**
+     * @return Explanation of the condition and, when applicable, its effect on mapping.
+     */
     @JsonProperty("reason")
     public Optional<String> getReason() {
         return reason;
@@ -173,7 +194,6 @@ public final class ReferenceDiagnostic {
 
         private Optional<String> reason = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -268,6 +288,24 @@ public final class ReferenceDiagnostic {
             return this;
         }
 
+        /**
+         * <p>UNRESOLVED: a source value needed to populate a field is missing,
+         * such as specimen material or collection start, or a supported
+         * reference cannot resolve to a resource or emitted target supplied
+         * in this request.
+         * AMBIGUOUS: a reference or identifier matches multiple possible
+         * targets. Identifier-only <code>PractitionerRole.practitioner</code> references
+         * are unambiguous when all matches map to one canonical provider.
+         * Literal references matching multiple source resources remain
+         * ambiguous even if those Practitioners merge into one provider.
+         * CONFLICTING: supplied values or relationships cannot be combined
+         * under the mapping policy, such as differing mapped provider identity
+         * attributes, multiple distinct NPIs on one Practitioner, conflicting
+         * Patient demographic extensions, or an Encounter belonging to a
+         * different patient.
+         * UNSUPPORTED: a supplied reference form, resource type, or value
+         * shape is outside the supported mapping policy.</p>
+         */
         @JsonSetter(value = "outcome", nulls = Nulls.SKIP)
         public Builder outcome(Optional<ReferenceDiagnosticOutcome> outcome) {
             this.outcome = outcome;
@@ -279,6 +317,9 @@ public final class ReferenceDiagnostic {
             return this;
         }
 
+        /**
+         * <p>Explanation of the condition and, when applicable, its effect on mapping.</p>
+         */
         @JsonSetter(value = "reason", nulls = Nulls.SKIP)
         public Builder reason(Optional<String> reason) {
             this.reason = reason;
@@ -301,6 +342,21 @@ public final class ReferenceDiagnostic {
                     outcome,
                     reason,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("resource_type")
+                    || key.equalsIgnoreCase("resource_id")
+                    || key.equalsIgnoreCase("omop_table")
+                    || key.equalsIgnoreCase("omop_id")
+                    || key.equalsIgnoreCase("path")
+                    || key.equalsIgnoreCase("reference")
+                    || key.equalsIgnoreCase("outcome")
+                    || key.equalsIgnoreCase("reason")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

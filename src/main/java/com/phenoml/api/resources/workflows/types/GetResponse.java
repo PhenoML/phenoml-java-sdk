@@ -96,7 +96,6 @@ public final class GetResponse {
 
         private Optional<WorkflowDefinition> workflowDetails = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -146,6 +145,16 @@ public final class GetResponse {
 
         public GetResponse build() {
             return new GetResponse(success, workflow, workflowDetails, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("success")
+                    || key.equalsIgnoreCase("workflow")
+                    || key.equalsIgnoreCase("workflow_details")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

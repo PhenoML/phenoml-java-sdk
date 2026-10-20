@@ -86,7 +86,6 @@ public final class TranscribeResponse {
     public static final class Builder implements TranscriptStage, _FinalStage {
         private String transcript;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -111,6 +110,14 @@ public final class TranscribeResponse {
         @java.lang.Override
         public TranscribeResponse build() {
             return new TranscribeResponse(transcript, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("transcript")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

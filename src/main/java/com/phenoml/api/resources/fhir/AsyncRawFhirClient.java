@@ -4,8 +4,10 @@
 package com.phenoml.api.resources.fhir;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.core.PathSegments;
 import com.phenoml.api.core.PhenomlClientApiException;
 import com.phenoml.api.core.PhenomlClientException;
 import com.phenoml.api.core.PhenomlClientHttpResponse;
@@ -127,9 +129,9 @@ public class AsyncRawFhirClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
+                .addPathSegment(PathSegments.validate(fhirProviderId))
                 .addPathSegments("fhir")
-                .addPathSegment(fhirPath);
+                .addPathSegment(PathSegments.validate(fhirPath));
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);
@@ -163,7 +165,8 @@ public class AsyncRawFhirClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<Object>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -188,6 +191,11 @@ public class AsyncRawFhirClient {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
+            }
+        });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
             }
         });
         return future;
@@ -231,9 +239,9 @@ public class AsyncRawFhirClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
+                .addPathSegment(PathSegments.validate(fhirProviderId))
                 .addPathSegments("fhir")
-                .addPathSegment(fhirPath);
+                .addPathSegment(PathSegments.validate(fhirPath));
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);
@@ -242,7 +250,8 @@ public class AsyncRawFhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request.getBody()),
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request.getBody(), requestOptions != null ? requestOptions.getBodyProperties() : null)),
                     MediaType.parse("application/fhir+json"));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -276,7 +285,8 @@ public class AsyncRawFhirClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<Object>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -301,6 +311,11 @@ public class AsyncRawFhirClient {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
+            }
+        });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
             }
         });
         return future;
@@ -344,9 +359,9 @@ public class AsyncRawFhirClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
+                .addPathSegment(PathSegments.validate(fhirProviderId))
                 .addPathSegments("fhir")
-                .addPathSegment(fhirPath);
+                .addPathSegment(PathSegments.validate(fhirPath));
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);
@@ -355,7 +370,8 @@ public class AsyncRawFhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request.getBody()),
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request.getBody(), requestOptions != null ? requestOptions.getBodyProperties() : null)),
                     MediaType.parse("application/fhir+json"));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -389,7 +405,8 @@ public class AsyncRawFhirClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<Object>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -414,6 +431,11 @@ public class AsyncRawFhirClient {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
+            }
+        });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
             }
         });
         return future;
@@ -454,9 +476,9 @@ public class AsyncRawFhirClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
+                .addPathSegment(PathSegments.validate(fhirProviderId))
                 .addPathSegments("fhir")
-                .addPathSegment(fhirPath);
+                .addPathSegment(PathSegments.validate(fhirPath));
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);
@@ -464,7 +486,10 @@ public class AsyncRawFhirClient {
         }
         Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
-                .method("DELETE", null)
+                .method(
+                        "DELETE",
+                        BodyProperties.toRequestBody(
+                                requestOptions != null ? requestOptions.getBodyProperties() : null, null))
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Accept", "application/json");
         if (request.getPhenomlOnBehalfOf().isPresent()) {
@@ -490,7 +515,8 @@ public class AsyncRawFhirClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<Object>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -515,6 +541,11 @@ public class AsyncRawFhirClient {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
+            }
+        });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
             }
         });
         return future;
@@ -604,9 +635,9 @@ public class AsyncRawFhirClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
+                .addPathSegment(PathSegments.validate(fhirProviderId))
                 .addPathSegments("fhir")
-                .addPathSegment(fhirPath);
+                .addPathSegment(PathSegments.validate(fhirPath));
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);
@@ -615,7 +646,8 @@ public class AsyncRawFhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request.getBody()),
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request.getBody(), requestOptions != null ? requestOptions.getBodyProperties() : null)),
                     MediaType.parse("application/json-patch+json"));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -649,7 +681,8 @@ public class AsyncRawFhirClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<Object>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -674,6 +707,11 @@ public class AsyncRawFhirClient {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
+            }
+        });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
             }
         });
         return future;
@@ -720,7 +758,7 @@ public class AsyncRawFhirClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
+                .addPathSegment(PathSegments.validate(fhirProviderId))
                 .addPathSegments("fhir");
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -730,7 +768,8 @@ public class AsyncRawFhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request.getBody()),
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request.getBody(), requestOptions != null ? requestOptions.getBodyProperties() : null)),
                     MediaType.parse("application/fhir+json"));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -764,7 +803,8 @@ public class AsyncRawFhirClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<Object>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -789,6 +829,11 @@ public class AsyncRawFhirClient {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
+            }
+        });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
             }
         });
         return future;

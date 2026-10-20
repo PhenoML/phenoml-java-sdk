@@ -87,7 +87,6 @@ public final class DeleteRequest {
 
         private Optional<String> phenomlFhirProvider = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -128,6 +127,11 @@ public final class DeleteRequest {
 
         public DeleteRequest build() {
             return new DeleteRequest(phenomlOnBehalfOf, phenomlFhirProvider, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
