@@ -4,39 +4,60 @@
 package com.phenoml.api.resources.cohort;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.cohort.requests.CohortRequest;
 import com.phenoml.api.resources.cohort.types.CohortResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncCohortClient {
-    protected final ClientOptions clientOptions;
 
-    private final AsyncRawCohortClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public AsyncCohortClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawCohortClient(clientOptions);
-    }
+  private final AsyncRawCohortClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawCohortClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AsyncCohortClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new AsyncRawCohortClient(clientOptions);
+  }
 
-    /**
-     * Converts natural language text into structured FHIR search queries for patient cohort analysis
-     */
-    public CompletableFuture<CohortResponse> analyze(CohortRequest request) {
-        return this.rawClient.analyze(request).thenApply(response -> response.body());
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public AsyncRawCohortClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Converts natural language text into structured FHIR search queries for patient cohort analysis
-     */
-    public CompletableFuture<CohortResponse> analyze(CohortRequest request, RequestOptions requestOptions) {
-        return this.rawClient.analyze(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Converts natural language text into structured FHIR search queries for patient cohort analysis
+   */
+  public CompletableFuture<CohortResponse> analyze(CohortRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<CohortResponse>> rawFuture =
+      this.rawClient.analyze(request);
+    CompletableFuture<CohortResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
+
+  /**
+   * Converts natural language text into structured FHIR search queries for patient cohort analysis
+   */
+  public CompletableFuture<CohortResponse> analyze(
+    CohortRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<CohortResponse>> rawFuture =
+      this.rawClient.analyze(request, requestOptions);
+    CompletableFuture<CohortResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 }

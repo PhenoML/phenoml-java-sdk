@@ -19,110 +19,119 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = FeedbackResponse.Builder.class)
 public final class FeedbackResponse {
-    private final String id;
 
-    private final Map<String, Object> additionalProperties;
+  private final String id;
 
-    private FeedbackResponse(String id, Map<String, Object> additionalProperties) {
-        this.id = id;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private FeedbackResponse(String id, Map<String, Object> additionalProperties) {
+    this.id = id;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return The ID of the saved feedback
+   */
+  @JsonProperty("id")
+  public String getId() {
+    return id;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof FeedbackResponse && equalTo((FeedbackResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(FeedbackResponse other) {
+    return id.equals(other.id);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.id);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static IdStage builder() {
+    return new Builder();
+  }
+
+  public interface IdStage {
+    /**
+     * <p>The ID of the saved feedback</p>
+     */
+    _FinalStage id(@NotNull String id);
+
+    Builder from(FeedbackResponse other);
+  }
+
+  public interface _FinalStage {
+    FeedbackResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements IdStage, _FinalStage {
+
+    private String id;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(FeedbackResponse other) {
+      id(other.getId());
+      return this;
     }
 
     /**
-     * @return The ID of the saved feedback
+     * <p>The ID of the saved feedback</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("id")
-    public String getId() {
-        return id;
+    @java.lang.Override
+    @JsonSetter("id")
+    public _FinalStage id(@NotNull String id) {
+      this.id = Objects.requireNonNull(id, "id must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof FeedbackResponse && equalTo((FeedbackResponse) other);
+    public FeedbackResponse build() {
+      return new FeedbackResponse(id, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(FeedbackResponse other) {
-        return id.equals(other.id);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.id);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("id")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static IdStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface IdStage {
-        /**
-         * <p>The ID of the saved feedback</p>
-         */
-        _FinalStage id(@NotNull String id);
-
-        Builder from(FeedbackResponse other);
-    }
-
-    public interface _FinalStage {
-        FeedbackResponse build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements IdStage, _FinalStage {
-        private String id;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(FeedbackResponse other) {
-            id(other.getId());
-            return this;
-        }
-
-        /**
-         * <p>The ID of the saved feedback</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("id")
-        public _FinalStage id(@NotNull String id) {
-            this.id = Objects.requireNonNull(id, "id must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public FeedbackResponse build() {
-            return new FeedbackResponse(id, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

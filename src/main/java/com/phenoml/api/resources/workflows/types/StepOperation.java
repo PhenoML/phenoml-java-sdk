@@ -20,162 +20,188 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = StepOperation.Builder.class)
 public final class StepOperation {
-    private final Optional<Lang2FhirSearchDefinition> searchDefinition;
 
-    private final Optional<Lang2FhirCreateDefinition> createDefinition;
+  private final Optional<Lang2FhirSearchDefinition> searchDefinition;
 
-    private final Optional<SubWorkflowDefinition> workflowDefinition;
+  private final Optional<Lang2FhirCreateDefinition> createDefinition;
 
-    private final Optional<DecisionNodeDefinition> decisionDefinition;
+  private final Optional<SubWorkflowDefinition> workflowDefinition;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<DecisionNodeDefinition> decisionDefinition;
 
-    private StepOperation(
-            Optional<Lang2FhirSearchDefinition> searchDefinition,
-            Optional<Lang2FhirCreateDefinition> createDefinition,
-            Optional<SubWorkflowDefinition> workflowDefinition,
-            Optional<DecisionNodeDefinition> decisionDefinition,
-            Map<String, Object> additionalProperties) {
-        this.searchDefinition = searchDefinition;
-        this.createDefinition = createDefinition;
-        this.workflowDefinition = workflowDefinition;
-        this.decisionDefinition = decisionDefinition;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private StepOperation(
+    Optional<Lang2FhirSearchDefinition> searchDefinition,
+    Optional<Lang2FhirCreateDefinition> createDefinition,
+    Optional<SubWorkflowDefinition> workflowDefinition,
+    Optional<DecisionNodeDefinition> decisionDefinition,
+    Map<String, Object> additionalProperties
+  ) {
+    this.searchDefinition = searchDefinition;
+    this.createDefinition = createDefinition;
+    this.workflowDefinition = workflowDefinition;
+    this.decisionDefinition = decisionDefinition;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("search_definition")
+  public Optional<Lang2FhirSearchDefinition> getSearchDefinition() {
+    return searchDefinition;
+  }
+
+  @JsonProperty("create_definition")
+  public Optional<Lang2FhirCreateDefinition> getCreateDefinition() {
+    return createDefinition;
+  }
+
+  @JsonProperty("workflow_definition")
+  public Optional<SubWorkflowDefinition> getWorkflowDefinition() {
+    return workflowDefinition;
+  }
+
+  @JsonProperty("decision_definition")
+  public Optional<DecisionNodeDefinition> getDecisionDefinition() {
+    return decisionDefinition;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof StepOperation && equalTo((StepOperation) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(StepOperation other) {
+    return (
+      searchDefinition.equals(other.searchDefinition) &&
+      createDefinition.equals(other.createDefinition) &&
+      workflowDefinition.equals(other.workflowDefinition) &&
+      decisionDefinition.equals(other.decisionDefinition)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.searchDefinition,
+      this.createDefinition,
+      this.workflowDefinition,
+      this.decisionDefinition
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Lang2FhirSearchDefinition> searchDefinition = Optional.empty();
+
+    private Optional<Lang2FhirCreateDefinition> createDefinition = Optional.empty();
+
+    private Optional<SubWorkflowDefinition> workflowDefinition = Optional.empty();
+
+    private Optional<DecisionNodeDefinition> decisionDefinition = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(StepOperation other) {
+      searchDefinition(other.getSearchDefinition());
+      createDefinition(other.getCreateDefinition());
+      workflowDefinition(other.getWorkflowDefinition());
+      decisionDefinition(other.getDecisionDefinition());
+      return this;
     }
 
-    @JsonProperty("search_definition")
-    public Optional<Lang2FhirSearchDefinition> getSearchDefinition() {
-        return searchDefinition;
+    @JsonSetter(value = "search_definition", nulls = Nulls.SKIP)
+    public Builder searchDefinition(Optional<Lang2FhirSearchDefinition> searchDefinition) {
+      this.searchDefinition = searchDefinition;
+      return this;
     }
 
-    @JsonProperty("create_definition")
-    public Optional<Lang2FhirCreateDefinition> getCreateDefinition() {
-        return createDefinition;
+    public Builder searchDefinition(Lang2FhirSearchDefinition searchDefinition) {
+      this.searchDefinition = Optional.ofNullable(searchDefinition);
+      return this;
     }
 
-    @JsonProperty("workflow_definition")
-    public Optional<SubWorkflowDefinition> getWorkflowDefinition() {
-        return workflowDefinition;
+    @JsonSetter(value = "create_definition", nulls = Nulls.SKIP)
+    public Builder createDefinition(Optional<Lang2FhirCreateDefinition> createDefinition) {
+      this.createDefinition = createDefinition;
+      return this;
     }
 
-    @JsonProperty("decision_definition")
-    public Optional<DecisionNodeDefinition> getDecisionDefinition() {
-        return decisionDefinition;
+    public Builder createDefinition(Lang2FhirCreateDefinition createDefinition) {
+      this.createDefinition = Optional.ofNullable(createDefinition);
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof StepOperation && equalTo((StepOperation) other);
+    @JsonSetter(value = "workflow_definition", nulls = Nulls.SKIP)
+    public Builder workflowDefinition(Optional<SubWorkflowDefinition> workflowDefinition) {
+      this.workflowDefinition = workflowDefinition;
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder workflowDefinition(SubWorkflowDefinition workflowDefinition) {
+      this.workflowDefinition = Optional.ofNullable(workflowDefinition);
+      return this;
     }
 
-    private boolean equalTo(StepOperation other) {
-        return searchDefinition.equals(other.searchDefinition)
-                && createDefinition.equals(other.createDefinition)
-                && workflowDefinition.equals(other.workflowDefinition)
-                && decisionDefinition.equals(other.decisionDefinition);
+    @JsonSetter(value = "decision_definition", nulls = Nulls.SKIP)
+    public Builder decisionDefinition(Optional<DecisionNodeDefinition> decisionDefinition) {
+      this.decisionDefinition = decisionDefinition;
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.searchDefinition, this.createDefinition, this.workflowDefinition, this.decisionDefinition);
+    public Builder decisionDefinition(DecisionNodeDefinition decisionDefinition) {
+      this.decisionDefinition = Optional.ofNullable(decisionDefinition);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public StepOperation build() {
+      return new StepOperation(
+        searchDefinition,
+        createDefinition,
+        workflowDefinition,
+        decisionDefinition,
+        additionalProperties
+      );
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("search_definition") ||
+        key.equalsIgnoreCase("create_definition") ||
+        key.equalsIgnoreCase("workflow_definition") ||
+        key.equalsIgnoreCase("decision_definition")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Lang2FhirSearchDefinition> searchDefinition = Optional.empty();
-
-        private Optional<Lang2FhirCreateDefinition> createDefinition = Optional.empty();
-
-        private Optional<SubWorkflowDefinition> workflowDefinition = Optional.empty();
-
-        private Optional<DecisionNodeDefinition> decisionDefinition = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(StepOperation other) {
-            searchDefinition(other.getSearchDefinition());
-            createDefinition(other.getCreateDefinition());
-            workflowDefinition(other.getWorkflowDefinition());
-            decisionDefinition(other.getDecisionDefinition());
-            return this;
-        }
-
-        @JsonSetter(value = "search_definition", nulls = Nulls.SKIP)
-        public Builder searchDefinition(Optional<Lang2FhirSearchDefinition> searchDefinition) {
-            this.searchDefinition = searchDefinition;
-            return this;
-        }
-
-        public Builder searchDefinition(Lang2FhirSearchDefinition searchDefinition) {
-            this.searchDefinition = Optional.ofNullable(searchDefinition);
-            return this;
-        }
-
-        @JsonSetter(value = "create_definition", nulls = Nulls.SKIP)
-        public Builder createDefinition(Optional<Lang2FhirCreateDefinition> createDefinition) {
-            this.createDefinition = createDefinition;
-            return this;
-        }
-
-        public Builder createDefinition(Lang2FhirCreateDefinition createDefinition) {
-            this.createDefinition = Optional.ofNullable(createDefinition);
-            return this;
-        }
-
-        @JsonSetter(value = "workflow_definition", nulls = Nulls.SKIP)
-        public Builder workflowDefinition(Optional<SubWorkflowDefinition> workflowDefinition) {
-            this.workflowDefinition = workflowDefinition;
-            return this;
-        }
-
-        public Builder workflowDefinition(SubWorkflowDefinition workflowDefinition) {
-            this.workflowDefinition = Optional.ofNullable(workflowDefinition);
-            return this;
-        }
-
-        @JsonSetter(value = "decision_definition", nulls = Nulls.SKIP)
-        public Builder decisionDefinition(Optional<DecisionNodeDefinition> decisionDefinition) {
-            this.decisionDefinition = decisionDefinition;
-            return this;
-        }
-
-        public Builder decisionDefinition(DecisionNodeDefinition decisionDefinition) {
-            this.decisionDefinition = Optional.ofNullable(decisionDefinition);
-            return this;
-        }
-
-        public StepOperation build() {
-            return new StepOperation(
-                    searchDefinition, createDefinition, workflowDefinition, decisionDefinition, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

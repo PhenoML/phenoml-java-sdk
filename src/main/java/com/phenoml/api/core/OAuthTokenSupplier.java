@@ -11,54 +11,59 @@ import java.time.temporal.ChronoUnit;
 import java.util.function.Supplier;
 
 public final class OAuthTokenSupplier implements Supplier<String> {
-    private static final long BUFFER_IN_MINUTES = 2;
 
-    private final String clientId;
+  private static final long BUFFER_IN_MINUTES = 2;
 
-    private final String clientSecret;
+  private final String clientId;
 
-    private final AuthtokenClient authClient;
+  private final String clientSecret;
 
-    private final Object tokenLock = new Object();
+  private final AuthtokenClient authClient;
 
-    private volatile String accessToken;
+  private final Object tokenLock = new Object();
 
-    private volatile Instant expiresAt;
+  private volatile String accessToken;
 
-    public OAuthTokenSupplier(String clientId, String clientSecret, AuthtokenClient authClient) {
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.authClient = authClient;
-        this.expiresAt = Instant.now();
+  private volatile Instant expiresAt;
+
+  public OAuthTokenSupplier(String clientId, String clientSecret, AuthtokenClient authClient) {
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.authClient = authClient;
+    this.expiresAt = Instant.now();
+  }
+
+  public TokenResponse fetchToken() {
+    ClientCredentialsRequest getTokenRequest = ClientCredentialsRequest.builder()
+      .clientId(clientId)
+      .clientSecret(clientSecret)
+      .grantType("client_credentials")
+      .build();
+    return authClient.getToken(getTokenRequest);
+  }
+
+  @java.lang.Override
+  public String get() {
+    String cachedToken = this.accessToken;
+    Instant cachedExpiresAt = this.expiresAt;
+    if (
+      cachedToken != null && cachedExpiresAt != null && !cachedExpiresAt.isBefore(Instant.now())
+    ) {
+      return "Bearer " + cachedToken;
     }
-
-    public TokenResponse fetchToken() {
-        ClientCredentialsRequest getTokenRequest = ClientCredentialsRequest.builder()
-                .clientId(clientId)
-                .clientSecret(clientSecret)
-                .grantType("client_credentials")
-                .build();
-        return authClient.getToken(getTokenRequest);
+    synchronized (tokenLock) {
+      if (accessToken == null || expiresAt.isBefore(Instant.now())) {
+        TokenResponse authResponse = fetchToken();
+        this.accessToken = authResponse.getAccessToken();
+        this.expiresAt = getExpiresAt(authResponse.getExpiresIn());
+      }
+      return "Bearer " + accessToken;
     }
+  }
 
-    @java.lang.Override
-    public String get() {
-        String cachedToken = this.accessToken;
-        Instant cachedExpiresAt = this.expiresAt;
-        if (cachedToken != null && cachedExpiresAt != null && !cachedExpiresAt.isBefore(Instant.now())) {
-            return "Bearer " + cachedToken;
-        }
-        synchronized (tokenLock) {
-            if (accessToken == null || expiresAt.isBefore(Instant.now())) {
-                TokenResponse authResponse = fetchToken();
-                this.accessToken = authResponse.getAccessToken();
-                this.expiresAt = getExpiresAt(authResponse.getExpiresIn());
-            }
-            return "Bearer " + accessToken;
-        }
-    }
-
-    private Instant getExpiresAt(long expiresInSeconds) {
-        return Instant.now().plus(expiresInSeconds, ChronoUnit.SECONDS).minus(BUFFER_IN_MINUTES, ChronoUnit.MINUTES);
-    }
+  private Instant getExpiresAt(long expiresInSeconds) {
+    return Instant.now()
+      .plus(expiresInSeconds, ChronoUnit.SECONDS)
+      .minus(BUFFER_IN_MINUTES, ChronoUnit.MINUTES);
+  }
 }

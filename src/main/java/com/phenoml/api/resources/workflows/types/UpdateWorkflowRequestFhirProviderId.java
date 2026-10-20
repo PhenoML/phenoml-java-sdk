@@ -17,83 +17,89 @@ import java.util.Objects;
 
 @JsonDeserialize(using = UpdateWorkflowRequestFhirProviderId.Deserializer.class)
 public final class UpdateWorkflowRequestFhirProviderId {
-    private final Object value;
 
-    private final int type;
+  private final Object value;
 
-    private UpdateWorkflowRequestFhirProviderId(Object value, int type) {
-        this.value = value;
-        this.type = type;
+  private final int type;
+
+  private UpdateWorkflowRequestFhirProviderId(Object value, int type) {
+    this.value = value;
+    this.type = type;
+  }
+
+  @JsonValue
+  public Object get() {
+    return this.value;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T visit(Visitor<T> visitor) {
+    if (this.type == 0) {
+      return visitor.visit((String) this.value);
+    } else if (this.type == 1) {
+      return visitor.visit((List<String>) this.value);
     }
+    throw new IllegalStateException("Failed to visit value. This should never happen.");
+  }
 
-    @JsonValue
-    public Object get() {
-        return this.value;
-    }
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof UpdateWorkflowRequestFhirProviderId &&
+      equalTo((UpdateWorkflowRequestFhirProviderId) other)
+    );
+  }
 
-    @SuppressWarnings("unchecked")
-    public <T> T visit(Visitor<T> visitor) {
-        if (this.type == 0) {
-            return visitor.visit((String) this.value);
-        } else if (this.type == 1) {
-            return visitor.visit((List<String>) this.value);
-        }
-        throw new IllegalStateException("Failed to visit value. This should never happen.");
+  private boolean equalTo(UpdateWorkflowRequestFhirProviderId other) {
+    return value.equals(other.value);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.value);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return this.value.toString();
+  }
+
+  public static UpdateWorkflowRequestFhirProviderId of(String value) {
+    return new UpdateWorkflowRequestFhirProviderId(value, 0);
+  }
+
+  public static UpdateWorkflowRequestFhirProviderId of(List<String> value) {
+    return new UpdateWorkflowRequestFhirProviderId(value, 1);
+  }
+
+  public interface Visitor<T> {
+    T visit(String value);
+
+    T visit(List<String> value);
+  }
+
+  static final class Deserializer extends StdDeserializer<UpdateWorkflowRequestFhirProviderId> {
+
+    Deserializer() {
+      super(UpdateWorkflowRequestFhirProviderId.class);
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof UpdateWorkflowRequestFhirProviderId
-                && equalTo((UpdateWorkflowRequestFhirProviderId) other);
+    public UpdateWorkflowRequestFhirProviderId deserialize(
+      JsonParser p,
+      DeserializationContext context
+    ) throws IOException {
+      Object value = p.readValueAs(Object.class);
+      try {
+        return of(ObjectMappers.JSON_MAPPER.convertValue(value, String.class));
+      } catch (RuntimeException e) {}
+      try {
+        return of(
+          ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<List<String>>() {})
+        );
+      } catch (RuntimeException e) {}
+      throw new JsonParseException(p, "Failed to deserialize");
     }
-
-    private boolean equalTo(UpdateWorkflowRequestFhirProviderId other) {
-        return value.equals(other.value);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.value);
-    }
-
-    @java.lang.Override
-    public String toString() {
-        return this.value.toString();
-    }
-
-    public static UpdateWorkflowRequestFhirProviderId of(String value) {
-        return new UpdateWorkflowRequestFhirProviderId(value, 0);
-    }
-
-    public static UpdateWorkflowRequestFhirProviderId of(List<String> value) {
-        return new UpdateWorkflowRequestFhirProviderId(value, 1);
-    }
-
-    public interface Visitor<T> {
-        T visit(String value);
-
-        T visit(List<String> value);
-    }
-
-    static final class Deserializer extends StdDeserializer<UpdateWorkflowRequestFhirProviderId> {
-        Deserializer() {
-            super(UpdateWorkflowRequestFhirProviderId.class);
-        }
-
-        @java.lang.Override
-        public UpdateWorkflowRequestFhirProviderId deserialize(JsonParser p, DeserializationContext context)
-                throws IOException {
-            Object value = p.readValueAs(Object.class);
-            try {
-                return of(ObjectMappers.JSON_MAPPER.convertValue(value, String.class));
-            } catch (RuntimeException e) {
-            }
-            try {
-                return of(ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<List<String>>() {}));
-            } catch (RuntimeException e) {
-            }
-            throw new JsonParseException(p, "Failed to deserialize");
-        }
-    }
+  }
 }

@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.implementationguides.implementationguides;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.implementationguides.implementationguides.requests.CreateCanonicalImplementationGuideRequest;
 import com.phenoml.api.resources.implementationguides.implementationguides.requests.UpdateImplementationGuideRequest;
@@ -14,139 +15,298 @@ import com.phenoml.api.resources.implementationguides.types.ImplementationGuideV
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncImplementationGuidesClient {
-    protected final ClientOptions clientOptions;
 
-    private final AsyncRawImplementationGuidesClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public AsyncImplementationGuidesClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawImplementationGuidesClient(clientOptions);
-    }
+  private final AsyncRawImplementationGuidesClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawImplementationGuidesClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AsyncImplementationGuidesClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new AsyncRawImplementationGuidesClient(clientOptions);
+  }
 
-    /**
-     * Returns every implementation guide on this instance — both guides that
-     * have stored metadata (a profile_context) and guides referenced by at
-     * least one custom profile — with the number of profiles in each.
-     */
-    public CompletableFuture<ImplementationGuideListResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public AsyncRawImplementationGuidesClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Returns every implementation guide on this instance — both guides that
-     * have stored metadata (a profile_context) and guides referenced by at
-     * least one custom profile — with the number of profiles in each.
-     */
-    public CompletableFuture<ImplementationGuideListResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Returns every implementation guide on this instance — both guides that
+   * have stored metadata (a profile_context) and guides referenced by at
+   * least one custom profile — with the number of profiles in each.
+   */
+  public CompletableFuture<ImplementationGuideListResponse> list() {
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideListResponse>> rawFuture =
+      this.rawClient.list();
+    CompletableFuture<ImplementationGuideListResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a single implementation guide, including its profile_context and
-     * the ids of the profiles that belong to it.
-     */
-    public CompletableFuture<ImplementationGuideDetail> get(String name) {
-        return this.rawClient.get(name).thenApply(response -> response.body());
-    }
+  /**
+   * Returns every implementation guide on this instance — both guides that
+   * have stored metadata (a profile_context) and guides referenced by at
+   * least one custom profile — with the number of profiles in each.
+   */
+  public CompletableFuture<ImplementationGuideListResponse> list(RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideListResponse>> rawFuture =
+      this.rawClient.list(requestOptions);
+    CompletableFuture<ImplementationGuideListResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a single implementation guide, including its profile_context and
-     * the ids of the profiles that belong to it.
-     */
-    public CompletableFuture<ImplementationGuideDetail> get(String name, RequestOptions requestOptions) {
-        return this.rawClient.get(name, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a single implementation guide, including its profile_context and
+   * the ids of the profiles that belong to it.
+   */
+  public CompletableFuture<ImplementationGuideDetail> get(String name) {
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideDetail>> rawFuture =
+      this.rawClient.get(name);
+    CompletableFuture<ImplementationGuideDetail> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Sets (or clears, with an empty value) the natural-language profile_context
-     * for an implementation guide. The context is injected into the LLM during
-     * resource detection to help select the right profiles from this guide.
-     * It applies to every profile in the guide.
-     */
-    public CompletableFuture<ImplementationGuideSummary> update(String name) {
-        return this.rawClient.update(name).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a single implementation guide, including its profile_context and
+   * the ids of the profiles that belong to it.
+   */
+  public CompletableFuture<ImplementationGuideDetail> get(
+    String name,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideDetail>> rawFuture =
+      this.rawClient.get(name, requestOptions);
+    CompletableFuture<ImplementationGuideDetail> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Sets (or clears, with an empty value) the natural-language profile_context
-     * for an implementation guide. The context is injected into the LLM during
-     * resource detection to help select the right profiles from this guide.
-     * It applies to every profile in the guide.
-     */
-    public CompletableFuture<ImplementationGuideSummary> update(String name, RequestOptions requestOptions) {
-        return this.rawClient.update(name, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Sets (or clears, with an empty value) the natural-language profile_context
+   * for an implementation guide. The context is injected into the LLM during
+   * resource detection to help select the right profiles from this guide.
+   * It applies to every profile in the guide.
+   */
+  public CompletableFuture<ImplementationGuideSummary> update(String name) {
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> rawFuture =
+      this.rawClient.update(name);
+    CompletableFuture<ImplementationGuideSummary> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Sets (or clears, with an empty value) the natural-language profile_context
-     * for an implementation guide. The context is injected into the LLM during
-     * resource detection to help select the right profiles from this guide.
-     * It applies to every profile in the guide.
-     */
-    public CompletableFuture<ImplementationGuideSummary> update(String name, UpdateImplementationGuideRequest request) {
-        return this.rawClient.update(name, request).thenApply(response -> response.body());
-    }
+  /**
+   * Sets (or clears, with an empty value) the natural-language profile_context
+   * for an implementation guide. The context is injected into the LLM during
+   * resource detection to help select the right profiles from this guide.
+   * It applies to every profile in the guide.
+   */
+  public CompletableFuture<ImplementationGuideSummary> update(
+    String name,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> rawFuture =
+      this.rawClient.update(name, requestOptions);
+    CompletableFuture<ImplementationGuideSummary> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Sets (or clears, with an empty value) the natural-language profile_context
-     * for an implementation guide. The context is injected into the LLM during
-     * resource detection to help select the right profiles from this guide.
-     * It applies to every profile in the guide.
-     */
-    public CompletableFuture<ImplementationGuideSummary> update(
-            String name, UpdateImplementationGuideRequest request, RequestOptions requestOptions) {
-        return this.rawClient.update(name, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Sets (or clears, with an empty value) the natural-language profile_context
+   * for an implementation guide. The context is injected into the LLM during
+   * resource detection to help select the right profiles from this guide.
+   * It applies to every profile in the guide.
+   */
+  public CompletableFuture<ImplementationGuideSummary> update(
+    String name,
+    UpdateImplementationGuideRequest request
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> rawFuture =
+      this.rawClient.update(name, request);
+    CompletableFuture<ImplementationGuideSummary> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Deletes the guide's metadata and all its canonical package versions.
-     * Custom profiles and their implementation-guide assignments are preserved.
-     */
-    public CompletableFuture<Void> delete(String name) {
-        return this.rawClient.delete(name).thenApply(response -> response.body());
-    }
+  /**
+   * Sets (or clears, with an empty value) the natural-language profile_context
+   * for an implementation guide. The context is injected into the LLM during
+   * resource detection to help select the right profiles from this guide.
+   * It applies to every profile in the guide.
+   */
+  public CompletableFuture<ImplementationGuideSummary> update(
+    String name,
+    UpdateImplementationGuideRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> rawFuture =
+      this.rawClient.update(name, request, requestOptions);
+    CompletableFuture<ImplementationGuideSummary> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Deletes the guide's metadata and all its canonical package versions.
-     * Custom profiles and their implementation-guide assignments are preserved.
-     */
-    public CompletableFuture<Void> delete(String name, RequestOptions requestOptions) {
-        return this.rawClient.delete(name, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Deletes the guide's metadata and all its canonical package versions.
+   * Custom profiles and their implementation-guide assignments are preserved.
+   */
+  public CompletableFuture<Void> delete(String name) {
+    CompletableFuture<PhenomlClientHttpResponse<Void>> rawFuture = this.rawClient.delete(name);
+    CompletableFuture<Void> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Publishes an exact package beneath this guide family. Each guide family
-     * supports one exact package version. Publishing another version returns
-     * <code>409 Conflict</code>.
-     */
-    public CompletableFuture<ImplementationGuideVersionDetail> createVersion(
-            String name, CreateCanonicalImplementationGuideRequest request) {
-        return this.rawClient.createVersion(name, request).thenApply(response -> response.body());
-    }
+  /**
+   * Deletes the guide's metadata and all its canonical package versions.
+   * Custom profiles and their implementation-guide assignments are preserved.
+   */
+  public CompletableFuture<Void> delete(String name, RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<Void>> rawFuture =
+      this.rawClient.delete(name, requestOptions);
+    CompletableFuture<Void> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Publishes an exact package beneath this guide family. Each guide family
-     * supports one exact package version. Publishing another version returns
-     * <code>409 Conflict</code>.
-     */
-    public CompletableFuture<ImplementationGuideVersionDetail> createVersion(
-            String name, CreateCanonicalImplementationGuideRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createVersion(name, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Publishes an exact package beneath this guide family. Each guide family
+   * supports one exact package version. Publishing another version returns
+   * <code>409 Conflict</code>.
+   */
+  public CompletableFuture<ImplementationGuideVersionDetail> createVersion(
+    String name,
+    CreateCanonicalImplementationGuideRequest request
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> rawFuture =
+      this.rawClient.createVersion(name, request);
+    CompletableFuture<ImplementationGuideVersionDetail> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    public CompletableFuture<ImplementationGuideVersionDetail> getVersion(String name, String version) {
-        return this.rawClient.getVersion(name, version).thenApply(response -> response.body());
-    }
+  /**
+   * Publishes an exact package beneath this guide family. Each guide family
+   * supports one exact package version. Publishing another version returns
+   * <code>409 Conflict</code>.
+   */
+  public CompletableFuture<ImplementationGuideVersionDetail> createVersion(
+    String name,
+    CreateCanonicalImplementationGuideRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> rawFuture =
+      this.rawClient.createVersion(name, request, requestOptions);
+    CompletableFuture<ImplementationGuideVersionDetail> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    public CompletableFuture<ImplementationGuideVersionDetail> getVersion(
-            String name, String version, RequestOptions requestOptions) {
-        return this.rawClient.getVersion(name, version, requestOptions).thenApply(response -> response.body());
-    }
+  public CompletableFuture<ImplementationGuideVersionDetail> getVersion(
+    String name,
+    String version
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> rawFuture =
+      this.rawClient.getVersion(name, version);
+    CompletableFuture<ImplementationGuideVersionDetail> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
+
+  public CompletableFuture<ImplementationGuideVersionDetail> getVersion(
+    String name,
+    String version,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> rawFuture =
+      this.rawClient.getVersion(name, version, requestOptions);
+    CompletableFuture<ImplementationGuideVersionDetail> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 }

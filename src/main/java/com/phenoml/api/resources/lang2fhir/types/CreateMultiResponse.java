@@ -21,243 +21,275 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateMultiResponse.Builder.class)
 public final class CreateMultiResponse implements ICreateMultiResponse {
-    private final Optional<Boolean> success;
 
-    private final Optional<String> message;
+  private final Optional<Boolean> success;
 
-    private final Optional<CreateMultiResponseBundle> bundle;
+  private final Optional<String> message;
 
-    private final Optional<List<CreateMultiResponseResourcesItem>> resources;
+  private final Optional<CreateMultiResponseBundle> bundle;
 
-    private final Optional<CreateMultiResponseValidation> validation;
+  private final Optional<List<CreateMultiResponseResourcesItem>> resources;
 
-    private final Optional<ResourceReviewResult> resourceReview;
+  private final Optional<CreateMultiResponseValidation> validation;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<ResourceReviewResult> resourceReview;
 
-    private CreateMultiResponse(
-            Optional<Boolean> success,
-            Optional<String> message,
-            Optional<CreateMultiResponseBundle> bundle,
-            Optional<List<CreateMultiResponseResourcesItem>> resources,
-            Optional<CreateMultiResponseValidation> validation,
-            Optional<ResourceReviewResult> resourceReview,
-            Map<String, Object> additionalProperties) {
-        this.success = success;
-        this.message = message;
-        this.bundle = bundle;
-        this.resources = resources;
-        this.validation = validation;
-        this.resourceReview = resourceReview;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CreateMultiResponse(
+    Optional<Boolean> success,
+    Optional<String> message,
+    Optional<CreateMultiResponseBundle> bundle,
+    Optional<List<CreateMultiResponseResourcesItem>> resources,
+    Optional<CreateMultiResponseValidation> validation,
+    Optional<ResourceReviewResult> resourceReview,
+    Map<String, Object> additionalProperties
+  ) {
+    this.success = success;
+    this.message = message;
+    this.bundle = bundle;
+    this.resources = resources;
+    this.validation = validation;
+    this.resourceReview = resourceReview;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Whether extraction was successful
+   */
+  @JsonProperty("success")
+  @java.lang.Override
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  /**
+   * @return Status message
+   */
+  @JsonProperty("message")
+  @java.lang.Override
+  public Optional<String> getMessage() {
+    return message;
+  }
+
+  /**
+   * @return FHIR transaction Bundle containing all extracted resources
+   */
+  @JsonProperty("bundle")
+  public Optional<CreateMultiResponseBundle> getBundle() {
+    return bundle;
+  }
+
+  /**
+   * @return Summary of extracted resources
+   */
+  @JsonProperty("resources")
+  public Optional<List<CreateMultiResponseResourcesItem>> getResources() {
+    return resources;
+  }
+
+  /**
+   * @return FHIR validation results. Present when validation_method is 'check' or 'fix'. Contains results from each validation pass. For 'check', there is one pass. For 'fix', there may be up to 3 passes as the system attempts auto-correction.
+   */
+  @JsonProperty("validation")
+  public Optional<CreateMultiResponseValidation> getValidation() {
+    return validation;
+  }
+
+  @JsonProperty("resource_review")
+  @java.lang.Override
+  public Optional<ResourceReviewResult> getResourceReview() {
+    return resourceReview;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CreateMultiResponse && equalTo((CreateMultiResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CreateMultiResponse other) {
+    return (
+      success.equals(other.success) &&
+      message.equals(other.message) &&
+      bundle.equals(other.bundle) &&
+      resources.equals(other.resources) &&
+      validation.equals(other.validation) &&
+      resourceReview.equals(other.resourceReview)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.success,
+      this.message,
+      this.bundle,
+      this.resources,
+      this.validation,
+      this.resourceReview
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<String> message = Optional.empty();
+
+    private Optional<CreateMultiResponseBundle> bundle = Optional.empty();
+
+    private Optional<List<CreateMultiResponseResourcesItem>> resources = Optional.empty();
+
+    private Optional<CreateMultiResponseValidation> validation = Optional.empty();
+
+    private Optional<ResourceReviewResult> resourceReview = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(CreateMultiResponse other) {
+      success(other.getSuccess());
+      message(other.getMessage());
+      bundle(other.getBundle());
+      resources(other.getResources());
+      validation(other.getValidation());
+      resourceReview(other.getResourceReview());
+      return this;
     }
 
     /**
-     * @return Whether extraction was successful
+     * <p>Whether extraction was successful</p>
      */
-    @JsonProperty("success")
-    @java.lang.Override
-    public Optional<Boolean> getSuccess() {
-        return success;
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
+    }
+
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
     }
 
     /**
-     * @return Status message
+     * <p>Status message</p>
      */
-    @JsonProperty("message")
-    @java.lang.Override
-    public Optional<String> getMessage() {
-        return message;
+    @JsonSetter(value = "message", nulls = Nulls.SKIP)
+    public Builder message(Optional<String> message) {
+      this.message = message;
+      return this;
+    }
+
+    public Builder message(String message) {
+      this.message = Optional.ofNullable(message);
+      return this;
     }
 
     /**
-     * @return FHIR transaction Bundle containing all extracted resources
+     * <p>FHIR transaction Bundle containing all extracted resources</p>
      */
-    @JsonProperty("bundle")
-    public Optional<CreateMultiResponseBundle> getBundle() {
-        return bundle;
+    @JsonSetter(value = "bundle", nulls = Nulls.SKIP)
+    public Builder bundle(Optional<CreateMultiResponseBundle> bundle) {
+      this.bundle = bundle;
+      return this;
+    }
+
+    public Builder bundle(CreateMultiResponseBundle bundle) {
+      this.bundle = Optional.ofNullable(bundle);
+      return this;
     }
 
     /**
-     * @return Summary of extracted resources
+     * <p>Summary of extracted resources</p>
      */
-    @JsonProperty("resources")
-    public Optional<List<CreateMultiResponseResourcesItem>> getResources() {
-        return resources;
+    @JsonSetter(value = "resources", nulls = Nulls.SKIP)
+    public Builder resources(Optional<List<CreateMultiResponseResourcesItem>> resources) {
+      this.resources = resources;
+      return this;
+    }
+
+    public Builder resources(List<CreateMultiResponseResourcesItem> resources) {
+      this.resources = Optional.ofNullable(resources);
+      return this;
     }
 
     /**
-     * @return FHIR validation results. Present when validation_method is 'check' or 'fix'. Contains results from each validation pass. For 'check', there is one pass. For 'fix', there may be up to 3 passes as the system attempts auto-correction.
+     * <p>FHIR validation results. Present when validation_method is 'check' or 'fix'. Contains results from each validation pass. For 'check', there is one pass. For 'fix', there may be up to 3 passes as the system attempts auto-correction.</p>
      */
-    @JsonProperty("validation")
-    public Optional<CreateMultiResponseValidation> getValidation() {
-        return validation;
+    @JsonSetter(value = "validation", nulls = Nulls.SKIP)
+    public Builder validation(Optional<CreateMultiResponseValidation> validation) {
+      this.validation = validation;
+      return this;
     }
 
-    @JsonProperty("resource_review")
-    @java.lang.Override
-    public Optional<ResourceReviewResult> getResourceReview() {
-        return resourceReview;
+    public Builder validation(CreateMultiResponseValidation validation) {
+      this.validation = Optional.ofNullable(validation);
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CreateMultiResponse && equalTo((CreateMultiResponse) other);
+    @JsonSetter(value = "resource_review", nulls = Nulls.SKIP)
+    public Builder resourceReview(Optional<ResourceReviewResult> resourceReview) {
+      this.resourceReview = resourceReview;
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder resourceReview(ResourceReviewResult resourceReview) {
+      this.resourceReview = Optional.ofNullable(resourceReview);
+      return this;
     }
 
-    private boolean equalTo(CreateMultiResponse other) {
-        return success.equals(other.success)
-                && message.equals(other.message)
-                && bundle.equals(other.bundle)
-                && resources.equals(other.resources)
-                && validation.equals(other.validation)
-                && resourceReview.equals(other.resourceReview);
+    public CreateMultiResponse build() {
+      return new CreateMultiResponse(
+        success,
+        message,
+        bundle,
+        resources,
+        validation,
+        resourceReview,
+        additionalProperties
+      );
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.success, this.message, this.bundle, this.resources, this.validation, this.resourceReview);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("success") ||
+        key.equalsIgnoreCase("message") ||
+        key.equalsIgnoreCase("bundle") ||
+        key.equalsIgnoreCase("resources") ||
+        key.equalsIgnoreCase("validation") ||
+        key.equalsIgnoreCase("resource_review")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<String> message = Optional.empty();
-
-        private Optional<CreateMultiResponseBundle> bundle = Optional.empty();
-
-        private Optional<List<CreateMultiResponseResourcesItem>> resources = Optional.empty();
-
-        private Optional<CreateMultiResponseValidation> validation = Optional.empty();
-
-        private Optional<ResourceReviewResult> resourceReview = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(CreateMultiResponse other) {
-            success(other.getSuccess());
-            message(other.getMessage());
-            bundle(other.getBundle());
-            resources(other.getResources());
-            validation(other.getValidation());
-            resourceReview(other.getResourceReview());
-            return this;
-        }
-
-        /**
-         * <p>Whether extraction was successful</p>
-         */
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        /**
-         * <p>Status message</p>
-         */
-        @JsonSetter(value = "message", nulls = Nulls.SKIP)
-        public Builder message(Optional<String> message) {
-            this.message = message;
-            return this;
-        }
-
-        public Builder message(String message) {
-            this.message = Optional.ofNullable(message);
-            return this;
-        }
-
-        /**
-         * <p>FHIR transaction Bundle containing all extracted resources</p>
-         */
-        @JsonSetter(value = "bundle", nulls = Nulls.SKIP)
-        public Builder bundle(Optional<CreateMultiResponseBundle> bundle) {
-            this.bundle = bundle;
-            return this;
-        }
-
-        public Builder bundle(CreateMultiResponseBundle bundle) {
-            this.bundle = Optional.ofNullable(bundle);
-            return this;
-        }
-
-        /**
-         * <p>Summary of extracted resources</p>
-         */
-        @JsonSetter(value = "resources", nulls = Nulls.SKIP)
-        public Builder resources(Optional<List<CreateMultiResponseResourcesItem>> resources) {
-            this.resources = resources;
-            return this;
-        }
-
-        public Builder resources(List<CreateMultiResponseResourcesItem> resources) {
-            this.resources = Optional.ofNullable(resources);
-            return this;
-        }
-
-        /**
-         * <p>FHIR validation results. Present when validation_method is 'check' or 'fix'. Contains results from each validation pass. For 'check', there is one pass. For 'fix', there may be up to 3 passes as the system attempts auto-correction.</p>
-         */
-        @JsonSetter(value = "validation", nulls = Nulls.SKIP)
-        public Builder validation(Optional<CreateMultiResponseValidation> validation) {
-            this.validation = validation;
-            return this;
-        }
-
-        public Builder validation(CreateMultiResponseValidation validation) {
-            this.validation = Optional.ofNullable(validation);
-            return this;
-        }
-
-        @JsonSetter(value = "resource_review", nulls = Nulls.SKIP)
-        public Builder resourceReview(Optional<ResourceReviewResult> resourceReview) {
-            this.resourceReview = resourceReview;
-            return this;
-        }
-
-        public Builder resourceReview(ResourceReviewResult resourceReview) {
-            this.resourceReview = Optional.ofNullable(resourceReview);
-            return this;
-        }
-
-        public CreateMultiResponse build() {
-            return new CreateMultiResponse(
-                    success, message, bundle, resources, validation, resourceReview, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

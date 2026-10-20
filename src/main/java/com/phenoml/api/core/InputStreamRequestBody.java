@@ -19,56 +19,57 @@ import org.jetbrains.annotations.Nullable;
  * which is useful for file uploads or sending large amounts of data without loading it all into memory.
  */
 public class InputStreamRequestBody extends RequestBody {
-    private final InputStream inputStream;
-    private final MediaType contentType;
 
-    /**
-     * Constructs an InputStreamRequestBody with the specified content type and input stream.
-     *
-     * @param contentType the MediaType of the content, or null if not known
-     * @param inputStream the InputStream containing the data to be sent
-     * @throws NullPointerException if inputStream is null
-     */
-    public InputStreamRequestBody(@Nullable MediaType contentType, InputStream inputStream) {
-        this.contentType = contentType;
-        this.inputStream = Objects.requireNonNull(inputStream, "inputStream == null");
-    }
+  private final InputStream inputStream;
+  private final MediaType contentType;
 
-    /**
-     * Returns the content type of this request body.
-     *
-     * @return the MediaType of the content, or null if not specified
-     */
-    @Nullable
-    @Override
-    public MediaType contentType() {
-        return contentType;
-    }
+  /**
+   * Constructs an InputStreamRequestBody with the specified content type and input stream.
+   *
+   * @param contentType the MediaType of the content, or null if not known
+   * @param inputStream the InputStream containing the data to be sent
+   * @throws NullPointerException if inputStream is null
+   */
+  public InputStreamRequestBody(@Nullable MediaType contentType, InputStream inputStream) {
+    this.contentType = contentType;
+    this.inputStream = Objects.requireNonNull(inputStream, "inputStream == null");
+  }
 
-    /**
-     * Returns the content length of this request body, if known.
-     * This method attempts to determine the length using the InputStream's available() method,
-     * which may not always accurately reflect the total length of the stream.
-     *
-     * @return the content length, or -1 if the length is unknown
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    public long contentLength() throws IOException {
-        return inputStream.available() == 0 ? -1 : inputStream.available();
-    }
+  /**
+   * Returns the content type of this request body.
+   *
+   * @return the MediaType of the content, or null if not specified
+   */
+  @Nullable
+  @Override
+  public MediaType contentType() {
+    return contentType;
+  }
 
-    /**
-     * Writes the content of the InputStream to the given BufferedSink.
-     * This method is responsible for transferring the data from the InputStream to the network request.
-     *
-     * @param sink the BufferedSink to write the content to
-     * @throws IOException if an I/O error occurs during writing
-     */
-    @Override
-    public void writeTo(BufferedSink sink) throws IOException {
-        try (Source source = Okio.source(inputStream)) {
-            sink.writeAll(source);
-        }
+  /**
+   * Returns the content length of this request body, if known.
+   * This method attempts to determine the length using the InputStream's available() method,
+   * which may not always accurately reflect the total length of the stream.
+   *
+   * @return the content length, or -1 if the length is unknown
+   * @throws IOException if an I/O error occurs
+   */
+  @Override
+  public long contentLength() throws IOException {
+    return inputStream.available() == 0 ? -1 : inputStream.available();
+  }
+
+  /**
+   * Writes the content of the InputStream to the given BufferedSink.
+   * This method is responsible for transferring the data from the InputStream to the network request.
+   *
+   * @param sink the BufferedSink to write the content to
+   * @throws IOException if an I/O error occurs during writing
+   */
+  @Override
+  public void writeTo(BufferedSink sink) throws IOException {
+    try (Source source = Okio.source(inputStream)) {
+      sink.writeAll(source);
     }
+  }
 }

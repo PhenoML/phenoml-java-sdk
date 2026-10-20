@@ -20,71 +20,263 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ChatMessageTemplate.Builder.class)
 public final class ChatMessageTemplate {
-    private final Optional<String> id;
 
-    private final Optional<String> sessionId;
+  private final Optional<String> id;
 
-    private final Optional<ChatMessageTemplateRole> role;
+  private final Optional<String> sessionId;
 
-    private final Optional<String> content;
+  private final Optional<ChatMessageTemplateRole> role;
 
-    private final Optional<String> created;
+  private final Optional<String> content;
 
-    private final Optional<String> updated;
+  private final Optional<String> created;
 
-    private final Optional<String> functionName;
+  private final Optional<String> updated;
 
-    private final Optional<Map<String, Object>> functionArgs;
+  private final Optional<String> functionName;
 
-    private final Optional<Map<String, Object>> functionResult;
+  private final Optional<Map<String, Object>> functionArgs;
 
-    private final Optional<Integer> messageOrder;
+  private final Optional<Map<String, Object>> functionResult;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Integer> messageOrder;
 
-    private ChatMessageTemplate(
-            Optional<String> id,
-            Optional<String> sessionId,
-            Optional<ChatMessageTemplateRole> role,
-            Optional<String> content,
-            Optional<String> created,
-            Optional<String> updated,
-            Optional<String> functionName,
-            Optional<Map<String, Object>> functionArgs,
-            Optional<Map<String, Object>> functionResult,
-            Optional<Integer> messageOrder,
-            Map<String, Object> additionalProperties) {
-        this.id = id;
-        this.sessionId = sessionId;
-        this.role = role;
-        this.content = content;
-        this.created = created;
-        this.updated = updated;
-        this.functionName = functionName;
-        this.functionArgs = functionArgs;
-        this.functionResult = functionResult;
-        this.messageOrder = messageOrder;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ChatMessageTemplate(
+    Optional<String> id,
+    Optional<String> sessionId,
+    Optional<ChatMessageTemplateRole> role,
+    Optional<String> content,
+    Optional<String> created,
+    Optional<String> updated,
+    Optional<String> functionName,
+    Optional<Map<String, Object>> functionArgs,
+    Optional<Map<String, Object>> functionResult,
+    Optional<Integer> messageOrder,
+    Map<String, Object> additionalProperties
+  ) {
+    this.id = id;
+    this.sessionId = sessionId;
+    this.role = role;
+    this.content = content;
+    this.created = created;
+    this.updated = updated;
+    this.functionName = functionName;
+    this.functionArgs = functionArgs;
+    this.functionResult = functionResult;
+    this.messageOrder = messageOrder;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Chat message ID
+   */
+  @JsonProperty("id")
+  public Optional<String> getId() {
+    return id;
+  }
+
+  /**
+   * @return Chat session ID
+   */
+  @JsonProperty("session_id")
+  public Optional<String> getSessionId() {
+    return sessionId;
+  }
+
+  /**
+   * @return Message role indicating the source/type of the message:
+   * <ul>
+   * <li><code>user</code> - Messages from the user</li>
+   * <li><code>assistant</code> - Text responses from the AI assistant</li>
+   * <li><code>model</code> - Function/tool call requests to the model</li>
+   * <li><code>function</code> - Function/tool call results</li>
+   * </ul>
+   */
+  @JsonProperty("role")
+  public Optional<ChatMessageTemplateRole> getRole() {
+    return role;
+  }
+
+  /**
+   * @return Message content
+   */
+  @JsonProperty("content")
+  public Optional<String> getContent() {
+    return content;
+  }
+
+  /**
+   * @return Message created time
+   */
+  @JsonProperty("created")
+  public Optional<String> getCreated() {
+    return created;
+  }
+
+  /**
+   * @return Message updated time
+   */
+  @JsonProperty("updated")
+  public Optional<String> getUpdated() {
+    return updated;
+  }
+
+  /**
+   * @return Function name
+   */
+  @JsonProperty("function_name")
+  public Optional<String> getFunctionName() {
+    return functionName;
+  }
+
+  /**
+   * @return Function arguments
+   */
+  @JsonProperty("function_args")
+  public Optional<Map<String, Object>> getFunctionArgs() {
+    return functionArgs;
+  }
+
+  /**
+   * @return Function result
+   */
+  @JsonProperty("function_result")
+  public Optional<Map<String, Object>> getFunctionResult() {
+    return functionResult;
+  }
+
+  /**
+   * @return Message order
+   */
+  @JsonProperty("message_order")
+  public Optional<Integer> getMessageOrder() {
+    return messageOrder;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ChatMessageTemplate && equalTo((ChatMessageTemplate) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ChatMessageTemplate other) {
+    return (
+      id.equals(other.id) &&
+      sessionId.equals(other.sessionId) &&
+      role.equals(other.role) &&
+      content.equals(other.content) &&
+      created.equals(other.created) &&
+      updated.equals(other.updated) &&
+      functionName.equals(other.functionName) &&
+      functionArgs.equals(other.functionArgs) &&
+      functionResult.equals(other.functionResult) &&
+      messageOrder.equals(other.messageOrder)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.id,
+      this.sessionId,
+      this.role,
+      this.content,
+      this.created,
+      this.updated,
+      this.functionName,
+      this.functionArgs,
+      this.functionResult,
+      this.messageOrder
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> id = Optional.empty();
+
+    private Optional<String> sessionId = Optional.empty();
+
+    private Optional<ChatMessageTemplateRole> role = Optional.empty();
+
+    private Optional<String> content = Optional.empty();
+
+    private Optional<String> created = Optional.empty();
+
+    private Optional<String> updated = Optional.empty();
+
+    private Optional<String> functionName = Optional.empty();
+
+    private Optional<Map<String, Object>> functionArgs = Optional.empty();
+
+    private Optional<Map<String, Object>> functionResult = Optional.empty();
+
+    private Optional<Integer> messageOrder = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ChatMessageTemplate other) {
+      id(other.getId());
+      sessionId(other.getSessionId());
+      role(other.getRole());
+      content(other.getContent());
+      created(other.getCreated());
+      updated(other.getUpdated());
+      functionName(other.getFunctionName());
+      functionArgs(other.getFunctionArgs());
+      functionResult(other.getFunctionResult());
+      messageOrder(other.getMessageOrder());
+      return this;
     }
 
     /**
-     * @return Chat message ID
+     * <p>Chat message ID</p>
      */
-    @JsonProperty("id")
-    public Optional<String> getId() {
-        return id;
+    @JsonSetter(value = "id", nulls = Nulls.SKIP)
+    public Builder id(Optional<String> id) {
+      this.id = id;
+      return this;
+    }
+
+    public Builder id(String id) {
+      this.id = Optional.ofNullable(id);
+      return this;
     }
 
     /**
-     * @return Chat session ID
+     * <p>Chat session ID</p>
      */
-    @JsonProperty("session_id")
-    public Optional<String> getSessionId() {
-        return sessionId;
+    @JsonSetter(value = "session_id", nulls = Nulls.SKIP)
+    public Builder sessionId(Optional<String> sessionId) {
+      this.sessionId = sessionId;
+      return this;
+    }
+
+    public Builder sessionId(String sessionId) {
+      this.sessionId = Optional.ofNullable(sessionId);
+      return this;
     }
 
     /**
-     * @return Message role indicating the source/type of the message:
+     * <p>Message role indicating the source/type of the message:</p>
      * <ul>
      * <li><code>user</code> - Messages from the user</li>
      * <li><code>assistant</code> - Text responses from the AI assistant</li>
@@ -92,325 +284,158 @@ public final class ChatMessageTemplate {
      * <li><code>function</code> - Function/tool call results</li>
      * </ul>
      */
-    @JsonProperty("role")
-    public Optional<ChatMessageTemplateRole> getRole() {
-        return role;
+    @JsonSetter(value = "role", nulls = Nulls.SKIP)
+    public Builder role(Optional<ChatMessageTemplateRole> role) {
+      this.role = role;
+      return this;
+    }
+
+    public Builder role(ChatMessageTemplateRole role) {
+      this.role = Optional.ofNullable(role);
+      return this;
     }
 
     /**
-     * @return Message content
+     * <p>Message content</p>
      */
-    @JsonProperty("content")
-    public Optional<String> getContent() {
-        return content;
+    @JsonSetter(value = "content", nulls = Nulls.SKIP)
+    public Builder content(Optional<String> content) {
+      this.content = content;
+      return this;
+    }
+
+    public Builder content(String content) {
+      this.content = Optional.ofNullable(content);
+      return this;
     }
 
     /**
-     * @return Message created time
+     * <p>Message created time</p>
      */
-    @JsonProperty("created")
-    public Optional<String> getCreated() {
-        return created;
+    @JsonSetter(value = "created", nulls = Nulls.SKIP)
+    public Builder created(Optional<String> created) {
+      this.created = created;
+      return this;
+    }
+
+    public Builder created(String created) {
+      this.created = Optional.ofNullable(created);
+      return this;
     }
 
     /**
-     * @return Message updated time
+     * <p>Message updated time</p>
      */
-    @JsonProperty("updated")
-    public Optional<String> getUpdated() {
-        return updated;
+    @JsonSetter(value = "updated", nulls = Nulls.SKIP)
+    public Builder updated(Optional<String> updated) {
+      this.updated = updated;
+      return this;
+    }
+
+    public Builder updated(String updated) {
+      this.updated = Optional.ofNullable(updated);
+      return this;
     }
 
     /**
-     * @return Function name
+     * <p>Function name</p>
      */
-    @JsonProperty("function_name")
-    public Optional<String> getFunctionName() {
-        return functionName;
+    @JsonSetter(value = "function_name", nulls = Nulls.SKIP)
+    public Builder functionName(Optional<String> functionName) {
+      this.functionName = functionName;
+      return this;
+    }
+
+    public Builder functionName(String functionName) {
+      this.functionName = Optional.ofNullable(functionName);
+      return this;
     }
 
     /**
-     * @return Function arguments
+     * <p>Function arguments</p>
      */
-    @JsonProperty("function_args")
-    public Optional<Map<String, Object>> getFunctionArgs() {
-        return functionArgs;
+    @JsonSetter(value = "function_args", nulls = Nulls.SKIP)
+    public Builder functionArgs(Optional<Map<String, Object>> functionArgs) {
+      this.functionArgs = functionArgs;
+      return this;
+    }
+
+    public Builder functionArgs(Map<String, Object> functionArgs) {
+      this.functionArgs = Optional.ofNullable(functionArgs);
+      return this;
     }
 
     /**
-     * @return Function result
+     * <p>Function result</p>
      */
-    @JsonProperty("function_result")
-    public Optional<Map<String, Object>> getFunctionResult() {
-        return functionResult;
+    @JsonSetter(value = "function_result", nulls = Nulls.SKIP)
+    public Builder functionResult(Optional<Map<String, Object>> functionResult) {
+      this.functionResult = functionResult;
+      return this;
+    }
+
+    public Builder functionResult(Map<String, Object> functionResult) {
+      this.functionResult = Optional.ofNullable(functionResult);
+      return this;
     }
 
     /**
-     * @return Message order
+     * <p>Message order</p>
      */
-    @JsonProperty("message_order")
-    public Optional<Integer> getMessageOrder() {
-        return messageOrder;
+    @JsonSetter(value = "message_order", nulls = Nulls.SKIP)
+    public Builder messageOrder(Optional<Integer> messageOrder) {
+      this.messageOrder = messageOrder;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ChatMessageTemplate && equalTo((ChatMessageTemplate) other);
+    public Builder messageOrder(Integer messageOrder) {
+      this.messageOrder = Optional.ofNullable(messageOrder);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ChatMessageTemplate build() {
+      return new ChatMessageTemplate(
+        id,
+        sessionId,
+        role,
+        content,
+        created,
+        updated,
+        functionName,
+        functionArgs,
+        functionResult,
+        messageOrder,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(ChatMessageTemplate other) {
-        return id.equals(other.id)
-                && sessionId.equals(other.sessionId)
-                && role.equals(other.role)
-                && content.equals(other.content)
-                && created.equals(other.created)
-                && updated.equals(other.updated)
-                && functionName.equals(other.functionName)
-                && functionArgs.equals(other.functionArgs)
-                && functionResult.equals(other.functionResult)
-                && messageOrder.equals(other.messageOrder);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("id") ||
+        key.equalsIgnoreCase("session_id") ||
+        key.equalsIgnoreCase("role") ||
+        key.equalsIgnoreCase("content") ||
+        key.equalsIgnoreCase("created") ||
+        key.equalsIgnoreCase("updated") ||
+        key.equalsIgnoreCase("function_name") ||
+        key.equalsIgnoreCase("function_args") ||
+        key.equalsIgnoreCase("function_result") ||
+        key.equalsIgnoreCase("message_order")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.id,
-                this.sessionId,
-                this.role,
-                this.content,
-                this.created,
-                this.updated,
-                this.functionName,
-                this.functionArgs,
-                this.functionResult,
-                this.messageOrder);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> id = Optional.empty();
-
-        private Optional<String> sessionId = Optional.empty();
-
-        private Optional<ChatMessageTemplateRole> role = Optional.empty();
-
-        private Optional<String> content = Optional.empty();
-
-        private Optional<String> created = Optional.empty();
-
-        private Optional<String> updated = Optional.empty();
-
-        private Optional<String> functionName = Optional.empty();
-
-        private Optional<Map<String, Object>> functionArgs = Optional.empty();
-
-        private Optional<Map<String, Object>> functionResult = Optional.empty();
-
-        private Optional<Integer> messageOrder = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ChatMessageTemplate other) {
-            id(other.getId());
-            sessionId(other.getSessionId());
-            role(other.getRole());
-            content(other.getContent());
-            created(other.getCreated());
-            updated(other.getUpdated());
-            functionName(other.getFunctionName());
-            functionArgs(other.getFunctionArgs());
-            functionResult(other.getFunctionResult());
-            messageOrder(other.getMessageOrder());
-            return this;
-        }
-
-        /**
-         * <p>Chat message ID</p>
-         */
-        @JsonSetter(value = "id", nulls = Nulls.SKIP)
-        public Builder id(Optional<String> id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder id(String id) {
-            this.id = Optional.ofNullable(id);
-            return this;
-        }
-
-        /**
-         * <p>Chat session ID</p>
-         */
-        @JsonSetter(value = "session_id", nulls = Nulls.SKIP)
-        public Builder sessionId(Optional<String> sessionId) {
-            this.sessionId = sessionId;
-            return this;
-        }
-
-        public Builder sessionId(String sessionId) {
-            this.sessionId = Optional.ofNullable(sessionId);
-            return this;
-        }
-
-        /**
-         * <p>Message role indicating the source/type of the message:</p>
-         * <ul>
-         * <li><code>user</code> - Messages from the user</li>
-         * <li><code>assistant</code> - Text responses from the AI assistant</li>
-         * <li><code>model</code> - Function/tool call requests to the model</li>
-         * <li><code>function</code> - Function/tool call results</li>
-         * </ul>
-         */
-        @JsonSetter(value = "role", nulls = Nulls.SKIP)
-        public Builder role(Optional<ChatMessageTemplateRole> role) {
-            this.role = role;
-            return this;
-        }
-
-        public Builder role(ChatMessageTemplateRole role) {
-            this.role = Optional.ofNullable(role);
-            return this;
-        }
-
-        /**
-         * <p>Message content</p>
-         */
-        @JsonSetter(value = "content", nulls = Nulls.SKIP)
-        public Builder content(Optional<String> content) {
-            this.content = content;
-            return this;
-        }
-
-        public Builder content(String content) {
-            this.content = Optional.ofNullable(content);
-            return this;
-        }
-
-        /**
-         * <p>Message created time</p>
-         */
-        @JsonSetter(value = "created", nulls = Nulls.SKIP)
-        public Builder created(Optional<String> created) {
-            this.created = created;
-            return this;
-        }
-
-        public Builder created(String created) {
-            this.created = Optional.ofNullable(created);
-            return this;
-        }
-
-        /**
-         * <p>Message updated time</p>
-         */
-        @JsonSetter(value = "updated", nulls = Nulls.SKIP)
-        public Builder updated(Optional<String> updated) {
-            this.updated = updated;
-            return this;
-        }
-
-        public Builder updated(String updated) {
-            this.updated = Optional.ofNullable(updated);
-            return this;
-        }
-
-        /**
-         * <p>Function name</p>
-         */
-        @JsonSetter(value = "function_name", nulls = Nulls.SKIP)
-        public Builder functionName(Optional<String> functionName) {
-            this.functionName = functionName;
-            return this;
-        }
-
-        public Builder functionName(String functionName) {
-            this.functionName = Optional.ofNullable(functionName);
-            return this;
-        }
-
-        /**
-         * <p>Function arguments</p>
-         */
-        @JsonSetter(value = "function_args", nulls = Nulls.SKIP)
-        public Builder functionArgs(Optional<Map<String, Object>> functionArgs) {
-            this.functionArgs = functionArgs;
-            return this;
-        }
-
-        public Builder functionArgs(Map<String, Object> functionArgs) {
-            this.functionArgs = Optional.ofNullable(functionArgs);
-            return this;
-        }
-
-        /**
-         * <p>Function result</p>
-         */
-        @JsonSetter(value = "function_result", nulls = Nulls.SKIP)
-        public Builder functionResult(Optional<Map<String, Object>> functionResult) {
-            this.functionResult = functionResult;
-            return this;
-        }
-
-        public Builder functionResult(Map<String, Object> functionResult) {
-            this.functionResult = Optional.ofNullable(functionResult);
-            return this;
-        }
-
-        /**
-         * <p>Message order</p>
-         */
-        @JsonSetter(value = "message_order", nulls = Nulls.SKIP)
-        public Builder messageOrder(Optional<Integer> messageOrder) {
-            this.messageOrder = messageOrder;
-            return this;
-        }
-
-        public Builder messageOrder(Integer messageOrder) {
-            this.messageOrder = Optional.ofNullable(messageOrder);
-            return this;
-        }
-
-        public ChatMessageTemplate build() {
-            return new ChatMessageTemplate(
-                    id,
-                    sessionId,
-                    role,
-                    content,
-                    created,
-                    updated,
-                    functionName,
-                    functionArgs,
-                    functionResult,
-                    messageOrder,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

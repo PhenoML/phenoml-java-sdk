@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ICreateMultiResponse {
-    Optional<Boolean> getSuccess();
+  Optional<Boolean> getSuccess();
 
-    Optional<String> getMessage();
+  Optional<String> getMessage();
 
-    Optional<CreateMultiResponseBundle> getBundle();
+  Optional<CreateMultiResponseBundle> getBundle();
 
-    Optional<List<CreateMultiResponseResourcesItem>> getResources();
+  Optional<List<CreateMultiResponseResourcesItem>> getResources();
 
-    Optional<CreateMultiResponseValidation> getValidation();
+  Optional<CreateMultiResponseValidation> getValidation();
 
-    Optional<ResourceReviewResult> getResourceReview();
+  Optional<ResourceReviewResult> getResourceReview();
 }

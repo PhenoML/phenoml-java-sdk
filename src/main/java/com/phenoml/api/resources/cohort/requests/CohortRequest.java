@@ -19,110 +19,119 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CohortRequest.Builder.class)
 public final class CohortRequest {
-    private final String text;
 
-    private final Map<String, Object> additionalProperties;
+  private final String text;
 
-    private CohortRequest(String text, Map<String, Object> additionalProperties) {
-        this.text = text;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CohortRequest(String text, Map<String, Object> additionalProperties) {
+    this.text = text;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Natural language text describing patient cohort criteria
+   */
+  @JsonProperty("text")
+  public String getText() {
+    return text;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CohortRequest && equalTo((CohortRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CohortRequest other) {
+    return text.equals(other.text);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.text);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static TextStage builder() {
+    return new Builder();
+  }
+
+  public interface TextStage {
+    /**
+     * <p>Natural language text describing patient cohort criteria</p>
+     */
+    _FinalStage text(@NotNull String text);
+
+    Builder from(CohortRequest other);
+  }
+
+  public interface _FinalStage {
+    CohortRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements TextStage, _FinalStage {
+
+    private String text;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(CohortRequest other) {
+      text(other.getText());
+      return this;
     }
 
     /**
-     * @return Natural language text describing patient cohort criteria
+     * <p>Natural language text describing patient cohort criteria</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("text")
-    public String getText() {
-        return text;
+    @java.lang.Override
+    @JsonSetter("text")
+    public _FinalStage text(@NotNull String text) {
+      this.text = Objects.requireNonNull(text, "text must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CohortRequest && equalTo((CohortRequest) other);
+    public CohortRequest build() {
+      return new CohortRequest(text, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(CohortRequest other) {
-        return text.equals(other.text);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.text);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("text")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static TextStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface TextStage {
-        /**
-         * <p>Natural language text describing patient cohort criteria</p>
-         */
-        _FinalStage text(@NotNull String text);
-
-        Builder from(CohortRequest other);
-    }
-
-    public interface _FinalStage {
-        CohortRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements TextStage, _FinalStage {
-        private String text;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(CohortRequest other) {
-            text(other.getText());
-            return this;
-        }
-
-        /**
-         * <p>Natural language text describing patient cohort criteria</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("text")
-        public _FinalStage text(@NotNull String text) {
-            this.text = Objects.requireNonNull(text, "text must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public CohortRequest build() {
-            return new CohortRequest(text, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

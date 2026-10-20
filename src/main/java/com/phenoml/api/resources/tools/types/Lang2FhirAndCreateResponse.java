@@ -20,178 +20,203 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Lang2FhirAndCreateResponse.Builder.class)
 public final class Lang2FhirAndCreateResponse {
-    private final Optional<Map<String, Object>> fhirResource;
 
-    private final Optional<String> fhirId;
+  private final Optional<Map<String, Object>> fhirResource;
 
-    private final Optional<Boolean> success;
+  private final Optional<String> fhirId;
 
-    private final Optional<String> message;
+  private final Optional<Boolean> success;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> message;
 
-    private Lang2FhirAndCreateResponse(
-            Optional<Map<String, Object>> fhirResource,
-            Optional<String> fhirId,
-            Optional<Boolean> success,
-            Optional<String> message,
-            Map<String, Object> additionalProperties) {
-        this.fhirResource = fhirResource;
-        this.fhirId = fhirId;
-        this.success = success;
-        this.message = message;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private Lang2FhirAndCreateResponse(
+    Optional<Map<String, Object>> fhirResource,
+    Optional<String> fhirId,
+    Optional<Boolean> success,
+    Optional<String> message,
+    Map<String, Object> additionalProperties
+  ) {
+    this.fhirResource = fhirResource;
+    this.fhirId = fhirId;
+    this.success = success;
+    this.message = message;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return The created FHIR resource
+   */
+  @JsonProperty("fhir_resource")
+  public Optional<Map<String, Object>> getFhirResource() {
+    return fhirResource;
+  }
+
+  /**
+   * @return ID of the resource in the FHIR server (if successfully stored)
+   */
+  @JsonProperty("fhir_id")
+  public Optional<String> getFhirId() {
+    return fhirId;
+  }
+
+  @JsonProperty("success")
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  /**
+   * @return Status message
+   */
+  @JsonProperty("message")
+  public Optional<String> getMessage() {
+    return message;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof Lang2FhirAndCreateResponse && equalTo((Lang2FhirAndCreateResponse) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(Lang2FhirAndCreateResponse other) {
+    return (
+      fhirResource.equals(other.fhirResource) &&
+      fhirId.equals(other.fhirId) &&
+      success.equals(other.success) &&
+      message.equals(other.message)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.fhirResource, this.fhirId, this.success, this.message);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Map<String, Object>> fhirResource = Optional.empty();
+
+    private Optional<String> fhirId = Optional.empty();
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<String> message = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(Lang2FhirAndCreateResponse other) {
+      fhirResource(other.getFhirResource());
+      fhirId(other.getFhirId());
+      success(other.getSuccess());
+      message(other.getMessage());
+      return this;
     }
 
     /**
-     * @return The created FHIR resource
+     * <p>The created FHIR resource</p>
      */
-    @JsonProperty("fhir_resource")
-    public Optional<Map<String, Object>> getFhirResource() {
-        return fhirResource;
+    @JsonSetter(value = "fhir_resource", nulls = Nulls.SKIP)
+    public Builder fhirResource(Optional<Map<String, Object>> fhirResource) {
+      this.fhirResource = fhirResource;
+      return this;
+    }
+
+    public Builder fhirResource(Map<String, Object> fhirResource) {
+      this.fhirResource = Optional.ofNullable(fhirResource);
+      return this;
     }
 
     /**
-     * @return ID of the resource in the FHIR server (if successfully stored)
+     * <p>ID of the resource in the FHIR server (if successfully stored)</p>
      */
-    @JsonProperty("fhir_id")
-    public Optional<String> getFhirId() {
-        return fhirId;
+    @JsonSetter(value = "fhir_id", nulls = Nulls.SKIP)
+    public Builder fhirId(Optional<String> fhirId) {
+      this.fhirId = fhirId;
+      return this;
     }
 
-    @JsonProperty("success")
-    public Optional<Boolean> getSuccess() {
-        return success;
+    public Builder fhirId(String fhirId) {
+      this.fhirId = Optional.ofNullable(fhirId);
+      return this;
+    }
+
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
+    }
+
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
     }
 
     /**
-     * @return Status message
+     * <p>Status message</p>
      */
-    @JsonProperty("message")
-    public Optional<String> getMessage() {
-        return message;
+    @JsonSetter(value = "message", nulls = Nulls.SKIP)
+    public Builder message(Optional<String> message) {
+      this.message = message;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof Lang2FhirAndCreateResponse && equalTo((Lang2FhirAndCreateResponse) other);
+    public Builder message(String message) {
+      this.message = Optional.ofNullable(message);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Lang2FhirAndCreateResponse build() {
+      return new Lang2FhirAndCreateResponse(
+        fhirResource,
+        fhirId,
+        success,
+        message,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(Lang2FhirAndCreateResponse other) {
-        return fhirResource.equals(other.fhirResource)
-                && fhirId.equals(other.fhirId)
-                && success.equals(other.success)
-                && message.equals(other.message);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("fhir_resource") ||
+        key.equalsIgnoreCase("fhir_id") ||
+        key.equalsIgnoreCase("success") ||
+        key.equalsIgnoreCase("message")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.fhirResource, this.fhirId, this.success, this.message);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Map<String, Object>> fhirResource = Optional.empty();
-
-        private Optional<String> fhirId = Optional.empty();
-
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<String> message = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(Lang2FhirAndCreateResponse other) {
-            fhirResource(other.getFhirResource());
-            fhirId(other.getFhirId());
-            success(other.getSuccess());
-            message(other.getMessage());
-            return this;
-        }
-
-        /**
-         * <p>The created FHIR resource</p>
-         */
-        @JsonSetter(value = "fhir_resource", nulls = Nulls.SKIP)
-        public Builder fhirResource(Optional<Map<String, Object>> fhirResource) {
-            this.fhirResource = fhirResource;
-            return this;
-        }
-
-        public Builder fhirResource(Map<String, Object> fhirResource) {
-            this.fhirResource = Optional.ofNullable(fhirResource);
-            return this;
-        }
-
-        /**
-         * <p>ID of the resource in the FHIR server (if successfully stored)</p>
-         */
-        @JsonSetter(value = "fhir_id", nulls = Nulls.SKIP)
-        public Builder fhirId(Optional<String> fhirId) {
-            this.fhirId = fhirId;
-            return this;
-        }
-
-        public Builder fhirId(String fhirId) {
-            this.fhirId = Optional.ofNullable(fhirId);
-            return this;
-        }
-
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        /**
-         * <p>Status message</p>
-         */
-        @JsonSetter(value = "message", nulls = Nulls.SKIP)
-        public Builder message(Optional<String> message) {
-            this.message = message;
-            return this;
-        }
-
-        public Builder message(String message) {
-            this.message = Optional.ofNullable(message);
-            return this;
-        }
-
-        public Lang2FhirAndCreateResponse build() {
-            return new Lang2FhirAndCreateResponse(fhirResource, fhirId, success, message, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

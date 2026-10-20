@@ -20,233 +20,266 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ResourceReviewFinding.Builder.class)
 public final class ResourceReviewFinding {
-    private final Optional<ResourceReviewFindingFieldKind> fieldKind;
 
-    private final Optional<String> fieldPath;
+  private final Optional<ResourceReviewFindingFieldKind> fieldKind;
 
-    private final Optional<String> value;
+  private final Optional<String> fieldPath;
 
-    private final Optional<Boolean> supported;
+  private final Optional<String> value;
 
-    private final Optional<Boolean> unaudited;
+  private final Optional<Boolean> supported;
 
-    private final Optional<String> rationale;
+  private final Optional<Boolean> unaudited;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> rationale;
 
-    private ResourceReviewFinding(
-            Optional<ResourceReviewFindingFieldKind> fieldKind,
-            Optional<String> fieldPath,
-            Optional<String> value,
-            Optional<Boolean> supported,
-            Optional<Boolean> unaudited,
-            Optional<String> rationale,
-            Map<String, Object> additionalProperties) {
-        this.fieldKind = fieldKind;
-        this.fieldPath = fieldPath;
-        this.value = value;
-        this.supported = supported;
-        this.unaudited = unaudited;
-        this.rationale = rationale;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ResourceReviewFinding(
+    Optional<ResourceReviewFindingFieldKind> fieldKind,
+    Optional<String> fieldPath,
+    Optional<String> value,
+    Optional<Boolean> supported,
+    Optional<Boolean> unaudited,
+    Optional<String> rationale,
+    Map<String, Object> additionalProperties
+  ) {
+    this.fieldKind = fieldKind;
+    this.fieldPath = fieldPath;
+    this.value = value;
+    this.supported = supported;
+    this.unaudited = unaudited;
+    this.rationale = rationale;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("fieldKind")
+  public Optional<ResourceReviewFindingFieldKind> getFieldKind() {
+    return fieldKind;
+  }
+
+  /**
+   * @return JSON path of the field within the resource.
+   */
+  @JsonProperty("fieldPath")
+  public Optional<String> getFieldPath() {
+    return fieldPath;
+  }
+
+  @JsonProperty("value")
+  public Optional<String> getValue() {
+    return value;
+  }
+
+  /**
+   * @return False when the reviewer found the field unsupported. Do not treat this field as a verdict when unaudited is true.
+   */
+  @JsonProperty("supported")
+  public Optional<Boolean> getSupported() {
+    return supported;
+  }
+
+  /**
+   * @return True when the reviewer did not return a verdict for this field; the resource was quarantined without treating the finding as evidence that the value is unsupported.
+   */
+  @JsonProperty("unaudited")
+  public Optional<Boolean> getUnaudited() {
+    return unaudited;
+  }
+
+  /**
+   * @return Short explanation of why the value is not supported by the source.
+   */
+  @JsonProperty("rationale")
+  public Optional<String> getRationale() {
+    return rationale;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ResourceReviewFinding && equalTo((ResourceReviewFinding) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ResourceReviewFinding other) {
+    return (
+      fieldKind.equals(other.fieldKind) &&
+      fieldPath.equals(other.fieldPath) &&
+      value.equals(other.value) &&
+      supported.equals(other.supported) &&
+      unaudited.equals(other.unaudited) &&
+      rationale.equals(other.rationale)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.fieldKind,
+      this.fieldPath,
+      this.value,
+      this.supported,
+      this.unaudited,
+      this.rationale
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<ResourceReviewFindingFieldKind> fieldKind = Optional.empty();
+
+    private Optional<String> fieldPath = Optional.empty();
+
+    private Optional<String> value = Optional.empty();
+
+    private Optional<Boolean> supported = Optional.empty();
+
+    private Optional<Boolean> unaudited = Optional.empty();
+
+    private Optional<String> rationale = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ResourceReviewFinding other) {
+      fieldKind(other.getFieldKind());
+      fieldPath(other.getFieldPath());
+      value(other.getValue());
+      supported(other.getSupported());
+      unaudited(other.getUnaudited());
+      rationale(other.getRationale());
+      return this;
     }
 
-    @JsonProperty("fieldKind")
-    public Optional<ResourceReviewFindingFieldKind> getFieldKind() {
-        return fieldKind;
+    @JsonSetter(value = "fieldKind", nulls = Nulls.SKIP)
+    public Builder fieldKind(Optional<ResourceReviewFindingFieldKind> fieldKind) {
+      this.fieldKind = fieldKind;
+      return this;
+    }
+
+    public Builder fieldKind(ResourceReviewFindingFieldKind fieldKind) {
+      this.fieldKind = Optional.ofNullable(fieldKind);
+      return this;
     }
 
     /**
-     * @return JSON path of the field within the resource.
+     * <p>JSON path of the field within the resource.</p>
      */
-    @JsonProperty("fieldPath")
-    public Optional<String> getFieldPath() {
-        return fieldPath;
+    @JsonSetter(value = "fieldPath", nulls = Nulls.SKIP)
+    public Builder fieldPath(Optional<String> fieldPath) {
+      this.fieldPath = fieldPath;
+      return this;
     }
 
-    @JsonProperty("value")
-    public Optional<String> getValue() {
-        return value;
+    public Builder fieldPath(String fieldPath) {
+      this.fieldPath = Optional.ofNullable(fieldPath);
+      return this;
+    }
+
+    @JsonSetter(value = "value", nulls = Nulls.SKIP)
+    public Builder value(Optional<String> value) {
+      this.value = value;
+      return this;
+    }
+
+    public Builder value(String value) {
+      this.value = Optional.ofNullable(value);
+      return this;
     }
 
     /**
-     * @return False when the reviewer found the field unsupported. Do not treat this field as a verdict when unaudited is true.
+     * <p>False when the reviewer found the field unsupported. Do not treat this field as a verdict when unaudited is true.</p>
      */
-    @JsonProperty("supported")
-    public Optional<Boolean> getSupported() {
-        return supported;
+    @JsonSetter(value = "supported", nulls = Nulls.SKIP)
+    public Builder supported(Optional<Boolean> supported) {
+      this.supported = supported;
+      return this;
+    }
+
+    public Builder supported(Boolean supported) {
+      this.supported = Optional.ofNullable(supported);
+      return this;
     }
 
     /**
-     * @return True when the reviewer did not return a verdict for this field; the resource was quarantined without treating the finding as evidence that the value is unsupported.
+     * <p>True when the reviewer did not return a verdict for this field; the resource was quarantined without treating the finding as evidence that the value is unsupported.</p>
      */
-    @JsonProperty("unaudited")
-    public Optional<Boolean> getUnaudited() {
-        return unaudited;
+    @JsonSetter(value = "unaudited", nulls = Nulls.SKIP)
+    public Builder unaudited(Optional<Boolean> unaudited) {
+      this.unaudited = unaudited;
+      return this;
+    }
+
+    public Builder unaudited(Boolean unaudited) {
+      this.unaudited = Optional.ofNullable(unaudited);
+      return this;
     }
 
     /**
-     * @return Short explanation of why the value is not supported by the source.
+     * <p>Short explanation of why the value is not supported by the source.</p>
      */
-    @JsonProperty("rationale")
-    public Optional<String> getRationale() {
-        return rationale;
+    @JsonSetter(value = "rationale", nulls = Nulls.SKIP)
+    public Builder rationale(Optional<String> rationale) {
+      this.rationale = rationale;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ResourceReviewFinding && equalTo((ResourceReviewFinding) other);
+    public Builder rationale(String rationale) {
+      this.rationale = Optional.ofNullable(rationale);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ResourceReviewFinding build() {
+      return new ResourceReviewFinding(
+        fieldKind,
+        fieldPath,
+        value,
+        supported,
+        unaudited,
+        rationale,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(ResourceReviewFinding other) {
-        return fieldKind.equals(other.fieldKind)
-                && fieldPath.equals(other.fieldPath)
-                && value.equals(other.value)
-                && supported.equals(other.supported)
-                && unaudited.equals(other.unaudited)
-                && rationale.equals(other.rationale);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("fieldKind") ||
+        key.equalsIgnoreCase("fieldPath") ||
+        key.equalsIgnoreCase("value") ||
+        key.equalsIgnoreCase("supported") ||
+        key.equalsIgnoreCase("unaudited") ||
+        key.equalsIgnoreCase("rationale")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.fieldKind, this.fieldPath, this.value, this.supported, this.unaudited, this.rationale);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<ResourceReviewFindingFieldKind> fieldKind = Optional.empty();
-
-        private Optional<String> fieldPath = Optional.empty();
-
-        private Optional<String> value = Optional.empty();
-
-        private Optional<Boolean> supported = Optional.empty();
-
-        private Optional<Boolean> unaudited = Optional.empty();
-
-        private Optional<String> rationale = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ResourceReviewFinding other) {
-            fieldKind(other.getFieldKind());
-            fieldPath(other.getFieldPath());
-            value(other.getValue());
-            supported(other.getSupported());
-            unaudited(other.getUnaudited());
-            rationale(other.getRationale());
-            return this;
-        }
-
-        @JsonSetter(value = "fieldKind", nulls = Nulls.SKIP)
-        public Builder fieldKind(Optional<ResourceReviewFindingFieldKind> fieldKind) {
-            this.fieldKind = fieldKind;
-            return this;
-        }
-
-        public Builder fieldKind(ResourceReviewFindingFieldKind fieldKind) {
-            this.fieldKind = Optional.ofNullable(fieldKind);
-            return this;
-        }
-
-        /**
-         * <p>JSON path of the field within the resource.</p>
-         */
-        @JsonSetter(value = "fieldPath", nulls = Nulls.SKIP)
-        public Builder fieldPath(Optional<String> fieldPath) {
-            this.fieldPath = fieldPath;
-            return this;
-        }
-
-        public Builder fieldPath(String fieldPath) {
-            this.fieldPath = Optional.ofNullable(fieldPath);
-            return this;
-        }
-
-        @JsonSetter(value = "value", nulls = Nulls.SKIP)
-        public Builder value(Optional<String> value) {
-            this.value = value;
-            return this;
-        }
-
-        public Builder value(String value) {
-            this.value = Optional.ofNullable(value);
-            return this;
-        }
-
-        /**
-         * <p>False when the reviewer found the field unsupported. Do not treat this field as a verdict when unaudited is true.</p>
-         */
-        @JsonSetter(value = "supported", nulls = Nulls.SKIP)
-        public Builder supported(Optional<Boolean> supported) {
-            this.supported = supported;
-            return this;
-        }
-
-        public Builder supported(Boolean supported) {
-            this.supported = Optional.ofNullable(supported);
-            return this;
-        }
-
-        /**
-         * <p>True when the reviewer did not return a verdict for this field; the resource was quarantined without treating the finding as evidence that the value is unsupported.</p>
-         */
-        @JsonSetter(value = "unaudited", nulls = Nulls.SKIP)
-        public Builder unaudited(Optional<Boolean> unaudited) {
-            this.unaudited = unaudited;
-            return this;
-        }
-
-        public Builder unaudited(Boolean unaudited) {
-            this.unaudited = Optional.ofNullable(unaudited);
-            return this;
-        }
-
-        /**
-         * <p>Short explanation of why the value is not supported by the source.</p>
-         */
-        @JsonSetter(value = "rationale", nulls = Nulls.SKIP)
-        public Builder rationale(Optional<String> rationale) {
-            this.rationale = rationale;
-            return this;
-        }
-
-        public Builder rationale(String rationale) {
-            this.rationale = Optional.ofNullable(rationale);
-            return this;
-        }
-
-        public ResourceReviewFinding build() {
-            return new ResourceReviewFinding(
-                    fieldKind, fieldPath, value, supported, unaudited, rationale, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

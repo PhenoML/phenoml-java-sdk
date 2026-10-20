@@ -7,135 +7,138 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class ExtractRequestConfigChunkingMethod {
-    public static final ExtractRequestConfigChunkingMethod SOAP_NOTE =
-            new ExtractRequestConfigChunkingMethod(Value.SOAP_NOTE, "soap_note");
 
-    public static final ExtractRequestConfigChunkingMethod FASTHPOCR =
-            new ExtractRequestConfigChunkingMethod(Value.FASTHPOCR, "fasthpocr");
+  public static final ExtractRequestConfigChunkingMethod SOAP_NOTE =
+    new ExtractRequestConfigChunkingMethod(Value.SOAP_NOTE, "soap_note");
 
-    public static final ExtractRequestConfigChunkingMethod TOPICS =
-            new ExtractRequestConfigChunkingMethod(Value.TOPICS, "topics");
+  public static final ExtractRequestConfigChunkingMethod FASTHPOCR =
+    new ExtractRequestConfigChunkingMethod(Value.FASTHPOCR, "fasthpocr");
 
-    public static final ExtractRequestConfigChunkingMethod PARAGRAPHS =
-            new ExtractRequestConfigChunkingMethod(Value.PARAGRAPHS, "paragraphs");
+  public static final ExtractRequestConfigChunkingMethod TOPICS =
+    new ExtractRequestConfigChunkingMethod(Value.TOPICS, "topics");
 
-    public static final ExtractRequestConfigChunkingMethod SENTENCES =
-            new ExtractRequestConfigChunkingMethod(Value.SENTENCES, "sentences");
+  public static final ExtractRequestConfigChunkingMethod PARAGRAPHS =
+    new ExtractRequestConfigChunkingMethod(Value.PARAGRAPHS, "paragraphs");
 
-    public static final ExtractRequestConfigChunkingMethod CLINICAL_NER_EXTRACT =
-            new ExtractRequestConfigChunkingMethod(Value.CLINICAL_NER_EXTRACT, "clinical_ner_extract");
+  public static final ExtractRequestConfigChunkingMethod SENTENCES =
+    new ExtractRequestConfigChunkingMethod(Value.SENTENCES, "sentences");
 
-    public static final ExtractRequestConfigChunkingMethod NONE =
-            new ExtractRequestConfigChunkingMethod(Value.NONE, "none");
+  public static final ExtractRequestConfigChunkingMethod CLINICAL_NER_EXTRACT =
+    new ExtractRequestConfigChunkingMethod(Value.CLINICAL_NER_EXTRACT, "clinical_ner_extract");
 
-    private final Value value;
+  public static final ExtractRequestConfigChunkingMethod NONE =
+    new ExtractRequestConfigChunkingMethod(Value.NONE, "none");
 
-    private final String string;
+  private final Value value;
 
-    ExtractRequestConfigChunkingMethod(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  ExtractRequestConfigChunkingMethod(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof ExtractRequestConfigChunkingMethod &&
+        this.string.equals(((ExtractRequestConfigChunkingMethod) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case SOAP_NOTE:
+        return visitor.visitSoapNote();
+      case FASTHPOCR:
+        return visitor.visitFasthpocr();
+      case TOPICS:
+        return visitor.visitTopics();
+      case PARAGRAPHS:
+        return visitor.visitParagraphs();
+      case SENTENCES:
+        return visitor.visitSentences();
+      case CLINICAL_NER_EXTRACT:
+        return visitor.visitClinicalNerExtract();
+      case NONE:
+        return visitor.visitNone();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static ExtractRequestConfigChunkingMethod valueOf(String value) {
+    switch (value) {
+      case "soap_note":
+        return SOAP_NOTE;
+      case "fasthpocr":
+        return FASTHPOCR;
+      case "topics":
+        return TOPICS;
+      case "paragraphs":
+        return PARAGRAPHS;
+      case "sentences":
+        return SENTENCES;
+      case "clinical_ner_extract":
+        return CLINICAL_NER_EXTRACT;
+      case "none":
+        return NONE;
+      default:
+        return new ExtractRequestConfigChunkingMethod(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    NONE,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof ExtractRequestConfigChunkingMethod
-                        && this.string.equals(((ExtractRequestConfigChunkingMethod) other).string));
-    }
+    SENTENCES,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    PARAGRAPHS,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case SOAP_NOTE:
-                return visitor.visitSoapNote();
-            case FASTHPOCR:
-                return visitor.visitFasthpocr();
-            case TOPICS:
-                return visitor.visitTopics();
-            case PARAGRAPHS:
-                return visitor.visitParagraphs();
-            case SENTENCES:
-                return visitor.visitSentences();
-            case CLINICAL_NER_EXTRACT:
-                return visitor.visitClinicalNerExtract();
-            case NONE:
-                return visitor.visitNone();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    TOPICS,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static ExtractRequestConfigChunkingMethod valueOf(String value) {
-        switch (value) {
-            case "soap_note":
-                return SOAP_NOTE;
-            case "fasthpocr":
-                return FASTHPOCR;
-            case "topics":
-                return TOPICS;
-            case "paragraphs":
-                return PARAGRAPHS;
-            case "sentences":
-                return SENTENCES;
-            case "clinical_ner_extract":
-                return CLINICAL_NER_EXTRACT;
-            case "none":
-                return NONE;
-            default:
-                return new ExtractRequestConfigChunkingMethod(Value.UNKNOWN, value);
-        }
-    }
+    SOAP_NOTE,
 
-    public enum Value {
-        NONE,
+    CLINICAL_NER_EXTRACT,
 
-        SENTENCES,
+    FASTHPOCR,
 
-        PARAGRAPHS,
+    UNKNOWN,
+  }
 
-        TOPICS,
+  public interface Visitor<T> {
+    T visitNone();
 
-        SOAP_NOTE,
+    T visitSentences();
 
-        CLINICAL_NER_EXTRACT,
+    T visitParagraphs();
 
-        FASTHPOCR,
+    T visitTopics();
 
-        UNKNOWN
-    }
+    T visitSoapNote();
 
-    public interface Visitor<T> {
-        T visitNone();
+    T visitClinicalNerExtract();
 
-        T visitSentences();
+    T visitFasthpocr();
 
-        T visitParagraphs();
-
-        T visitTopics();
-
-        T visitSoapNote();
-
-        T visitClinicalNerExtract();
-
-        T visitFasthpocr();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

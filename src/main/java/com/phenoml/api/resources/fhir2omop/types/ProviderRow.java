@@ -20,433 +20,497 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ProviderRow.Builder.class)
 public final class ProviderRow {
-    private final Optional<Long> providerId;
 
-    private final Optional<String> providerName;
+  private final Optional<Long> providerId;
 
-    private final Optional<String> npi;
+  private final Optional<String> providerName;
 
-    private final Optional<String> dea;
+  private final Optional<String> npi;
 
-    private final Optional<Long> specialtyConceptId;
+  private final Optional<String> dea;
 
-    private final Optional<Long> careSiteId;
+  private final Optional<Long> specialtyConceptId;
 
-    private final Optional<Integer> yearOfBirth;
+  private final Optional<Long> careSiteId;
 
-    private final Optional<Long> genderConceptId;
+  private final Optional<Integer> yearOfBirth;
 
-    private final Optional<String> providerSourceValue;
+  private final Optional<Long> genderConceptId;
 
-    private final Optional<String> specialtySourceValue;
+  private final Optional<String> providerSourceValue;
 
-    private final Optional<Long> specialtySourceConceptId;
+  private final Optional<String> specialtySourceValue;
 
-    private final Optional<String> genderSourceValue;
+  private final Optional<Long> specialtySourceConceptId;
 
-    private final Optional<Long> genderSourceConceptId;
+  private final Optional<String> genderSourceValue;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Long> genderSourceConceptId;
 
-    private ProviderRow(
-            Optional<Long> providerId,
-            Optional<String> providerName,
-            Optional<String> npi,
-            Optional<String> dea,
-            Optional<Long> specialtyConceptId,
-            Optional<Long> careSiteId,
-            Optional<Integer> yearOfBirth,
-            Optional<Long> genderConceptId,
-            Optional<String> providerSourceValue,
-            Optional<String> specialtySourceValue,
-            Optional<Long> specialtySourceConceptId,
-            Optional<String> genderSourceValue,
-            Optional<Long> genderSourceConceptId,
-            Map<String, Object> additionalProperties) {
-        this.providerId = providerId;
-        this.providerName = providerName;
-        this.npi = npi;
-        this.dea = dea;
-        this.specialtyConceptId = specialtyConceptId;
-        this.careSiteId = careSiteId;
-        this.yearOfBirth = yearOfBirth;
-        this.genderConceptId = genderConceptId;
-        this.providerSourceValue = providerSourceValue;
-        this.specialtySourceValue = specialtySourceValue;
-        this.specialtySourceConceptId = specialtySourceConceptId;
-        this.genderSourceValue = genderSourceValue;
-        this.genderSourceConceptId = genderSourceConceptId;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ProviderRow(
+    Optional<Long> providerId,
+    Optional<String> providerName,
+    Optional<String> npi,
+    Optional<String> dea,
+    Optional<Long> specialtyConceptId,
+    Optional<Long> careSiteId,
+    Optional<Integer> yearOfBirth,
+    Optional<Long> genderConceptId,
+    Optional<String> providerSourceValue,
+    Optional<String> specialtySourceValue,
+    Optional<Long> specialtySourceConceptId,
+    Optional<String> genderSourceValue,
+    Optional<Long> genderSourceConceptId,
+    Map<String, Object> additionalProperties
+  ) {
+    this.providerId = providerId;
+    this.providerName = providerName;
+    this.npi = npi;
+    this.dea = dea;
+    this.specialtyConceptId = specialtyConceptId;
+    this.careSiteId = careSiteId;
+    this.yearOfBirth = yearOfBirth;
+    this.genderConceptId = genderConceptId;
+    this.providerSourceValue = providerSourceValue;
+    this.specialtySourceValue = specialtySourceValue;
+    this.specialtySourceConceptId = specialtySourceConceptId;
+    this.genderSourceValue = genderSourceValue;
+    this.genderSourceConceptId = genderSourceConceptId;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("provider_id")
+  public Optional<Long> getProviderId() {
+    return providerId;
+  }
+
+  @JsonProperty("provider_name")
+  public Optional<String> getProviderName() {
+    return providerName;
+  }
+
+  /**
+   * @return Single distinct non-empty source NPI. Omitted when the Practitioner has multiple distinct NPIs.
+   */
+  @JsonProperty("npi")
+  public Optional<String> getNpi() {
+    return npi;
+  }
+
+  @JsonProperty("dea")
+  public Optional<String> getDea() {
+    return dea;
+  }
+
+  @JsonProperty("specialty_concept_id")
+  public Optional<Long> getSpecialtyConceptId() {
+    return specialtyConceptId;
+  }
+
+  @JsonProperty("care_site_id")
+  public Optional<Long> getCareSiteId() {
+    return careSiteId;
+  }
+
+  /**
+   * @return Year from Practitioner.birthDate.
+   */
+  @JsonProperty("year_of_birth")
+  public Optional<Integer> getYearOfBirth() {
+    return yearOfBirth;
+  }
+
+  /**
+   * @return For recorded <code>Practitioner.gender</code>, <code>male</code> and <code>female</code> resolve to validated OMOP Gender concepts. <code>other</code>, <code>unknown</code>, and absent values remain <code>0</code>.
+   */
+  @JsonProperty("gender_concept_id")
+  public Optional<Long> getGenderConceptId() {
+    return genderConceptId;
+  }
+
+  /**
+   * @return The single distinct source NPI, when present. Compatible providers
+   * can use this value as a cross-request deduplication key; row IDs are
+   * per response, and the API does not merge across requests. Conflicting
+   * NPI groups retain separate rows sharing this value. Preserve rows
+   * flagged by identity diagnostics using <code>omop_table: provider</code> and
+   * <code>omop_id</code>, and check identity compatibility across responses before
+   * deduplicating.
+   * Without one unambiguous NPI, this is the source practitioner identity.
+   * Multiple distinct NPIs leave <code>npi</code> unset and use the resource ID,
+   * full URL, or an explicitly marked response-local provider ordinal
+   * such as <code>@provider-index:1</code> when neither is supplied.
+   * A Practitioner contained by a PractitionerRole without one unambiguous
+   * NPI is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code>
+   * so identical local contained IDs do not collide; an id-less parent
+   * uses an explicitly marked response-local role ordinal such as
+   * <code>@role-index:1</code>.
+   */
+  @JsonProperty("provider_source_value")
+  public Optional<String> getProviderSourceValue() {
+    return providerSourceValue;
+  }
+
+  @JsonProperty("specialty_source_value")
+  public Optional<String> getSpecialtySourceValue() {
+    return specialtySourceValue;
+  }
+
+  @JsonProperty("specialty_source_concept_id")
+  public Optional<Long> getSpecialtySourceConceptId() {
+    return specialtySourceConceptId;
+  }
+
+  /**
+   * @return The recorded FHIR administrative-gender value for this Provider.
+   */
+  @JsonProperty("gender_source_value")
+  public Optional<String> getGenderSourceValue() {
+    return genderSourceValue;
+  }
+
+  /**
+   * @return Remains <code>0</code> because FHIR administrative-gender codes do not themselves identify OMOP source concepts.
+   */
+  @JsonProperty("gender_source_concept_id")
+  public Optional<Long> getGenderSourceConceptId() {
+    return genderSourceConceptId;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ProviderRow && equalTo((ProviderRow) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ProviderRow other) {
+    return (
+      providerId.equals(other.providerId) &&
+      providerName.equals(other.providerName) &&
+      npi.equals(other.npi) &&
+      dea.equals(other.dea) &&
+      specialtyConceptId.equals(other.specialtyConceptId) &&
+      careSiteId.equals(other.careSiteId) &&
+      yearOfBirth.equals(other.yearOfBirth) &&
+      genderConceptId.equals(other.genderConceptId) &&
+      providerSourceValue.equals(other.providerSourceValue) &&
+      specialtySourceValue.equals(other.specialtySourceValue) &&
+      specialtySourceConceptId.equals(other.specialtySourceConceptId) &&
+      genderSourceValue.equals(other.genderSourceValue) &&
+      genderSourceConceptId.equals(other.genderSourceConceptId)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.providerId,
+      this.providerName,
+      this.npi,
+      this.dea,
+      this.specialtyConceptId,
+      this.careSiteId,
+      this.yearOfBirth,
+      this.genderConceptId,
+      this.providerSourceValue,
+      this.specialtySourceValue,
+      this.specialtySourceConceptId,
+      this.genderSourceValue,
+      this.genderSourceConceptId
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Long> providerId = Optional.empty();
+
+    private Optional<String> providerName = Optional.empty();
+
+    private Optional<String> npi = Optional.empty();
+
+    private Optional<String> dea = Optional.empty();
+
+    private Optional<Long> specialtyConceptId = Optional.empty();
+
+    private Optional<Long> careSiteId = Optional.empty();
+
+    private Optional<Integer> yearOfBirth = Optional.empty();
+
+    private Optional<Long> genderConceptId = Optional.empty();
+
+    private Optional<String> providerSourceValue = Optional.empty();
+
+    private Optional<String> specialtySourceValue = Optional.empty();
+
+    private Optional<Long> specialtySourceConceptId = Optional.empty();
+
+    private Optional<String> genderSourceValue = Optional.empty();
+
+    private Optional<Long> genderSourceConceptId = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ProviderRow other) {
+      providerId(other.getProviderId());
+      providerName(other.getProviderName());
+      npi(other.getNpi());
+      dea(other.getDea());
+      specialtyConceptId(other.getSpecialtyConceptId());
+      careSiteId(other.getCareSiteId());
+      yearOfBirth(other.getYearOfBirth());
+      genderConceptId(other.getGenderConceptId());
+      providerSourceValue(other.getProviderSourceValue());
+      specialtySourceValue(other.getSpecialtySourceValue());
+      specialtySourceConceptId(other.getSpecialtySourceConceptId());
+      genderSourceValue(other.getGenderSourceValue());
+      genderSourceConceptId(other.getGenderSourceConceptId());
+      return this;
     }
 
-    @JsonProperty("provider_id")
-    public Optional<Long> getProviderId() {
-        return providerId;
+    @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
+    public Builder providerId(Optional<Long> providerId) {
+      this.providerId = providerId;
+      return this;
     }
 
-    @JsonProperty("provider_name")
-    public Optional<String> getProviderName() {
-        return providerName;
+    public Builder providerId(Long providerId) {
+      this.providerId = Optional.ofNullable(providerId);
+      return this;
     }
 
-    @JsonProperty("npi")
-    public Optional<String> getNpi() {
-        return npi;
+    @JsonSetter(value = "provider_name", nulls = Nulls.SKIP)
+    public Builder providerName(Optional<String> providerName) {
+      this.providerName = providerName;
+      return this;
     }
 
-    @JsonProperty("dea")
-    public Optional<String> getDea() {
-        return dea;
-    }
-
-    @JsonProperty("specialty_concept_id")
-    public Optional<Long> getSpecialtyConceptId() {
-        return specialtyConceptId;
-    }
-
-    @JsonProperty("care_site_id")
-    public Optional<Long> getCareSiteId() {
-        return careSiteId;
+    public Builder providerName(String providerName) {
+      this.providerName = Optional.ofNullable(providerName);
+      return this;
     }
 
     /**
-     * @return Year from Practitioner.birthDate.
+     * <p>Single distinct non-empty source NPI. Omitted when the Practitioner has multiple distinct NPIs.</p>
      */
-    @JsonProperty("year_of_birth")
-    public Optional<Integer> getYearOfBirth() {
-        return yearOfBirth;
+    @JsonSetter(value = "npi", nulls = Nulls.SKIP)
+    public Builder npi(Optional<String> npi) {
+      this.npi = npi;
+      return this;
+    }
+
+    public Builder npi(String npi) {
+      this.npi = Optional.ofNullable(npi);
+      return this;
+    }
+
+    @JsonSetter(value = "dea", nulls = Nulls.SKIP)
+    public Builder dea(Optional<String> dea) {
+      this.dea = dea;
+      return this;
+    }
+
+    public Builder dea(String dea) {
+      this.dea = Optional.ofNullable(dea);
+      return this;
+    }
+
+    @JsonSetter(value = "specialty_concept_id", nulls = Nulls.SKIP)
+    public Builder specialtyConceptId(Optional<Long> specialtyConceptId) {
+      this.specialtyConceptId = specialtyConceptId;
+      return this;
+    }
+
+    public Builder specialtyConceptId(Long specialtyConceptId) {
+      this.specialtyConceptId = Optional.ofNullable(specialtyConceptId);
+      return this;
+    }
+
+    @JsonSetter(value = "care_site_id", nulls = Nulls.SKIP)
+    public Builder careSiteId(Optional<Long> careSiteId) {
+      this.careSiteId = careSiteId;
+      return this;
+    }
+
+    public Builder careSiteId(Long careSiteId) {
+      this.careSiteId = Optional.ofNullable(careSiteId);
+      return this;
     }
 
     /**
-     * @return For recorded <code>Practitioner.gender</code>, <code>male</code> and <code>female</code> resolve to validated OMOP Gender concepts. <code>other</code>, <code>unknown</code>, and absent values remain <code>0</code>.
+     * <p>Year from Practitioner.birthDate.</p>
      */
-    @JsonProperty("gender_concept_id")
-    public Optional<Long> getGenderConceptId() {
-        return genderConceptId;
+    @JsonSetter(value = "year_of_birth", nulls = Nulls.SKIP)
+    public Builder yearOfBirth(Optional<Integer> yearOfBirth) {
+      this.yearOfBirth = yearOfBirth;
+      return this;
+    }
+
+    public Builder yearOfBirth(Integer yearOfBirth) {
+      this.yearOfBirth = Optional.ofNullable(yearOfBirth);
+      return this;
     }
 
     /**
-     * @return The source practitioner identity. A Practitioner contained by a PractitionerRole is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code> so identical local contained IDs do not collide; an id-less parent uses an explicitly marked response-local role ordinal such as <code>@role-index:1</code>.
+     * <p>For recorded <code>Practitioner.gender</code>, <code>male</code> and <code>female</code> resolve to validated OMOP Gender concepts. <code>other</code>, <code>unknown</code>, and absent values remain <code>0</code>.</p>
      */
-    @JsonProperty("provider_source_value")
-    public Optional<String> getProviderSourceValue() {
-        return providerSourceValue;
+    @JsonSetter(value = "gender_concept_id", nulls = Nulls.SKIP)
+    public Builder genderConceptId(Optional<Long> genderConceptId) {
+      this.genderConceptId = genderConceptId;
+      return this;
     }
 
-    @JsonProperty("specialty_source_value")
-    public Optional<String> getSpecialtySourceValue() {
-        return specialtySourceValue;
-    }
-
-    @JsonProperty("specialty_source_concept_id")
-    public Optional<Long> getSpecialtySourceConceptId() {
-        return specialtySourceConceptId;
+    public Builder genderConceptId(Long genderConceptId) {
+      this.genderConceptId = Optional.ofNullable(genderConceptId);
+      return this;
     }
 
     /**
-     * @return The recorded FHIR administrative-gender value for this Provider.
+     * <p>The single distinct source NPI, when present. Compatible providers
+     * can use this value as a cross-request deduplication key; row IDs are
+     * per response, and the API does not merge across requests. Conflicting
+     * NPI groups retain separate rows sharing this value. Preserve rows
+     * flagged by identity diagnostics using <code>omop_table: provider</code> and
+     * <code>omop_id</code>, and check identity compatibility across responses before
+     * deduplicating.
+     * Without one unambiguous NPI, this is the source practitioner identity.
+     * Multiple distinct NPIs leave <code>npi</code> unset and use the resource ID,
+     * full URL, or an explicitly marked response-local provider ordinal
+     * such as <code>@provider-index:1</code> when neither is supplied.
+     * A Practitioner contained by a PractitionerRole without one unambiguous
+     * NPI is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code>
+     * so identical local contained IDs do not collide; an id-less parent
+     * uses an explicitly marked response-local role ordinal such as
+     * <code>@role-index:1</code>.</p>
      */
-    @JsonProperty("gender_source_value")
-    public Optional<String> getGenderSourceValue() {
-        return genderSourceValue;
+    @JsonSetter(value = "provider_source_value", nulls = Nulls.SKIP)
+    public Builder providerSourceValue(Optional<String> providerSourceValue) {
+      this.providerSourceValue = providerSourceValue;
+      return this;
+    }
+
+    public Builder providerSourceValue(String providerSourceValue) {
+      this.providerSourceValue = Optional.ofNullable(providerSourceValue);
+      return this;
+    }
+
+    @JsonSetter(value = "specialty_source_value", nulls = Nulls.SKIP)
+    public Builder specialtySourceValue(Optional<String> specialtySourceValue) {
+      this.specialtySourceValue = specialtySourceValue;
+      return this;
+    }
+
+    public Builder specialtySourceValue(String specialtySourceValue) {
+      this.specialtySourceValue = Optional.ofNullable(specialtySourceValue);
+      return this;
+    }
+
+    @JsonSetter(value = "specialty_source_concept_id", nulls = Nulls.SKIP)
+    public Builder specialtySourceConceptId(Optional<Long> specialtySourceConceptId) {
+      this.specialtySourceConceptId = specialtySourceConceptId;
+      return this;
+    }
+
+    public Builder specialtySourceConceptId(Long specialtySourceConceptId) {
+      this.specialtySourceConceptId = Optional.ofNullable(specialtySourceConceptId);
+      return this;
     }
 
     /**
-     * @return Remains <code>0</code> for FHIR administrative-gender enum-policy results.
+     * <p>The recorded FHIR administrative-gender value for this Provider.</p>
      */
-    @JsonProperty("gender_source_concept_id")
-    public Optional<Long> getGenderSourceConceptId() {
-        return genderSourceConceptId;
+    @JsonSetter(value = "gender_source_value", nulls = Nulls.SKIP)
+    public Builder genderSourceValue(Optional<String> genderSourceValue) {
+      this.genderSourceValue = genderSourceValue;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ProviderRow && equalTo((ProviderRow) other);
+    public Builder genderSourceValue(String genderSourceValue) {
+      this.genderSourceValue = Optional.ofNullable(genderSourceValue);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    /**
+     * <p>Remains <code>0</code> because FHIR administrative-gender codes do not themselves identify OMOP source concepts.</p>
+     */
+    @JsonSetter(value = "gender_source_concept_id", nulls = Nulls.SKIP)
+    public Builder genderSourceConceptId(Optional<Long> genderSourceConceptId) {
+      this.genderSourceConceptId = genderSourceConceptId;
+      return this;
     }
 
-    private boolean equalTo(ProviderRow other) {
-        return providerId.equals(other.providerId)
-                && providerName.equals(other.providerName)
-                && npi.equals(other.npi)
-                && dea.equals(other.dea)
-                && specialtyConceptId.equals(other.specialtyConceptId)
-                && careSiteId.equals(other.careSiteId)
-                && yearOfBirth.equals(other.yearOfBirth)
-                && genderConceptId.equals(other.genderConceptId)
-                && providerSourceValue.equals(other.providerSourceValue)
-                && specialtySourceValue.equals(other.specialtySourceValue)
-                && specialtySourceConceptId.equals(other.specialtySourceConceptId)
-                && genderSourceValue.equals(other.genderSourceValue)
-                && genderSourceConceptId.equals(other.genderSourceConceptId);
+    public Builder genderSourceConceptId(Long genderSourceConceptId) {
+      this.genderSourceConceptId = Optional.ofNullable(genderSourceConceptId);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.providerId,
-                this.providerName,
-                this.npi,
-                this.dea,
-                this.specialtyConceptId,
-                this.careSiteId,
-                this.yearOfBirth,
-                this.genderConceptId,
-                this.providerSourceValue,
-                this.specialtySourceValue,
-                this.specialtySourceConceptId,
-                this.genderSourceValue,
-                this.genderSourceConceptId);
+    public ProviderRow build() {
+      return new ProviderRow(
+        providerId,
+        providerName,
+        npi,
+        dea,
+        specialtyConceptId,
+        careSiteId,
+        yearOfBirth,
+        genderConceptId,
+        providerSourceValue,
+        specialtySourceValue,
+        specialtySourceConceptId,
+        genderSourceValue,
+        genderSourceConceptId,
+        additionalProperties
+      );
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("provider_id") ||
+        key.equalsIgnoreCase("provider_name") ||
+        key.equalsIgnoreCase("npi") ||
+        key.equalsIgnoreCase("dea") ||
+        key.equalsIgnoreCase("specialty_concept_id") ||
+        key.equalsIgnoreCase("care_site_id") ||
+        key.equalsIgnoreCase("year_of_birth") ||
+        key.equalsIgnoreCase("gender_concept_id") ||
+        key.equalsIgnoreCase("provider_source_value") ||
+        key.equalsIgnoreCase("specialty_source_value") ||
+        key.equalsIgnoreCase("specialty_source_concept_id") ||
+        key.equalsIgnoreCase("gender_source_value") ||
+        key.equalsIgnoreCase("gender_source_concept_id")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Long> providerId = Optional.empty();
-
-        private Optional<String> providerName = Optional.empty();
-
-        private Optional<String> npi = Optional.empty();
-
-        private Optional<String> dea = Optional.empty();
-
-        private Optional<Long> specialtyConceptId = Optional.empty();
-
-        private Optional<Long> careSiteId = Optional.empty();
-
-        private Optional<Integer> yearOfBirth = Optional.empty();
-
-        private Optional<Long> genderConceptId = Optional.empty();
-
-        private Optional<String> providerSourceValue = Optional.empty();
-
-        private Optional<String> specialtySourceValue = Optional.empty();
-
-        private Optional<Long> specialtySourceConceptId = Optional.empty();
-
-        private Optional<String> genderSourceValue = Optional.empty();
-
-        private Optional<Long> genderSourceConceptId = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ProviderRow other) {
-            providerId(other.getProviderId());
-            providerName(other.getProviderName());
-            npi(other.getNpi());
-            dea(other.getDea());
-            specialtyConceptId(other.getSpecialtyConceptId());
-            careSiteId(other.getCareSiteId());
-            yearOfBirth(other.getYearOfBirth());
-            genderConceptId(other.getGenderConceptId());
-            providerSourceValue(other.getProviderSourceValue());
-            specialtySourceValue(other.getSpecialtySourceValue());
-            specialtySourceConceptId(other.getSpecialtySourceConceptId());
-            genderSourceValue(other.getGenderSourceValue());
-            genderSourceConceptId(other.getGenderSourceConceptId());
-            return this;
-        }
-
-        @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
-        public Builder providerId(Optional<Long> providerId) {
-            this.providerId = providerId;
-            return this;
-        }
-
-        public Builder providerId(Long providerId) {
-            this.providerId = Optional.ofNullable(providerId);
-            return this;
-        }
-
-        @JsonSetter(value = "provider_name", nulls = Nulls.SKIP)
-        public Builder providerName(Optional<String> providerName) {
-            this.providerName = providerName;
-            return this;
-        }
-
-        public Builder providerName(String providerName) {
-            this.providerName = Optional.ofNullable(providerName);
-            return this;
-        }
-
-        @JsonSetter(value = "npi", nulls = Nulls.SKIP)
-        public Builder npi(Optional<String> npi) {
-            this.npi = npi;
-            return this;
-        }
-
-        public Builder npi(String npi) {
-            this.npi = Optional.ofNullable(npi);
-            return this;
-        }
-
-        @JsonSetter(value = "dea", nulls = Nulls.SKIP)
-        public Builder dea(Optional<String> dea) {
-            this.dea = dea;
-            return this;
-        }
-
-        public Builder dea(String dea) {
-            this.dea = Optional.ofNullable(dea);
-            return this;
-        }
-
-        @JsonSetter(value = "specialty_concept_id", nulls = Nulls.SKIP)
-        public Builder specialtyConceptId(Optional<Long> specialtyConceptId) {
-            this.specialtyConceptId = specialtyConceptId;
-            return this;
-        }
-
-        public Builder specialtyConceptId(Long specialtyConceptId) {
-            this.specialtyConceptId = Optional.ofNullable(specialtyConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "care_site_id", nulls = Nulls.SKIP)
-        public Builder careSiteId(Optional<Long> careSiteId) {
-            this.careSiteId = careSiteId;
-            return this;
-        }
-
-        public Builder careSiteId(Long careSiteId) {
-            this.careSiteId = Optional.ofNullable(careSiteId);
-            return this;
-        }
-
-        /**
-         * <p>Year from Practitioner.birthDate.</p>
-         */
-        @JsonSetter(value = "year_of_birth", nulls = Nulls.SKIP)
-        public Builder yearOfBirth(Optional<Integer> yearOfBirth) {
-            this.yearOfBirth = yearOfBirth;
-            return this;
-        }
-
-        public Builder yearOfBirth(Integer yearOfBirth) {
-            this.yearOfBirth = Optional.ofNullable(yearOfBirth);
-            return this;
-        }
-
-        /**
-         * <p>For recorded <code>Practitioner.gender</code>, <code>male</code> and <code>female</code> resolve to validated OMOP Gender concepts. <code>other</code>, <code>unknown</code>, and absent values remain <code>0</code>.</p>
-         */
-        @JsonSetter(value = "gender_concept_id", nulls = Nulls.SKIP)
-        public Builder genderConceptId(Optional<Long> genderConceptId) {
-            this.genderConceptId = genderConceptId;
-            return this;
-        }
-
-        public Builder genderConceptId(Long genderConceptId) {
-            this.genderConceptId = Optional.ofNullable(genderConceptId);
-            return this;
-        }
-
-        /**
-         * <p>The source practitioner identity. A Practitioner contained by a PractitionerRole is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code> so identical local contained IDs do not collide; an id-less parent uses an explicitly marked response-local role ordinal such as <code>@role-index:1</code>.</p>
-         */
-        @JsonSetter(value = "provider_source_value", nulls = Nulls.SKIP)
-        public Builder providerSourceValue(Optional<String> providerSourceValue) {
-            this.providerSourceValue = providerSourceValue;
-            return this;
-        }
-
-        public Builder providerSourceValue(String providerSourceValue) {
-            this.providerSourceValue = Optional.ofNullable(providerSourceValue);
-            return this;
-        }
-
-        @JsonSetter(value = "specialty_source_value", nulls = Nulls.SKIP)
-        public Builder specialtySourceValue(Optional<String> specialtySourceValue) {
-            this.specialtySourceValue = specialtySourceValue;
-            return this;
-        }
-
-        public Builder specialtySourceValue(String specialtySourceValue) {
-            this.specialtySourceValue = Optional.ofNullable(specialtySourceValue);
-            return this;
-        }
-
-        @JsonSetter(value = "specialty_source_concept_id", nulls = Nulls.SKIP)
-        public Builder specialtySourceConceptId(Optional<Long> specialtySourceConceptId) {
-            this.specialtySourceConceptId = specialtySourceConceptId;
-            return this;
-        }
-
-        public Builder specialtySourceConceptId(Long specialtySourceConceptId) {
-            this.specialtySourceConceptId = Optional.ofNullable(specialtySourceConceptId);
-            return this;
-        }
-
-        /**
-         * <p>The recorded FHIR administrative-gender value for this Provider.</p>
-         */
-        @JsonSetter(value = "gender_source_value", nulls = Nulls.SKIP)
-        public Builder genderSourceValue(Optional<String> genderSourceValue) {
-            this.genderSourceValue = genderSourceValue;
-            return this;
-        }
-
-        public Builder genderSourceValue(String genderSourceValue) {
-            this.genderSourceValue = Optional.ofNullable(genderSourceValue);
-            return this;
-        }
-
-        /**
-         * <p>Remains <code>0</code> for FHIR administrative-gender enum-policy results.</p>
-         */
-        @JsonSetter(value = "gender_source_concept_id", nulls = Nulls.SKIP)
-        public Builder genderSourceConceptId(Optional<Long> genderSourceConceptId) {
-            this.genderSourceConceptId = genderSourceConceptId;
-            return this;
-        }
-
-        public Builder genderSourceConceptId(Long genderSourceConceptId) {
-            this.genderSourceConceptId = Optional.ofNullable(genderSourceConceptId);
-            return this;
-        }
-
-        public ProviderRow build() {
-            return new ProviderRow(
-                    providerId,
-                    providerName,
-                    npi,
-                    dea,
-                    specialtyConceptId,
-                    careSiteId,
-                    yearOfBirth,
-                    genderConceptId,
-                    providerSourceValue,
-                    specialtySourceValue,
-                    specialtySourceConceptId,
-                    genderSourceValue,
-                    genderSourceConceptId,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

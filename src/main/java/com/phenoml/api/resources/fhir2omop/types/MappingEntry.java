@@ -20,162 +20,355 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = MappingEntry.Builder.class)
 public final class MappingEntry {
-    private final Optional<String> resourceType;
 
-    private final Optional<String> resourceId;
+  private final Optional<String> resourceType;
 
-    private final Optional<String> omopTable;
+  private final Optional<String> resourceId;
 
-    private final Optional<Long> omopId;
+  private final Optional<String> omopTable;
 
-    private final Optional<String> omopField;
+  private final Optional<Long> omopId;
 
-    private final Optional<String> sourceSystem;
+  private final Optional<String> omopField;
 
-    private final Optional<String> sourceCode;
+  private final Optional<String> sourceSystem;
 
-    private final Optional<String> sourceName;
+  private final Optional<String> sourceCode;
 
-    private final Optional<String> targetVocabulary;
+  private final Optional<String> sourceName;
 
-    private final Optional<String> targetCode;
+  private final Optional<String> targetVocabulary;
 
-    private final Optional<String> targetName;
+  private final Optional<String> targetCode;
 
-    private final Optional<MappingEntryMappingStatus> mappingStatus;
+  private final Optional<String> targetName;
 
-    private final boolean selected;
+  private final Optional<MappingEntryMappingStatus> mappingStatus;
 
-    private final Optional<String> note;
+  private final boolean selected;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<MappingResolution> resolution;
 
-    private MappingEntry(
-            Optional<String> resourceType,
-            Optional<String> resourceId,
-            Optional<String> omopTable,
-            Optional<Long> omopId,
-            Optional<String> omopField,
-            Optional<String> sourceSystem,
-            Optional<String> sourceCode,
-            Optional<String> sourceName,
-            Optional<String> targetVocabulary,
-            Optional<String> targetCode,
-            Optional<String> targetName,
-            Optional<MappingEntryMappingStatus> mappingStatus,
-            boolean selected,
-            Optional<String> note,
-            Map<String, Object> additionalProperties) {
-        this.resourceType = resourceType;
-        this.resourceId = resourceId;
-        this.omopTable = omopTable;
-        this.omopId = omopId;
-        this.omopField = omopField;
-        this.sourceSystem = sourceSystem;
-        this.sourceCode = sourceCode;
-        this.sourceName = sourceName;
-        this.targetVocabulary = targetVocabulary;
-        this.targetCode = targetCode;
-        this.targetName = targetName;
-        this.mappingStatus = mappingStatus;
-        this.selected = selected;
-        this.note = note;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Optional<String> note;
 
-    @JsonProperty("resource_type")
-    public Optional<String> getResourceType() {
-        return resourceType;
-    }
+  private final Map<String, Object> additionalProperties;
 
-    @JsonProperty("resource_id")
-    public Optional<String> getResourceId() {
-        return resourceId;
-    }
+  private MappingEntry(
+    Optional<String> resourceType,
+    Optional<String> resourceId,
+    Optional<String> omopTable,
+    Optional<Long> omopId,
+    Optional<String> omopField,
+    Optional<String> sourceSystem,
+    Optional<String> sourceCode,
+    Optional<String> sourceName,
+    Optional<String> targetVocabulary,
+    Optional<String> targetCode,
+    Optional<String> targetName,
+    Optional<MappingEntryMappingStatus> mappingStatus,
+    boolean selected,
+    Optional<MappingResolution> resolution,
+    Optional<String> note,
+    Map<String, Object> additionalProperties
+  ) {
+    this.resourceType = resourceType;
+    this.resourceId = resourceId;
+    this.omopTable = omopTable;
+    this.omopId = omopId;
+    this.omopField = omopField;
+    this.sourceSystem = sourceSystem;
+    this.sourceCode = sourceCode;
+    this.sourceName = sourceName;
+    this.targetVocabulary = targetVocabulary;
+    this.targetCode = targetCode;
+    this.targetName = targetName;
+    this.mappingStatus = mappingStatus;
+    this.selected = selected;
+    this.resolution = resolution;
+    this.note = note;
+    this.additionalProperties = additionalProperties;
+  }
 
-    @JsonProperty("omop_table")
-    public Optional<String> getOmopTable() {
-        return omopTable;
-    }
+  @JsonProperty("resource_type")
+  public Optional<String> getResourceType() {
+    return resourceType;
+  }
+
+  @JsonProperty("resource_id")
+  public Optional<String> getResourceId() {
+    return resourceId;
+  }
+
+  @JsonProperty("omop_table")
+  public Optional<String> getOmopTable() {
+    return omopTable;
+  }
+
+  /**
+   * @return The id of the OMOP row this coding produced (e.g. <code>condition_occurrence_id</code>),
+   * within <code>omop_table</code>. A resource with multiple codings yields one entry
+   * per coding, all sharing this id.
+   */
+  @JsonProperty("omop_id")
+  public Optional<Long> getOmopId() {
+    return omopId;
+  }
+
+  /**
+   * @return The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>. Omitted when the entry preserves source information without populating a row column.
+   */
+  @JsonProperty("omop_field")
+  public Optional<String> getOmopField() {
+    return omopField;
+  }
+
+  @JsonProperty("source_system")
+  public Optional<String> getSourceSystem() {
+    return sourceSystem;
+  }
+
+  @JsonProperty("source_code")
+  public Optional<String> getSourceCode() {
+    return sourceCode;
+  }
+
+  @JsonProperty("source_name")
+  public Optional<String> getSourceName() {
+    return sourceName;
+  }
+
+  @JsonProperty("target_vocabulary")
+  public Optional<String> getTargetVocabulary() {
+    return targetVocabulary;
+  }
+
+  /**
+   * @return The standard concept's own code: the source code itself for an
+   * ALREADY_STANDARD row, the standard concept's code for a MAPPED row,
+   * or the suggested code for an UNCHECKED row. Omitted for UNMAPPED
+   * rows.
+   */
+  @JsonProperty("target_code")
+  public Optional<String> getTargetCode() {
+    return targetCode;
+  }
+
+  @JsonProperty("target_name")
+  public Optional<String> getTargetName() {
+    return targetName;
+  }
+
+  /**
+   * @return ALREADY_STANDARD (source coding is already a standard OMOP concept),
+   * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
+   * standard code was suggested for a text-only resource but not verified
+   * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
+   * (no target concept selected, including missing mappings,
+   * target-domain mismatches and ambiguity, or source information
+   * retained without concept resolution as explained in <code>note</code>).
+   */
+  @JsonProperty("mapping_status")
+  public Optional<MappingEntryMappingStatus> getMappingStatus() {
+    return mappingStatus;
+  }
+
+  /**
+   * @return Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings, text-only rows, and entries without a corresponding row column. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.
+   */
+  @JsonProperty("selected")
+  public boolean getSelected() {
+    return selected;
+  }
+
+  @JsonProperty("resolution")
+  public Optional<MappingResolution> getResolution() {
+    return resolution;
+  }
+
+  /**
+   * @return Additional context for the entry, including the output table,
+   * populated fields, source information without a corresponding row
+   * column, and <code>DOMAIN_MISMATCH</code> outcomes. A coded route is noted as
+   * <code>FHIR route</code>. Patient demographic entries name their source and, when
+   * not applied, why:
+   * <ul>
+   * <li><code>US Core birth sex</code>; <code>US Core birth sex; null flavor</code>;
+   * <code>US Core birth sex; outside value set</code>;
+   * <code>US Core birth sex; conflicting values</code></li>
+   * <li><code>FHIR administrative gender; assumed sex at birth</code>;
+   * <code>FHIR administrative gender; not a sex-at-birth value</code>;
+   * <code>FHIR administrative gender; not used, birth sex supplied</code></li>
+   * <li><code>US Core race OMB category</code>;
+   * <code>US Core race OMB category; more than one race</code> (linked to its
+   * <code>observation</code> race row); <code>US Core race; null flavor</code></li>
+   * <li><code>US Core ethnicity OMB category</code>;
+   * <code>US Core ethnicity OMB category; conflicting categories</code>;
+   * <code>US Core ethnicity; null flavor</code></li>
+   * </ul>
+   */
+  @JsonProperty("note")
+  public Optional<String> getNote() {
+    return note;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof MappingEntry && equalTo((MappingEntry) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(MappingEntry other) {
+    return (
+      resourceType.equals(other.resourceType) &&
+      resourceId.equals(other.resourceId) &&
+      omopTable.equals(other.omopTable) &&
+      omopId.equals(other.omopId) &&
+      omopField.equals(other.omopField) &&
+      sourceSystem.equals(other.sourceSystem) &&
+      sourceCode.equals(other.sourceCode) &&
+      sourceName.equals(other.sourceName) &&
+      targetVocabulary.equals(other.targetVocabulary) &&
+      targetCode.equals(other.targetCode) &&
+      targetName.equals(other.targetName) &&
+      mappingStatus.equals(other.mappingStatus) &&
+      selected == other.selected &&
+      resolution.equals(other.resolution) &&
+      note.equals(other.note)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.resourceType,
+      this.resourceId,
+      this.omopTable,
+      this.omopId,
+      this.omopField,
+      this.sourceSystem,
+      this.sourceCode,
+      this.sourceName,
+      this.targetVocabulary,
+      this.targetCode,
+      this.targetName,
+      this.mappingStatus,
+      this.selected,
+      this.resolution,
+      this.note
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static SelectedStage builder() {
+    return new Builder();
+  }
+
+  public interface SelectedStage {
+    /**
+     * <p>Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings, text-only rows, and entries without a corresponding row column. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.</p>
+     */
+    _FinalStage selected(boolean selected);
+
+    Builder from(MappingEntry other);
+  }
+
+  public interface _FinalStage {
+    MappingEntry build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    _FinalStage resourceType(Optional<String> resourceType);
+
+    _FinalStage resourceType(String resourceType);
+
+    _FinalStage resourceId(Optional<String> resourceId);
+
+    _FinalStage resourceId(String resourceId);
+
+    _FinalStage omopTable(Optional<String> omopTable);
+
+    _FinalStage omopTable(String omopTable);
 
     /**
-     * @return The id of the OMOP row this coding produced (e.g. <code>condition_occurrence_id</code>),
+     * <p>The id of the OMOP row this coding produced (e.g. <code>condition_occurrence_id</code>),
      * within <code>omop_table</code>. A resource with multiple codings yields one entry
-     * per coding, all sharing this id.
+     * per coding, all sharing this id.</p>
      */
-    @JsonProperty("omop_id")
-    public Optional<Long> getOmopId() {
-        return omopId;
-    }
+    _FinalStage omopId(Optional<Long> omopId);
+
+    _FinalStage omopId(Long omopId);
 
     /**
-     * @return The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>.
+     * <p>The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>. Omitted when the entry preserves source information without populating a row column.</p>
      */
-    @JsonProperty("omop_field")
-    public Optional<String> getOmopField() {
-        return omopField;
-    }
+    _FinalStage omopField(Optional<String> omopField);
 
-    @JsonProperty("source_system")
-    public Optional<String> getSourceSystem() {
-        return sourceSystem;
-    }
+    _FinalStage omopField(String omopField);
 
-    @JsonProperty("source_code")
-    public Optional<String> getSourceCode() {
-        return sourceCode;
-    }
+    _FinalStage sourceSystem(Optional<String> sourceSystem);
 
-    @JsonProperty("source_name")
-    public Optional<String> getSourceName() {
-        return sourceName;
-    }
+    _FinalStage sourceSystem(String sourceSystem);
 
-    @JsonProperty("target_vocabulary")
-    public Optional<String> getTargetVocabulary() {
-        return targetVocabulary;
-    }
+    _FinalStage sourceCode(Optional<String> sourceCode);
+
+    _FinalStage sourceCode(String sourceCode);
+
+    _FinalStage sourceName(Optional<String> sourceName);
+
+    _FinalStage sourceName(String sourceName);
+
+    _FinalStage targetVocabulary(Optional<String> targetVocabulary);
+
+    _FinalStage targetVocabulary(String targetVocabulary);
 
     /**
-     * @return The standard concept's own code: the source code itself for an
+     * <p>The standard concept's own code: the source code itself for an
      * ALREADY_STANDARD row, the standard concept's code for a MAPPED row,
      * or the suggested code for an UNCHECKED row. Omitted for UNMAPPED
-     * rows.
+     * rows.</p>
      */
-    @JsonProperty("target_code")
-    public Optional<String> getTargetCode() {
-        return targetCode;
-    }
+    _FinalStage targetCode(Optional<String> targetCode);
 
-    @JsonProperty("target_name")
-    public Optional<String> getTargetName() {
-        return targetName;
-    }
+    _FinalStage targetCode(String targetCode);
+
+    _FinalStage targetName(Optional<String> targetName);
+
+    _FinalStage targetName(String targetName);
 
     /**
-     * @return ALREADY_STANDARD (source coding is already a standard OMOP concept),
+     * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
      * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
      * standard code was suggested for a text-only resource but not verified
      * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
-     * (no standard concept found).
+     * (no target concept selected, including missing mappings,
+     * target-domain mismatches and ambiguity, or source information
+     * retained without concept resolution as explained in <code>note</code>).</p>
      */
-    @JsonProperty("mapping_status")
-    public Optional<MappingEntryMappingStatus> getMappingStatus() {
-        return mappingStatus;
-    }
+    _FinalStage mappingStatus(Optional<MappingEntryMappingStatus> mappingStatus);
+
+    _FinalStage mappingStatus(MappingEntryMappingStatus mappingStatus);
+
+    _FinalStage resolution(Optional<MappingResolution> resolution);
+
+    _FinalStage resolution(MappingResolution resolution);
 
     /**
-     * @return Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings and text-only rows. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.
-     */
-    @JsonProperty("selected")
-    public boolean getSelected() {
-        return selected;
-    }
-
-    /**
-     * @return Additional context for the entry. A coded route is noted as
+     * <p>Additional context for the entry, including the output table,
+     * populated fields, source information without a corresponding row
+     * column, and <code>DOMAIN_MISMATCH</code> outcomes. A coded route is noted as
      * <code>FHIR route</code>. Patient demographic entries name their source and, when
-     * not applied, why:
+     * not applied, why:</p>
      * <ul>
      * <li><code>US Core birth sex</code>; <code>US Core birth sex; null flavor</code>;
      * <code>US Core birth sex; outside value set</code>;
@@ -191,525 +384,410 @@ public final class MappingEntry {
      * <code>US Core ethnicity; null flavor</code></li>
      * </ul>
      */
-    @JsonProperty("note")
-    public Optional<String> getNote() {
-        return note;
+    _FinalStage note(Optional<String> note);
+
+    _FinalStage note(String note);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements SelectedStage, _FinalStage {
+
+    private boolean selected;
+
+    private Optional<String> note = Optional.empty();
+
+    private Optional<MappingResolution> resolution = Optional.empty();
+
+    private Optional<MappingEntryMappingStatus> mappingStatus = Optional.empty();
+
+    private Optional<String> targetName = Optional.empty();
+
+    private Optional<String> targetCode = Optional.empty();
+
+    private Optional<String> targetVocabulary = Optional.empty();
+
+    private Optional<String> sourceName = Optional.empty();
+
+    private Optional<String> sourceCode = Optional.empty();
+
+    private Optional<String> sourceSystem = Optional.empty();
+
+    private Optional<String> omopField = Optional.empty();
+
+    private Optional<Long> omopId = Optional.empty();
+
+    private Optional<String> omopTable = Optional.empty();
+
+    private Optional<String> resourceId = Optional.empty();
+
+    private Optional<String> resourceType = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(MappingEntry other) {
+      resourceType(other.getResourceType());
+      resourceId(other.getResourceId());
+      omopTable(other.getOmopTable());
+      omopId(other.getOmopId());
+      omopField(other.getOmopField());
+      sourceSystem(other.getSourceSystem());
+      sourceCode(other.getSourceCode());
+      sourceName(other.getSourceName());
+      targetVocabulary(other.getTargetVocabulary());
+      targetCode(other.getTargetCode());
+      targetName(other.getTargetName());
+      mappingStatus(other.getMappingStatus());
+      selected(other.getSelected());
+      resolution(other.getResolution());
+      note(other.getNote());
+      return this;
+    }
+
+    /**
+     * <p>Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings, text-only rows, and entries without a corresponding row column. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("selected")
+    public _FinalStage selected(boolean selected) {
+      this.selected = selected;
+      return this;
+    }
+
+    /**
+     * <p>Additional context for the entry, including the output table,
+     * populated fields, source information without a corresponding row
+     * column, and <code>DOMAIN_MISMATCH</code> outcomes. A coded route is noted as
+     * <code>FHIR route</code>. Patient demographic entries name their source and, when
+     * not applied, why:</p>
+     * <ul>
+     * <li><code>US Core birth sex</code>; <code>US Core birth sex; null flavor</code>;
+     * <code>US Core birth sex; outside value set</code>;
+     * <code>US Core birth sex; conflicting values</code></li>
+     * <li><code>FHIR administrative gender; assumed sex at birth</code>;
+     * <code>FHIR administrative gender; not a sex-at-birth value</code>;
+     * <code>FHIR administrative gender; not used, birth sex supplied</code></li>
+     * <li><code>US Core race OMB category</code>;
+     * <code>US Core race OMB category; more than one race</code> (linked to its
+     * <code>observation</code> race row); <code>US Core race; null flavor</code></li>
+     * <li><code>US Core ethnicity OMB category</code>;
+     * <code>US Core ethnicity OMB category; conflicting categories</code>;
+     * <code>US Core ethnicity; null flavor</code></li>
+     * </ul>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage note(String note) {
+      this.note = Optional.ofNullable(note);
+      return this;
+    }
+
+    /**
+     * <p>Additional context for the entry, including the output table,
+     * populated fields, source information without a corresponding row
+     * column, and <code>DOMAIN_MISMATCH</code> outcomes. A coded route is noted as
+     * <code>FHIR route</code>. Patient demographic entries name their source and, when
+     * not applied, why:</p>
+     * <ul>
+     * <li><code>US Core birth sex</code>; <code>US Core birth sex; null flavor</code>;
+     * <code>US Core birth sex; outside value set</code>;
+     * <code>US Core birth sex; conflicting values</code></li>
+     * <li><code>FHIR administrative gender; assumed sex at birth</code>;
+     * <code>FHIR administrative gender; not a sex-at-birth value</code>;
+     * <code>FHIR administrative gender; not used, birth sex supplied</code></li>
+     * <li><code>US Core race OMB category</code>;
+     * <code>US Core race OMB category; more than one race</code> (linked to its
+     * <code>observation</code> race row); <code>US Core race; null flavor</code></li>
+     * <li><code>US Core ethnicity OMB category</code>;
+     * <code>US Core ethnicity OMB category; conflicting categories</code>;
+     * <code>US Core ethnicity; null flavor</code></li>
+     * </ul>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "note", nulls = Nulls.SKIP)
+    public _FinalStage note(Optional<String> note) {
+      this.note = note;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof MappingEntry && equalTo((MappingEntry) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(MappingEntry other) {
-        return resourceType.equals(other.resourceType)
-                && resourceId.equals(other.resourceId)
-                && omopTable.equals(other.omopTable)
-                && omopId.equals(other.omopId)
-                && omopField.equals(other.omopField)
-                && sourceSystem.equals(other.sourceSystem)
-                && sourceCode.equals(other.sourceCode)
-                && sourceName.equals(other.sourceName)
-                && targetVocabulary.equals(other.targetVocabulary)
-                && targetCode.equals(other.targetCode)
-                && targetName.equals(other.targetName)
-                && mappingStatus.equals(other.mappingStatus)
-                && selected == other.selected
-                && note.equals(other.note);
+    public _FinalStage resolution(MappingResolution resolution) {
+      this.resolution = Optional.ofNullable(resolution);
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.resourceType,
-                this.resourceId,
-                this.omopTable,
-                this.omopId,
-                this.omopField,
-                this.sourceSystem,
-                this.sourceCode,
-                this.sourceName,
-                this.targetVocabulary,
-                this.targetCode,
-                this.targetName,
-                this.mappingStatus,
-                this.selected,
-                this.note);
+    @JsonSetter(value = "resolution", nulls = Nulls.SKIP)
+    public _FinalStage resolution(Optional<MappingResolution> resolution) {
+      this.resolution = resolution;
+      return this;
+    }
+
+    /**
+     * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
+     * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
+     * standard code was suggested for a text-only resource but not verified
+     * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
+     * (no target concept selected, including missing mappings,
+     * target-domain mismatches and ambiguity, or source information
+     * retained without concept resolution as explained in <code>note</code>).</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage mappingStatus(MappingEntryMappingStatus mappingStatus) {
+      this.mappingStatus = Optional.ofNullable(mappingStatus);
+      return this;
+    }
+
+    /**
+     * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
+     * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
+     * standard code was suggested for a text-only resource but not verified
+     * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
+     * (no target concept selected, including missing mappings,
+     * target-domain mismatches and ambiguity, or source information
+     * retained without concept resolution as explained in <code>note</code>).</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "mapping_status", nulls = Nulls.SKIP)
+    public _FinalStage mappingStatus(Optional<MappingEntryMappingStatus> mappingStatus) {
+      this.mappingStatus = mappingStatus;
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public _FinalStage targetName(String targetName) {
+      this.targetName = Optional.ofNullable(targetName);
+      return this;
     }
 
-    public static SelectedStage builder() {
-        return new Builder();
+    @java.lang.Override
+    @JsonSetter(value = "target_name", nulls = Nulls.SKIP)
+    public _FinalStage targetName(Optional<String> targetName) {
+      this.targetName = targetName;
+      return this;
     }
 
-    public interface SelectedStage {
-        /**
-         * <p>Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings and text-only rows. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.</p>
-         */
-        _FinalStage selected(boolean selected);
-
-        Builder from(MappingEntry other);
+    /**
+     * <p>The standard concept's own code: the source code itself for an
+     * ALREADY_STANDARD row, the standard concept's code for a MAPPED row,
+     * or the suggested code for an UNCHECKED row. Omitted for UNMAPPED
+     * rows.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage targetCode(String targetCode) {
+      this.targetCode = Optional.ofNullable(targetCode);
+      return this;
     }
 
-    public interface _FinalStage {
-        MappingEntry build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        _FinalStage resourceType(Optional<String> resourceType);
-
-        _FinalStage resourceType(String resourceType);
-
-        _FinalStage resourceId(Optional<String> resourceId);
-
-        _FinalStage resourceId(String resourceId);
-
-        _FinalStage omopTable(Optional<String> omopTable);
-
-        _FinalStage omopTable(String omopTable);
-
-        /**
-         * <p>The id of the OMOP row this coding produced (e.g. <code>condition_occurrence_id</code>),
-         * within <code>omop_table</code>. A resource with multiple codings yields one entry
-         * per coding, all sharing this id.</p>
-         */
-        _FinalStage omopId(Optional<Long> omopId);
-
-        _FinalStage omopId(Long omopId);
-
-        /**
-         * <p>The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>.</p>
-         */
-        _FinalStage omopField(Optional<String> omopField);
-
-        _FinalStage omopField(String omopField);
-
-        _FinalStage sourceSystem(Optional<String> sourceSystem);
-
-        _FinalStage sourceSystem(String sourceSystem);
-
-        _FinalStage sourceCode(Optional<String> sourceCode);
-
-        _FinalStage sourceCode(String sourceCode);
-
-        _FinalStage sourceName(Optional<String> sourceName);
-
-        _FinalStage sourceName(String sourceName);
-
-        _FinalStage targetVocabulary(Optional<String> targetVocabulary);
-
-        _FinalStage targetVocabulary(String targetVocabulary);
-
-        /**
-         * <p>The standard concept's own code: the source code itself for an
-         * ALREADY_STANDARD row, the standard concept's code for a MAPPED row,
-         * or the suggested code for an UNCHECKED row. Omitted for UNMAPPED
-         * rows.</p>
-         */
-        _FinalStage targetCode(Optional<String> targetCode);
-
-        _FinalStage targetCode(String targetCode);
-
-        _FinalStage targetName(Optional<String> targetName);
-
-        _FinalStage targetName(String targetName);
-
-        /**
-         * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
-         * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
-         * standard code was suggested for a text-only resource but not verified
-         * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
-         * (no standard concept found).</p>
-         */
-        _FinalStage mappingStatus(Optional<MappingEntryMappingStatus> mappingStatus);
-
-        _FinalStage mappingStatus(MappingEntryMappingStatus mappingStatus);
-
-        /**
-         * <p>Additional context for the entry. A coded route is noted as
-         * <code>FHIR route</code>. Patient demographic entries name their source and, when
-         * not applied, why:</p>
-         * <ul>
-         * <li><code>US Core birth sex</code>; <code>US Core birth sex; null flavor</code>;
-         * <code>US Core birth sex; outside value set</code>;
-         * <code>US Core birth sex; conflicting values</code></li>
-         * <li><code>FHIR administrative gender; assumed sex at birth</code>;
-         * <code>FHIR administrative gender; not a sex-at-birth value</code>;
-         * <code>FHIR administrative gender; not used, birth sex supplied</code></li>
-         * <li><code>US Core race OMB category</code>;
-         * <code>US Core race OMB category; more than one race</code> (linked to its
-         * <code>observation</code> race row); <code>US Core race; null flavor</code></li>
-         * <li><code>US Core ethnicity OMB category</code>;
-         * <code>US Core ethnicity OMB category; conflicting categories</code>;
-         * <code>US Core ethnicity; null flavor</code></li>
-         * </ul>
-         */
-        _FinalStage note(Optional<String> note);
-
-        _FinalStage note(String note);
+    /**
+     * <p>The standard concept's own code: the source code itself for an
+     * ALREADY_STANDARD row, the standard concept's code for a MAPPED row,
+     * or the suggested code for an UNCHECKED row. Omitted for UNMAPPED
+     * rows.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "target_code", nulls = Nulls.SKIP)
+    public _FinalStage targetCode(Optional<String> targetCode) {
+      this.targetCode = targetCode;
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements SelectedStage, _FinalStage {
-        private boolean selected;
-
-        private Optional<String> note = Optional.empty();
-
-        private Optional<MappingEntryMappingStatus> mappingStatus = Optional.empty();
-
-        private Optional<String> targetName = Optional.empty();
-
-        private Optional<String> targetCode = Optional.empty();
-
-        private Optional<String> targetVocabulary = Optional.empty();
-
-        private Optional<String> sourceName = Optional.empty();
-
-        private Optional<String> sourceCode = Optional.empty();
-
-        private Optional<String> sourceSystem = Optional.empty();
-
-        private Optional<String> omopField = Optional.empty();
-
-        private Optional<Long> omopId = Optional.empty();
-
-        private Optional<String> omopTable = Optional.empty();
-
-        private Optional<String> resourceId = Optional.empty();
-
-        private Optional<String> resourceType = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(MappingEntry other) {
-            resourceType(other.getResourceType());
-            resourceId(other.getResourceId());
-            omopTable(other.getOmopTable());
-            omopId(other.getOmopId());
-            omopField(other.getOmopField());
-            sourceSystem(other.getSourceSystem());
-            sourceCode(other.getSourceCode());
-            sourceName(other.getSourceName());
-            targetVocabulary(other.getTargetVocabulary());
-            targetCode(other.getTargetCode());
-            targetName(other.getTargetName());
-            mappingStatus(other.getMappingStatus());
-            selected(other.getSelected());
-            note(other.getNote());
-            return this;
-        }
-
-        /**
-         * <p>Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings and text-only rows. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("selected")
-        public _FinalStage selected(boolean selected) {
-            this.selected = selected;
-            return this;
-        }
-
-        /**
-         * <p>Additional context for the entry. A coded route is noted as
-         * <code>FHIR route</code>. Patient demographic entries name their source and, when
-         * not applied, why:</p>
-         * <ul>
-         * <li><code>US Core birth sex</code>; <code>US Core birth sex; null flavor</code>;
-         * <code>US Core birth sex; outside value set</code>;
-         * <code>US Core birth sex; conflicting values</code></li>
-         * <li><code>FHIR administrative gender; assumed sex at birth</code>;
-         * <code>FHIR administrative gender; not a sex-at-birth value</code>;
-         * <code>FHIR administrative gender; not used, birth sex supplied</code></li>
-         * <li><code>US Core race OMB category</code>;
-         * <code>US Core race OMB category; more than one race</code> (linked to its
-         * <code>observation</code> race row); <code>US Core race; null flavor</code></li>
-         * <li><code>US Core ethnicity OMB category</code>;
-         * <code>US Core ethnicity OMB category; conflicting categories</code>;
-         * <code>US Core ethnicity; null flavor</code></li>
-         * </ul>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage note(String note) {
-            this.note = Optional.ofNullable(note);
-            return this;
-        }
-
-        /**
-         * <p>Additional context for the entry. A coded route is noted as
-         * <code>FHIR route</code>. Patient demographic entries name their source and, when
-         * not applied, why:</p>
-         * <ul>
-         * <li><code>US Core birth sex</code>; <code>US Core birth sex; null flavor</code>;
-         * <code>US Core birth sex; outside value set</code>;
-         * <code>US Core birth sex; conflicting values</code></li>
-         * <li><code>FHIR administrative gender; assumed sex at birth</code>;
-         * <code>FHIR administrative gender; not a sex-at-birth value</code>;
-         * <code>FHIR administrative gender; not used, birth sex supplied</code></li>
-         * <li><code>US Core race OMB category</code>;
-         * <code>US Core race OMB category; more than one race</code> (linked to its
-         * <code>observation</code> race row); <code>US Core race; null flavor</code></li>
-         * <li><code>US Core ethnicity OMB category</code>;
-         * <code>US Core ethnicity OMB category; conflicting categories</code>;
-         * <code>US Core ethnicity; null flavor</code></li>
-         * </ul>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "note", nulls = Nulls.SKIP)
-        public _FinalStage note(Optional<String> note) {
-            this.note = note;
-            return this;
-        }
-
-        /**
-         * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
-         * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
-         * standard code was suggested for a text-only resource but not verified
-         * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
-         * (no standard concept found).</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage mappingStatus(MappingEntryMappingStatus mappingStatus) {
-            this.mappingStatus = Optional.ofNullable(mappingStatus);
-            return this;
-        }
-
-        /**
-         * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
-         * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
-         * standard code was suggested for a text-only resource but not verified
-         * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
-         * (no standard concept found).</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "mapping_status", nulls = Nulls.SKIP)
-        public _FinalStage mappingStatus(Optional<MappingEntryMappingStatus> mappingStatus) {
-            this.mappingStatus = mappingStatus;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage targetName(String targetName) {
-            this.targetName = Optional.ofNullable(targetName);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "target_name", nulls = Nulls.SKIP)
-        public _FinalStage targetName(Optional<String> targetName) {
-            this.targetName = targetName;
-            return this;
-        }
-
-        /**
-         * <p>The standard concept's own code: the source code itself for an
-         * ALREADY_STANDARD row, the standard concept's code for a MAPPED row,
-         * or the suggested code for an UNCHECKED row. Omitted for UNMAPPED
-         * rows.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage targetCode(String targetCode) {
-            this.targetCode = Optional.ofNullable(targetCode);
-            return this;
-        }
-
-        /**
-         * <p>The standard concept's own code: the source code itself for an
-         * ALREADY_STANDARD row, the standard concept's code for a MAPPED row,
-         * or the suggested code for an UNCHECKED row. Omitted for UNMAPPED
-         * rows.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "target_code", nulls = Nulls.SKIP)
-        public _FinalStage targetCode(Optional<String> targetCode) {
-            this.targetCode = targetCode;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage targetVocabulary(String targetVocabulary) {
-            this.targetVocabulary = Optional.ofNullable(targetVocabulary);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "target_vocabulary", nulls = Nulls.SKIP)
-        public _FinalStage targetVocabulary(Optional<String> targetVocabulary) {
-            this.targetVocabulary = targetVocabulary;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage sourceName(String sourceName) {
-            this.sourceName = Optional.ofNullable(sourceName);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "source_name", nulls = Nulls.SKIP)
-        public _FinalStage sourceName(Optional<String> sourceName) {
-            this.sourceName = sourceName;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage sourceCode(String sourceCode) {
-            this.sourceCode = Optional.ofNullable(sourceCode);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "source_code", nulls = Nulls.SKIP)
-        public _FinalStage sourceCode(Optional<String> sourceCode) {
-            this.sourceCode = sourceCode;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage sourceSystem(String sourceSystem) {
-            this.sourceSystem = Optional.ofNullable(sourceSystem);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "source_system", nulls = Nulls.SKIP)
-        public _FinalStage sourceSystem(Optional<String> sourceSystem) {
-            this.sourceSystem = sourceSystem;
-            return this;
-        }
-
-        /**
-         * <p>The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage omopField(String omopField) {
-            this.omopField = Optional.ofNullable(omopField);
-            return this;
-        }
-
-        /**
-         * <p>The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "omop_field", nulls = Nulls.SKIP)
-        public _FinalStage omopField(Optional<String> omopField) {
-            this.omopField = omopField;
-            return this;
-        }
-
-        /**
-         * <p>The id of the OMOP row this coding produced (e.g. <code>condition_occurrence_id</code>),
-         * within <code>omop_table</code>. A resource with multiple codings yields one entry
-         * per coding, all sharing this id.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage omopId(Long omopId) {
-            this.omopId = Optional.ofNullable(omopId);
-            return this;
-        }
-
-        /**
-         * <p>The id of the OMOP row this coding produced (e.g. <code>condition_occurrence_id</code>),
-         * within <code>omop_table</code>. A resource with multiple codings yields one entry
-         * per coding, all sharing this id.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "omop_id", nulls = Nulls.SKIP)
-        public _FinalStage omopId(Optional<Long> omopId) {
-            this.omopId = omopId;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage omopTable(String omopTable) {
-            this.omopTable = Optional.ofNullable(omopTable);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "omop_table", nulls = Nulls.SKIP)
-        public _FinalStage omopTable(Optional<String> omopTable) {
-            this.omopTable = omopTable;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage resourceId(String resourceId) {
-            this.resourceId = Optional.ofNullable(resourceId);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "resource_id", nulls = Nulls.SKIP)
-        public _FinalStage resourceId(Optional<String> resourceId) {
-            this.resourceId = resourceId;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage resourceType(String resourceType) {
-            this.resourceType = Optional.ofNullable(resourceType);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "resource_type", nulls = Nulls.SKIP)
-        public _FinalStage resourceType(Optional<String> resourceType) {
-            this.resourceType = resourceType;
-            return this;
-        }
-
-        @java.lang.Override
-        public MappingEntry build() {
-            return new MappingEntry(
-                    resourceType,
-                    resourceId,
-                    omopTable,
-                    omopId,
-                    omopField,
-                    sourceSystem,
-                    sourceCode,
-                    sourceName,
-                    targetVocabulary,
-                    targetCode,
-                    targetName,
-                    mappingStatus,
-                    selected,
-                    note,
-                    additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    @java.lang.Override
+    public _FinalStage targetVocabulary(String targetVocabulary) {
+      this.targetVocabulary = Optional.ofNullable(targetVocabulary);
+      return this;
     }
+
+    @java.lang.Override
+    @JsonSetter(value = "target_vocabulary", nulls = Nulls.SKIP)
+    public _FinalStage targetVocabulary(Optional<String> targetVocabulary) {
+      this.targetVocabulary = targetVocabulary;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage sourceName(String sourceName) {
+      this.sourceName = Optional.ofNullable(sourceName);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(value = "source_name", nulls = Nulls.SKIP)
+    public _FinalStage sourceName(Optional<String> sourceName) {
+      this.sourceName = sourceName;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage sourceCode(String sourceCode) {
+      this.sourceCode = Optional.ofNullable(sourceCode);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(value = "source_code", nulls = Nulls.SKIP)
+    public _FinalStage sourceCode(Optional<String> sourceCode) {
+      this.sourceCode = sourceCode;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage sourceSystem(String sourceSystem) {
+      this.sourceSystem = Optional.ofNullable(sourceSystem);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(value = "source_system", nulls = Nulls.SKIP)
+    public _FinalStage sourceSystem(Optional<String> sourceSystem) {
+      this.sourceSystem = sourceSystem;
+      return this;
+    }
+
+    /**
+     * <p>The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>. Omitted when the entry preserves source information without populating a row column.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage omopField(String omopField) {
+      this.omopField = Optional.ofNullable(omopField);
+      return this;
+    }
+
+    /**
+     * <p>The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>. Omitted when the entry preserves source information without populating a row column.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "omop_field", nulls = Nulls.SKIP)
+    public _FinalStage omopField(Optional<String> omopField) {
+      this.omopField = omopField;
+      return this;
+    }
+
+    /**
+     * <p>The id of the OMOP row this coding produced (e.g. <code>condition_occurrence_id</code>),
+     * within <code>omop_table</code>. A resource with multiple codings yields one entry
+     * per coding, all sharing this id.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage omopId(Long omopId) {
+      this.omopId = Optional.ofNullable(omopId);
+      return this;
+    }
+
+    /**
+     * <p>The id of the OMOP row this coding produced (e.g. <code>condition_occurrence_id</code>),
+     * within <code>omop_table</code>. A resource with multiple codings yields one entry
+     * per coding, all sharing this id.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "omop_id", nulls = Nulls.SKIP)
+    public _FinalStage omopId(Optional<Long> omopId) {
+      this.omopId = omopId;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage omopTable(String omopTable) {
+      this.omopTable = Optional.ofNullable(omopTable);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(value = "omop_table", nulls = Nulls.SKIP)
+    public _FinalStage omopTable(Optional<String> omopTable) {
+      this.omopTable = omopTable;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage resourceId(String resourceId) {
+      this.resourceId = Optional.ofNullable(resourceId);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(value = "resource_id", nulls = Nulls.SKIP)
+    public _FinalStage resourceId(Optional<String> resourceId) {
+      this.resourceId = resourceId;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage resourceType(String resourceType) {
+      this.resourceType = Optional.ofNullable(resourceType);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(value = "resource_type", nulls = Nulls.SKIP)
+    public _FinalStage resourceType(Optional<String> resourceType) {
+      this.resourceType = resourceType;
+      return this;
+    }
+
+    @java.lang.Override
+    public MappingEntry build() {
+      return new MappingEntry(
+        resourceType,
+        resourceId,
+        omopTable,
+        omopId,
+        omopField,
+        sourceSystem,
+        sourceCode,
+        sourceName,
+        targetVocabulary,
+        targetCode,
+        targetName,
+        mappingStatus,
+        selected,
+        resolution,
+        note,
+        additionalProperties
+      );
+    }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("resource_type") ||
+        key.equalsIgnoreCase("resource_id") ||
+        key.equalsIgnoreCase("omop_table") ||
+        key.equalsIgnoreCase("omop_id") ||
+        key.equalsIgnoreCase("omop_field") ||
+        key.equalsIgnoreCase("source_system") ||
+        key.equalsIgnoreCase("source_code") ||
+        key.equalsIgnoreCase("source_name") ||
+        key.equalsIgnoreCase("target_vocabulary") ||
+        key.equalsIgnoreCase("target_code") ||
+        key.equalsIgnoreCase("target_name") ||
+        key.equalsIgnoreCase("mapping_status") ||
+        key.equalsIgnoreCase("selected") ||
+        key.equalsIgnoreCase("resolution") ||
+        key.equalsIgnoreCase("note")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

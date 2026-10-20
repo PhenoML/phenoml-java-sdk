@@ -20,172 +20,189 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PrimaryPatient.Builder.class)
 public final class PrimaryPatient {
-    private final Optional<PatientReference> identifier;
 
-    private final Optional<PrimaryPatientName> name;
+  private final Optional<PatientReference> identifier;
 
-    private final Optional<String> birthDate;
+  private final Optional<PrimaryPatientName> name;
 
-    private final Optional<PrimaryPatientGender> gender;
+  private final Optional<String> birthDate;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<PrimaryPatientGender> gender;
 
-    private PrimaryPatient(
-            Optional<PatientReference> identifier,
-            Optional<PrimaryPatientName> name,
-            Optional<String> birthDate,
-            Optional<PrimaryPatientGender> gender,
-            Map<String, Object> additionalProperties) {
-        this.identifier = identifier;
-        this.name = name;
-        this.birthDate = birthDate;
-        this.gender = gender;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private PrimaryPatient(
+    Optional<PatientReference> identifier,
+    Optional<PrimaryPatientName> name,
+    Optional<String> birthDate,
+    Optional<PrimaryPatientGender> gender,
+    Map<String, Object> additionalProperties
+  ) {
+    this.identifier = identifier;
+    this.name = name;
+    this.birthDate = birthDate;
+    this.gender = gender;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("identifier")
+  public Optional<PatientReference> getIdentifier() {
+    return identifier;
+  }
+
+  @JsonProperty("name")
+  public Optional<PrimaryPatientName> getName() {
+    return name;
+  }
+
+  /**
+   * @return Complete date of birth in YYYY-MM-DD format.
+   */
+  @JsonProperty("birthDate")
+  public Optional<String> getBirthDate() {
+    return birthDate;
+  }
+
+  /**
+   * @return Administrative gender. This corroborates another match but does not identify a patient alone.
+   */
+  @JsonProperty("gender")
+  public Optional<PrimaryPatientGender> getGender() {
+    return gender;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof PrimaryPatient && equalTo((PrimaryPatient) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(PrimaryPatient other) {
+    return (
+      identifier.equals(other.identifier) &&
+      name.equals(other.name) &&
+      birthDate.equals(other.birthDate) &&
+      gender.equals(other.gender)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.identifier, this.name, this.birthDate, this.gender);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<PatientReference> identifier = Optional.empty();
+
+    private Optional<PrimaryPatientName> name = Optional.empty();
+
+    private Optional<String> birthDate = Optional.empty();
+
+    private Optional<PrimaryPatientGender> gender = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(PrimaryPatient other) {
+      identifier(other.getIdentifier());
+      name(other.getName());
+      birthDate(other.getBirthDate());
+      gender(other.getGender());
+      return this;
     }
 
-    @JsonProperty("identifier")
-    public Optional<PatientReference> getIdentifier() {
-        return identifier;
+    @JsonSetter(value = "identifier", nulls = Nulls.SKIP)
+    public Builder identifier(Optional<PatientReference> identifier) {
+      this.identifier = identifier;
+      return this;
     }
 
-    @JsonProperty("name")
-    public Optional<PrimaryPatientName> getName() {
-        return name;
+    public Builder identifier(PatientReference identifier) {
+      this.identifier = Optional.ofNullable(identifier);
+      return this;
+    }
+
+    @JsonSetter(value = "name", nulls = Nulls.SKIP)
+    public Builder name(Optional<PrimaryPatientName> name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder name(PrimaryPatientName name) {
+      this.name = Optional.ofNullable(name);
+      return this;
     }
 
     /**
-     * @return Complete date of birth in YYYY-MM-DD format.
+     * <p>Complete date of birth in YYYY-MM-DD format.</p>
      */
-    @JsonProperty("birthDate")
-    public Optional<String> getBirthDate() {
-        return birthDate;
+    @JsonSetter(value = "birthDate", nulls = Nulls.SKIP)
+    public Builder birthDate(Optional<String> birthDate) {
+      this.birthDate = birthDate;
+      return this;
+    }
+
+    public Builder birthDate(String birthDate) {
+      this.birthDate = Optional.ofNullable(birthDate);
+      return this;
     }
 
     /**
-     * @return Administrative gender. This corroborates another match but does not identify a patient alone.
+     * <p>Administrative gender. This corroborates another match but does not identify a patient alone.</p>
      */
-    @JsonProperty("gender")
-    public Optional<PrimaryPatientGender> getGender() {
-        return gender;
+    @JsonSetter(value = "gender", nulls = Nulls.SKIP)
+    public Builder gender(Optional<PrimaryPatientGender> gender) {
+      this.gender = gender;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof PrimaryPatient && equalTo((PrimaryPatient) other);
+    public Builder gender(PrimaryPatientGender gender) {
+      this.gender = Optional.ofNullable(gender);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public PrimaryPatient build() {
+      return new PrimaryPatient(identifier, name, birthDate, gender, additionalProperties);
     }
 
-    private boolean equalTo(PrimaryPatient other) {
-        return identifier.equals(other.identifier)
-                && name.equals(other.name)
-                && birthDate.equals(other.birthDate)
-                && gender.equals(other.gender);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("identifier") ||
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("birthDate") ||
+        key.equalsIgnoreCase("gender")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.identifier, this.name, this.birthDate, this.gender);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<PatientReference> identifier = Optional.empty();
-
-        private Optional<PrimaryPatientName> name = Optional.empty();
-
-        private Optional<String> birthDate = Optional.empty();
-
-        private Optional<PrimaryPatientGender> gender = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(PrimaryPatient other) {
-            identifier(other.getIdentifier());
-            name(other.getName());
-            birthDate(other.getBirthDate());
-            gender(other.getGender());
-            return this;
-        }
-
-        @JsonSetter(value = "identifier", nulls = Nulls.SKIP)
-        public Builder identifier(Optional<PatientReference> identifier) {
-            this.identifier = identifier;
-            return this;
-        }
-
-        public Builder identifier(PatientReference identifier) {
-            this.identifier = Optional.ofNullable(identifier);
-            return this;
-        }
-
-        @JsonSetter(value = "name", nulls = Nulls.SKIP)
-        public Builder name(Optional<PrimaryPatientName> name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder name(PrimaryPatientName name) {
-            this.name = Optional.ofNullable(name);
-            return this;
-        }
-
-        /**
-         * <p>Complete date of birth in YYYY-MM-DD format.</p>
-         */
-        @JsonSetter(value = "birthDate", nulls = Nulls.SKIP)
-        public Builder birthDate(Optional<String> birthDate) {
-            this.birthDate = birthDate;
-            return this;
-        }
-
-        public Builder birthDate(String birthDate) {
-            this.birthDate = Optional.ofNullable(birthDate);
-            return this;
-        }
-
-        /**
-         * <p>Administrative gender. This corroborates another match but does not identify a patient alone.</p>
-         */
-        @JsonSetter(value = "gender", nulls = Nulls.SKIP)
-        public Builder gender(Optional<PrimaryPatientGender> gender) {
-            this.gender = gender;
-            return this;
-        }
-
-        public Builder gender(PrimaryPatientGender gender) {
-            this.gender = Optional.ofNullable(gender);
-            return this;
-        }
-
-        public PrimaryPatient build() {
-            return new PrimaryPatient(identifier, name, birthDate, gender, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

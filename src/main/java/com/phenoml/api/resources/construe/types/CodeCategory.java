@@ -19,142 +19,151 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CodeCategory.Builder.class)
 public final class CodeCategory {
-    private final String uri;
 
-    private final String label;
+  private final String uri;
 
-    private final Map<String, Object> additionalProperties;
+  private final String label;
 
-    private CodeCategory(String uri, String label, Map<String, Object> additionalProperties) {
-        this.uri = uri;
-        this.label = label;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CodeCategory(String uri, String label, Map<String, Object> additionalProperties) {
+    this.uri = uri;
+    this.label = label;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Identifier for the category term (e.g. an HPO URI).
+   */
+  @JsonProperty("uri")
+  public String getUri() {
+    return uri;
+  }
+
+  /**
+   * @return Human-readable label for the category term.
+   */
+  @JsonProperty("label")
+  public String getLabel() {
+    return label;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CodeCategory && equalTo((CodeCategory) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CodeCategory other) {
+    return uri.equals(other.uri) && label.equals(other.label);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.uri, this.label);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static UriStage builder() {
+    return new Builder();
+  }
+
+  public interface UriStage {
+    /**
+     * <p>Identifier for the category term (e.g. an HPO URI).</p>
+     */
+    LabelStage uri(@NotNull String uri);
+
+    Builder from(CodeCategory other);
+  }
+
+  public interface LabelStage {
+    /**
+     * <p>Human-readable label for the category term.</p>
+     */
+    _FinalStage label(@NotNull String label);
+  }
+
+  public interface _FinalStage {
+    CodeCategory build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements UriStage, LabelStage, _FinalStage {
+
+    private String uri;
+
+    private String label;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(CodeCategory other) {
+      uri(other.getUri());
+      label(other.getLabel());
+      return this;
     }
 
     /**
-     * @return Identifier for the category term (e.g. an HPO URI).
+     * <p>Identifier for the category term (e.g. an HPO URI).</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("uri")
-    public String getUri() {
-        return uri;
+    @java.lang.Override
+    @JsonSetter("uri")
+    public LabelStage uri(@NotNull String uri) {
+      this.uri = Objects.requireNonNull(uri, "uri must not be null");
+      return this;
     }
 
     /**
-     * @return Human-readable label for the category term.
+     * <p>Human-readable label for the category term.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("label")
-    public String getLabel() {
-        return label;
+    @java.lang.Override
+    @JsonSetter("label")
+    public _FinalStage label(@NotNull String label) {
+      this.label = Objects.requireNonNull(label, "label must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CodeCategory && equalTo((CodeCategory) other);
+    public CodeCategory build() {
+      return new CodeCategory(uri, label, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(CodeCategory other) {
-        return uri.equals(other.uri) && label.equals(other.label);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.uri, this.label);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("uri") || key.equalsIgnoreCase("label")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static UriStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface UriStage {
-        /**
-         * <p>Identifier for the category term (e.g. an HPO URI).</p>
-         */
-        LabelStage uri(@NotNull String uri);
-
-        Builder from(CodeCategory other);
-    }
-
-    public interface LabelStage {
-        /**
-         * <p>Human-readable label for the category term.</p>
-         */
-        _FinalStage label(@NotNull String label);
-    }
-
-    public interface _FinalStage {
-        CodeCategory build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements UriStage, LabelStage, _FinalStage {
-        private String uri;
-
-        private String label;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(CodeCategory other) {
-            uri(other.getUri());
-            label(other.getLabel());
-            return this;
-        }
-
-        /**
-         * <p>Identifier for the category term (e.g. an HPO URI).</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("uri")
-        public LabelStage uri(@NotNull String uri) {
-            this.uri = Objects.requireNonNull(uri, "uri must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Human-readable label for the category term.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("label")
-        public _FinalStage label(@NotNull String label) {
-            this.label = Objects.requireNonNull(label, "label must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public CodeCategory build() {
-            return new CodeCategory(uri, label, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -8,21 +8,23 @@ import com.phenoml.api.core.Suppliers;
 import java.util.function.Supplier;
 
 public class AsyncImplementationGuidesClient {
-    protected final ClientOptions clientOptions;
 
-    protected final Supplier<
-                    com.phenoml.api.resources.implementationguides.implementationguides.AsyncImplementationGuidesClient>
-            implementationGuidesClient;
+  protected final ClientOptions clientOptions;
 
-    public AsyncImplementationGuidesClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.implementationGuidesClient = Suppliers.memoize(() ->
-                new com.phenoml.api.resources.implementationguides.implementationguides.AsyncImplementationGuidesClient(
-                        clientOptions));
-    }
+  protected final Supplier<
+    com.phenoml.api.resources.implementationguides.implementationguides.AsyncImplementationGuidesClient
+  > implementationGuidesClient;
 
-    public com.phenoml.api.resources.implementationguides.implementationguides.AsyncImplementationGuidesClient
-            implementationGuides() {
-        return this.implementationGuidesClient.get();
-    }
+  public AsyncImplementationGuidesClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.implementationGuidesClient = Suppliers.memoize(() ->
+      new com.phenoml.api.resources.implementationguides.implementationguides.AsyncImplementationGuidesClient(
+        clientOptions
+      )
+    );
+  }
+
+  public com.phenoml.api.resources.implementationguides.implementationguides.AsyncImplementationGuidesClient implementationGuides() {
+    return this.implementationGuidesClient.get();
+  }
 }

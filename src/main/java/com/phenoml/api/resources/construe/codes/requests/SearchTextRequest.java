@@ -21,193 +21,210 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = SearchTextRequest.Builder.class)
 public final class SearchTextRequest {
-    private final String q;
 
-    private final Optional<String> version;
+  private final String q;
 
-    private final Optional<Integer> limit;
+  private final Optional<String> version;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Integer> limit;
 
-    private SearchTextRequest(
-            String q, Optional<String> version, Optional<Integer> limit, Map<String, Object> additionalProperties) {
-        this.q = q;
-        this.version = version;
-        this.limit = limit;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private SearchTextRequest(
+    String q,
+    Optional<String> version,
+    Optional<Integer> limit,
+    Map<String, Object> additionalProperties
+  ) {
+    this.q = q;
+    this.version = version;
+    this.limit = limit;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Search query (searches code IDs and descriptions)
+   */
+  @JsonProperty("q")
+  public String getQ() {
+    return q;
+  }
+
+  /**
+   * @return Specific version of the code system, such as <code>umls-2026aa</code>.
+   */
+  @JsonProperty("version")
+  public Optional<String> getVersion() {
+    return version;
+  }
+
+  /**
+   * @return Maximum number of results (default 20, max 100)
+   */
+  @JsonProperty("limit")
+  public Optional<Integer> getLimit() {
+    return limit;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof SearchTextRequest && equalTo((SearchTextRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(SearchTextRequest other) {
+    return q.equals(other.q) && version.equals(other.version) && limit.equals(other.limit);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.q, this.version, this.limit);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static QStage builder() {
+    return new Builder();
+  }
+
+  public interface QStage {
+    /**
+     * <p>Search query (searches code IDs and descriptions)</p>
+     */
+    _FinalStage q(@NotNull String q);
+
+    Builder from(SearchTextRequest other);
+  }
+
+  public interface _FinalStage {
+    SearchTextRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
+     */
+    _FinalStage version(Optional<String> version);
+
+    _FinalStage version(String version);
+
+    /**
+     * <p>Maximum number of results (default 20, max 100)</p>
+     */
+    _FinalStage limit(Optional<Integer> limit);
+
+    _FinalStage limit(Integer limit);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements QStage, _FinalStage {
+
+    private String q;
+
+    private Optional<Integer> limit = Optional.empty();
+
+    private Optional<String> version = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(SearchTextRequest other) {
+      q(other.getQ());
+      version(other.getVersion());
+      limit(other.getLimit());
+      return this;
     }
 
     /**
-     * @return Search query (searches code IDs and descriptions)
+     * <p>Search query (searches code IDs and descriptions)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("q")
-    public String getQ() {
-        return q;
+    @java.lang.Override
+    @JsonSetter("q")
+    public _FinalStage q(@NotNull String q) {
+      this.q = Objects.requireNonNull(q, "q must not be null");
+      return this;
     }
 
     /**
-     * @return Specific version of the code system, such as <code>umls-2026aa</code>.
+     * <p>Maximum number of results (default 20, max 100)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("version")
-    public Optional<String> getVersion() {
-        return version;
+    @java.lang.Override
+    public _FinalStage limit(Integer limit) {
+      this.limit = Optional.ofNullable(limit);
+      return this;
     }
 
     /**
-     * @return Maximum number of results (default 20, max 100)
+     * <p>Maximum number of results (default 20, max 100)</p>
      */
-    @JsonProperty("limit")
-    public Optional<Integer> getLimit() {
-        return limit;
+    @java.lang.Override
+    @JsonSetter(value = "limit", nulls = Nulls.SKIP)
+    public _FinalStage limit(Optional<Integer> limit) {
+      this.limit = limit;
+      return this;
+    }
+
+    /**
+     * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage version(String version) {
+      this.version = Optional.ofNullable(version);
+      return this;
+    }
+
+    /**
+     * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "version", nulls = Nulls.SKIP)
+    public _FinalStage version(Optional<String> version) {
+      this.version = version;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof SearchTextRequest && equalTo((SearchTextRequest) other);
+    public SearchTextRequest build() {
+      return new SearchTextRequest(q, version, limit, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(SearchTextRequest other) {
-        return q.equals(other.q) && version.equals(other.version) && limit.equals(other.limit);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.q, this.version, this.limit);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("q") ||
+        key.equalsIgnoreCase("version") ||
+        key.equalsIgnoreCase("limit")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static QStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface QStage {
-        /**
-         * <p>Search query (searches code IDs and descriptions)</p>
-         */
-        _FinalStage q(@NotNull String q);
-
-        Builder from(SearchTextRequest other);
-    }
-
-    public interface _FinalStage {
-        SearchTextRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
-         */
-        _FinalStage version(Optional<String> version);
-
-        _FinalStage version(String version);
-
-        /**
-         * <p>Maximum number of results (default 20, max 100)</p>
-         */
-        _FinalStage limit(Optional<Integer> limit);
-
-        _FinalStage limit(Integer limit);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements QStage, _FinalStage {
-        private String q;
-
-        private Optional<Integer> limit = Optional.empty();
-
-        private Optional<String> version = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(SearchTextRequest other) {
-            q(other.getQ());
-            version(other.getVersion());
-            limit(other.getLimit());
-            return this;
-        }
-
-        /**
-         * <p>Search query (searches code IDs and descriptions)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("q")
-        public _FinalStage q(@NotNull String q) {
-            this.q = Objects.requireNonNull(q, "q must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Maximum number of results (default 20, max 100)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage limit(Integer limit) {
-            this.limit = Optional.ofNullable(limit);
-            return this;
-        }
-
-        /**
-         * <p>Maximum number of results (default 20, max 100)</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "limit", nulls = Nulls.SKIP)
-        public _FinalStage limit(Optional<Integer> limit) {
-            this.limit = limit;
-            return this;
-        }
-
-        /**
-         * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage version(String version) {
-            this.version = Optional.ofNullable(version);
-            return this;
-        }
-
-        /**
-         * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "version", nulls = Nulls.SKIP)
-        public _FinalStage version(Optional<String> version) {
-            this.version = version;
-            return this;
-        }
-
-        @java.lang.Override
-        public SearchTextRequest build() {
-            return new SearchTextRequest(q, version, limit, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -20,63 +20,306 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ExtractRequestConfig.Builder.class)
 public final class ExtractRequestConfig {
-    private final Optional<ExtractRequestConfigChunkingMethod> chunkingMethod;
 
-    private final Optional<Integer> maxCodesPerChunk;
+  private final Optional<ExtractRequestConfigChunkingMethod> chunkingMethod;
 
-    private final Optional<Float> codeSimilarityFilter;
+  private final Optional<Integer> maxCodesPerChunk;
 
-    private final Optional<ExtractRequestConfigValidationMethod> validationMethod;
+  private final Optional<Float> codeSimilarityFilter;
 
-    private final Optional<Float> chunkCodeJaccardSimilarityFilteringThreshold;
+  private final Optional<ExtractRequestConfigValidationMethod> validationMethod;
 
-    private final Optional<Boolean> includeRationale;
+  private final Optional<Float> chunkCodeJaccardSimilarityFilteringThreshold;
 
-    private final Optional<Boolean> includeAncestors;
+  private final Optional<Boolean> includeRationale;
 
-    private final Optional<Boolean> includeInvalid;
+  private final Optional<Boolean> includeAncestors;
 
-    private final Optional<Boolean> includeCitations;
+  private final Optional<Boolean> includeInvalid;
 
-    private final Optional<String> extractionContext;
+  private final Optional<Boolean> includeCitations;
 
-    private final Optional<Double> minContextRelevance;
+  private final Optional<String> extractionContext;
 
-    private final Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort;
+  private final Optional<Double> minContextRelevance;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort;
 
-    private ExtractRequestConfig(
-            Optional<ExtractRequestConfigChunkingMethod> chunkingMethod,
-            Optional<Integer> maxCodesPerChunk,
-            Optional<Float> codeSimilarityFilter,
-            Optional<ExtractRequestConfigValidationMethod> validationMethod,
-            Optional<Float> chunkCodeJaccardSimilarityFilteringThreshold,
-            Optional<Boolean> includeRationale,
-            Optional<Boolean> includeAncestors,
-            Optional<Boolean> includeInvalid,
-            Optional<Boolean> includeCitations,
-            Optional<String> extractionContext,
-            Optional<Double> minContextRelevance,
-            Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort,
-            Map<String, Object> additionalProperties) {
-        this.chunkingMethod = chunkingMethod;
-        this.maxCodesPerChunk = maxCodesPerChunk;
-        this.codeSimilarityFilter = codeSimilarityFilter;
-        this.validationMethod = validationMethod;
-        this.chunkCodeJaccardSimilarityFilteringThreshold = chunkCodeJaccardSimilarityFilteringThreshold;
-        this.includeRationale = includeRationale;
-        this.includeAncestors = includeAncestors;
-        this.includeInvalid = includeInvalid;
-        this.includeCitations = includeCitations;
-        this.extractionContext = extractionContext;
-        this.minContextRelevance = minContextRelevance;
-        this.consistencyEffort = consistencyEffort;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ExtractRequestConfig(
+    Optional<ExtractRequestConfigChunkingMethod> chunkingMethod,
+    Optional<Integer> maxCodesPerChunk,
+    Optional<Float> codeSimilarityFilter,
+    Optional<ExtractRequestConfigValidationMethod> validationMethod,
+    Optional<Float> chunkCodeJaccardSimilarityFilteringThreshold,
+    Optional<Boolean> includeRationale,
+    Optional<Boolean> includeAncestors,
+    Optional<Boolean> includeInvalid,
+    Optional<Boolean> includeCitations,
+    Optional<String> extractionContext,
+    Optional<Double> minContextRelevance,
+    Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort,
+    Map<String, Object> additionalProperties
+  ) {
+    this.chunkingMethod = chunkingMethod;
+    this.maxCodesPerChunk = maxCodesPerChunk;
+    this.codeSimilarityFilter = codeSimilarityFilter;
+    this.validationMethod = validationMethod;
+    this.chunkCodeJaccardSimilarityFilteringThreshold =
+      chunkCodeJaccardSimilarityFilteringThreshold;
+    this.includeRationale = includeRationale;
+    this.includeAncestors = includeAncestors;
+    this.includeInvalid = includeInvalid;
+    this.includeCitations = includeCitations;
+    this.extractionContext = extractionContext;
+    this.minContextRelevance = minContextRelevance;
+    this.consistencyEffort = consistencyEffort;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Method for splitting input text into chunks before code extraction.
+   * <ul>
+   * <li>none - Treat the full input as a single chunk.</li>
+   * <li>sentences - Split on sentence boundaries (supports citations).</li>
+   * <li>paragraphs / topics / soap_note - LLM-based chunking.</li>
+   * <li>clinical_ner_extract - Extract clinical concepts (problems, tests,
+   * treatments) and use each as a chunk (supports citations).</li>
+   * <li>fasthpocr - Extract HPO concepts directly with category
+   * annotations (supports citations). Requires <code>system: HPO</code>;
+   * other systems are rejected. Causes most other config options
+   * to be ignored.</li>
+   * </ul>
+   */
+  @JsonProperty("chunking_method")
+  public Optional<ExtractRequestConfigChunkingMethod> getChunkingMethod() {
+    return chunkingMethod;
+  }
+
+  /**
+   * @return Maximum number of codes to extract per chunk. If not specified, uses system-specific defaults:
+   * <ul>
+   * <li>SNOMED: 10</li>
+   * <li>LOINC, HPO, RXNORM: 20</li>
+   * <li>All other systems: 5</li>
+   * </ul>
+   */
+  @JsonProperty("max_codes_per_chunk")
+  public Optional<Integer> getMaxCodesPerChunk() {
+    return maxCodesPerChunk;
+  }
+
+  /**
+   * @return Threshold for filtering similar codes (0.0-1.0)
+   */
+  @JsonProperty("code_similarity_filter")
+  public Optional<Float> getCodeSimilarityFilter() {
+    return codeSimilarityFilter;
+  }
+
+  /**
+   * @return Method for validating extracted codes:
+   * <ul>
+   * <li>none - No validation, returns all candidate codes</li>
+   * <li>simple - LLM-based validation</li>
+   * <li>medication_search - LLM-based validation tailored for medication concepts</li>
+   * <li>chunk_code_jaccard_similarity - Token-level Jaccard similarity between source text chunk and code description</li>
+   * </ul>
+   */
+  @JsonProperty("validation_method")
+  public Optional<ExtractRequestConfigValidationMethod> getValidationMethod() {
+    return validationMethod;
+  }
+
+  /**
+   * @return Minimum Jaccard similarity (0.0-1.0) for a code to be considered valid
+   * when using the &quot;chunk_code_jaccard_similarity&quot; validation method. Ignored by other methods.
+   */
+  @JsonProperty("chunk_code_jaccard_similarity_filtering_threshold")
+  public Optional<Float> getChunkCodeJaccardSimilarityFilteringThreshold() {
+    return chunkCodeJaccardSimilarityFilteringThreshold;
+  }
+
+  /**
+   * @return Whether to include explanations for why each code was extracted
+   */
+  @JsonProperty("include_rationale")
+  public Optional<Boolean> getIncludeRationale() {
+    return includeRationale;
+  }
+
+  /**
+   * @return Whether to include ancestor/parent codes in the results
+   */
+  @JsonProperty("include_ancestors")
+  public Optional<Boolean> getIncludeAncestors() {
+    return includeAncestors;
+  }
+
+  /**
+   * @return Whether to include codes that failed validation in the results
+   */
+  @JsonProperty("include_invalid")
+  public Optional<Boolean> getIncludeInvalid() {
+    return includeInvalid;
+  }
+
+  /**
+   * @return Whether to include source text citations for each extracted code.
+   * Citations show the exact text spans (with character offsets) that led to each code.
+   * Supported when chunking_method is &quot;sentences&quot;, &quot;clinical_ner_extract&quot;, or &quot;fasthpocr&quot;.
+   */
+  @JsonProperty("include_citations")
+  public Optional<Boolean> getIncludeCitations() {
+    return includeCitations;
+  }
+
+  /**
+   * @return Optional context describing the goal of the extraction.
+   * Required when min_context_relevance is greater than 0.
+   */
+  @JsonProperty("extraction_context")
+  public Optional<String> getExtractionContext() {
+    return extractionContext;
+  }
+
+  /**
+   * @return Minimum relevance score (0.0–1.0) a chunk must reach to proceed to code extraction.
+   * Chunks are scored by an LLM against the extraction_context goal. Chunks below this
+   * threshold are dropped, reducing noise and extraction cost.
+   * Set to 0 (the default) to disable relevance filtering and extract from all chunks.
+   * Requires the &quot;extraction_context&quot; field when set above 0.
+   */
+  @JsonProperty("min_context_relevance")
+  public Optional<Double> getMinContextRelevance() {
+    return minContextRelevance;
+  }
+
+  /**
+   * @return How much effort to spend ensuring consistent results across repeated requests.
+   * Higher levels apply stricter filtering to remove borderline results that may
+   * vary between calls, improving determinism at the cost of additional latency.
+   * <p>When validation_method is set to a value other than &quot;none&quot;, consistency is
+   * applied to the validation step: codes must be unanimously validated across
+   * multiple rounds to be included.</p>
+   * <p>When validation_method is &quot;none&quot; and min_context_relevance is set above 0,
+   * consistency is applied to the relevance ranking step instead: chunks must
+   * pass the relevance threshold in every round to be included.</p>
+   */
+  @JsonProperty("consistency_effort")
+  public Optional<ExtractRequestConfigConsistencyEffort> getConsistencyEffort() {
+    return consistencyEffort;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ExtractRequestConfig && equalTo((ExtractRequestConfig) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ExtractRequestConfig other) {
+    return (
+      chunkingMethod.equals(other.chunkingMethod) &&
+      maxCodesPerChunk.equals(other.maxCodesPerChunk) &&
+      codeSimilarityFilter.equals(other.codeSimilarityFilter) &&
+      validationMethod.equals(other.validationMethod) &&
+      chunkCodeJaccardSimilarityFilteringThreshold.equals(
+        other.chunkCodeJaccardSimilarityFilteringThreshold
+      ) &&
+      includeRationale.equals(other.includeRationale) &&
+      includeAncestors.equals(other.includeAncestors) &&
+      includeInvalid.equals(other.includeInvalid) &&
+      includeCitations.equals(other.includeCitations) &&
+      extractionContext.equals(other.extractionContext) &&
+      minContextRelevance.equals(other.minContextRelevance) &&
+      consistencyEffort.equals(other.consistencyEffort)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.chunkingMethod,
+      this.maxCodesPerChunk,
+      this.codeSimilarityFilter,
+      this.validationMethod,
+      this.chunkCodeJaccardSimilarityFilteringThreshold,
+      this.includeRationale,
+      this.includeAncestors,
+      this.includeInvalid,
+      this.includeCitations,
+      this.extractionContext,
+      this.minContextRelevance,
+      this.consistencyEffort
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<ExtractRequestConfigChunkingMethod> chunkingMethod = Optional.empty();
+
+    private Optional<Integer> maxCodesPerChunk = Optional.empty();
+
+    private Optional<Float> codeSimilarityFilter = Optional.empty();
+
+    private Optional<ExtractRequestConfigValidationMethod> validationMethod = Optional.empty();
+
+    private Optional<Float> chunkCodeJaccardSimilarityFilteringThreshold = Optional.empty();
+
+    private Optional<Boolean> includeRationale = Optional.empty();
+
+    private Optional<Boolean> includeAncestors = Optional.empty();
+
+    private Optional<Boolean> includeInvalid = Optional.empty();
+
+    private Optional<Boolean> includeCitations = Optional.empty();
+
+    private Optional<String> extractionContext = Optional.empty();
+
+    private Optional<Double> minContextRelevance = Optional.empty();
+
+    private Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ExtractRequestConfig other) {
+      chunkingMethod(other.getChunkingMethod());
+      maxCodesPerChunk(other.getMaxCodesPerChunk());
+      codeSimilarityFilter(other.getCodeSimilarityFilter());
+      validationMethod(other.getValidationMethod());
+      chunkCodeJaccardSimilarityFilteringThreshold(
+        other.getChunkCodeJaccardSimilarityFilteringThreshold()
+      );
+      includeRationale(other.getIncludeRationale());
+      includeAncestors(other.getIncludeAncestors());
+      includeInvalid(other.getIncludeInvalid());
+      includeCitations(other.getIncludeCitations());
+      extractionContext(other.getExtractionContext());
+      minContextRelevance(other.getMinContextRelevance());
+      consistencyEffort(other.getConsistencyEffort());
+      return this;
     }
 
     /**
-     * @return Method for splitting input text into chunks before code extraction.
+     * <p>Method for splitting input text into chunks before code extraction.</p>
      * <ul>
      * <li>none - Treat the full input as a single chunk.</li>
      * <li>sentences - Split on sentence boundaries (supports citations).</li>
@@ -89,34 +332,52 @@ public final class ExtractRequestConfig {
      * to be ignored.</li>
      * </ul>
      */
-    @JsonProperty("chunking_method")
-    public Optional<ExtractRequestConfigChunkingMethod> getChunkingMethod() {
-        return chunkingMethod;
+    @JsonSetter(value = "chunking_method", nulls = Nulls.SKIP)
+    public Builder chunkingMethod(Optional<ExtractRequestConfigChunkingMethod> chunkingMethod) {
+      this.chunkingMethod = chunkingMethod;
+      return this;
+    }
+
+    public Builder chunkingMethod(ExtractRequestConfigChunkingMethod chunkingMethod) {
+      this.chunkingMethod = Optional.ofNullable(chunkingMethod);
+      return this;
     }
 
     /**
-     * @return Maximum number of codes to extract per chunk. If not specified, uses system-specific defaults:
+     * <p>Maximum number of codes to extract per chunk. If not specified, uses system-specific defaults:</p>
      * <ul>
      * <li>SNOMED: 10</li>
      * <li>LOINC, HPO, RXNORM: 20</li>
      * <li>All other systems: 5</li>
      * </ul>
      */
-    @JsonProperty("max_codes_per_chunk")
-    public Optional<Integer> getMaxCodesPerChunk() {
-        return maxCodesPerChunk;
+    @JsonSetter(value = "max_codes_per_chunk", nulls = Nulls.SKIP)
+    public Builder maxCodesPerChunk(Optional<Integer> maxCodesPerChunk) {
+      this.maxCodesPerChunk = maxCodesPerChunk;
+      return this;
+    }
+
+    public Builder maxCodesPerChunk(Integer maxCodesPerChunk) {
+      this.maxCodesPerChunk = Optional.ofNullable(maxCodesPerChunk);
+      return this;
     }
 
     /**
-     * @return Threshold for filtering similar codes (0.0-1.0)
+     * <p>Threshold for filtering similar codes (0.0-1.0)</p>
      */
-    @JsonProperty("code_similarity_filter")
-    public Optional<Float> getCodeSimilarityFilter() {
-        return codeSimilarityFilter;
+    @JsonSetter(value = "code_similarity_filter", nulls = Nulls.SKIP)
+    public Builder codeSimilarityFilter(Optional<Float> codeSimilarityFilter) {
+      this.codeSimilarityFilter = codeSimilarityFilter;
+      return this;
+    }
+
+    public Builder codeSimilarityFilter(Float codeSimilarityFilter) {
+      this.codeSimilarityFilter = Optional.ofNullable(codeSimilarityFilter);
+      return this;
     }
 
     /**
-     * @return Method for validating extracted codes:
+     * <p>Method for validating extracted codes:</p>
      * <ul>
      * <li>none - No validation, returns all candidate codes</li>
      * <li>simple - LLM-based validation</li>
@@ -124,79 +385,136 @@ public final class ExtractRequestConfig {
      * <li>chunk_code_jaccard_similarity - Token-level Jaccard similarity between source text chunk and code description</li>
      * </ul>
      */
-    @JsonProperty("validation_method")
-    public Optional<ExtractRequestConfigValidationMethod> getValidationMethod() {
-        return validationMethod;
+    @JsonSetter(value = "validation_method", nulls = Nulls.SKIP)
+    public Builder validationMethod(
+      Optional<ExtractRequestConfigValidationMethod> validationMethod
+    ) {
+      this.validationMethod = validationMethod;
+      return this;
+    }
+
+    public Builder validationMethod(ExtractRequestConfigValidationMethod validationMethod) {
+      this.validationMethod = Optional.ofNullable(validationMethod);
+      return this;
     }
 
     /**
-     * @return Minimum Jaccard similarity (0.0-1.0) for a code to be considered valid
-     * when using the &quot;chunk_code_jaccard_similarity&quot; validation method. Ignored by other methods.
+     * <p>Minimum Jaccard similarity (0.0-1.0) for a code to be considered valid
+     * when using the &quot;chunk_code_jaccard_similarity&quot; validation method. Ignored by other methods.</p>
      */
-    @JsonProperty("chunk_code_jaccard_similarity_filtering_threshold")
-    public Optional<Float> getChunkCodeJaccardSimilarityFilteringThreshold() {
-        return chunkCodeJaccardSimilarityFilteringThreshold;
+    @JsonSetter(value = "chunk_code_jaccard_similarity_filtering_threshold", nulls = Nulls.SKIP)
+    public Builder chunkCodeJaccardSimilarityFilteringThreshold(
+      Optional<Float> chunkCodeJaccardSimilarityFilteringThreshold
+    ) {
+      this.chunkCodeJaccardSimilarityFilteringThreshold =
+        chunkCodeJaccardSimilarityFilteringThreshold;
+      return this;
+    }
+
+    public Builder chunkCodeJaccardSimilarityFilteringThreshold(
+      Float chunkCodeJaccardSimilarityFilteringThreshold
+    ) {
+      this.chunkCodeJaccardSimilarityFilteringThreshold = Optional.ofNullable(
+        chunkCodeJaccardSimilarityFilteringThreshold
+      );
+      return this;
     }
 
     /**
-     * @return Whether to include explanations for why each code was extracted
+     * <p>Whether to include explanations for why each code was extracted</p>
      */
-    @JsonProperty("include_rationale")
-    public Optional<Boolean> getIncludeRationale() {
-        return includeRationale;
+    @JsonSetter(value = "include_rationale", nulls = Nulls.SKIP)
+    public Builder includeRationale(Optional<Boolean> includeRationale) {
+      this.includeRationale = includeRationale;
+      return this;
+    }
+
+    public Builder includeRationale(Boolean includeRationale) {
+      this.includeRationale = Optional.ofNullable(includeRationale);
+      return this;
     }
 
     /**
-     * @return Whether to include ancestor/parent codes in the results
+     * <p>Whether to include ancestor/parent codes in the results</p>
      */
-    @JsonProperty("include_ancestors")
-    public Optional<Boolean> getIncludeAncestors() {
-        return includeAncestors;
+    @JsonSetter(value = "include_ancestors", nulls = Nulls.SKIP)
+    public Builder includeAncestors(Optional<Boolean> includeAncestors) {
+      this.includeAncestors = includeAncestors;
+      return this;
+    }
+
+    public Builder includeAncestors(Boolean includeAncestors) {
+      this.includeAncestors = Optional.ofNullable(includeAncestors);
+      return this;
     }
 
     /**
-     * @return Whether to include codes that failed validation in the results
+     * <p>Whether to include codes that failed validation in the results</p>
      */
-    @JsonProperty("include_invalid")
-    public Optional<Boolean> getIncludeInvalid() {
-        return includeInvalid;
+    @JsonSetter(value = "include_invalid", nulls = Nulls.SKIP)
+    public Builder includeInvalid(Optional<Boolean> includeInvalid) {
+      this.includeInvalid = includeInvalid;
+      return this;
+    }
+
+    public Builder includeInvalid(Boolean includeInvalid) {
+      this.includeInvalid = Optional.ofNullable(includeInvalid);
+      return this;
     }
 
     /**
-     * @return Whether to include source text citations for each extracted code.
+     * <p>Whether to include source text citations for each extracted code.
      * Citations show the exact text spans (with character offsets) that led to each code.
-     * Supported when chunking_method is &quot;sentences&quot;, &quot;clinical_ner_extract&quot;, or &quot;fasthpocr&quot;.
+     * Supported when chunking_method is &quot;sentences&quot;, &quot;clinical_ner_extract&quot;, or &quot;fasthpocr&quot;.</p>
      */
-    @JsonProperty("include_citations")
-    public Optional<Boolean> getIncludeCitations() {
-        return includeCitations;
+    @JsonSetter(value = "include_citations", nulls = Nulls.SKIP)
+    public Builder includeCitations(Optional<Boolean> includeCitations) {
+      this.includeCitations = includeCitations;
+      return this;
+    }
+
+    public Builder includeCitations(Boolean includeCitations) {
+      this.includeCitations = Optional.ofNullable(includeCitations);
+      return this;
     }
 
     /**
-     * @return Optional context describing the goal of the extraction.
-     * Required when min_context_relevance is greater than 0.
+     * <p>Optional context describing the goal of the extraction.
+     * Required when min_context_relevance is greater than 0.</p>
      */
-    @JsonProperty("extraction_context")
-    public Optional<String> getExtractionContext() {
-        return extractionContext;
+    @JsonSetter(value = "extraction_context", nulls = Nulls.SKIP)
+    public Builder extractionContext(Optional<String> extractionContext) {
+      this.extractionContext = extractionContext;
+      return this;
+    }
+
+    public Builder extractionContext(String extractionContext) {
+      this.extractionContext = Optional.ofNullable(extractionContext);
+      return this;
     }
 
     /**
-     * @return Minimum relevance score (0.0–1.0) a chunk must reach to proceed to code extraction.
+     * <p>Minimum relevance score (0.0–1.0) a chunk must reach to proceed to code extraction.
      * Chunks are scored by an LLM against the extraction_context goal. Chunks below this
      * threshold are dropped, reducing noise and extraction cost.
      * Set to 0 (the default) to disable relevance filtering and extract from all chunks.
-     * Requires the &quot;extraction_context&quot; field when set above 0.
+     * Requires the &quot;extraction_context&quot; field when set above 0.</p>
      */
-    @JsonProperty("min_context_relevance")
-    public Optional<Double> getMinContextRelevance() {
-        return minContextRelevance;
+    @JsonSetter(value = "min_context_relevance", nulls = Nulls.SKIP)
+    public Builder minContextRelevance(Optional<Double> minContextRelevance) {
+      this.minContextRelevance = minContextRelevance;
+      return this;
+    }
+
+    public Builder minContextRelevance(Double minContextRelevance) {
+      this.minContextRelevance = Optional.ofNullable(minContextRelevance);
+      return this;
     }
 
     /**
-     * @return How much effort to spend ensuring consistent results across repeated requests.
+     * <p>How much effort to spend ensuring consistent results across repeated requests.
      * Higher levels apply stricter filtering to remove borderline results that may
-     * vary between calls, improving determinism at the cost of additional latency.
+     * vary between calls, improving determinism at the cost of additional latency.</p>
      * <p>When validation_method is set to a value other than &quot;none&quot;, consistency is
      * applied to the validation step: codes must be unanimously validated across
      * multiple rounds to be included.</p>
@@ -204,345 +522,66 @@ public final class ExtractRequestConfig {
      * consistency is applied to the relevance ranking step instead: chunks must
      * pass the relevance threshold in every round to be included.</p>
      */
-    @JsonProperty("consistency_effort")
-    public Optional<ExtractRequestConfigConsistencyEffort> getConsistencyEffort() {
-        return consistencyEffort;
+    @JsonSetter(value = "consistency_effort", nulls = Nulls.SKIP)
+    public Builder consistencyEffort(
+      Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort
+    ) {
+      this.consistencyEffort = consistencyEffort;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ExtractRequestConfig && equalTo((ExtractRequestConfig) other);
+    public Builder consistencyEffort(ExtractRequestConfigConsistencyEffort consistencyEffort) {
+      this.consistencyEffort = Optional.ofNullable(consistencyEffort);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ExtractRequestConfig build() {
+      return new ExtractRequestConfig(
+        chunkingMethod,
+        maxCodesPerChunk,
+        codeSimilarityFilter,
+        validationMethod,
+        chunkCodeJaccardSimilarityFilteringThreshold,
+        includeRationale,
+        includeAncestors,
+        includeInvalid,
+        includeCitations,
+        extractionContext,
+        minContextRelevance,
+        consistencyEffort,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(ExtractRequestConfig other) {
-        return chunkingMethod.equals(other.chunkingMethod)
-                && maxCodesPerChunk.equals(other.maxCodesPerChunk)
-                && codeSimilarityFilter.equals(other.codeSimilarityFilter)
-                && validationMethod.equals(other.validationMethod)
-                && chunkCodeJaccardSimilarityFilteringThreshold.equals(
-                        other.chunkCodeJaccardSimilarityFilteringThreshold)
-                && includeRationale.equals(other.includeRationale)
-                && includeAncestors.equals(other.includeAncestors)
-                && includeInvalid.equals(other.includeInvalid)
-                && includeCitations.equals(other.includeCitations)
-                && extractionContext.equals(other.extractionContext)
-                && minContextRelevance.equals(other.minContextRelevance)
-                && consistencyEffort.equals(other.consistencyEffort);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("chunking_method") ||
+        key.equalsIgnoreCase("max_codes_per_chunk") ||
+        key.equalsIgnoreCase("code_similarity_filter") ||
+        key.equalsIgnoreCase("validation_method") ||
+        key.equalsIgnoreCase("chunk_code_jaccard_similarity_filtering_threshold") ||
+        key.equalsIgnoreCase("include_rationale") ||
+        key.equalsIgnoreCase("include_ancestors") ||
+        key.equalsIgnoreCase("include_invalid") ||
+        key.equalsIgnoreCase("include_citations") ||
+        key.equalsIgnoreCase("extraction_context") ||
+        key.equalsIgnoreCase("min_context_relevance") ||
+        key.equalsIgnoreCase("consistency_effort")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.chunkingMethod,
-                this.maxCodesPerChunk,
-                this.codeSimilarityFilter,
-                this.validationMethod,
-                this.chunkCodeJaccardSimilarityFilteringThreshold,
-                this.includeRationale,
-                this.includeAncestors,
-                this.includeInvalid,
-                this.includeCitations,
-                this.extractionContext,
-                this.minContextRelevance,
-                this.consistencyEffort);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<ExtractRequestConfigChunkingMethod> chunkingMethod = Optional.empty();
-
-        private Optional<Integer> maxCodesPerChunk = Optional.empty();
-
-        private Optional<Float> codeSimilarityFilter = Optional.empty();
-
-        private Optional<ExtractRequestConfigValidationMethod> validationMethod = Optional.empty();
-
-        private Optional<Float> chunkCodeJaccardSimilarityFilteringThreshold = Optional.empty();
-
-        private Optional<Boolean> includeRationale = Optional.empty();
-
-        private Optional<Boolean> includeAncestors = Optional.empty();
-
-        private Optional<Boolean> includeInvalid = Optional.empty();
-
-        private Optional<Boolean> includeCitations = Optional.empty();
-
-        private Optional<String> extractionContext = Optional.empty();
-
-        private Optional<Double> minContextRelevance = Optional.empty();
-
-        private Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ExtractRequestConfig other) {
-            chunkingMethod(other.getChunkingMethod());
-            maxCodesPerChunk(other.getMaxCodesPerChunk());
-            codeSimilarityFilter(other.getCodeSimilarityFilter());
-            validationMethod(other.getValidationMethod());
-            chunkCodeJaccardSimilarityFilteringThreshold(other.getChunkCodeJaccardSimilarityFilteringThreshold());
-            includeRationale(other.getIncludeRationale());
-            includeAncestors(other.getIncludeAncestors());
-            includeInvalid(other.getIncludeInvalid());
-            includeCitations(other.getIncludeCitations());
-            extractionContext(other.getExtractionContext());
-            minContextRelevance(other.getMinContextRelevance());
-            consistencyEffort(other.getConsistencyEffort());
-            return this;
-        }
-
-        /**
-         * <p>Method for splitting input text into chunks before code extraction.</p>
-         * <ul>
-         * <li>none - Treat the full input as a single chunk.</li>
-         * <li>sentences - Split on sentence boundaries (supports citations).</li>
-         * <li>paragraphs / topics / soap_note - LLM-based chunking.</li>
-         * <li>clinical_ner_extract - Extract clinical concepts (problems, tests,
-         * treatments) and use each as a chunk (supports citations).</li>
-         * <li>fasthpocr - Extract HPO concepts directly with category
-         * annotations (supports citations). Requires <code>system: HPO</code>;
-         * other systems are rejected. Causes most other config options
-         * to be ignored.</li>
-         * </ul>
-         */
-        @JsonSetter(value = "chunking_method", nulls = Nulls.SKIP)
-        public Builder chunkingMethod(Optional<ExtractRequestConfigChunkingMethod> chunkingMethod) {
-            this.chunkingMethod = chunkingMethod;
-            return this;
-        }
-
-        public Builder chunkingMethod(ExtractRequestConfigChunkingMethod chunkingMethod) {
-            this.chunkingMethod = Optional.ofNullable(chunkingMethod);
-            return this;
-        }
-
-        /**
-         * <p>Maximum number of codes to extract per chunk. If not specified, uses system-specific defaults:</p>
-         * <ul>
-         * <li>SNOMED: 10</li>
-         * <li>LOINC, HPO, RXNORM: 20</li>
-         * <li>All other systems: 5</li>
-         * </ul>
-         */
-        @JsonSetter(value = "max_codes_per_chunk", nulls = Nulls.SKIP)
-        public Builder maxCodesPerChunk(Optional<Integer> maxCodesPerChunk) {
-            this.maxCodesPerChunk = maxCodesPerChunk;
-            return this;
-        }
-
-        public Builder maxCodesPerChunk(Integer maxCodesPerChunk) {
-            this.maxCodesPerChunk = Optional.ofNullable(maxCodesPerChunk);
-            return this;
-        }
-
-        /**
-         * <p>Threshold for filtering similar codes (0.0-1.0)</p>
-         */
-        @JsonSetter(value = "code_similarity_filter", nulls = Nulls.SKIP)
-        public Builder codeSimilarityFilter(Optional<Float> codeSimilarityFilter) {
-            this.codeSimilarityFilter = codeSimilarityFilter;
-            return this;
-        }
-
-        public Builder codeSimilarityFilter(Float codeSimilarityFilter) {
-            this.codeSimilarityFilter = Optional.ofNullable(codeSimilarityFilter);
-            return this;
-        }
-
-        /**
-         * <p>Method for validating extracted codes:</p>
-         * <ul>
-         * <li>none - No validation, returns all candidate codes</li>
-         * <li>simple - LLM-based validation</li>
-         * <li>medication_search - LLM-based validation tailored for medication concepts</li>
-         * <li>chunk_code_jaccard_similarity - Token-level Jaccard similarity between source text chunk and code description</li>
-         * </ul>
-         */
-        @JsonSetter(value = "validation_method", nulls = Nulls.SKIP)
-        public Builder validationMethod(Optional<ExtractRequestConfigValidationMethod> validationMethod) {
-            this.validationMethod = validationMethod;
-            return this;
-        }
-
-        public Builder validationMethod(ExtractRequestConfigValidationMethod validationMethod) {
-            this.validationMethod = Optional.ofNullable(validationMethod);
-            return this;
-        }
-
-        /**
-         * <p>Minimum Jaccard similarity (0.0-1.0) for a code to be considered valid
-         * when using the &quot;chunk_code_jaccard_similarity&quot; validation method. Ignored by other methods.</p>
-         */
-        @JsonSetter(value = "chunk_code_jaccard_similarity_filtering_threshold", nulls = Nulls.SKIP)
-        public Builder chunkCodeJaccardSimilarityFilteringThreshold(
-                Optional<Float> chunkCodeJaccardSimilarityFilteringThreshold) {
-            this.chunkCodeJaccardSimilarityFilteringThreshold = chunkCodeJaccardSimilarityFilteringThreshold;
-            return this;
-        }
-
-        public Builder chunkCodeJaccardSimilarityFilteringThreshold(
-                Float chunkCodeJaccardSimilarityFilteringThreshold) {
-            this.chunkCodeJaccardSimilarityFilteringThreshold =
-                    Optional.ofNullable(chunkCodeJaccardSimilarityFilteringThreshold);
-            return this;
-        }
-
-        /**
-         * <p>Whether to include explanations for why each code was extracted</p>
-         */
-        @JsonSetter(value = "include_rationale", nulls = Nulls.SKIP)
-        public Builder includeRationale(Optional<Boolean> includeRationale) {
-            this.includeRationale = includeRationale;
-            return this;
-        }
-
-        public Builder includeRationale(Boolean includeRationale) {
-            this.includeRationale = Optional.ofNullable(includeRationale);
-            return this;
-        }
-
-        /**
-         * <p>Whether to include ancestor/parent codes in the results</p>
-         */
-        @JsonSetter(value = "include_ancestors", nulls = Nulls.SKIP)
-        public Builder includeAncestors(Optional<Boolean> includeAncestors) {
-            this.includeAncestors = includeAncestors;
-            return this;
-        }
-
-        public Builder includeAncestors(Boolean includeAncestors) {
-            this.includeAncestors = Optional.ofNullable(includeAncestors);
-            return this;
-        }
-
-        /**
-         * <p>Whether to include codes that failed validation in the results</p>
-         */
-        @JsonSetter(value = "include_invalid", nulls = Nulls.SKIP)
-        public Builder includeInvalid(Optional<Boolean> includeInvalid) {
-            this.includeInvalid = includeInvalid;
-            return this;
-        }
-
-        public Builder includeInvalid(Boolean includeInvalid) {
-            this.includeInvalid = Optional.ofNullable(includeInvalid);
-            return this;
-        }
-
-        /**
-         * <p>Whether to include source text citations for each extracted code.
-         * Citations show the exact text spans (with character offsets) that led to each code.
-         * Supported when chunking_method is &quot;sentences&quot;, &quot;clinical_ner_extract&quot;, or &quot;fasthpocr&quot;.</p>
-         */
-        @JsonSetter(value = "include_citations", nulls = Nulls.SKIP)
-        public Builder includeCitations(Optional<Boolean> includeCitations) {
-            this.includeCitations = includeCitations;
-            return this;
-        }
-
-        public Builder includeCitations(Boolean includeCitations) {
-            this.includeCitations = Optional.ofNullable(includeCitations);
-            return this;
-        }
-
-        /**
-         * <p>Optional context describing the goal of the extraction.
-         * Required when min_context_relevance is greater than 0.</p>
-         */
-        @JsonSetter(value = "extraction_context", nulls = Nulls.SKIP)
-        public Builder extractionContext(Optional<String> extractionContext) {
-            this.extractionContext = extractionContext;
-            return this;
-        }
-
-        public Builder extractionContext(String extractionContext) {
-            this.extractionContext = Optional.ofNullable(extractionContext);
-            return this;
-        }
-
-        /**
-         * <p>Minimum relevance score (0.0–1.0) a chunk must reach to proceed to code extraction.
-         * Chunks are scored by an LLM against the extraction_context goal. Chunks below this
-         * threshold are dropped, reducing noise and extraction cost.
-         * Set to 0 (the default) to disable relevance filtering and extract from all chunks.
-         * Requires the &quot;extraction_context&quot; field when set above 0.</p>
-         */
-        @JsonSetter(value = "min_context_relevance", nulls = Nulls.SKIP)
-        public Builder minContextRelevance(Optional<Double> minContextRelevance) {
-            this.minContextRelevance = minContextRelevance;
-            return this;
-        }
-
-        public Builder minContextRelevance(Double minContextRelevance) {
-            this.minContextRelevance = Optional.ofNullable(minContextRelevance);
-            return this;
-        }
-
-        /**
-         * <p>How much effort to spend ensuring consistent results across repeated requests.
-         * Higher levels apply stricter filtering to remove borderline results that may
-         * vary between calls, improving determinism at the cost of additional latency.</p>
-         * <p>When validation_method is set to a value other than &quot;none&quot;, consistency is
-         * applied to the validation step: codes must be unanimously validated across
-         * multiple rounds to be included.</p>
-         * <p>When validation_method is &quot;none&quot; and min_context_relevance is set above 0,
-         * consistency is applied to the relevance ranking step instead: chunks must
-         * pass the relevance threshold in every round to be included.</p>
-         */
-        @JsonSetter(value = "consistency_effort", nulls = Nulls.SKIP)
-        public Builder consistencyEffort(Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort) {
-            this.consistencyEffort = consistencyEffort;
-            return this;
-        }
-
-        public Builder consistencyEffort(ExtractRequestConfigConsistencyEffort consistencyEffort) {
-            this.consistencyEffort = Optional.ofNullable(consistencyEffort);
-            return this;
-        }
-
-        public ExtractRequestConfig build() {
-            return new ExtractRequestConfig(
-                    chunkingMethod,
-                    maxCodesPerChunk,
-                    codeSimilarityFilter,
-                    validationMethod,
-                    chunkCodeJaccardSimilarityFilteringThreshold,
-                    includeRationale,
-                    includeAncestors,
-                    includeInvalid,
-                    includeCitations,
-                    extractionContext,
-                    minContextRelevance,
-                    consistencyEffort,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

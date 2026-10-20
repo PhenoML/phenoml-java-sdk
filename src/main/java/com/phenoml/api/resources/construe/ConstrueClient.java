@@ -13,49 +13,50 @@ import com.phenoml.api.resources.construe.types.FeedbackResponse;
 import java.util.function.Supplier;
 
 public class ConstrueClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawConstrueClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    protected final Supplier<CodeSystemsClient> codeSystemsClient;
+  private final RawConstrueClient rawClient;
 
-    protected final Supplier<CodesClient> codesClient;
+  protected final Supplier<CodeSystemsClient> codeSystemsClient;
 
-    public ConstrueClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawConstrueClient(clientOptions);
-        this.codeSystemsClient = Suppliers.memoize(() -> new CodeSystemsClient(clientOptions));
-        this.codesClient = Suppliers.memoize(() -> new CodesClient(clientOptions));
-    }
+  protected final Supplier<CodesClient> codesClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawConstrueClient withRawResponse() {
-        return this.rawClient;
-    }
+  public ConstrueClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawConstrueClient(clientOptions);
+    this.codeSystemsClient = Suppliers.memoize(() -> new CodeSystemsClient(clientOptions));
+    this.codesClient = Suppliers.memoize(() -> new CodesClient(clientOptions));
+  }
 
-    /**
-     * Submits user feedback on results from the Construe extraction endpoint.
-     * Feedback includes the full extraction result received and the result the user expected.
-     */
-    public FeedbackResponse submitFeedback(FeedbackRequest request) {
-        return this.rawClient.submitFeedback(request).body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawConstrueClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Submits user feedback on results from the Construe extraction endpoint.
-     * Feedback includes the full extraction result received and the result the user expected.
-     */
-    public FeedbackResponse submitFeedback(FeedbackRequest request, RequestOptions requestOptions) {
-        return this.rawClient.submitFeedback(request, requestOptions).body();
-    }
+  /**
+   * Submits user feedback on results from the Construe extraction endpoint.
+   * Feedback includes the full extraction result received and the result the user expected.
+   */
+  public FeedbackResponse submitFeedback(FeedbackRequest request) {
+    return this.rawClient.submitFeedback(request).body();
+  }
 
-    public CodeSystemsClient codeSystems() {
-        return this.codeSystemsClient.get();
-    }
+  /**
+   * Submits user feedback on results from the Construe extraction endpoint.
+   * Feedback includes the full extraction result received and the result the user expected.
+   */
+  public FeedbackResponse submitFeedback(FeedbackRequest request, RequestOptions requestOptions) {
+    return this.rawClient.submitFeedback(request, requestOptions).body();
+  }
 
-    public CodesClient codes() {
-        return this.codesClient.get();
-    }
+  public CodeSystemsClient codeSystems() {
+    return this.codeSystemsClient.get();
+  }
+
+  public CodesClient codes() {
+    return this.codesClient.get();
+  }
 }

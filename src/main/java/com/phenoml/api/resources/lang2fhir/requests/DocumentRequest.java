@@ -22,225 +22,243 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = DocumentRequest.Builder.class)
 public final class DocumentRequest {
-    private final String version;
 
-    private final String resource;
+  private final String version;
 
-    private final String content;
+  private final String resource;
 
-    private final Optional<DocumentConfig> config;
+  private final String content;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<DocumentConfig> config;
 
-    private DocumentRequest(
-            String version,
-            String resource,
-            String content,
-            Optional<DocumentConfig> config,
-            Map<String, Object> additionalProperties) {
-        this.version = version;
-        this.resource = resource;
-        this.content = content;
-        this.config = config;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
+  private DocumentRequest(
+    String version,
+    String resource,
+    String content,
+    Optional<DocumentConfig> config,
+    Map<String, Object> additionalProperties
+  ) {
+    this.version = version;
+    this.resource = resource;
+    this.content = content;
+    this.config = config;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return FHIR version to use
+   */
+  @JsonProperty("version")
+  public String getVersion() {
+    return version;
+  }
+
+  /**
+   * @return Type of FHIR resource to create. Accepts any FHIR resource type or US Core profile name.
+   */
+  @JsonProperty("resource")
+  public String getResource() {
+    return resource;
+  }
+
+  /**
+   * @return Base64 encoded file content.
+   * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
+   * TIFF, RTF, and XML/C-CDA uploads are available on dedicated instances only.
+   * File type is auto-detected from content magic bytes.
+   * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
+   * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.
+   */
+  @JsonProperty("content")
+  public String getContent() {
+    return content;
+  }
+
+  @JsonProperty("config")
+  public Optional<DocumentConfig> getConfig() {
+    return config;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof DocumentRequest && equalTo((DocumentRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(DocumentRequest other) {
+    return (
+      version.equals(other.version) &&
+      resource.equals(other.resource) &&
+      content.equals(other.content) &&
+      config.equals(other.config)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.version, this.resource, this.content, this.config);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static VersionStage builder() {
+    return new Builder();
+  }
+
+  public interface VersionStage {
     /**
-     * @return FHIR version to use
+     * <p>FHIR version to use</p>
      */
-    @JsonProperty("version")
-    public String getVersion() {
-        return version;
-    }
+    ResourceStage version(@NotNull String version);
 
+    Builder from(DocumentRequest other);
+  }
+
+  public interface ResourceStage {
     /**
-     * @return Type of FHIR resource to create. Accepts any FHIR resource type or US Core profile name.
+     * <p>Type of FHIR resource to create. Accepts any FHIR resource type or US Core profile name.</p>
      */
-    @JsonProperty("resource")
-    public String getResource() {
-        return resource;
-    }
+    ContentStage resource(@NotNull String resource);
+  }
 
+  public interface ContentStage {
     /**
-     * @return Base64 encoded file content.
+     * <p>Base64 encoded file content.
      * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
      * TIFF, RTF, and XML/C-CDA uploads are available on dedicated instances only.
      * File type is auto-detected from content magic bytes.
      * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
-     * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.
+     * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.</p>
      */
-    @JsonProperty("content")
-    public String getContent() {
-        return content;
+    _FinalStage content(@NotNull String content);
+  }
+
+  public interface _FinalStage {
+    DocumentRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    _FinalStage config(Optional<DocumentConfig> config);
+
+    _FinalStage config(DocumentConfig config);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements VersionStage, ResourceStage, ContentStage, _FinalStage {
+
+    private String version;
+
+    private String resource;
+
+    private String content;
+
+    private Optional<DocumentConfig> config = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(DocumentRequest other) {
+      version(other.getVersion());
+      resource(other.getResource());
+      content(other.getContent());
+      config(other.getConfig());
+      return this;
     }
 
-    @JsonProperty("config")
-    public Optional<DocumentConfig> getConfig() {
-        return config;
+    /**
+     * <p>FHIR version to use</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("version")
+    public ResourceStage version(@NotNull String version) {
+      this.version = Objects.requireNonNull(version, "version must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Type of FHIR resource to create. Accepts any FHIR resource type or US Core profile name.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("resource")
+    public ContentStage resource(@NotNull String resource) {
+      this.resource = Objects.requireNonNull(resource, "resource must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Base64 encoded file content.
+     * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
+     * TIFF, RTF, and XML/C-CDA uploads are available on dedicated instances only.
+     * File type is auto-detected from content magic bytes.
+     * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
+     * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("content")
+    public _FinalStage content(@NotNull String content) {
+      this.content = Objects.requireNonNull(content, "content must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof DocumentRequest && equalTo((DocumentRequest) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(DocumentRequest other) {
-        return version.equals(other.version)
-                && resource.equals(other.resource)
-                && content.equals(other.content)
-                && config.equals(other.config);
+    public _FinalStage config(DocumentConfig config) {
+      this.config = Optional.ofNullable(config);
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.version, this.resource, this.content, this.config);
+    @JsonSetter(value = "config", nulls = Nulls.SKIP)
+    public _FinalStage config(Optional<DocumentConfig> config) {
+      this.config = config;
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public DocumentRequest build() {
+      return new DocumentRequest(version, resource, content, config, additionalProperties);
     }
 
-    public static VersionStage builder() {
-        return new Builder();
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("version") ||
+        key.equalsIgnoreCase("resource") ||
+        key.equalsIgnoreCase("content") ||
+        key.equalsIgnoreCase("config")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public interface VersionStage {
-        /**
-         * <p>FHIR version to use</p>
-         */
-        ResourceStage version(@NotNull String version);
-
-        Builder from(DocumentRequest other);
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public interface ResourceStage {
-        /**
-         * <p>Type of FHIR resource to create. Accepts any FHIR resource type or US Core profile name.</p>
-         */
-        ContentStage resource(@NotNull String resource);
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface ContentStage {
-        /**
-         * <p>Base64 encoded file content.
-         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
-         * TIFF, RTF, and XML/C-CDA uploads are available on dedicated instances only.
-         * File type is auto-detected from content magic bytes.
-         * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
-         * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.</p>
-         */
-        _FinalStage content(@NotNull String content);
-    }
-
-    public interface _FinalStage {
-        DocumentRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        _FinalStage config(Optional<DocumentConfig> config);
-
-        _FinalStage config(DocumentConfig config);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements VersionStage, ResourceStage, ContentStage, _FinalStage {
-        private String version;
-
-        private String resource;
-
-        private String content;
-
-        private Optional<DocumentConfig> config = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(DocumentRequest other) {
-            version(other.getVersion());
-            resource(other.getResource());
-            content(other.getContent());
-            config(other.getConfig());
-            return this;
-        }
-
-        /**
-         * <p>FHIR version to use</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("version")
-        public ResourceStage version(@NotNull String version) {
-            this.version = Objects.requireNonNull(version, "version must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Type of FHIR resource to create. Accepts any FHIR resource type or US Core profile name.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("resource")
-        public ContentStage resource(@NotNull String resource) {
-            this.resource = Objects.requireNonNull(resource, "resource must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Base64 encoded file content.
-         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
-         * TIFF, RTF, and XML/C-CDA uploads are available on dedicated instances only.
-         * File type is auto-detected from content magic bytes.
-         * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
-         * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("content")
-        public _FinalStage content(@NotNull String content) {
-            this.content = Objects.requireNonNull(content, "content must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage config(DocumentConfig config) {
-            this.config = Optional.ofNullable(config);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "config", nulls = Nulls.SKIP)
-        public _FinalStage config(Optional<DocumentConfig> config) {
-            this.config = config;
-            return this;
-        }
-
-        @java.lang.Override
-        public DocumentRequest build() {
-            return new DocumentRequest(version, resource, content, config, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

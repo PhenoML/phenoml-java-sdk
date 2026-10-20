@@ -12,9 +12,7 @@
       "encounter_date": "2024-01-15"
     },
     "config": {
-      "fhir_provider_ids": [
-        "550e8400-e29b-41d4-a716-446655440000"
-      ],
+      "fhir_provider_ids": ["550e8400-e29b-41d4-a716-446655440000"],
       "dynamic_generation": false
     },
     "graph": {
@@ -42,9 +40,7 @@
       "patient_last_name": "Rippin"
     },
     "config": {
-      "fhir_provider_ids": [
-        "550e8400-e29b-41d4-a716-446655440000"
-      ],
+      "fhir_provider_ids": ["550e8400-e29b-41d4-a716-446655440000"],
       "dynamic_generation": false
     },
     "graph": {
@@ -61,11 +57,7 @@
                 "family": "{{patient_last_name}}",
                 "given": "{{patient_first_name}}"
               },
-              "required_fields": [
-                "id",
-                "name",
-                "identifier"
-              ],
+              "required_fields": ["id", "name", "identifier"],
               "runtime_placeholders": {
                 "{{patient_first_name}}": "input.patient_first_name",
                 "{{patient_last_name}}": "input.patient_last_name"
@@ -118,9 +110,7 @@
             }
           },
           "provider_id": "550e8400-e29b-41d4-a716-446655440000",
-          "dependencies": [
-            "dependencies"
-          ],
+          "dependencies": ["dependencies"],
           "dynamic_generation": false
         }
       ]

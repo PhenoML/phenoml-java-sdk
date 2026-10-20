@@ -7,91 +7,94 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class GetCodeSystemDetailResponseStatus {
-    public static final GetCodeSystemDetailResponseStatus FAILED =
-            new GetCodeSystemDetailResponseStatus(Value.FAILED, "failed");
 
-    public static final GetCodeSystemDetailResponseStatus PROCESSING =
-            new GetCodeSystemDetailResponseStatus(Value.PROCESSING, "processing");
+  public static final GetCodeSystemDetailResponseStatus FAILED =
+    new GetCodeSystemDetailResponseStatus(Value.FAILED, "failed");
 
-    public static final GetCodeSystemDetailResponseStatus READY =
-            new GetCodeSystemDetailResponseStatus(Value.READY, "ready");
+  public static final GetCodeSystemDetailResponseStatus PROCESSING =
+    new GetCodeSystemDetailResponseStatus(Value.PROCESSING, "processing");
 
-    private final Value value;
+  public static final GetCodeSystemDetailResponseStatus READY =
+    new GetCodeSystemDetailResponseStatus(Value.READY, "ready");
 
-    private final String string;
+  private final Value value;
 
-    GetCodeSystemDetailResponseStatus(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  GetCodeSystemDetailResponseStatus(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof GetCodeSystemDetailResponseStatus &&
+        this.string.equals(((GetCodeSystemDetailResponseStatus) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case FAILED:
+        return visitor.visitFailed();
+      case PROCESSING:
+        return visitor.visitProcessing();
+      case READY:
+        return visitor.visitReady();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static GetCodeSystemDetailResponseStatus valueOf(String value) {
+    switch (value) {
+      case "failed":
+        return FAILED;
+      case "processing":
+        return PROCESSING;
+      case "ready":
+        return READY;
+      default:
+        return new GetCodeSystemDetailResponseStatus(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    PROCESSING,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof GetCodeSystemDetailResponseStatus
-                        && this.string.equals(((GetCodeSystemDetailResponseStatus) other).string));
-    }
+    READY,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    FAILED,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case FAILED:
-                return visitor.visitFailed();
-            case PROCESSING:
-                return visitor.visitProcessing();
-            case READY:
-                return visitor.visitReady();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    UNKNOWN,
+  }
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static GetCodeSystemDetailResponseStatus valueOf(String value) {
-        switch (value) {
-            case "failed":
-                return FAILED;
-            case "processing":
-                return PROCESSING;
-            case "ready":
-                return READY;
-            default:
-                return new GetCodeSystemDetailResponseStatus(Value.UNKNOWN, value);
-        }
-    }
+  public interface Visitor<T> {
+    T visitProcessing();
 
-    public enum Value {
-        PROCESSING,
+    T visitReady();
 
-        READY,
+    T visitFailed();
 
-        FAILED,
-
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitProcessing();
-
-        T visitReady();
-
-        T visitFailed();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

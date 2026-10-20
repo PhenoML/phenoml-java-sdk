@@ -20,136 +20,152 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = DroppedResource.Builder.class)
 public final class DroppedResource {
-    private final Optional<String> resourceType;
 
-    private final Optional<String> resourceId;
+  private final Optional<String> resourceType;
 
-    private final Optional<String> reason;
+  private final Optional<String> resourceId;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> reason;
 
-    private DroppedResource(
-            Optional<String> resourceType,
-            Optional<String> resourceId,
-            Optional<String> reason,
-            Map<String, Object> additionalProperties) {
-        this.resourceType = resourceType;
-        this.resourceId = resourceId;
-        this.reason = reason;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private DroppedResource(
+    Optional<String> resourceType,
+    Optional<String> resourceId,
+    Optional<String> reason,
+    Map<String, Object> additionalProperties
+  ) {
+    this.resourceType = resourceType;
+    this.resourceId = resourceId;
+    this.reason = reason;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("resource_type")
+  public Optional<String> getResourceType() {
+    return resourceType;
+  }
+
+  @JsonProperty("resource_id")
+  public Optional<String> getResourceId() {
+    return resourceId;
+  }
+
+  @JsonProperty("reason")
+  public Optional<String> getReason() {
+    return reason;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof DroppedResource && equalTo((DroppedResource) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(DroppedResource other) {
+    return (
+      resourceType.equals(other.resourceType) &&
+      resourceId.equals(other.resourceId) &&
+      reason.equals(other.reason)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.resourceType, this.resourceId, this.reason);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> resourceType = Optional.empty();
+
+    private Optional<String> resourceId = Optional.empty();
+
+    private Optional<String> reason = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(DroppedResource other) {
+      resourceType(other.getResourceType());
+      resourceId(other.getResourceId());
+      reason(other.getReason());
+      return this;
     }
 
-    @JsonProperty("resource_type")
-    public Optional<String> getResourceType() {
-        return resourceType;
+    @JsonSetter(value = "resource_type", nulls = Nulls.SKIP)
+    public Builder resourceType(Optional<String> resourceType) {
+      this.resourceType = resourceType;
+      return this;
     }
 
-    @JsonProperty("resource_id")
-    public Optional<String> getResourceId() {
-        return resourceId;
+    public Builder resourceType(String resourceType) {
+      this.resourceType = Optional.ofNullable(resourceType);
+      return this;
     }
 
-    @JsonProperty("reason")
-    public Optional<String> getReason() {
-        return reason;
+    @JsonSetter(value = "resource_id", nulls = Nulls.SKIP)
+    public Builder resourceId(Optional<String> resourceId) {
+      this.resourceId = resourceId;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof DroppedResource && equalTo((DroppedResource) other);
+    public Builder resourceId(String resourceId) {
+      this.resourceId = Optional.ofNullable(resourceId);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    @JsonSetter(value = "reason", nulls = Nulls.SKIP)
+    public Builder reason(Optional<String> reason) {
+      this.reason = reason;
+      return this;
     }
 
-    private boolean equalTo(DroppedResource other) {
-        return resourceType.equals(other.resourceType)
-                && resourceId.equals(other.resourceId)
-                && reason.equals(other.reason);
+    public Builder reason(String reason) {
+      this.reason = Optional.ofNullable(reason);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.resourceType, this.resourceId, this.reason);
+    public DroppedResource build() {
+      return new DroppedResource(resourceType, resourceId, reason, additionalProperties);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("resource_type") ||
+        key.equalsIgnoreCase("resource_id") ||
+        key.equalsIgnoreCase("reason")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> resourceType = Optional.empty();
-
-        private Optional<String> resourceId = Optional.empty();
-
-        private Optional<String> reason = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(DroppedResource other) {
-            resourceType(other.getResourceType());
-            resourceId(other.getResourceId());
-            reason(other.getReason());
-            return this;
-        }
-
-        @JsonSetter(value = "resource_type", nulls = Nulls.SKIP)
-        public Builder resourceType(Optional<String> resourceType) {
-            this.resourceType = resourceType;
-            return this;
-        }
-
-        public Builder resourceType(String resourceType) {
-            this.resourceType = Optional.ofNullable(resourceType);
-            return this;
-        }
-
-        @JsonSetter(value = "resource_id", nulls = Nulls.SKIP)
-        public Builder resourceId(Optional<String> resourceId) {
-            this.resourceId = resourceId;
-            return this;
-        }
-
-        public Builder resourceId(String resourceId) {
-            this.resourceId = Optional.ofNullable(resourceId);
-            return this;
-        }
-
-        @JsonSetter(value = "reason", nulls = Nulls.SKIP)
-        public Builder reason(Optional<String> reason) {
-            this.reason = reason;
-            return this;
-        }
-
-        public Builder reason(String reason) {
-            this.reason = Optional.ofNullable(reason);
-            return this;
-        }
-
-        public DroppedResource build() {
-            return new DroppedResource(resourceType, resourceId, reason, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

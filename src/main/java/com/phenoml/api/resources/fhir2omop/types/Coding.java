@@ -20,134 +20,148 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Coding.Builder.class)
 public final class Coding {
-    private final Optional<String> system;
 
-    private final Optional<String> code;
+  private final Optional<String> system;
 
-    private final Optional<String> display;
+  private final Optional<String> code;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> display;
 
-    private Coding(
-            Optional<String> system,
-            Optional<String> code,
-            Optional<String> display,
-            Map<String, Object> additionalProperties) {
-        this.system = system;
-        this.code = code;
-        this.display = display;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private Coding(
+    Optional<String> system,
+    Optional<String> code,
+    Optional<String> display,
+    Map<String, Object> additionalProperties
+  ) {
+    this.system = system;
+    this.code = code;
+    this.display = display;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("system")
+  public Optional<String> getSystem() {
+    return system;
+  }
+
+  @JsonProperty("code")
+  public Optional<String> getCode() {
+    return code;
+  }
+
+  @JsonProperty("display")
+  public Optional<String> getDisplay() {
+    return display;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof Coding && equalTo((Coding) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(Coding other) {
+    return system.equals(other.system) && code.equals(other.code) && display.equals(other.display);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.system, this.code, this.display);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> system = Optional.empty();
+
+    private Optional<String> code = Optional.empty();
+
+    private Optional<String> display = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(Coding other) {
+      system(other.getSystem());
+      code(other.getCode());
+      display(other.getDisplay());
+      return this;
     }
 
-    @JsonProperty("system")
-    public Optional<String> getSystem() {
-        return system;
+    @JsonSetter(value = "system", nulls = Nulls.SKIP)
+    public Builder system(Optional<String> system) {
+      this.system = system;
+      return this;
     }
 
-    @JsonProperty("code")
-    public Optional<String> getCode() {
-        return code;
+    public Builder system(String system) {
+      this.system = Optional.ofNullable(system);
+      return this;
     }
 
-    @JsonProperty("display")
-    public Optional<String> getDisplay() {
-        return display;
+    @JsonSetter(value = "code", nulls = Nulls.SKIP)
+    public Builder code(Optional<String> code) {
+      this.code = code;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof Coding && equalTo((Coding) other);
+    public Builder code(String code) {
+      this.code = Optional.ofNullable(code);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    @JsonSetter(value = "display", nulls = Nulls.SKIP)
+    public Builder display(Optional<String> display) {
+      this.display = display;
+      return this;
     }
 
-    private boolean equalTo(Coding other) {
-        return system.equals(other.system) && code.equals(other.code) && display.equals(other.display);
+    public Builder display(String display) {
+      this.display = Optional.ofNullable(display);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.system, this.code, this.display);
+    public Coding build() {
+      return new Coding(system, code, display, additionalProperties);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("system") ||
+        key.equalsIgnoreCase("code") ||
+        key.equalsIgnoreCase("display")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> system = Optional.empty();
-
-        private Optional<String> code = Optional.empty();
-
-        private Optional<String> display = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(Coding other) {
-            system(other.getSystem());
-            code(other.getCode());
-            display(other.getDisplay());
-            return this;
-        }
-
-        @JsonSetter(value = "system", nulls = Nulls.SKIP)
-        public Builder system(Optional<String> system) {
-            this.system = system;
-            return this;
-        }
-
-        public Builder system(String system) {
-            this.system = Optional.ofNullable(system);
-            return this;
-        }
-
-        @JsonSetter(value = "code", nulls = Nulls.SKIP)
-        public Builder code(Optional<String> code) {
-            this.code = code;
-            return this;
-        }
-
-        public Builder code(String code) {
-            this.code = Optional.ofNullable(code);
-            return this;
-        }
-
-        @JsonSetter(value = "display", nulls = Nulls.SKIP)
-        public Builder display(Optional<String> display) {
-            this.display = display;
-            return this;
-        }
-
-        public Builder display(String display) {
-            this.display = Optional.ofNullable(display);
-            return this;
-        }
-
-        public Coding build() {
-            return new Coding(system, code, display, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

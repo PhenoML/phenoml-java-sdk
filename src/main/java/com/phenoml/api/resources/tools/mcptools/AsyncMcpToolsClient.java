@@ -4,66 +4,137 @@
 package com.phenoml.api.resources.tools.mcptools;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.tools.types.McpServerToolResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncMcpToolsClient {
-    protected final ClientOptions clientOptions;
 
-    private final AsyncRawMcpToolsClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public AsyncMcpToolsClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawMcpToolsClient(clientOptions);
-    }
+  private final AsyncRawMcpToolsClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawMcpToolsClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AsyncMcpToolsClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new AsyncRawMcpToolsClient(clientOptions);
+  }
 
-    /**
-     * Lists all MCP server tools for a specific MCP server
-     */
-    public CompletableFuture<McpServerToolResponse> list(String mcpServerId) {
-        return this.rawClient.list(mcpServerId).thenApply(response -> response.body());
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public AsyncRawMcpToolsClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Lists all MCP server tools for a specific MCP server
-     */
-    public CompletableFuture<McpServerToolResponse> list(String mcpServerId, RequestOptions requestOptions) {
-        return this.rawClient.list(mcpServerId, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Lists all MCP server tools for a specific MCP server
+   */
+  public CompletableFuture<McpServerToolResponse> list(String mcpServerId) {
+    CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> rawFuture =
+      this.rawClient.list(mcpServerId);
+    CompletableFuture<McpServerToolResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Gets a MCP server tool by ID
-     */
-    public CompletableFuture<McpServerToolResponse> get(String mcpServerToolId) {
-        return this.rawClient.get(mcpServerToolId).thenApply(response -> response.body());
-    }
+  /**
+   * Lists all MCP server tools for a specific MCP server
+   */
+  public CompletableFuture<McpServerToolResponse> list(
+    String mcpServerId,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> rawFuture =
+      this.rawClient.list(mcpServerId, requestOptions);
+    CompletableFuture<McpServerToolResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Gets a MCP server tool by ID
-     */
-    public CompletableFuture<McpServerToolResponse> get(String mcpServerToolId, RequestOptions requestOptions) {
-        return this.rawClient.get(mcpServerToolId, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Gets a MCP server tool by ID
+   */
+  public CompletableFuture<McpServerToolResponse> get(String mcpServerToolId) {
+    CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> rawFuture =
+      this.rawClient.get(mcpServerToolId);
+    CompletableFuture<McpServerToolResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Deletes a MCP server tool by ID
-     */
-    public CompletableFuture<McpServerToolResponse> delete(String mcpServerToolId) {
-        return this.rawClient.delete(mcpServerToolId).thenApply(response -> response.body());
-    }
+  /**
+   * Gets a MCP server tool by ID
+   */
+  public CompletableFuture<McpServerToolResponse> get(
+    String mcpServerToolId,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> rawFuture =
+      this.rawClient.get(mcpServerToolId, requestOptions);
+    CompletableFuture<McpServerToolResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Deletes a MCP server tool by ID
-     */
-    public CompletableFuture<McpServerToolResponse> delete(String mcpServerToolId, RequestOptions requestOptions) {
-        return this.rawClient.delete(mcpServerToolId, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Deletes a MCP server tool by ID
+   */
+  public CompletableFuture<McpServerToolResponse> delete(String mcpServerToolId) {
+    CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> rawFuture =
+      this.rawClient.delete(mcpServerToolId);
+    CompletableFuture<McpServerToolResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
+
+  /**
+   * Deletes a MCP server tool by ID
+   */
+  public CompletableFuture<McpServerToolResponse> delete(
+    String mcpServerToolId,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> rawFuture =
+      this.rawClient.delete(mcpServerToolId, requestOptions);
+    CompletableFuture<McpServerToolResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 }

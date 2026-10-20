@@ -7,17 +7,17 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 public interface IImplementationGuideSummary {
-    Optional<String> getName();
+  Optional<String> getName();
 
-    Optional<String> getProfileContext();
+  Optional<String> getProfileContext();
 
-    Optional<Integer> getProfileCount();
+  Optional<Integer> getProfileCount();
 
-    Optional<String> getCanonicalUrl();
+  Optional<String> getCanonicalUrl();
 
-    Optional<Integer> getVersionCount();
+  Optional<Integer> getVersionCount();
 
-    Optional<OffsetDateTime> getCreatedAt();
+  Optional<OffsetDateTime> getCreatedAt();
 
-    Optional<OffsetDateTime> getUpdatedAt();
+  Optional<OffsetDateTime> getUpdatedAt();
 }

@@ -20,297 +20,362 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ReferenceDiagnostic.Builder.class)
 public final class ReferenceDiagnostic {
-    private final Optional<String> resourceType;
 
-    private final Optional<String> resourceId;
+  private final Optional<String> resourceType;
 
-    private final Optional<String> omopTable;
+  private final Optional<String> resourceId;
 
-    private final Optional<Long> omopId;
+  private final Optional<String> omopTable;
 
-    private final Optional<String> path;
+  private final Optional<Long> omopId;
 
-    private final Optional<String> reference;
+  private final Optional<String> path;
 
-    private final Optional<ReferenceDiagnosticOutcome> outcome;
+  private final Optional<String> reference;
 
-    private final Optional<String> reason;
+  private final Optional<ReferenceDiagnosticOutcome> outcome;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> reason;
 
-    private ReferenceDiagnostic(
-            Optional<String> resourceType,
-            Optional<String> resourceId,
-            Optional<String> omopTable,
-            Optional<Long> omopId,
-            Optional<String> path,
-            Optional<String> reference,
-            Optional<ReferenceDiagnosticOutcome> outcome,
-            Optional<String> reason,
-            Map<String, Object> additionalProperties) {
-        this.resourceType = resourceType;
-        this.resourceId = resourceId;
-        this.omopTable = omopTable;
-        this.omopId = omopId;
-        this.path = path;
-        this.reference = reference;
-        this.outcome = outcome;
-        this.reason = reason;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ReferenceDiagnostic(
+    Optional<String> resourceType,
+    Optional<String> resourceId,
+    Optional<String> omopTable,
+    Optional<Long> omopId,
+    Optional<String> path,
+    Optional<String> reference,
+    Optional<ReferenceDiagnosticOutcome> outcome,
+    Optional<String> reason,
+    Map<String, Object> additionalProperties
+  ) {
+    this.resourceType = resourceType;
+    this.resourceId = resourceId;
+    this.omopTable = omopTable;
+    this.omopId = omopId;
+    this.path = path;
+    this.reference = reference;
+    this.outcome = outcome;
+    this.reason = reason;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("resource_type")
+  public Optional<String> getResourceType() {
+    return resourceType;
+  }
+
+  @JsonProperty("resource_id")
+  public Optional<String> getResourceId() {
+    return resourceId;
+  }
+
+  /**
+   * @return Table containing the affected row in this response. Present together with omop_id when that row is emitted.
+   */
+  @JsonProperty("omop_table")
+  public Optional<String> getOmopTable() {
+    return omopTable;
+  }
+
+  /**
+   * @return Primary key of the affected row within omop_table in this response. Present together with omop_table when that row is emitted.
+   */
+  @JsonProperty("omop_id")
+  public Optional<Long> getOmopId() {
+    return omopId;
+  }
+
+  /**
+   * @return FHIR element path on the source resource.
+   */
+  @JsonProperty("path")
+  public Optional<String> getPath() {
+    return path;
+  }
+
+  /**
+   * @return The supplied Reference.reference value, when present.
+   */
+  @JsonProperty("reference")
+  public Optional<String> getReference() {
+    return reference;
+  }
+
+  /**
+   * @return UNRESOLVED: a source value needed to populate a field is missing,
+   * such as specimen material or collection start, or a supported
+   * reference cannot resolve to a resource or emitted target supplied
+   * in this request.
+   * AMBIGUOUS: a reference or identifier matches multiple possible
+   * targets. Identifier-only <code>PractitionerRole.practitioner</code> references
+   * are unambiguous when all matches map to one canonical provider.
+   * Literal references matching multiple source resources remain
+   * ambiguous even if those Practitioners merge into one provider.
+   * CONFLICTING: supplied values or relationships cannot be combined
+   * under the mapping policy, such as differing mapped provider identity
+   * attributes, multiple distinct NPIs on one Practitioner, conflicting
+   * Patient demographic extensions, or an Encounter belonging to a
+   * different patient.
+   * UNSUPPORTED: a supplied reference form, resource type, or value
+   * shape is outside the supported mapping policy.
+   */
+  @JsonProperty("outcome")
+  public Optional<ReferenceDiagnosticOutcome> getOutcome() {
+    return outcome;
+  }
+
+  /**
+   * @return Explanation of the condition and, when applicable, its effect on mapping.
+   */
+  @JsonProperty("reason")
+  public Optional<String> getReason() {
+    return reason;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ReferenceDiagnostic && equalTo((ReferenceDiagnostic) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ReferenceDiagnostic other) {
+    return (
+      resourceType.equals(other.resourceType) &&
+      resourceId.equals(other.resourceId) &&
+      omopTable.equals(other.omopTable) &&
+      omopId.equals(other.omopId) &&
+      path.equals(other.path) &&
+      reference.equals(other.reference) &&
+      outcome.equals(other.outcome) &&
+      reason.equals(other.reason)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.resourceType,
+      this.resourceId,
+      this.omopTable,
+      this.omopId,
+      this.path,
+      this.reference,
+      this.outcome,
+      this.reason
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> resourceType = Optional.empty();
+
+    private Optional<String> resourceId = Optional.empty();
+
+    private Optional<String> omopTable = Optional.empty();
+
+    private Optional<Long> omopId = Optional.empty();
+
+    private Optional<String> path = Optional.empty();
+
+    private Optional<String> reference = Optional.empty();
+
+    private Optional<ReferenceDiagnosticOutcome> outcome = Optional.empty();
+
+    private Optional<String> reason = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ReferenceDiagnostic other) {
+      resourceType(other.getResourceType());
+      resourceId(other.getResourceId());
+      omopTable(other.getOmopTable());
+      omopId(other.getOmopId());
+      path(other.getPath());
+      reference(other.getReference());
+      outcome(other.getOutcome());
+      reason(other.getReason());
+      return this;
     }
 
-    @JsonProperty("resource_type")
-    public Optional<String> getResourceType() {
-        return resourceType;
+    @JsonSetter(value = "resource_type", nulls = Nulls.SKIP)
+    public Builder resourceType(Optional<String> resourceType) {
+      this.resourceType = resourceType;
+      return this;
     }
 
-    @JsonProperty("resource_id")
-    public Optional<String> getResourceId() {
-        return resourceId;
+    public Builder resourceType(String resourceType) {
+      this.resourceType = Optional.ofNullable(resourceType);
+      return this;
+    }
+
+    @JsonSetter(value = "resource_id", nulls = Nulls.SKIP)
+    public Builder resourceId(Optional<String> resourceId) {
+      this.resourceId = resourceId;
+      return this;
+    }
+
+    public Builder resourceId(String resourceId) {
+      this.resourceId = Optional.ofNullable(resourceId);
+      return this;
     }
 
     /**
-     * @return Table containing the affected row in this response. Present together with omop_id when that row is emitted.
+     * <p>Table containing the affected row in this response. Present together with omop_id when that row is emitted.</p>
      */
-    @JsonProperty("omop_table")
-    public Optional<String> getOmopTable() {
-        return omopTable;
+    @JsonSetter(value = "omop_table", nulls = Nulls.SKIP)
+    public Builder omopTable(Optional<String> omopTable) {
+      this.omopTable = omopTable;
+      return this;
+    }
+
+    public Builder omopTable(String omopTable) {
+      this.omopTable = Optional.ofNullable(omopTable);
+      return this;
     }
 
     /**
-     * @return Primary key of the affected row within omop_table in this response. Present together with omop_table when that row is emitted.
+     * <p>Primary key of the affected row within omop_table in this response. Present together with omop_table when that row is emitted.</p>
      */
-    @JsonProperty("omop_id")
-    public Optional<Long> getOmopId() {
-        return omopId;
+    @JsonSetter(value = "omop_id", nulls = Nulls.SKIP)
+    public Builder omopId(Optional<Long> omopId) {
+      this.omopId = omopId;
+      return this;
+    }
+
+    public Builder omopId(Long omopId) {
+      this.omopId = Optional.ofNullable(omopId);
+      return this;
     }
 
     /**
-     * @return FHIR element path on the source resource.
+     * <p>FHIR element path on the source resource.</p>
      */
-    @JsonProperty("path")
-    public Optional<String> getPath() {
-        return path;
+    @JsonSetter(value = "path", nulls = Nulls.SKIP)
+    public Builder path(Optional<String> path) {
+      this.path = path;
+      return this;
+    }
+
+    public Builder path(String path) {
+      this.path = Optional.ofNullable(path);
+      return this;
     }
 
     /**
-     * @return The supplied Reference.reference value, when present.
+     * <p>The supplied Reference.reference value, when present.</p>
      */
-    @JsonProperty("reference")
-    public Optional<String> getReference() {
-        return reference;
+    @JsonSetter(value = "reference", nulls = Nulls.SKIP)
+    public Builder reference(Optional<String> reference) {
+      this.reference = reference;
+      return this;
     }
 
-    @JsonProperty("outcome")
-    public Optional<ReferenceDiagnosticOutcome> getOutcome() {
-        return outcome;
+    public Builder reference(String reference) {
+      this.reference = Optional.ofNullable(reference);
+      return this;
     }
 
-    @JsonProperty("reason")
-    public Optional<String> getReason() {
-        return reason;
+    /**
+     * <p>UNRESOLVED: a source value needed to populate a field is missing,
+     * such as specimen material or collection start, or a supported
+     * reference cannot resolve to a resource or emitted target supplied
+     * in this request.
+     * AMBIGUOUS: a reference or identifier matches multiple possible
+     * targets. Identifier-only <code>PractitionerRole.practitioner</code> references
+     * are unambiguous when all matches map to one canonical provider.
+     * Literal references matching multiple source resources remain
+     * ambiguous even if those Practitioners merge into one provider.
+     * CONFLICTING: supplied values or relationships cannot be combined
+     * under the mapping policy, such as differing mapped provider identity
+     * attributes, multiple distinct NPIs on one Practitioner, conflicting
+     * Patient demographic extensions, or an Encounter belonging to a
+     * different patient.
+     * UNSUPPORTED: a supplied reference form, resource type, or value
+     * shape is outside the supported mapping policy.</p>
+     */
+    @JsonSetter(value = "outcome", nulls = Nulls.SKIP)
+    public Builder outcome(Optional<ReferenceDiagnosticOutcome> outcome) {
+      this.outcome = outcome;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ReferenceDiagnostic && equalTo((ReferenceDiagnostic) other);
+    public Builder outcome(ReferenceDiagnosticOutcome outcome) {
+      this.outcome = Optional.ofNullable(outcome);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    /**
+     * <p>Explanation of the condition and, when applicable, its effect on mapping.</p>
+     */
+    @JsonSetter(value = "reason", nulls = Nulls.SKIP)
+    public Builder reason(Optional<String> reason) {
+      this.reason = reason;
+      return this;
     }
 
-    private boolean equalTo(ReferenceDiagnostic other) {
-        return resourceType.equals(other.resourceType)
-                && resourceId.equals(other.resourceId)
-                && omopTable.equals(other.omopTable)
-                && omopId.equals(other.omopId)
-                && path.equals(other.path)
-                && reference.equals(other.reference)
-                && outcome.equals(other.outcome)
-                && reason.equals(other.reason);
+    public Builder reason(String reason) {
+      this.reason = Optional.ofNullable(reason);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.resourceType,
-                this.resourceId,
-                this.omopTable,
-                this.omopId,
-                this.path,
-                this.reference,
-                this.outcome,
-                this.reason);
+    public ReferenceDiagnostic build() {
+      return new ReferenceDiagnostic(
+        resourceType,
+        resourceId,
+        omopTable,
+        omopId,
+        path,
+        reference,
+        outcome,
+        reason,
+        additionalProperties
+      );
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("resource_type") ||
+        key.equalsIgnoreCase("resource_id") ||
+        key.equalsIgnoreCase("omop_table") ||
+        key.equalsIgnoreCase("omop_id") ||
+        key.equalsIgnoreCase("path") ||
+        key.equalsIgnoreCase("reference") ||
+        key.equalsIgnoreCase("outcome") ||
+        key.equalsIgnoreCase("reason")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> resourceType = Optional.empty();
-
-        private Optional<String> resourceId = Optional.empty();
-
-        private Optional<String> omopTable = Optional.empty();
-
-        private Optional<Long> omopId = Optional.empty();
-
-        private Optional<String> path = Optional.empty();
-
-        private Optional<String> reference = Optional.empty();
-
-        private Optional<ReferenceDiagnosticOutcome> outcome = Optional.empty();
-
-        private Optional<String> reason = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ReferenceDiagnostic other) {
-            resourceType(other.getResourceType());
-            resourceId(other.getResourceId());
-            omopTable(other.getOmopTable());
-            omopId(other.getOmopId());
-            path(other.getPath());
-            reference(other.getReference());
-            outcome(other.getOutcome());
-            reason(other.getReason());
-            return this;
-        }
-
-        @JsonSetter(value = "resource_type", nulls = Nulls.SKIP)
-        public Builder resourceType(Optional<String> resourceType) {
-            this.resourceType = resourceType;
-            return this;
-        }
-
-        public Builder resourceType(String resourceType) {
-            this.resourceType = Optional.ofNullable(resourceType);
-            return this;
-        }
-
-        @JsonSetter(value = "resource_id", nulls = Nulls.SKIP)
-        public Builder resourceId(Optional<String> resourceId) {
-            this.resourceId = resourceId;
-            return this;
-        }
-
-        public Builder resourceId(String resourceId) {
-            this.resourceId = Optional.ofNullable(resourceId);
-            return this;
-        }
-
-        /**
-         * <p>Table containing the affected row in this response. Present together with omop_id when that row is emitted.</p>
-         */
-        @JsonSetter(value = "omop_table", nulls = Nulls.SKIP)
-        public Builder omopTable(Optional<String> omopTable) {
-            this.omopTable = omopTable;
-            return this;
-        }
-
-        public Builder omopTable(String omopTable) {
-            this.omopTable = Optional.ofNullable(omopTable);
-            return this;
-        }
-
-        /**
-         * <p>Primary key of the affected row within omop_table in this response. Present together with omop_table when that row is emitted.</p>
-         */
-        @JsonSetter(value = "omop_id", nulls = Nulls.SKIP)
-        public Builder omopId(Optional<Long> omopId) {
-            this.omopId = omopId;
-            return this;
-        }
-
-        public Builder omopId(Long omopId) {
-            this.omopId = Optional.ofNullable(omopId);
-            return this;
-        }
-
-        /**
-         * <p>FHIR element path on the source resource.</p>
-         */
-        @JsonSetter(value = "path", nulls = Nulls.SKIP)
-        public Builder path(Optional<String> path) {
-            this.path = path;
-            return this;
-        }
-
-        public Builder path(String path) {
-            this.path = Optional.ofNullable(path);
-            return this;
-        }
-
-        /**
-         * <p>The supplied Reference.reference value, when present.</p>
-         */
-        @JsonSetter(value = "reference", nulls = Nulls.SKIP)
-        public Builder reference(Optional<String> reference) {
-            this.reference = reference;
-            return this;
-        }
-
-        public Builder reference(String reference) {
-            this.reference = Optional.ofNullable(reference);
-            return this;
-        }
-
-        @JsonSetter(value = "outcome", nulls = Nulls.SKIP)
-        public Builder outcome(Optional<ReferenceDiagnosticOutcome> outcome) {
-            this.outcome = outcome;
-            return this;
-        }
-
-        public Builder outcome(ReferenceDiagnosticOutcome outcome) {
-            this.outcome = Optional.ofNullable(outcome);
-            return this;
-        }
-
-        @JsonSetter(value = "reason", nulls = Nulls.SKIP)
-        public Builder reason(Optional<String> reason) {
-            this.reason = reason;
-            return this;
-        }
-
-        public Builder reason(String reason) {
-            this.reason = Optional.ofNullable(reason);
-            return this;
-        }
-
-        public ReferenceDiagnostic build() {
-            return new ReferenceDiagnostic(
-                    resourceType,
-                    resourceId,
-                    omopTable,
-                    omopId,
-                    path,
-                    reference,
-                    outcome,
-                    reason,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

@@ -21,186 +21,209 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = McpServerToolResponse.Builder.class)
 public final class McpServerToolResponse {
-    private final Optional<Boolean> success;
 
-    private final Optional<String> message;
+  private final Optional<Boolean> success;
 
-    private final Optional<McpServerTool> data;
+  private final Optional<String> message;
 
-    private final Optional<List<McpServerTool>> mcpServerTools;
+  private final Optional<McpServerTool> data;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<McpServerTool>> mcpServerTools;
 
-    private McpServerToolResponse(
-            Optional<Boolean> success,
-            Optional<String> message,
-            Optional<McpServerTool> data,
-            Optional<List<McpServerTool>> mcpServerTools,
-            Map<String, Object> additionalProperties) {
-        this.success = success;
-        this.message = message;
-        this.data = data;
-        this.mcpServerTools = mcpServerTools;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private McpServerToolResponse(
+    Optional<Boolean> success,
+    Optional<String> message,
+    Optional<McpServerTool> data,
+    Optional<List<McpServerTool>> mcpServerTools,
+    Map<String, Object> additionalProperties
+  ) {
+    this.success = success;
+    this.message = message;
+    this.data = data;
+    this.mcpServerTools = mcpServerTools;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Whether the operation succeeded
+   */
+  @JsonProperty("success")
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  /**
+   * @return Status message
+   */
+  @JsonProperty("message")
+  public Optional<String> getMessage() {
+    return message;
+  }
+
+  /**
+   * @return Single MCP server tool (returned by GET /tools/mcp-server/tool/{mcp_server_tool_id}).
+   */
+  @JsonProperty("data")
+  public Optional<McpServerTool> getData() {
+    return data;
+  }
+
+  /**
+   * @return List of MCP server tools. Returned by
+   * /tools/mcp-server/{mcp_server_id}/list.
+   */
+  @JsonProperty("mcp_server_tools")
+  public Optional<List<McpServerTool>> getMcpServerTools() {
+    return mcpServerTools;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof McpServerToolResponse && equalTo((McpServerToolResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(McpServerToolResponse other) {
+    return (
+      success.equals(other.success) &&
+      message.equals(other.message) &&
+      data.equals(other.data) &&
+      mcpServerTools.equals(other.mcpServerTools)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.success, this.message, this.data, this.mcpServerTools);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<String> message = Optional.empty();
+
+    private Optional<McpServerTool> data = Optional.empty();
+
+    private Optional<List<McpServerTool>> mcpServerTools = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(McpServerToolResponse other) {
+      success(other.getSuccess());
+      message(other.getMessage());
+      data(other.getData());
+      mcpServerTools(other.getMcpServerTools());
+      return this;
     }
 
     /**
-     * @return Whether the operation succeeded
+     * <p>Whether the operation succeeded</p>
      */
-    @JsonProperty("success")
-    public Optional<Boolean> getSuccess() {
-        return success;
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
+    }
+
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
     }
 
     /**
-     * @return Status message
+     * <p>Status message</p>
      */
-    @JsonProperty("message")
-    public Optional<String> getMessage() {
-        return message;
+    @JsonSetter(value = "message", nulls = Nulls.SKIP)
+    public Builder message(Optional<String> message) {
+      this.message = message;
+      return this;
+    }
+
+    public Builder message(String message) {
+      this.message = Optional.ofNullable(message);
+      return this;
     }
 
     /**
-     * @return Single MCP server tool (returned by GET /tools/mcp-server/tool/{mcp_server_tool_id}).
+     * <p>Single MCP server tool (returned by GET /tools/mcp-server/tool/{mcp_server_tool_id}).</p>
      */
-    @JsonProperty("data")
-    public Optional<McpServerTool> getData() {
-        return data;
+    @JsonSetter(value = "data", nulls = Nulls.SKIP)
+    public Builder data(Optional<McpServerTool> data) {
+      this.data = data;
+      return this;
+    }
+
+    public Builder data(McpServerTool data) {
+      this.data = Optional.ofNullable(data);
+      return this;
     }
 
     /**
-     * @return List of MCP server tools. Returned by
-     * /tools/mcp-server/{mcp_server_id}/list.
+     * <p>List of MCP server tools. Returned by
+     * /tools/mcp-server/{mcp_server_id}/list.</p>
      */
-    @JsonProperty("mcp_server_tools")
-    public Optional<List<McpServerTool>> getMcpServerTools() {
-        return mcpServerTools;
+    @JsonSetter(value = "mcp_server_tools", nulls = Nulls.SKIP)
+    public Builder mcpServerTools(Optional<List<McpServerTool>> mcpServerTools) {
+      this.mcpServerTools = mcpServerTools;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof McpServerToolResponse && equalTo((McpServerToolResponse) other);
+    public Builder mcpServerTools(List<McpServerTool> mcpServerTools) {
+      this.mcpServerTools = Optional.ofNullable(mcpServerTools);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public McpServerToolResponse build() {
+      return new McpServerToolResponse(
+        success,
+        message,
+        data,
+        mcpServerTools,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(McpServerToolResponse other) {
-        return success.equals(other.success)
-                && message.equals(other.message)
-                && data.equals(other.data)
-                && mcpServerTools.equals(other.mcpServerTools);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("success") ||
+        key.equalsIgnoreCase("message") ||
+        key.equalsIgnoreCase("data") ||
+        key.equalsIgnoreCase("mcp_server_tools")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.success, this.message, this.data, this.mcpServerTools);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<String> message = Optional.empty();
-
-        private Optional<McpServerTool> data = Optional.empty();
-
-        private Optional<List<McpServerTool>> mcpServerTools = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(McpServerToolResponse other) {
-            success(other.getSuccess());
-            message(other.getMessage());
-            data(other.getData());
-            mcpServerTools(other.getMcpServerTools());
-            return this;
-        }
-
-        /**
-         * <p>Whether the operation succeeded</p>
-         */
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        /**
-         * <p>Status message</p>
-         */
-        @JsonSetter(value = "message", nulls = Nulls.SKIP)
-        public Builder message(Optional<String> message) {
-            this.message = message;
-            return this;
-        }
-
-        public Builder message(String message) {
-            this.message = Optional.ofNullable(message);
-            return this;
-        }
-
-        /**
-         * <p>Single MCP server tool (returned by GET /tools/mcp-server/tool/{mcp_server_tool_id}).</p>
-         */
-        @JsonSetter(value = "data", nulls = Nulls.SKIP)
-        public Builder data(Optional<McpServerTool> data) {
-            this.data = data;
-            return this;
-        }
-
-        public Builder data(McpServerTool data) {
-            this.data = Optional.ofNullable(data);
-            return this;
-        }
-
-        /**
-         * <p>List of MCP server tools. Returned by
-         * /tools/mcp-server/{mcp_server_id}/list.</p>
-         */
-        @JsonSetter(value = "mcp_server_tools", nulls = Nulls.SKIP)
-        public Builder mcpServerTools(Optional<List<McpServerTool>> mcpServerTools) {
-            this.mcpServerTools = mcpServerTools;
-            return this;
-        }
-
-        public Builder mcpServerTools(List<McpServerTool> mcpServerTools) {
-            this.mcpServerTools = Optional.ofNullable(mcpServerTools);
-            return this;
-        }
-
-        public McpServerToolResponse build() {
-            return new McpServerToolResponse(success, message, data, mcpServerTools, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

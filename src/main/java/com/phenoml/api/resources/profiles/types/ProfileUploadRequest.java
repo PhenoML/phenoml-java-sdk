@@ -21,134 +21,152 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ProfileUploadRequest.Builder.class)
 public final class ProfileUploadRequest {
-    private final Map<String, Object> structureDefinition;
 
-    private final Optional<String> implementationGuide;
+  private final Map<String, Object> structureDefinition;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> implementationGuide;
 
-    private ProfileUploadRequest(
-            Map<String, Object> structureDefinition,
-            Optional<String> implementationGuide,
-            Map<String, Object> additionalProperties) {
-        this.structureDefinition = structureDefinition;
-        this.implementationGuide = implementationGuide;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ProfileUploadRequest(
+    Map<String, Object> structureDefinition,
+    Optional<String> implementationGuide,
+    Map<String, Object> additionalProperties
+  ) {
+    this.structureDefinition = structureDefinition;
+    this.implementationGuide = implementationGuide;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return A FHIR StructureDefinition as a JSON object. Must include url, type, and a snapshot with elements. Metadata such as version, resource type, and url is read from the StructureDefinition itself. The lowercase id becomes the profile's lookup key; when omitted, a random UUID is assigned.
+   */
+  @JsonProperty("structure_definition")
+  public Map<String, Object> getStructureDefinition() {
+    return structureDefinition;
+  }
+
+  /**
+   * @return Implementation Guide name to group this profile under. On create, defaults to &quot;custom&quot; if omitted; on update, omitting it preserves the profile's current guide. Cannot be &quot;us_core&quot; (reserved). Use this to organize custom profiles into named IGs that can be referenced when calling create/multi or document/multi endpoints.
+   */
+  @JsonProperty("implementation_guide")
+  public Optional<String> getImplementationGuide() {
+    return implementationGuide;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ProfileUploadRequest && equalTo((ProfileUploadRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ProfileUploadRequest other) {
+    return (
+      structureDefinition.equals(other.structureDefinition) &&
+      implementationGuide.equals(other.implementationGuide)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.structureDefinition, this.implementationGuide);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Map<String, Object> structureDefinition = new LinkedHashMap<>();
+
+    private Optional<String> implementationGuide = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ProfileUploadRequest other) {
+      structureDefinition(other.getStructureDefinition());
+      implementationGuide(other.getImplementationGuide());
+      return this;
     }
 
     /**
-     * @return A FHIR StructureDefinition as a JSON object. Must include url, type, and a snapshot with elements. Metadata such as version, resource type, and url is read from the StructureDefinition itself. The lowercase id becomes the profile's lookup key; when omitted, a random UUID is assigned.
+     * <p>A FHIR StructureDefinition as a JSON object. Must include url, type, and a snapshot with elements. Metadata such as version, resource type, and url is read from the StructureDefinition itself. The lowercase id becomes the profile's lookup key; when omitted, a random UUID is assigned.</p>
      */
-    @JsonProperty("structure_definition")
-    public Map<String, Object> getStructureDefinition() {
-        return structureDefinition;
+    @JsonSetter(value = "structure_definition", nulls = Nulls.SKIP)
+    public Builder structureDefinition(Map<String, Object> structureDefinition) {
+      this.structureDefinition.clear();
+      if (structureDefinition != null) {
+        this.structureDefinition.putAll(structureDefinition);
+      }
+      return this;
+    }
+
+    public Builder putAllStructureDefinition(Map<String, Object> structureDefinition) {
+      if (structureDefinition != null) {
+        this.structureDefinition.putAll(structureDefinition);
+      }
+      return this;
+    }
+
+    public Builder structureDefinition(String key, Object value) {
+      this.structureDefinition.put(key, value);
+      return this;
     }
 
     /**
-     * @return Implementation Guide name to group this profile under. On create, defaults to &quot;custom&quot; if omitted; on update, omitting it preserves the profile's current guide. Cannot be &quot;us_core&quot; (reserved). Use this to organize custom profiles into named IGs that can be referenced when calling create/multi or document/multi endpoints.
+     * <p>Implementation Guide name to group this profile under. On create, defaults to &quot;custom&quot; if omitted; on update, omitting it preserves the profile's current guide. Cannot be &quot;us_core&quot; (reserved). Use this to organize custom profiles into named IGs that can be referenced when calling create/multi or document/multi endpoints.</p>
      */
-    @JsonProperty("implementation_guide")
-    public Optional<String> getImplementationGuide() {
-        return implementationGuide;
+    @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
+    public Builder implementationGuide(Optional<String> implementationGuide) {
+      this.implementationGuide = implementationGuide;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ProfileUploadRequest && equalTo((ProfileUploadRequest) other);
+    public Builder implementationGuide(String implementationGuide) {
+      this.implementationGuide = Optional.ofNullable(implementationGuide);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ProfileUploadRequest build() {
+      return new ProfileUploadRequest(
+        structureDefinition,
+        implementationGuide,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(ProfileUploadRequest other) {
-        return structureDefinition.equals(other.structureDefinition)
-                && implementationGuide.equals(other.implementationGuide);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("structure_definition") || key.equalsIgnoreCase("implementation_guide")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.structureDefinition, this.implementationGuide);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Map<String, Object> structureDefinition = new LinkedHashMap<>();
-
-        private Optional<String> implementationGuide = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ProfileUploadRequest other) {
-            structureDefinition(other.getStructureDefinition());
-            implementationGuide(other.getImplementationGuide());
-            return this;
-        }
-
-        /**
-         * <p>A FHIR StructureDefinition as a JSON object. Must include url, type, and a snapshot with elements. Metadata such as version, resource type, and url is read from the StructureDefinition itself. The lowercase id becomes the profile's lookup key; when omitted, a random UUID is assigned.</p>
-         */
-        @JsonSetter(value = "structure_definition", nulls = Nulls.SKIP)
-        public Builder structureDefinition(Map<String, Object> structureDefinition) {
-            this.structureDefinition.clear();
-            if (structureDefinition != null) {
-                this.structureDefinition.putAll(structureDefinition);
-            }
-            return this;
-        }
-
-        public Builder putAllStructureDefinition(Map<String, Object> structureDefinition) {
-            if (structureDefinition != null) {
-                this.structureDefinition.putAll(structureDefinition);
-            }
-            return this;
-        }
-
-        public Builder structureDefinition(String key, Object value) {
-            this.structureDefinition.put(key, value);
-            return this;
-        }
-
-        /**
-         * <p>Implementation Guide name to group this profile under. On create, defaults to &quot;custom&quot; if omitted; on update, omitting it preserves the profile's current guide. Cannot be &quot;us_core&quot; (reserved). Use this to organize custom profiles into named IGs that can be referenced when calling create/multi or document/multi endpoints.</p>
-         */
-        @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
-        public Builder implementationGuide(Optional<String> implementationGuide) {
-            this.implementationGuide = implementationGuide;
-            return this;
-        }
-
-        public Builder implementationGuide(String implementationGuide) {
-            this.implementationGuide = Optional.ofNullable(implementationGuide);
-            return this;
-        }
-
-        public ProfileUploadRequest build() {
-            return new ProfileUploadRequest(structureDefinition, implementationGuide, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -20,363 +20,422 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = VisitOccurrenceRow.Builder.class)
 public final class VisitOccurrenceRow {
-    private final Optional<Long> visitOccurrenceId;
 
-    private final Optional<Long> personId;
+  private final Optional<Long> visitOccurrenceId;
 
-    private final Optional<Long> visitConceptId;
+  private final Optional<Long> personId;
 
-    private final Optional<String> visitStartDate;
+  private final Optional<Long> visitConceptId;
 
-    private final Optional<String> visitStartDatetime;
+  private final Optional<String> visitStartDate;
 
-    private final Optional<String> visitEndDate;
+  private final Optional<String> visitStartDatetime;
 
-    private final Optional<String> visitEndDatetime;
+  private final Optional<String> visitEndDate;
 
-    private final Optional<Long> visitTypeConceptId;
+  private final Optional<String> visitEndDatetime;
 
-    private final Optional<Long> providerId;
+  private final Optional<Long> visitTypeConceptId;
 
-    private final Optional<Long> careSiteId;
+  private final Optional<Long> providerId;
 
-    private final Optional<String> visitSourceValue;
+  private final Optional<Long> careSiteId;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> visitSourceValue;
 
-    private VisitOccurrenceRow(
-            Optional<Long> visitOccurrenceId,
-            Optional<Long> personId,
-            Optional<Long> visitConceptId,
-            Optional<String> visitStartDate,
-            Optional<String> visitStartDatetime,
-            Optional<String> visitEndDate,
-            Optional<String> visitEndDatetime,
-            Optional<Long> visitTypeConceptId,
-            Optional<Long> providerId,
-            Optional<Long> careSiteId,
-            Optional<String> visitSourceValue,
-            Map<String, Object> additionalProperties) {
-        this.visitOccurrenceId = visitOccurrenceId;
-        this.personId = personId;
-        this.visitConceptId = visitConceptId;
-        this.visitStartDate = visitStartDate;
-        this.visitStartDatetime = visitStartDatetime;
-        this.visitEndDate = visitEndDate;
-        this.visitEndDatetime = visitEndDatetime;
-        this.visitTypeConceptId = visitTypeConceptId;
-        this.providerId = providerId;
-        this.careSiteId = careSiteId;
-        this.visitSourceValue = visitSourceValue;
-        this.additionalProperties = additionalProperties;
+  private final Optional<Long> visitSourceConceptId;
+
+  private final Map<String, Object> additionalProperties;
+
+  private VisitOccurrenceRow(
+    Optional<Long> visitOccurrenceId,
+    Optional<Long> personId,
+    Optional<Long> visitConceptId,
+    Optional<String> visitStartDate,
+    Optional<String> visitStartDatetime,
+    Optional<String> visitEndDate,
+    Optional<String> visitEndDatetime,
+    Optional<Long> visitTypeConceptId,
+    Optional<Long> providerId,
+    Optional<Long> careSiteId,
+    Optional<String> visitSourceValue,
+    Optional<Long> visitSourceConceptId,
+    Map<String, Object> additionalProperties
+  ) {
+    this.visitOccurrenceId = visitOccurrenceId;
+    this.personId = personId;
+    this.visitConceptId = visitConceptId;
+    this.visitStartDate = visitStartDate;
+    this.visitStartDatetime = visitStartDatetime;
+    this.visitEndDate = visitEndDate;
+    this.visitEndDatetime = visitEndDatetime;
+    this.visitTypeConceptId = visitTypeConceptId;
+    this.providerId = providerId;
+    this.careSiteId = careSiteId;
+    this.visitSourceValue = visitSourceValue;
+    this.visitSourceConceptId = visitSourceConceptId;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("visit_occurrence_id")
+  public Optional<Long> getVisitOccurrenceId() {
+    return visitOccurrenceId;
+  }
+
+  @JsonProperty("person_id")
+  public Optional<Long> getPersonId() {
+    return personId;
+  }
+
+  @JsonProperty("visit_concept_id")
+  public Optional<Long> getVisitConceptId() {
+    return visitConceptId;
+  }
+
+  /**
+   * @return Date from Encounter.period.start.
+   */
+  @JsonProperty("visit_start_date")
+  public Optional<String> getVisitStartDate() {
+    return visitStartDate;
+  }
+
+  @JsonProperty("visit_start_datetime")
+  public Optional<String> getVisitStartDatetime() {
+    return visitStartDatetime;
+  }
+
+  /**
+   * @return Date from Encounter.period.end.
+   */
+  @JsonProperty("visit_end_date")
+  public Optional<String> getVisitEndDate() {
+    return visitEndDate;
+  }
+
+  @JsonProperty("visit_end_datetime")
+  public Optional<String> getVisitEndDatetime() {
+    return visitEndDatetime;
+  }
+
+  @JsonProperty("visit_type_concept_id")
+  public Optional<Long> getVisitTypeConceptId() {
+    return visitTypeConceptId;
+  }
+
+  @JsonProperty("provider_id")
+  public Optional<Long> getProviderId() {
+    return providerId;
+  }
+
+  @JsonProperty("care_site_id")
+  public Optional<Long> getCareSiteId() {
+    return careSiteId;
+  }
+
+  @JsonProperty("visit_source_value")
+  public Optional<String> getVisitSourceValue() {
+    return visitSourceValue;
+  }
+
+  /**
+   * @return OMOP source concept for the selected Encounter.class or Encounter.type coding when available; <code>0</code> when the source coding has no OMOP source concept, including the HL7 encounter class codes listed above.
+   */
+  @JsonProperty("visit_source_concept_id")
+  public Optional<Long> getVisitSourceConceptId() {
+    return visitSourceConceptId;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof VisitOccurrenceRow && equalTo((VisitOccurrenceRow) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(VisitOccurrenceRow other) {
+    return (
+      visitOccurrenceId.equals(other.visitOccurrenceId) &&
+      personId.equals(other.personId) &&
+      visitConceptId.equals(other.visitConceptId) &&
+      visitStartDate.equals(other.visitStartDate) &&
+      visitStartDatetime.equals(other.visitStartDatetime) &&
+      visitEndDate.equals(other.visitEndDate) &&
+      visitEndDatetime.equals(other.visitEndDatetime) &&
+      visitTypeConceptId.equals(other.visitTypeConceptId) &&
+      providerId.equals(other.providerId) &&
+      careSiteId.equals(other.careSiteId) &&
+      visitSourceValue.equals(other.visitSourceValue) &&
+      visitSourceConceptId.equals(other.visitSourceConceptId)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.visitOccurrenceId,
+      this.personId,
+      this.visitConceptId,
+      this.visitStartDate,
+      this.visitStartDatetime,
+      this.visitEndDate,
+      this.visitEndDatetime,
+      this.visitTypeConceptId,
+      this.providerId,
+      this.careSiteId,
+      this.visitSourceValue,
+      this.visitSourceConceptId
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Long> visitOccurrenceId = Optional.empty();
+
+    private Optional<Long> personId = Optional.empty();
+
+    private Optional<Long> visitConceptId = Optional.empty();
+
+    private Optional<String> visitStartDate = Optional.empty();
+
+    private Optional<String> visitStartDatetime = Optional.empty();
+
+    private Optional<String> visitEndDate = Optional.empty();
+
+    private Optional<String> visitEndDatetime = Optional.empty();
+
+    private Optional<Long> visitTypeConceptId = Optional.empty();
+
+    private Optional<Long> providerId = Optional.empty();
+
+    private Optional<Long> careSiteId = Optional.empty();
+
+    private Optional<String> visitSourceValue = Optional.empty();
+
+    private Optional<Long> visitSourceConceptId = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(VisitOccurrenceRow other) {
+      visitOccurrenceId(other.getVisitOccurrenceId());
+      personId(other.getPersonId());
+      visitConceptId(other.getVisitConceptId());
+      visitStartDate(other.getVisitStartDate());
+      visitStartDatetime(other.getVisitStartDatetime());
+      visitEndDate(other.getVisitEndDate());
+      visitEndDatetime(other.getVisitEndDatetime());
+      visitTypeConceptId(other.getVisitTypeConceptId());
+      providerId(other.getProviderId());
+      careSiteId(other.getCareSiteId());
+      visitSourceValue(other.getVisitSourceValue());
+      visitSourceConceptId(other.getVisitSourceConceptId());
+      return this;
     }
 
-    @JsonProperty("visit_occurrence_id")
-    public Optional<Long> getVisitOccurrenceId() {
-        return visitOccurrenceId;
+    @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
+    public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
+      this.visitOccurrenceId = visitOccurrenceId;
+      return this;
     }
 
-    @JsonProperty("person_id")
-    public Optional<Long> getPersonId() {
-        return personId;
+    public Builder visitOccurrenceId(Long visitOccurrenceId) {
+      this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
+      return this;
     }
 
-    @JsonProperty("visit_concept_id")
-    public Optional<Long> getVisitConceptId() {
-        return visitConceptId;
+    @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
+    public Builder personId(Optional<Long> personId) {
+      this.personId = personId;
+      return this;
+    }
+
+    public Builder personId(Long personId) {
+      this.personId = Optional.ofNullable(personId);
+      return this;
+    }
+
+    @JsonSetter(value = "visit_concept_id", nulls = Nulls.SKIP)
+    public Builder visitConceptId(Optional<Long> visitConceptId) {
+      this.visitConceptId = visitConceptId;
+      return this;
+    }
+
+    public Builder visitConceptId(Long visitConceptId) {
+      this.visitConceptId = Optional.ofNullable(visitConceptId);
+      return this;
     }
 
     /**
-     * @return Date from Encounter.period.start.
+     * <p>Date from Encounter.period.start.</p>
      */
-    @JsonProperty("visit_start_date")
-    public Optional<String> getVisitStartDate() {
-        return visitStartDate;
+    @JsonSetter(value = "visit_start_date", nulls = Nulls.SKIP)
+    public Builder visitStartDate(Optional<String> visitStartDate) {
+      this.visitStartDate = visitStartDate;
+      return this;
     }
 
-    @JsonProperty("visit_start_datetime")
-    public Optional<String> getVisitStartDatetime() {
-        return visitStartDatetime;
+    public Builder visitStartDate(String visitStartDate) {
+      this.visitStartDate = Optional.ofNullable(visitStartDate);
+      return this;
+    }
+
+    @JsonSetter(value = "visit_start_datetime", nulls = Nulls.SKIP)
+    public Builder visitStartDatetime(Optional<String> visitStartDatetime) {
+      this.visitStartDatetime = visitStartDatetime;
+      return this;
+    }
+
+    public Builder visitStartDatetime(String visitStartDatetime) {
+      this.visitStartDatetime = Optional.ofNullable(visitStartDatetime);
+      return this;
     }
 
     /**
-     * @return Date from Encounter.period.end.
+     * <p>Date from Encounter.period.end.</p>
      */
-    @JsonProperty("visit_end_date")
-    public Optional<String> getVisitEndDate() {
-        return visitEndDate;
+    @JsonSetter(value = "visit_end_date", nulls = Nulls.SKIP)
+    public Builder visitEndDate(Optional<String> visitEndDate) {
+      this.visitEndDate = visitEndDate;
+      return this;
     }
 
-    @JsonProperty("visit_end_datetime")
-    public Optional<String> getVisitEndDatetime() {
-        return visitEndDatetime;
+    public Builder visitEndDate(String visitEndDate) {
+      this.visitEndDate = Optional.ofNullable(visitEndDate);
+      return this;
     }
 
-    @JsonProperty("visit_type_concept_id")
-    public Optional<Long> getVisitTypeConceptId() {
-        return visitTypeConceptId;
+    @JsonSetter(value = "visit_end_datetime", nulls = Nulls.SKIP)
+    public Builder visitEndDatetime(Optional<String> visitEndDatetime) {
+      this.visitEndDatetime = visitEndDatetime;
+      return this;
     }
 
-    @JsonProperty("provider_id")
-    public Optional<Long> getProviderId() {
-        return providerId;
+    public Builder visitEndDatetime(String visitEndDatetime) {
+      this.visitEndDatetime = Optional.ofNullable(visitEndDatetime);
+      return this;
     }
 
-    @JsonProperty("care_site_id")
-    public Optional<Long> getCareSiteId() {
-        return careSiteId;
+    @JsonSetter(value = "visit_type_concept_id", nulls = Nulls.SKIP)
+    public Builder visitTypeConceptId(Optional<Long> visitTypeConceptId) {
+      this.visitTypeConceptId = visitTypeConceptId;
+      return this;
     }
 
-    @JsonProperty("visit_source_value")
-    public Optional<String> getVisitSourceValue() {
-        return visitSourceValue;
+    public Builder visitTypeConceptId(Long visitTypeConceptId) {
+      this.visitTypeConceptId = Optional.ofNullable(visitTypeConceptId);
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof VisitOccurrenceRow && equalTo((VisitOccurrenceRow) other);
+    @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
+    public Builder providerId(Optional<Long> providerId) {
+      this.providerId = providerId;
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder providerId(Long providerId) {
+      this.providerId = Optional.ofNullable(providerId);
+      return this;
     }
 
-    private boolean equalTo(VisitOccurrenceRow other) {
-        return visitOccurrenceId.equals(other.visitOccurrenceId)
-                && personId.equals(other.personId)
-                && visitConceptId.equals(other.visitConceptId)
-                && visitStartDate.equals(other.visitStartDate)
-                && visitStartDatetime.equals(other.visitStartDatetime)
-                && visitEndDate.equals(other.visitEndDate)
-                && visitEndDatetime.equals(other.visitEndDatetime)
-                && visitTypeConceptId.equals(other.visitTypeConceptId)
-                && providerId.equals(other.providerId)
-                && careSiteId.equals(other.careSiteId)
-                && visitSourceValue.equals(other.visitSourceValue);
+    @JsonSetter(value = "care_site_id", nulls = Nulls.SKIP)
+    public Builder careSiteId(Optional<Long> careSiteId) {
+      this.careSiteId = careSiteId;
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.visitOccurrenceId,
-                this.personId,
-                this.visitConceptId,
-                this.visitStartDate,
-                this.visitStartDatetime,
-                this.visitEndDate,
-                this.visitEndDatetime,
-                this.visitTypeConceptId,
-                this.providerId,
-                this.careSiteId,
-                this.visitSourceValue);
+    public Builder careSiteId(Long careSiteId) {
+      this.careSiteId = Optional.ofNullable(careSiteId);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonSetter(value = "visit_source_value", nulls = Nulls.SKIP)
+    public Builder visitSourceValue(Optional<String> visitSourceValue) {
+      this.visitSourceValue = visitSourceValue;
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder visitSourceValue(String visitSourceValue) {
+      this.visitSourceValue = Optional.ofNullable(visitSourceValue);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Long> visitOccurrenceId = Optional.empty();
-
-        private Optional<Long> personId = Optional.empty();
-
-        private Optional<Long> visitConceptId = Optional.empty();
-
-        private Optional<String> visitStartDate = Optional.empty();
-
-        private Optional<String> visitStartDatetime = Optional.empty();
-
-        private Optional<String> visitEndDate = Optional.empty();
-
-        private Optional<String> visitEndDatetime = Optional.empty();
-
-        private Optional<Long> visitTypeConceptId = Optional.empty();
-
-        private Optional<Long> providerId = Optional.empty();
-
-        private Optional<Long> careSiteId = Optional.empty();
-
-        private Optional<String> visitSourceValue = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(VisitOccurrenceRow other) {
-            visitOccurrenceId(other.getVisitOccurrenceId());
-            personId(other.getPersonId());
-            visitConceptId(other.getVisitConceptId());
-            visitStartDate(other.getVisitStartDate());
-            visitStartDatetime(other.getVisitStartDatetime());
-            visitEndDate(other.getVisitEndDate());
-            visitEndDatetime(other.getVisitEndDatetime());
-            visitTypeConceptId(other.getVisitTypeConceptId());
-            providerId(other.getProviderId());
-            careSiteId(other.getCareSiteId());
-            visitSourceValue(other.getVisitSourceValue());
-            return this;
-        }
-
-        @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
-        public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
-            this.visitOccurrenceId = visitOccurrenceId;
-            return this;
-        }
-
-        public Builder visitOccurrenceId(Long visitOccurrenceId) {
-            this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
-            return this;
-        }
-
-        @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
-        public Builder personId(Optional<Long> personId) {
-            this.personId = personId;
-            return this;
-        }
-
-        public Builder personId(Long personId) {
-            this.personId = Optional.ofNullable(personId);
-            return this;
-        }
-
-        @JsonSetter(value = "visit_concept_id", nulls = Nulls.SKIP)
-        public Builder visitConceptId(Optional<Long> visitConceptId) {
-            this.visitConceptId = visitConceptId;
-            return this;
-        }
-
-        public Builder visitConceptId(Long visitConceptId) {
-            this.visitConceptId = Optional.ofNullable(visitConceptId);
-            return this;
-        }
-
-        /**
-         * <p>Date from Encounter.period.start.</p>
-         */
-        @JsonSetter(value = "visit_start_date", nulls = Nulls.SKIP)
-        public Builder visitStartDate(Optional<String> visitStartDate) {
-            this.visitStartDate = visitStartDate;
-            return this;
-        }
-
-        public Builder visitStartDate(String visitStartDate) {
-            this.visitStartDate = Optional.ofNullable(visitStartDate);
-            return this;
-        }
-
-        @JsonSetter(value = "visit_start_datetime", nulls = Nulls.SKIP)
-        public Builder visitStartDatetime(Optional<String> visitStartDatetime) {
-            this.visitStartDatetime = visitStartDatetime;
-            return this;
-        }
-
-        public Builder visitStartDatetime(String visitStartDatetime) {
-            this.visitStartDatetime = Optional.ofNullable(visitStartDatetime);
-            return this;
-        }
-
-        /**
-         * <p>Date from Encounter.period.end.</p>
-         */
-        @JsonSetter(value = "visit_end_date", nulls = Nulls.SKIP)
-        public Builder visitEndDate(Optional<String> visitEndDate) {
-            this.visitEndDate = visitEndDate;
-            return this;
-        }
-
-        public Builder visitEndDate(String visitEndDate) {
-            this.visitEndDate = Optional.ofNullable(visitEndDate);
-            return this;
-        }
-
-        @JsonSetter(value = "visit_end_datetime", nulls = Nulls.SKIP)
-        public Builder visitEndDatetime(Optional<String> visitEndDatetime) {
-            this.visitEndDatetime = visitEndDatetime;
-            return this;
-        }
-
-        public Builder visitEndDatetime(String visitEndDatetime) {
-            this.visitEndDatetime = Optional.ofNullable(visitEndDatetime);
-            return this;
-        }
-
-        @JsonSetter(value = "visit_type_concept_id", nulls = Nulls.SKIP)
-        public Builder visitTypeConceptId(Optional<Long> visitTypeConceptId) {
-            this.visitTypeConceptId = visitTypeConceptId;
-            return this;
-        }
-
-        public Builder visitTypeConceptId(Long visitTypeConceptId) {
-            this.visitTypeConceptId = Optional.ofNullable(visitTypeConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
-        public Builder providerId(Optional<Long> providerId) {
-            this.providerId = providerId;
-            return this;
-        }
-
-        public Builder providerId(Long providerId) {
-            this.providerId = Optional.ofNullable(providerId);
-            return this;
-        }
-
-        @JsonSetter(value = "care_site_id", nulls = Nulls.SKIP)
-        public Builder careSiteId(Optional<Long> careSiteId) {
-            this.careSiteId = careSiteId;
-            return this;
-        }
-
-        public Builder careSiteId(Long careSiteId) {
-            this.careSiteId = Optional.ofNullable(careSiteId);
-            return this;
-        }
-
-        @JsonSetter(value = "visit_source_value", nulls = Nulls.SKIP)
-        public Builder visitSourceValue(Optional<String> visitSourceValue) {
-            this.visitSourceValue = visitSourceValue;
-            return this;
-        }
-
-        public Builder visitSourceValue(String visitSourceValue) {
-            this.visitSourceValue = Optional.ofNullable(visitSourceValue);
-            return this;
-        }
-
-        public VisitOccurrenceRow build() {
-            return new VisitOccurrenceRow(
-                    visitOccurrenceId,
-                    personId,
-                    visitConceptId,
-                    visitStartDate,
-                    visitStartDatetime,
-                    visitEndDate,
-                    visitEndDatetime,
-                    visitTypeConceptId,
-                    providerId,
-                    careSiteId,
-                    visitSourceValue,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    /**
+     * <p>OMOP source concept for the selected Encounter.class or Encounter.type coding when available; <code>0</code> when the source coding has no OMOP source concept, including the HL7 encounter class codes listed above.</p>
+     */
+    @JsonSetter(value = "visit_source_concept_id", nulls = Nulls.SKIP)
+    public Builder visitSourceConceptId(Optional<Long> visitSourceConceptId) {
+      this.visitSourceConceptId = visitSourceConceptId;
+      return this;
     }
+
+    public Builder visitSourceConceptId(Long visitSourceConceptId) {
+      this.visitSourceConceptId = Optional.ofNullable(visitSourceConceptId);
+      return this;
+    }
+
+    public VisitOccurrenceRow build() {
+      return new VisitOccurrenceRow(
+        visitOccurrenceId,
+        personId,
+        visitConceptId,
+        visitStartDate,
+        visitStartDatetime,
+        visitEndDate,
+        visitEndDatetime,
+        visitTypeConceptId,
+        providerId,
+        careSiteId,
+        visitSourceValue,
+        visitSourceConceptId,
+        additionalProperties
+      );
+    }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("visit_occurrence_id") ||
+        key.equalsIgnoreCase("person_id") ||
+        key.equalsIgnoreCase("visit_concept_id") ||
+        key.equalsIgnoreCase("visit_start_date") ||
+        key.equalsIgnoreCase("visit_start_datetime") ||
+        key.equalsIgnoreCase("visit_end_date") ||
+        key.equalsIgnoreCase("visit_end_datetime") ||
+        key.equalsIgnoreCase("visit_type_concept_id") ||
+        key.equalsIgnoreCase("provider_id") ||
+        key.equalsIgnoreCase("care_site_id") ||
+        key.equalsIgnoreCase("visit_source_value") ||
+        key.equalsIgnoreCase("visit_source_concept_id")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

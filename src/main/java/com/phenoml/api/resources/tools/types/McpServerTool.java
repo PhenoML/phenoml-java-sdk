@@ -20,246 +20,278 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = McpServerTool.Builder.class)
 public final class McpServerTool {
-    private final Optional<String> id;
 
-    private final Optional<String> name;
+  private final Optional<String> id;
 
-    private final Optional<String> description;
+  private final Optional<String> name;
 
-    private final Optional<Map<String, Object>> inputSchema;
+  private final Optional<String> description;
 
-    private final Optional<String> mcpServerId;
+  private final Optional<Map<String, Object>> inputSchema;
 
-    private final Optional<String> mcpServerUrl;
+  private final Optional<String> mcpServerId;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> mcpServerUrl;
 
-    private McpServerTool(
-            Optional<String> id,
-            Optional<String> name,
-            Optional<String> description,
-            Optional<Map<String, Object>> inputSchema,
-            Optional<String> mcpServerId,
-            Optional<String> mcpServerUrl,
-            Map<String, Object> additionalProperties) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.inputSchema = inputSchema;
-        this.mcpServerId = mcpServerId;
-        this.mcpServerUrl = mcpServerUrl;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private McpServerTool(
+    Optional<String> id,
+    Optional<String> name,
+    Optional<String> description,
+    Optional<Map<String, Object>> inputSchema,
+    Optional<String> mcpServerId,
+    Optional<String> mcpServerUrl,
+    Map<String, Object> additionalProperties
+  ) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.inputSchema = inputSchema;
+    this.mcpServerId = mcpServerId;
+    this.mcpServerUrl = mcpServerUrl;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return ID of the MCP server tool
+   */
+  @JsonProperty("id")
+  public Optional<String> getId() {
+    return id;
+  }
+
+  /**
+   * @return Name of the MCP server tool
+   */
+  @JsonProperty("name")
+  public Optional<String> getName() {
+    return name;
+  }
+
+  /**
+   * @return Description of the MCP server tool
+   */
+  @JsonProperty("description")
+  public Optional<String> getDescription() {
+    return description;
+  }
+
+  /**
+   * @return Input schema of the MCP server tool
+   */
+  @JsonProperty("input_schema")
+  public Optional<Map<String, Object>> getInputSchema() {
+    return inputSchema;
+  }
+
+  /**
+   * @return ID of the MCP server that the tool belongs to
+   */
+  @JsonProperty("mcp_server_id")
+  public Optional<String> getMcpServerId() {
+    return mcpServerId;
+  }
+
+  /**
+   * @return URL of the MCP server
+   */
+  @JsonProperty("mcp_server_url")
+  public Optional<String> getMcpServerUrl() {
+    return mcpServerUrl;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof McpServerTool && equalTo((McpServerTool) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(McpServerTool other) {
+    return (
+      id.equals(other.id) &&
+      name.equals(other.name) &&
+      description.equals(other.description) &&
+      inputSchema.equals(other.inputSchema) &&
+      mcpServerId.equals(other.mcpServerId) &&
+      mcpServerUrl.equals(other.mcpServerUrl)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.id,
+      this.name,
+      this.description,
+      this.inputSchema,
+      this.mcpServerId,
+      this.mcpServerUrl
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> id = Optional.empty();
+
+    private Optional<String> name = Optional.empty();
+
+    private Optional<String> description = Optional.empty();
+
+    private Optional<Map<String, Object>> inputSchema = Optional.empty();
+
+    private Optional<String> mcpServerId = Optional.empty();
+
+    private Optional<String> mcpServerUrl = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(McpServerTool other) {
+      id(other.getId());
+      name(other.getName());
+      description(other.getDescription());
+      inputSchema(other.getInputSchema());
+      mcpServerId(other.getMcpServerId());
+      mcpServerUrl(other.getMcpServerUrl());
+      return this;
     }
 
     /**
-     * @return ID of the MCP server tool
+     * <p>ID of the MCP server tool</p>
      */
-    @JsonProperty("id")
-    public Optional<String> getId() {
-        return id;
+    @JsonSetter(value = "id", nulls = Nulls.SKIP)
+    public Builder id(Optional<String> id) {
+      this.id = id;
+      return this;
+    }
+
+    public Builder id(String id) {
+      this.id = Optional.ofNullable(id);
+      return this;
     }
 
     /**
-     * @return Name of the MCP server tool
+     * <p>Name of the MCP server tool</p>
      */
-    @JsonProperty("name")
-    public Optional<String> getName() {
-        return name;
+    @JsonSetter(value = "name", nulls = Nulls.SKIP)
+    public Builder name(Optional<String> name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.name = Optional.ofNullable(name);
+      return this;
     }
 
     /**
-     * @return Description of the MCP server tool
+     * <p>Description of the MCP server tool</p>
      */
-    @JsonProperty("description")
-    public Optional<String> getDescription() {
-        return description;
+    @JsonSetter(value = "description", nulls = Nulls.SKIP)
+    public Builder description(Optional<String> description) {
+      this.description = description;
+      return this;
+    }
+
+    public Builder description(String description) {
+      this.description = Optional.ofNullable(description);
+      return this;
     }
 
     /**
-     * @return Input schema of the MCP server tool
+     * <p>Input schema of the MCP server tool</p>
      */
-    @JsonProperty("input_schema")
-    public Optional<Map<String, Object>> getInputSchema() {
-        return inputSchema;
+    @JsonSetter(value = "input_schema", nulls = Nulls.SKIP)
+    public Builder inputSchema(Optional<Map<String, Object>> inputSchema) {
+      this.inputSchema = inputSchema;
+      return this;
+    }
+
+    public Builder inputSchema(Map<String, Object> inputSchema) {
+      this.inputSchema = Optional.ofNullable(inputSchema);
+      return this;
     }
 
     /**
-     * @return ID of the MCP server that the tool belongs to
+     * <p>ID of the MCP server that the tool belongs to</p>
      */
-    @JsonProperty("mcp_server_id")
-    public Optional<String> getMcpServerId() {
-        return mcpServerId;
+    @JsonSetter(value = "mcp_server_id", nulls = Nulls.SKIP)
+    public Builder mcpServerId(Optional<String> mcpServerId) {
+      this.mcpServerId = mcpServerId;
+      return this;
+    }
+
+    public Builder mcpServerId(String mcpServerId) {
+      this.mcpServerId = Optional.ofNullable(mcpServerId);
+      return this;
     }
 
     /**
-     * @return URL of the MCP server
+     * <p>URL of the MCP server</p>
      */
-    @JsonProperty("mcp_server_url")
-    public Optional<String> getMcpServerUrl() {
-        return mcpServerUrl;
+    @JsonSetter(value = "mcp_server_url", nulls = Nulls.SKIP)
+    public Builder mcpServerUrl(Optional<String> mcpServerUrl) {
+      this.mcpServerUrl = mcpServerUrl;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof McpServerTool && equalTo((McpServerTool) other);
+    public Builder mcpServerUrl(String mcpServerUrl) {
+      this.mcpServerUrl = Optional.ofNullable(mcpServerUrl);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public McpServerTool build() {
+      return new McpServerTool(
+        id,
+        name,
+        description,
+        inputSchema,
+        mcpServerId,
+        mcpServerUrl,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(McpServerTool other) {
-        return id.equals(other.id)
-                && name.equals(other.name)
-                && description.equals(other.description)
-                && inputSchema.equals(other.inputSchema)
-                && mcpServerId.equals(other.mcpServerId)
-                && mcpServerUrl.equals(other.mcpServerUrl);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("id") ||
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("description") ||
+        key.equalsIgnoreCase("input_schema") ||
+        key.equalsIgnoreCase("mcp_server_id") ||
+        key.equalsIgnoreCase("mcp_server_url")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.id, this.name, this.description, this.inputSchema, this.mcpServerId, this.mcpServerUrl);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> id = Optional.empty();
-
-        private Optional<String> name = Optional.empty();
-
-        private Optional<String> description = Optional.empty();
-
-        private Optional<Map<String, Object>> inputSchema = Optional.empty();
-
-        private Optional<String> mcpServerId = Optional.empty();
-
-        private Optional<String> mcpServerUrl = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(McpServerTool other) {
-            id(other.getId());
-            name(other.getName());
-            description(other.getDescription());
-            inputSchema(other.getInputSchema());
-            mcpServerId(other.getMcpServerId());
-            mcpServerUrl(other.getMcpServerUrl());
-            return this;
-        }
-
-        /**
-         * <p>ID of the MCP server tool</p>
-         */
-        @JsonSetter(value = "id", nulls = Nulls.SKIP)
-        public Builder id(Optional<String> id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder id(String id) {
-            this.id = Optional.ofNullable(id);
-            return this;
-        }
-
-        /**
-         * <p>Name of the MCP server tool</p>
-         */
-        @JsonSetter(value = "name", nulls = Nulls.SKIP)
-        public Builder name(Optional<String> name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = Optional.ofNullable(name);
-            return this;
-        }
-
-        /**
-         * <p>Description of the MCP server tool</p>
-         */
-        @JsonSetter(value = "description", nulls = Nulls.SKIP)
-        public Builder description(Optional<String> description) {
-            this.description = description;
-            return this;
-        }
-
-        public Builder description(String description) {
-            this.description = Optional.ofNullable(description);
-            return this;
-        }
-
-        /**
-         * <p>Input schema of the MCP server tool</p>
-         */
-        @JsonSetter(value = "input_schema", nulls = Nulls.SKIP)
-        public Builder inputSchema(Optional<Map<String, Object>> inputSchema) {
-            this.inputSchema = inputSchema;
-            return this;
-        }
-
-        public Builder inputSchema(Map<String, Object> inputSchema) {
-            this.inputSchema = Optional.ofNullable(inputSchema);
-            return this;
-        }
-
-        /**
-         * <p>ID of the MCP server that the tool belongs to</p>
-         */
-        @JsonSetter(value = "mcp_server_id", nulls = Nulls.SKIP)
-        public Builder mcpServerId(Optional<String> mcpServerId) {
-            this.mcpServerId = mcpServerId;
-            return this;
-        }
-
-        public Builder mcpServerId(String mcpServerId) {
-            this.mcpServerId = Optional.ofNullable(mcpServerId);
-            return this;
-        }
-
-        /**
-         * <p>URL of the MCP server</p>
-         */
-        @JsonSetter(value = "mcp_server_url", nulls = Nulls.SKIP)
-        public Builder mcpServerUrl(Optional<String> mcpServerUrl) {
-            this.mcpServerUrl = mcpServerUrl;
-            return this;
-        }
-
-        public Builder mcpServerUrl(String mcpServerUrl) {
-            this.mcpServerUrl = Optional.ofNullable(mcpServerUrl);
-            return this;
-        }
-
-        public McpServerTool build() {
-            return new McpServerTool(
-                    id, name, description, inputSchema, mcpServerId, mcpServerUrl, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

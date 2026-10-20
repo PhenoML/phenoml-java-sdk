@@ -22,209 +22,227 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ExportCodeSystemResponse.Builder.class)
 public final class ExportCodeSystemResponse {
-    private final String name;
 
-    private final String version;
+  private final String name;
 
-    private final List<CodeResponse> codes;
+  private final String version;
 
-    private final Map<String, Object> additionalProperties;
+  private final List<CodeResponse> codes;
 
-    private ExportCodeSystemResponse(
-            String name, String version, List<CodeResponse> codes, Map<String, Object> additionalProperties) {
-        this.name = name;
-        this.version = version;
-        this.codes = codes;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ExportCodeSystemResponse(
+    String name,
+    String version,
+    List<CodeResponse> codes,
+    Map<String, Object> additionalProperties
+  ) {
+    this.name = name;
+    this.version = version;
+    this.codes = codes;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Code system name
+   */
+  @JsonProperty("name")
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @return Code system version
+   */
+  @JsonProperty("version")
+  public String getVersion() {
+    return version;
+  }
+
+  /**
+   * @return Upload format (always &quot;json&quot;)
+   */
+  @JsonProperty("format")
+  public String getFormat() {
+    return "json";
+  }
+
+  /**
+   * @return All codes in the system
+   */
+  @JsonProperty("codes")
+  public List<CodeResponse> getCodes() {
+    return codes;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ExportCodeSystemResponse && equalTo((ExportCodeSystemResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ExportCodeSystemResponse other) {
+    return name.equals(other.name) && version.equals(other.version) && codes.equals(other.codes);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.name, this.version, this.codes);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static NameStage builder() {
+    return new Builder();
+  }
+
+  public interface NameStage {
+    /**
+     * <p>Code system name</p>
+     */
+    VersionStage name(@NotNull String name);
+
+    Builder from(ExportCodeSystemResponse other);
+  }
+
+  public interface VersionStage {
+    /**
+     * <p>Code system version</p>
+     */
+    _FinalStage version(@NotNull String version);
+  }
+
+  public interface _FinalStage {
+    ExportCodeSystemResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>All codes in the system</p>
+     */
+    _FinalStage codes(List<CodeResponse> codes);
+
+    _FinalStage addCodes(CodeResponse codes);
+
+    _FinalStage addAllCodes(List<CodeResponse> codes);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements NameStage, VersionStage, _FinalStage {
+
+    private String name;
+
+    private String version;
+
+    private List<CodeResponse> codes = new ArrayList<>();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(ExportCodeSystemResponse other) {
+      name(other.getName());
+      version(other.getVersion());
+      codes(other.getCodes());
+      return this;
     }
 
     /**
-     * @return Code system name
+     * <p>Code system name</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("name")
-    public String getName() {
-        return name;
+    @java.lang.Override
+    @JsonSetter("name")
+    public VersionStage name(@NotNull String name) {
+      this.name = Objects.requireNonNull(name, "name must not be null");
+      return this;
     }
 
     /**
-     * @return Code system version
+     * <p>Code system version</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("version")
-    public String getVersion() {
-        return version;
+    @java.lang.Override
+    @JsonSetter("version")
+    public _FinalStage version(@NotNull String version) {
+      this.version = Objects.requireNonNull(version, "version must not be null");
+      return this;
     }
 
     /**
-     * @return Upload format (always &quot;json&quot;)
+     * <p>All codes in the system</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("format")
-    public String getFormat() {
-        return "json";
+    @java.lang.Override
+    public _FinalStage addAllCodes(List<CodeResponse> codes) {
+      if (codes != null) {
+        this.codes.addAll(codes);
+      }
+      return this;
     }
 
     /**
-     * @return All codes in the system
+     * <p>All codes in the system</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("codes")
-    public List<CodeResponse> getCodes() {
-        return codes;
+    @java.lang.Override
+    public _FinalStage addCodes(CodeResponse codes) {
+      this.codes.add(codes);
+      return this;
+    }
+
+    /**
+     * <p>All codes in the system</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "codes", nulls = Nulls.SKIP)
+    public _FinalStage codes(List<CodeResponse> codes) {
+      this.codes.clear();
+      if (codes != null) {
+        this.codes.addAll(codes);
+      }
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ExportCodeSystemResponse && equalTo((ExportCodeSystemResponse) other);
+    public ExportCodeSystemResponse build() {
+      return new ExportCodeSystemResponse(name, version, codes, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(ExportCodeSystemResponse other) {
-        return name.equals(other.name) && version.equals(other.version) && codes.equals(other.codes);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("version") ||
+        key.equalsIgnoreCase("format") ||
+        key.equalsIgnoreCase("codes")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.name, this.version, this.codes);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static NameStage builder() {
-        return new Builder();
-    }
-
-    public interface NameStage {
-        /**
-         * <p>Code system name</p>
-         */
-        VersionStage name(@NotNull String name);
-
-        Builder from(ExportCodeSystemResponse other);
-    }
-
-    public interface VersionStage {
-        /**
-         * <p>Code system version</p>
-         */
-        _FinalStage version(@NotNull String version);
-    }
-
-    public interface _FinalStage {
-        ExportCodeSystemResponse build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>All codes in the system</p>
-         */
-        _FinalStage codes(List<CodeResponse> codes);
-
-        _FinalStage addCodes(CodeResponse codes);
-
-        _FinalStage addAllCodes(List<CodeResponse> codes);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements NameStage, VersionStage, _FinalStage {
-        private String name;
-
-        private String version;
-
-        private List<CodeResponse> codes = new ArrayList<>();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(ExportCodeSystemResponse other) {
-            name(other.getName());
-            version(other.getVersion());
-            codes(other.getCodes());
-            return this;
-        }
-
-        /**
-         * <p>Code system name</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("name")
-        public VersionStage name(@NotNull String name) {
-            this.name = Objects.requireNonNull(name, "name must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Code system version</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("version")
-        public _FinalStage version(@NotNull String version) {
-            this.version = Objects.requireNonNull(version, "version must not be null");
-            return this;
-        }
-
-        /**
-         * <p>All codes in the system</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addAllCodes(List<CodeResponse> codes) {
-            if (codes != null) {
-                this.codes.addAll(codes);
-            }
-            return this;
-        }
-
-        /**
-         * <p>All codes in the system</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addCodes(CodeResponse codes) {
-            this.codes.add(codes);
-            return this;
-        }
-
-        /**
-         * <p>All codes in the system</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "codes", nulls = Nulls.SKIP)
-        public _FinalStage codes(List<CodeResponse> codes) {
-            this.codes.clear();
-            if (codes != null) {
-                this.codes.addAll(codes);
-            }
-            return this;
-        }
-
-        @java.lang.Override
-        public ExportCodeSystemResponse build() {
-            return new ExportCodeSystemResponse(name, version, codes, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

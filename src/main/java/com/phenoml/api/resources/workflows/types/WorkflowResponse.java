@@ -21,309 +21,332 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = WorkflowResponse.Builder.class)
 public final class WorkflowResponse {
-    private final Optional<String> id;
 
-    private final Optional<String> name;
+  private final Optional<String> id;
 
-    private final Optional<String> workflowInstructions;
+  private final Optional<String> name;
 
-    private final Optional<Map<String, Object>> sampleData;
+  private final Optional<String> workflowInstructions;
 
-    private final Optional<WorkflowConfig> config;
+  private final Optional<Map<String, Object>> sampleData;
 
-    private final Optional<WorkflowResponseGraph> graph;
+  private final Optional<WorkflowConfig> config;
 
-    private final Optional<OffsetDateTime> createdAt;
+  private final Optional<WorkflowResponseGraph> graph;
 
-    private final Optional<OffsetDateTime> updatedAt;
+  private final Optional<OffsetDateTime> createdAt;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<OffsetDateTime> updatedAt;
 
-    private WorkflowResponse(
-            Optional<String> id,
-            Optional<String> name,
-            Optional<String> workflowInstructions,
-            Optional<Map<String, Object>> sampleData,
-            Optional<WorkflowConfig> config,
-            Optional<WorkflowResponseGraph> graph,
-            Optional<OffsetDateTime> createdAt,
-            Optional<OffsetDateTime> updatedAt,
-            Map<String, Object> additionalProperties) {
-        this.id = id;
-        this.name = name;
-        this.workflowInstructions = workflowInstructions;
-        this.sampleData = sampleData;
-        this.config = config;
-        this.graph = graph;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private WorkflowResponse(
+    Optional<String> id,
+    Optional<String> name,
+    Optional<String> workflowInstructions,
+    Optional<Map<String, Object>> sampleData,
+    Optional<WorkflowConfig> config,
+    Optional<WorkflowResponseGraph> graph,
+    Optional<OffsetDateTime> createdAt,
+    Optional<OffsetDateTime> updatedAt,
+    Map<String, Object> additionalProperties
+  ) {
+    this.id = id;
+    this.name = name;
+    this.workflowInstructions = workflowInstructions;
+    this.sampleData = sampleData;
+    this.config = config;
+    this.graph = graph;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Unique identifier for the workflow
+   */
+  @JsonProperty("id")
+  public Optional<String> getId() {
+    return id;
+  }
+
+  /**
+   * @return Human-readable name for the workflow
+   */
+  @JsonProperty("name")
+  public Optional<String> getName() {
+    return name;
+  }
+
+  /**
+   * @return Natural language instructions that define the workflow logic
+   */
+  @JsonProperty("workflow_instructions")
+  public Optional<String> getWorkflowInstructions() {
+    return workflowInstructions;
+  }
+
+  /**
+   * @return Sample data used for workflow graph generation
+   */
+  @JsonProperty("sample_data")
+  public Optional<Map<String, Object>> getSampleData() {
+    return sampleData;
+  }
+
+  @JsonProperty("config")
+  public Optional<WorkflowConfig> getConfig() {
+    return config;
+  }
+
+  @JsonProperty("graph")
+  public Optional<WorkflowResponseGraph> getGraph() {
+    return graph;
+  }
+
+  /**
+   * @return Timestamp when the workflow was created
+   */
+  @JsonProperty("created_at")
+  public Optional<OffsetDateTime> getCreatedAt() {
+    return createdAt;
+  }
+
+  /**
+   * @return Timestamp when the workflow was last updated
+   */
+  @JsonProperty("updated_at")
+  public Optional<OffsetDateTime> getUpdatedAt() {
+    return updatedAt;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof WorkflowResponse && equalTo((WorkflowResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(WorkflowResponse other) {
+    return (
+      id.equals(other.id) &&
+      name.equals(other.name) &&
+      workflowInstructions.equals(other.workflowInstructions) &&
+      sampleData.equals(other.sampleData) &&
+      config.equals(other.config) &&
+      graph.equals(other.graph) &&
+      createdAt.equals(other.createdAt) &&
+      updatedAt.equals(other.updatedAt)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.id,
+      this.name,
+      this.workflowInstructions,
+      this.sampleData,
+      this.config,
+      this.graph,
+      this.createdAt,
+      this.updatedAt
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> id = Optional.empty();
+
+    private Optional<String> name = Optional.empty();
+
+    private Optional<String> workflowInstructions = Optional.empty();
+
+    private Optional<Map<String, Object>> sampleData = Optional.empty();
+
+    private Optional<WorkflowConfig> config = Optional.empty();
+
+    private Optional<WorkflowResponseGraph> graph = Optional.empty();
+
+    private Optional<OffsetDateTime> createdAt = Optional.empty();
+
+    private Optional<OffsetDateTime> updatedAt = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(WorkflowResponse other) {
+      id(other.getId());
+      name(other.getName());
+      workflowInstructions(other.getWorkflowInstructions());
+      sampleData(other.getSampleData());
+      config(other.getConfig());
+      graph(other.getGraph());
+      createdAt(other.getCreatedAt());
+      updatedAt(other.getUpdatedAt());
+      return this;
     }
 
     /**
-     * @return Unique identifier for the workflow
+     * <p>Unique identifier for the workflow</p>
      */
-    @JsonProperty("id")
-    public Optional<String> getId() {
-        return id;
+    @JsonSetter(value = "id", nulls = Nulls.SKIP)
+    public Builder id(Optional<String> id) {
+      this.id = id;
+      return this;
+    }
+
+    public Builder id(String id) {
+      this.id = Optional.ofNullable(id);
+      return this;
     }
 
     /**
-     * @return Human-readable name for the workflow
+     * <p>Human-readable name for the workflow</p>
      */
-    @JsonProperty("name")
-    public Optional<String> getName() {
-        return name;
+    @JsonSetter(value = "name", nulls = Nulls.SKIP)
+    public Builder name(Optional<String> name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.name = Optional.ofNullable(name);
+      return this;
     }
 
     /**
-     * @return Natural language instructions that define the workflow logic
+     * <p>Natural language instructions that define the workflow logic</p>
      */
-    @JsonProperty("workflow_instructions")
-    public Optional<String> getWorkflowInstructions() {
-        return workflowInstructions;
+    @JsonSetter(value = "workflow_instructions", nulls = Nulls.SKIP)
+    public Builder workflowInstructions(Optional<String> workflowInstructions) {
+      this.workflowInstructions = workflowInstructions;
+      return this;
+    }
+
+    public Builder workflowInstructions(String workflowInstructions) {
+      this.workflowInstructions = Optional.ofNullable(workflowInstructions);
+      return this;
     }
 
     /**
-     * @return Sample data used for workflow graph generation
+     * <p>Sample data used for workflow graph generation</p>
      */
-    @JsonProperty("sample_data")
-    public Optional<Map<String, Object>> getSampleData() {
-        return sampleData;
+    @JsonSetter(value = "sample_data", nulls = Nulls.SKIP)
+    public Builder sampleData(Optional<Map<String, Object>> sampleData) {
+      this.sampleData = sampleData;
+      return this;
     }
 
-    @JsonProperty("config")
-    public Optional<WorkflowConfig> getConfig() {
-        return config;
+    public Builder sampleData(Map<String, Object> sampleData) {
+      this.sampleData = Optional.ofNullable(sampleData);
+      return this;
     }
 
-    @JsonProperty("graph")
-    public Optional<WorkflowResponseGraph> getGraph() {
-        return graph;
+    @JsonSetter(value = "config", nulls = Nulls.SKIP)
+    public Builder config(Optional<WorkflowConfig> config) {
+      this.config = config;
+      return this;
+    }
+
+    public Builder config(WorkflowConfig config) {
+      this.config = Optional.ofNullable(config);
+      return this;
+    }
+
+    @JsonSetter(value = "graph", nulls = Nulls.SKIP)
+    public Builder graph(Optional<WorkflowResponseGraph> graph) {
+      this.graph = graph;
+      return this;
+    }
+
+    public Builder graph(WorkflowResponseGraph graph) {
+      this.graph = Optional.ofNullable(graph);
+      return this;
     }
 
     /**
-     * @return Timestamp when the workflow was created
+     * <p>Timestamp when the workflow was created</p>
      */
-    @JsonProperty("created_at")
-    public Optional<OffsetDateTime> getCreatedAt() {
-        return createdAt;
+    @JsonSetter(value = "created_at", nulls = Nulls.SKIP)
+    public Builder createdAt(Optional<OffsetDateTime> createdAt) {
+      this.createdAt = createdAt;
+      return this;
+    }
+
+    public Builder createdAt(OffsetDateTime createdAt) {
+      this.createdAt = Optional.ofNullable(createdAt);
+      return this;
     }
 
     /**
-     * @return Timestamp when the workflow was last updated
+     * <p>Timestamp when the workflow was last updated</p>
      */
-    @JsonProperty("updated_at")
-    public Optional<OffsetDateTime> getUpdatedAt() {
-        return updatedAt;
+    @JsonSetter(value = "updated_at", nulls = Nulls.SKIP)
+    public Builder updatedAt(Optional<OffsetDateTime> updatedAt) {
+      this.updatedAt = updatedAt;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof WorkflowResponse && equalTo((WorkflowResponse) other);
+    public Builder updatedAt(OffsetDateTime updatedAt) {
+      this.updatedAt = Optional.ofNullable(updatedAt);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public WorkflowResponse build() {
+      return new WorkflowResponse(
+        id,
+        name,
+        workflowInstructions,
+        sampleData,
+        config,
+        graph,
+        createdAt,
+        updatedAt,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(WorkflowResponse other) {
-        return id.equals(other.id)
-                && name.equals(other.name)
-                && workflowInstructions.equals(other.workflowInstructions)
-                && sampleData.equals(other.sampleData)
-                && config.equals(other.config)
-                && graph.equals(other.graph)
-                && createdAt.equals(other.createdAt)
-                && updatedAt.equals(other.updatedAt);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("id") ||
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("workflow_instructions") ||
+        key.equalsIgnoreCase("sample_data") ||
+        key.equalsIgnoreCase("config") ||
+        key.equalsIgnoreCase("graph") ||
+        key.equalsIgnoreCase("created_at") ||
+        key.equalsIgnoreCase("updated_at")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.id,
-                this.name,
-                this.workflowInstructions,
-                this.sampleData,
-                this.config,
-                this.graph,
-                this.createdAt,
-                this.updatedAt);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> id = Optional.empty();
-
-        private Optional<String> name = Optional.empty();
-
-        private Optional<String> workflowInstructions = Optional.empty();
-
-        private Optional<Map<String, Object>> sampleData = Optional.empty();
-
-        private Optional<WorkflowConfig> config = Optional.empty();
-
-        private Optional<WorkflowResponseGraph> graph = Optional.empty();
-
-        private Optional<OffsetDateTime> createdAt = Optional.empty();
-
-        private Optional<OffsetDateTime> updatedAt = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(WorkflowResponse other) {
-            id(other.getId());
-            name(other.getName());
-            workflowInstructions(other.getWorkflowInstructions());
-            sampleData(other.getSampleData());
-            config(other.getConfig());
-            graph(other.getGraph());
-            createdAt(other.getCreatedAt());
-            updatedAt(other.getUpdatedAt());
-            return this;
-        }
-
-        /**
-         * <p>Unique identifier for the workflow</p>
-         */
-        @JsonSetter(value = "id", nulls = Nulls.SKIP)
-        public Builder id(Optional<String> id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder id(String id) {
-            this.id = Optional.ofNullable(id);
-            return this;
-        }
-
-        /**
-         * <p>Human-readable name for the workflow</p>
-         */
-        @JsonSetter(value = "name", nulls = Nulls.SKIP)
-        public Builder name(Optional<String> name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = Optional.ofNullable(name);
-            return this;
-        }
-
-        /**
-         * <p>Natural language instructions that define the workflow logic</p>
-         */
-        @JsonSetter(value = "workflow_instructions", nulls = Nulls.SKIP)
-        public Builder workflowInstructions(Optional<String> workflowInstructions) {
-            this.workflowInstructions = workflowInstructions;
-            return this;
-        }
-
-        public Builder workflowInstructions(String workflowInstructions) {
-            this.workflowInstructions = Optional.ofNullable(workflowInstructions);
-            return this;
-        }
-
-        /**
-         * <p>Sample data used for workflow graph generation</p>
-         */
-        @JsonSetter(value = "sample_data", nulls = Nulls.SKIP)
-        public Builder sampleData(Optional<Map<String, Object>> sampleData) {
-            this.sampleData = sampleData;
-            return this;
-        }
-
-        public Builder sampleData(Map<String, Object> sampleData) {
-            this.sampleData = Optional.ofNullable(sampleData);
-            return this;
-        }
-
-        @JsonSetter(value = "config", nulls = Nulls.SKIP)
-        public Builder config(Optional<WorkflowConfig> config) {
-            this.config = config;
-            return this;
-        }
-
-        public Builder config(WorkflowConfig config) {
-            this.config = Optional.ofNullable(config);
-            return this;
-        }
-
-        @JsonSetter(value = "graph", nulls = Nulls.SKIP)
-        public Builder graph(Optional<WorkflowResponseGraph> graph) {
-            this.graph = graph;
-            return this;
-        }
-
-        public Builder graph(WorkflowResponseGraph graph) {
-            this.graph = Optional.ofNullable(graph);
-            return this;
-        }
-
-        /**
-         * <p>Timestamp when the workflow was created</p>
-         */
-        @JsonSetter(value = "created_at", nulls = Nulls.SKIP)
-        public Builder createdAt(Optional<OffsetDateTime> createdAt) {
-            this.createdAt = createdAt;
-            return this;
-        }
-
-        public Builder createdAt(OffsetDateTime createdAt) {
-            this.createdAt = Optional.ofNullable(createdAt);
-            return this;
-        }
-
-        /**
-         * <p>Timestamp when the workflow was last updated</p>
-         */
-        @JsonSetter(value = "updated_at", nulls = Nulls.SKIP)
-        public Builder updatedAt(Optional<OffsetDateTime> updatedAt) {
-            this.updatedAt = updatedAt;
-            return this;
-        }
-
-        public Builder updatedAt(OffsetDateTime updatedAt) {
-            this.updatedAt = Optional.ofNullable(updatedAt);
-            return this;
-        }
-
-        public WorkflowResponse build() {
-            return new WorkflowResponse(
-                    id,
-                    name,
-                    workflowInstructions,
-                    sampleData,
-                    config,
-                    graph,
-                    createdAt,
-                    updatedAt,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

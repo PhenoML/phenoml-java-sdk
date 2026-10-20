@@ -22,134 +22,152 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PromptsListResponse.Builder.class)
 public final class PromptsListResponse {
-    private final Optional<Boolean> success;
 
-    private final Optional<String> message;
+  private final Optional<Boolean> success;
 
-    private final Optional<List<PromptTemplate>> prompts;
+  private final Optional<String> message;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<PromptTemplate>> prompts;
 
-    private PromptsListResponse(
-            Optional<Boolean> success,
-            Optional<String> message,
-            Optional<List<PromptTemplate>> prompts,
-            Map<String, Object> additionalProperties) {
-        this.success = success;
-        this.message = message;
-        this.prompts = prompts;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private PromptsListResponse(
+    Optional<Boolean> success,
+    Optional<String> message,
+    Optional<List<PromptTemplate>> prompts,
+    Map<String, Object> additionalProperties
+  ) {
+    this.success = success;
+    this.message = message;
+    this.prompts = prompts;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("success")
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  @JsonProperty("message")
+  public Optional<String> getMessage() {
+    return message;
+  }
+
+  @JsonProperty("prompts")
+  public Optional<List<PromptTemplate>> getPrompts() {
+    return prompts;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof PromptsListResponse && equalTo((PromptsListResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(PromptsListResponse other) {
+    return (
+      success.equals(other.success) &&
+      message.equals(other.message) &&
+      prompts.equals(other.prompts)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.success, this.message, this.prompts);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<String> message = Optional.empty();
+
+    private Optional<List<PromptTemplate>> prompts = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(PromptsListResponse other) {
+      success(other.getSuccess());
+      message(other.getMessage());
+      prompts(other.getPrompts());
+      return this;
     }
 
-    @JsonProperty("success")
-    public Optional<Boolean> getSuccess() {
-        return success;
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
     }
 
-    @JsonProperty("message")
-    public Optional<String> getMessage() {
-        return message;
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
     }
 
-    @JsonProperty("prompts")
-    public Optional<List<PromptTemplate>> getPrompts() {
-        return prompts;
+    @JsonSetter(value = "message", nulls = Nulls.SKIP)
+    public Builder message(Optional<String> message) {
+      this.message = message;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof PromptsListResponse && equalTo((PromptsListResponse) other);
+    public Builder message(String message) {
+      this.message = Optional.ofNullable(message);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    @JsonSetter(value = "prompts", nulls = Nulls.SKIP)
+    public Builder prompts(Optional<List<PromptTemplate>> prompts) {
+      this.prompts = prompts;
+      return this;
     }
 
-    private boolean equalTo(PromptsListResponse other) {
-        return success.equals(other.success) && message.equals(other.message) && prompts.equals(other.prompts);
+    public Builder prompts(List<PromptTemplate> prompts) {
+      this.prompts = Optional.ofNullable(prompts);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.success, this.message, this.prompts);
+    public PromptsListResponse build() {
+      return new PromptsListResponse(success, message, prompts, additionalProperties);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("success") ||
+        key.equalsIgnoreCase("message") ||
+        key.equalsIgnoreCase("prompts")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<String> message = Optional.empty();
-
-        private Optional<List<PromptTemplate>> prompts = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(PromptsListResponse other) {
-            success(other.getSuccess());
-            message(other.getMessage());
-            prompts(other.getPrompts());
-            return this;
-        }
-
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        @JsonSetter(value = "message", nulls = Nulls.SKIP)
-        public Builder message(Optional<String> message) {
-            this.message = message;
-            return this;
-        }
-
-        public Builder message(String message) {
-            this.message = Optional.ofNullable(message);
-            return this;
-        }
-
-        @JsonSetter(value = "prompts", nulls = Nulls.SKIP)
-        public Builder prompts(Optional<List<PromptTemplate>> prompts) {
-            this.prompts = prompts;
-            return this;
-        }
-
-        public Builder prompts(List<PromptTemplate> prompts) {
-            this.prompts = Optional.ofNullable(prompts);
-            return this;
-        }
-
-        public PromptsListResponse build() {
-            return new PromptsListResponse(success, message, prompts, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

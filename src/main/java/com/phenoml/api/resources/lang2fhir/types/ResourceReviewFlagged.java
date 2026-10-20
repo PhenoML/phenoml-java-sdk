@@ -21,178 +21,201 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ResourceReviewFlagged.Builder.class)
 public final class ResourceReviewFlagged {
-    private final Optional<String> tempId;
 
-    private final Optional<String> resourceType;
+  private final Optional<String> tempId;
 
-    private final Optional<Map<String, Object>> resource;
+  private final Optional<String> resourceType;
 
-    private final Optional<List<ResourceReviewFinding>> findings;
+  private final Optional<Map<String, Object>> resource;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<ResourceReviewFinding>> findings;
 
-    private ResourceReviewFlagged(
-            Optional<String> tempId,
-            Optional<String> resourceType,
-            Optional<Map<String, Object>> resource,
-            Optional<List<ResourceReviewFinding>> findings,
-            Map<String, Object> additionalProperties) {
-        this.tempId = tempId;
-        this.resourceType = resourceType;
-        this.resource = resource;
-        this.findings = findings;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ResourceReviewFlagged(
+    Optional<String> tempId,
+    Optional<String> resourceType,
+    Optional<Map<String, Object>> resource,
+    Optional<List<ResourceReviewFinding>> findings,
+    Map<String, Object> additionalProperties
+  ) {
+    this.tempId = tempId;
+    this.resourceType = resourceType;
+    this.resource = resource;
+    this.findings = findings;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return The urn:uuid of the flagged resource (its former bundle fullUrl).
+   */
+  @JsonProperty("tempId")
+  public Optional<String> getTempId() {
+    return tempId;
+  }
+
+  @JsonProperty("resourceType")
+  public Optional<String> getResourceType() {
+    return resourceType;
+  }
+
+  /**
+   * @return The full generated FHIR resource that was pulled from the bundle.
+   */
+  @JsonProperty("resource")
+  public Optional<Map<String, Object>> getResource() {
+    return resource;
+  }
+
+  /**
+   * @return The findings that caused the resource to be quarantined.
+   */
+  @JsonProperty("findings")
+  public Optional<List<ResourceReviewFinding>> getFindings() {
+    return findings;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ResourceReviewFlagged && equalTo((ResourceReviewFlagged) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ResourceReviewFlagged other) {
+    return (
+      tempId.equals(other.tempId) &&
+      resourceType.equals(other.resourceType) &&
+      resource.equals(other.resource) &&
+      findings.equals(other.findings)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.tempId, this.resourceType, this.resource, this.findings);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> tempId = Optional.empty();
+
+    private Optional<String> resourceType = Optional.empty();
+
+    private Optional<Map<String, Object>> resource = Optional.empty();
+
+    private Optional<List<ResourceReviewFinding>> findings = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ResourceReviewFlagged other) {
+      tempId(other.getTempId());
+      resourceType(other.getResourceType());
+      resource(other.getResource());
+      findings(other.getFindings());
+      return this;
     }
 
     /**
-     * @return The urn:uuid of the flagged resource (its former bundle fullUrl).
+     * <p>The urn:uuid of the flagged resource (its former bundle fullUrl).</p>
      */
-    @JsonProperty("tempId")
-    public Optional<String> getTempId() {
-        return tempId;
+    @JsonSetter(value = "tempId", nulls = Nulls.SKIP)
+    public Builder tempId(Optional<String> tempId) {
+      this.tempId = tempId;
+      return this;
     }
 
-    @JsonProperty("resourceType")
-    public Optional<String> getResourceType() {
-        return resourceType;
+    public Builder tempId(String tempId) {
+      this.tempId = Optional.ofNullable(tempId);
+      return this;
+    }
+
+    @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
+    public Builder resourceType(Optional<String> resourceType) {
+      this.resourceType = resourceType;
+      return this;
+    }
+
+    public Builder resourceType(String resourceType) {
+      this.resourceType = Optional.ofNullable(resourceType);
+      return this;
     }
 
     /**
-     * @return The full generated FHIR resource that was pulled from the bundle.
+     * <p>The full generated FHIR resource that was pulled from the bundle.</p>
      */
-    @JsonProperty("resource")
-    public Optional<Map<String, Object>> getResource() {
-        return resource;
+    @JsonSetter(value = "resource", nulls = Nulls.SKIP)
+    public Builder resource(Optional<Map<String, Object>> resource) {
+      this.resource = resource;
+      return this;
+    }
+
+    public Builder resource(Map<String, Object> resource) {
+      this.resource = Optional.ofNullable(resource);
+      return this;
     }
 
     /**
-     * @return The findings that caused the resource to be quarantined.
+     * <p>The findings that caused the resource to be quarantined.</p>
      */
-    @JsonProperty("findings")
-    public Optional<List<ResourceReviewFinding>> getFindings() {
-        return findings;
+    @JsonSetter(value = "findings", nulls = Nulls.SKIP)
+    public Builder findings(Optional<List<ResourceReviewFinding>> findings) {
+      this.findings = findings;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ResourceReviewFlagged && equalTo((ResourceReviewFlagged) other);
+    public Builder findings(List<ResourceReviewFinding> findings) {
+      this.findings = Optional.ofNullable(findings);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ResourceReviewFlagged build() {
+      return new ResourceReviewFlagged(
+        tempId,
+        resourceType,
+        resource,
+        findings,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(ResourceReviewFlagged other) {
-        return tempId.equals(other.tempId)
-                && resourceType.equals(other.resourceType)
-                && resource.equals(other.resource)
-                && findings.equals(other.findings);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("tempId") ||
+        key.equalsIgnoreCase("resourceType") ||
+        key.equalsIgnoreCase("resource") ||
+        key.equalsIgnoreCase("findings")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.tempId, this.resourceType, this.resource, this.findings);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> tempId = Optional.empty();
-
-        private Optional<String> resourceType = Optional.empty();
-
-        private Optional<Map<String, Object>> resource = Optional.empty();
-
-        private Optional<List<ResourceReviewFinding>> findings = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ResourceReviewFlagged other) {
-            tempId(other.getTempId());
-            resourceType(other.getResourceType());
-            resource(other.getResource());
-            findings(other.getFindings());
-            return this;
-        }
-
-        /**
-         * <p>The urn:uuid of the flagged resource (its former bundle fullUrl).</p>
-         */
-        @JsonSetter(value = "tempId", nulls = Nulls.SKIP)
-        public Builder tempId(Optional<String> tempId) {
-            this.tempId = tempId;
-            return this;
-        }
-
-        public Builder tempId(String tempId) {
-            this.tempId = Optional.ofNullable(tempId);
-            return this;
-        }
-
-        @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
-        public Builder resourceType(Optional<String> resourceType) {
-            this.resourceType = resourceType;
-            return this;
-        }
-
-        public Builder resourceType(String resourceType) {
-            this.resourceType = Optional.ofNullable(resourceType);
-            return this;
-        }
-
-        /**
-         * <p>The full generated FHIR resource that was pulled from the bundle.</p>
-         */
-        @JsonSetter(value = "resource", nulls = Nulls.SKIP)
-        public Builder resource(Optional<Map<String, Object>> resource) {
-            this.resource = resource;
-            return this;
-        }
-
-        public Builder resource(Map<String, Object> resource) {
-            this.resource = Optional.ofNullable(resource);
-            return this;
-        }
-
-        /**
-         * <p>The findings that caused the resource to be quarantined.</p>
-         */
-        @JsonSetter(value = "findings", nulls = Nulls.SKIP)
-        public Builder findings(Optional<List<ResourceReviewFinding>> findings) {
-            this.findings = findings;
-            return this;
-        }
-
-        public Builder findings(List<ResourceReviewFinding> findings) {
-            this.findings = Optional.ofNullable(findings);
-            return this;
-        }
-
-        public ResourceReviewFlagged build() {
-            return new ResourceReviewFlagged(tempId, resourceType, resource, findings, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

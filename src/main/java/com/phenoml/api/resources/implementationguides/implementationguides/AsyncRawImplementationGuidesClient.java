@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.implementationguides.implementationguides;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
@@ -38,646 +39,912 @@ import okhttp3.ResponseBody;
 import org.jetbrains.annotations.NotNull;
 
 public class AsyncRawImplementationGuidesClient {
-    protected final ClientOptions clientOptions;
 
-    public AsyncRawImplementationGuidesClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-    }
+  protected final ClientOptions clientOptions;
 
-    /**
-     * Returns every implementation guide on this instance — both guides that
-     * have stored metadata (a profile_context) and guides referenced by at
-     * least one custom profile — with the number of profiles in each.
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideListResponse>> list() {
-        return list(null);
-    }
+  public AsyncRawImplementationGuidesClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+  }
 
-    /**
-     * Returns every implementation guide on this instance — both guides that
-     * have stored metadata (a profile_context) and guides referenced by at
-     * least one custom profile — with the number of profiles in each.
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideListResponse>> list(
-            RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir/implementation-guides");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("GET", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideListResponse>> future =
-                new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-                    if (response.isSuccessful()) {
-                        future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, ImplementationGuideListResponse.class),
-                                response));
-                        return;
-                    }
-                    try {
-                        switch (response.code()) {
-                            case 401:
-                                future.completeExceptionally(new UnauthorizedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 403:
-                                future.completeExceptionally(new ForbiddenError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 500:
-                                future.completeExceptionally(new InternalServerError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
-                    }
-                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-                    future.completeExceptionally(new PhenomlClientApiException(
-                            "Error with status code " + response.code(), response.code(), errorBody, response));
-                    return;
-                } catch (JsonProcessingException e) {
-                    future.completeExceptionally(
-                            new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e));
-                } catch (IOException e) {
-                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
-                }
-            }
+  /**
+   * Returns every implementation guide on this instance — both guides that
+   * have stored metadata (a profile_context) and guides referenced by at
+   * least one custom profile — with the number of profiles in each.
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideListResponse>> list() {
+    return list(null);
+  }
 
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
-            }
+  /**
+   * Returns every implementation guide on this instance — both guides that
+   * have stored metadata (a profile_context) and guides referenced by at
+   * least one custom profile — with the number of profiles in each.
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideListResponse>> list(
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir/implementation-guides");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
         });
-        return future;
     }
-
-    /**
-     * Returns a single implementation guide, including its profile_context and
-     * the ids of the profiles that belong to it.
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideDetail>> get(String name) {
-        return get(name, null);
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("GET", null)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
     }
-
-    /**
-     * Returns a single implementation guide, including its profile_context and
-     * the ids of the profiles that belong to it.
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideDetail>> get(
-            String name, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir/implementation-guides")
-                .addPathSegment(name);
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("GET", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideDetail>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-                    if (response.isSuccessful()) {
-                        future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, ImplementationGuideDetail.class),
-                                response));
-                        return;
-                    }
-                    try {
-                        switch (response.code()) {
-                            case 400:
-                                future.completeExceptionally(new BadRequestError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 401:
-                                future.completeExceptionally(new UnauthorizedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 403:
-                                future.completeExceptionally(new ForbiddenError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 404:
-                                future.completeExceptionally(new NotFoundError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 500:
-                                future.completeExceptionally(new InternalServerError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
-                    }
-                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-                    future.completeExceptionally(new PhenomlClientApiException(
-                            "Error with status code " + response.code(), response.code(), errorBody, response));
-                    return;
-                } catch (JsonProcessingException e) {
-                    future.completeExceptionally(
-                            new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e));
-                } catch (IOException e) {
-                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
-                }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideListResponse>> future =
+      new CompletableFuture<>();
+    RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+    okhttpCall.enqueue(
+      new Callback() {
+        @Override
+        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+          try (ResponseBody responseBody = response.body()) {
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+              future.complete(
+                new PhenomlClientHttpResponse<>(
+                  ObjectMappers.JSON_MAPPER.readValue(
+                    responseBodyString,
+                    ImplementationGuideListResponse.class
+                  ),
+                  response
+                )
+              );
+              return;
             }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
+            try {
+              switch (response.code()) {
+                case 401:
+                  future.completeExceptionally(
+                    new UnauthorizedError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 403:
+                  future.completeExceptionally(
+                    new ForbiddenError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 500:
+                  future.completeExceptionally(
+                    new InternalServerError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+              }
+            } catch (JsonProcessingException ignored) {
+              // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            future.completeExceptionally(
+              new PhenomlClientApiException(
+                "Error with status code " + response.code(),
+                response.code(),
+                errorBody,
+                response
+              )
+            );
+            return;
+          } catch (JsonProcessingException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e)
+            );
+          } catch (IOException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Network error executing HTTP request", e)
+            );
+          }
+        }
+
+        @Override
+        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+          future.completeExceptionally(
+            new PhenomlClientException("Network error executing HTTP request", e)
+          );
+        }
+      }
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        okhttpCall.cancel();
+      }
+    });
+    return future;
+  }
+
+  /**
+   * Returns a single implementation guide, including its profile_context and
+   * the ids of the profiles that belong to it.
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideDetail>> get(String name) {
+    return get(name, null);
+  }
+
+  /**
+   * Returns a single implementation guide, including its profile_context and
+   * the ids of the profiles that belong to it.
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideDetail>> get(
+    String name,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir/implementation-guides")
+      .addPathSegment(name);
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
         });
-        return future;
     }
-
-    /**
-     * Sets (or clears, with an empty value) the natural-language profile_context
-     * for an implementation guide. The context is injected into the LLM during
-     * resource detection to help select the right profiles from this guide.
-     * It applies to every profile in the guide.
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> update(String name) {
-        return update(name, UpdateImplementationGuideRequest.builder().build());
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("GET", null)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
     }
-
-    /**
-     * Sets (or clears, with an empty value) the natural-language profile_context
-     * for an implementation guide. The context is injected into the LLM during
-     * resource detection to help select the right profiles from this guide.
-     * It applies to every profile in the guide.
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> update(
-            String name, RequestOptions requestOptions) {
-        return update(name, UpdateImplementationGuideRequest.builder().build(), requestOptions);
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
     }
-
-    /**
-     * Sets (or clears, with an empty value) the natural-language profile_context
-     * for an implementation guide. The context is injected into the LLM during
-     * resource detection to help select the right profiles from this guide.
-     * It applies to every profile in the guide.
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> update(
-            String name, UpdateImplementationGuideRequest request) {
-        return update(name, request, null);
-    }
-
-    /**
-     * Sets (or clears, with an empty value) the natural-language profile_context
-     * for an implementation guide. The context is injected into the LLM during
-     * resource detection to help select the right profiles from this guide.
-     * It applies to every profile in the guide.
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> update(
-            String name, UpdateImplementationGuideRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir/implementation-guides")
-                .addPathSegment(name);
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("PUT", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-                    if (response.isSuccessful()) {
-                        future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, ImplementationGuideSummary.class),
-                                response));
-                        return;
-                    }
-                    try {
-                        switch (response.code()) {
-                            case 400:
-                                future.completeExceptionally(new BadRequestError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 401:
-                                future.completeExceptionally(new UnauthorizedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 403:
-                                future.completeExceptionally(new ForbiddenError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 500:
-                                future.completeExceptionally(new InternalServerError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
-                    }
-                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-                    future.completeExceptionally(new PhenomlClientApiException(
-                            "Error with status code " + response.code(), response.code(), errorBody, response));
-                    return;
-                } catch (JsonProcessingException e) {
-                    future.completeExceptionally(
-                            new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e));
-                } catch (IOException e) {
-                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
-                }
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideDetail>> future =
+      new CompletableFuture<>();
+    RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+    okhttpCall.enqueue(
+      new Callback() {
+        @Override
+        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+          try (ResponseBody responseBody = response.body()) {
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+              future.complete(
+                new PhenomlClientHttpResponse<>(
+                  ObjectMappers.JSON_MAPPER.readValue(
+                    responseBodyString,
+                    ImplementationGuideDetail.class
+                  ),
+                  response
+                )
+              );
+              return;
             }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
+            try {
+              switch (response.code()) {
+                case 400:
+                  future.completeExceptionally(
+                    new BadRequestError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 401:
+                  future.completeExceptionally(
+                    new UnauthorizedError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 403:
+                  future.completeExceptionally(
+                    new ForbiddenError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 404:
+                  future.completeExceptionally(
+                    new NotFoundError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 500:
+                  future.completeExceptionally(
+                    new InternalServerError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+              }
+            } catch (JsonProcessingException ignored) {
+              // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            future.completeExceptionally(
+              new PhenomlClientApiException(
+                "Error with status code " + response.code(),
+                response.code(),
+                errorBody,
+                response
+              )
+            );
+            return;
+          } catch (JsonProcessingException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e)
+            );
+          } catch (IOException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Network error executing HTTP request", e)
+            );
+          }
+        }
+
+        @Override
+        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+          future.completeExceptionally(
+            new PhenomlClientException("Network error executing HTTP request", e)
+          );
+        }
+      }
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        okhttpCall.cancel();
+      }
+    });
+    return future;
+  }
+
+  /**
+   * Sets (or clears, with an empty value) the natural-language profile_context
+   * for an implementation guide. The context is injected into the LLM during
+   * resource detection to help select the right profiles from this guide.
+   * It applies to every profile in the guide.
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> update(
+    String name
+  ) {
+    return update(name, UpdateImplementationGuideRequest.builder().build());
+  }
+
+  /**
+   * Sets (or clears, with an empty value) the natural-language profile_context
+   * for an implementation guide. The context is injected into the LLM during
+   * resource detection to help select the right profiles from this guide.
+   * It applies to every profile in the guide.
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> update(
+    String name,
+    RequestOptions requestOptions
+  ) {
+    return update(name, UpdateImplementationGuideRequest.builder().build(), requestOptions);
+  }
+
+  /**
+   * Sets (or clears, with an empty value) the natural-language profile_context
+   * for an implementation guide. The context is injected into the LLM during
+   * resource detection to help select the right profiles from this guide.
+   * It applies to every profile in the guide.
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> update(
+    String name,
+    UpdateImplementationGuideRequest request
+  ) {
+    return update(name, request, null);
+  }
+
+  /**
+   * Sets (or clears, with an empty value) the natural-language profile_context
+   * for an implementation guide. The context is injected into the LLM during
+   * resource detection to help select the right profiles from this guide.
+   * It applies to every profile in the guide.
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> update(
+    String name,
+    UpdateImplementationGuideRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir/implementation-guides")
+      .addPathSegment(name);
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
         });
-        return future;
     }
-
-    /**
-     * Deletes the guide's metadata and all its canonical package versions.
-     * Custom profiles and their implementation-guide assignments are preserved.
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<Void>> delete(String name) {
-        return delete(name, null);
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
     }
-
-    /**
-     * Deletes the guide's metadata and all its canonical package versions.
-     * Custom profiles and their implementation-guide assignments are preserved.
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<Void>> delete(String name, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir/implementation-guides")
-                .addPathSegment(name);
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("DELETE", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        CompletableFuture<PhenomlClientHttpResponse<Void>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    if (response.isSuccessful()) {
-                        future.complete(new PhenomlClientHttpResponse<>(null, response));
-                        return;
-                    }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-                    try {
-                        switch (response.code()) {
-                            case 400:
-                                future.completeExceptionally(new BadRequestError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 401:
-                                future.completeExceptionally(new UnauthorizedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 403:
-                                future.completeExceptionally(new ForbiddenError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 404:
-                                future.completeExceptionally(new NotFoundError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 500:
-                                future.completeExceptionally(new InternalServerError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
-                    }
-                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-                    future.completeExceptionally(new PhenomlClientApiException(
-                            "Error with status code " + response.code(), response.code(), errorBody, response));
-                    return;
-                } catch (JsonProcessingException e) {
-                    future.completeExceptionally(
-                            new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e));
-                } catch (IOException e) {
-                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
-                }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("PUT", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> future =
+      new CompletableFuture<>();
+    RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+    okhttpCall.enqueue(
+      new Callback() {
+        @Override
+        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+          try (ResponseBody responseBody = response.body()) {
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+              future.complete(
+                new PhenomlClientHttpResponse<>(
+                  ObjectMappers.JSON_MAPPER.readValue(
+                    responseBodyString,
+                    ImplementationGuideSummary.class
+                  ),
+                  response
+                )
+              );
+              return;
             }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
+            try {
+              switch (response.code()) {
+                case 400:
+                  future.completeExceptionally(
+                    new BadRequestError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 401:
+                  future.completeExceptionally(
+                    new UnauthorizedError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 403:
+                  future.completeExceptionally(
+                    new ForbiddenError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 500:
+                  future.completeExceptionally(
+                    new InternalServerError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+              }
+            } catch (JsonProcessingException ignored) {
+              // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            future.completeExceptionally(
+              new PhenomlClientApiException(
+                "Error with status code " + response.code(),
+                response.code(),
+                errorBody,
+                response
+              )
+            );
+            return;
+          } catch (JsonProcessingException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e)
+            );
+          } catch (IOException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Network error executing HTTP request", e)
+            );
+          }
+        }
+
+        @Override
+        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+          future.completeExceptionally(
+            new PhenomlClientException("Network error executing HTTP request", e)
+          );
+        }
+      }
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        okhttpCall.cancel();
+      }
+    });
+    return future;
+  }
+
+  /**
+   * Deletes the guide's metadata and all its canonical package versions.
+   * Custom profiles and their implementation-guide assignments are preserved.
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<Void>> delete(String name) {
+    return delete(name, null);
+  }
+
+  /**
+   * Deletes the guide's metadata and all its canonical package versions.
+   * Custom profiles and their implementation-guide assignments are preserved.
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<Void>> delete(
+    String name,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir/implementation-guides")
+      .addPathSegment(name);
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
         });
-        return future;
     }
-
-    /**
-     * Publishes an exact package beneath this guide family. Each guide family
-     * supports one exact package version. Publishing another version returns
-     * <code>409 Conflict</code>.
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> createVersion(
-            String name, CreateCanonicalImplementationGuideRequest request) {
-        return createVersion(name, request, null);
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method(
+        "DELETE",
+        BodyProperties.toRequestBody(
+          requestOptions != null ? requestOptions.getBodyProperties() : null,
+          null
+        )
+      )
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
     }
-
-    /**
-     * Publishes an exact package beneath this guide family. Each guide family
-     * supports one exact package version. Publishing another version returns
-     * <code>409 Conflict</code>.
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> createVersion(
-            String name, CreateCanonicalImplementationGuideRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir/implementation-guides")
-                .addPathSegment(name)
-                .addPathSegments("versions");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> future =
-                new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-                    if (response.isSuccessful()) {
-                        future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, ImplementationGuideVersionDetail.class),
-                                response));
-                        return;
-                    }
-                    try {
-                        switch (response.code()) {
-                            case 400:
-                                future.completeExceptionally(new BadRequestError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 404:
-                                future.completeExceptionally(new NotFoundError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 409:
-                                future.completeExceptionally(new ConflictError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
-                    }
-                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-                    future.completeExceptionally(new PhenomlClientApiException(
-                            "Error with status code " + response.code(), response.code(), errorBody, response));
-                    return;
-                } catch (JsonProcessingException e) {
-                    future.completeExceptionally(
-                            new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e));
-                } catch (IOException e) {
-                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
-                }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    CompletableFuture<PhenomlClientHttpResponse<Void>> future = new CompletableFuture<>();
+    RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+    okhttpCall.enqueue(
+      new Callback() {
+        @Override
+        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+          try (ResponseBody responseBody = response.body()) {
+            if (response.isSuccessful()) {
+              future.complete(new PhenomlClientHttpResponse<>(null, response));
+              return;
             }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+              switch (response.code()) {
+                case 400:
+                  future.completeExceptionally(
+                    new BadRequestError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 401:
+                  future.completeExceptionally(
+                    new UnauthorizedError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 403:
+                  future.completeExceptionally(
+                    new ForbiddenError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 404:
+                  future.completeExceptionally(
+                    new NotFoundError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 500:
+                  future.completeExceptionally(
+                    new InternalServerError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+              }
+            } catch (JsonProcessingException ignored) {
+              // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            future.completeExceptionally(
+              new PhenomlClientApiException(
+                "Error with status code " + response.code(),
+                response.code(),
+                errorBody,
+                response
+              )
+            );
+            return;
+          } catch (JsonProcessingException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e)
+            );
+          } catch (IOException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Network error executing HTTP request", e)
+            );
+          }
+        }
+
+        @Override
+        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+          future.completeExceptionally(
+            new PhenomlClientException("Network error executing HTTP request", e)
+          );
+        }
+      }
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        okhttpCall.cancel();
+      }
+    });
+    return future;
+  }
+
+  /**
+   * Publishes an exact package beneath this guide family. Each guide family
+   * supports one exact package version. Publishing another version returns
+   * <code>409 Conflict</code>.
+   */
+  public CompletableFuture<
+    PhenomlClientHttpResponse<ImplementationGuideVersionDetail>
+  > createVersion(String name, CreateCanonicalImplementationGuideRequest request) {
+    return createVersion(name, request, null);
+  }
+
+  /**
+   * Publishes an exact package beneath this guide family. Each guide family
+   * supports one exact package version. Publishing another version returns
+   * <code>409 Conflict</code>.
+   */
+  public CompletableFuture<
+    PhenomlClientHttpResponse<ImplementationGuideVersionDetail>
+  > createVersion(
+    String name,
+    CreateCanonicalImplementationGuideRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir/implementation-guides")
+      .addPathSegment(name)
+      .addPathSegments("versions");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
         });
-        return future;
     }
-
-    public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> getVersion(
-            String name, String version) {
-        return getVersion(name, version, null);
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
     }
-
-    public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> getVersion(
-            String name, String version, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir/implementation-guides")
-                .addPathSegment(name)
-                .addPathSegments("versions")
-                .addPathSegment(version);
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("GET", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> future =
-                new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-                    if (response.isSuccessful()) {
-                        future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(
-                                        responseBodyString, ImplementationGuideVersionDetail.class),
-                                response));
-                        return;
-                    }
-                    try {
-                        switch (response.code()) {
-                            case 400:
-                                future.completeExceptionally(new BadRequestError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 404:
-                                future.completeExceptionally(new NotFoundError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
-                    }
-                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-                    future.completeExceptionally(new PhenomlClientApiException(
-                            "Error with status code " + response.code(), response.code(), errorBody, response));
-                    return;
-                } catch (JsonProcessingException e) {
-                    future.completeExceptionally(
-                            new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e));
-                } catch (IOException e) {
-                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
-                }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("POST", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> future =
+      new CompletableFuture<>();
+    RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+    okhttpCall.enqueue(
+      new Callback() {
+        @Override
+        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+          try (ResponseBody responseBody = response.body()) {
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+              future.complete(
+                new PhenomlClientHttpResponse<>(
+                  ObjectMappers.JSON_MAPPER.readValue(
+                    responseBodyString,
+                    ImplementationGuideVersionDetail.class
+                  ),
+                  response
+                )
+              );
+              return;
             }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
+            try {
+              switch (response.code()) {
+                case 400:
+                  future.completeExceptionally(
+                    new BadRequestError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 404:
+                  future.completeExceptionally(
+                    new NotFoundError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 409:
+                  future.completeExceptionally(
+                    new ConflictError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+              }
+            } catch (JsonProcessingException ignored) {
+              // unable to map error response, throwing generic error
             }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            future.completeExceptionally(
+              new PhenomlClientApiException(
+                "Error with status code " + response.code(),
+                response.code(),
+                errorBody,
+                response
+              )
+            );
+            return;
+          } catch (JsonProcessingException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e)
+            );
+          } catch (IOException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Network error executing HTTP request", e)
+            );
+          }
+        }
+
+        @Override
+        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+          future.completeExceptionally(
+            new PhenomlClientException("Network error executing HTTP request", e)
+          );
+        }
+      }
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        okhttpCall.cancel();
+      }
+    });
+    return future;
+  }
+
+  public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> getVersion(
+    String name,
+    String version
+  ) {
+    return getVersion(name, version, null);
+  }
+
+  public CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> getVersion(
+    String name,
+    String version,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir/implementation-guides")
+      .addPathSegment(name)
+      .addPathSegments("versions")
+      .addPathSegment(version);
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
         });
-        return future;
     }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("GET", null)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> future =
+      new CompletableFuture<>();
+    RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+    okhttpCall.enqueue(
+      new Callback() {
+        @Override
+        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+          try (ResponseBody responseBody = response.body()) {
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+              future.complete(
+                new PhenomlClientHttpResponse<>(
+                  ObjectMappers.JSON_MAPPER.readValue(
+                    responseBodyString,
+                    ImplementationGuideVersionDetail.class
+                  ),
+                  response
+                )
+              );
+              return;
+            }
+            try {
+              switch (response.code()) {
+                case 400:
+                  future.completeExceptionally(
+                    new BadRequestError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 404:
+                  future.completeExceptionally(
+                    new NotFoundError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+              }
+            } catch (JsonProcessingException ignored) {
+              // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            future.completeExceptionally(
+              new PhenomlClientApiException(
+                "Error with status code " + response.code(),
+                response.code(),
+                errorBody,
+                response
+              )
+            );
+            return;
+          } catch (JsonProcessingException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e)
+            );
+          } catch (IOException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Network error executing HTTP request", e)
+            );
+          }
+        }
+
+        @Override
+        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+          future.completeExceptionally(
+            new PhenomlClientException("Network error executing HTTP request", e)
+          );
+        }
+      }
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        okhttpCall.cancel();
+      }
+    });
+    return future;
+  }
 }

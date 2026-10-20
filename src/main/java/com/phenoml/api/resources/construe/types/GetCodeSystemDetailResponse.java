@@ -20,341 +20,379 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = GetCodeSystemDetailResponse.Builder.class)
 public final class GetCodeSystemDetailResponse {
-    private final String name;
 
-    private final String version;
+  private final String name;
 
-    private final int codeCount;
+  private final String version;
 
-    private final boolean builtin;
+  private final int codeCount;
 
-    private final GetCodeSystemDetailResponseStatus status;
+  private final boolean builtin;
 
-    private final OffsetDateTime createdAt;
+  private final GetCodeSystemDetailResponseStatus status;
 
-    private final OffsetDateTime updatedAt;
+  private final OffsetDateTime createdAt;
 
-    private final Map<String, Object> additionalProperties;
+  private final OffsetDateTime updatedAt;
 
-    private GetCodeSystemDetailResponse(
-            String name,
-            String version,
-            int codeCount,
-            boolean builtin,
-            GetCodeSystemDetailResponseStatus status,
-            OffsetDateTime createdAt,
-            OffsetDateTime updatedAt,
-            Map<String, Object> additionalProperties) {
-        this.name = name;
-        this.version = version;
-        this.codeCount = codeCount;
-        this.builtin = builtin;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
+  private GetCodeSystemDetailResponse(
+    String name,
+    String version,
+    int codeCount,
+    boolean builtin,
+    GetCodeSystemDetailResponseStatus status,
+    OffsetDateTime createdAt,
+    OffsetDateTime updatedAt,
+    Map<String, Object> additionalProperties
+  ) {
+    this.name = name;
+    this.version = version;
+    this.codeCount = codeCount;
+    this.builtin = builtin;
+    this.status = status;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Code system name
+   */
+  @JsonProperty("name")
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @return Code system version
+   */
+  @JsonProperty("version")
+  public String getVersion() {
+    return version;
+  }
+
+  /**
+   * @return Total number of codes in the system
+   */
+  @JsonProperty("code_count")
+  public int getCodeCount() {
+    return codeCount;
+  }
+
+  /**
+   * @return Whether this is a built-in system (vs custom uploaded)
+   */
+  @JsonProperty("builtin")
+  public boolean getBuiltin() {
+    return builtin;
+  }
+
+  /**
+   * @return Processing status of the code system.
+   * <ul>
+   * <li>&quot;processing&quot;: embeddings are being generated</li>
+   * <li>&quot;ready&quot;: code system is ready for use</li>
+   * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
+   * </ul>
+   */
+  @JsonProperty("status")
+  public GetCodeSystemDetailResponseStatus getStatus() {
+    return status;
+  }
+
+  /**
+   * @return When the code system was created
+   */
+  @JsonProperty("created_at")
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  /**
+   * @return When the code system was last updated
+   */
+  @JsonProperty("updated_at")
+  public OffsetDateTime getUpdatedAt() {
+    return updatedAt;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof GetCodeSystemDetailResponse && equalTo((GetCodeSystemDetailResponse) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(GetCodeSystemDetailResponse other) {
+    return (
+      name.equals(other.name) &&
+      version.equals(other.version) &&
+      codeCount == other.codeCount &&
+      builtin == other.builtin &&
+      status.equals(other.status) &&
+      createdAt.equals(other.createdAt) &&
+      updatedAt.equals(other.updatedAt)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.name,
+      this.version,
+      this.codeCount,
+      this.builtin,
+      this.status,
+      this.createdAt,
+      this.updatedAt
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static NameStage builder() {
+    return new Builder();
+  }
+
+  public interface NameStage {
     /**
-     * @return Code system name
+     * <p>Code system name</p>
      */
-    @JsonProperty("name")
-    public String getName() {
-        return name;
-    }
+    VersionStage name(@NotNull String name);
 
+    Builder from(GetCodeSystemDetailResponse other);
+  }
+
+  public interface VersionStage {
     /**
-     * @return Code system version
+     * <p>Code system version</p>
      */
-    @JsonProperty("version")
-    public String getVersion() {
-        return version;
-    }
+    CodeCountStage version(@NotNull String version);
+  }
 
+  public interface CodeCountStage {
     /**
-     * @return Total number of codes in the system
+     * <p>Total number of codes in the system</p>
      */
-    @JsonProperty("code_count")
-    public int getCodeCount() {
-        return codeCount;
-    }
+    BuiltinStage codeCount(int codeCount);
+  }
 
+  public interface BuiltinStage {
     /**
-     * @return Whether this is a built-in system (vs custom uploaded)
+     * <p>Whether this is a built-in system (vs custom uploaded)</p>
      */
-    @JsonProperty("builtin")
-    public boolean getBuiltin() {
-        return builtin;
-    }
+    StatusStage builtin(boolean builtin);
+  }
 
+  public interface StatusStage {
     /**
-     * @return Processing status of the code system.
+     * <p>Processing status of the code system.</p>
      * <ul>
      * <li>&quot;processing&quot;: embeddings are being generated</li>
      * <li>&quot;ready&quot;: code system is ready for use</li>
      * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
      * </ul>
      */
-    @JsonProperty("status")
-    public GetCodeSystemDetailResponseStatus getStatus() {
-        return status;
+    CreatedAtStage status(@NotNull GetCodeSystemDetailResponseStatus status);
+  }
+
+  public interface CreatedAtStage {
+    /**
+     * <p>When the code system was created</p>
+     */
+    UpdatedAtStage createdAt(@NotNull OffsetDateTime createdAt);
+  }
+
+  public interface UpdatedAtStage {
+    /**
+     * <p>When the code system was last updated</p>
+     */
+    _FinalStage updatedAt(@NotNull OffsetDateTime updatedAt);
+  }
+
+  public interface _FinalStage {
+    GetCodeSystemDetailResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements
+      NameStage,
+      VersionStage,
+      CodeCountStage,
+      BuiltinStage,
+      StatusStage,
+      CreatedAtStage,
+      UpdatedAtStage,
+      _FinalStage {
+
+    private String name;
+
+    private String version;
+
+    private int codeCount;
+
+    private boolean builtin;
+
+    private GetCodeSystemDetailResponseStatus status;
+
+    private OffsetDateTime createdAt;
+
+    private OffsetDateTime updatedAt;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(GetCodeSystemDetailResponse other) {
+      name(other.getName());
+      version(other.getVersion());
+      codeCount(other.getCodeCount());
+      builtin(other.getBuiltin());
+      status(other.getStatus());
+      createdAt(other.getCreatedAt());
+      updatedAt(other.getUpdatedAt());
+      return this;
     }
 
     /**
-     * @return When the code system was created
+     * <p>Code system name</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("created_at")
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
+    @java.lang.Override
+    @JsonSetter("name")
+    public VersionStage name(@NotNull String name) {
+      this.name = Objects.requireNonNull(name, "name must not be null");
+      return this;
     }
 
     /**
-     * @return When the code system was last updated
+     * <p>Code system version</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("updated_at")
-    public OffsetDateTime getUpdatedAt() {
-        return updatedAt;
+    @java.lang.Override
+    @JsonSetter("version")
+    public CodeCountStage version(@NotNull String version) {
+      this.version = Objects.requireNonNull(version, "version must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Total number of codes in the system</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("code_count")
+    public BuiltinStage codeCount(int codeCount) {
+      this.codeCount = codeCount;
+      return this;
+    }
+
+    /**
+     * <p>Whether this is a built-in system (vs custom uploaded)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("builtin")
+    public StatusStage builtin(boolean builtin) {
+      this.builtin = builtin;
+      return this;
+    }
+
+    /**
+     * <p>Processing status of the code system.</p>
+     * <ul>
+     * <li>&quot;processing&quot;: embeddings are being generated</li>
+     * <li>&quot;ready&quot;: code system is ready for use</li>
+     * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
+     * </ul>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("status")
+    public CreatedAtStage status(@NotNull GetCodeSystemDetailResponseStatus status) {
+      this.status = Objects.requireNonNull(status, "status must not be null");
+      return this;
+    }
+
+    /**
+     * <p>When the code system was created</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("created_at")
+    public UpdatedAtStage createdAt(@NotNull OffsetDateTime createdAt) {
+      this.createdAt = Objects.requireNonNull(createdAt, "createdAt must not be null");
+      return this;
+    }
+
+    /**
+     * <p>When the code system was last updated</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("updated_at")
+    public _FinalStage updatedAt(@NotNull OffsetDateTime updatedAt) {
+      this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof GetCodeSystemDetailResponse && equalTo((GetCodeSystemDetailResponse) other);
+    public GetCodeSystemDetailResponse build() {
+      return new GetCodeSystemDetailResponse(
+        name,
+        version,
+        codeCount,
+        builtin,
+        status,
+        createdAt,
+        updatedAt,
+        additionalProperties
+      );
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(GetCodeSystemDetailResponse other) {
-        return name.equals(other.name)
-                && version.equals(other.version)
-                && codeCount == other.codeCount
-                && builtin == other.builtin
-                && status.equals(other.status)
-                && createdAt.equals(other.createdAt)
-                && updatedAt.equals(other.updatedAt);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("version") ||
+        key.equalsIgnoreCase("code_count") ||
+        key.equalsIgnoreCase("builtin") ||
+        key.equalsIgnoreCase("status") ||
+        key.equalsIgnoreCase("created_at") ||
+        key.equalsIgnoreCase("updated_at")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.name, this.version, this.codeCount, this.builtin, this.status, this.createdAt, this.updatedAt);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static NameStage builder() {
-        return new Builder();
-    }
-
-    public interface NameStage {
-        /**
-         * <p>Code system name</p>
-         */
-        VersionStage name(@NotNull String name);
-
-        Builder from(GetCodeSystemDetailResponse other);
-    }
-
-    public interface VersionStage {
-        /**
-         * <p>Code system version</p>
-         */
-        CodeCountStage version(@NotNull String version);
-    }
-
-    public interface CodeCountStage {
-        /**
-         * <p>Total number of codes in the system</p>
-         */
-        BuiltinStage codeCount(int codeCount);
-    }
-
-    public interface BuiltinStage {
-        /**
-         * <p>Whether this is a built-in system (vs custom uploaded)</p>
-         */
-        StatusStage builtin(boolean builtin);
-    }
-
-    public interface StatusStage {
-        /**
-         * <p>Processing status of the code system.</p>
-         * <ul>
-         * <li>&quot;processing&quot;: embeddings are being generated</li>
-         * <li>&quot;ready&quot;: code system is ready for use</li>
-         * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
-         * </ul>
-         */
-        CreatedAtStage status(@NotNull GetCodeSystemDetailResponseStatus status);
-    }
-
-    public interface CreatedAtStage {
-        /**
-         * <p>When the code system was created</p>
-         */
-        UpdatedAtStage createdAt(@NotNull OffsetDateTime createdAt);
-    }
-
-    public interface UpdatedAtStage {
-        /**
-         * <p>When the code system was last updated</p>
-         */
-        _FinalStage updatedAt(@NotNull OffsetDateTime updatedAt);
-    }
-
-    public interface _FinalStage {
-        GetCodeSystemDetailResponse build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder
-            implements NameStage,
-                    VersionStage,
-                    CodeCountStage,
-                    BuiltinStage,
-                    StatusStage,
-                    CreatedAtStage,
-                    UpdatedAtStage,
-                    _FinalStage {
-        private String name;
-
-        private String version;
-
-        private int codeCount;
-
-        private boolean builtin;
-
-        private GetCodeSystemDetailResponseStatus status;
-
-        private OffsetDateTime createdAt;
-
-        private OffsetDateTime updatedAt;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(GetCodeSystemDetailResponse other) {
-            name(other.getName());
-            version(other.getVersion());
-            codeCount(other.getCodeCount());
-            builtin(other.getBuiltin());
-            status(other.getStatus());
-            createdAt(other.getCreatedAt());
-            updatedAt(other.getUpdatedAt());
-            return this;
-        }
-
-        /**
-         * <p>Code system name</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("name")
-        public VersionStage name(@NotNull String name) {
-            this.name = Objects.requireNonNull(name, "name must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Code system version</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("version")
-        public CodeCountStage version(@NotNull String version) {
-            this.version = Objects.requireNonNull(version, "version must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Total number of codes in the system</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("code_count")
-        public BuiltinStage codeCount(int codeCount) {
-            this.codeCount = codeCount;
-            return this;
-        }
-
-        /**
-         * <p>Whether this is a built-in system (vs custom uploaded)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("builtin")
-        public StatusStage builtin(boolean builtin) {
-            this.builtin = builtin;
-            return this;
-        }
-
-        /**
-         * <p>Processing status of the code system.</p>
-         * <ul>
-         * <li>&quot;processing&quot;: embeddings are being generated</li>
-         * <li>&quot;ready&quot;: code system is ready for use</li>
-         * <li>&quot;failed&quot;: processing failed (re-upload with replace=true to retry)</li>
-         * </ul>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("status")
-        public CreatedAtStage status(@NotNull GetCodeSystemDetailResponseStatus status) {
-            this.status = Objects.requireNonNull(status, "status must not be null");
-            return this;
-        }
-
-        /**
-         * <p>When the code system was created</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("created_at")
-        public UpdatedAtStage createdAt(@NotNull OffsetDateTime createdAt) {
-            this.createdAt = Objects.requireNonNull(createdAt, "createdAt must not be null");
-            return this;
-        }
-
-        /**
-         * <p>When the code system was last updated</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("updated_at")
-        public _FinalStage updatedAt(@NotNull OffsetDateTime updatedAt) {
-            this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public GetCodeSystemDetailResponse build() {
-            return new GetCodeSystemDetailResponse(
-                    name, version, codeCount, builtin, status, createdAt, updatedAt, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -14,94 +14,98 @@ import com.phenoml.api.resources.fhirprovider.types.FhirProviderResponse;
 import java.util.function.Supplier;
 
 public class FhirProviderClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawFhirProviderClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    protected final Supplier<AuthConfigClient> authConfigClient;
+  private final RawFhirProviderClient rawClient;
 
-    public FhirProviderClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawFhirProviderClient(clientOptions);
-        this.authConfigClient = Suppliers.memoize(() -> new AuthConfigClient(clientOptions));
-    }
+  protected final Supplier<AuthConfigClient> authConfigClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawFhirProviderClient withRawResponse() {
-        return this.rawClient;
-    }
+  public FhirProviderClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawFhirProviderClient(clientOptions);
+    this.authConfigClient = Suppliers.memoize(() -> new AuthConfigClient(clientOptions));
+  }
 
-    /**
-     * Creates a new FHIR provider configuration with authentication credentials.
-     * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
-     */
-    public FhirProviderResponse create(FhirProviderCreateRequest request) {
-        return this.rawClient.create(request).body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawFhirProviderClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Creates a new FHIR provider configuration with authentication credentials.
-     * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
-     */
-    public FhirProviderResponse create(FhirProviderCreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).body();
-    }
+  /**
+   * Creates a new FHIR provider configuration with authentication credentials.
+   * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
+   */
+  public FhirProviderResponse create(FhirProviderCreateRequest request) {
+    return this.rawClient.create(request).body();
+  }
 
-    /**
-     * Retrieves a list of all active FHIR providers for the authenticated user.
-     * <p>On shared instances, only sandbox providers are returned.
-     * Sandbox providers return FhirProviderSandboxInfo.</p>
-     */
-    public FhirProviderListResponse list() {
-        return this.rawClient.list().body();
-    }
+  /**
+   * Creates a new FHIR provider configuration with authentication credentials.
+   * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
+   */
+  public FhirProviderResponse create(
+    FhirProviderCreateRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.create(request, requestOptions).body();
+  }
 
-    /**
-     * Retrieves a list of all active FHIR providers for the authenticated user.
-     * <p>On shared instances, only sandbox providers are returned.
-     * Sandbox providers return FhirProviderSandboxInfo.</p>
-     */
-    public FhirProviderListResponse list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).body();
-    }
+  /**
+   * Retrieves a list of all active FHIR providers for the authenticated user.
+   * <p>On shared instances, only sandbox providers are returned.
+   * Sandbox providers return FhirProviderSandboxInfo.</p>
+   */
+  public FhirProviderListResponse list() {
+    return this.rawClient.list().body();
+  }
 
-    /**
-     * Retrieves a specific FHIR provider configuration by its ID.
-     * <p>Sandbox providers return FhirProviderSandboxInfo.
-     * On shared instances, only sandbox providers can be accessed.</p>
-     */
-    public FhirProviderResponse get(String fhirProviderId) {
-        return this.rawClient.get(fhirProviderId).body();
-    }
+  /**
+   * Retrieves a list of all active FHIR providers for the authenticated user.
+   * <p>On shared instances, only sandbox providers are returned.
+   * Sandbox providers return FhirProviderSandboxInfo.</p>
+   */
+  public FhirProviderListResponse list(RequestOptions requestOptions) {
+    return this.rawClient.list(requestOptions).body();
+  }
 
-    /**
-     * Retrieves a specific FHIR provider configuration by its ID.
-     * <p>Sandbox providers return FhirProviderSandboxInfo.
-     * On shared instances, only sandbox providers can be accessed.</p>
-     */
-    public FhirProviderResponse get(String fhirProviderId, RequestOptions requestOptions) {
-        return this.rawClient.get(fhirProviderId, requestOptions).body();
-    }
+  /**
+   * Retrieves a specific FHIR provider configuration by its ID.
+   * <p>Sandbox providers return FhirProviderSandboxInfo.
+   * On shared instances, only sandbox providers can be accessed.</p>
+   */
+  public FhirProviderResponse get(String fhirProviderId) {
+    return this.rawClient.get(fhirProviderId).body();
+  }
 
-    /**
-     * Deletes a FHIR provider.
-     * <p>Note: Sandbox providers cannot be deleted.</p>
-     */
-    public DeleteResponse delete(String fhirProviderId) {
-        return this.rawClient.delete(fhirProviderId).body();
-    }
+  /**
+   * Retrieves a specific FHIR provider configuration by its ID.
+   * <p>Sandbox providers return FhirProviderSandboxInfo.
+   * On shared instances, only sandbox providers can be accessed.</p>
+   */
+  public FhirProviderResponse get(String fhirProviderId, RequestOptions requestOptions) {
+    return this.rawClient.get(fhirProviderId, requestOptions).body();
+  }
 
-    /**
-     * Deletes a FHIR provider.
-     * <p>Note: Sandbox providers cannot be deleted.</p>
-     */
-    public DeleteResponse delete(String fhirProviderId, RequestOptions requestOptions) {
-        return this.rawClient.delete(fhirProviderId, requestOptions).body();
-    }
+  /**
+   * Deletes a FHIR provider.
+   * <p>Note: Sandbox providers cannot be deleted.</p>
+   */
+  public DeleteResponse delete(String fhirProviderId) {
+    return this.rawClient.delete(fhirProviderId).body();
+  }
 
-    public AuthConfigClient authConfig() {
-        return this.authConfigClient.get();
-    }
+  /**
+   * Deletes a FHIR provider.
+   * <p>Note: Sandbox providers cannot be deleted.</p>
+   */
+  public DeleteResponse delete(String fhirProviderId, RequestOptions requestOptions) {
+    return this.rawClient.delete(fhirProviderId, requestOptions).body();
+  }
+
+  public AuthConfigClient authConfig() {
+    return this.authConfigClient.get();
+  }
 }

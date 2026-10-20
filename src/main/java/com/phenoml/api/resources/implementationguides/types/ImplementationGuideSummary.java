@@ -21,296 +21,320 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ImplementationGuideSummary.Builder.class)
 public final class ImplementationGuideSummary implements IImplementationGuideSummary {
-    private final Optional<String> name;
 
-    private final Optional<String> profileContext;
+  private final Optional<String> name;
 
-    private final Optional<Integer> profileCount;
+  private final Optional<String> profileContext;
 
-    private final Optional<String> canonicalUrl;
+  private final Optional<Integer> profileCount;
 
-    private final Optional<Integer> versionCount;
+  private final Optional<String> canonicalUrl;
 
-    private final Optional<OffsetDateTime> createdAt;
+  private final Optional<Integer> versionCount;
 
-    private final Optional<OffsetDateTime> updatedAt;
+  private final Optional<OffsetDateTime> createdAt;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<OffsetDateTime> updatedAt;
 
-    private ImplementationGuideSummary(
-            Optional<String> name,
-            Optional<String> profileContext,
-            Optional<Integer> profileCount,
-            Optional<String> canonicalUrl,
-            Optional<Integer> versionCount,
-            Optional<OffsetDateTime> createdAt,
-            Optional<OffsetDateTime> updatedAt,
-            Map<String, Object> additionalProperties) {
-        this.name = name;
-        this.profileContext = profileContext;
-        this.profileCount = profileCount;
-        this.canonicalUrl = canonicalUrl;
-        this.versionCount = versionCount;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ImplementationGuideSummary(
+    Optional<String> name,
+    Optional<String> profileContext,
+    Optional<Integer> profileCount,
+    Optional<String> canonicalUrl,
+    Optional<Integer> versionCount,
+    Optional<OffsetDateTime> createdAt,
+    Optional<OffsetDateTime> updatedAt,
+    Map<String, Object> additionalProperties
+  ) {
+    this.name = name;
+    this.profileContext = profileContext;
+    this.profileCount = profileCount;
+    this.canonicalUrl = canonicalUrl;
+    this.versionCount = versionCount;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return The instance-local implementation guide name (the stable key).
+   */
+  @JsonProperty("name")
+  @java.lang.Override
+  public Optional<String> getName() {
+    return name;
+  }
+
+  /**
+   * @return Natural-language context injected into the LLM during resource detection.
+   */
+  @JsonProperty("profile_context")
+  @java.lang.Override
+  public Optional<String> getProfileContext() {
+    return profileContext;
+  }
+
+  /**
+   * @return The number of custom profiles in this implementation guide.
+   */
+  @JsonProperty("profile_count")
+  @java.lang.Override
+  public Optional<Integer> getProfileCount() {
+    return profileCount;
+  }
+
+  /**
+   * @return Canonical FHIR ImplementationGuide URL, when the family has an exact package.
+   */
+  @JsonProperty("canonical_url")
+  @java.lang.Override
+  public Optional<String> getCanonicalUrl() {
+    return canonicalUrl;
+  }
+
+  /**
+   * @return Number of retained exact package versions.
+   */
+  @JsonProperty("version_count")
+  @java.lang.Override
+  public Optional<Integer> getVersionCount() {
+    return versionCount;
+  }
+
+  /**
+   * @return Present only for guides that have stored metadata (a profile_context has been set). Omitted for guides that exist solely because a profile references them.
+   */
+  @JsonProperty("created_at")
+  @java.lang.Override
+  public Optional<OffsetDateTime> getCreatedAt() {
+    return createdAt;
+  }
+
+  /**
+   * @return Present only for guides that have stored metadata. Omitted for guides that exist solely because a profile references them.
+   */
+  @JsonProperty("updated_at")
+  @java.lang.Override
+  public Optional<OffsetDateTime> getUpdatedAt() {
+    return updatedAt;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof ImplementationGuideSummary && equalTo((ImplementationGuideSummary) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ImplementationGuideSummary other) {
+    return (
+      name.equals(other.name) &&
+      profileContext.equals(other.profileContext) &&
+      profileCount.equals(other.profileCount) &&
+      canonicalUrl.equals(other.canonicalUrl) &&
+      versionCount.equals(other.versionCount) &&
+      createdAt.equals(other.createdAt) &&
+      updatedAt.equals(other.updatedAt)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.name,
+      this.profileContext,
+      this.profileCount,
+      this.canonicalUrl,
+      this.versionCount,
+      this.createdAt,
+      this.updatedAt
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> name = Optional.empty();
+
+    private Optional<String> profileContext = Optional.empty();
+
+    private Optional<Integer> profileCount = Optional.empty();
+
+    private Optional<String> canonicalUrl = Optional.empty();
+
+    private Optional<Integer> versionCount = Optional.empty();
+
+    private Optional<OffsetDateTime> createdAt = Optional.empty();
+
+    private Optional<OffsetDateTime> updatedAt = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ImplementationGuideSummary other) {
+      name(other.getName());
+      profileContext(other.getProfileContext());
+      profileCount(other.getProfileCount());
+      canonicalUrl(other.getCanonicalUrl());
+      versionCount(other.getVersionCount());
+      createdAt(other.getCreatedAt());
+      updatedAt(other.getUpdatedAt());
+      return this;
     }
 
     /**
-     * @return The instance-local implementation guide name (the stable key).
+     * <p>The instance-local implementation guide name (the stable key).</p>
      */
-    @JsonProperty("name")
-    @java.lang.Override
-    public Optional<String> getName() {
-        return name;
+    @JsonSetter(value = "name", nulls = Nulls.SKIP)
+    public Builder name(Optional<String> name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.name = Optional.ofNullable(name);
+      return this;
     }
 
     /**
-     * @return Natural-language context injected into the LLM during resource detection.
+     * <p>Natural-language context injected into the LLM during resource detection.</p>
      */
-    @JsonProperty("profile_context")
-    @java.lang.Override
-    public Optional<String> getProfileContext() {
-        return profileContext;
+    @JsonSetter(value = "profile_context", nulls = Nulls.SKIP)
+    public Builder profileContext(Optional<String> profileContext) {
+      this.profileContext = profileContext;
+      return this;
+    }
+
+    public Builder profileContext(String profileContext) {
+      this.profileContext = Optional.ofNullable(profileContext);
+      return this;
     }
 
     /**
-     * @return The number of custom profiles in this implementation guide.
+     * <p>The number of custom profiles in this implementation guide.</p>
      */
-    @JsonProperty("profile_count")
-    @java.lang.Override
-    public Optional<Integer> getProfileCount() {
-        return profileCount;
+    @JsonSetter(value = "profile_count", nulls = Nulls.SKIP)
+    public Builder profileCount(Optional<Integer> profileCount) {
+      this.profileCount = profileCount;
+      return this;
+    }
+
+    public Builder profileCount(Integer profileCount) {
+      this.profileCount = Optional.ofNullable(profileCount);
+      return this;
     }
 
     /**
-     * @return Canonical FHIR ImplementationGuide URL, when the family has an exact package.
+     * <p>Canonical FHIR ImplementationGuide URL, when the family has an exact package.</p>
      */
-    @JsonProperty("canonical_url")
-    @java.lang.Override
-    public Optional<String> getCanonicalUrl() {
-        return canonicalUrl;
+    @JsonSetter(value = "canonical_url", nulls = Nulls.SKIP)
+    public Builder canonicalUrl(Optional<String> canonicalUrl) {
+      this.canonicalUrl = canonicalUrl;
+      return this;
+    }
+
+    public Builder canonicalUrl(String canonicalUrl) {
+      this.canonicalUrl = Optional.ofNullable(canonicalUrl);
+      return this;
     }
 
     /**
-     * @return Number of retained exact package versions.
+     * <p>Number of retained exact package versions.</p>
      */
-    @JsonProperty("version_count")
-    @java.lang.Override
-    public Optional<Integer> getVersionCount() {
-        return versionCount;
+    @JsonSetter(value = "version_count", nulls = Nulls.SKIP)
+    public Builder versionCount(Optional<Integer> versionCount) {
+      this.versionCount = versionCount;
+      return this;
+    }
+
+    public Builder versionCount(Integer versionCount) {
+      this.versionCount = Optional.ofNullable(versionCount);
+      return this;
     }
 
     /**
-     * @return Present only for guides that have stored metadata (a profile_context has been set). Omitted for guides that exist solely because a profile references them.
+     * <p>Present only for guides that have stored metadata (a profile_context has been set). Omitted for guides that exist solely because a profile references them.</p>
      */
-    @JsonProperty("created_at")
-    @java.lang.Override
-    public Optional<OffsetDateTime> getCreatedAt() {
-        return createdAt;
+    @JsonSetter(value = "created_at", nulls = Nulls.SKIP)
+    public Builder createdAt(Optional<OffsetDateTime> createdAt) {
+      this.createdAt = createdAt;
+      return this;
+    }
+
+    public Builder createdAt(OffsetDateTime createdAt) {
+      this.createdAt = Optional.ofNullable(createdAt);
+      return this;
     }
 
     /**
-     * @return Present only for guides that have stored metadata. Omitted for guides that exist solely because a profile references them.
+     * <p>Present only for guides that have stored metadata. Omitted for guides that exist solely because a profile references them.</p>
      */
-    @JsonProperty("updated_at")
-    @java.lang.Override
-    public Optional<OffsetDateTime> getUpdatedAt() {
-        return updatedAt;
+    @JsonSetter(value = "updated_at", nulls = Nulls.SKIP)
+    public Builder updatedAt(Optional<OffsetDateTime> updatedAt) {
+      this.updatedAt = updatedAt;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ImplementationGuideSummary && equalTo((ImplementationGuideSummary) other);
+    public Builder updatedAt(OffsetDateTime updatedAt) {
+      this.updatedAt = Optional.ofNullable(updatedAt);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ImplementationGuideSummary build() {
+      return new ImplementationGuideSummary(
+        name,
+        profileContext,
+        profileCount,
+        canonicalUrl,
+        versionCount,
+        createdAt,
+        updatedAt,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(ImplementationGuideSummary other) {
-        return name.equals(other.name)
-                && profileContext.equals(other.profileContext)
-                && profileCount.equals(other.profileCount)
-                && canonicalUrl.equals(other.canonicalUrl)
-                && versionCount.equals(other.versionCount)
-                && createdAt.equals(other.createdAt)
-                && updatedAt.equals(other.updatedAt);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("profile_context") ||
+        key.equalsIgnoreCase("profile_count") ||
+        key.equalsIgnoreCase("canonical_url") ||
+        key.equalsIgnoreCase("version_count") ||
+        key.equalsIgnoreCase("created_at") ||
+        key.equalsIgnoreCase("updated_at")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.name,
-                this.profileContext,
-                this.profileCount,
-                this.canonicalUrl,
-                this.versionCount,
-                this.createdAt,
-                this.updatedAt);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> name = Optional.empty();
-
-        private Optional<String> profileContext = Optional.empty();
-
-        private Optional<Integer> profileCount = Optional.empty();
-
-        private Optional<String> canonicalUrl = Optional.empty();
-
-        private Optional<Integer> versionCount = Optional.empty();
-
-        private Optional<OffsetDateTime> createdAt = Optional.empty();
-
-        private Optional<OffsetDateTime> updatedAt = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ImplementationGuideSummary other) {
-            name(other.getName());
-            profileContext(other.getProfileContext());
-            profileCount(other.getProfileCount());
-            canonicalUrl(other.getCanonicalUrl());
-            versionCount(other.getVersionCount());
-            createdAt(other.getCreatedAt());
-            updatedAt(other.getUpdatedAt());
-            return this;
-        }
-
-        /**
-         * <p>The instance-local implementation guide name (the stable key).</p>
-         */
-        @JsonSetter(value = "name", nulls = Nulls.SKIP)
-        public Builder name(Optional<String> name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = Optional.ofNullable(name);
-            return this;
-        }
-
-        /**
-         * <p>Natural-language context injected into the LLM during resource detection.</p>
-         */
-        @JsonSetter(value = "profile_context", nulls = Nulls.SKIP)
-        public Builder profileContext(Optional<String> profileContext) {
-            this.profileContext = profileContext;
-            return this;
-        }
-
-        public Builder profileContext(String profileContext) {
-            this.profileContext = Optional.ofNullable(profileContext);
-            return this;
-        }
-
-        /**
-         * <p>The number of custom profiles in this implementation guide.</p>
-         */
-        @JsonSetter(value = "profile_count", nulls = Nulls.SKIP)
-        public Builder profileCount(Optional<Integer> profileCount) {
-            this.profileCount = profileCount;
-            return this;
-        }
-
-        public Builder profileCount(Integer profileCount) {
-            this.profileCount = Optional.ofNullable(profileCount);
-            return this;
-        }
-
-        /**
-         * <p>Canonical FHIR ImplementationGuide URL, when the family has an exact package.</p>
-         */
-        @JsonSetter(value = "canonical_url", nulls = Nulls.SKIP)
-        public Builder canonicalUrl(Optional<String> canonicalUrl) {
-            this.canonicalUrl = canonicalUrl;
-            return this;
-        }
-
-        public Builder canonicalUrl(String canonicalUrl) {
-            this.canonicalUrl = Optional.ofNullable(canonicalUrl);
-            return this;
-        }
-
-        /**
-         * <p>Number of retained exact package versions.</p>
-         */
-        @JsonSetter(value = "version_count", nulls = Nulls.SKIP)
-        public Builder versionCount(Optional<Integer> versionCount) {
-            this.versionCount = versionCount;
-            return this;
-        }
-
-        public Builder versionCount(Integer versionCount) {
-            this.versionCount = Optional.ofNullable(versionCount);
-            return this;
-        }
-
-        /**
-         * <p>Present only for guides that have stored metadata (a profile_context has been set). Omitted for guides that exist solely because a profile references them.</p>
-         */
-        @JsonSetter(value = "created_at", nulls = Nulls.SKIP)
-        public Builder createdAt(Optional<OffsetDateTime> createdAt) {
-            this.createdAt = createdAt;
-            return this;
-        }
-
-        public Builder createdAt(OffsetDateTime createdAt) {
-            this.createdAt = Optional.ofNullable(createdAt);
-            return this;
-        }
-
-        /**
-         * <p>Present only for guides that have stored metadata. Omitted for guides that exist solely because a profile references them.</p>
-         */
-        @JsonSetter(value = "updated_at", nulls = Nulls.SKIP)
-        public Builder updatedAt(Optional<OffsetDateTime> updatedAt) {
-            this.updatedAt = updatedAt;
-            return this;
-        }
-
-        public Builder updatedAt(OffsetDateTime updatedAt) {
-            this.updatedAt = Optional.ofNullable(updatedAt);
-            return this;
-        }
-
-        public ImplementationGuideSummary build() {
-            return new ImplementationGuideSummary(
-                    name,
-                    profileContext,
-                    profileCount,
-                    canonicalUrl,
-                    versionCount,
-                    createdAt,
-                    updatedAt,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

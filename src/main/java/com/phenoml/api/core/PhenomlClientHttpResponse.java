@@ -11,27 +11,29 @@ import okhttp3.Response;
 
 public final class PhenomlClientHttpResponse<T> {
 
-    private final T body;
+  private final T body;
 
-    private final Map<String, List<String>> headers;
+  private final Map<String, List<String>> headers;
 
-    public PhenomlClientHttpResponse(T body, Response rawResponse) {
-        this.body = body;
+  public PhenomlClientHttpResponse(T body, Response rawResponse) {
+    this.body = body;
 
-        Map<String, List<String>> headers = new HashMap<>();
-        rawResponse.headers().forEach(header -> {
-            String key = header.component1();
-            String value = header.component2();
-            headers.computeIfAbsent(key, _str -> new ArrayList<>()).add(value);
-        });
-        this.headers = headers;
-    }
+    Map<String, List<String>> headers = new HashMap<>();
+    rawResponse
+      .headers()
+      .forEach(header -> {
+        String key = header.component1();
+        String value = header.component2();
+        headers.computeIfAbsent(key, _str -> new ArrayList<>()).add(value);
+      });
+    this.headers = headers;
+  }
 
-    public T body() {
-        return this.body;
-    }
+  public T body() {
+    return this.body;
+  }
 
-    public Map<String, List<String>> headers() {
-        return headers;
-    }
+  public Map<String, List<String>> headers() {
+    return headers;
+  }
 }

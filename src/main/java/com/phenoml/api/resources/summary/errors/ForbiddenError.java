@@ -7,26 +7,27 @@ import com.phenoml.api.core.PhenomlClientApiException;
 import okhttp3.Response;
 
 public final class ForbiddenError extends PhenomlClientApiException {
-    /**
-     * The body of the response that triggered the exception.
-     */
-    private final Object body;
 
-    public ForbiddenError(Object body) {
-        super("ForbiddenError", 403, body);
-        this.body = body;
-    }
+  /**
+   * The body of the response that triggered the exception.
+   */
+  private final Object body;
 
-    public ForbiddenError(Object body, Response rawResponse) {
-        super("ForbiddenError", 403, body, rawResponse);
-        this.body = body;
-    }
+  public ForbiddenError(Object body) {
+    super("ForbiddenError", 403, body);
+    this.body = body;
+  }
 
-    /**
-     * @return the body
-     */
-    @java.lang.Override
-    public Object body() {
-        return this.body;
-    }
+  public ForbiddenError(Object body, Response rawResponse) {
+    super("ForbiddenError", 403, body, rawResponse);
+    this.body = body;
+  }
+
+  /**
+   * @return the body
+   */
+  @java.lang.Override
+  public Object body() {
+    return this.body;
+  }
 }

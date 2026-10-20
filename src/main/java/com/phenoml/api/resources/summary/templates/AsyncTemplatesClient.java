@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.summary.templates;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.summary.templates.requests.CreateSummaryTemplateRequest;
 import com.phenoml.api.resources.summary.templates.requests.UpdateSummaryTemplateRequest;
@@ -15,91 +16,181 @@ import com.phenoml.api.resources.summary.types.CreateSummaryTemplateResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncTemplatesClient {
-    protected final ClientOptions clientOptions;
 
-    private final AsyncRawTemplatesClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public AsyncTemplatesClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawTemplatesClient(clientOptions);
-    }
+  private final AsyncRawTemplatesClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawTemplatesClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AsyncTemplatesClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new AsyncRawTemplatesClient(clientOptions);
+  }
 
-    /**
-     * Retrieves all summary templates for the authenticated user
-     */
-    public CompletableFuture<ListResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public AsyncRawTemplatesClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Retrieves all summary templates for the authenticated user
-     */
-    public CompletableFuture<ListResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves all summary templates for the authenticated user
+   */
+  public CompletableFuture<ListResponse> list() {
+    CompletableFuture<PhenomlClientHttpResponse<ListResponse>> rawFuture = this.rawClient.list();
+    CompletableFuture<ListResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Creates a summary template from an example using LLM function calling
-     */
-    public CompletableFuture<CreateSummaryTemplateResponse> create(CreateSummaryTemplateRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves all summary templates for the authenticated user
+   */
+  public CompletableFuture<ListResponse> list(RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<ListResponse>> rawFuture =
+      this.rawClient.list(requestOptions);
+    CompletableFuture<ListResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Creates a summary template from an example using LLM function calling
-     */
-    public CompletableFuture<CreateSummaryTemplateResponse> create(
-            CreateSummaryTemplateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Creates a summary template from an example using LLM function calling
+   */
+  public CompletableFuture<CreateSummaryTemplateResponse> create(
+    CreateSummaryTemplateRequest request
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<CreateSummaryTemplateResponse>> rawFuture =
+      this.rawClient.create(request);
+    CompletableFuture<CreateSummaryTemplateResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Retrieves a specific summary template
-     */
-    public CompletableFuture<GetResponse> get(String id) {
-        return this.rawClient.get(id).thenApply(response -> response.body());
-    }
+  /**
+   * Creates a summary template from an example using LLM function calling
+   */
+  public CompletableFuture<CreateSummaryTemplateResponse> create(
+    CreateSummaryTemplateRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<CreateSummaryTemplateResponse>> rawFuture =
+      this.rawClient.create(request, requestOptions);
+    CompletableFuture<CreateSummaryTemplateResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Retrieves a specific summary template
-     */
-    public CompletableFuture<GetResponse> get(String id, RequestOptions requestOptions) {
-        return this.rawClient.get(id, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves a specific summary template
+   */
+  public CompletableFuture<GetResponse> get(String id) {
+    CompletableFuture<PhenomlClientHttpResponse<GetResponse>> rawFuture = this.rawClient.get(id);
+    CompletableFuture<GetResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Updates an existing summary template
-     */
-    public CompletableFuture<UpdateResponse> update(String id, UpdateSummaryTemplateRequest request) {
-        return this.rawClient.update(id, request).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves a specific summary template
+   */
+  public CompletableFuture<GetResponse> get(String id, RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<GetResponse>> rawFuture =
+      this.rawClient.get(id, requestOptions);
+    CompletableFuture<GetResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Updates an existing summary template
-     */
-    public CompletableFuture<UpdateResponse> update(
-            String id, UpdateSummaryTemplateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Updates an existing summary template
+   */
+  public CompletableFuture<UpdateResponse> update(String id, UpdateSummaryTemplateRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<UpdateResponse>> rawFuture =
+      this.rawClient.update(id, request);
+    CompletableFuture<UpdateResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Deletes a summary template
-     */
-    public CompletableFuture<DeleteResponse> delete(String id) {
-        return this.rawClient.delete(id).thenApply(response -> response.body());
-    }
+  /**
+   * Updates an existing summary template
+   */
+  public CompletableFuture<UpdateResponse> update(
+    String id,
+    UpdateSummaryTemplateRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<UpdateResponse>> rawFuture =
+      this.rawClient.update(id, request, requestOptions);
+    CompletableFuture<UpdateResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Deletes a summary template
-     */
-    public CompletableFuture<DeleteResponse> delete(String id, RequestOptions requestOptions) {
-        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Deletes a summary template
+   */
+  public CompletableFuture<DeleteResponse> delete(String id) {
+    CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> rawFuture =
+      this.rawClient.delete(id);
+    CompletableFuture<DeleteResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
+
+  /**
+   * Deletes a summary template
+   */
+  public CompletableFuture<DeleteResponse> delete(String id, RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> rawFuture =
+      this.rawClient.delete(id, requestOptions);
+    CompletableFuture<DeleteResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 }

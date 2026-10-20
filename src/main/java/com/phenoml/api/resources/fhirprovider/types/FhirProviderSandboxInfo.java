@@ -21,192 +21,210 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = FhirProviderSandboxInfo.Builder.class)
 public final class FhirProviderSandboxInfo {
-    private final String id;
 
-    private final String name;
+  private final String id;
 
-    private final Optional<String> description;
+  private final String name;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> description;
 
-    private FhirProviderSandboxInfo(
-            String id, String name, Optional<String> description, Map<String, Object> additionalProperties) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private FhirProviderSandboxInfo(
+    String id,
+    String name,
+    Optional<String> description,
+    Map<String, Object> additionalProperties
+  ) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Unique identifier for the FHIR provider
+   */
+  @JsonProperty("id")
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * @return Display name for the FHIR provider
+   */
+  @JsonProperty("name")
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @return Optional description of the FHIR provider
+   */
+  @JsonProperty("description")
+  public Optional<String> getDescription() {
+    return description;
+  }
+
+  /**
+   * @return Provider type (always &quot;sandbox&quot; for this schema)
+   */
+  @JsonProperty("provider")
+  public String getProvider() {
+    return "sandbox";
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof FhirProviderSandboxInfo && equalTo((FhirProviderSandboxInfo) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(FhirProviderSandboxInfo other) {
+    return id.equals(other.id) && name.equals(other.name) && description.equals(other.description);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.id, this.name, this.description);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static IdStage builder() {
+    return new Builder();
+  }
+
+  public interface IdStage {
+    /**
+     * <p>Unique identifier for the FHIR provider</p>
+     */
+    NameStage id(@NotNull String id);
+
+    Builder from(FhirProviderSandboxInfo other);
+  }
+
+  public interface NameStage {
+    /**
+     * <p>Display name for the FHIR provider</p>
+     */
+    _FinalStage name(@NotNull String name);
+  }
+
+  public interface _FinalStage {
+    FhirProviderSandboxInfo build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Optional description of the FHIR provider</p>
+     */
+    _FinalStage description(Optional<String> description);
+
+    _FinalStage description(String description);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements IdStage, NameStage, _FinalStage {
+
+    private String id;
+
+    private String name;
+
+    private Optional<String> description = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(FhirProviderSandboxInfo other) {
+      id(other.getId());
+      name(other.getName());
+      description(other.getDescription());
+      return this;
     }
 
     /**
-     * @return Unique identifier for the FHIR provider
+     * <p>Unique identifier for the FHIR provider</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("id")
-    public String getId() {
-        return id;
+    @java.lang.Override
+    @JsonSetter("id")
+    public NameStage id(@NotNull String id) {
+      this.id = Objects.requireNonNull(id, "id must not be null");
+      return this;
     }
 
     /**
-     * @return Display name for the FHIR provider
+     * <p>Display name for the FHIR provider</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("name")
-    public String getName() {
-        return name;
+    @java.lang.Override
+    @JsonSetter("name")
+    public _FinalStage name(@NotNull String name) {
+      this.name = Objects.requireNonNull(name, "name must not be null");
+      return this;
     }
 
     /**
-     * @return Optional description of the FHIR provider
+     * <p>Optional description of the FHIR provider</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("description")
-    public Optional<String> getDescription() {
-        return description;
+    @java.lang.Override
+    public _FinalStage description(String description) {
+      this.description = Optional.ofNullable(description);
+      return this;
     }
 
     /**
-     * @return Provider type (always &quot;sandbox&quot; for this schema)
+     * <p>Optional description of the FHIR provider</p>
      */
-    @JsonProperty("provider")
-    public String getProvider() {
-        return "sandbox";
+    @java.lang.Override
+    @JsonSetter(value = "description", nulls = Nulls.SKIP)
+    public _FinalStage description(Optional<String> description) {
+      this.description = description;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof FhirProviderSandboxInfo && equalTo((FhirProviderSandboxInfo) other);
+    public FhirProviderSandboxInfo build() {
+      return new FhirProviderSandboxInfo(id, name, description, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(FhirProviderSandboxInfo other) {
-        return id.equals(other.id) && name.equals(other.name) && description.equals(other.description);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("id") ||
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("description") ||
+        key.equalsIgnoreCase("provider")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.id, this.name, this.description);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static IdStage builder() {
-        return new Builder();
-    }
-
-    public interface IdStage {
-        /**
-         * <p>Unique identifier for the FHIR provider</p>
-         */
-        NameStage id(@NotNull String id);
-
-        Builder from(FhirProviderSandboxInfo other);
-    }
-
-    public interface NameStage {
-        /**
-         * <p>Display name for the FHIR provider</p>
-         */
-        _FinalStage name(@NotNull String name);
-    }
-
-    public interface _FinalStage {
-        FhirProviderSandboxInfo build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Optional description of the FHIR provider</p>
-         */
-        _FinalStage description(Optional<String> description);
-
-        _FinalStage description(String description);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements IdStage, NameStage, _FinalStage {
-        private String id;
-
-        private String name;
-
-        private Optional<String> description = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(FhirProviderSandboxInfo other) {
-            id(other.getId());
-            name(other.getName());
-            description(other.getDescription());
-            return this;
-        }
-
-        /**
-         * <p>Unique identifier for the FHIR provider</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("id")
-        public NameStage id(@NotNull String id) {
-            this.id = Objects.requireNonNull(id, "id must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Display name for the FHIR provider</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("name")
-        public _FinalStage name(@NotNull String name) {
-            this.name = Objects.requireNonNull(name, "name must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Optional description of the FHIR provider</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage description(String description) {
-            this.description = Optional.ofNullable(description);
-            return this;
-        }
-
-        /**
-         * <p>Optional description of the FHIR provider</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "description", nulls = Nulls.SKIP)
-        public _FinalStage description(Optional<String> description) {
-            this.description = description;
-            return this;
-        }
-
-        @java.lang.Override
-        public FhirProviderSandboxInfo build() {
-            return new FhirProviderSandboxInfo(id, name, description, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

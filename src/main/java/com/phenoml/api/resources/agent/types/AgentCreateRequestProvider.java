@@ -17,81 +17,86 @@ import java.util.Objects;
 
 @JsonDeserialize(using = AgentCreateRequestProvider.Deserializer.class)
 public final class AgentCreateRequestProvider {
-    private final Object value;
 
-    private final int type;
+  private final Object value;
 
-    private AgentCreateRequestProvider(Object value, int type) {
-        this.value = value;
-        this.type = type;
+  private final int type;
+
+  private AgentCreateRequestProvider(Object value, int type) {
+    this.value = value;
+    this.type = type;
+  }
+
+  @JsonValue
+  public Object get() {
+    return this.value;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T visit(Visitor<T> visitor) {
+    if (this.type == 0) {
+      return visitor.visit((String) this.value);
+    } else if (this.type == 1) {
+      return visitor.visit((List<String>) this.value);
     }
+    throw new IllegalStateException("Failed to visit value. This should never happen.");
+  }
 
-    @JsonValue
-    public Object get() {
-        return this.value;
-    }
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof AgentCreateRequestProvider && equalTo((AgentCreateRequestProvider) other)
+    );
+  }
 
-    @SuppressWarnings("unchecked")
-    public <T> T visit(Visitor<T> visitor) {
-        if (this.type == 0) {
-            return visitor.visit((String) this.value);
-        } else if (this.type == 1) {
-            return visitor.visit((List<String>) this.value);
-        }
-        throw new IllegalStateException("Failed to visit value. This should never happen.");
+  private boolean equalTo(AgentCreateRequestProvider other) {
+    return value.equals(other.value);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.value);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return this.value.toString();
+  }
+
+  public static AgentCreateRequestProvider of(String value) {
+    return new AgentCreateRequestProvider(value, 0);
+  }
+
+  public static AgentCreateRequestProvider of(List<String> value) {
+    return new AgentCreateRequestProvider(value, 1);
+  }
+
+  public interface Visitor<T> {
+    T visit(String value);
+
+    T visit(List<String> value);
+  }
+
+  static final class Deserializer extends StdDeserializer<AgentCreateRequestProvider> {
+
+    Deserializer() {
+      super(AgentCreateRequestProvider.class);
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof AgentCreateRequestProvider && equalTo((AgentCreateRequestProvider) other);
+    public AgentCreateRequestProvider deserialize(JsonParser p, DeserializationContext context)
+      throws IOException {
+      Object value = p.readValueAs(Object.class);
+      try {
+        return of(ObjectMappers.JSON_MAPPER.convertValue(value, String.class));
+      } catch (RuntimeException e) {}
+      try {
+        return of(
+          ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<List<String>>() {})
+        );
+      } catch (RuntimeException e) {}
+      throw new JsonParseException(p, "Failed to deserialize");
     }
-
-    private boolean equalTo(AgentCreateRequestProvider other) {
-        return value.equals(other.value);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.value);
-    }
-
-    @java.lang.Override
-    public String toString() {
-        return this.value.toString();
-    }
-
-    public static AgentCreateRequestProvider of(String value) {
-        return new AgentCreateRequestProvider(value, 0);
-    }
-
-    public static AgentCreateRequestProvider of(List<String> value) {
-        return new AgentCreateRequestProvider(value, 1);
-    }
-
-    public interface Visitor<T> {
-        T visit(String value);
-
-        T visit(List<String> value);
-    }
-
-    static final class Deserializer extends StdDeserializer<AgentCreateRequestProvider> {
-        Deserializer() {
-            super(AgentCreateRequestProvider.class);
-        }
-
-        @java.lang.Override
-        public AgentCreateRequestProvider deserialize(JsonParser p, DeserializationContext context) throws IOException {
-            Object value = p.readValueAs(Object.class);
-            try {
-                return of(ObjectMappers.JSON_MAPPER.convertValue(value, String.class));
-            } catch (RuntimeException e) {
-            }
-            try {
-                return of(ObjectMappers.JSON_MAPPER.convertValue(value, new TypeReference<List<String>>() {}));
-            } catch (RuntimeException e) {
-            }
-            throw new JsonParseException(p, "Failed to deserialize");
-        }
-    }
+  }
 }

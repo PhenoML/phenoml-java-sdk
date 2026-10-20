@@ -7,26 +7,27 @@ import com.phenoml.api.core.PhenomlClientApiException;
 import okhttp3.Response;
 
 public final class UnprocessableEntityError extends PhenomlClientApiException {
-    /**
-     * The body of the response that triggered the exception.
-     */
-    private final Object body;
 
-    public UnprocessableEntityError(Object body) {
-        super("UnprocessableEntityError", 422, body);
-        this.body = body;
-    }
+  /**
+   * The body of the response that triggered the exception.
+   */
+  private final Object body;
 
-    public UnprocessableEntityError(Object body, Response rawResponse) {
-        super("UnprocessableEntityError", 422, body, rawResponse);
-        this.body = body;
-    }
+  public UnprocessableEntityError(Object body) {
+    super("UnprocessableEntityError", 422, body);
+    this.body = body;
+  }
 
-    /**
-     * @return the body
-     */
-    @java.lang.Override
-    public Object body() {
-        return this.body;
-    }
+  public UnprocessableEntityError(Object body, Response rawResponse) {
+    super("UnprocessableEntityError", 422, body, rawResponse);
+    this.body = body;
+  }
+
+  /**
+   * @return the body
+   */
+  @java.lang.Override
+  public Object body() {
+    return this.body;
+  }
 }

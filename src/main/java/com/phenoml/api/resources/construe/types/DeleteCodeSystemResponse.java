@@ -19,110 +19,119 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = DeleteCodeSystemResponse.Builder.class)
 public final class DeleteCodeSystemResponse {
-    private final String message;
 
-    private final Map<String, Object> additionalProperties;
+  private final String message;
 
-    private DeleteCodeSystemResponse(String message, Map<String, Object> additionalProperties) {
-        this.message = message;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private DeleteCodeSystemResponse(String message, Map<String, Object> additionalProperties) {
+    this.message = message;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Confirmation message
+   */
+  @JsonProperty("message")
+  public String getMessage() {
+    return message;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof DeleteCodeSystemResponse && equalTo((DeleteCodeSystemResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(DeleteCodeSystemResponse other) {
+    return message.equals(other.message);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.message);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static MessageStage builder() {
+    return new Builder();
+  }
+
+  public interface MessageStage {
+    /**
+     * <p>Confirmation message</p>
+     */
+    _FinalStage message(@NotNull String message);
+
+    Builder from(DeleteCodeSystemResponse other);
+  }
+
+  public interface _FinalStage {
+    DeleteCodeSystemResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements MessageStage, _FinalStage {
+
+    private String message;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(DeleteCodeSystemResponse other) {
+      message(other.getMessage());
+      return this;
     }
 
     /**
-     * @return Confirmation message
+     * <p>Confirmation message</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("message")
-    public String getMessage() {
-        return message;
+    @java.lang.Override
+    @JsonSetter("message")
+    public _FinalStage message(@NotNull String message) {
+      this.message = Objects.requireNonNull(message, "message must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof DeleteCodeSystemResponse && equalTo((DeleteCodeSystemResponse) other);
+    public DeleteCodeSystemResponse build() {
+      return new DeleteCodeSystemResponse(message, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(DeleteCodeSystemResponse other) {
-        return message.equals(other.message);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.message);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("message")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static MessageStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface MessageStage {
-        /**
-         * <p>Confirmation message</p>
-         */
-        _FinalStage message(@NotNull String message);
-
-        Builder from(DeleteCodeSystemResponse other);
-    }
-
-    public interface _FinalStage {
-        DeleteCodeSystemResponse build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements MessageStage, _FinalStage {
-        private String message;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(DeleteCodeSystemResponse other) {
-            message(other.getMessage());
-            return this;
-        }
-
-        /**
-         * <p>Confirmation message</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("message")
-        public _FinalStage message(@NotNull String message) {
-            this.message = Objects.requireNonNull(message, "message must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public DeleteCodeSystemResponse build() {
-            return new DeleteCodeSystemResponse(message, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

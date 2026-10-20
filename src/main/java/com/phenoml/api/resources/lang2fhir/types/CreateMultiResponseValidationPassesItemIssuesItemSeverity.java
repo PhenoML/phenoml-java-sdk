@@ -7,103 +7,107 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class CreateMultiResponseValidationPassesItemIssuesItemSeverity {
-    public static final CreateMultiResponseValidationPassesItemIssuesItemSeverity FATAL =
-            new CreateMultiResponseValidationPassesItemIssuesItemSeverity(Value.FATAL, "fatal");
 
-    public static final CreateMultiResponseValidationPassesItemIssuesItemSeverity WARNING =
-            new CreateMultiResponseValidationPassesItemIssuesItemSeverity(Value.WARNING, "warning");
+  public static final CreateMultiResponseValidationPassesItemIssuesItemSeverity FATAL =
+    new CreateMultiResponseValidationPassesItemIssuesItemSeverity(Value.FATAL, "fatal");
 
-    public static final CreateMultiResponseValidationPassesItemIssuesItemSeverity ERROR =
-            new CreateMultiResponseValidationPassesItemIssuesItemSeverity(Value.ERROR, "error");
+  public static final CreateMultiResponseValidationPassesItemIssuesItemSeverity WARNING =
+    new CreateMultiResponseValidationPassesItemIssuesItemSeverity(Value.WARNING, "warning");
 
-    public static final CreateMultiResponseValidationPassesItemIssuesItemSeverity INFORMATION =
-            new CreateMultiResponseValidationPassesItemIssuesItemSeverity(Value.INFORMATION, "information");
+  public static final CreateMultiResponseValidationPassesItemIssuesItemSeverity ERROR =
+    new CreateMultiResponseValidationPassesItemIssuesItemSeverity(Value.ERROR, "error");
 
-    private final Value value;
+  public static final CreateMultiResponseValidationPassesItemIssuesItemSeverity INFORMATION =
+    new CreateMultiResponseValidationPassesItemIssuesItemSeverity(Value.INFORMATION, "information");
 
-    private final String string;
+  private final Value value;
 
-    CreateMultiResponseValidationPassesItemIssuesItemSeverity(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  CreateMultiResponseValidationPassesItemIssuesItemSeverity(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof CreateMultiResponseValidationPassesItemIssuesItemSeverity &&
+        this.string.equals(
+            ((CreateMultiResponseValidationPassesItemIssuesItemSeverity) other).string
+          ))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case FATAL:
+        return visitor.visitFatal();
+      case WARNING:
+        return visitor.visitWarning();
+      case ERROR:
+        return visitor.visitError();
+      case INFORMATION:
+        return visitor.visitInformation();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static CreateMultiResponseValidationPassesItemIssuesItemSeverity valueOf(String value) {
+    switch (value) {
+      case "fatal":
+        return FATAL;
+      case "warning":
+        return WARNING;
+      case "error":
+        return ERROR;
+      case "information":
+        return INFORMATION;
+      default:
+        return new CreateMultiResponseValidationPassesItemIssuesItemSeverity(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    FATAL,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof CreateMultiResponseValidationPassesItemIssuesItemSeverity
-                        && this.string.equals(
-                                ((CreateMultiResponseValidationPassesItemIssuesItemSeverity) other).string));
-    }
+    ERROR,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    WARNING,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case FATAL:
-                return visitor.visitFatal();
-            case WARNING:
-                return visitor.visitWarning();
-            case ERROR:
-                return visitor.visitError();
-            case INFORMATION:
-                return visitor.visitInformation();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    INFORMATION,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static CreateMultiResponseValidationPassesItemIssuesItemSeverity valueOf(String value) {
-        switch (value) {
-            case "fatal":
-                return FATAL;
-            case "warning":
-                return WARNING;
-            case "error":
-                return ERROR;
-            case "information":
-                return INFORMATION;
-            default:
-                return new CreateMultiResponseValidationPassesItemIssuesItemSeverity(Value.UNKNOWN, value);
-        }
-    }
+    UNKNOWN,
+  }
 
-    public enum Value {
-        FATAL,
+  public interface Visitor<T> {
+    T visitFatal();
 
-        ERROR,
+    T visitError();
 
-        WARNING,
+    T visitWarning();
 
-        INFORMATION,
+    T visitInformation();
 
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitFatal();
-
-        T visitError();
-
-        T visitWarning();
-
-        T visitInformation();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

@@ -22,142 +22,154 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ExtractCodesResult.Builder.class)
 public final class ExtractCodesResult {
-    private final ExtractRequestSystem system;
 
-    private final List<ExtractedCodeResult> codes;
+  private final ExtractRequestSystem system;
 
-    private final Map<String, Object> additionalProperties;
+  private final List<ExtractedCodeResult> codes;
 
-    private ExtractCodesResult(
-            ExtractRequestSystem system, List<ExtractedCodeResult> codes, Map<String, Object> additionalProperties) {
-        this.system = system;
-        this.codes = codes;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
-    @JsonProperty("system")
-    public ExtractRequestSystem getSystem() {
-        return system;
-    }
+  private ExtractCodesResult(
+    ExtractRequestSystem system,
+    List<ExtractedCodeResult> codes,
+    Map<String, Object> additionalProperties
+  ) {
+    this.system = system;
+    this.codes = codes;
+    this.additionalProperties = additionalProperties;
+  }
 
-    @JsonProperty("codes")
-    public List<ExtractedCodeResult> getCodes() {
-        return codes;
+  @JsonProperty("system")
+  public ExtractRequestSystem getSystem() {
+    return system;
+  }
+
+  @JsonProperty("codes")
+  public List<ExtractedCodeResult> getCodes() {
+    return codes;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ExtractCodesResult && equalTo((ExtractCodesResult) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ExtractCodesResult other) {
+    return system.equals(other.system) && codes.equals(other.codes);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.system, this.codes);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static SystemStage builder() {
+    return new Builder();
+  }
+
+  public interface SystemStage {
+    _FinalStage system(@NotNull ExtractRequestSystem system);
+
+    Builder from(ExtractCodesResult other);
+  }
+
+  public interface _FinalStage {
+    ExtractCodesResult build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    _FinalStage codes(List<ExtractedCodeResult> codes);
+
+    _FinalStage addCodes(ExtractedCodeResult codes);
+
+    _FinalStage addAllCodes(List<ExtractedCodeResult> codes);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements SystemStage, _FinalStage {
+
+    private ExtractRequestSystem system;
+
+    private List<ExtractedCodeResult> codes = new ArrayList<>();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(ExtractCodesResult other) {
+      system(other.getSystem());
+      codes(other.getCodes());
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ExtractCodesResult && equalTo((ExtractCodesResult) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(ExtractCodesResult other) {
-        return system.equals(other.system) && codes.equals(other.codes);
+    @JsonSetter("system")
+    public _FinalStage system(@NotNull ExtractRequestSystem system) {
+      this.system = Objects.requireNonNull(system, "system must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.system, this.codes);
+    public _FinalStage addAllCodes(List<ExtractedCodeResult> codes) {
+      if (codes != null) {
+        this.codes.addAll(codes);
+      }
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public _FinalStage addCodes(ExtractedCodeResult codes) {
+      this.codes.add(codes);
+      return this;
     }
 
-    public static SystemStage builder() {
-        return new Builder();
+    @java.lang.Override
+    @JsonSetter(value = "codes", nulls = Nulls.SKIP)
+    public _FinalStage codes(List<ExtractedCodeResult> codes) {
+      this.codes.clear();
+      if (codes != null) {
+        this.codes.addAll(codes);
+      }
+      return this;
     }
 
-    public interface SystemStage {
-        _FinalStage system(@NotNull ExtractRequestSystem system);
-
-        Builder from(ExtractCodesResult other);
+    @java.lang.Override
+    public ExtractCodesResult build() {
+      return new ExtractCodesResult(system, codes, additionalProperties);
     }
 
-    public interface _FinalStage {
-        ExtractCodesResult build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        _FinalStage codes(List<ExtractedCodeResult> codes);
-
-        _FinalStage addCodes(ExtractedCodeResult codes);
-
-        _FinalStage addAllCodes(List<ExtractedCodeResult> codes);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("system") || key.equalsIgnoreCase("codes")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements SystemStage, _FinalStage {
-        private ExtractRequestSystem system;
-
-        private List<ExtractedCodeResult> codes = new ArrayList<>();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(ExtractCodesResult other) {
-            system(other.getSystem());
-            codes(other.getCodes());
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("system")
-        public _FinalStage system(@NotNull ExtractRequestSystem system) {
-            this.system = Objects.requireNonNull(system, "system must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage addAllCodes(List<ExtractedCodeResult> codes) {
-            if (codes != null) {
-                this.codes.addAll(codes);
-            }
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage addCodes(ExtractedCodeResult codes) {
-            this.codes.add(codes);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "codes", nulls = Nulls.SKIP)
-        public _FinalStage codes(List<ExtractedCodeResult> codes) {
-            this.codes.clear();
-            if (codes != null) {
-                this.codes.addAll(codes);
-            }
-            return this;
-        }
-
-        @java.lang.Override
-        public ExtractCodesResult build() {
-            return new ExtractCodesResult(system, codes, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

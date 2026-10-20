@@ -7,78 +7,87 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class ResourceReviewTargetFieldsItem {
-    public static final ResourceReviewTargetFieldsItem CODES = new ResourceReviewTargetFieldsItem(Value.CODES, "codes");
 
-    public static final ResourceReviewTargetFieldsItem DATES = new ResourceReviewTargetFieldsItem(Value.DATES, "dates");
+  public static final ResourceReviewTargetFieldsItem CODES = new ResourceReviewTargetFieldsItem(
+    Value.CODES,
+    "codes"
+  );
 
-    private final Value value;
+  public static final ResourceReviewTargetFieldsItem DATES = new ResourceReviewTargetFieldsItem(
+    Value.DATES,
+    "dates"
+  );
 
-    private final String string;
+  private final Value value;
 
-    ResourceReviewTargetFieldsItem(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  ResourceReviewTargetFieldsItem(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof ResourceReviewTargetFieldsItem &&
+        this.string.equals(((ResourceReviewTargetFieldsItem) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case CODES:
+        return visitor.visitCodes();
+      case DATES:
+        return visitor.visitDates();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static ResourceReviewTargetFieldsItem valueOf(String value) {
+    switch (value) {
+      case "codes":
+        return CODES;
+      case "dates":
+        return DATES;
+      default:
+        return new ResourceReviewTargetFieldsItem(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    DATES,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof ResourceReviewTargetFieldsItem
-                        && this.string.equals(((ResourceReviewTargetFieldsItem) other).string));
-    }
+    CODES,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    UNKNOWN,
+  }
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case CODES:
-                return visitor.visitCodes();
-            case DATES:
-                return visitor.visitDates();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+  public interface Visitor<T> {
+    T visitDates();
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static ResourceReviewTargetFieldsItem valueOf(String value) {
-        switch (value) {
-            case "codes":
-                return CODES;
-            case "dates":
-                return DATES;
-            default:
-                return new ResourceReviewTargetFieldsItem(Value.UNKNOWN, value);
-        }
-    }
+    T visitCodes();
 
-    public enum Value {
-        DATES,
-
-        CODES,
-
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitDates();
-
-        T visitCodes();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

@@ -20,221 +20,242 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CareSiteRow.Builder.class)
 public final class CareSiteRow {
-    private final Optional<Long> careSiteId;
 
-    private final Optional<String> careSiteName;
+  private final Optional<Long> careSiteId;
 
-    private final Optional<Long> placeOfServiceConceptId;
+  private final Optional<String> careSiteName;
 
-    private final Optional<Long> locationId;
+  private final Optional<Long> placeOfServiceConceptId;
 
-    private final Optional<String> careSiteSourceValue;
+  private final Optional<Long> locationId;
 
-    private final Optional<String> placeOfServiceSourceValue;
+  private final Optional<String> careSiteSourceValue;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> placeOfServiceSourceValue;
 
-    private CareSiteRow(
-            Optional<Long> careSiteId,
-            Optional<String> careSiteName,
-            Optional<Long> placeOfServiceConceptId,
-            Optional<Long> locationId,
-            Optional<String> careSiteSourceValue,
-            Optional<String> placeOfServiceSourceValue,
-            Map<String, Object> additionalProperties) {
-        this.careSiteId = careSiteId;
-        this.careSiteName = careSiteName;
-        this.placeOfServiceConceptId = placeOfServiceConceptId;
-        this.locationId = locationId;
-        this.careSiteSourceValue = careSiteSourceValue;
-        this.placeOfServiceSourceValue = placeOfServiceSourceValue;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CareSiteRow(
+    Optional<Long> careSiteId,
+    Optional<String> careSiteName,
+    Optional<Long> placeOfServiceConceptId,
+    Optional<Long> locationId,
+    Optional<String> careSiteSourceValue,
+    Optional<String> placeOfServiceSourceValue,
+    Map<String, Object> additionalProperties
+  ) {
+    this.careSiteId = careSiteId;
+    this.careSiteName = careSiteName;
+    this.placeOfServiceConceptId = placeOfServiceConceptId;
+    this.locationId = locationId;
+    this.careSiteSourceValue = careSiteSourceValue;
+    this.placeOfServiceSourceValue = placeOfServiceSourceValue;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("care_site_id")
+  public Optional<Long> getCareSiteId() {
+    return careSiteId;
+  }
+
+  @JsonProperty("care_site_name")
+  public Optional<String> getCareSiteName() {
+    return careSiteName;
+  }
+
+  @JsonProperty("place_of_service_concept_id")
+  public Optional<Long> getPlaceOfServiceConceptId() {
+    return placeOfServiceConceptId;
+  }
+
+  @JsonProperty("location_id")
+  public Optional<Long> getLocationId() {
+    return locationId;
+  }
+
+  @JsonProperty("care_site_source_value")
+  public Optional<String> getCareSiteSourceValue() {
+    return careSiteSourceValue;
+  }
+
+  @JsonProperty("place_of_service_source_value")
+  public Optional<String> getPlaceOfServiceSourceValue() {
+    return placeOfServiceSourceValue;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CareSiteRow && equalTo((CareSiteRow) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CareSiteRow other) {
+    return (
+      careSiteId.equals(other.careSiteId) &&
+      careSiteName.equals(other.careSiteName) &&
+      placeOfServiceConceptId.equals(other.placeOfServiceConceptId) &&
+      locationId.equals(other.locationId) &&
+      careSiteSourceValue.equals(other.careSiteSourceValue) &&
+      placeOfServiceSourceValue.equals(other.placeOfServiceSourceValue)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.careSiteId,
+      this.careSiteName,
+      this.placeOfServiceConceptId,
+      this.locationId,
+      this.careSiteSourceValue,
+      this.placeOfServiceSourceValue
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Long> careSiteId = Optional.empty();
+
+    private Optional<String> careSiteName = Optional.empty();
+
+    private Optional<Long> placeOfServiceConceptId = Optional.empty();
+
+    private Optional<Long> locationId = Optional.empty();
+
+    private Optional<String> careSiteSourceValue = Optional.empty();
+
+    private Optional<String> placeOfServiceSourceValue = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(CareSiteRow other) {
+      careSiteId(other.getCareSiteId());
+      careSiteName(other.getCareSiteName());
+      placeOfServiceConceptId(other.getPlaceOfServiceConceptId());
+      locationId(other.getLocationId());
+      careSiteSourceValue(other.getCareSiteSourceValue());
+      placeOfServiceSourceValue(other.getPlaceOfServiceSourceValue());
+      return this;
     }
 
-    @JsonProperty("care_site_id")
-    public Optional<Long> getCareSiteId() {
-        return careSiteId;
+    @JsonSetter(value = "care_site_id", nulls = Nulls.SKIP)
+    public Builder careSiteId(Optional<Long> careSiteId) {
+      this.careSiteId = careSiteId;
+      return this;
     }
 
-    @JsonProperty("care_site_name")
-    public Optional<String> getCareSiteName() {
-        return careSiteName;
+    public Builder careSiteId(Long careSiteId) {
+      this.careSiteId = Optional.ofNullable(careSiteId);
+      return this;
     }
 
-    @JsonProperty("place_of_service_concept_id")
-    public Optional<Long> getPlaceOfServiceConceptId() {
-        return placeOfServiceConceptId;
+    @JsonSetter(value = "care_site_name", nulls = Nulls.SKIP)
+    public Builder careSiteName(Optional<String> careSiteName) {
+      this.careSiteName = careSiteName;
+      return this;
     }
 
-    @JsonProperty("location_id")
-    public Optional<Long> getLocationId() {
-        return locationId;
+    public Builder careSiteName(String careSiteName) {
+      this.careSiteName = Optional.ofNullable(careSiteName);
+      return this;
     }
 
-    @JsonProperty("care_site_source_value")
-    public Optional<String> getCareSiteSourceValue() {
-        return careSiteSourceValue;
+    @JsonSetter(value = "place_of_service_concept_id", nulls = Nulls.SKIP)
+    public Builder placeOfServiceConceptId(Optional<Long> placeOfServiceConceptId) {
+      this.placeOfServiceConceptId = placeOfServiceConceptId;
+      return this;
     }
 
-    @JsonProperty("place_of_service_source_value")
-    public Optional<String> getPlaceOfServiceSourceValue() {
-        return placeOfServiceSourceValue;
+    public Builder placeOfServiceConceptId(Long placeOfServiceConceptId) {
+      this.placeOfServiceConceptId = Optional.ofNullable(placeOfServiceConceptId);
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CareSiteRow && equalTo((CareSiteRow) other);
+    @JsonSetter(value = "location_id", nulls = Nulls.SKIP)
+    public Builder locationId(Optional<Long> locationId) {
+      this.locationId = locationId;
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder locationId(Long locationId) {
+      this.locationId = Optional.ofNullable(locationId);
+      return this;
     }
 
-    private boolean equalTo(CareSiteRow other) {
-        return careSiteId.equals(other.careSiteId)
-                && careSiteName.equals(other.careSiteName)
-                && placeOfServiceConceptId.equals(other.placeOfServiceConceptId)
-                && locationId.equals(other.locationId)
-                && careSiteSourceValue.equals(other.careSiteSourceValue)
-                && placeOfServiceSourceValue.equals(other.placeOfServiceSourceValue);
+    @JsonSetter(value = "care_site_source_value", nulls = Nulls.SKIP)
+    public Builder careSiteSourceValue(Optional<String> careSiteSourceValue) {
+      this.careSiteSourceValue = careSiteSourceValue;
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.careSiteId,
-                this.careSiteName,
-                this.placeOfServiceConceptId,
-                this.locationId,
-                this.careSiteSourceValue,
-                this.placeOfServiceSourceValue);
+    public Builder careSiteSourceValue(String careSiteSourceValue) {
+      this.careSiteSourceValue = Optional.ofNullable(careSiteSourceValue);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonSetter(value = "place_of_service_source_value", nulls = Nulls.SKIP)
+    public Builder placeOfServiceSourceValue(Optional<String> placeOfServiceSourceValue) {
+      this.placeOfServiceSourceValue = placeOfServiceSourceValue;
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder placeOfServiceSourceValue(String placeOfServiceSourceValue) {
+      this.placeOfServiceSourceValue = Optional.ofNullable(placeOfServiceSourceValue);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Long> careSiteId = Optional.empty();
-
-        private Optional<String> careSiteName = Optional.empty();
-
-        private Optional<Long> placeOfServiceConceptId = Optional.empty();
-
-        private Optional<Long> locationId = Optional.empty();
-
-        private Optional<String> careSiteSourceValue = Optional.empty();
-
-        private Optional<String> placeOfServiceSourceValue = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(CareSiteRow other) {
-            careSiteId(other.getCareSiteId());
-            careSiteName(other.getCareSiteName());
-            placeOfServiceConceptId(other.getPlaceOfServiceConceptId());
-            locationId(other.getLocationId());
-            careSiteSourceValue(other.getCareSiteSourceValue());
-            placeOfServiceSourceValue(other.getPlaceOfServiceSourceValue());
-            return this;
-        }
-
-        @JsonSetter(value = "care_site_id", nulls = Nulls.SKIP)
-        public Builder careSiteId(Optional<Long> careSiteId) {
-            this.careSiteId = careSiteId;
-            return this;
-        }
-
-        public Builder careSiteId(Long careSiteId) {
-            this.careSiteId = Optional.ofNullable(careSiteId);
-            return this;
-        }
-
-        @JsonSetter(value = "care_site_name", nulls = Nulls.SKIP)
-        public Builder careSiteName(Optional<String> careSiteName) {
-            this.careSiteName = careSiteName;
-            return this;
-        }
-
-        public Builder careSiteName(String careSiteName) {
-            this.careSiteName = Optional.ofNullable(careSiteName);
-            return this;
-        }
-
-        @JsonSetter(value = "place_of_service_concept_id", nulls = Nulls.SKIP)
-        public Builder placeOfServiceConceptId(Optional<Long> placeOfServiceConceptId) {
-            this.placeOfServiceConceptId = placeOfServiceConceptId;
-            return this;
-        }
-
-        public Builder placeOfServiceConceptId(Long placeOfServiceConceptId) {
-            this.placeOfServiceConceptId = Optional.ofNullable(placeOfServiceConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "location_id", nulls = Nulls.SKIP)
-        public Builder locationId(Optional<Long> locationId) {
-            this.locationId = locationId;
-            return this;
-        }
-
-        public Builder locationId(Long locationId) {
-            this.locationId = Optional.ofNullable(locationId);
-            return this;
-        }
-
-        @JsonSetter(value = "care_site_source_value", nulls = Nulls.SKIP)
-        public Builder careSiteSourceValue(Optional<String> careSiteSourceValue) {
-            this.careSiteSourceValue = careSiteSourceValue;
-            return this;
-        }
-
-        public Builder careSiteSourceValue(String careSiteSourceValue) {
-            this.careSiteSourceValue = Optional.ofNullable(careSiteSourceValue);
-            return this;
-        }
-
-        @JsonSetter(value = "place_of_service_source_value", nulls = Nulls.SKIP)
-        public Builder placeOfServiceSourceValue(Optional<String> placeOfServiceSourceValue) {
-            this.placeOfServiceSourceValue = placeOfServiceSourceValue;
-            return this;
-        }
-
-        public Builder placeOfServiceSourceValue(String placeOfServiceSourceValue) {
-            this.placeOfServiceSourceValue = Optional.ofNullable(placeOfServiceSourceValue);
-            return this;
-        }
-
-        public CareSiteRow build() {
-            return new CareSiteRow(
-                    careSiteId,
-                    careSiteName,
-                    placeOfServiceConceptId,
-                    locationId,
-                    careSiteSourceValue,
-                    placeOfServiceSourceValue,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public CareSiteRow build() {
+      return new CareSiteRow(
+        careSiteId,
+        careSiteName,
+        placeOfServiceConceptId,
+        locationId,
+        careSiteSourceValue,
+        placeOfServiceSourceValue,
+        additionalProperties
+      );
     }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("care_site_id") ||
+        key.equalsIgnoreCase("care_site_name") ||
+        key.equalsIgnoreCase("place_of_service_concept_id") ||
+        key.equalsIgnoreCase("location_id") ||
+        key.equalsIgnoreCase("care_site_source_value") ||
+        key.equalsIgnoreCase("place_of_service_source_value")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

@@ -22,196 +22,214 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ResultsPageResponse.Builder.class)
 public final class ResultsPageResponse {
-    private final List<BatchItemStatus> results;
 
-    private final Optional<String> nextCursor;
+  private final List<BatchItemStatus> results;
 
-    private final boolean hasMore;
+  private final Optional<String> nextCursor;
 
-    private final Map<String, Object> additionalProperties;
+  private final boolean hasMore;
 
-    private ResultsPageResponse(
-            List<BatchItemStatus> results,
-            Optional<String> nextCursor,
-            boolean hasMore,
-            Map<String, Object> additionalProperties) {
-        this.results = results;
-        this.nextCursor = nextCursor;
-        this.hasMore = hasMore;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
-    @JsonProperty("results")
-    public List<BatchItemStatus> getResults() {
-        return results;
+  private ResultsPageResponse(
+    List<BatchItemStatus> results,
+    Optional<String> nextCursor,
+    boolean hasMore,
+    Map<String, Object> additionalProperties
+  ) {
+    this.results = results;
+    this.nextCursor = nextCursor;
+    this.hasMore = hasMore;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("results")
+  public List<BatchItemStatus> getResults() {
+    return results;
+  }
+
+  /**
+   * @return Cursor for the next page, when has_more is true.
+   */
+  @JsonProperty("next_cursor")
+  public Optional<String> getNextCursor() {
+    return nextCursor;
+  }
+
+  /**
+   * @return Whether more results remain beyond this page.
+   */
+  @JsonProperty("has_more")
+  public boolean getHasMore() {
+    return hasMore;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ResultsPageResponse && equalTo((ResultsPageResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ResultsPageResponse other) {
+    return (
+      results.equals(other.results) &&
+      nextCursor.equals(other.nextCursor) &&
+      hasMore == other.hasMore
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.results, this.nextCursor, this.hasMore);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static HasMoreStage builder() {
+    return new Builder();
+  }
+
+  public interface HasMoreStage {
+    /**
+     * <p>Whether more results remain beyond this page.</p>
+     */
+    _FinalStage hasMore(boolean hasMore);
+
+    Builder from(ResultsPageResponse other);
+  }
+
+  public interface _FinalStage {
+    ResultsPageResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    _FinalStage results(List<BatchItemStatus> results);
+
+    _FinalStage addResults(BatchItemStatus results);
+
+    _FinalStage addAllResults(List<BatchItemStatus> results);
+
+    /**
+     * <p>Cursor for the next page, when has_more is true.</p>
+     */
+    _FinalStage nextCursor(Optional<String> nextCursor);
+
+    _FinalStage nextCursor(String nextCursor);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements HasMoreStage, _FinalStage {
+
+    private boolean hasMore;
+
+    private Optional<String> nextCursor = Optional.empty();
+
+    private List<BatchItemStatus> results = new ArrayList<>();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(ResultsPageResponse other) {
+      results(other.getResults());
+      nextCursor(other.getNextCursor());
+      hasMore(other.getHasMore());
+      return this;
     }
 
     /**
-     * @return Cursor for the next page, when has_more is true.
+     * <p>Whether more results remain beyond this page.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("next_cursor")
-    public Optional<String> getNextCursor() {
-        return nextCursor;
+    @java.lang.Override
+    @JsonSetter("has_more")
+    public _FinalStage hasMore(boolean hasMore) {
+      this.hasMore = hasMore;
+      return this;
     }
 
     /**
-     * @return Whether more results remain beyond this page.
+     * <p>Cursor for the next page, when has_more is true.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("has_more")
-    public boolean getHasMore() {
-        return hasMore;
+    @java.lang.Override
+    public _FinalStage nextCursor(String nextCursor) {
+      this.nextCursor = Optional.ofNullable(nextCursor);
+      return this;
+    }
+
+    /**
+     * <p>Cursor for the next page, when has_more is true.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "next_cursor", nulls = Nulls.SKIP)
+    public _FinalStage nextCursor(Optional<String> nextCursor) {
+      this.nextCursor = nextCursor;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ResultsPageResponse && equalTo((ResultsPageResponse) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(ResultsPageResponse other) {
-        return results.equals(other.results) && nextCursor.equals(other.nextCursor) && hasMore == other.hasMore;
+    public _FinalStage addAllResults(List<BatchItemStatus> results) {
+      if (results != null) {
+        this.results.addAll(results);
+      }
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.results, this.nextCursor, this.hasMore);
+    public _FinalStage addResults(BatchItemStatus results) {
+      this.results.add(results);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonSetter(value = "results", nulls = Nulls.SKIP)
+    public _FinalStage results(List<BatchItemStatus> results) {
+      this.results.clear();
+      if (results != null) {
+        this.results.addAll(results);
+      }
+      return this;
     }
 
-    public static HasMoreStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public ResultsPageResponse build() {
+      return new ResultsPageResponse(results, nextCursor, hasMore, additionalProperties);
     }
 
-    public interface HasMoreStage {
-        /**
-         * <p>Whether more results remain beyond this page.</p>
-         */
-        _FinalStage hasMore(boolean hasMore);
-
-        Builder from(ResultsPageResponse other);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("results") ||
+        key.equalsIgnoreCase("next_cursor") ||
+        key.equalsIgnoreCase("has_more")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public interface _FinalStage {
-        ResultsPageResponse build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        _FinalStage results(List<BatchItemStatus> results);
-
-        _FinalStage addResults(BatchItemStatus results);
-
-        _FinalStage addAllResults(List<BatchItemStatus> results);
-
-        /**
-         * <p>Cursor for the next page, when has_more is true.</p>
-         */
-        _FinalStage nextCursor(Optional<String> nextCursor);
-
-        _FinalStage nextCursor(String nextCursor);
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements HasMoreStage, _FinalStage {
-        private boolean hasMore;
-
-        private Optional<String> nextCursor = Optional.empty();
-
-        private List<BatchItemStatus> results = new ArrayList<>();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(ResultsPageResponse other) {
-            results(other.getResults());
-            nextCursor(other.getNextCursor());
-            hasMore(other.getHasMore());
-            return this;
-        }
-
-        /**
-         * <p>Whether more results remain beyond this page.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("has_more")
-        public _FinalStage hasMore(boolean hasMore) {
-            this.hasMore = hasMore;
-            return this;
-        }
-
-        /**
-         * <p>Cursor for the next page, when has_more is true.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage nextCursor(String nextCursor) {
-            this.nextCursor = Optional.ofNullable(nextCursor);
-            return this;
-        }
-
-        /**
-         * <p>Cursor for the next page, when has_more is true.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "next_cursor", nulls = Nulls.SKIP)
-        public _FinalStage nextCursor(Optional<String> nextCursor) {
-            this.nextCursor = nextCursor;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage addAllResults(List<BatchItemStatus> results) {
-            if (results != null) {
-                this.results.addAll(results);
-            }
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage addResults(BatchItemStatus results) {
-            this.results.add(results);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "results", nulls = Nulls.SKIP)
-        public _FinalStage results(List<BatchItemStatus> results) {
-            this.results.clear();
-            if (results != null) {
-                this.results.addAll(results);
-            }
-            return this;
-        }
-
-        @java.lang.Override
-        public ResultsPageResponse build() {
-            return new ResultsPageResponse(results, nextCursor, hasMore, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

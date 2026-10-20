@@ -20,92 +20,101 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ListRequest.Builder.class)
 public final class ListRequest {
-    private final Optional<String> tags;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> tags;
 
-    private ListRequest(Optional<String> tags, Map<String, Object> additionalProperties) {
-        this.tags = tags;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ListRequest(Optional<String> tags, Map<String, Object> additionalProperties) {
+    this.tags = tags;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Filter by tags
+   */
+  @JsonProperty("tags")
+  public Optional<String> getTags() {
+    return tags;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ListRequest && equalTo((ListRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ListRequest other) {
+    return tags.equals(other.tags);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.tags);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> tags = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ListRequest other) {
+      tags(other.getTags());
+      return this;
     }
 
     /**
-     * @return Filter by tags
+     * <p>Filter by tags</p>
      */
-    @JsonProperty("tags")
-    public Optional<String> getTags() {
-        return tags;
+    @JsonSetter(value = "tags", nulls = Nulls.SKIP)
+    public Builder tags(Optional<String> tags) {
+      this.tags = tags;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ListRequest && equalTo((ListRequest) other);
+    public Builder tags(String tags) {
+      this.tags = Optional.ofNullable(tags);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ListRequest build() {
+      return new ListRequest(tags, additionalProperties);
     }
 
-    private boolean equalTo(ListRequest other) {
-        return tags.equals(other.tags);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("tags")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.tags);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> tags = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ListRequest other) {
-            tags(other.getTags());
-            return this;
-        }
-
-        /**
-         * <p>Filter by tags</p>
-         */
-        @JsonSetter(value = "tags", nulls = Nulls.SKIP)
-        public Builder tags(Optional<String> tags) {
-            this.tags = tags;
-            return this;
-        }
-
-        public Builder tags(String tags) {
-            this.tags = Optional.ofNullable(tags);
-            return this;
-        }
-
-        public ListRequest build() {
-            return new ListRequest(tags, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

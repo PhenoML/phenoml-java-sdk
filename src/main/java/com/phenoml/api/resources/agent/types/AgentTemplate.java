@@ -21,313 +21,344 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = AgentTemplate.Builder.class)
 public final class AgentTemplate {
-    private final Optional<String> id;
 
-    private final Optional<String> name;
+  private final Optional<String> id;
 
-    private final Optional<String> description;
+  private final Optional<String> name;
 
-    private final Optional<List<String>> prompts;
+  private final Optional<String> description;
 
-    private final Optional<List<String>> tools;
+  private final Optional<List<String>> prompts;
 
-    private final Optional<List<String>> workflows;
+  private final Optional<List<String>> tools;
 
-    private final Optional<List<String>> tags;
+  private final Optional<List<String>> workflows;
 
-    private final Optional<AgentTemplateProvider> provider;
+  private final Optional<List<String>> tags;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<AgentTemplateProvider> provider;
 
-    private AgentTemplate(
-            Optional<String> id,
-            Optional<String> name,
-            Optional<String> description,
-            Optional<List<String>> prompts,
-            Optional<List<String>> tools,
-            Optional<List<String>> workflows,
-            Optional<List<String>> tags,
-            Optional<AgentTemplateProvider> provider,
-            Map<String, Object> additionalProperties) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.prompts = prompts;
-        this.tools = tools;
-        this.workflows = workflows;
-        this.tags = tags;
-        this.provider = provider;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private AgentTemplate(
+    Optional<String> id,
+    Optional<String> name,
+    Optional<String> description,
+    Optional<List<String>> prompts,
+    Optional<List<String>> tools,
+    Optional<List<String>> workflows,
+    Optional<List<String>> tags,
+    Optional<AgentTemplateProvider> provider,
+    Map<String, Object> additionalProperties
+  ) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.prompts = prompts;
+    this.tools = tools;
+    this.workflows = workflows;
+    this.tags = tags;
+    this.provider = provider;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Agent ID
+   */
+  @JsonProperty("id")
+  public Optional<String> getId() {
+    return id;
+  }
+
+  /**
+   * @return Agent name
+   */
+  @JsonProperty("name")
+  public Optional<String> getName() {
+    return name;
+  }
+
+  /**
+   * @return Agent description
+   */
+  @JsonProperty("description")
+  public Optional<String> getDescription() {
+    return description;
+  }
+
+  /**
+   * @return Array of prompt IDs used by this agent
+   */
+  @JsonProperty("prompts")
+  public Optional<List<String>> getPrompts() {
+    return prompts;
+  }
+
+  /**
+   * @return Array of MCP server tool IDs used by this agent
+   */
+  @JsonProperty("tools")
+  public Optional<List<String>> getTools() {
+    return tools;
+  }
+
+  /**
+   * @return Array of workflow IDs exposed as tools by this agent
+   */
+  @JsonProperty("workflows")
+  public Optional<List<String>> getWorkflows() {
+    return workflows;
+  }
+
+  /**
+   * @return Tags for categorizing the agent
+   */
+  @JsonProperty("tags")
+  public Optional<List<String>> getTags() {
+    return tags;
+  }
+
+  /**
+   * @return FHIR provider ID(s) - must be valid UUIDs from existing FHIR providers
+   */
+  @JsonProperty("provider")
+  public Optional<AgentTemplateProvider> getProvider() {
+    return provider;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof AgentTemplate && equalTo((AgentTemplate) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(AgentTemplate other) {
+    return (
+      id.equals(other.id) &&
+      name.equals(other.name) &&
+      description.equals(other.description) &&
+      prompts.equals(other.prompts) &&
+      tools.equals(other.tools) &&
+      workflows.equals(other.workflows) &&
+      tags.equals(other.tags) &&
+      provider.equals(other.provider)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.id,
+      this.name,
+      this.description,
+      this.prompts,
+      this.tools,
+      this.workflows,
+      this.tags,
+      this.provider
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> id = Optional.empty();
+
+    private Optional<String> name = Optional.empty();
+
+    private Optional<String> description = Optional.empty();
+
+    private Optional<List<String>> prompts = Optional.empty();
+
+    private Optional<List<String>> tools = Optional.empty();
+
+    private Optional<List<String>> workflows = Optional.empty();
+
+    private Optional<List<String>> tags = Optional.empty();
+
+    private Optional<AgentTemplateProvider> provider = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(AgentTemplate other) {
+      id(other.getId());
+      name(other.getName());
+      description(other.getDescription());
+      prompts(other.getPrompts());
+      tools(other.getTools());
+      workflows(other.getWorkflows());
+      tags(other.getTags());
+      provider(other.getProvider());
+      return this;
     }
 
     /**
-     * @return Agent ID
+     * <p>Agent ID</p>
      */
-    @JsonProperty("id")
-    public Optional<String> getId() {
-        return id;
+    @JsonSetter(value = "id", nulls = Nulls.SKIP)
+    public Builder id(Optional<String> id) {
+      this.id = id;
+      return this;
+    }
+
+    public Builder id(String id) {
+      this.id = Optional.ofNullable(id);
+      return this;
     }
 
     /**
-     * @return Agent name
+     * <p>Agent name</p>
      */
-    @JsonProperty("name")
-    public Optional<String> getName() {
-        return name;
+    @JsonSetter(value = "name", nulls = Nulls.SKIP)
+    public Builder name(Optional<String> name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.name = Optional.ofNullable(name);
+      return this;
     }
 
     /**
-     * @return Agent description
+     * <p>Agent description</p>
      */
-    @JsonProperty("description")
-    public Optional<String> getDescription() {
-        return description;
+    @JsonSetter(value = "description", nulls = Nulls.SKIP)
+    public Builder description(Optional<String> description) {
+      this.description = description;
+      return this;
+    }
+
+    public Builder description(String description) {
+      this.description = Optional.ofNullable(description);
+      return this;
     }
 
     /**
-     * @return Array of prompt IDs used by this agent
+     * <p>Array of prompt IDs used by this agent</p>
      */
-    @JsonProperty("prompts")
-    public Optional<List<String>> getPrompts() {
-        return prompts;
+    @JsonSetter(value = "prompts", nulls = Nulls.SKIP)
+    public Builder prompts(Optional<List<String>> prompts) {
+      this.prompts = prompts;
+      return this;
+    }
+
+    public Builder prompts(List<String> prompts) {
+      this.prompts = Optional.ofNullable(prompts);
+      return this;
     }
 
     /**
-     * @return Array of MCP server tool IDs used by this agent
+     * <p>Array of MCP server tool IDs used by this agent</p>
      */
-    @JsonProperty("tools")
-    public Optional<List<String>> getTools() {
-        return tools;
+    @JsonSetter(value = "tools", nulls = Nulls.SKIP)
+    public Builder tools(Optional<List<String>> tools) {
+      this.tools = tools;
+      return this;
+    }
+
+    public Builder tools(List<String> tools) {
+      this.tools = Optional.ofNullable(tools);
+      return this;
     }
 
     /**
-     * @return Array of workflow IDs exposed as tools by this agent
+     * <p>Array of workflow IDs exposed as tools by this agent</p>
      */
-    @JsonProperty("workflows")
-    public Optional<List<String>> getWorkflows() {
-        return workflows;
+    @JsonSetter(value = "workflows", nulls = Nulls.SKIP)
+    public Builder workflows(Optional<List<String>> workflows) {
+      this.workflows = workflows;
+      return this;
+    }
+
+    public Builder workflows(List<String> workflows) {
+      this.workflows = Optional.ofNullable(workflows);
+      return this;
     }
 
     /**
-     * @return Tags for categorizing the agent
+     * <p>Tags for categorizing the agent</p>
      */
-    @JsonProperty("tags")
-    public Optional<List<String>> getTags() {
-        return tags;
+    @JsonSetter(value = "tags", nulls = Nulls.SKIP)
+    public Builder tags(Optional<List<String>> tags) {
+      this.tags = tags;
+      return this;
+    }
+
+    public Builder tags(List<String> tags) {
+      this.tags = Optional.ofNullable(tags);
+      return this;
     }
 
     /**
-     * @return FHIR provider ID(s) - must be valid UUIDs from existing FHIR providers
+     * <p>FHIR provider ID(s) - must be valid UUIDs from existing FHIR providers</p>
      */
-    @JsonProperty("provider")
-    public Optional<AgentTemplateProvider> getProvider() {
-        return provider;
+    @JsonSetter(value = "provider", nulls = Nulls.SKIP)
+    public Builder provider(Optional<AgentTemplateProvider> provider) {
+      this.provider = provider;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof AgentTemplate && equalTo((AgentTemplate) other);
+    public Builder provider(AgentTemplateProvider provider) {
+      this.provider = Optional.ofNullable(provider);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public AgentTemplate build() {
+      return new AgentTemplate(
+        id,
+        name,
+        description,
+        prompts,
+        tools,
+        workflows,
+        tags,
+        provider,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(AgentTemplate other) {
-        return id.equals(other.id)
-                && name.equals(other.name)
-                && description.equals(other.description)
-                && prompts.equals(other.prompts)
-                && tools.equals(other.tools)
-                && workflows.equals(other.workflows)
-                && tags.equals(other.tags)
-                && provider.equals(other.provider);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("id") ||
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("description") ||
+        key.equalsIgnoreCase("prompts") ||
+        key.equalsIgnoreCase("tools") ||
+        key.equalsIgnoreCase("workflows") ||
+        key.equalsIgnoreCase("tags") ||
+        key.equalsIgnoreCase("provider")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.id,
-                this.name,
-                this.description,
-                this.prompts,
-                this.tools,
-                this.workflows,
-                this.tags,
-                this.provider);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> id = Optional.empty();
-
-        private Optional<String> name = Optional.empty();
-
-        private Optional<String> description = Optional.empty();
-
-        private Optional<List<String>> prompts = Optional.empty();
-
-        private Optional<List<String>> tools = Optional.empty();
-
-        private Optional<List<String>> workflows = Optional.empty();
-
-        private Optional<List<String>> tags = Optional.empty();
-
-        private Optional<AgentTemplateProvider> provider = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(AgentTemplate other) {
-            id(other.getId());
-            name(other.getName());
-            description(other.getDescription());
-            prompts(other.getPrompts());
-            tools(other.getTools());
-            workflows(other.getWorkflows());
-            tags(other.getTags());
-            provider(other.getProvider());
-            return this;
-        }
-
-        /**
-         * <p>Agent ID</p>
-         */
-        @JsonSetter(value = "id", nulls = Nulls.SKIP)
-        public Builder id(Optional<String> id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder id(String id) {
-            this.id = Optional.ofNullable(id);
-            return this;
-        }
-
-        /**
-         * <p>Agent name</p>
-         */
-        @JsonSetter(value = "name", nulls = Nulls.SKIP)
-        public Builder name(Optional<String> name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = Optional.ofNullable(name);
-            return this;
-        }
-
-        /**
-         * <p>Agent description</p>
-         */
-        @JsonSetter(value = "description", nulls = Nulls.SKIP)
-        public Builder description(Optional<String> description) {
-            this.description = description;
-            return this;
-        }
-
-        public Builder description(String description) {
-            this.description = Optional.ofNullable(description);
-            return this;
-        }
-
-        /**
-         * <p>Array of prompt IDs used by this agent</p>
-         */
-        @JsonSetter(value = "prompts", nulls = Nulls.SKIP)
-        public Builder prompts(Optional<List<String>> prompts) {
-            this.prompts = prompts;
-            return this;
-        }
-
-        public Builder prompts(List<String> prompts) {
-            this.prompts = Optional.ofNullable(prompts);
-            return this;
-        }
-
-        /**
-         * <p>Array of MCP server tool IDs used by this agent</p>
-         */
-        @JsonSetter(value = "tools", nulls = Nulls.SKIP)
-        public Builder tools(Optional<List<String>> tools) {
-            this.tools = tools;
-            return this;
-        }
-
-        public Builder tools(List<String> tools) {
-            this.tools = Optional.ofNullable(tools);
-            return this;
-        }
-
-        /**
-         * <p>Array of workflow IDs exposed as tools by this agent</p>
-         */
-        @JsonSetter(value = "workflows", nulls = Nulls.SKIP)
-        public Builder workflows(Optional<List<String>> workflows) {
-            this.workflows = workflows;
-            return this;
-        }
-
-        public Builder workflows(List<String> workflows) {
-            this.workflows = Optional.ofNullable(workflows);
-            return this;
-        }
-
-        /**
-         * <p>Tags for categorizing the agent</p>
-         */
-        @JsonSetter(value = "tags", nulls = Nulls.SKIP)
-        public Builder tags(Optional<List<String>> tags) {
-            this.tags = tags;
-            return this;
-        }
-
-        public Builder tags(List<String> tags) {
-            this.tags = Optional.ofNullable(tags);
-            return this;
-        }
-
-        /**
-         * <p>FHIR provider ID(s) - must be valid UUIDs from existing FHIR providers</p>
-         */
-        @JsonSetter(value = "provider", nulls = Nulls.SKIP)
-        public Builder provider(Optional<AgentTemplateProvider> provider) {
-            this.provider = provider;
-            return this;
-        }
-
-        public Builder provider(AgentTemplateProvider provider) {
-            this.provider = Optional.ofNullable(provider);
-            return this;
-        }
-
-        public AgentTemplate build() {
-            return new AgentTemplate(
-                    id, name, description, prompts, tools, workflows, tags, provider, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -24,166 +24,178 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PatchRequest.Builder.class)
 public final class PatchRequest {
-    private final Optional<String> phenomlOnBehalfOf;
 
-    private final Optional<String> phenomlFhirProvider;
+  private final Optional<String> phenomlOnBehalfOf;
 
-    private final List<PatchRequestBodyItem> body;
+  private final Optional<String> phenomlFhirProvider;
 
-    private final Map<String, Object> additionalProperties;
+  private final List<PatchRequestBodyItem> body;
 
-    private PatchRequest(
-            Optional<String> phenomlOnBehalfOf,
-            Optional<String> phenomlFhirProvider,
-            List<PatchRequestBodyItem> body,
-            Map<String, Object> additionalProperties) {
-        this.phenomlOnBehalfOf = phenomlOnBehalfOf;
-        this.phenomlFhirProvider = phenomlFhirProvider;
-        this.body = body;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private PatchRequest(
+    Optional<String> phenomlOnBehalfOf,
+    Optional<String> phenomlFhirProvider,
+    List<PatchRequestBodyItem> body,
+    Map<String, Object> additionalProperties
+  ) {
+    this.phenomlOnBehalfOf = phenomlOnBehalfOf;
+    this.phenomlFhirProvider = phenomlFhirProvider;
+    this.body = body;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+   * Must be in the format: Patient/{uuid} or Practitioner/{uuid}
+   */
+  @JsonIgnore
+  public Optional<String> getPhenomlOnBehalfOf() {
+    return phenomlOnBehalfOf;
+  }
+
+  /**
+   * @return Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+   * Multiple FHIR provider integrations can be provided as comma-separated values.
+   */
+  @JsonIgnore
+  public Optional<String> getPhenomlFhirProvider() {
+    return phenomlFhirProvider;
+  }
+
+  /**
+   * @return Array of JSON Patch operations following RFC 6902
+   */
+  @JsonProperty("body")
+  public List<PatchRequestBodyItem> getBody() {
+    return body;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof PatchRequest && equalTo((PatchRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(PatchRequest other) {
+    return (
+      phenomlOnBehalfOf.equals(other.phenomlOnBehalfOf) &&
+      phenomlFhirProvider.equals(other.phenomlFhirProvider) &&
+      body.equals(other.body)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.phenomlOnBehalfOf, this.phenomlFhirProvider, this.body);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> phenomlOnBehalfOf = Optional.empty();
+
+    private Optional<String> phenomlFhirProvider = Optional.empty();
+
+    private List<PatchRequestBodyItem> body = new ArrayList<>();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(PatchRequest other) {
+      phenomlOnBehalfOf(other.getPhenomlOnBehalfOf());
+      phenomlFhirProvider(other.getPhenomlFhirProvider());
+      body(other.getBody());
+      return this;
     }
 
     /**
-     * @return Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
-     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}
+     * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
      */
-    @JsonIgnore
-    public Optional<String> getPhenomlOnBehalfOf() {
-        return phenomlOnBehalfOf;
+    public Builder phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf) {
+      this.phenomlOnBehalfOf = phenomlOnBehalfOf;
+      return this;
+    }
+
+    public Builder phenomlOnBehalfOf(String phenomlOnBehalfOf) {
+      this.phenomlOnBehalfOf = Optional.ofNullable(phenomlOnBehalfOf);
+      return this;
     }
 
     /**
-     * @return Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
-     * Multiple FHIR provider integrations can be provided as comma-separated values.
+     * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+     * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
      */
-    @JsonIgnore
-    public Optional<String> getPhenomlFhirProvider() {
-        return phenomlFhirProvider;
+    public Builder phenomlFhirProvider(Optional<String> phenomlFhirProvider) {
+      this.phenomlFhirProvider = phenomlFhirProvider;
+      return this;
+    }
+
+    public Builder phenomlFhirProvider(String phenomlFhirProvider) {
+      this.phenomlFhirProvider = Optional.ofNullable(phenomlFhirProvider);
+      return this;
     }
 
     /**
-     * @return Array of JSON Patch operations following RFC 6902
+     * <p>Array of JSON Patch operations following RFC 6902</p>
      */
-    @JsonProperty("body")
-    public List<PatchRequestBodyItem> getBody() {
-        return body;
+    @JsonSetter(value = "body", nulls = Nulls.SKIP)
+    public Builder body(List<PatchRequestBodyItem> body) {
+      this.body.clear();
+      if (body != null) {
+        this.body.addAll(body);
+      }
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof PatchRequest && equalTo((PatchRequest) other);
+    public Builder addBody(PatchRequestBodyItem body) {
+      this.body.add(body);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder addAllBody(List<PatchRequestBodyItem> body) {
+      if (body != null) {
+        this.body.addAll(body);
+      }
+      return this;
     }
 
-    private boolean equalTo(PatchRequest other) {
-        return phenomlOnBehalfOf.equals(other.phenomlOnBehalfOf)
-                && phenomlFhirProvider.equals(other.phenomlFhirProvider)
-                && body.equals(other.body);
+    public PatchRequest build() {
+      return new PatchRequest(phenomlOnBehalfOf, phenomlFhirProvider, body, additionalProperties);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.phenomlOnBehalfOf, this.phenomlFhirProvider, this.body);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("body")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> phenomlOnBehalfOf = Optional.empty();
-
-        private Optional<String> phenomlFhirProvider = Optional.empty();
-
-        private List<PatchRequestBodyItem> body = new ArrayList<>();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(PatchRequest other) {
-            phenomlOnBehalfOf(other.getPhenomlOnBehalfOf());
-            phenomlFhirProvider(other.getPhenomlFhirProvider());
-            body(other.getBody());
-            return this;
-        }
-
-        /**
-         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
-         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
-         */
-        public Builder phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf) {
-            this.phenomlOnBehalfOf = phenomlOnBehalfOf;
-            return this;
-        }
-
-        public Builder phenomlOnBehalfOf(String phenomlOnBehalfOf) {
-            this.phenomlOnBehalfOf = Optional.ofNullable(phenomlOnBehalfOf);
-            return this;
-        }
-
-        /**
-         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
-         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
-         */
-        public Builder phenomlFhirProvider(Optional<String> phenomlFhirProvider) {
-            this.phenomlFhirProvider = phenomlFhirProvider;
-            return this;
-        }
-
-        public Builder phenomlFhirProvider(String phenomlFhirProvider) {
-            this.phenomlFhirProvider = Optional.ofNullable(phenomlFhirProvider);
-            return this;
-        }
-
-        /**
-         * <p>Array of JSON Patch operations following RFC 6902</p>
-         */
-        @JsonSetter(value = "body", nulls = Nulls.SKIP)
-        public Builder body(List<PatchRequestBodyItem> body) {
-            this.body.clear();
-            if (body != null) {
-                this.body.addAll(body);
-            }
-            return this;
-        }
-
-        public Builder addBody(PatchRequestBodyItem body) {
-            this.body.add(body);
-            return this;
-        }
-
-        public Builder addAllBody(List<PatchRequestBodyItem> body) {
-            if (body != null) {
-                this.body.addAll(body);
-            }
-            return this;
-        }
-
-        public PatchRequest build() {
-            return new PatchRequest(phenomlOnBehalfOf, phenomlFhirProvider, body, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

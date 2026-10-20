@@ -19,110 +19,119 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = TranscribeResponse.Builder.class)
 public final class TranscribeResponse {
-    private final String transcript;
 
-    private final Map<String, Object> additionalProperties;
+  private final String transcript;
 
-    private TranscribeResponse(String transcript, Map<String, Object> additionalProperties) {
-        this.transcript = transcript;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private TranscribeResponse(String transcript, Map<String, Object> additionalProperties) {
+    this.transcript = transcript;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return The full transcript of the audio.
+   */
+  @JsonProperty("transcript")
+  public String getTranscript() {
+    return transcript;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof TranscribeResponse && equalTo((TranscribeResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(TranscribeResponse other) {
+    return transcript.equals(other.transcript);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.transcript);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static TranscriptStage builder() {
+    return new Builder();
+  }
+
+  public interface TranscriptStage {
+    /**
+     * <p>The full transcript of the audio.</p>
+     */
+    _FinalStage transcript(@NotNull String transcript);
+
+    Builder from(TranscribeResponse other);
+  }
+
+  public interface _FinalStage {
+    TranscribeResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements TranscriptStage, _FinalStage {
+
+    private String transcript;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(TranscribeResponse other) {
+      transcript(other.getTranscript());
+      return this;
     }
 
     /**
-     * @return The full transcript of the audio.
+     * <p>The full transcript of the audio.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("transcript")
-    public String getTranscript() {
-        return transcript;
+    @java.lang.Override
+    @JsonSetter("transcript")
+    public _FinalStage transcript(@NotNull String transcript) {
+      this.transcript = Objects.requireNonNull(transcript, "transcript must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof TranscribeResponse && equalTo((TranscribeResponse) other);
+    public TranscribeResponse build() {
+      return new TranscribeResponse(transcript, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(TranscribeResponse other) {
-        return transcript.equals(other.transcript);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.transcript);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("transcript")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static TranscriptStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface TranscriptStage {
-        /**
-         * <p>The full transcript of the audio.</p>
-         */
-        _FinalStage transcript(@NotNull String transcript);
-
-        Builder from(TranscribeResponse other);
-    }
-
-    public interface _FinalStage {
-        TranscribeResponse build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements TranscriptStage, _FinalStage {
-        private String transcript;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(TranscribeResponse other) {
-            transcript(other.getTranscript());
-            return this;
-        }
-
-        /**
-         * <p>The full transcript of the audio.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("transcript")
-        public _FinalStage transcript(@NotNull String transcript) {
-            this.transcript = Objects.requireNonNull(transcript, "transcript must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public TranscribeResponse build() {
-            return new TranscribeResponse(transcript, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

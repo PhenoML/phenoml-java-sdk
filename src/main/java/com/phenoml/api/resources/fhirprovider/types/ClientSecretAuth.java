@@ -21,219 +21,236 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ClientSecretAuth.Builder.class)
 public final class ClientSecretAuth {
-    private final String clientId;
 
-    private final String clientSecret;
+  private final String clientId;
 
-    private final Optional<Role> role;
+  private final String clientSecret;
 
-    private final Optional<String> scopes;
+  private final Optional<Role> role;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> scopes;
 
-    private ClientSecretAuth(
-            String clientId,
-            String clientSecret,
-            Optional<Role> role,
-            Optional<String> scopes,
-            Map<String, Object> additionalProperties) {
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.role = role;
-        this.scopes = scopes;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ClientSecretAuth(
+    String clientId,
+    String clientSecret,
+    Optional<Role> role,
+    Optional<String> scopes,
+    Map<String, Object> additionalProperties
+  ) {
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.role = role;
+    this.scopes = scopes;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return OAuth client ID
+   */
+  @JsonProperty("client_id")
+  public String getClientId() {
+    return clientId;
+  }
+
+  /**
+   * @return OAuth client secret
+   */
+  @JsonProperty("client_secret")
+  public String getClientSecret() {
+    return clientSecret;
+  }
+
+  @JsonProperty("role")
+  public Optional<Role> getRole() {
+    return role;
+  }
+
+  /**
+   * @return OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.
+   */
+  @JsonProperty("scopes")
+  public Optional<String> getScopes() {
+    return scopes;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ClientSecretAuth && equalTo((ClientSecretAuth) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ClientSecretAuth other) {
+    return (
+      clientId.equals(other.clientId) &&
+      clientSecret.equals(other.clientSecret) &&
+      role.equals(other.role) &&
+      scopes.equals(other.scopes)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.clientId, this.clientSecret, this.role, this.scopes);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static ClientIdStage builder() {
+    return new Builder();
+  }
+
+  public interface ClientIdStage {
+    /**
+     * <p>OAuth client ID</p>
+     */
+    ClientSecretStage clientId(@NotNull String clientId);
+
+    Builder from(ClientSecretAuth other);
+  }
+
+  public interface ClientSecretStage {
+    /**
+     * <p>OAuth client secret</p>
+     */
+    _FinalStage clientSecret(@NotNull String clientSecret);
+  }
+
+  public interface _FinalStage {
+    ClientSecretAuth build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    _FinalStage role(Optional<Role> role);
+
+    _FinalStage role(Role role);
+
+    /**
+     * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.</p>
+     */
+    _FinalStage scopes(Optional<String> scopes);
+
+    _FinalStage scopes(String scopes);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements ClientIdStage, ClientSecretStage, _FinalStage {
+
+    private String clientId;
+
+    private String clientSecret;
+
+    private Optional<String> scopes = Optional.empty();
+
+    private Optional<Role> role = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(ClientSecretAuth other) {
+      clientId(other.getClientId());
+      clientSecret(other.getClientSecret());
+      role(other.getRole());
+      scopes(other.getScopes());
+      return this;
     }
 
     /**
-     * @return OAuth client ID
+     * <p>OAuth client ID</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("client_id")
-    public String getClientId() {
-        return clientId;
+    @java.lang.Override
+    @JsonSetter("client_id")
+    public ClientSecretStage clientId(@NotNull String clientId) {
+      this.clientId = Objects.requireNonNull(clientId, "clientId must not be null");
+      return this;
     }
 
     /**
-     * @return OAuth client secret
+     * <p>OAuth client secret</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("client_secret")
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    @JsonProperty("role")
-    public Optional<Role> getRole() {
-        return role;
+    @java.lang.Override
+    @JsonSetter("client_secret")
+    public _FinalStage clientSecret(@NotNull String clientSecret) {
+      this.clientSecret = Objects.requireNonNull(clientSecret, "clientSecret must not be null");
+      return this;
     }
 
     /**
-     * @return OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.
+     * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("scopes")
-    public Optional<String> getScopes() {
-        return scopes;
+    @java.lang.Override
+    public _FinalStage scopes(String scopes) {
+      this.scopes = Optional.ofNullable(scopes);
+      return this;
+    }
+
+    /**
+     * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "scopes", nulls = Nulls.SKIP)
+    public _FinalStage scopes(Optional<String> scopes) {
+      this.scopes = scopes;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ClientSecretAuth && equalTo((ClientSecretAuth) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(ClientSecretAuth other) {
-        return clientId.equals(other.clientId)
-                && clientSecret.equals(other.clientSecret)
-                && role.equals(other.role)
-                && scopes.equals(other.scopes);
+    public _FinalStage role(Role role) {
+      this.role = Optional.ofNullable(role);
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.clientId, this.clientSecret, this.role, this.scopes);
+    @JsonSetter(value = "role", nulls = Nulls.SKIP)
+    public _FinalStage role(Optional<Role> role) {
+      this.role = role;
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public ClientSecretAuth build() {
+      return new ClientSecretAuth(clientId, clientSecret, role, scopes, additionalProperties);
     }
 
-    public static ClientIdStage builder() {
-        return new Builder();
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("client_id") ||
+        key.equalsIgnoreCase("client_secret") ||
+        key.equalsIgnoreCase("role") ||
+        key.equalsIgnoreCase("scopes")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public interface ClientIdStage {
-        /**
-         * <p>OAuth client ID</p>
-         */
-        ClientSecretStage clientId(@NotNull String clientId);
-
-        Builder from(ClientSecretAuth other);
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public interface ClientSecretStage {
-        /**
-         * <p>OAuth client secret</p>
-         */
-        _FinalStage clientSecret(@NotNull String clientSecret);
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface _FinalStage {
-        ClientSecretAuth build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        _FinalStage role(Optional<Role> role);
-
-        _FinalStage role(Role role);
-
-        /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.</p>
-         */
-        _FinalStage scopes(Optional<String> scopes);
-
-        _FinalStage scopes(String scopes);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements ClientIdStage, ClientSecretStage, _FinalStage {
-        private String clientId;
-
-        private String clientSecret;
-
-        private Optional<String> scopes = Optional.empty();
-
-        private Optional<Role> role = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(ClientSecretAuth other) {
-            clientId(other.getClientId());
-            clientSecret(other.getClientSecret());
-            role(other.getRole());
-            scopes(other.getScopes());
-            return this;
-        }
-
-        /**
-         * <p>OAuth client ID</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("client_id")
-        public ClientSecretStage clientId(@NotNull String clientId) {
-            this.clientId = Objects.requireNonNull(clientId, "clientId must not be null");
-            return this;
-        }
-
-        /**
-         * <p>OAuth client secret</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("client_secret")
-        public _FinalStage clientSecret(@NotNull String clientSecret) {
-            this.clientSecret = Objects.requireNonNull(clientSecret, "clientSecret must not be null");
-            return this;
-        }
-
-        /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage scopes(String scopes) {
-            this.scopes = Optional.ofNullable(scopes);
-            return this;
-        }
-
-        /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "scopes", nulls = Nulls.SKIP)
-        public _FinalStage scopes(Optional<String> scopes) {
-            this.scopes = scopes;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage role(Role role) {
-            this.role = Optional.ofNullable(role);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "role", nulls = Nulls.SKIP)
-        public _FinalStage role(Optional<Role> role) {
-            this.role = role;
-            return this;
-        }
-
-        @java.lang.Override
-        public ClientSecretAuth build() {
-            return new ClientSecretAuth(clientId, clientSecret, role, scopes, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

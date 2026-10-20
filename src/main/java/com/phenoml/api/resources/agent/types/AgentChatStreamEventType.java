@@ -7,122 +7,139 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class AgentChatStreamEventType {
-    public static final AgentChatStreamEventType MESSAGE_START =
-            new AgentChatStreamEventType(Value.MESSAGE_START, "message_start");
 
-    public static final AgentChatStreamEventType CONTENT_DELTA =
-            new AgentChatStreamEventType(Value.CONTENT_DELTA, "content_delta");
+  public static final AgentChatStreamEventType MESSAGE_START = new AgentChatStreamEventType(
+    Value.MESSAGE_START,
+    "message_start"
+  );
 
-    public static final AgentChatStreamEventType MESSAGE_END =
-            new AgentChatStreamEventType(Value.MESSAGE_END, "message_end");
+  public static final AgentChatStreamEventType CONTENT_DELTA = new AgentChatStreamEventType(
+    Value.CONTENT_DELTA,
+    "content_delta"
+  );
 
-    public static final AgentChatStreamEventType TOOL_USE = new AgentChatStreamEventType(Value.TOOL_USE, "tool_use");
+  public static final AgentChatStreamEventType MESSAGE_END = new AgentChatStreamEventType(
+    Value.MESSAGE_END,
+    "message_end"
+  );
 
-    public static final AgentChatStreamEventType ERROR = new AgentChatStreamEventType(Value.ERROR, "error");
+  public static final AgentChatStreamEventType TOOL_USE = new AgentChatStreamEventType(
+    Value.TOOL_USE,
+    "tool_use"
+  );
 
-    public static final AgentChatStreamEventType TOOL_RESULT =
-            new AgentChatStreamEventType(Value.TOOL_RESULT, "tool_result");
+  public static final AgentChatStreamEventType ERROR = new AgentChatStreamEventType(
+    Value.ERROR,
+    "error"
+  );
 
-    private final Value value;
+  public static final AgentChatStreamEventType TOOL_RESULT = new AgentChatStreamEventType(
+    Value.TOOL_RESULT,
+    "tool_result"
+  );
 
-    private final String string;
+  private final Value value;
 
-    AgentChatStreamEventType(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  AgentChatStreamEventType(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof AgentChatStreamEventType &&
+        this.string.equals(((AgentChatStreamEventType) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case MESSAGE_START:
+        return visitor.visitMessageStart();
+      case CONTENT_DELTA:
+        return visitor.visitContentDelta();
+      case MESSAGE_END:
+        return visitor.visitMessageEnd();
+      case TOOL_USE:
+        return visitor.visitToolUse();
+      case ERROR:
+        return visitor.visitError();
+      case TOOL_RESULT:
+        return visitor.visitToolResult();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static AgentChatStreamEventType valueOf(String value) {
+    switch (value) {
+      case "message_start":
+        return MESSAGE_START;
+      case "content_delta":
+        return CONTENT_DELTA;
+      case "message_end":
+        return MESSAGE_END;
+      case "tool_use":
+        return TOOL_USE;
+      case "error":
+        return ERROR;
+      case "tool_result":
+        return TOOL_RESULT;
+      default:
+        return new AgentChatStreamEventType(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    MESSAGE_START,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof AgentChatStreamEventType
-                        && this.string.equals(((AgentChatStreamEventType) other).string));
-    }
+    CONTENT_DELTA,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    TOOL_USE,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case MESSAGE_START:
-                return visitor.visitMessageStart();
-            case CONTENT_DELTA:
-                return visitor.visitContentDelta();
-            case MESSAGE_END:
-                return visitor.visitMessageEnd();
-            case TOOL_USE:
-                return visitor.visitToolUse();
-            case ERROR:
-                return visitor.visitError();
-            case TOOL_RESULT:
-                return visitor.visitToolResult();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    TOOL_RESULT,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static AgentChatStreamEventType valueOf(String value) {
-        switch (value) {
-            case "message_start":
-                return MESSAGE_START;
-            case "content_delta":
-                return CONTENT_DELTA;
-            case "message_end":
-                return MESSAGE_END;
-            case "tool_use":
-                return TOOL_USE;
-            case "error":
-                return ERROR;
-            case "tool_result":
-                return TOOL_RESULT;
-            default:
-                return new AgentChatStreamEventType(Value.UNKNOWN, value);
-        }
-    }
+    MESSAGE_END,
 
-    public enum Value {
-        MESSAGE_START,
+    ERROR,
 
-        CONTENT_DELTA,
+    UNKNOWN,
+  }
 
-        TOOL_USE,
+  public interface Visitor<T> {
+    T visitMessageStart();
 
-        TOOL_RESULT,
+    T visitContentDelta();
 
-        MESSAGE_END,
+    T visitToolUse();
 
-        ERROR,
+    T visitToolResult();
 
-        UNKNOWN
-    }
+    T visitMessageEnd();
 
-    public interface Visitor<T> {
-        T visitMessageStart();
+    T visitError();
 
-        T visitContentDelta();
-
-        T visitToolUse();
-
-        T visitToolResult();
-
-        T visitMessageEnd();
-
-        T visitError();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.fhirprovider;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.fhirprovider.authconfig.AsyncAuthConfigClient;
@@ -15,95 +16,176 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public class AsyncFhirProviderClient {
-    protected final ClientOptions clientOptions;
 
-    private final AsyncRawFhirProviderClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    protected final Supplier<AsyncAuthConfigClient> authConfigClient;
+  private final AsyncRawFhirProviderClient rawClient;
 
-    public AsyncFhirProviderClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawFhirProviderClient(clientOptions);
-        this.authConfigClient = Suppliers.memoize(() -> new AsyncAuthConfigClient(clientOptions));
-    }
+  protected final Supplier<AsyncAuthConfigClient> authConfigClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawFhirProviderClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AsyncFhirProviderClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new AsyncRawFhirProviderClient(clientOptions);
+    this.authConfigClient = Suppliers.memoize(() -> new AsyncAuthConfigClient(clientOptions));
+  }
 
-    /**
-     * Creates a new FHIR provider configuration with authentication credentials.
-     * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
-     */
-    public CompletableFuture<FhirProviderResponse> create(FhirProviderCreateRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public AsyncRawFhirProviderClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Creates a new FHIR provider configuration with authentication credentials.
-     * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
-     */
-    public CompletableFuture<FhirProviderResponse> create(
-            FhirProviderCreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Creates a new FHIR provider configuration with authentication credentials.
+   * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
+   */
+  public CompletableFuture<FhirProviderResponse> create(FhirProviderCreateRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<FhirProviderResponse>> rawFuture =
+      this.rawClient.create(request);
+    CompletableFuture<FhirProviderResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Retrieves a list of all active FHIR providers for the authenticated user.
-     * <p>On shared instances, only sandbox providers are returned.
-     * Sandbox providers return FhirProviderSandboxInfo.</p>
-     */
-    public CompletableFuture<FhirProviderListResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
-    }
+  /**
+   * Creates a new FHIR provider configuration with authentication credentials.
+   * <p>Note: The &quot;sandbox&quot; provider type cannot be created via this API - it is managed internally.</p>
+   */
+  public CompletableFuture<FhirProviderResponse> create(
+    FhirProviderCreateRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<FhirProviderResponse>> rawFuture =
+      this.rawClient.create(request, requestOptions);
+    CompletableFuture<FhirProviderResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Retrieves a list of all active FHIR providers for the authenticated user.
-     * <p>On shared instances, only sandbox providers are returned.
-     * Sandbox providers return FhirProviderSandboxInfo.</p>
-     */
-    public CompletableFuture<FhirProviderListResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves a list of all active FHIR providers for the authenticated user.
+   * <p>On shared instances, only sandbox providers are returned.
+   * Sandbox providers return FhirProviderSandboxInfo.</p>
+   */
+  public CompletableFuture<FhirProviderListResponse> list() {
+    CompletableFuture<PhenomlClientHttpResponse<FhirProviderListResponse>> rawFuture =
+      this.rawClient.list();
+    CompletableFuture<FhirProviderListResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Retrieves a specific FHIR provider configuration by its ID.
-     * <p>Sandbox providers return FhirProviderSandboxInfo.
-     * On shared instances, only sandbox providers can be accessed.</p>
-     */
-    public CompletableFuture<FhirProviderResponse> get(String fhirProviderId) {
-        return this.rawClient.get(fhirProviderId).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves a list of all active FHIR providers for the authenticated user.
+   * <p>On shared instances, only sandbox providers are returned.
+   * Sandbox providers return FhirProviderSandboxInfo.</p>
+   */
+  public CompletableFuture<FhirProviderListResponse> list(RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<FhirProviderListResponse>> rawFuture =
+      this.rawClient.list(requestOptions);
+    CompletableFuture<FhirProviderListResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Retrieves a specific FHIR provider configuration by its ID.
-     * <p>Sandbox providers return FhirProviderSandboxInfo.
-     * On shared instances, only sandbox providers can be accessed.</p>
-     */
-    public CompletableFuture<FhirProviderResponse> get(String fhirProviderId, RequestOptions requestOptions) {
-        return this.rawClient.get(fhirProviderId, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves a specific FHIR provider configuration by its ID.
+   * <p>Sandbox providers return FhirProviderSandboxInfo.
+   * On shared instances, only sandbox providers can be accessed.</p>
+   */
+  public CompletableFuture<FhirProviderResponse> get(String fhirProviderId) {
+    CompletableFuture<PhenomlClientHttpResponse<FhirProviderResponse>> rawFuture =
+      this.rawClient.get(fhirProviderId);
+    CompletableFuture<FhirProviderResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Deletes a FHIR provider.
-     * <p>Note: Sandbox providers cannot be deleted.</p>
-     */
-    public CompletableFuture<DeleteResponse> delete(String fhirProviderId) {
-        return this.rawClient.delete(fhirProviderId).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves a specific FHIR provider configuration by its ID.
+   * <p>Sandbox providers return FhirProviderSandboxInfo.
+   * On shared instances, only sandbox providers can be accessed.</p>
+   */
+  public CompletableFuture<FhirProviderResponse> get(
+    String fhirProviderId,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<FhirProviderResponse>> rawFuture =
+      this.rawClient.get(fhirProviderId, requestOptions);
+    CompletableFuture<FhirProviderResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Deletes a FHIR provider.
-     * <p>Note: Sandbox providers cannot be deleted.</p>
-     */
-    public CompletableFuture<DeleteResponse> delete(String fhirProviderId, RequestOptions requestOptions) {
-        return this.rawClient.delete(fhirProviderId, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Deletes a FHIR provider.
+   * <p>Note: Sandbox providers cannot be deleted.</p>
+   */
+  public CompletableFuture<DeleteResponse> delete(String fhirProviderId) {
+    CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> rawFuture =
+      this.rawClient.delete(fhirProviderId);
+    CompletableFuture<DeleteResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    public AsyncAuthConfigClient authConfig() {
-        return this.authConfigClient.get();
-    }
+  /**
+   * Deletes a FHIR provider.
+   * <p>Note: Sandbox providers cannot be deleted.</p>
+   */
+  public CompletableFuture<DeleteResponse> delete(
+    String fhirProviderId,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> rawFuture =
+      this.rawClient.delete(fhirProviderId, requestOptions);
+    CompletableFuture<DeleteResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
+
+  public AsyncAuthConfigClient authConfig() {
+    return this.authConfigClient.get();
+  }
 }

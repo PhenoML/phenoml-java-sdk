@@ -20,639 +20,707 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = DrugExposureRow.Builder.class)
 public final class DrugExposureRow {
-    private final Optional<Long> drugExposureId;
 
-    private final Optional<Long> personId;
+  private final Optional<Long> drugExposureId;
 
-    private final Optional<Long> drugConceptId;
+  private final Optional<Long> personId;
 
-    private final Optional<String> drugExposureStartDate;
+  private final Optional<Long> drugConceptId;
 
-    private final Optional<String> drugExposureStartDatetime;
+  private final Optional<String> drugExposureStartDate;
 
-    private final Optional<String> drugExposureEndDate;
+  private final Optional<String> drugExposureStartDatetime;
 
-    private final Optional<String> drugExposureEndDatetime;
+  private final Optional<String> drugExposureEndDate;
 
-    private final Optional<String> verbatimEndDate;
+  private final Optional<String> drugExposureEndDatetime;
 
-    private final Optional<Long> drugTypeConceptId;
+  private final Optional<String> verbatimEndDate;
 
-    private final Optional<String> stopReason;
+  private final Optional<Long> drugTypeConceptId;
 
-    private final Optional<Long> refills;
+  private final Optional<String> stopReason;
 
-    private final Optional<Long> daysSupply;
+  private final Optional<Long> refills;
 
-    private final Optional<String> sig;
+  private final Optional<Long> daysSupply;
 
-    private final Optional<Long> routeConceptId;
+  private final Optional<Double> quantity;
 
-    private final Optional<String> lotNumber;
+  private final Optional<String> sig;
 
-    private final Optional<Long> visitOccurrenceId;
+  private final Optional<Long> routeConceptId;
 
-    private final Optional<Long> providerId;
+  private final Optional<String> lotNumber;
 
-    private final Optional<String> drugSourceValue;
+  private final Optional<Long> visitOccurrenceId;
 
-    private final Optional<Long> drugSourceConceptId;
+  private final Optional<Long> providerId;
 
-    private final Optional<String> routeSourceValue;
+  private final Optional<String> drugSourceValue;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Long> drugSourceConceptId;
 
-    private DrugExposureRow(
-            Optional<Long> drugExposureId,
-            Optional<Long> personId,
-            Optional<Long> drugConceptId,
-            Optional<String> drugExposureStartDate,
-            Optional<String> drugExposureStartDatetime,
-            Optional<String> drugExposureEndDate,
-            Optional<String> drugExposureEndDatetime,
-            Optional<String> verbatimEndDate,
-            Optional<Long> drugTypeConceptId,
-            Optional<String> stopReason,
-            Optional<Long> refills,
-            Optional<Long> daysSupply,
-            Optional<String> sig,
-            Optional<Long> routeConceptId,
-            Optional<String> lotNumber,
-            Optional<Long> visitOccurrenceId,
-            Optional<Long> providerId,
-            Optional<String> drugSourceValue,
-            Optional<Long> drugSourceConceptId,
-            Optional<String> routeSourceValue,
-            Map<String, Object> additionalProperties) {
-        this.drugExposureId = drugExposureId;
-        this.personId = personId;
-        this.drugConceptId = drugConceptId;
-        this.drugExposureStartDate = drugExposureStartDate;
-        this.drugExposureStartDatetime = drugExposureStartDatetime;
-        this.drugExposureEndDate = drugExposureEndDate;
-        this.drugExposureEndDatetime = drugExposureEndDatetime;
-        this.verbatimEndDate = verbatimEndDate;
-        this.drugTypeConceptId = drugTypeConceptId;
-        this.stopReason = stopReason;
-        this.refills = refills;
-        this.daysSupply = daysSupply;
-        this.sig = sig;
-        this.routeConceptId = routeConceptId;
-        this.lotNumber = lotNumber;
-        this.visitOccurrenceId = visitOccurrenceId;
-        this.providerId = providerId;
-        this.drugSourceValue = drugSourceValue;
-        this.drugSourceConceptId = drugSourceConceptId;
-        this.routeSourceValue = routeSourceValue;
-        this.additionalProperties = additionalProperties;
+  private final Optional<String> routeSourceValue;
+
+  private final Map<String, Object> additionalProperties;
+
+  private DrugExposureRow(
+    Optional<Long> drugExposureId,
+    Optional<Long> personId,
+    Optional<Long> drugConceptId,
+    Optional<String> drugExposureStartDate,
+    Optional<String> drugExposureStartDatetime,
+    Optional<String> drugExposureEndDate,
+    Optional<String> drugExposureEndDatetime,
+    Optional<String> verbatimEndDate,
+    Optional<Long> drugTypeConceptId,
+    Optional<String> stopReason,
+    Optional<Long> refills,
+    Optional<Long> daysSupply,
+    Optional<Double> quantity,
+    Optional<String> sig,
+    Optional<Long> routeConceptId,
+    Optional<String> lotNumber,
+    Optional<Long> visitOccurrenceId,
+    Optional<Long> providerId,
+    Optional<String> drugSourceValue,
+    Optional<Long> drugSourceConceptId,
+    Optional<String> routeSourceValue,
+    Map<String, Object> additionalProperties
+  ) {
+    this.drugExposureId = drugExposureId;
+    this.personId = personId;
+    this.drugConceptId = drugConceptId;
+    this.drugExposureStartDate = drugExposureStartDate;
+    this.drugExposureStartDatetime = drugExposureStartDatetime;
+    this.drugExposureEndDate = drugExposureEndDate;
+    this.drugExposureEndDatetime = drugExposureEndDatetime;
+    this.verbatimEndDate = verbatimEndDate;
+    this.drugTypeConceptId = drugTypeConceptId;
+    this.stopReason = stopReason;
+    this.refills = refills;
+    this.daysSupply = daysSupply;
+    this.quantity = quantity;
+    this.sig = sig;
+    this.routeConceptId = routeConceptId;
+    this.lotNumber = lotNumber;
+    this.visitOccurrenceId = visitOccurrenceId;
+    this.providerId = providerId;
+    this.drugSourceValue = drugSourceValue;
+    this.drugSourceConceptId = drugSourceConceptId;
+    this.routeSourceValue = routeSourceValue;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("drug_exposure_id")
+  public Optional<Long> getDrugExposureId() {
+    return drugExposureId;
+  }
+
+  @JsonProperty("person_id")
+  public Optional<Long> getPersonId() {
+    return personId;
+  }
+
+  @JsonProperty("drug_concept_id")
+  public Optional<Long> getDrugConceptId() {
+    return drugConceptId;
+  }
+
+  /**
+   * @return Start date selected by the source resource's timing rules, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn; see the endpoint's timing sources for all supported resources.
+   */
+  @JsonProperty("drug_exposure_start_date")
+  public Optional<String> getDrugExposureStartDate() {
+    return drugExposureStartDate;
+  }
+
+  @JsonProperty("drug_exposure_start_datetime")
+  public Optional<String> getDrugExposureStartDatetime() {
+    return drugExposureStartDatetime;
+  }
+
+  /**
+   * @return End date selected by the source resource's timing rules, when available. For medication resources, an explicit effectivePeriod.end or the start date of a single-event administration or immunization; see the endpoint's timing sources for other resources.
+   */
+  @JsonProperty("drug_exposure_end_date")
+  public Optional<String> getDrugExposureEndDate() {
+    return drugExposureEndDate;
+  }
+
+  @JsonProperty("drug_exposure_end_datetime")
+  public Optional<String> getDrugExposureEndDatetime() {
+    return drugExposureEndDatetime;
+  }
+
+  /**
+   * @return Date from an explicit FHIR Period.end only; inferred same-day ends are not verbatim source values.
+   */
+  @JsonProperty("verbatim_end_date")
+  public Optional<String> getVerbatimEndDate() {
+    return verbatimEndDate;
+  }
+
+  @JsonProperty("drug_type_concept_id")
+  public Optional<Long> getDrugTypeConceptId() {
+    return drugTypeConceptId;
+  }
+
+  @JsonProperty("stop_reason")
+  public Optional<String> getStopReason() {
+    return stopReason;
+  }
+
+  /**
+   * @return Direct MedicationRequest.dispenseRequest.numberOfRepeatsAllowed value, when supplied.
+   */
+  @JsonProperty("refills")
+  public Optional<Long> getRefills() {
+    return refills;
+  }
+
+  /**
+   * @return Direct positive whole-day MedicationRequest.dispenseRequest.expectedSupplyDuration; never derived from drug quantity, dosage, refills, or timing.
+   */
+  @JsonProperty("days_supply")
+  public Optional<Long> getDaysSupply() {
+    return daysSupply;
+  }
+
+  /**
+   * @return Formulation-specific quantity from a direct MedicationRequest dispense quantity, MedicationAdministration dose, or Immunization dose quantity. Under fixed_dose_form_count this is a matched coded tablet/capsule count copied directly, or an ingredient amount divided by per-unit strength. Under clinical_injection_ingredient_amount this is the ingredient amount, copied directly or derived using explicit concentration evidence. See the endpoint's supported dose forms and prerequisites; quantity_transformations identifies the policy, source, calculation evidence, and output unit, or explains why a supplied quantity was omitted.
+   */
+  @JsonProperty("quantity")
+  public Optional<Double> getQuantity() {
+    return quantity;
+  }
+
+  /**
+   * @return Newline-joined non-empty FHIR Dosage.text instructions in source order.
+   */
+  @JsonProperty("sig")
+  public Optional<String> getSig() {
+    return sig;
+  }
+
+  /**
+   * @return Target-valid OMOP Route concept for an unambiguous coded FHIR route; <code>0</code> for an unmapped coded route, omitted for absent, text-only, or conflicting routes.
+   */
+  @JsonProperty("route_concept_id")
+  public Optional<Long> getRouteConceptId() {
+    return routeConceptId;
+  }
+
+  /**
+   * @return Direct FHIR R4 Immunization.lotNumber value.
+   */
+  @JsonProperty("lot_number")
+  public Optional<String> getLotNumber() {
+    return lotNumber;
+  }
+
+  @JsonProperty("visit_occurrence_id")
+  public Optional<Long> getVisitOccurrenceId() {
+    return visitOccurrenceId;
+  }
+
+  @JsonProperty("provider_id")
+  public Optional<Long> getProviderId() {
+    return providerId;
+  }
+
+  @JsonProperty("drug_source_value")
+  public Optional<String> getDrugSourceValue() {
+    return drugSourceValue;
+  }
+
+  @JsonProperty("drug_source_concept_id")
+  public Optional<Long> getDrugSourceConceptId() {
+    return drugSourceConceptId;
+  }
+
+  /**
+   * @return Selected source coding or text for an unambiguous FHIR route.
+   */
+  @JsonProperty("route_source_value")
+  public Optional<String> getRouteSourceValue() {
+    return routeSourceValue;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof DrugExposureRow && equalTo((DrugExposureRow) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(DrugExposureRow other) {
+    return (
+      drugExposureId.equals(other.drugExposureId) &&
+      personId.equals(other.personId) &&
+      drugConceptId.equals(other.drugConceptId) &&
+      drugExposureStartDate.equals(other.drugExposureStartDate) &&
+      drugExposureStartDatetime.equals(other.drugExposureStartDatetime) &&
+      drugExposureEndDate.equals(other.drugExposureEndDate) &&
+      drugExposureEndDatetime.equals(other.drugExposureEndDatetime) &&
+      verbatimEndDate.equals(other.verbatimEndDate) &&
+      drugTypeConceptId.equals(other.drugTypeConceptId) &&
+      stopReason.equals(other.stopReason) &&
+      refills.equals(other.refills) &&
+      daysSupply.equals(other.daysSupply) &&
+      quantity.equals(other.quantity) &&
+      sig.equals(other.sig) &&
+      routeConceptId.equals(other.routeConceptId) &&
+      lotNumber.equals(other.lotNumber) &&
+      visitOccurrenceId.equals(other.visitOccurrenceId) &&
+      providerId.equals(other.providerId) &&
+      drugSourceValue.equals(other.drugSourceValue) &&
+      drugSourceConceptId.equals(other.drugSourceConceptId) &&
+      routeSourceValue.equals(other.routeSourceValue)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.drugExposureId,
+      this.personId,
+      this.drugConceptId,
+      this.drugExposureStartDate,
+      this.drugExposureStartDatetime,
+      this.drugExposureEndDate,
+      this.drugExposureEndDatetime,
+      this.verbatimEndDate,
+      this.drugTypeConceptId,
+      this.stopReason,
+      this.refills,
+      this.daysSupply,
+      this.quantity,
+      this.sig,
+      this.routeConceptId,
+      this.lotNumber,
+      this.visitOccurrenceId,
+      this.providerId,
+      this.drugSourceValue,
+      this.drugSourceConceptId,
+      this.routeSourceValue
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Long> drugExposureId = Optional.empty();
+
+    private Optional<Long> personId = Optional.empty();
+
+    private Optional<Long> drugConceptId = Optional.empty();
+
+    private Optional<String> drugExposureStartDate = Optional.empty();
+
+    private Optional<String> drugExposureStartDatetime = Optional.empty();
+
+    private Optional<String> drugExposureEndDate = Optional.empty();
+
+    private Optional<String> drugExposureEndDatetime = Optional.empty();
+
+    private Optional<String> verbatimEndDate = Optional.empty();
+
+    private Optional<Long> drugTypeConceptId = Optional.empty();
+
+    private Optional<String> stopReason = Optional.empty();
+
+    private Optional<Long> refills = Optional.empty();
+
+    private Optional<Long> daysSupply = Optional.empty();
+
+    private Optional<Double> quantity = Optional.empty();
+
+    private Optional<String> sig = Optional.empty();
+
+    private Optional<Long> routeConceptId = Optional.empty();
+
+    private Optional<String> lotNumber = Optional.empty();
+
+    private Optional<Long> visitOccurrenceId = Optional.empty();
+
+    private Optional<Long> providerId = Optional.empty();
+
+    private Optional<String> drugSourceValue = Optional.empty();
+
+    private Optional<Long> drugSourceConceptId = Optional.empty();
+
+    private Optional<String> routeSourceValue = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(DrugExposureRow other) {
+      drugExposureId(other.getDrugExposureId());
+      personId(other.getPersonId());
+      drugConceptId(other.getDrugConceptId());
+      drugExposureStartDate(other.getDrugExposureStartDate());
+      drugExposureStartDatetime(other.getDrugExposureStartDatetime());
+      drugExposureEndDate(other.getDrugExposureEndDate());
+      drugExposureEndDatetime(other.getDrugExposureEndDatetime());
+      verbatimEndDate(other.getVerbatimEndDate());
+      drugTypeConceptId(other.getDrugTypeConceptId());
+      stopReason(other.getStopReason());
+      refills(other.getRefills());
+      daysSupply(other.getDaysSupply());
+      quantity(other.getQuantity());
+      sig(other.getSig());
+      routeConceptId(other.getRouteConceptId());
+      lotNumber(other.getLotNumber());
+      visitOccurrenceId(other.getVisitOccurrenceId());
+      providerId(other.getProviderId());
+      drugSourceValue(other.getDrugSourceValue());
+      drugSourceConceptId(other.getDrugSourceConceptId());
+      routeSourceValue(other.getRouteSourceValue());
+      return this;
     }
 
-    @JsonProperty("drug_exposure_id")
-    public Optional<Long> getDrugExposureId() {
-        return drugExposureId;
+    @JsonSetter(value = "drug_exposure_id", nulls = Nulls.SKIP)
+    public Builder drugExposureId(Optional<Long> drugExposureId) {
+      this.drugExposureId = drugExposureId;
+      return this;
     }
 
-    @JsonProperty("person_id")
-    public Optional<Long> getPersonId() {
-        return personId;
+    public Builder drugExposureId(Long drugExposureId) {
+      this.drugExposureId = Optional.ofNullable(drugExposureId);
+      return this;
     }
 
-    @JsonProperty("drug_concept_id")
-    public Optional<Long> getDrugConceptId() {
-        return drugConceptId;
+    @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
+    public Builder personId(Optional<Long> personId) {
+      this.personId = personId;
+      return this;
+    }
+
+    public Builder personId(Long personId) {
+      this.personId = Optional.ofNullable(personId);
+      return this;
+    }
+
+    @JsonSetter(value = "drug_concept_id", nulls = Nulls.SKIP)
+    public Builder drugConceptId(Optional<Long> drugConceptId) {
+      this.drugConceptId = drugConceptId;
+      return this;
+    }
+
+    public Builder drugConceptId(Long drugConceptId) {
+      this.drugConceptId = Optional.ofNullable(drugConceptId);
+      return this;
     }
 
     /**
-     * @return Date from the resource's timing source, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn.
+     * <p>Start date selected by the source resource's timing rules, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn; see the endpoint's timing sources for all supported resources.</p>
      */
-    @JsonProperty("drug_exposure_start_date")
-    public Optional<String> getDrugExposureStartDate() {
-        return drugExposureStartDate;
+    @JsonSetter(value = "drug_exposure_start_date", nulls = Nulls.SKIP)
+    public Builder drugExposureStartDate(Optional<String> drugExposureStartDate) {
+      this.drugExposureStartDate = drugExposureStartDate;
+      return this;
     }
 
-    @JsonProperty("drug_exposure_start_datetime")
-    public Optional<String> getDrugExposureStartDatetime() {
-        return drugExposureStartDatetime;
+    public Builder drugExposureStartDate(String drugExposureStartDate) {
+      this.drugExposureStartDate = Optional.ofNullable(drugExposureStartDate);
+      return this;
+    }
+
+    @JsonSetter(value = "drug_exposure_start_datetime", nulls = Nulls.SKIP)
+    public Builder drugExposureStartDatetime(Optional<String> drugExposureStartDatetime) {
+      this.drugExposureStartDatetime = drugExposureStartDatetime;
+      return this;
+    }
+
+    public Builder drugExposureStartDatetime(String drugExposureStartDatetime) {
+      this.drugExposureStartDatetime = Optional.ofNullable(drugExposureStartDatetime);
+      return this;
     }
 
     /**
-     * @return Date from an explicit FHIR Period end, or the same day as the start for a single-event administration or immunization. Unset when the source supplies neither.
+     * <p>End date selected by the source resource's timing rules, when available. For medication resources, an explicit effectivePeriod.end or the start date of a single-event administration or immunization; see the endpoint's timing sources for other resources.</p>
      */
-    @JsonProperty("drug_exposure_end_date")
-    public Optional<String> getDrugExposureEndDate() {
-        return drugExposureEndDate;
+    @JsonSetter(value = "drug_exposure_end_date", nulls = Nulls.SKIP)
+    public Builder drugExposureEndDate(Optional<String> drugExposureEndDate) {
+      this.drugExposureEndDate = drugExposureEndDate;
+      return this;
     }
 
-    @JsonProperty("drug_exposure_end_datetime")
-    public Optional<String> getDrugExposureEndDatetime() {
-        return drugExposureEndDatetime;
+    public Builder drugExposureEndDate(String drugExposureEndDate) {
+      this.drugExposureEndDate = Optional.ofNullable(drugExposureEndDate);
+      return this;
+    }
+
+    @JsonSetter(value = "drug_exposure_end_datetime", nulls = Nulls.SKIP)
+    public Builder drugExposureEndDatetime(Optional<String> drugExposureEndDatetime) {
+      this.drugExposureEndDatetime = drugExposureEndDatetime;
+      return this;
+    }
+
+    public Builder drugExposureEndDatetime(String drugExposureEndDatetime) {
+      this.drugExposureEndDatetime = Optional.ofNullable(drugExposureEndDatetime);
+      return this;
     }
 
     /**
-     * @return Date from an explicit FHIR Period.end only; inferred same-day ends are not verbatim source values.
+     * <p>Date from an explicit FHIR Period.end only; inferred same-day ends are not verbatim source values.</p>
      */
-    @JsonProperty("verbatim_end_date")
-    public Optional<String> getVerbatimEndDate() {
-        return verbatimEndDate;
+    @JsonSetter(value = "verbatim_end_date", nulls = Nulls.SKIP)
+    public Builder verbatimEndDate(Optional<String> verbatimEndDate) {
+      this.verbatimEndDate = verbatimEndDate;
+      return this;
     }
 
-    @JsonProperty("drug_type_concept_id")
-    public Optional<Long> getDrugTypeConceptId() {
-        return drugTypeConceptId;
+    public Builder verbatimEndDate(String verbatimEndDate) {
+      this.verbatimEndDate = Optional.ofNullable(verbatimEndDate);
+      return this;
     }
 
-    @JsonProperty("stop_reason")
-    public Optional<String> getStopReason() {
-        return stopReason;
+    @JsonSetter(value = "drug_type_concept_id", nulls = Nulls.SKIP)
+    public Builder drugTypeConceptId(Optional<Long> drugTypeConceptId) {
+      this.drugTypeConceptId = drugTypeConceptId;
+      return this;
+    }
+
+    public Builder drugTypeConceptId(Long drugTypeConceptId) {
+      this.drugTypeConceptId = Optional.ofNullable(drugTypeConceptId);
+      return this;
+    }
+
+    @JsonSetter(value = "stop_reason", nulls = Nulls.SKIP)
+    public Builder stopReason(Optional<String> stopReason) {
+      this.stopReason = stopReason;
+      return this;
+    }
+
+    public Builder stopReason(String stopReason) {
+      this.stopReason = Optional.ofNullable(stopReason);
+      return this;
     }
 
     /**
-     * @return Direct MedicationRequest.dispenseRequest.numberOfRepeatsAllowed value, when supplied.
+     * <p>Direct MedicationRequest.dispenseRequest.numberOfRepeatsAllowed value, when supplied.</p>
      */
-    @JsonProperty("refills")
-    public Optional<Long> getRefills() {
-        return refills;
+    @JsonSetter(value = "refills", nulls = Nulls.SKIP)
+    public Builder refills(Optional<Long> refills) {
+      this.refills = refills;
+      return this;
+    }
+
+    public Builder refills(Long refills) {
+      this.refills = Optional.ofNullable(refills);
+      return this;
     }
 
     /**
-     * @return Direct positive whole-day MedicationRequest.dispenseRequest.expectedSupplyDuration; no dose or quantity conversion is applied.
+     * <p>Direct positive whole-day MedicationRequest.dispenseRequest.expectedSupplyDuration; never derived from drug quantity, dosage, refills, or timing.</p>
      */
-    @JsonProperty("days_supply")
-    public Optional<Long> getDaysSupply() {
-        return daysSupply;
+    @JsonSetter(value = "days_supply", nulls = Nulls.SKIP)
+    public Builder daysSupply(Optional<Long> daysSupply) {
+      this.daysSupply = daysSupply;
+      return this;
+    }
+
+    public Builder daysSupply(Long daysSupply) {
+      this.daysSupply = Optional.ofNullable(daysSupply);
+      return this;
     }
 
     /**
-     * @return Newline-joined non-empty FHIR Dosage.text instructions in source order.
+     * <p>Formulation-specific quantity from a direct MedicationRequest dispense quantity, MedicationAdministration dose, or Immunization dose quantity. Under fixed_dose_form_count this is a matched coded tablet/capsule count copied directly, or an ingredient amount divided by per-unit strength. Under clinical_injection_ingredient_amount this is the ingredient amount, copied directly or derived using explicit concentration evidence. See the endpoint's supported dose forms and prerequisites; quantity_transformations identifies the policy, source, calculation evidence, and output unit, or explains why a supplied quantity was omitted.</p>
      */
-    @JsonProperty("sig")
-    public Optional<String> getSig() {
-        return sig;
+    @JsonSetter(value = "quantity", nulls = Nulls.SKIP)
+    public Builder quantity(Optional<Double> quantity) {
+      this.quantity = quantity;
+      return this;
+    }
+
+    public Builder quantity(Double quantity) {
+      this.quantity = Optional.ofNullable(quantity);
+      return this;
     }
 
     /**
-     * @return Target-valid OMOP Route concept for an unambiguous coded FHIR route; <code>0</code> for an unmapped coded route, omitted for absent, text-only, or conflicting routes.
+     * <p>Newline-joined non-empty FHIR Dosage.text instructions in source order.</p>
      */
-    @JsonProperty("route_concept_id")
-    public Optional<Long> getRouteConceptId() {
-        return routeConceptId;
+    @JsonSetter(value = "sig", nulls = Nulls.SKIP)
+    public Builder sig(Optional<String> sig) {
+      this.sig = sig;
+      return this;
+    }
+
+    public Builder sig(String sig) {
+      this.sig = Optional.ofNullable(sig);
+      return this;
     }
 
     /**
-     * @return Direct FHIR R4 Immunization.lotNumber value.
+     * <p>Target-valid OMOP Route concept for an unambiguous coded FHIR route; <code>0</code> for an unmapped coded route, omitted for absent, text-only, or conflicting routes.</p>
      */
-    @JsonProperty("lot_number")
-    public Optional<String> getLotNumber() {
-        return lotNumber;
+    @JsonSetter(value = "route_concept_id", nulls = Nulls.SKIP)
+    public Builder routeConceptId(Optional<Long> routeConceptId) {
+      this.routeConceptId = routeConceptId;
+      return this;
     }
 
-    @JsonProperty("visit_occurrence_id")
-    public Optional<Long> getVisitOccurrenceId() {
-        return visitOccurrenceId;
-    }
-
-    @JsonProperty("provider_id")
-    public Optional<Long> getProviderId() {
-        return providerId;
-    }
-
-    @JsonProperty("drug_source_value")
-    public Optional<String> getDrugSourceValue() {
-        return drugSourceValue;
-    }
-
-    @JsonProperty("drug_source_concept_id")
-    public Optional<Long> getDrugSourceConceptId() {
-        return drugSourceConceptId;
+    public Builder routeConceptId(Long routeConceptId) {
+      this.routeConceptId = Optional.ofNullable(routeConceptId);
+      return this;
     }
 
     /**
-     * @return Selected source coding or text for an unambiguous FHIR route.
+     * <p>Direct FHIR R4 Immunization.lotNumber value.</p>
      */
-    @JsonProperty("route_source_value")
-    public Optional<String> getRouteSourceValue() {
-        return routeSourceValue;
+    @JsonSetter(value = "lot_number", nulls = Nulls.SKIP)
+    public Builder lotNumber(Optional<String> lotNumber) {
+      this.lotNumber = lotNumber;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof DrugExposureRow && equalTo((DrugExposureRow) other);
+    public Builder lotNumber(String lotNumber) {
+      this.lotNumber = Optional.ofNullable(lotNumber);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
+    public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
+      this.visitOccurrenceId = visitOccurrenceId;
+      return this;
     }
 
-    private boolean equalTo(DrugExposureRow other) {
-        return drugExposureId.equals(other.drugExposureId)
-                && personId.equals(other.personId)
-                && drugConceptId.equals(other.drugConceptId)
-                && drugExposureStartDate.equals(other.drugExposureStartDate)
-                && drugExposureStartDatetime.equals(other.drugExposureStartDatetime)
-                && drugExposureEndDate.equals(other.drugExposureEndDate)
-                && drugExposureEndDatetime.equals(other.drugExposureEndDatetime)
-                && verbatimEndDate.equals(other.verbatimEndDate)
-                && drugTypeConceptId.equals(other.drugTypeConceptId)
-                && stopReason.equals(other.stopReason)
-                && refills.equals(other.refills)
-                && daysSupply.equals(other.daysSupply)
-                && sig.equals(other.sig)
-                && routeConceptId.equals(other.routeConceptId)
-                && lotNumber.equals(other.lotNumber)
-                && visitOccurrenceId.equals(other.visitOccurrenceId)
-                && providerId.equals(other.providerId)
-                && drugSourceValue.equals(other.drugSourceValue)
-                && drugSourceConceptId.equals(other.drugSourceConceptId)
-                && routeSourceValue.equals(other.routeSourceValue);
+    public Builder visitOccurrenceId(Long visitOccurrenceId) {
+      this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.drugExposureId,
-                this.personId,
-                this.drugConceptId,
-                this.drugExposureStartDate,
-                this.drugExposureStartDatetime,
-                this.drugExposureEndDate,
-                this.drugExposureEndDatetime,
-                this.verbatimEndDate,
-                this.drugTypeConceptId,
-                this.stopReason,
-                this.refills,
-                this.daysSupply,
-                this.sig,
-                this.routeConceptId,
-                this.lotNumber,
-                this.visitOccurrenceId,
-                this.providerId,
-                this.drugSourceValue,
-                this.drugSourceConceptId,
-                this.routeSourceValue);
+    @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
+    public Builder providerId(Optional<Long> providerId) {
+      this.providerId = providerId;
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder providerId(Long providerId) {
+      this.providerId = Optional.ofNullable(providerId);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @JsonSetter(value = "drug_source_value", nulls = Nulls.SKIP)
+    public Builder drugSourceValue(Optional<String> drugSourceValue) {
+      this.drugSourceValue = drugSourceValue;
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Long> drugExposureId = Optional.empty();
-
-        private Optional<Long> personId = Optional.empty();
-
-        private Optional<Long> drugConceptId = Optional.empty();
-
-        private Optional<String> drugExposureStartDate = Optional.empty();
-
-        private Optional<String> drugExposureStartDatetime = Optional.empty();
-
-        private Optional<String> drugExposureEndDate = Optional.empty();
-
-        private Optional<String> drugExposureEndDatetime = Optional.empty();
-
-        private Optional<String> verbatimEndDate = Optional.empty();
-
-        private Optional<Long> drugTypeConceptId = Optional.empty();
-
-        private Optional<String> stopReason = Optional.empty();
-
-        private Optional<Long> refills = Optional.empty();
-
-        private Optional<Long> daysSupply = Optional.empty();
-
-        private Optional<String> sig = Optional.empty();
-
-        private Optional<Long> routeConceptId = Optional.empty();
-
-        private Optional<String> lotNumber = Optional.empty();
-
-        private Optional<Long> visitOccurrenceId = Optional.empty();
-
-        private Optional<Long> providerId = Optional.empty();
-
-        private Optional<String> drugSourceValue = Optional.empty();
-
-        private Optional<Long> drugSourceConceptId = Optional.empty();
-
-        private Optional<String> routeSourceValue = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(DrugExposureRow other) {
-            drugExposureId(other.getDrugExposureId());
-            personId(other.getPersonId());
-            drugConceptId(other.getDrugConceptId());
-            drugExposureStartDate(other.getDrugExposureStartDate());
-            drugExposureStartDatetime(other.getDrugExposureStartDatetime());
-            drugExposureEndDate(other.getDrugExposureEndDate());
-            drugExposureEndDatetime(other.getDrugExposureEndDatetime());
-            verbatimEndDate(other.getVerbatimEndDate());
-            drugTypeConceptId(other.getDrugTypeConceptId());
-            stopReason(other.getStopReason());
-            refills(other.getRefills());
-            daysSupply(other.getDaysSupply());
-            sig(other.getSig());
-            routeConceptId(other.getRouteConceptId());
-            lotNumber(other.getLotNumber());
-            visitOccurrenceId(other.getVisitOccurrenceId());
-            providerId(other.getProviderId());
-            drugSourceValue(other.getDrugSourceValue());
-            drugSourceConceptId(other.getDrugSourceConceptId());
-            routeSourceValue(other.getRouteSourceValue());
-            return this;
-        }
-
-        @JsonSetter(value = "drug_exposure_id", nulls = Nulls.SKIP)
-        public Builder drugExposureId(Optional<Long> drugExposureId) {
-            this.drugExposureId = drugExposureId;
-            return this;
-        }
-
-        public Builder drugExposureId(Long drugExposureId) {
-            this.drugExposureId = Optional.ofNullable(drugExposureId);
-            return this;
-        }
-
-        @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
-        public Builder personId(Optional<Long> personId) {
-            this.personId = personId;
-            return this;
-        }
-
-        public Builder personId(Long personId) {
-            this.personId = Optional.ofNullable(personId);
-            return this;
-        }
-
-        @JsonSetter(value = "drug_concept_id", nulls = Nulls.SKIP)
-        public Builder drugConceptId(Optional<Long> drugConceptId) {
-            this.drugConceptId = drugConceptId;
-            return this;
-        }
-
-        public Builder drugConceptId(Long drugConceptId) {
-            this.drugConceptId = Optional.ofNullable(drugConceptId);
-            return this;
-        }
-
-        /**
-         * <p>Date from the resource's timing source, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn.</p>
-         */
-        @JsonSetter(value = "drug_exposure_start_date", nulls = Nulls.SKIP)
-        public Builder drugExposureStartDate(Optional<String> drugExposureStartDate) {
-            this.drugExposureStartDate = drugExposureStartDate;
-            return this;
-        }
-
-        public Builder drugExposureStartDate(String drugExposureStartDate) {
-            this.drugExposureStartDate = Optional.ofNullable(drugExposureStartDate);
-            return this;
-        }
-
-        @JsonSetter(value = "drug_exposure_start_datetime", nulls = Nulls.SKIP)
-        public Builder drugExposureStartDatetime(Optional<String> drugExposureStartDatetime) {
-            this.drugExposureStartDatetime = drugExposureStartDatetime;
-            return this;
-        }
-
-        public Builder drugExposureStartDatetime(String drugExposureStartDatetime) {
-            this.drugExposureStartDatetime = Optional.ofNullable(drugExposureStartDatetime);
-            return this;
-        }
-
-        /**
-         * <p>Date from an explicit FHIR Period end, or the same day as the start for a single-event administration or immunization. Unset when the source supplies neither.</p>
-         */
-        @JsonSetter(value = "drug_exposure_end_date", nulls = Nulls.SKIP)
-        public Builder drugExposureEndDate(Optional<String> drugExposureEndDate) {
-            this.drugExposureEndDate = drugExposureEndDate;
-            return this;
-        }
-
-        public Builder drugExposureEndDate(String drugExposureEndDate) {
-            this.drugExposureEndDate = Optional.ofNullable(drugExposureEndDate);
-            return this;
-        }
-
-        @JsonSetter(value = "drug_exposure_end_datetime", nulls = Nulls.SKIP)
-        public Builder drugExposureEndDatetime(Optional<String> drugExposureEndDatetime) {
-            this.drugExposureEndDatetime = drugExposureEndDatetime;
-            return this;
-        }
-
-        public Builder drugExposureEndDatetime(String drugExposureEndDatetime) {
-            this.drugExposureEndDatetime = Optional.ofNullable(drugExposureEndDatetime);
-            return this;
-        }
-
-        /**
-         * <p>Date from an explicit FHIR Period.end only; inferred same-day ends are not verbatim source values.</p>
-         */
-        @JsonSetter(value = "verbatim_end_date", nulls = Nulls.SKIP)
-        public Builder verbatimEndDate(Optional<String> verbatimEndDate) {
-            this.verbatimEndDate = verbatimEndDate;
-            return this;
-        }
-
-        public Builder verbatimEndDate(String verbatimEndDate) {
-            this.verbatimEndDate = Optional.ofNullable(verbatimEndDate);
-            return this;
-        }
-
-        @JsonSetter(value = "drug_type_concept_id", nulls = Nulls.SKIP)
-        public Builder drugTypeConceptId(Optional<Long> drugTypeConceptId) {
-            this.drugTypeConceptId = drugTypeConceptId;
-            return this;
-        }
-
-        public Builder drugTypeConceptId(Long drugTypeConceptId) {
-            this.drugTypeConceptId = Optional.ofNullable(drugTypeConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "stop_reason", nulls = Nulls.SKIP)
-        public Builder stopReason(Optional<String> stopReason) {
-            this.stopReason = stopReason;
-            return this;
-        }
-
-        public Builder stopReason(String stopReason) {
-            this.stopReason = Optional.ofNullable(stopReason);
-            return this;
-        }
-
-        /**
-         * <p>Direct MedicationRequest.dispenseRequest.numberOfRepeatsAllowed value, when supplied.</p>
-         */
-        @JsonSetter(value = "refills", nulls = Nulls.SKIP)
-        public Builder refills(Optional<Long> refills) {
-            this.refills = refills;
-            return this;
-        }
-
-        public Builder refills(Long refills) {
-            this.refills = Optional.ofNullable(refills);
-            return this;
-        }
-
-        /**
-         * <p>Direct positive whole-day MedicationRequest.dispenseRequest.expectedSupplyDuration; no dose or quantity conversion is applied.</p>
-         */
-        @JsonSetter(value = "days_supply", nulls = Nulls.SKIP)
-        public Builder daysSupply(Optional<Long> daysSupply) {
-            this.daysSupply = daysSupply;
-            return this;
-        }
-
-        public Builder daysSupply(Long daysSupply) {
-            this.daysSupply = Optional.ofNullable(daysSupply);
-            return this;
-        }
-
-        /**
-         * <p>Newline-joined non-empty FHIR Dosage.text instructions in source order.</p>
-         */
-        @JsonSetter(value = "sig", nulls = Nulls.SKIP)
-        public Builder sig(Optional<String> sig) {
-            this.sig = sig;
-            return this;
-        }
-
-        public Builder sig(String sig) {
-            this.sig = Optional.ofNullable(sig);
-            return this;
-        }
-
-        /**
-         * <p>Target-valid OMOP Route concept for an unambiguous coded FHIR route; <code>0</code> for an unmapped coded route, omitted for absent, text-only, or conflicting routes.</p>
-         */
-        @JsonSetter(value = "route_concept_id", nulls = Nulls.SKIP)
-        public Builder routeConceptId(Optional<Long> routeConceptId) {
-            this.routeConceptId = routeConceptId;
-            return this;
-        }
-
-        public Builder routeConceptId(Long routeConceptId) {
-            this.routeConceptId = Optional.ofNullable(routeConceptId);
-            return this;
-        }
-
-        /**
-         * <p>Direct FHIR R4 Immunization.lotNumber value.</p>
-         */
-        @JsonSetter(value = "lot_number", nulls = Nulls.SKIP)
-        public Builder lotNumber(Optional<String> lotNumber) {
-            this.lotNumber = lotNumber;
-            return this;
-        }
-
-        public Builder lotNumber(String lotNumber) {
-            this.lotNumber = Optional.ofNullable(lotNumber);
-            return this;
-        }
-
-        @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
-        public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
-            this.visitOccurrenceId = visitOccurrenceId;
-            return this;
-        }
-
-        public Builder visitOccurrenceId(Long visitOccurrenceId) {
-            this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
-            return this;
-        }
-
-        @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
-        public Builder providerId(Optional<Long> providerId) {
-            this.providerId = providerId;
-            return this;
-        }
-
-        public Builder providerId(Long providerId) {
-            this.providerId = Optional.ofNullable(providerId);
-            return this;
-        }
-
-        @JsonSetter(value = "drug_source_value", nulls = Nulls.SKIP)
-        public Builder drugSourceValue(Optional<String> drugSourceValue) {
-            this.drugSourceValue = drugSourceValue;
-            return this;
-        }
-
-        public Builder drugSourceValue(String drugSourceValue) {
-            this.drugSourceValue = Optional.ofNullable(drugSourceValue);
-            return this;
-        }
-
-        @JsonSetter(value = "drug_source_concept_id", nulls = Nulls.SKIP)
-        public Builder drugSourceConceptId(Optional<Long> drugSourceConceptId) {
-            this.drugSourceConceptId = drugSourceConceptId;
-            return this;
-        }
-
-        public Builder drugSourceConceptId(Long drugSourceConceptId) {
-            this.drugSourceConceptId = Optional.ofNullable(drugSourceConceptId);
-            return this;
-        }
-
-        /**
-         * <p>Selected source coding or text for an unambiguous FHIR route.</p>
-         */
-        @JsonSetter(value = "route_source_value", nulls = Nulls.SKIP)
-        public Builder routeSourceValue(Optional<String> routeSourceValue) {
-            this.routeSourceValue = routeSourceValue;
-            return this;
-        }
-
-        public Builder routeSourceValue(String routeSourceValue) {
-            this.routeSourceValue = Optional.ofNullable(routeSourceValue);
-            return this;
-        }
-
-        public DrugExposureRow build() {
-            return new DrugExposureRow(
-                    drugExposureId,
-                    personId,
-                    drugConceptId,
-                    drugExposureStartDate,
-                    drugExposureStartDatetime,
-                    drugExposureEndDate,
-                    drugExposureEndDatetime,
-                    verbatimEndDate,
-                    drugTypeConceptId,
-                    stopReason,
-                    refills,
-                    daysSupply,
-                    sig,
-                    routeConceptId,
-                    lotNumber,
-                    visitOccurrenceId,
-                    providerId,
-                    drugSourceValue,
-                    drugSourceConceptId,
-                    routeSourceValue,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder drugSourceValue(String drugSourceValue) {
+      this.drugSourceValue = Optional.ofNullable(drugSourceValue);
+      return this;
     }
+
+    @JsonSetter(value = "drug_source_concept_id", nulls = Nulls.SKIP)
+    public Builder drugSourceConceptId(Optional<Long> drugSourceConceptId) {
+      this.drugSourceConceptId = drugSourceConceptId;
+      return this;
+    }
+
+    public Builder drugSourceConceptId(Long drugSourceConceptId) {
+      this.drugSourceConceptId = Optional.ofNullable(drugSourceConceptId);
+      return this;
+    }
+
+    /**
+     * <p>Selected source coding or text for an unambiguous FHIR route.</p>
+     */
+    @JsonSetter(value = "route_source_value", nulls = Nulls.SKIP)
+    public Builder routeSourceValue(Optional<String> routeSourceValue) {
+      this.routeSourceValue = routeSourceValue;
+      return this;
+    }
+
+    public Builder routeSourceValue(String routeSourceValue) {
+      this.routeSourceValue = Optional.ofNullable(routeSourceValue);
+      return this;
+    }
+
+    public DrugExposureRow build() {
+      return new DrugExposureRow(
+        drugExposureId,
+        personId,
+        drugConceptId,
+        drugExposureStartDate,
+        drugExposureStartDatetime,
+        drugExposureEndDate,
+        drugExposureEndDatetime,
+        verbatimEndDate,
+        drugTypeConceptId,
+        stopReason,
+        refills,
+        daysSupply,
+        quantity,
+        sig,
+        routeConceptId,
+        lotNumber,
+        visitOccurrenceId,
+        providerId,
+        drugSourceValue,
+        drugSourceConceptId,
+        routeSourceValue,
+        additionalProperties
+      );
+    }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("drug_exposure_id") ||
+        key.equalsIgnoreCase("person_id") ||
+        key.equalsIgnoreCase("drug_concept_id") ||
+        key.equalsIgnoreCase("drug_exposure_start_date") ||
+        key.equalsIgnoreCase("drug_exposure_start_datetime") ||
+        key.equalsIgnoreCase("drug_exposure_end_date") ||
+        key.equalsIgnoreCase("drug_exposure_end_datetime") ||
+        key.equalsIgnoreCase("verbatim_end_date") ||
+        key.equalsIgnoreCase("drug_type_concept_id") ||
+        key.equalsIgnoreCase("stop_reason") ||
+        key.equalsIgnoreCase("refills") ||
+        key.equalsIgnoreCase("days_supply") ||
+        key.equalsIgnoreCase("quantity") ||
+        key.equalsIgnoreCase("sig") ||
+        key.equalsIgnoreCase("route_concept_id") ||
+        key.equalsIgnoreCase("lot_number") ||
+        key.equalsIgnoreCase("visit_occurrence_id") ||
+        key.equalsIgnoreCase("provider_id") ||
+        key.equalsIgnoreCase("drug_source_value") ||
+        key.equalsIgnoreCase("drug_source_concept_id") ||
+        key.equalsIgnoreCase("route_source_value")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

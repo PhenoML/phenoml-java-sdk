@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.lang2fhirbatch;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.lang2fhirbatch.requests.CreateBatchRequest;
 import com.phenoml.api.resources.lang2fhirbatch.requests.GetRequest;
@@ -23,399 +24,680 @@ import java.util.concurrent.CompletableFuture;
 import okhttp3.MediaType;
 
 public class AsyncLang2FhirBatchClient {
-    protected final ClientOptions clientOptions;
 
-    private final AsyncRawLang2FhirBatchClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public AsyncLang2FhirBatchClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawLang2FhirBatchClient(clientOptions);
-    }
+  private final AsyncRawLang2FhirBatchClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawLang2FhirBatchClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AsyncLang2FhirBatchClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new AsyncRawLang2FhirBatchClient(clientOptions);
+  }
 
-    /**
-     * Returns a page of the instance's batch jobs, newest first, without
-     * per-job counts. Jobs are shared across the instance's credentials, so
-     * this lists every batch job on the instance, not just the calling
-     * credential's.
-     */
-    public CompletableFuture<JobListResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public AsyncRawLang2FhirBatchClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Returns a page of the instance's batch jobs, newest first, without
-     * per-job counts. Jobs are shared across the instance's credentials, so
-     * this lists every batch job on the instance, not just the calling
-     * credential's.
-     */
-    public CompletableFuture<JobListResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a page of the instance's batch jobs, newest first, without
+   * per-job counts. Jobs are shared across the instance's credentials, so
+   * this lists every batch job on the instance, not just the calling
+   * credential's.
+   */
+  public CompletableFuture<JobListResponse> list() {
+    CompletableFuture<PhenomlClientHttpResponse<JobListResponse>> rawFuture = this.rawClient.list();
+    CompletableFuture<JobListResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a page of the instance's batch jobs, newest first, without
-     * per-job counts. Jobs are shared across the instance's credentials, so
-     * this lists every batch job on the instance, not just the calling
-     * credential's.
-     */
-    public CompletableFuture<JobListResponse> list(ListRequest request) {
-        return this.rawClient.list(request).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a page of the instance's batch jobs, newest first, without
+   * per-job counts. Jobs are shared across the instance's credentials, so
+   * this lists every batch job on the instance, not just the calling
+   * credential's.
+   */
+  public CompletableFuture<JobListResponse> list(RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<JobListResponse>> rawFuture =
+      this.rawClient.list(requestOptions);
+    CompletableFuture<JobListResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a page of the instance's batch jobs, newest first, without
-     * per-job counts. Jobs are shared across the instance's credentials, so
-     * this lists every batch job on the instance, not just the calling
-     * credential's.
-     */
-    public CompletableFuture<JobListResponse> list(ListRequest request, RequestOptions requestOptions) {
-        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a page of the instance's batch jobs, newest first, without
+   * per-job counts. Jobs are shared across the instance's credentials, so
+   * this lists every batch job on the instance, not just the calling
+   * credential's.
+   */
+  public CompletableFuture<JobListResponse> list(ListRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<JobListResponse>> rawFuture =
+      this.rawClient.list(request);
+    CompletableFuture<JobListResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Opens an empty job; upload items, then finalize it to start processing.
-     * <p><code>request_id</code> makes creation idempotent: a retry returns the original
-     * job. A token is released when its job is canceled or fails before
-     * finalization; otherwise it continues to resolve to that job.</p>
-     */
-    public CompletableFuture<BatchJob> create() {
-        return this.rawClient.create().thenApply(response -> response.body());
-    }
+  /**
+   * Returns a page of the instance's batch jobs, newest first, without
+   * per-job counts. Jobs are shared across the instance's credentials, so
+   * this lists every batch job on the instance, not just the calling
+   * credential's.
+   */
+  public CompletableFuture<JobListResponse> list(
+    ListRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<JobListResponse>> rawFuture =
+      this.rawClient.list(request, requestOptions);
+    CompletableFuture<JobListResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Opens an empty job; upload items, then finalize it to start processing.
-     * <p><code>request_id</code> makes creation idempotent: a retry returns the original
-     * job. A token is released when its job is canceled or fails before
-     * finalization; otherwise it continues to resolve to that job.</p>
-     */
-    public CompletableFuture<BatchJob> create(RequestOptions requestOptions) {
-        return this.rawClient.create(requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Opens an empty job; upload items, then finalize it to start processing.
+   * <p><code>request_id</code> makes creation idempotent: a retry returns the original
+   * job. A token is released when its job is canceled or fails before
+   * finalization; otherwise it continues to resolve to that job.</p>
+   */
+  public CompletableFuture<BatchJob> create() {
+    CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture = this.rawClient.create();
+    CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Opens an empty job; upload items, then finalize it to start processing.
-     * <p><code>request_id</code> makes creation idempotent: a retry returns the original
-     * job. A token is released when its job is canceled or fails before
-     * finalization; otherwise it continues to resolve to that job.</p>
-     */
-    public CompletableFuture<BatchJob> create(CreateBatchRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
-    }
+  /**
+   * Opens an empty job; upload items, then finalize it to start processing.
+   * <p><code>request_id</code> makes creation idempotent: a retry returns the original
+   * job. A token is released when its job is canceled or fails before
+   * finalization; otherwise it continues to resolve to that job.</p>
+   */
+  public CompletableFuture<BatchJob> create(RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture =
+      this.rawClient.create(requestOptions);
+    CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Opens an empty job; upload items, then finalize it to start processing.
-     * <p><code>request_id</code> makes creation idempotent: a retry returns the original
-     * job. A token is released when its job is canceled or fails before
-     * finalization; otherwise it continues to resolve to that job.</p>
-     */
-    public CompletableFuture<BatchJob> create(CreateBatchRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Opens an empty job; upload items, then finalize it to start processing.
+   * <p><code>request_id</code> makes creation idempotent: a retry returns the original
+   * job. A token is released when its job is canceled or fails before
+   * finalization; otherwise it continues to resolve to that job.</p>
+   */
+  public CompletableFuture<BatchJob> create(CreateBatchRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture =
+      this.rawClient.create(request);
+    CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
-     * or JSON-only <code>create</code>.
-     * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
-     * forbids it. Violations return <code>400</code>.</p>
-     * <p>Upload validates only the envelope. Endpoint request validation happens
-     * during processing: decoding failures are <code>invalid_input</code>; other pipeline
-     * failures are <code>processing_failed</code>.</p>
-     * <p>Use <code>request_id</code> for every upload so retries replace the same item.
-     * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
-     * overwrites the item and returns false.</p>
-     * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
-     * when the item is too large.</p>
-     */
-    public CompletableFuture<UploadItemResponse> uploadItem(String jobId, Optional<File> file) {
-        return this.rawClient.uploadItem(jobId, file).thenApply(response -> response.body());
-    }
+  /**
+   * Opens an empty job; upload items, then finalize it to start processing.
+   * <p><code>request_id</code> makes creation idempotent: a retry returns the original
+   * job. A token is released when its job is canceled or fails before
+   * finalization; otherwise it continues to resolve to that job.</p>
+   */
+  public CompletableFuture<BatchJob> create(
+    CreateBatchRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture =
+      this.rawClient.create(request, requestOptions);
+    CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
-     * or JSON-only <code>create</code>.
-     * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
-     * forbids it. Violations return <code>400</code>.</p>
-     * <p>Upload validates only the envelope. Endpoint request validation happens
-     * during processing: decoding failures are <code>invalid_input</code>; other pipeline
-     * failures are <code>processing_failed</code>.</p>
-     * <p>Use <code>request_id</code> for every upload so retries replace the same item.
-     * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
-     * overwrites the item and returns false.</p>
-     * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
-     * when the item is too large.</p>
-     */
-    public CompletableFuture<UploadItemResponse> uploadItem(
-            String jobId, Optional<File> file, RequestOptions requestOptions) {
-        return this.rawClient.uploadItem(jobId, file, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
+   * or JSON-only <code>create</code>.
+   * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
+   * forbids it. Violations return <code>400</code>.</p>
+   * <p>Upload validates only the envelope. Endpoint request validation happens
+   * during processing: decoding failures are <code>invalid_input</code>; other pipeline
+   * failures are <code>processing_failed</code>.</p>
+   * <p>Use <code>request_id</code> for every upload so retries replace the same item.
+   * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
+   * overwrites the item and returns false.</p>
+   * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
+   * when the item is too large.</p>
+   */
+  public CompletableFuture<UploadItemResponse> uploadItem(String jobId, Optional<File> file) {
+    CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+      this.rawClient.uploadItem(jobId, file);
+    CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
-     * or JSON-only <code>create</code>.
-     * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
-     * forbids it. Violations return <code>400</code>.</p>
-     * <p>Upload validates only the envelope. Endpoint request validation happens
-     * during processing: decoding failures are <code>invalid_input</code>; other pipeline
-     * failures are <code>processing_failed</code>.</p>
-     * <p>Use <code>request_id</code> for every upload so retries replace the same item.
-     * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
-     * overwrites the item and returns false.</p>
-     * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
-     * when the item is too large.</p>
-     */
-    public CompletableFuture<UploadItemResponse> uploadItem(
-            String jobId, Optional<File> file, UploadItemRequest request) {
-        return this.rawClient.uploadItem(jobId, file, request).thenApply(response -> response.body());
-    }
+  /**
+   * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
+   * or JSON-only <code>create</code>.
+   * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
+   * forbids it. Violations return <code>400</code>.</p>
+   * <p>Upload validates only the envelope. Endpoint request validation happens
+   * during processing: decoding failures are <code>invalid_input</code>; other pipeline
+   * failures are <code>processing_failed</code>.</p>
+   * <p>Use <code>request_id</code> for every upload so retries replace the same item.
+   * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
+   * overwrites the item and returns false.</p>
+   * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
+   * when the item is too large.</p>
+   */
+  public CompletableFuture<UploadItemResponse> uploadItem(
+    String jobId,
+    Optional<File> file,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+      this.rawClient.uploadItem(jobId, file, requestOptions);
+    CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
-     * or JSON-only <code>create</code>.
-     * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
-     * forbids it. Violations return <code>400</code>.</p>
-     * <p>Upload validates only the envelope. Endpoint request validation happens
-     * during processing: decoding failures are <code>invalid_input</code>; other pipeline
-     * failures are <code>processing_failed</code>.</p>
-     * <p>Use <code>request_id</code> for every upload so retries replace the same item.
-     * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
-     * overwrites the item and returns false.</p>
-     * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
-     * when the item is too large.</p>
-     */
-    public CompletableFuture<UploadItemResponse> uploadItem(
-            String jobId, Optional<File> file, UploadItemRequest request, RequestOptions requestOptions) {
-        return this.rawClient.uploadItem(jobId, file, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
+   * or JSON-only <code>create</code>.
+   * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
+   * forbids it. Violations return <code>400</code>.</p>
+   * <p>Upload validates only the envelope. Endpoint request validation happens
+   * during processing: decoding failures are <code>invalid_input</code>; other pipeline
+   * failures are <code>processing_failed</code>.</p>
+   * <p>Use <code>request_id</code> for every upload so retries replace the same item.
+   * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
+   * overwrites the item and returns false.</p>
+   * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
+   * when the item is too large.</p>
+   */
+  public CompletableFuture<UploadItemResponse> uploadItem(
+    String jobId,
+    Optional<File> file,
+    UploadItemRequest request
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+      this.rawClient.uploadItem(jobId, file, request);
+    CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    public CompletableFuture<UploadItemResponse> uploadItem(
-            String jobId, UploadItemRequest request, InputStream stream, String filename) {
-        return this.rawClient.uploadItem(jobId, request, stream, filename).thenApply(response -> response.body());
-    }
+  /**
+   * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
+   * or JSON-only <code>create</code>.
+   * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
+   * forbids it. Violations return <code>400</code>.</p>
+   * <p>Upload validates only the envelope. Endpoint request validation happens
+   * during processing: decoding failures are <code>invalid_input</code>; other pipeline
+   * failures are <code>processing_failed</code>.</p>
+   * <p>Use <code>request_id</code> for every upload so retries replace the same item.
+   * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
+   * overwrites the item and returns false.</p>
+   * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
+   * when the item is too large.</p>
+   */
+  public CompletableFuture<UploadItemResponse> uploadItem(
+    String jobId,
+    Optional<File> file,
+    UploadItemRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+      this.rawClient.uploadItem(jobId, file, request, requestOptions);
+    CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    public CompletableFuture<UploadItemResponse> uploadItem(
-            String jobId, UploadItemRequest request, InputStream stream, String filename, MediaType mediaType) {
-        return this.rawClient
-                .uploadItem(jobId, request, stream, filename, mediaType)
-                .thenApply(response -> response.body());
-    }
+  public CompletableFuture<UploadItemResponse> uploadItem(
+    String jobId,
+    UploadItemRequest request,
+    InputStream stream,
+    String filename
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+      this.rawClient.uploadItem(jobId, request, stream, filename);
+    CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    public CompletableFuture<UploadItemResponse> uploadItem(
-            String jobId,
-            UploadItemRequest request,
-            InputStream stream,
-            String filename,
-            RequestOptions requestOptions) {
-        return this.rawClient
-                .uploadItem(jobId, request, stream, filename, requestOptions)
-                .thenApply(response -> response.body());
-    }
+  public CompletableFuture<UploadItemResponse> uploadItem(
+    String jobId,
+    UploadItemRequest request,
+    InputStream stream,
+    String filename,
+    MediaType mediaType
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+      this.rawClient.uploadItem(jobId, request, stream, filename, mediaType);
+    CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    public CompletableFuture<UploadItemResponse> uploadItem(
-            String jobId,
-            UploadItemRequest request,
-            InputStream stream,
-            String filename,
-            MediaType mediaType,
-            RequestOptions requestOptions) {
-        return this.rawClient
-                .uploadItem(jobId, request, stream, filename, mediaType, requestOptions)
-                .thenApply(response -> response.body());
-    }
+  public CompletableFuture<UploadItemResponse> uploadItem(
+    String jobId,
+    UploadItemRequest request,
+    InputStream stream,
+    String filename,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+      this.rawClient.uploadItem(jobId, request, stream, filename, requestOptions);
+    CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Seals the job's item set and starts processing. Takes no request body.
-     * Finalize is idempotent: a retried finalize succeeds again.
-     * <p>If a previous upload did not complete, finalize returns a <code>409</code>; re-send
-     * the missing upload (with the same <code>request_id</code>), then finalize.
-     * Finalizing a job with no items is a <code>400</code>.</p>
-     */
-    public CompletableFuture<BatchJob> finalize(String jobId) {
-        return this.rawClient.finalize(jobId).thenApply(response -> response.body());
-    }
+  public CompletableFuture<UploadItemResponse> uploadItem(
+    String jobId,
+    UploadItemRequest request,
+    InputStream stream,
+    String filename,
+    MediaType mediaType,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+      this.rawClient.uploadItem(jobId, request, stream, filename, mediaType, requestOptions);
+    CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Seals the job's item set and starts processing. Takes no request body.
-     * Finalize is idempotent: a retried finalize succeeds again.
-     * <p>If a previous upload did not complete, finalize returns a <code>409</code>; re-send
-     * the missing upload (with the same <code>request_id</code>), then finalize.
-     * Finalizing a job with no items is a <code>400</code>.</p>
-     */
-    public CompletableFuture<BatchJob> finalize(String jobId, RequestOptions requestOptions) {
-        return this.rawClient.finalize(jobId, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Seals the job's item set and starts processing. Takes no request body.
+   * Finalize is idempotent: a retried finalize succeeds again.
+   * <p>If a previous upload did not complete, finalize returns a <code>409</code>; re-send
+   * the missing upload (with the same <code>request_id</code>), then finalize.
+   * Finalizing a job with no items is a <code>400</code>.</p>
+   */
+  public CompletableFuture<BatchJob> finalize(String jobId) {
+    CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture =
+      this.rawClient.finalize(jobId);
+    CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Drives a job to the terminal <code>canceled</code> state on request. Takes no
-     * request body.
-     * <p>Cancel does not delete the job: the job record and any results already
-     * produced are preserved for the normal retention window, the same as a
-     * <code>completed</code> or <code>failed</code> job. Items stop being processed and keep the state
-     * they held at cancellation, so a canceled job's <code>counts</code> may show
-     * unfinished items that never resolve.</p>
-     * <p>Cancel is idempotent: canceling an already-<code>canceled</code> job returns <code>200</code>
-     * with the job. Canceling a job that has already <code>completed</code> or <code>failed</code> is
-     * a <code>409</code>.</p>
-     */
-    public CompletableFuture<BatchJob> cancel(String jobId) {
-        return this.rawClient.cancel(jobId).thenApply(response -> response.body());
-    }
+  /**
+   * Seals the job's item set and starts processing. Takes no request body.
+   * Finalize is idempotent: a retried finalize succeeds again.
+   * <p>If a previous upload did not complete, finalize returns a <code>409</code>; re-send
+   * the missing upload (with the same <code>request_id</code>), then finalize.
+   * Finalizing a job with no items is a <code>400</code>.</p>
+   */
+  public CompletableFuture<BatchJob> finalize(String jobId, RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture =
+      this.rawClient.finalize(jobId, requestOptions);
+    CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Drives a job to the terminal <code>canceled</code> state on request. Takes no
-     * request body.
-     * <p>Cancel does not delete the job: the job record and any results already
-     * produced are preserved for the normal retention window, the same as a
-     * <code>completed</code> or <code>failed</code> job. Items stop being processed and keep the state
-     * they held at cancellation, so a canceled job's <code>counts</code> may show
-     * unfinished items that never resolve.</p>
-     * <p>Cancel is idempotent: canceling an already-<code>canceled</code> job returns <code>200</code>
-     * with the job. Canceling a job that has already <code>completed</code> or <code>failed</code> is
-     * a <code>409</code>.</p>
-     */
-    public CompletableFuture<BatchJob> cancel(String jobId, RequestOptions requestOptions) {
-        return this.rawClient.cancel(jobId, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Drives a job to the terminal <code>canceled</code> state on request. Takes no
+   * request body.
+   * <p>Cancel does not delete the job: the job record and any results already
+   * produced are preserved for the normal retention window, the same as a
+   * <code>completed</code> or <code>failed</code> job. Items stop being processed and keep the state
+   * they held at cancellation, so a canceled job's <code>counts</code> may show
+   * unfinished items that never resolve.</p>
+   * <p>Cancel is idempotent: canceling an already-<code>canceled</code> job returns <code>200</code>
+   * with the job. Canceling a job that has already <code>completed</code> or <code>failed</code> is
+   * a <code>409</code>.</p>
+   */
+  public CompletableFuture<BatchJob> cancel(String jobId) {
+    CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture = this.rawClient.cancel(jobId);
+    CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a job's record, its per-status item counts, and one page of
-     * per-item statuses.
-     * <p>Items are listed in a stable order that is not upload order and is the
-     * same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public CompletableFuture<JobDetailResponse> get(String jobId) {
-        return this.rawClient.get(jobId).thenApply(response -> response.body());
-    }
+  /**
+   * Drives a job to the terminal <code>canceled</code> state on request. Takes no
+   * request body.
+   * <p>Cancel does not delete the job: the job record and any results already
+   * produced are preserved for the normal retention window, the same as a
+   * <code>completed</code> or <code>failed</code> job. Items stop being processed and keep the state
+   * they held at cancellation, so a canceled job's <code>counts</code> may show
+   * unfinished items that never resolve.</p>
+   * <p>Cancel is idempotent: canceling an already-<code>canceled</code> job returns <code>200</code>
+   * with the job. Canceling a job that has already <code>completed</code> or <code>failed</code> is
+   * a <code>409</code>.</p>
+   */
+  public CompletableFuture<BatchJob> cancel(String jobId, RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture =
+      this.rawClient.cancel(jobId, requestOptions);
+    CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a job's record, its per-status item counts, and one page of
-     * per-item statuses.
-     * <p>Items are listed in a stable order that is not upload order and is the
-     * same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public CompletableFuture<JobDetailResponse> get(String jobId, RequestOptions requestOptions) {
-        return this.rawClient.get(jobId, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a job's record, its per-status item counts, and one page of
+   * per-item statuses.
+   * <p>Items are listed in a stable order that is not upload order and is the
+   * same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public CompletableFuture<JobDetailResponse> get(String jobId) {
+    CompletableFuture<PhenomlClientHttpResponse<JobDetailResponse>> rawFuture =
+      this.rawClient.get(jobId);
+    CompletableFuture<JobDetailResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a job's record, its per-status item counts, and one page of
-     * per-item statuses.
-     * <p>Items are listed in a stable order that is not upload order and is the
-     * same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public CompletableFuture<JobDetailResponse> get(String jobId, GetRequest request) {
-        return this.rawClient.get(jobId, request).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a job's record, its per-status item counts, and one page of
+   * per-item statuses.
+   * <p>Items are listed in a stable order that is not upload order and is the
+   * same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public CompletableFuture<JobDetailResponse> get(String jobId, RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<JobDetailResponse>> rawFuture =
+      this.rawClient.get(jobId, requestOptions);
+    CompletableFuture<JobDetailResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a job's record, its per-status item counts, and one page of
-     * per-item statuses.
-     * <p>Items are listed in a stable order that is not upload order and is the
-     * same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public CompletableFuture<JobDetailResponse> get(String jobId, GetRequest request, RequestOptions requestOptions) {
-        return this.rawClient.get(jobId, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a job's record, its per-status item counts, and one page of
+   * per-item statuses.
+   * <p>Items are listed in a stable order that is not upload order and is the
+   * same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public CompletableFuture<JobDetailResponse> get(String jobId, GetRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<JobDetailResponse>> rawFuture =
+      this.rawClient.get(jobId, request);
+    CompletableFuture<JobDetailResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * A lighter status page. Returns the same per-item status entries as
-     * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
-     * and the entries carry <code>result_size</code> rather than any result content. Use
-     * each entry's <code>item_id</code> to fetch that item's result from
-     * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
-     * <p>Entries are listed in a stable order that is not upload order and is
-     * the same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public CompletableFuture<ResultsPageResponse> getResults(String jobId) {
-        return this.rawClient.getResults(jobId).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a job's record, its per-status item counts, and one page of
+   * per-item statuses.
+   * <p>Items are listed in a stable order that is not upload order and is the
+   * same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public CompletableFuture<JobDetailResponse> get(
+    String jobId,
+    GetRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<JobDetailResponse>> rawFuture =
+      this.rawClient.get(jobId, request, requestOptions);
+    CompletableFuture<JobDetailResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * A lighter status page. Returns the same per-item status entries as
-     * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
-     * and the entries carry <code>result_size</code> rather than any result content. Use
-     * each entry's <code>item_id</code> to fetch that item's result from
-     * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
-     * <p>Entries are listed in a stable order that is not upload order and is
-     * the same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public CompletableFuture<ResultsPageResponse> getResults(String jobId, RequestOptions requestOptions) {
-        return this.rawClient.getResults(jobId, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * A lighter status page. Returns the same per-item status entries as
+   * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
+   * and the entries carry <code>result_size</code> rather than any result content. Use
+   * each entry's <code>item_id</code> to fetch that item's result from
+   * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
+   * <p>Entries are listed in a stable order that is not upload order and is
+   * the same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public CompletableFuture<ResultsPageResponse> getResults(String jobId) {
+    CompletableFuture<PhenomlClientHttpResponse<ResultsPageResponse>> rawFuture =
+      this.rawClient.getResults(jobId);
+    CompletableFuture<ResultsPageResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * A lighter status page. Returns the same per-item status entries as
-     * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
-     * and the entries carry <code>result_size</code> rather than any result content. Use
-     * each entry's <code>item_id</code> to fetch that item's result from
-     * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
-     * <p>Entries are listed in a stable order that is not upload order and is
-     * the same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public CompletableFuture<ResultsPageResponse> getResults(String jobId, GetResultsRequest request) {
-        return this.rawClient.getResults(jobId, request).thenApply(response -> response.body());
-    }
+  /**
+   * A lighter status page. Returns the same per-item status entries as
+   * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
+   * and the entries carry <code>result_size</code> rather than any result content. Use
+   * each entry's <code>item_id</code> to fetch that item's result from
+   * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
+   * <p>Entries are listed in a stable order that is not upload order and is
+   * the same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public CompletableFuture<ResultsPageResponse> getResults(
+    String jobId,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ResultsPageResponse>> rawFuture =
+      this.rawClient.getResults(jobId, requestOptions);
+    CompletableFuture<ResultsPageResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * A lighter status page. Returns the same per-item status entries as
-     * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
-     * and the entries carry <code>result_size</code> rather than any result content. Use
-     * each entry's <code>item_id</code> to fetch that item's result from
-     * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
-     * <p>Entries are listed in a stable order that is not upload order and is
-     * the same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public CompletableFuture<ResultsPageResponse> getResults(
-            String jobId, GetResultsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getResults(jobId, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * A lighter status page. Returns the same per-item status entries as
+   * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
+   * and the entries carry <code>result_size</code> rather than any result content. Use
+   * each entry's <code>item_id</code> to fetch that item's result from
+   * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
+   * <p>Entries are listed in a stable order that is not upload order and is
+   * the same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public CompletableFuture<ResultsPageResponse> getResults(
+    String jobId,
+    GetResultsRequest request
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ResultsPageResponse>> rawFuture =
+      this.rawClient.getResults(jobId, request);
+    CompletableFuture<ResultsPageResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Streams one item's stored result bytes verbatim as <code>application/json</code>.
-     * The body is the response the item's synchronous multi endpoint would have
-     * returned — a <code>DocumentMultiResponse</code> for a document item or a
-     * <code>CreateMultiResponse</code> for a create item.
-     * <p>Only a succeeded item has a result: an item that has not succeeded
-     * (pending, processing, or failed) is a <code>409</code>, and a result that has
-     * expired is a <code>404</code>.</p>
-     */
-    public CompletableFuture<Map<String, Object>> getResult(String jobId, String itemId) {
-        return this.rawClient.getResult(jobId, itemId).thenApply(response -> response.body());
-    }
+  /**
+   * A lighter status page. Returns the same per-item status entries as
+   * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
+   * and the entries carry <code>result_size</code> rather than any result content. Use
+   * each entry's <code>item_id</code> to fetch that item's result from
+   * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
+   * <p>Entries are listed in a stable order that is not upload order and is
+   * the same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public CompletableFuture<ResultsPageResponse> getResults(
+    String jobId,
+    GetResultsRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ResultsPageResponse>> rawFuture =
+      this.rawClient.getResults(jobId, request, requestOptions);
+    CompletableFuture<ResultsPageResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Streams one item's stored result bytes verbatim as <code>application/json</code>.
-     * The body is the response the item's synchronous multi endpoint would have
-     * returned — a <code>DocumentMultiResponse</code> for a document item or a
-     * <code>CreateMultiResponse</code> for a create item.
-     * <p>Only a succeeded item has a result: an item that has not succeeded
-     * (pending, processing, or failed) is a <code>409</code>, and a result that has
-     * expired is a <code>404</code>.</p>
-     */
-    public CompletableFuture<Map<String, Object>> getResult(
-            String jobId, String itemId, RequestOptions requestOptions) {
-        return this.rawClient.getResult(jobId, itemId, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Streams one item's stored result bytes verbatim as <code>application/json</code>.
+   * The body is the response the item's synchronous multi endpoint would have
+   * returned — a <code>DocumentMultiResponse</code> for a document item or a
+   * <code>CreateMultiResponse</code> for a create item.
+   * <p>Only a succeeded item has a result: an item that has not succeeded
+   * (pending, processing, or failed) is a <code>409</code>, and a result that has
+   * expired is a <code>404</code>.</p>
+   */
+  public CompletableFuture<Map<String, Object>> getResult(String jobId, String itemId) {
+    CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> rawFuture =
+      this.rawClient.getResult(jobId, itemId);
+    CompletableFuture<Map<String, Object>> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
+
+  /**
+   * Streams one item's stored result bytes verbatim as <code>application/json</code>.
+   * The body is the response the item's synchronous multi endpoint would have
+   * returned — a <code>DocumentMultiResponse</code> for a document item or a
+   * <code>CreateMultiResponse</code> for a create item.
+   * <p>Only a succeeded item has a result: an item that has not succeeded
+   * (pending, processing, or failed) is a <code>409</code>, and a result that has
+   * expired is a <code>404</code>.</p>
+   */
+  public CompletableFuture<Map<String, Object>> getResult(
+    String jobId,
+    String itemId,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> rawFuture =
+      this.rawClient.getResult(jobId, itemId, requestOptions);
+    CompletableFuture<Map<String, Object>> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 }

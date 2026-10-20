@@ -6,17 +6,18 @@ package com.phenoml.api.core;
 import java.util.Optional;
 
 public final class NullableNonemptyFilter {
-    @Override
-    public boolean equals(Object o) {
-        boolean isOptionalEmpty = isOptionalEmpty(o);
 
-        return isOptionalEmpty;
-    }
+  @Override
+  public boolean equals(Object o) {
+    boolean isOptionalEmpty = isOptionalEmpty(o);
 
-    private boolean isOptionalEmpty(Object o) {
-        if (o instanceof Optional) {
-            return !((Optional<?>) o).isPresent();
-        }
-        return false;
+    return isOptionalEmpty;
+  }
+
+  private boolean isOptionalEmpty(Object o) {
+    if (o instanceof Optional) {
+      return !((Optional<?>) o).isPresent();
     }
+    return false;
+  }
 }

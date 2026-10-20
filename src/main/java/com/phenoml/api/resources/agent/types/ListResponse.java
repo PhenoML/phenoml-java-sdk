@@ -21,134 +21,150 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ListResponse.Builder.class)
 public final class ListResponse {
-    private final Optional<Boolean> success;
 
-    private final Optional<String> message;
+  private final Optional<Boolean> success;
 
-    private final Optional<List<AgentTemplate>> agents;
+  private final Optional<String> message;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<AgentTemplate>> agents;
 
-    private ListResponse(
-            Optional<Boolean> success,
-            Optional<String> message,
-            Optional<List<AgentTemplate>> agents,
-            Map<String, Object> additionalProperties) {
-        this.success = success;
-        this.message = message;
-        this.agents = agents;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ListResponse(
+    Optional<Boolean> success,
+    Optional<String> message,
+    Optional<List<AgentTemplate>> agents,
+    Map<String, Object> additionalProperties
+  ) {
+    this.success = success;
+    this.message = message;
+    this.agents = agents;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("success")
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  @JsonProperty("message")
+  public Optional<String> getMessage() {
+    return message;
+  }
+
+  @JsonProperty("agents")
+  public Optional<List<AgentTemplate>> getAgents() {
+    return agents;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ListResponse && equalTo((ListResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ListResponse other) {
+    return (
+      success.equals(other.success) && message.equals(other.message) && agents.equals(other.agents)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.success, this.message, this.agents);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<String> message = Optional.empty();
+
+    private Optional<List<AgentTemplate>> agents = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ListResponse other) {
+      success(other.getSuccess());
+      message(other.getMessage());
+      agents(other.getAgents());
+      return this;
     }
 
-    @JsonProperty("success")
-    public Optional<Boolean> getSuccess() {
-        return success;
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
     }
 
-    @JsonProperty("message")
-    public Optional<String> getMessage() {
-        return message;
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
     }
 
-    @JsonProperty("agents")
-    public Optional<List<AgentTemplate>> getAgents() {
-        return agents;
+    @JsonSetter(value = "message", nulls = Nulls.SKIP)
+    public Builder message(Optional<String> message) {
+      this.message = message;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ListResponse && equalTo((ListResponse) other);
+    public Builder message(String message) {
+      this.message = Optional.ofNullable(message);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    @JsonSetter(value = "agents", nulls = Nulls.SKIP)
+    public Builder agents(Optional<List<AgentTemplate>> agents) {
+      this.agents = agents;
+      return this;
     }
 
-    private boolean equalTo(ListResponse other) {
-        return success.equals(other.success) && message.equals(other.message) && agents.equals(other.agents);
+    public Builder agents(List<AgentTemplate> agents) {
+      this.agents = Optional.ofNullable(agents);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.success, this.message, this.agents);
+    public ListResponse build() {
+      return new ListResponse(success, message, agents, additionalProperties);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("success") ||
+        key.equalsIgnoreCase("message") ||
+        key.equalsIgnoreCase("agents")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<String> message = Optional.empty();
-
-        private Optional<List<AgentTemplate>> agents = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ListResponse other) {
-            success(other.getSuccess());
-            message(other.getMessage());
-            agents(other.getAgents());
-            return this;
-        }
-
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        @JsonSetter(value = "message", nulls = Nulls.SKIP)
-        public Builder message(Optional<String> message) {
-            this.message = message;
-            return this;
-        }
-
-        public Builder message(String message) {
-            this.message = Optional.ofNullable(message);
-            return this;
-        }
-
-        @JsonSetter(value = "agents", nulls = Nulls.SKIP)
-        public Builder agents(Optional<List<AgentTemplate>> agents) {
-            this.agents = agents;
-            return this;
-        }
-
-        public Builder agents(List<AgentTemplate> agents) {
-            this.agents = Optional.ofNullable(agents);
-            return this;
-        }
-
-        public ListResponse build() {
-            return new ListResponse(success, message, agents, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

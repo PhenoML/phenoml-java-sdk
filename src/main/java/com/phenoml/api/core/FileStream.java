@@ -13,48 +13,53 @@ import org.jetbrains.annotations.Nullable;
  * Represents a file stream with associated metadata for file uploads.
  */
 public class FileStream {
-    private final InputStream inputStream;
-    private final String fileName;
-    private final MediaType contentType;
 
-    /**
-     * Constructs a FileStream with the given input stream and optional metadata.
-     *
-     * @param inputStream The input stream of the file content. Must not be null.
-     * @param fileName The name of the file, or null if unknown.
-     * @param contentType The MIME type of the file content, or null if unknown.
-     * @throws NullPointerException if inputStream is null
-     */
-    public FileStream(InputStream inputStream, @Nullable String fileName, @Nullable MediaType contentType) {
-        this.inputStream = Objects.requireNonNull(inputStream, "Input stream cannot be null");
-        this.fileName = fileName;
-        this.contentType = contentType;
-    }
+  private final InputStream inputStream;
+  private final String fileName;
+  private final MediaType contentType;
 
-    public FileStream(InputStream inputStream) {
-        this(inputStream, null, null);
-    }
+  /**
+   * Constructs a FileStream with the given input stream and optional metadata.
+   *
+   * @param inputStream The input stream of the file content. Must not be null.
+   * @param fileName The name of the file, or null if unknown.
+   * @param contentType The MIME type of the file content, or null if unknown.
+   * @throws NullPointerException if inputStream is null
+   */
+  public FileStream(
+    InputStream inputStream,
+    @Nullable String fileName,
+    @Nullable MediaType contentType
+  ) {
+    this.inputStream = Objects.requireNonNull(inputStream, "Input stream cannot be null");
+    this.fileName = fileName;
+    this.contentType = contentType;
+  }
 
-    public InputStream getInputStream() {
-        return inputStream;
-    }
+  public FileStream(InputStream inputStream) {
+    this(inputStream, null, null);
+  }
 
-    @Nullable
-    public String getFileName() {
-        return fileName;
-    }
+  public InputStream getInputStream() {
+    return inputStream;
+  }
 
-    @Nullable
-    public MediaType getContentType() {
-        return contentType;
-    }
+  @Nullable
+  public String getFileName() {
+    return fileName;
+  }
 
-    /**
-     * Creates a RequestBody suitable for use with OkHttp client.
-     *
-     * @return A RequestBody instance representing this file stream.
-     */
-    public RequestBody toRequestBody() {
-        return new InputStreamRequestBody(contentType, inputStream);
-    }
+  @Nullable
+  public MediaType getContentType() {
+    return contentType;
+  }
+
+  /**
+   * Creates a RequestBody suitable for use with OkHttp client.
+   *
+   * @return A RequestBody instance representing this file stream.
+   */
+  public RequestBody toRequestBody() {
+    return new InputStreamRequestBody(contentType, inputStream);
+  }
 }

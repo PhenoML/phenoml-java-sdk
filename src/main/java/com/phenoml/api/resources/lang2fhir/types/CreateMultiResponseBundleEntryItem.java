@@ -20,135 +20,160 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateMultiResponseBundleEntryItem.Builder.class)
 public final class CreateMultiResponseBundleEntryItem {
-    private final Optional<String> fullUrl;
 
-    private final Optional<Map<String, Object>> resource;
+  private final Optional<String> fullUrl;
 
-    private final Optional<CreateMultiResponseBundleEntryItemRequest> request;
+  private final Optional<Map<String, Object>> resource;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<CreateMultiResponseBundleEntryItemRequest> request;
 
-    private CreateMultiResponseBundleEntryItem(
-            Optional<String> fullUrl,
-            Optional<Map<String, Object>> resource,
-            Optional<CreateMultiResponseBundleEntryItemRequest> request,
-            Map<String, Object> additionalProperties) {
-        this.fullUrl = fullUrl;
-        this.resource = resource;
-        this.request = request;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CreateMultiResponseBundleEntryItem(
+    Optional<String> fullUrl,
+    Optional<Map<String, Object>> resource,
+    Optional<CreateMultiResponseBundleEntryItemRequest> request,
+    Map<String, Object> additionalProperties
+  ) {
+    this.fullUrl = fullUrl;
+    this.resource = resource;
+    this.request = request;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("fullUrl")
+  public Optional<String> getFullUrl() {
+    return fullUrl;
+  }
+
+  @JsonProperty("resource")
+  public Optional<Map<String, Object>> getResource() {
+    return resource;
+  }
+
+  @JsonProperty("request")
+  public Optional<CreateMultiResponseBundleEntryItemRequest> getRequest() {
+    return request;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof CreateMultiResponseBundleEntryItem &&
+      equalTo((CreateMultiResponseBundleEntryItem) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CreateMultiResponseBundleEntryItem other) {
+    return (
+      fullUrl.equals(other.fullUrl) &&
+      resource.equals(other.resource) &&
+      request.equals(other.request)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.fullUrl, this.resource, this.request);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> fullUrl = Optional.empty();
+
+    private Optional<Map<String, Object>> resource = Optional.empty();
+
+    private Optional<CreateMultiResponseBundleEntryItemRequest> request = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(CreateMultiResponseBundleEntryItem other) {
+      fullUrl(other.getFullUrl());
+      resource(other.getResource());
+      request(other.getRequest());
+      return this;
     }
 
-    @JsonProperty("fullUrl")
-    public Optional<String> getFullUrl() {
-        return fullUrl;
+    @JsonSetter(value = "fullUrl", nulls = Nulls.SKIP)
+    public Builder fullUrl(Optional<String> fullUrl) {
+      this.fullUrl = fullUrl;
+      return this;
     }
 
-    @JsonProperty("resource")
-    public Optional<Map<String, Object>> getResource() {
-        return resource;
+    public Builder fullUrl(String fullUrl) {
+      this.fullUrl = Optional.ofNullable(fullUrl);
+      return this;
     }
 
-    @JsonProperty("request")
-    public Optional<CreateMultiResponseBundleEntryItemRequest> getRequest() {
-        return request;
+    @JsonSetter(value = "resource", nulls = Nulls.SKIP)
+    public Builder resource(Optional<Map<String, Object>> resource) {
+      this.resource = resource;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CreateMultiResponseBundleEntryItem
-                && equalTo((CreateMultiResponseBundleEntryItem) other);
+    public Builder resource(Map<String, Object> resource) {
+      this.resource = Optional.ofNullable(resource);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    @JsonSetter(value = "request", nulls = Nulls.SKIP)
+    public Builder request(Optional<CreateMultiResponseBundleEntryItemRequest> request) {
+      this.request = request;
+      return this;
     }
 
-    private boolean equalTo(CreateMultiResponseBundleEntryItem other) {
-        return fullUrl.equals(other.fullUrl) && resource.equals(other.resource) && request.equals(other.request);
+    public Builder request(CreateMultiResponseBundleEntryItemRequest request) {
+      this.request = Optional.ofNullable(request);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.fullUrl, this.resource, this.request);
+    public CreateMultiResponseBundleEntryItem build() {
+      return new CreateMultiResponseBundleEntryItem(
+        fullUrl,
+        resource,
+        request,
+        additionalProperties
+      );
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("fullUrl") ||
+        key.equalsIgnoreCase("resource") ||
+        key.equalsIgnoreCase("request")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> fullUrl = Optional.empty();
-
-        private Optional<Map<String, Object>> resource = Optional.empty();
-
-        private Optional<CreateMultiResponseBundleEntryItemRequest> request = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(CreateMultiResponseBundleEntryItem other) {
-            fullUrl(other.getFullUrl());
-            resource(other.getResource());
-            request(other.getRequest());
-            return this;
-        }
-
-        @JsonSetter(value = "fullUrl", nulls = Nulls.SKIP)
-        public Builder fullUrl(Optional<String> fullUrl) {
-            this.fullUrl = fullUrl;
-            return this;
-        }
-
-        public Builder fullUrl(String fullUrl) {
-            this.fullUrl = Optional.ofNullable(fullUrl);
-            return this;
-        }
-
-        @JsonSetter(value = "resource", nulls = Nulls.SKIP)
-        public Builder resource(Optional<Map<String, Object>> resource) {
-            this.resource = resource;
-            return this;
-        }
-
-        public Builder resource(Map<String, Object> resource) {
-            this.resource = Optional.ofNullable(resource);
-            return this;
-        }
-
-        @JsonSetter(value = "request", nulls = Nulls.SKIP)
-        public Builder request(Optional<CreateMultiResponseBundleEntryItemRequest> request) {
-            this.request = request;
-            return this;
-        }
-
-        public Builder request(CreateMultiResponseBundleEntryItemRequest request) {
-            this.request = Optional.ofNullable(request);
-            return this;
-        }
-
-        public CreateMultiResponseBundleEntryItem build() {
-            return new CreateMultiResponseBundleEntryItem(fullUrl, resource, request, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

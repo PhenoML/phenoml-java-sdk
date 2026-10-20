@@ -23,237 +23,263 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = FhirProviderCreateRequest.Builder.class)
 public final class FhirProviderCreateRequest {
-    private final String name;
 
-    private final Optional<String> description;
+  private final String name;
 
-    private final Provider provider;
+  private final Optional<String> description;
 
-    private final String baseUrl;
+  private final Provider provider;
 
-    private final FhirProviderCreateRequestAuth auth;
+  private final String baseUrl;
 
-    private final Map<String, Object> additionalProperties;
+  private final FhirProviderCreateRequestAuth auth;
 
-    private FhirProviderCreateRequest(
-            String name,
-            Optional<String> description,
-            Provider provider,
-            String baseUrl,
-            FhirProviderCreateRequestAuth auth,
-            Map<String, Object> additionalProperties) {
-        this.name = name;
-        this.description = description;
-        this.provider = provider;
-        this.baseUrl = baseUrl;
-        this.auth = auth;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private FhirProviderCreateRequest(
+    String name,
+    Optional<String> description,
+    Provider provider,
+    String baseUrl,
+    FhirProviderCreateRequestAuth auth,
+    Map<String, Object> additionalProperties
+  ) {
+    this.name = name;
+    this.description = description;
+    this.provider = provider;
+    this.baseUrl = baseUrl;
+    this.auth = auth;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Display name for the FHIR provider
+   */
+  @JsonProperty("name")
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @return Optional description of the FHIR provider
+   */
+  @JsonProperty("description")
+  public Optional<String> getDescription() {
+    return description;
+  }
+
+  @JsonProperty("provider")
+  public Provider getProvider() {
+    return provider;
+  }
+
+  /**
+   * @return Base URL of the FHIR server
+   */
+  @JsonProperty("base_url")
+  public String getBaseUrl() {
+    return baseUrl;
+  }
+
+  @JsonProperty("auth")
+  public FhirProviderCreateRequestAuth getAuth() {
+    return auth;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof FhirProviderCreateRequest && equalTo((FhirProviderCreateRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(FhirProviderCreateRequest other) {
+    return (
+      name.equals(other.name) &&
+      description.equals(other.description) &&
+      provider.equals(other.provider) &&
+      baseUrl.equals(other.baseUrl) &&
+      auth.equals(other.auth)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.name, this.description, this.provider, this.baseUrl, this.auth);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static NameStage builder() {
+    return new Builder();
+  }
+
+  public interface NameStage {
+    /**
+     * <p>Display name for the FHIR provider</p>
+     */
+    ProviderStage name(@NotNull String name);
+
+    Builder from(FhirProviderCreateRequest other);
+  }
+
+  public interface ProviderStage {
+    BaseUrlStage provider(@NotNull Provider provider);
+  }
+
+  public interface BaseUrlStage {
+    /**
+     * <p>Base URL of the FHIR server</p>
+     */
+    AuthStage baseUrl(@NotNull String baseUrl);
+  }
+
+  public interface AuthStage {
+    _FinalStage auth(@NotNull FhirProviderCreateRequestAuth auth);
+  }
+
+  public interface _FinalStage {
+    FhirProviderCreateRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Optional description of the FHIR provider</p>
+     */
+    _FinalStage description(Optional<String> description);
+
+    _FinalStage description(String description);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements NameStage, ProviderStage, BaseUrlStage, AuthStage, _FinalStage {
+
+    private String name;
+
+    private Provider provider;
+
+    private String baseUrl;
+
+    private FhirProviderCreateRequestAuth auth;
+
+    private Optional<String> description = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(FhirProviderCreateRequest other) {
+      name(other.getName());
+      description(other.getDescription());
+      provider(other.getProvider());
+      baseUrl(other.getBaseUrl());
+      auth(other.getAuth());
+      return this;
     }
 
     /**
-     * @return Display name for the FHIR provider
+     * <p>Display name for the FHIR provider</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("name")
-    public String getName() {
-        return name;
+    @java.lang.Override
+    @JsonSetter("name")
+    public ProviderStage name(@NotNull String name) {
+      this.name = Objects.requireNonNull(name, "name must not be null");
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter("provider")
+    public BaseUrlStage provider(@NotNull Provider provider) {
+      this.provider = Objects.requireNonNull(provider, "provider must not be null");
+      return this;
     }
 
     /**
-     * @return Optional description of the FHIR provider
+     * <p>Base URL of the FHIR server</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("description")
-    public Optional<String> getDescription() {
-        return description;
+    @java.lang.Override
+    @JsonSetter("base_url")
+    public AuthStage baseUrl(@NotNull String baseUrl) {
+      this.baseUrl = Objects.requireNonNull(baseUrl, "baseUrl must not be null");
+      return this;
     }
 
-    @JsonProperty("provider")
-    public Provider getProvider() {
-        return provider;
+    @java.lang.Override
+    @JsonSetter("auth")
+    public _FinalStage auth(@NotNull FhirProviderCreateRequestAuth auth) {
+      this.auth = Objects.requireNonNull(auth, "auth must not be null");
+      return this;
     }
 
     /**
-     * @return Base URL of the FHIR server
+     * <p>Optional description of the FHIR provider</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("base_url")
-    public String getBaseUrl() {
-        return baseUrl;
+    @java.lang.Override
+    public _FinalStage description(String description) {
+      this.description = Optional.ofNullable(description);
+      return this;
     }
 
-    @JsonProperty("auth")
-    public FhirProviderCreateRequestAuth getAuth() {
-        return auth;
+    /**
+     * <p>Optional description of the FHIR provider</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "description", nulls = Nulls.SKIP)
+    public _FinalStage description(Optional<String> description) {
+      this.description = description;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof FhirProviderCreateRequest && equalTo((FhirProviderCreateRequest) other);
+    public FhirProviderCreateRequest build() {
+      return new FhirProviderCreateRequest(
+        name,
+        description,
+        provider,
+        baseUrl,
+        auth,
+        additionalProperties
+      );
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(FhirProviderCreateRequest other) {
-        return name.equals(other.name)
-                && description.equals(other.description)
-                && provider.equals(other.provider)
-                && baseUrl.equals(other.baseUrl)
-                && auth.equals(other.auth);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("description") ||
+        key.equalsIgnoreCase("provider") ||
+        key.equalsIgnoreCase("base_url") ||
+        key.equalsIgnoreCase("auth")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.name, this.description, this.provider, this.baseUrl, this.auth);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static NameStage builder() {
-        return new Builder();
-    }
-
-    public interface NameStage {
-        /**
-         * <p>Display name for the FHIR provider</p>
-         */
-        ProviderStage name(@NotNull String name);
-
-        Builder from(FhirProviderCreateRequest other);
-    }
-
-    public interface ProviderStage {
-        BaseUrlStage provider(@NotNull Provider provider);
-    }
-
-    public interface BaseUrlStage {
-        /**
-         * <p>Base URL of the FHIR server</p>
-         */
-        AuthStage baseUrl(@NotNull String baseUrl);
-    }
-
-    public interface AuthStage {
-        _FinalStage auth(@NotNull FhirProviderCreateRequestAuth auth);
-    }
-
-    public interface _FinalStage {
-        FhirProviderCreateRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Optional description of the FHIR provider</p>
-         */
-        _FinalStage description(Optional<String> description);
-
-        _FinalStage description(String description);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements NameStage, ProviderStage, BaseUrlStage, AuthStage, _FinalStage {
-        private String name;
-
-        private Provider provider;
-
-        private String baseUrl;
-
-        private FhirProviderCreateRequestAuth auth;
-
-        private Optional<String> description = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(FhirProviderCreateRequest other) {
-            name(other.getName());
-            description(other.getDescription());
-            provider(other.getProvider());
-            baseUrl(other.getBaseUrl());
-            auth(other.getAuth());
-            return this;
-        }
-
-        /**
-         * <p>Display name for the FHIR provider</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("name")
-        public ProviderStage name(@NotNull String name) {
-            this.name = Objects.requireNonNull(name, "name must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("provider")
-        public BaseUrlStage provider(@NotNull Provider provider) {
-            this.provider = Objects.requireNonNull(provider, "provider must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Base URL of the FHIR server</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("base_url")
-        public AuthStage baseUrl(@NotNull String baseUrl) {
-            this.baseUrl = Objects.requireNonNull(baseUrl, "baseUrl must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("auth")
-        public _FinalStage auth(@NotNull FhirProviderCreateRequestAuth auth) {
-            this.auth = Objects.requireNonNull(auth, "auth must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Optional description of the FHIR provider</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage description(String description) {
-            this.description = Optional.ofNullable(description);
-            return this;
-        }
-
-        /**
-         * <p>Optional description of the FHIR provider</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "description", nulls = Nulls.SKIP)
-        public _FinalStage description(Optional<String> description) {
-            this.description = description;
-            return this;
-        }
-
-        @java.lang.Override
-        public FhirProviderCreateRequest build() {
-            return new FhirProviderCreateRequest(name, description, provider, baseUrl, auth, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

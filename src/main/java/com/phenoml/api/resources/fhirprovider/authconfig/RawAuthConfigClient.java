@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.fhirprovider.authconfig;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
@@ -32,289 +33,380 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class RawAuthConfigClient {
-    protected final ClientOptions clientOptions;
 
-    public RawAuthConfigClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-    }
+  protected final ClientOptions clientOptions;
 
-    /**
-     * Adds a new authentication configuration to an existing FHIR provider.
-     * This enables key rotation and multiple auth configurations per provider.
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public PhenomlClientHttpResponse<FhirProviderResponse> add(
-            String fhirProviderId, FhirProviderAddAuthConfigRequest request) {
-        return add(fhirProviderId, request, null);
-    }
+  public RawAuthConfigClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+  }
 
-    /**
-     * Adds a new authentication configuration to an existing FHIR provider.
-     * This enables key rotation and multiple auth configurations per provider.
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public PhenomlClientHttpResponse<FhirProviderResponse> add(
-            String fhirProviderId, FhirProviderAddAuthConfigRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
-                .addPathSegments("add-auth-config");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("PATCH", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirProviderResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Adds a new authentication configuration to an existing FHIR provider.
+   * This enables key rotation and multiple auth configurations per provider.
+   * <p>Note: Sandbox providers cannot be modified.</p>
+   */
+  public PhenomlClientHttpResponse<FhirProviderResponse> add(
+    String fhirProviderId,
+    FhirProviderAddAuthConfigRequest request
+  ) {
+    return add(fhirProviderId, request, null);
+  }
 
-    /**
-     * Sets which authentication configuration should be active for a FHIR provider.
-     * Only one auth config can be active at a time.
-     * <p>If the specified auth config is already active, the request succeeds without
-     * making any changes and returns a message indicating the config is already active.</p>
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public PhenomlClientHttpResponse<FhirProviderResponse> setActive(
-            String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request) {
-        return setActive(fhirProviderId, request, null);
+  /**
+   * Adds a new authentication configuration to an existing FHIR provider.
+   * This enables key rotation and multiple auth configurations per provider.
+   * <p>Note: Sandbox providers cannot be modified.</p>
+   */
+  public PhenomlClientHttpResponse<FhirProviderResponse> add(
+    String fhirProviderId,
+    FhirProviderAddAuthConfigRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir-provider")
+      .addPathSegment(fhirProviderId)
+      .addPathSegments("add-auth-config");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("PATCH", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirProviderResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 403:
+            throw new ForbiddenError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Sets which authentication configuration should be active for a FHIR provider.
-     * Only one auth config can be active at a time.
-     * <p>If the specified auth config is already active, the request succeeds without
-     * making any changes and returns a message indicating the config is already active.</p>
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public PhenomlClientHttpResponse<FhirProviderResponse> setActive(
-            String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
-                .addPathSegments("set-active-auth-config");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("PATCH", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirProviderResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Sets which authentication configuration should be active for a FHIR provider.
+   * Only one auth config can be active at a time.
+   * <p>If the specified auth config is already active, the request succeeds without
+   * making any changes and returns a message indicating the config is already active.</p>
+   * <p>Note: Sandbox providers cannot be modified.</p>
+   */
+  public PhenomlClientHttpResponse<FhirProviderResponse> setActive(
+    String fhirProviderId,
+    FhirProviderSetActiveAuthConfigRequest request
+  ) {
+    return setActive(fhirProviderId, request, null);
+  }
 
-    /**
-     * Removes an authentication configuration from a FHIR provider.
-     * Cannot remove the currently active auth configuration.
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public PhenomlClientHttpResponse<RemoveResponse> remove(
-            String fhirProviderId, FhirProviderRemoveAuthConfigRequest request) {
-        return remove(fhirProviderId, request, null);
+  /**
+   * Sets which authentication configuration should be active for a FHIR provider.
+   * Only one auth config can be active at a time.
+   * <p>If the specified auth config is already active, the request succeeds without
+   * making any changes and returns a message indicating the config is already active.</p>
+   * <p>Note: Sandbox providers cannot be modified.</p>
+   */
+  public PhenomlClientHttpResponse<FhirProviderResponse> setActive(
+    String fhirProviderId,
+    FhirProviderSetActiveAuthConfigRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir-provider")
+      .addPathSegment(fhirProviderId)
+      .addPathSegments("set-active-auth-config");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("PATCH", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, FhirProviderResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 403:
+            throw new ForbiddenError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Removes an authentication configuration from a FHIR provider.
-     * Cannot remove the currently active auth configuration.
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public PhenomlClientHttpResponse<RemoveResponse> remove(
-            String fhirProviderId, FhirProviderRemoveAuthConfigRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
-                .addPathSegments("remove-auth-config");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("PATCH", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RemoveResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
+  /**
+   * Removes an authentication configuration from a FHIR provider.
+   * Cannot remove the currently active auth configuration.
+   * <p>Note: Sandbox providers cannot be modified.</p>
+   */
+  public PhenomlClientHttpResponse<RemoveResponse> remove(
+    String fhirProviderId,
+    FhirProviderRemoveAuthConfigRequest request
+  ) {
+    return remove(fhirProviderId, request, null);
+  }
+
+  /**
+   * Removes an authentication configuration from a FHIR provider.
+   * Cannot remove the currently active auth configuration.
+   * <p>Note: Sandbox providers cannot be modified.</p>
+   */
+  public PhenomlClientHttpResponse<RemoveResponse> remove(
+    String fhirProviderId,
+    FhirProviderRemoveAuthConfigRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir-provider")
+      .addPathSegment(fhirProviderId)
+      .addPathSegments("remove-auth-config");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("PATCH", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, RemoveResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 403:
+            throw new ForbiddenError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 }

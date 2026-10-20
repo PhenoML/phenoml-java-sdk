@@ -7,78 +7,87 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class ResourceReviewFindingFieldKind {
-    public static final ResourceReviewFindingFieldKind CODES = new ResourceReviewFindingFieldKind(Value.CODES, "codes");
 
-    public static final ResourceReviewFindingFieldKind DATES = new ResourceReviewFindingFieldKind(Value.DATES, "dates");
+  public static final ResourceReviewFindingFieldKind CODES = new ResourceReviewFindingFieldKind(
+    Value.CODES,
+    "codes"
+  );
 
-    private final Value value;
+  public static final ResourceReviewFindingFieldKind DATES = new ResourceReviewFindingFieldKind(
+    Value.DATES,
+    "dates"
+  );
 
-    private final String string;
+  private final Value value;
 
-    ResourceReviewFindingFieldKind(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  ResourceReviewFindingFieldKind(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof ResourceReviewFindingFieldKind &&
+        this.string.equals(((ResourceReviewFindingFieldKind) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case CODES:
+        return visitor.visitCodes();
+      case DATES:
+        return visitor.visitDates();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static ResourceReviewFindingFieldKind valueOf(String value) {
+    switch (value) {
+      case "codes":
+        return CODES;
+      case "dates":
+        return DATES;
+      default:
+        return new ResourceReviewFindingFieldKind(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    DATES,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof ResourceReviewFindingFieldKind
-                        && this.string.equals(((ResourceReviewFindingFieldKind) other).string));
-    }
+    CODES,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    UNKNOWN,
+  }
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case CODES:
-                return visitor.visitCodes();
-            case DATES:
-                return visitor.visitDates();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+  public interface Visitor<T> {
+    T visitDates();
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static ResourceReviewFindingFieldKind valueOf(String value) {
-        switch (value) {
-            case "codes":
-                return CODES;
-            case "dates":
-                return DATES;
-            default:
-                return new ResourceReviewFindingFieldKind(Value.UNKNOWN, value);
-        }
-    }
+    T visitCodes();
 
-    public enum Value {
-        DATES,
-
-        CODES,
-
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitDates();
-
-        T visitCodes();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

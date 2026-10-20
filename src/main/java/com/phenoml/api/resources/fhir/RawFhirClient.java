@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.fhir;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.core.PhenomlClientApiException;
@@ -30,671 +31,829 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class RawFhirClient {
-    protected final ClientOptions clientOptions;
 
-    public RawFhirClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-    }
+  protected final ClientOptions clientOptions;
 
-    /**
-     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
-     * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
-     * <ul>
-     * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
-     * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
-     * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
-     * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
-     * </ul>
-     * <p>Examples:</p>
-     * <ul>
-     * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
-     * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
-     * </ul>
-     * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> search(String fhirProviderId, String fhirPath) {
-        return search(fhirProviderId, fhirPath, SearchRequest.builder().build());
-    }
+  public RawFhirClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+  }
 
-    /**
-     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
-     * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
-     * <ul>
-     * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
-     * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
-     * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
-     * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
-     * </ul>
-     * <p>Examples:</p>
-     * <ul>
-     * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
-     * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
-     * </ul>
-     * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> search(
-            String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
-        return search(fhirProviderId, fhirPath, SearchRequest.builder().build(), requestOptions);
-    }
+  /**
+   * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
+   * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
+   * <ul>
+   * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
+   * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
+   * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
+   * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
+   * </ul>
+   * <p>Examples:</p>
+   * <ul>
+   * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
+   * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
+   * </ul>
+   * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> search(String fhirProviderId, String fhirPath) {
+    return search(fhirProviderId, fhirPath, SearchRequest.builder().build());
+  }
 
-    /**
-     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
-     * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
-     * <ul>
-     * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
-     * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
-     * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
-     * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
-     * </ul>
-     * <p>Examples:</p>
-     * <ul>
-     * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
-     * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
-     * </ul>
-     * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> search(String fhirProviderId, String fhirPath, SearchRequest request) {
-        return search(fhirProviderId, fhirPath, request, null);
-    }
+  /**
+   * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
+   * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
+   * <ul>
+   * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
+   * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
+   * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
+   * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
+   * </ul>
+   * <p>Examples:</p>
+   * <ul>
+   * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
+   * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
+   * </ul>
+   * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> search(
+    String fhirProviderId,
+    String fhirPath,
+    RequestOptions requestOptions
+  ) {
+    return search(fhirProviderId, fhirPath, SearchRequest.builder().build(), requestOptions);
+  }
 
-    /**
-     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
-     * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
-     * <ul>
-     * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
-     * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
-     * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
-     * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
-     * </ul>
-     * <p>Examples:</p>
-     * <ul>
-     * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
-     * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
-     * </ul>
-     * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> search(
-            String fhirProviderId, String fhirPath, SearchRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
-                .addPathSegments("fhir")
-                .addPathSegment(fhirPath);
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("GET", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json");
-        if (request.getPhenomlOnBehalfOf().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
-        }
-        if (request.getPhenomlFhirProvider().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
-        }
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
+   * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
+   * <ul>
+   * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
+   * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
+   * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
+   * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
+   * </ul>
+   * <p>Examples:</p>
+   * <ul>
+   * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
+   * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
+   * </ul>
+   * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> search(
+    String fhirProviderId,
+    String fhirPath,
+    SearchRequest request
+  ) {
+    return search(fhirProviderId, fhirPath, request, null);
+  }
 
-    /**
-     * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> create(String fhirProviderId, String fhirPath, Object body) {
-        return create(
-                fhirProviderId, fhirPath, CreateRequest.builder().body(body).build());
+  /**
+   * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
+   * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
+   * <ul>
+   * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
+   * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
+   * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
+   * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
+   * </ul>
+   * <p>Examples:</p>
+   * <ul>
+   * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
+   * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
+   * </ul>
+   * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> search(
+    String fhirProviderId,
+    String fhirPath,
+    SearchRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir-provider")
+      .addPathSegment(fhirProviderId)
+      .addPathSegments("fhir")
+      .addPathSegment(fhirPath);
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    Request.Builder _requestBuilder = new Request.Builder()
+      .url(httpUrl.build())
+      .method("GET", null)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json");
+    if (request.getPhenomlOnBehalfOf().isPresent()) {
+      _requestBuilder.addHeader("X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
+    }
+    if (request.getPhenomlFhirProvider().isPresent()) {
+      _requestBuilder.addHeader("X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
+    }
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+          response
+        );
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> create(
-            String fhirProviderId, String fhirPath, Object body, RequestOptions requestOptions) {
-        return create(
-                fhirProviderId, fhirPath, CreateRequest.builder().body(body).build(), requestOptions);
-    }
+  /**
+   * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> create(
+    String fhirProviderId,
+    String fhirPath,
+    Object body
+  ) {
+    return create(fhirProviderId, fhirPath, CreateRequest.builder().body(body).build());
+  }
 
-    /**
-     * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> create(String fhirProviderId, String fhirPath, CreateRequest request) {
-        return create(fhirProviderId, fhirPath, request, null);
-    }
+  /**
+   * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> create(
+    String fhirProviderId,
+    String fhirPath,
+    Object body,
+    RequestOptions requestOptions
+  ) {
+    return create(
+      fhirProviderId,
+      fhirPath,
+      CreateRequest.builder().body(body).build(),
+      requestOptions
+    );
+  }
 
-    /**
-     * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> create(
-            String fhirProviderId, String fhirPath, CreateRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
-                .addPathSegments("fhir")
-                .addPathSegment(fhirPath);
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request.getBody()),
-                    MediaType.parse("application/fhir+json"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/fhir+json")
-                .addHeader("Accept", "application/json");
-        if (request.getPhenomlOnBehalfOf().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
-        }
-        if (request.getPhenomlFhirProvider().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
-        }
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> create(
+    String fhirProviderId,
+    String fhirPath,
+    CreateRequest request
+  ) {
+    return create(fhirProviderId, fhirPath, request, null);
+  }
 
-    /**
-     * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> upsert(String fhirProviderId, String fhirPath, Object body) {
-        return upsert(
-                fhirProviderId, fhirPath, UpsertRequest.builder().body(body).build());
+  /**
+   * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> create(
+    String fhirProviderId,
+    String fhirPath,
+    CreateRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir-provider")
+      .addPathSegment(fhirProviderId)
+      .addPathSegments("fhir")
+      .addPathSegment(fhirPath);
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request.getBody(),
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaType.parse("application/fhir+json")
+      );
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    Request.Builder _requestBuilder = new Request.Builder()
+      .url(httpUrl.build())
+      .method("POST", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/fhir+json")
+      .addHeader("Accept", "application/json");
+    if (request.getPhenomlOnBehalfOf().isPresent()) {
+      _requestBuilder.addHeader("X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
+    }
+    if (request.getPhenomlFhirProvider().isPresent()) {
+      _requestBuilder.addHeader("X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
+    }
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+          response
+        );
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> upsert(
-            String fhirProviderId, String fhirPath, Object body, RequestOptions requestOptions) {
-        return upsert(
-                fhirProviderId, fhirPath, UpsertRequest.builder().body(body).build(), requestOptions);
-    }
+  /**
+   * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> upsert(
+    String fhirProviderId,
+    String fhirPath,
+    Object body
+  ) {
+    return upsert(fhirProviderId, fhirPath, UpsertRequest.builder().body(body).build());
+  }
 
-    /**
-     * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> upsert(String fhirProviderId, String fhirPath, UpsertRequest request) {
-        return upsert(fhirProviderId, fhirPath, request, null);
-    }
+  /**
+   * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> upsert(
+    String fhirProviderId,
+    String fhirPath,
+    Object body,
+    RequestOptions requestOptions
+  ) {
+    return upsert(
+      fhirProviderId,
+      fhirPath,
+      UpsertRequest.builder().body(body).build(),
+      requestOptions
+    );
+  }
 
-    /**
-     * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> upsert(
-            String fhirProviderId, String fhirPath, UpsertRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
-                .addPathSegments("fhir")
-                .addPathSegment(fhirPath);
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request.getBody()),
-                    MediaType.parse("application/fhir+json"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("PUT", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/fhir+json")
-                .addHeader("Accept", "application/json");
-        if (request.getPhenomlOnBehalfOf().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
-        }
-        if (request.getPhenomlFhirProvider().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
-        }
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> upsert(
+    String fhirProviderId,
+    String fhirPath,
+    UpsertRequest request
+  ) {
+    return upsert(fhirProviderId, fhirPath, request, null);
+  }
 
-    /**
-     * Deletes a FHIR resource from the specified provider.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> delete(String fhirProviderId, String fhirPath) {
-        return delete(fhirProviderId, fhirPath, DeleteRequest.builder().build());
+  /**
+   * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> upsert(
+    String fhirProviderId,
+    String fhirPath,
+    UpsertRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir-provider")
+      .addPathSegment(fhirProviderId)
+      .addPathSegments("fhir")
+      .addPathSegment(fhirPath);
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request.getBody(),
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaType.parse("application/fhir+json")
+      );
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    Request.Builder _requestBuilder = new Request.Builder()
+      .url(httpUrl.build())
+      .method("PUT", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/fhir+json")
+      .addHeader("Accept", "application/json");
+    if (request.getPhenomlOnBehalfOf().isPresent()) {
+      _requestBuilder.addHeader("X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
+    }
+    if (request.getPhenomlFhirProvider().isPresent()) {
+      _requestBuilder.addHeader("X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
+    }
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+          response
+        );
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Deletes a FHIR resource from the specified provider.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> delete(
-            String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
-        return delete(fhirProviderId, fhirPath, DeleteRequest.builder().build(), requestOptions);
-    }
+  /**
+   * Deletes a FHIR resource from the specified provider.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> delete(String fhirProviderId, String fhirPath) {
+    return delete(fhirProviderId, fhirPath, DeleteRequest.builder().build());
+  }
 
-    /**
-     * Deletes a FHIR resource from the specified provider.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> delete(String fhirProviderId, String fhirPath, DeleteRequest request) {
-        return delete(fhirProviderId, fhirPath, request, null);
-    }
+  /**
+   * Deletes a FHIR resource from the specified provider.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> delete(
+    String fhirProviderId,
+    String fhirPath,
+    RequestOptions requestOptions
+  ) {
+    return delete(fhirProviderId, fhirPath, DeleteRequest.builder().build(), requestOptions);
+  }
 
-    /**
-     * Deletes a FHIR resource from the specified provider.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> delete(
-            String fhirProviderId, String fhirPath, DeleteRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
-                .addPathSegments("fhir")
-                .addPathSegment(fhirPath);
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("DELETE", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json");
-        if (request.getPhenomlOnBehalfOf().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
-        }
-        if (request.getPhenomlFhirProvider().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
-        }
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Deletes a FHIR resource from the specified provider.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> delete(
+    String fhirProviderId,
+    String fhirPath,
+    DeleteRequest request
+  ) {
+    return delete(fhirProviderId, fhirPath, request, null);
+  }
 
-    /**
-     * Partially updates a FHIR resource on the specified provider.
-     * <p>Two body formats are supported, selected by request content type:</p>
-     * <ul>
-     * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
-     * <ul>
-     * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
-     * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
-     * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
-     * </ul>
-     * </li>
-     * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
-     * </ul>
-     * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> patch(
-            String fhirProviderId, String fhirPath, List<PatchRequestBodyItem> body) {
-        return patch(fhirProviderId, fhirPath, PatchRequest.builder().body(body).build());
+  /**
+   * Deletes a FHIR resource from the specified provider.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> delete(
+    String fhirProviderId,
+    String fhirPath,
+    DeleteRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir-provider")
+      .addPathSegment(fhirProviderId)
+      .addPathSegments("fhir")
+      .addPathSegment(fhirPath);
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    Request.Builder _requestBuilder = new Request.Builder()
+      .url(httpUrl.build())
+      .method(
+        "DELETE",
+        BodyProperties.toRequestBody(
+          requestOptions != null ? requestOptions.getBodyProperties() : null,
+          null
+        )
+      )
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json");
+    if (request.getPhenomlOnBehalfOf().isPresent()) {
+      _requestBuilder.addHeader("X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
+    }
+    if (request.getPhenomlFhirProvider().isPresent()) {
+      _requestBuilder.addHeader("X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
+    }
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+          response
+        );
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Partially updates a FHIR resource on the specified provider.
-     * <p>Two body formats are supported, selected by request content type:</p>
-     * <ul>
-     * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
-     * <ul>
-     * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
-     * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
-     * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
-     * </ul>
-     * </li>
-     * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
-     * </ul>
-     * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> patch(
-            String fhirProviderId, String fhirPath, List<PatchRequestBodyItem> body, RequestOptions requestOptions) {
-        return patch(fhirProviderId, fhirPath, PatchRequest.builder().body(body).build(), requestOptions);
-    }
+  /**
+   * Partially updates a FHIR resource on the specified provider.
+   * <p>Two body formats are supported, selected by request content type:</p>
+   * <ul>
+   * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
+   * <ul>
+   * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
+   * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
+   * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
+   * </ul>
+   * </li>
+   * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
+   * </ul>
+   * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> patch(
+    String fhirProviderId,
+    String fhirPath,
+    List<PatchRequestBodyItem> body
+  ) {
+    return patch(fhirProviderId, fhirPath, PatchRequest.builder().body(body).build());
+  }
 
-    /**
-     * Partially updates a FHIR resource on the specified provider.
-     * <p>Two body formats are supported, selected by request content type:</p>
-     * <ul>
-     * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
-     * <ul>
-     * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
-     * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
-     * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
-     * </ul>
-     * </li>
-     * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
-     * </ul>
-     * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> patch(String fhirProviderId, String fhirPath, PatchRequest request) {
-        return patch(fhirProviderId, fhirPath, request, null);
-    }
+  /**
+   * Partially updates a FHIR resource on the specified provider.
+   * <p>Two body formats are supported, selected by request content type:</p>
+   * <ul>
+   * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
+   * <ul>
+   * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
+   * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
+   * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
+   * </ul>
+   * </li>
+   * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
+   * </ul>
+   * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> patch(
+    String fhirProviderId,
+    String fhirPath,
+    List<PatchRequestBodyItem> body,
+    RequestOptions requestOptions
+  ) {
+    return patch(
+      fhirProviderId,
+      fhirPath,
+      PatchRequest.builder().body(body).build(),
+      requestOptions
+    );
+  }
 
-    /**
-     * Partially updates a FHIR resource on the specified provider.
-     * <p>Two body formats are supported, selected by request content type:</p>
-     * <ul>
-     * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
-     * <ul>
-     * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
-     * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
-     * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
-     * </ul>
-     * </li>
-     * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
-     * </ul>
-     * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> patch(
-            String fhirProviderId, String fhirPath, PatchRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
-                .addPathSegments("fhir")
-                .addPathSegment(fhirPath);
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request.getBody()),
-                    MediaType.parse("application/json-patch+json"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("PATCH", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json-patch+json")
-                .addHeader("Accept", "application/json");
-        if (request.getPhenomlOnBehalfOf().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
-        }
-        if (request.getPhenomlFhirProvider().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
-        }
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Partially updates a FHIR resource on the specified provider.
+   * <p>Two body formats are supported, selected by request content type:</p>
+   * <ul>
+   * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
+   * <ul>
+   * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
+   * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
+   * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
+   * </ul>
+   * </li>
+   * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
+   * </ul>
+   * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> patch(
+    String fhirProviderId,
+    String fhirPath,
+    PatchRequest request
+  ) {
+    return patch(fhirProviderId, fhirPath, request, null);
+  }
 
-    /**
-     * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
-     * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> executeBundle(String fhirProviderId, Object body) {
-        return executeBundle(
-                fhirProviderId, ExecuteBundleRequest.builder().body(body).build());
+  /**
+   * Partially updates a FHIR resource on the specified provider.
+   * <p>Two body formats are supported, selected by request content type:</p>
+   * <ul>
+   * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
+   * <ul>
+   * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
+   * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
+   * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
+   * </ul>
+   * </li>
+   * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
+   * </ul>
+   * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> patch(
+    String fhirProviderId,
+    String fhirPath,
+    PatchRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir-provider")
+      .addPathSegment(fhirProviderId)
+      .addPathSegments("fhir")
+      .addPathSegment(fhirPath);
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request.getBody(),
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaType.parse("application/json-patch+json")
+      );
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    Request.Builder _requestBuilder = new Request.Builder()
+      .url(httpUrl.build())
+      .method("PATCH", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json-patch+json")
+      .addHeader("Accept", "application/json");
+    if (request.getPhenomlOnBehalfOf().isPresent()) {
+      _requestBuilder.addHeader("X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
+    }
+    if (request.getPhenomlFhirProvider().isPresent()) {
+      _requestBuilder.addHeader("X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
+    }
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+          response
+        );
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
-     * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> executeBundle(
-            String fhirProviderId, Object body, RequestOptions requestOptions) {
-        return executeBundle(
-                fhirProviderId, ExecuteBundleRequest.builder().body(body).build(), requestOptions);
-    }
+  /**
+   * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
+   * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> executeBundle(String fhirProviderId, Object body) {
+    return executeBundle(fhirProviderId, ExecuteBundleRequest.builder().body(body).build());
+  }
 
-    /**
-     * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
-     * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> executeBundle(String fhirProviderId, ExecuteBundleRequest request) {
-        return executeBundle(fhirProviderId, request, null);
-    }
+  /**
+   * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
+   * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> executeBundle(
+    String fhirProviderId,
+    Object body,
+    RequestOptions requestOptions
+  ) {
+    return executeBundle(
+      fhirProviderId,
+      ExecuteBundleRequest.builder().body(body).build(),
+      requestOptions
+    );
+  }
 
-    /**
-     * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
-     * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public PhenomlClientHttpResponse<Object> executeBundle(
-            String fhirProviderId, ExecuteBundleRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
-                .addPathSegments("fhir");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request.getBody()),
-                    MediaType.parse("application/fhir+json"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/fhir+json")
-                .addHeader("Accept", "application/json");
-        if (request.getPhenomlOnBehalfOf().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
-        }
-        if (request.getPhenomlFhirProvider().isPresent()) {
-            _requestBuilder.addHeader(
-                    "X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
-        }
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
+  /**
+   * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
+   * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> executeBundle(
+    String fhirProviderId,
+    ExecuteBundleRequest request
+  ) {
+    return executeBundle(fhirProviderId, request, null);
+  }
+
+  /**
+   * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
+   * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public PhenomlClientHttpResponse<Object> executeBundle(
+    String fhirProviderId,
+    ExecuteBundleRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir-provider")
+      .addPathSegment(fhirProviderId)
+      .addPathSegments("fhir");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request.getBody(),
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaType.parse("application/fhir+json")
+      );
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    Request.Builder _requestBuilder = new Request.Builder()
+      .url(httpUrl.build())
+      .method("POST", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/fhir+json")
+      .addHeader("Accept", "application/json");
+    if (request.getPhenomlOnBehalfOf().isPresent()) {
+      _requestBuilder.addHeader("X-Phenoml-On-Behalf-Of", request.getPhenomlOnBehalfOf().get());
+    }
+    if (request.getPhenomlFhirProvider().isPresent()) {
+      _requestBuilder.addHeader("X-Phenoml-Fhir-Provider", request.getPhenomlFhirProvider().get());
+    }
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+          response
+        );
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 }

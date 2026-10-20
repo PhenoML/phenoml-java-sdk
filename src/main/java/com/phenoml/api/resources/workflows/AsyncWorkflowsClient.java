@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.workflows;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.workflows.requests.CreateWorkflowRequest;
 import com.phenoml.api.resources.workflows.requests.ExecuteWorkflowRequest;
@@ -19,134 +20,296 @@ import com.phenoml.api.resources.workflows.types.UpdateResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncWorkflowsClient {
-    protected final ClientOptions clientOptions;
 
-    private final AsyncRawWorkflowsClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public AsyncWorkflowsClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawWorkflowsClient(clientOptions);
-    }
+  private final AsyncRawWorkflowsClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawWorkflowsClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AsyncWorkflowsClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new AsyncRawWorkflowsClient(clientOptions);
+  }
 
-    /**
-     * Retrieves all workflow definitions for the authenticated user
-     */
-    public CompletableFuture<ListWorkflowsResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public AsyncRawWorkflowsClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Retrieves all workflow definitions for the authenticated user
-     */
-    public CompletableFuture<ListWorkflowsResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves all workflow definitions for the authenticated user
+   */
+  public CompletableFuture<ListWorkflowsResponse> list() {
+    CompletableFuture<PhenomlClientHttpResponse<ListWorkflowsResponse>> rawFuture =
+      this.rawClient.list();
+    CompletableFuture<ListWorkflowsResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Retrieves all workflow definitions for the authenticated user
-     */
-    public CompletableFuture<ListWorkflowsResponse> list(ListRequest request) {
-        return this.rawClient.list(request).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves all workflow definitions for the authenticated user
+   */
+  public CompletableFuture<ListWorkflowsResponse> list(RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<ListWorkflowsResponse>> rawFuture =
+      this.rawClient.list(requestOptions);
+    CompletableFuture<ListWorkflowsResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Retrieves all workflow definitions for the authenticated user
-     */
-    public CompletableFuture<ListWorkflowsResponse> list(ListRequest request, RequestOptions requestOptions) {
-        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves all workflow definitions for the authenticated user
+   */
+  public CompletableFuture<ListWorkflowsResponse> list(ListRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<ListWorkflowsResponse>> rawFuture =
+      this.rawClient.list(request);
+    CompletableFuture<ListWorkflowsResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Creates a new workflow definition with graph generation from workflow instructions
-     */
-    public CompletableFuture<CreateWorkflowResponse> create(CreateWorkflowRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves all workflow definitions for the authenticated user
+   */
+  public CompletableFuture<ListWorkflowsResponse> list(
+    ListRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ListWorkflowsResponse>> rawFuture =
+      this.rawClient.list(request, requestOptions);
+    CompletableFuture<ListWorkflowsResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Creates a new workflow definition with graph generation from workflow instructions
-     */
-    public CompletableFuture<CreateWorkflowResponse> create(
-            CreateWorkflowRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Creates a new workflow definition with graph generation from workflow instructions
+   */
+  public CompletableFuture<CreateWorkflowResponse> create(CreateWorkflowRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<CreateWorkflowResponse>> rawFuture =
+      this.rawClient.create(request);
+    CompletableFuture<CreateWorkflowResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Retrieves a workflow definition by its ID
-     */
-    public CompletableFuture<GetResponse> get(String id) {
-        return this.rawClient.get(id).thenApply(response -> response.body());
-    }
+  /**
+   * Creates a new workflow definition with graph generation from workflow instructions
+   */
+  public CompletableFuture<CreateWorkflowResponse> create(
+    CreateWorkflowRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<CreateWorkflowResponse>> rawFuture =
+      this.rawClient.create(request, requestOptions);
+    CompletableFuture<CreateWorkflowResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Retrieves a workflow definition by its ID
-     */
-    public CompletableFuture<GetResponse> get(String id, RequestOptions requestOptions) {
-        return this.rawClient.get(id, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves a workflow definition by its ID
+   */
+  public CompletableFuture<GetResponse> get(String id) {
+    CompletableFuture<PhenomlClientHttpResponse<GetResponse>> rawFuture = this.rawClient.get(id);
+    CompletableFuture<GetResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Retrieves a workflow definition by its ID
-     */
-    public CompletableFuture<GetResponse> get(String id, GetRequest request) {
-        return this.rawClient.get(id, request).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves a workflow definition by its ID
+   */
+  public CompletableFuture<GetResponse> get(String id, RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<GetResponse>> rawFuture =
+      this.rawClient.get(id, requestOptions);
+    CompletableFuture<GetResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Retrieves a workflow definition by its ID
-     */
-    public CompletableFuture<GetResponse> get(String id, GetRequest request, RequestOptions requestOptions) {
-        return this.rawClient.get(id, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves a workflow definition by its ID
+   */
+  public CompletableFuture<GetResponse> get(String id, GetRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<GetResponse>> rawFuture =
+      this.rawClient.get(id, request);
+    CompletableFuture<GetResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Updates an existing workflow definition
-     */
-    public CompletableFuture<UpdateResponse> update(String id, UpdateWorkflowRequest request) {
-        return this.rawClient.update(id, request).thenApply(response -> response.body());
-    }
+  /**
+   * Retrieves a workflow definition by its ID
+   */
+  public CompletableFuture<GetResponse> get(
+    String id,
+    GetRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<GetResponse>> rawFuture =
+      this.rawClient.get(id, request, requestOptions);
+    CompletableFuture<GetResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Updates an existing workflow definition
-     */
-    public CompletableFuture<UpdateResponse> update(
-            String id, UpdateWorkflowRequest request, RequestOptions requestOptions) {
-        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Updates an existing workflow definition
+   */
+  public CompletableFuture<UpdateResponse> update(String id, UpdateWorkflowRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<UpdateResponse>> rawFuture =
+      this.rawClient.update(id, request);
+    CompletableFuture<UpdateResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Deletes a workflow definition by its ID
-     */
-    public CompletableFuture<DeleteResponse> delete(String id) {
-        return this.rawClient.delete(id).thenApply(response -> response.body());
-    }
+  /**
+   * Updates an existing workflow definition
+   */
+  public CompletableFuture<UpdateResponse> update(
+    String id,
+    UpdateWorkflowRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<UpdateResponse>> rawFuture =
+      this.rawClient.update(id, request, requestOptions);
+    CompletableFuture<UpdateResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Deletes a workflow definition by its ID
-     */
-    public CompletableFuture<DeleteResponse> delete(String id, RequestOptions requestOptions) {
-        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Deletes a workflow definition by its ID
+   */
+  public CompletableFuture<DeleteResponse> delete(String id) {
+    CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> rawFuture =
+      this.rawClient.delete(id);
+    CompletableFuture<DeleteResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Executes a workflow with provided input data and returns results
-     */
-    public CompletableFuture<ExecuteWorkflowResponse> execute(String id, ExecuteWorkflowRequest request) {
-        return this.rawClient.execute(id, request).thenApply(response -> response.body());
-    }
+  /**
+   * Deletes a workflow definition by its ID
+   */
+  public CompletableFuture<DeleteResponse> delete(String id, RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> rawFuture =
+      this.rawClient.delete(id, requestOptions);
+    CompletableFuture<DeleteResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Executes a workflow with provided input data and returns results
-     */
-    public CompletableFuture<ExecuteWorkflowResponse> execute(
-            String id, ExecuteWorkflowRequest request, RequestOptions requestOptions) {
-        return this.rawClient.execute(id, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Executes a workflow with provided input data and returns results
+   */
+  public CompletableFuture<ExecuteWorkflowResponse> execute(
+    String id,
+    ExecuteWorkflowRequest request
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ExecuteWorkflowResponse>> rawFuture =
+      this.rawClient.execute(id, request);
+    CompletableFuture<ExecuteWorkflowResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
+
+  /**
+   * Executes a workflow with provided input data and returns results
+   */
+  public CompletableFuture<ExecuteWorkflowResponse> execute(
+    String id,
+    ExecuteWorkflowRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ExecuteWorkflowResponse>> rawFuture =
+      this.rawClient.execute(id, request, requestOptions);
+    CompletableFuture<ExecuteWorkflowResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 }

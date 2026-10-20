@@ -22,201 +22,218 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CrosswalkRequest.Builder.class)
 public final class CrosswalkRequest {
-    private final String system;
 
-    private final String code;
+  private final String system;
 
-    private final List<String> targets;
+  private final String code;
 
-    private final Map<String, Object> additionalProperties;
+  private final List<String> targets;
 
-    private CrosswalkRequest(
-            String system, String code, List<String> targets, Map<String, Object> additionalProperties) {
-        this.system = system;
-        this.code = code;
-        this.targets = targets;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CrosswalkRequest(
+    String system,
+    String code,
+    List<String> targets,
+    Map<String, Object> additionalProperties
+  ) {
+    this.system = system;
+    this.code = code;
+    this.targets = targets;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Source FHIR code-system URI.
+   */
+  @JsonProperty("system")
+  public String getSystem() {
+    return system;
+  }
+
+  /**
+   * @return Source code to map.
+   */
+  @JsonProperty("code")
+  public String getCode() {
+    return code;
+  }
+
+  /**
+   * @return Target FHIR code-system URIs.
+   */
+  @JsonProperty("targets")
+  public List<String> getTargets() {
+    return targets;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CrosswalkRequest && equalTo((CrosswalkRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CrosswalkRequest other) {
+    return system.equals(other.system) && code.equals(other.code) && targets.equals(other.targets);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.system, this.code, this.targets);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static SystemStage builder() {
+    return new Builder();
+  }
+
+  public interface SystemStage {
+    /**
+     * <p>Source FHIR code-system URI.</p>
+     */
+    CodeStage system(@NotNull String system);
+
+    Builder from(CrosswalkRequest other);
+  }
+
+  public interface CodeStage {
+    /**
+     * <p>Source code to map.</p>
+     */
+    _FinalStage code(@NotNull String code);
+  }
+
+  public interface _FinalStage {
+    CrosswalkRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Target FHIR code-system URIs.</p>
+     */
+    _FinalStage targets(List<String> targets);
+
+    _FinalStage addTargets(String targets);
+
+    _FinalStage addAllTargets(List<String> targets);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements SystemStage, CodeStage, _FinalStage {
+
+    private String system;
+
+    private String code;
+
+    private List<String> targets = new ArrayList<>();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(CrosswalkRequest other) {
+      system(other.getSystem());
+      code(other.getCode());
+      targets(other.getTargets());
+      return this;
     }
 
     /**
-     * @return Source FHIR code-system URI.
+     * <p>Source FHIR code-system URI.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("system")
-    public String getSystem() {
-        return system;
+    @java.lang.Override
+    @JsonSetter("system")
+    public CodeStage system(@NotNull String system) {
+      this.system = Objects.requireNonNull(system, "system must not be null");
+      return this;
     }
 
     /**
-     * @return Source code to map.
+     * <p>Source code to map.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("code")
-    public String getCode() {
-        return code;
+    @java.lang.Override
+    @JsonSetter("code")
+    public _FinalStage code(@NotNull String code) {
+      this.code = Objects.requireNonNull(code, "code must not be null");
+      return this;
     }
 
     /**
-     * @return Target FHIR code-system URIs.
+     * <p>Target FHIR code-system URIs.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("targets")
-    public List<String> getTargets() {
-        return targets;
+    @java.lang.Override
+    public _FinalStage addAllTargets(List<String> targets) {
+      if (targets != null) {
+        this.targets.addAll(targets);
+      }
+      return this;
+    }
+
+    /**
+     * <p>Target FHIR code-system URIs.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage addTargets(String targets) {
+      this.targets.add(targets);
+      return this;
+    }
+
+    /**
+     * <p>Target FHIR code-system URIs.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "targets", nulls = Nulls.SKIP)
+    public _FinalStage targets(List<String> targets) {
+      this.targets.clear();
+      if (targets != null) {
+        this.targets.addAll(targets);
+      }
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CrosswalkRequest && equalTo((CrosswalkRequest) other);
+    public CrosswalkRequest build() {
+      return new CrosswalkRequest(system, code, targets, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(CrosswalkRequest other) {
-        return system.equals(other.system) && code.equals(other.code) && targets.equals(other.targets);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.system, this.code, this.targets);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("system") ||
+        key.equalsIgnoreCase("code") ||
+        key.equalsIgnoreCase("targets")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static SystemStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface SystemStage {
-        /**
-         * <p>Source FHIR code-system URI.</p>
-         */
-        CodeStage system(@NotNull String system);
-
-        Builder from(CrosswalkRequest other);
-    }
-
-    public interface CodeStage {
-        /**
-         * <p>Source code to map.</p>
-         */
-        _FinalStage code(@NotNull String code);
-    }
-
-    public interface _FinalStage {
-        CrosswalkRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Target FHIR code-system URIs.</p>
-         */
-        _FinalStage targets(List<String> targets);
-
-        _FinalStage addTargets(String targets);
-
-        _FinalStage addAllTargets(List<String> targets);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements SystemStage, CodeStage, _FinalStage {
-        private String system;
-
-        private String code;
-
-        private List<String> targets = new ArrayList<>();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(CrosswalkRequest other) {
-            system(other.getSystem());
-            code(other.getCode());
-            targets(other.getTargets());
-            return this;
-        }
-
-        /**
-         * <p>Source FHIR code-system URI.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("system")
-        public CodeStage system(@NotNull String system) {
-            this.system = Objects.requireNonNull(system, "system must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Source code to map.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("code")
-        public _FinalStage code(@NotNull String code) {
-            this.code = Objects.requireNonNull(code, "code must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Target FHIR code-system URIs.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addAllTargets(List<String> targets) {
-            if (targets != null) {
-                this.targets.addAll(targets);
-            }
-            return this;
-        }
-
-        /**
-         * <p>Target FHIR code-system URIs.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addTargets(String targets) {
-            this.targets.add(targets);
-            return this;
-        }
-
-        /**
-         * <p>Target FHIR code-system URIs.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "targets", nulls = Nulls.SKIP)
-        public _FinalStage targets(List<String> targets) {
-            this.targets.clear();
-            if (targets != null) {
-                this.targets.addAll(targets);
-            }
-            return this;
-        }
-
-        @java.lang.Override
-        public CrosswalkRequest build() {
-            return new CrosswalkRequest(system, code, targets, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

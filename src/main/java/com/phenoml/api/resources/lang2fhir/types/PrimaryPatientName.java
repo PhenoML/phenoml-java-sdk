@@ -21,121 +21,133 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PrimaryPatientName.Builder.class)
 public final class PrimaryPatientName {
-    private final Optional<String> family;
 
-    private final Optional<List<String>> given;
+  private final Optional<String> family;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<String>> given;
 
-    private PrimaryPatientName(
-            Optional<String> family, Optional<List<String>> given, Map<String, Object> additionalProperties) {
-        this.family = family;
-        this.given = given;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private PrimaryPatientName(
+    Optional<String> family,
+    Optional<List<String>> given,
+    Map<String, Object> additionalProperties
+  ) {
+    this.family = family;
+    this.given = given;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Family name.
+   */
+  @JsonProperty("family")
+  public Optional<String> getFamily() {
+    return family;
+  }
+
+  /**
+   * @return Given names. Matching succeeds when a generated name has a supplied given name.
+   */
+  @JsonProperty("given")
+  public Optional<List<String>> getGiven() {
+    return given;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof PrimaryPatientName && equalTo((PrimaryPatientName) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(PrimaryPatientName other) {
+    return family.equals(other.family) && given.equals(other.given);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.family, this.given);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> family = Optional.empty();
+
+    private Optional<List<String>> given = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(PrimaryPatientName other) {
+      family(other.getFamily());
+      given(other.getGiven());
+      return this;
     }
 
     /**
-     * @return Family name.
+     * <p>Family name.</p>
      */
-    @JsonProperty("family")
-    public Optional<String> getFamily() {
-        return family;
+    @JsonSetter(value = "family", nulls = Nulls.SKIP)
+    public Builder family(Optional<String> family) {
+      this.family = family;
+      return this;
+    }
+
+    public Builder family(String family) {
+      this.family = Optional.ofNullable(family);
+      return this;
     }
 
     /**
-     * @return Given names. Matching succeeds when a generated name has a supplied given name.
+     * <p>Given names. Matching succeeds when a generated name has a supplied given name.</p>
      */
-    @JsonProperty("given")
-    public Optional<List<String>> getGiven() {
-        return given;
+    @JsonSetter(value = "given", nulls = Nulls.SKIP)
+    public Builder given(Optional<List<String>> given) {
+      this.given = given;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof PrimaryPatientName && equalTo((PrimaryPatientName) other);
+    public Builder given(List<String> given) {
+      this.given = Optional.ofNullable(given);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public PrimaryPatientName build() {
+      return new PrimaryPatientName(family, given, additionalProperties);
     }
 
-    private boolean equalTo(PrimaryPatientName other) {
-        return family.equals(other.family) && given.equals(other.given);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("family") || key.equalsIgnoreCase("given")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.family, this.given);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> family = Optional.empty();
-
-        private Optional<List<String>> given = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(PrimaryPatientName other) {
-            family(other.getFamily());
-            given(other.getGiven());
-            return this;
-        }
-
-        /**
-         * <p>Family name.</p>
-         */
-        @JsonSetter(value = "family", nulls = Nulls.SKIP)
-        public Builder family(Optional<String> family) {
-            this.family = family;
-            return this;
-        }
-
-        public Builder family(String family) {
-            this.family = Optional.ofNullable(family);
-            return this;
-        }
-
-        /**
-         * <p>Given names. Matching succeeds when a generated name has a supplied given name.</p>
-         */
-        @JsonSetter(value = "given", nulls = Nulls.SKIP)
-        public Builder given(Optional<List<String>> given) {
-            this.given = given;
-            return this;
-        }
-
-        public Builder given(List<String> given) {
-            this.given = Optional.ofNullable(given);
-            return this;
-        }
-
-        public PrimaryPatientName build() {
-            return new PrimaryPatientName(family, given, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

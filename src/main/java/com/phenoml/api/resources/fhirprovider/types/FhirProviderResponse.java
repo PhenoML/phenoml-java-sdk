@@ -20,140 +20,156 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = FhirProviderResponse.Builder.class)
 public final class FhirProviderResponse {
-    private final Optional<Boolean> success;
 
-    private final Optional<String> message;
+  private final Optional<Boolean> success;
 
-    private final Optional<FhirProviderResponseData> data;
+  private final Optional<String> message;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<FhirProviderResponseData> data;
 
-    private FhirProviderResponse(
-            Optional<Boolean> success,
-            Optional<String> message,
-            Optional<FhirProviderResponseData> data,
-            Map<String, Object> additionalProperties) {
-        this.success = success;
-        this.message = message;
-        this.data = data;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private FhirProviderResponse(
+    Optional<Boolean> success,
+    Optional<String> message,
+    Optional<FhirProviderResponseData> data,
+    Map<String, Object> additionalProperties
+  ) {
+    this.success = success;
+    this.message = message;
+    this.data = data;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("success")
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  @JsonProperty("message")
+  public Optional<String> getMessage() {
+    return message;
+  }
+
+  /**
+   * @return Provider details. Sandbox providers return FhirProviderSandboxInfo.
+   */
+  @JsonProperty("data")
+  public Optional<FhirProviderResponseData> getData() {
+    return data;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof FhirProviderResponse && equalTo((FhirProviderResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(FhirProviderResponse other) {
+    return (
+      success.equals(other.success) && message.equals(other.message) && data.equals(other.data)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.success, this.message, this.data);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<String> message = Optional.empty();
+
+    private Optional<FhirProviderResponseData> data = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(FhirProviderResponse other) {
+      success(other.getSuccess());
+      message(other.getMessage());
+      data(other.getData());
+      return this;
     }
 
-    @JsonProperty("success")
-    public Optional<Boolean> getSuccess() {
-        return success;
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
     }
 
-    @JsonProperty("message")
-    public Optional<String> getMessage() {
-        return message;
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
+    }
+
+    @JsonSetter(value = "message", nulls = Nulls.SKIP)
+    public Builder message(Optional<String> message) {
+      this.message = message;
+      return this;
+    }
+
+    public Builder message(String message) {
+      this.message = Optional.ofNullable(message);
+      return this;
     }
 
     /**
-     * @return Provider details. Sandbox providers return FhirProviderSandboxInfo.
+     * <p>Provider details. Sandbox providers return FhirProviderSandboxInfo.</p>
      */
-    @JsonProperty("data")
-    public Optional<FhirProviderResponseData> getData() {
-        return data;
+    @JsonSetter(value = "data", nulls = Nulls.SKIP)
+    public Builder data(Optional<FhirProviderResponseData> data) {
+      this.data = data;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof FhirProviderResponse && equalTo((FhirProviderResponse) other);
+    public Builder data(FhirProviderResponseData data) {
+      this.data = Optional.ofNullable(data);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public FhirProviderResponse build() {
+      return new FhirProviderResponse(success, message, data, additionalProperties);
     }
 
-    private boolean equalTo(FhirProviderResponse other) {
-        return success.equals(other.success) && message.equals(other.message) && data.equals(other.data);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("success") ||
+        key.equalsIgnoreCase("message") ||
+        key.equalsIgnoreCase("data")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.success, this.message, this.data);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<String> message = Optional.empty();
-
-        private Optional<FhirProviderResponseData> data = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(FhirProviderResponse other) {
-            success(other.getSuccess());
-            message(other.getMessage());
-            data(other.getData());
-            return this;
-        }
-
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        @JsonSetter(value = "message", nulls = Nulls.SKIP)
-        public Builder message(Optional<String> message) {
-            this.message = message;
-            return this;
-        }
-
-        public Builder message(String message) {
-            this.message = Optional.ofNullable(message);
-            return this;
-        }
-
-        /**
-         * <p>Provider details. Sandbox providers return FhirProviderSandboxInfo.</p>
-         */
-        @JsonSetter(value = "data", nulls = Nulls.SKIP)
-        public Builder data(Optional<FhirProviderResponseData> data) {
-            this.data = data;
-            return this;
-        }
-
-        public Builder data(FhirProviderResponseData data) {
-            this.data = Optional.ofNullable(data);
-            return this;
-        }
-
-        public FhirProviderResponse build() {
-            return new FhirProviderResponse(success, message, data, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

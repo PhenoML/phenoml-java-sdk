@@ -15,83 +15,83 @@ package com.phenoml.api.core;
  */
 public final class Logger {
 
-    private static final Logger DEFAULT = new Logger(LogLevel.INFO, new ConsoleLogger(), true);
+  private static final Logger DEFAULT = new Logger(LogLevel.INFO, new ConsoleLogger(), true);
 
-    private final LogLevel level;
-    private final ILogger logger;
-    private final boolean silent;
+  private final LogLevel level;
+  private final ILogger logger;
+  private final boolean silent;
 
-    public Logger(LogLevel level, ILogger logger, boolean silent) {
-        this.level = level;
-        this.logger = logger;
-        this.silent = silent;
+  public Logger(LogLevel level, ILogger logger, boolean silent) {
+    this.level = level;
+    this.logger = logger;
+    this.silent = silent;
+  }
+
+  /**
+   * Returns a default silent logger (no output).
+   */
+  public static Logger getDefault() {
+    return DEFAULT;
+  }
+
+  /**
+   * Creates a Logger from a {@link LogConfig}. If config is {@code null}, returns the default silent logger.
+   */
+  public static Logger from(LogConfig config) {
+    if (config == null) {
+      return DEFAULT;
     }
+    return new Logger(config.level(), config.logger(), config.silent());
+  }
 
-    /**
-     * Returns a default silent logger (no output).
-     */
-    public static Logger getDefault() {
-        return DEFAULT;
-    }
+  /**
+   * Creates a Logger from an {@code Optional<LogConfig>}. If empty, returns the default silent logger.
+   */
+  public static Logger from(java.util.Optional<LogConfig> config) {
+    return config.map(Logger::from).orElse(DEFAULT);
+  }
 
-    /**
-     * Creates a Logger from a {@link LogConfig}. If config is {@code null}, returns the default silent logger.
-     */
-    public static Logger from(LogConfig config) {
-        if (config == null) {
-            return DEFAULT;
-        }
-        return new Logger(config.level(), config.logger(), config.silent());
-    }
+  private boolean shouldLog(LogLevel messageLevel) {
+    return !silent && level.getValue() <= messageLevel.getValue();
+  }
 
-    /**
-     * Creates a Logger from an {@code Optional<LogConfig>}. If empty, returns the default silent logger.
-     */
-    public static Logger from(java.util.Optional<LogConfig> config) {
-        return config.map(Logger::from).orElse(DEFAULT);
-    }
+  public boolean isDebug() {
+    return shouldLog(LogLevel.DEBUG);
+  }
 
-    private boolean shouldLog(LogLevel messageLevel) {
-        return !silent && level.getValue() <= messageLevel.getValue();
-    }
+  public boolean isInfo() {
+    return shouldLog(LogLevel.INFO);
+  }
 
-    public boolean isDebug() {
-        return shouldLog(LogLevel.DEBUG);
-    }
+  public boolean isWarn() {
+    return shouldLog(LogLevel.WARN);
+  }
 
-    public boolean isInfo() {
-        return shouldLog(LogLevel.INFO);
-    }
+  public boolean isError() {
+    return shouldLog(LogLevel.ERROR);
+  }
 
-    public boolean isWarn() {
-        return shouldLog(LogLevel.WARN);
+  public void debug(String message) {
+    if (isDebug()) {
+      logger.debug(message);
     }
+  }
 
-    public boolean isError() {
-        return shouldLog(LogLevel.ERROR);
+  public void info(String message) {
+    if (isInfo()) {
+      logger.info(message);
     }
+  }
 
-    public void debug(String message) {
-        if (isDebug()) {
-            logger.debug(message);
-        }
+  public void warn(String message) {
+    if (isWarn()) {
+      logger.warn(message);
     }
+  }
 
-    public void info(String message) {
-        if (isInfo()) {
-            logger.info(message);
-        }
+  public void error(String message) {
+    if (isError()) {
+      logger.error(message);
     }
-
-    public void warn(String message) {
-        if (isWarn()) {
-            logger.warn(message);
-        }
-    }
-
-    public void error(String message) {
-        if (isError()) {
-            logger.error(message);
-        }
-    }
+  }
 }

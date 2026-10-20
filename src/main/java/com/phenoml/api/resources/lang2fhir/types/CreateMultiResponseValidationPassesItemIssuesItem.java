@@ -21,216 +21,245 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateMultiResponseValidationPassesItemIssuesItem.Builder.class)
 public final class CreateMultiResponseValidationPassesItemIssuesItem {
-    private final Optional<CreateMultiResponseValidationPassesItemIssuesItemSeverity> severity;
 
-    private final Optional<String> code;
+  private final Optional<CreateMultiResponseValidationPassesItemIssuesItemSeverity> severity;
 
-    private final Optional<String> diagnostics;
+  private final Optional<String> code;
 
-    private final Optional<List<String>> expression;
+  private final Optional<String> diagnostics;
 
-    private final Optional<String> source;
+  private final Optional<List<String>> expression;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> source;
 
-    private CreateMultiResponseValidationPassesItemIssuesItem(
-            Optional<CreateMultiResponseValidationPassesItemIssuesItemSeverity> severity,
-            Optional<String> code,
-            Optional<String> diagnostics,
-            Optional<List<String>> expression,
-            Optional<String> source,
-            Map<String, Object> additionalProperties) {
-        this.severity = severity;
-        this.code = code;
-        this.diagnostics = diagnostics;
-        this.expression = expression;
-        this.source = source;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CreateMultiResponseValidationPassesItemIssuesItem(
+    Optional<CreateMultiResponseValidationPassesItemIssuesItemSeverity> severity,
+    Optional<String> code,
+    Optional<String> diagnostics,
+    Optional<List<String>> expression,
+    Optional<String> source,
+    Map<String, Object> additionalProperties
+  ) {
+    this.severity = severity;
+    this.code = code;
+    this.diagnostics = diagnostics;
+    this.expression = expression;
+    this.source = source;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Issue severity level
+   */
+  @JsonProperty("severity")
+  public Optional<CreateMultiResponseValidationPassesItemIssuesItemSeverity> getSeverity() {
+    return severity;
+  }
+
+  /**
+   * @return Issue type code
+   */
+  @JsonProperty("code")
+  public Optional<String> getCode() {
+    return code;
+  }
+
+  /**
+   * @return Human-readable description of the issue
+   */
+  @JsonProperty("diagnostics")
+  public Optional<String> getDiagnostics() {
+    return diagnostics;
+  }
+
+  /**
+   * @return FHIRPath expression(s) pointing to the issue location
+   */
+  @JsonProperty("expression")
+  public Optional<List<String>> getExpression() {
+    return expression;
+  }
+
+  /**
+   * @return Validation phase that generated this issue
+   */
+  @JsonProperty("source")
+  public Optional<String> getSource() {
+    return source;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof CreateMultiResponseValidationPassesItemIssuesItem &&
+      equalTo((CreateMultiResponseValidationPassesItemIssuesItem) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CreateMultiResponseValidationPassesItemIssuesItem other) {
+    return (
+      severity.equals(other.severity) &&
+      code.equals(other.code) &&
+      diagnostics.equals(other.diagnostics) &&
+      expression.equals(other.expression) &&
+      source.equals(other.source)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.severity, this.code, this.diagnostics, this.expression, this.source);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<CreateMultiResponseValidationPassesItemIssuesItemSeverity> severity =
+      Optional.empty();
+
+    private Optional<String> code = Optional.empty();
+
+    private Optional<String> diagnostics = Optional.empty();
+
+    private Optional<List<String>> expression = Optional.empty();
+
+    private Optional<String> source = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(CreateMultiResponseValidationPassesItemIssuesItem other) {
+      severity(other.getSeverity());
+      code(other.getCode());
+      diagnostics(other.getDiagnostics());
+      expression(other.getExpression());
+      source(other.getSource());
+      return this;
     }
 
     /**
-     * @return Issue severity level
+     * <p>Issue severity level</p>
      */
-    @JsonProperty("severity")
-    public Optional<CreateMultiResponseValidationPassesItemIssuesItemSeverity> getSeverity() {
-        return severity;
+    @JsonSetter(value = "severity", nulls = Nulls.SKIP)
+    public Builder severity(
+      Optional<CreateMultiResponseValidationPassesItemIssuesItemSeverity> severity
+    ) {
+      this.severity = severity;
+      return this;
+    }
+
+    public Builder severity(CreateMultiResponseValidationPassesItemIssuesItemSeverity severity) {
+      this.severity = Optional.ofNullable(severity);
+      return this;
     }
 
     /**
-     * @return Issue type code
+     * <p>Issue type code</p>
      */
-    @JsonProperty("code")
-    public Optional<String> getCode() {
-        return code;
+    @JsonSetter(value = "code", nulls = Nulls.SKIP)
+    public Builder code(Optional<String> code) {
+      this.code = code;
+      return this;
+    }
+
+    public Builder code(String code) {
+      this.code = Optional.ofNullable(code);
+      return this;
     }
 
     /**
-     * @return Human-readable description of the issue
+     * <p>Human-readable description of the issue</p>
      */
-    @JsonProperty("diagnostics")
-    public Optional<String> getDiagnostics() {
-        return diagnostics;
+    @JsonSetter(value = "diagnostics", nulls = Nulls.SKIP)
+    public Builder diagnostics(Optional<String> diagnostics) {
+      this.diagnostics = diagnostics;
+      return this;
+    }
+
+    public Builder diagnostics(String diagnostics) {
+      this.diagnostics = Optional.ofNullable(diagnostics);
+      return this;
     }
 
     /**
-     * @return FHIRPath expression(s) pointing to the issue location
+     * <p>FHIRPath expression(s) pointing to the issue location</p>
      */
-    @JsonProperty("expression")
-    public Optional<List<String>> getExpression() {
-        return expression;
+    @JsonSetter(value = "expression", nulls = Nulls.SKIP)
+    public Builder expression(Optional<List<String>> expression) {
+      this.expression = expression;
+      return this;
+    }
+
+    public Builder expression(List<String> expression) {
+      this.expression = Optional.ofNullable(expression);
+      return this;
     }
 
     /**
-     * @return Validation phase that generated this issue
+     * <p>Validation phase that generated this issue</p>
      */
-    @JsonProperty("source")
-    public Optional<String> getSource() {
-        return source;
+    @JsonSetter(value = "source", nulls = Nulls.SKIP)
+    public Builder source(Optional<String> source) {
+      this.source = source;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CreateMultiResponseValidationPassesItemIssuesItem
-                && equalTo((CreateMultiResponseValidationPassesItemIssuesItem) other);
+    public Builder source(String source) {
+      this.source = Optional.ofNullable(source);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public CreateMultiResponseValidationPassesItemIssuesItem build() {
+      return new CreateMultiResponseValidationPassesItemIssuesItem(
+        severity,
+        code,
+        diagnostics,
+        expression,
+        source,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(CreateMultiResponseValidationPassesItemIssuesItem other) {
-        return severity.equals(other.severity)
-                && code.equals(other.code)
-                && diagnostics.equals(other.diagnostics)
-                && expression.equals(other.expression)
-                && source.equals(other.source);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("severity") ||
+        key.equalsIgnoreCase("code") ||
+        key.equalsIgnoreCase("diagnostics") ||
+        key.equalsIgnoreCase("expression") ||
+        key.equalsIgnoreCase("source")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.severity, this.code, this.diagnostics, this.expression, this.source);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<CreateMultiResponseValidationPassesItemIssuesItemSeverity> severity = Optional.empty();
-
-        private Optional<String> code = Optional.empty();
-
-        private Optional<String> diagnostics = Optional.empty();
-
-        private Optional<List<String>> expression = Optional.empty();
-
-        private Optional<String> source = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(CreateMultiResponseValidationPassesItemIssuesItem other) {
-            severity(other.getSeverity());
-            code(other.getCode());
-            diagnostics(other.getDiagnostics());
-            expression(other.getExpression());
-            source(other.getSource());
-            return this;
-        }
-
-        /**
-         * <p>Issue severity level</p>
-         */
-        @JsonSetter(value = "severity", nulls = Nulls.SKIP)
-        public Builder severity(Optional<CreateMultiResponseValidationPassesItemIssuesItemSeverity> severity) {
-            this.severity = severity;
-            return this;
-        }
-
-        public Builder severity(CreateMultiResponseValidationPassesItemIssuesItemSeverity severity) {
-            this.severity = Optional.ofNullable(severity);
-            return this;
-        }
-
-        /**
-         * <p>Issue type code</p>
-         */
-        @JsonSetter(value = "code", nulls = Nulls.SKIP)
-        public Builder code(Optional<String> code) {
-            this.code = code;
-            return this;
-        }
-
-        public Builder code(String code) {
-            this.code = Optional.ofNullable(code);
-            return this;
-        }
-
-        /**
-         * <p>Human-readable description of the issue</p>
-         */
-        @JsonSetter(value = "diagnostics", nulls = Nulls.SKIP)
-        public Builder diagnostics(Optional<String> diagnostics) {
-            this.diagnostics = diagnostics;
-            return this;
-        }
-
-        public Builder diagnostics(String diagnostics) {
-            this.diagnostics = Optional.ofNullable(diagnostics);
-            return this;
-        }
-
-        /**
-         * <p>FHIRPath expression(s) pointing to the issue location</p>
-         */
-        @JsonSetter(value = "expression", nulls = Nulls.SKIP)
-        public Builder expression(Optional<List<String>> expression) {
-            this.expression = expression;
-            return this;
-        }
-
-        public Builder expression(List<String> expression) {
-            this.expression = Optional.ofNullable(expression);
-            return this;
-        }
-
-        /**
-         * <p>Validation phase that generated this issue</p>
-         */
-        @JsonSetter(value = "source", nulls = Nulls.SKIP)
-        public Builder source(Optional<String> source) {
-            this.source = source;
-            return this;
-        }
-
-        public Builder source(String source) {
-            this.source = Optional.ofNullable(source);
-            return this;
-        }
-
-        public CreateMultiResponseValidationPassesItemIssuesItem build() {
-            return new CreateMultiResponseValidationPassesItemIssuesItem(
-                    severity, code, diagnostics, expression, source, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

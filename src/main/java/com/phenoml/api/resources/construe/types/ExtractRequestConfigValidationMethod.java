@@ -7,103 +7,108 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class ExtractRequestConfigValidationMethod {
-    public static final ExtractRequestConfigValidationMethod SIMPLE =
-            new ExtractRequestConfigValidationMethod(Value.SIMPLE, "simple");
 
-    public static final ExtractRequestConfigValidationMethod MEDICATION_SEARCH =
-            new ExtractRequestConfigValidationMethod(Value.MEDICATION_SEARCH, "medication_search");
+  public static final ExtractRequestConfigValidationMethod SIMPLE =
+    new ExtractRequestConfigValidationMethod(Value.SIMPLE, "simple");
 
-    public static final ExtractRequestConfigValidationMethod NONE =
-            new ExtractRequestConfigValidationMethod(Value.NONE, "none");
+  public static final ExtractRequestConfigValidationMethod MEDICATION_SEARCH =
+    new ExtractRequestConfigValidationMethod(Value.MEDICATION_SEARCH, "medication_search");
 
-    public static final ExtractRequestConfigValidationMethod CHUNK_CODE_JACCARD_SIMILARITY =
-            new ExtractRequestConfigValidationMethod(
-                    Value.CHUNK_CODE_JACCARD_SIMILARITY, "chunk_code_jaccard_similarity");
+  public static final ExtractRequestConfigValidationMethod NONE =
+    new ExtractRequestConfigValidationMethod(Value.NONE, "none");
 
-    private final Value value;
+  public static final ExtractRequestConfigValidationMethod CHUNK_CODE_JACCARD_SIMILARITY =
+    new ExtractRequestConfigValidationMethod(
+      Value.CHUNK_CODE_JACCARD_SIMILARITY,
+      "chunk_code_jaccard_similarity"
+    );
 
-    private final String string;
+  private final Value value;
 
-    ExtractRequestConfigValidationMethod(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  ExtractRequestConfigValidationMethod(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof ExtractRequestConfigValidationMethod &&
+        this.string.equals(((ExtractRequestConfigValidationMethod) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case SIMPLE:
+        return visitor.visitSimple();
+      case MEDICATION_SEARCH:
+        return visitor.visitMedicationSearch();
+      case NONE:
+        return visitor.visitNone();
+      case CHUNK_CODE_JACCARD_SIMILARITY:
+        return visitor.visitChunkCodeJaccardSimilarity();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static ExtractRequestConfigValidationMethod valueOf(String value) {
+    switch (value) {
+      case "simple":
+        return SIMPLE;
+      case "medication_search":
+        return MEDICATION_SEARCH;
+      case "none":
+        return NONE;
+      case "chunk_code_jaccard_similarity":
+        return CHUNK_CODE_JACCARD_SIMILARITY;
+      default:
+        return new ExtractRequestConfigValidationMethod(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    NONE,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof ExtractRequestConfigValidationMethod
-                        && this.string.equals(((ExtractRequestConfigValidationMethod) other).string));
-    }
+    SIMPLE,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    MEDICATION_SEARCH,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case SIMPLE:
-                return visitor.visitSimple();
-            case MEDICATION_SEARCH:
-                return visitor.visitMedicationSearch();
-            case NONE:
-                return visitor.visitNone();
-            case CHUNK_CODE_JACCARD_SIMILARITY:
-                return visitor.visitChunkCodeJaccardSimilarity();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    CHUNK_CODE_JACCARD_SIMILARITY,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static ExtractRequestConfigValidationMethod valueOf(String value) {
-        switch (value) {
-            case "simple":
-                return SIMPLE;
-            case "medication_search":
-                return MEDICATION_SEARCH;
-            case "none":
-                return NONE;
-            case "chunk_code_jaccard_similarity":
-                return CHUNK_CODE_JACCARD_SIMILARITY;
-            default:
-                return new ExtractRequestConfigValidationMethod(Value.UNKNOWN, value);
-        }
-    }
+    UNKNOWN,
+  }
 
-    public enum Value {
-        NONE,
+  public interface Visitor<T> {
+    T visitNone();
 
-        SIMPLE,
+    T visitSimple();
 
-        MEDICATION_SEARCH,
+    T visitMedicationSearch();
 
-        CHUNK_CODE_JACCARD_SIMILARITY,
+    T visitChunkCodeJaccardSimilarity();
 
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitNone();
-
-        T visitSimple();
-
-        T visitMedicationSearch();
-
-        T visitChunkCodeJaccardSimilarity();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

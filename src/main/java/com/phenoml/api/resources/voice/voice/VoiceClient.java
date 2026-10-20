@@ -9,79 +9,80 @@ import com.phenoml.api.resources.voice.types.TranscribeResponse;
 import com.phenoml.api.resources.voice.voice.requests.TranscribeRequest;
 
 public class VoiceClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawVoiceClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public VoiceClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawVoiceClient(clientOptions);
-    }
+  private final RawVoiceClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawVoiceClient withRawResponse() {
-        return this.rawClient;
-    }
+  public VoiceClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawVoiceClient(clientOptions);
+  }
 
-    /**
-     * Transcribes an uploaded audio recording and returns the transcript.
-     * Send the raw audio bytes as the request body; the audio format is
-     * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
-     * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
-     * minutes of audio per request. This duration limit is independent of file
-     * size or format, so a compressed recording within the body-size limit can
-     * still be rejected for being too long. Pair the transcript with a
-     * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
-     * FHIR resource.</p>
-     */
-    public TranscribeResponse transcribe(byte[] body) {
-        return this.rawClient.transcribe(body).body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawVoiceClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Transcribes an uploaded audio recording and returns the transcript.
-     * Send the raw audio bytes as the request body; the audio format is
-     * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
-     * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
-     * minutes of audio per request. This duration limit is independent of file
-     * size or format, so a compressed recording within the body-size limit can
-     * still be rejected for being too long. Pair the transcript with a
-     * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
-     * FHIR resource.</p>
-     */
-    public TranscribeResponse transcribe(byte[] body, RequestOptions requestOptions) {
-        return this.rawClient.transcribe(body, requestOptions).body();
-    }
+  /**
+   * Transcribes an uploaded audio recording and returns the transcript.
+   * Send the raw audio bytes as the request body; the audio format is
+   * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
+   * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
+   * minutes of audio per request. This duration limit is independent of file
+   * size or format, so a compressed recording within the body-size limit can
+   * still be rejected for being too long. Pair the transcript with a
+   * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
+   * FHIR resource.</p>
+   */
+  public TranscribeResponse transcribe(byte[] body) {
+    return this.rawClient.transcribe(body).body();
+  }
 
-    /**
-     * Transcribes an uploaded audio recording and returns the transcript.
-     * Send the raw audio bytes as the request body; the audio format is
-     * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
-     * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
-     * minutes of audio per request. This duration limit is independent of file
-     * size or format, so a compressed recording within the body-size limit can
-     * still be rejected for being too long. Pair the transcript with a
-     * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
-     * FHIR resource.</p>
-     */
-    public TranscribeResponse transcribe(TranscribeRequest request) {
-        return this.rawClient.transcribe(request).body();
-    }
+  /**
+   * Transcribes an uploaded audio recording and returns the transcript.
+   * Send the raw audio bytes as the request body; the audio format is
+   * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
+   * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
+   * minutes of audio per request. This duration limit is independent of file
+   * size or format, so a compressed recording within the body-size limit can
+   * still be rejected for being too long. Pair the transcript with a
+   * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
+   * FHIR resource.</p>
+   */
+  public TranscribeResponse transcribe(byte[] body, RequestOptions requestOptions) {
+    return this.rawClient.transcribe(body, requestOptions).body();
+  }
 
-    /**
-     * Transcribes an uploaded audio recording and returns the transcript.
-     * Send the raw audio bytes as the request body; the audio format is
-     * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
-     * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
-     * minutes of audio per request. This duration limit is independent of file
-     * size or format, so a compressed recording within the body-size limit can
-     * still be rejected for being too long. Pair the transcript with a
-     * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
-     * FHIR resource.</p>
-     */
-    public TranscribeResponse transcribe(TranscribeRequest request, RequestOptions requestOptions) {
-        return this.rawClient.transcribe(request, requestOptions).body();
-    }
+  /**
+   * Transcribes an uploaded audio recording and returns the transcript.
+   * Send the raw audio bytes as the request body; the audio format is
+   * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
+   * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
+   * minutes of audio per request. This duration limit is independent of file
+   * size or format, so a compressed recording within the body-size limit can
+   * still be rejected for being too long. Pair the transcript with a
+   * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
+   * FHIR resource.</p>
+   */
+  public TranscribeResponse transcribe(TranscribeRequest request) {
+    return this.rawClient.transcribe(request).body();
+  }
+
+  /**
+   * Transcribes an uploaded audio recording and returns the transcript.
+   * Send the raw audio bytes as the request body; the audio format is
+   * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
+   * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
+   * minutes of audio per request. This duration limit is independent of file
+   * size or format, so a compressed recording within the body-size limit can
+   * still be rejected for being too long. Pair the transcript with a
+   * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
+   * FHIR resource.</p>
+   */
+  public TranscribeResponse transcribe(TranscribeRequest request, RequestOptions requestOptions) {
+    return this.rawClient.transcribe(request, requestOptions).body();
+  }
 }

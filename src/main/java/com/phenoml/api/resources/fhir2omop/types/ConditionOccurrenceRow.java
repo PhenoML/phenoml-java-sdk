@@ -20,415 +20,443 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ConditionOccurrenceRow.Builder.class)
 public final class ConditionOccurrenceRow {
-    private final Optional<Long> conditionOccurrenceId;
 
-    private final Optional<Long> personId;
+  private final Optional<Long> conditionOccurrenceId;
 
-    private final Optional<Long> conditionConceptId;
+  private final Optional<Long> personId;
 
-    private final Optional<String> conditionStartDate;
+  private final Optional<Long> conditionConceptId;
 
-    private final Optional<String> conditionStartDatetime;
+  private final Optional<String> conditionStartDate;
 
-    private final Optional<String> conditionEndDate;
+  private final Optional<String> conditionStartDatetime;
 
-    private final Optional<String> conditionEndDatetime;
+  private final Optional<String> conditionEndDate;
 
-    private final Optional<Long> conditionTypeConceptId;
+  private final Optional<String> conditionEndDatetime;
 
-    private final Optional<Long> visitOccurrenceId;
+  private final Optional<Long> conditionTypeConceptId;
 
-    private final Optional<Long> providerId;
+  private final Optional<Long> visitOccurrenceId;
 
-    private final Optional<String> conditionSourceValue;
+  private final Optional<Long> providerId;
 
-    private final Optional<Long> conditionSourceConceptId;
+  private final Optional<String> conditionSourceValue;
 
-    private final Optional<String> conditionStatusSourceValue;
+  private final Optional<Long> conditionSourceConceptId;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> conditionStatusSourceValue;
 
-    private ConditionOccurrenceRow(
-            Optional<Long> conditionOccurrenceId,
-            Optional<Long> personId,
-            Optional<Long> conditionConceptId,
-            Optional<String> conditionStartDate,
-            Optional<String> conditionStartDatetime,
-            Optional<String> conditionEndDate,
-            Optional<String> conditionEndDatetime,
-            Optional<Long> conditionTypeConceptId,
-            Optional<Long> visitOccurrenceId,
-            Optional<Long> providerId,
-            Optional<String> conditionSourceValue,
-            Optional<Long> conditionSourceConceptId,
-            Optional<String> conditionStatusSourceValue,
-            Map<String, Object> additionalProperties) {
-        this.conditionOccurrenceId = conditionOccurrenceId;
-        this.personId = personId;
-        this.conditionConceptId = conditionConceptId;
-        this.conditionStartDate = conditionStartDate;
-        this.conditionStartDatetime = conditionStartDatetime;
-        this.conditionEndDate = conditionEndDate;
-        this.conditionEndDatetime = conditionEndDatetime;
-        this.conditionTypeConceptId = conditionTypeConceptId;
-        this.visitOccurrenceId = visitOccurrenceId;
-        this.providerId = providerId;
-        this.conditionSourceValue = conditionSourceValue;
-        this.conditionSourceConceptId = conditionSourceConceptId;
-        this.conditionStatusSourceValue = conditionStatusSourceValue;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ConditionOccurrenceRow(
+    Optional<Long> conditionOccurrenceId,
+    Optional<Long> personId,
+    Optional<Long> conditionConceptId,
+    Optional<String> conditionStartDate,
+    Optional<String> conditionStartDatetime,
+    Optional<String> conditionEndDate,
+    Optional<String> conditionEndDatetime,
+    Optional<Long> conditionTypeConceptId,
+    Optional<Long> visitOccurrenceId,
+    Optional<Long> providerId,
+    Optional<String> conditionSourceValue,
+    Optional<Long> conditionSourceConceptId,
+    Optional<String> conditionStatusSourceValue,
+    Map<String, Object> additionalProperties
+  ) {
+    this.conditionOccurrenceId = conditionOccurrenceId;
+    this.personId = personId;
+    this.conditionConceptId = conditionConceptId;
+    this.conditionStartDate = conditionStartDate;
+    this.conditionStartDatetime = conditionStartDatetime;
+    this.conditionEndDate = conditionEndDate;
+    this.conditionEndDatetime = conditionEndDatetime;
+    this.conditionTypeConceptId = conditionTypeConceptId;
+    this.visitOccurrenceId = visitOccurrenceId;
+    this.providerId = providerId;
+    this.conditionSourceValue = conditionSourceValue;
+    this.conditionSourceConceptId = conditionSourceConceptId;
+    this.conditionStatusSourceValue = conditionStatusSourceValue;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("condition_occurrence_id")
+  public Optional<Long> getConditionOccurrenceId() {
+    return conditionOccurrenceId;
+  }
+
+  @JsonProperty("person_id")
+  public Optional<Long> getPersonId() {
+    return personId;
+  }
+
+  @JsonProperty("condition_concept_id")
+  public Optional<Long> getConditionConceptId() {
+    return conditionConceptId;
+  }
+
+  /**
+   * @return Start date selected by the source resource's timing rules. For a Condition, onsetDateTime or onsetPeriod.start, otherwise recordedDate; see the endpoint's timing sources for other resources.
+   */
+  @JsonProperty("condition_start_date")
+  public Optional<String> getConditionStartDate() {
+    return conditionStartDate;
+  }
+
+  @JsonProperty("condition_start_datetime")
+  public Optional<String> getConditionStartDatetime() {
+    return conditionStartDatetime;
+  }
+
+  /**
+   * @return End date selected by the source resource's timing rules, when available. For a Condition, abatementDateTime or abatementPeriod.end; see the endpoint's timing sources for other resources.
+   */
+  @JsonProperty("condition_end_date")
+  public Optional<String> getConditionEndDate() {
+    return conditionEndDate;
+  }
+
+  @JsonProperty("condition_end_datetime")
+  public Optional<String> getConditionEndDatetime() {
+    return conditionEndDatetime;
+  }
+
+  @JsonProperty("condition_type_concept_id")
+  public Optional<Long> getConditionTypeConceptId() {
+    return conditionTypeConceptId;
+  }
+
+  @JsonProperty("visit_occurrence_id")
+  public Optional<Long> getVisitOccurrenceId() {
+    return visitOccurrenceId;
+  }
+
+  @JsonProperty("provider_id")
+  public Optional<Long> getProviderId() {
+    return providerId;
+  }
+
+  @JsonProperty("condition_source_value")
+  public Optional<String> getConditionSourceValue() {
+    return conditionSourceValue;
+  }
+
+  @JsonProperty("condition_source_concept_id")
+  public Optional<Long> getConditionSourceConceptId() {
+    return conditionSourceConceptId;
+  }
+
+  @JsonProperty("condition_status_source_value")
+  public Optional<String> getConditionStatusSourceValue() {
+    return conditionStatusSourceValue;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ConditionOccurrenceRow && equalTo((ConditionOccurrenceRow) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ConditionOccurrenceRow other) {
+    return (
+      conditionOccurrenceId.equals(other.conditionOccurrenceId) &&
+      personId.equals(other.personId) &&
+      conditionConceptId.equals(other.conditionConceptId) &&
+      conditionStartDate.equals(other.conditionStartDate) &&
+      conditionStartDatetime.equals(other.conditionStartDatetime) &&
+      conditionEndDate.equals(other.conditionEndDate) &&
+      conditionEndDatetime.equals(other.conditionEndDatetime) &&
+      conditionTypeConceptId.equals(other.conditionTypeConceptId) &&
+      visitOccurrenceId.equals(other.visitOccurrenceId) &&
+      providerId.equals(other.providerId) &&
+      conditionSourceValue.equals(other.conditionSourceValue) &&
+      conditionSourceConceptId.equals(other.conditionSourceConceptId) &&
+      conditionStatusSourceValue.equals(other.conditionStatusSourceValue)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.conditionOccurrenceId,
+      this.personId,
+      this.conditionConceptId,
+      this.conditionStartDate,
+      this.conditionStartDatetime,
+      this.conditionEndDate,
+      this.conditionEndDatetime,
+      this.conditionTypeConceptId,
+      this.visitOccurrenceId,
+      this.providerId,
+      this.conditionSourceValue,
+      this.conditionSourceConceptId,
+      this.conditionStatusSourceValue
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Long> conditionOccurrenceId = Optional.empty();
+
+    private Optional<Long> personId = Optional.empty();
+
+    private Optional<Long> conditionConceptId = Optional.empty();
+
+    private Optional<String> conditionStartDate = Optional.empty();
+
+    private Optional<String> conditionStartDatetime = Optional.empty();
+
+    private Optional<String> conditionEndDate = Optional.empty();
+
+    private Optional<String> conditionEndDatetime = Optional.empty();
+
+    private Optional<Long> conditionTypeConceptId = Optional.empty();
+
+    private Optional<Long> visitOccurrenceId = Optional.empty();
+
+    private Optional<Long> providerId = Optional.empty();
+
+    private Optional<String> conditionSourceValue = Optional.empty();
+
+    private Optional<Long> conditionSourceConceptId = Optional.empty();
+
+    private Optional<String> conditionStatusSourceValue = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ConditionOccurrenceRow other) {
+      conditionOccurrenceId(other.getConditionOccurrenceId());
+      personId(other.getPersonId());
+      conditionConceptId(other.getConditionConceptId());
+      conditionStartDate(other.getConditionStartDate());
+      conditionStartDatetime(other.getConditionStartDatetime());
+      conditionEndDate(other.getConditionEndDate());
+      conditionEndDatetime(other.getConditionEndDatetime());
+      conditionTypeConceptId(other.getConditionTypeConceptId());
+      visitOccurrenceId(other.getVisitOccurrenceId());
+      providerId(other.getProviderId());
+      conditionSourceValue(other.getConditionSourceValue());
+      conditionSourceConceptId(other.getConditionSourceConceptId());
+      conditionStatusSourceValue(other.getConditionStatusSourceValue());
+      return this;
     }
 
-    @JsonProperty("condition_occurrence_id")
-    public Optional<Long> getConditionOccurrenceId() {
-        return conditionOccurrenceId;
+    @JsonSetter(value = "condition_occurrence_id", nulls = Nulls.SKIP)
+    public Builder conditionOccurrenceId(Optional<Long> conditionOccurrenceId) {
+      this.conditionOccurrenceId = conditionOccurrenceId;
+      return this;
     }
 
-    @JsonProperty("person_id")
-    public Optional<Long> getPersonId() {
-        return personId;
+    public Builder conditionOccurrenceId(Long conditionOccurrenceId) {
+      this.conditionOccurrenceId = Optional.ofNullable(conditionOccurrenceId);
+      return this;
     }
 
-    @JsonProperty("condition_concept_id")
-    public Optional<Long> getConditionConceptId() {
-        return conditionConceptId;
+    @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
+    public Builder personId(Optional<Long> personId) {
+      this.personId = personId;
+      return this;
+    }
+
+    public Builder personId(Long personId) {
+      this.personId = Optional.ofNullable(personId);
+      return this;
+    }
+
+    @JsonSetter(value = "condition_concept_id", nulls = Nulls.SKIP)
+    public Builder conditionConceptId(Optional<Long> conditionConceptId) {
+      this.conditionConceptId = conditionConceptId;
+      return this;
+    }
+
+    public Builder conditionConceptId(Long conditionConceptId) {
+      this.conditionConceptId = Optional.ofNullable(conditionConceptId);
+      return this;
     }
 
     /**
-     * @return Date from Condition.onsetDateTime or onsetPeriod.start, otherwise Condition.recordedDate.
+     * <p>Start date selected by the source resource's timing rules. For a Condition, onsetDateTime or onsetPeriod.start, otherwise recordedDate; see the endpoint's timing sources for other resources.</p>
      */
-    @JsonProperty("condition_start_date")
-    public Optional<String> getConditionStartDate() {
-        return conditionStartDate;
+    @JsonSetter(value = "condition_start_date", nulls = Nulls.SKIP)
+    public Builder conditionStartDate(Optional<String> conditionStartDate) {
+      this.conditionStartDate = conditionStartDate;
+      return this;
     }
 
-    @JsonProperty("condition_start_datetime")
-    public Optional<String> getConditionStartDatetime() {
-        return conditionStartDatetime;
+    public Builder conditionStartDate(String conditionStartDate) {
+      this.conditionStartDate = Optional.ofNullable(conditionStartDate);
+      return this;
+    }
+
+    @JsonSetter(value = "condition_start_datetime", nulls = Nulls.SKIP)
+    public Builder conditionStartDatetime(Optional<String> conditionStartDatetime) {
+      this.conditionStartDatetime = conditionStartDatetime;
+      return this;
+    }
+
+    public Builder conditionStartDatetime(String conditionStartDatetime) {
+      this.conditionStartDatetime = Optional.ofNullable(conditionStartDatetime);
+      return this;
     }
 
     /**
-     * @return Date from Condition.abatementDateTime or abatementPeriod.end.
+     * <p>End date selected by the source resource's timing rules, when available. For a Condition, abatementDateTime or abatementPeriod.end; see the endpoint's timing sources for other resources.</p>
      */
-    @JsonProperty("condition_end_date")
-    public Optional<String> getConditionEndDate() {
-        return conditionEndDate;
+    @JsonSetter(value = "condition_end_date", nulls = Nulls.SKIP)
+    public Builder conditionEndDate(Optional<String> conditionEndDate) {
+      this.conditionEndDate = conditionEndDate;
+      return this;
     }
 
-    @JsonProperty("condition_end_datetime")
-    public Optional<String> getConditionEndDatetime() {
-        return conditionEndDatetime;
+    public Builder conditionEndDate(String conditionEndDate) {
+      this.conditionEndDate = Optional.ofNullable(conditionEndDate);
+      return this;
     }
 
-    @JsonProperty("condition_type_concept_id")
-    public Optional<Long> getConditionTypeConceptId() {
-        return conditionTypeConceptId;
+    @JsonSetter(value = "condition_end_datetime", nulls = Nulls.SKIP)
+    public Builder conditionEndDatetime(Optional<String> conditionEndDatetime) {
+      this.conditionEndDatetime = conditionEndDatetime;
+      return this;
     }
 
-    @JsonProperty("visit_occurrence_id")
-    public Optional<Long> getVisitOccurrenceId() {
-        return visitOccurrenceId;
+    public Builder conditionEndDatetime(String conditionEndDatetime) {
+      this.conditionEndDatetime = Optional.ofNullable(conditionEndDatetime);
+      return this;
     }
 
-    @JsonProperty("provider_id")
-    public Optional<Long> getProviderId() {
-        return providerId;
+    @JsonSetter(value = "condition_type_concept_id", nulls = Nulls.SKIP)
+    public Builder conditionTypeConceptId(Optional<Long> conditionTypeConceptId) {
+      this.conditionTypeConceptId = conditionTypeConceptId;
+      return this;
     }
 
-    @JsonProperty("condition_source_value")
-    public Optional<String> getConditionSourceValue() {
-        return conditionSourceValue;
+    public Builder conditionTypeConceptId(Long conditionTypeConceptId) {
+      this.conditionTypeConceptId = Optional.ofNullable(conditionTypeConceptId);
+      return this;
     }
 
-    @JsonProperty("condition_source_concept_id")
-    public Optional<Long> getConditionSourceConceptId() {
-        return conditionSourceConceptId;
+    @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
+    public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
+      this.visitOccurrenceId = visitOccurrenceId;
+      return this;
     }
 
-    @JsonProperty("condition_status_source_value")
-    public Optional<String> getConditionStatusSourceValue() {
-        return conditionStatusSourceValue;
+    public Builder visitOccurrenceId(Long visitOccurrenceId) {
+      this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ConditionOccurrenceRow && equalTo((ConditionOccurrenceRow) other);
+    @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
+    public Builder providerId(Optional<Long> providerId) {
+      this.providerId = providerId;
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder providerId(Long providerId) {
+      this.providerId = Optional.ofNullable(providerId);
+      return this;
     }
 
-    private boolean equalTo(ConditionOccurrenceRow other) {
-        return conditionOccurrenceId.equals(other.conditionOccurrenceId)
-                && personId.equals(other.personId)
-                && conditionConceptId.equals(other.conditionConceptId)
-                && conditionStartDate.equals(other.conditionStartDate)
-                && conditionStartDatetime.equals(other.conditionStartDatetime)
-                && conditionEndDate.equals(other.conditionEndDate)
-                && conditionEndDatetime.equals(other.conditionEndDatetime)
-                && conditionTypeConceptId.equals(other.conditionTypeConceptId)
-                && visitOccurrenceId.equals(other.visitOccurrenceId)
-                && providerId.equals(other.providerId)
-                && conditionSourceValue.equals(other.conditionSourceValue)
-                && conditionSourceConceptId.equals(other.conditionSourceConceptId)
-                && conditionStatusSourceValue.equals(other.conditionStatusSourceValue);
+    @JsonSetter(value = "condition_source_value", nulls = Nulls.SKIP)
+    public Builder conditionSourceValue(Optional<String> conditionSourceValue) {
+      this.conditionSourceValue = conditionSourceValue;
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.conditionOccurrenceId,
-                this.personId,
-                this.conditionConceptId,
-                this.conditionStartDate,
-                this.conditionStartDatetime,
-                this.conditionEndDate,
-                this.conditionEndDatetime,
-                this.conditionTypeConceptId,
-                this.visitOccurrenceId,
-                this.providerId,
-                this.conditionSourceValue,
-                this.conditionSourceConceptId,
-                this.conditionStatusSourceValue);
+    public Builder conditionSourceValue(String conditionSourceValue) {
+      this.conditionSourceValue = Optional.ofNullable(conditionSourceValue);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonSetter(value = "condition_source_concept_id", nulls = Nulls.SKIP)
+    public Builder conditionSourceConceptId(Optional<Long> conditionSourceConceptId) {
+      this.conditionSourceConceptId = conditionSourceConceptId;
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder conditionSourceConceptId(Long conditionSourceConceptId) {
+      this.conditionSourceConceptId = Optional.ofNullable(conditionSourceConceptId);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Long> conditionOccurrenceId = Optional.empty();
-
-        private Optional<Long> personId = Optional.empty();
-
-        private Optional<Long> conditionConceptId = Optional.empty();
-
-        private Optional<String> conditionStartDate = Optional.empty();
-
-        private Optional<String> conditionStartDatetime = Optional.empty();
-
-        private Optional<String> conditionEndDate = Optional.empty();
-
-        private Optional<String> conditionEndDatetime = Optional.empty();
-
-        private Optional<Long> conditionTypeConceptId = Optional.empty();
-
-        private Optional<Long> visitOccurrenceId = Optional.empty();
-
-        private Optional<Long> providerId = Optional.empty();
-
-        private Optional<String> conditionSourceValue = Optional.empty();
-
-        private Optional<Long> conditionSourceConceptId = Optional.empty();
-
-        private Optional<String> conditionStatusSourceValue = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ConditionOccurrenceRow other) {
-            conditionOccurrenceId(other.getConditionOccurrenceId());
-            personId(other.getPersonId());
-            conditionConceptId(other.getConditionConceptId());
-            conditionStartDate(other.getConditionStartDate());
-            conditionStartDatetime(other.getConditionStartDatetime());
-            conditionEndDate(other.getConditionEndDate());
-            conditionEndDatetime(other.getConditionEndDatetime());
-            conditionTypeConceptId(other.getConditionTypeConceptId());
-            visitOccurrenceId(other.getVisitOccurrenceId());
-            providerId(other.getProviderId());
-            conditionSourceValue(other.getConditionSourceValue());
-            conditionSourceConceptId(other.getConditionSourceConceptId());
-            conditionStatusSourceValue(other.getConditionStatusSourceValue());
-            return this;
-        }
-
-        @JsonSetter(value = "condition_occurrence_id", nulls = Nulls.SKIP)
-        public Builder conditionOccurrenceId(Optional<Long> conditionOccurrenceId) {
-            this.conditionOccurrenceId = conditionOccurrenceId;
-            return this;
-        }
-
-        public Builder conditionOccurrenceId(Long conditionOccurrenceId) {
-            this.conditionOccurrenceId = Optional.ofNullable(conditionOccurrenceId);
-            return this;
-        }
-
-        @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
-        public Builder personId(Optional<Long> personId) {
-            this.personId = personId;
-            return this;
-        }
-
-        public Builder personId(Long personId) {
-            this.personId = Optional.ofNullable(personId);
-            return this;
-        }
-
-        @JsonSetter(value = "condition_concept_id", nulls = Nulls.SKIP)
-        public Builder conditionConceptId(Optional<Long> conditionConceptId) {
-            this.conditionConceptId = conditionConceptId;
-            return this;
-        }
-
-        public Builder conditionConceptId(Long conditionConceptId) {
-            this.conditionConceptId = Optional.ofNullable(conditionConceptId);
-            return this;
-        }
-
-        /**
-         * <p>Date from Condition.onsetDateTime or onsetPeriod.start, otherwise Condition.recordedDate.</p>
-         */
-        @JsonSetter(value = "condition_start_date", nulls = Nulls.SKIP)
-        public Builder conditionStartDate(Optional<String> conditionStartDate) {
-            this.conditionStartDate = conditionStartDate;
-            return this;
-        }
-
-        public Builder conditionStartDate(String conditionStartDate) {
-            this.conditionStartDate = Optional.ofNullable(conditionStartDate);
-            return this;
-        }
-
-        @JsonSetter(value = "condition_start_datetime", nulls = Nulls.SKIP)
-        public Builder conditionStartDatetime(Optional<String> conditionStartDatetime) {
-            this.conditionStartDatetime = conditionStartDatetime;
-            return this;
-        }
-
-        public Builder conditionStartDatetime(String conditionStartDatetime) {
-            this.conditionStartDatetime = Optional.ofNullable(conditionStartDatetime);
-            return this;
-        }
-
-        /**
-         * <p>Date from Condition.abatementDateTime or abatementPeriod.end.</p>
-         */
-        @JsonSetter(value = "condition_end_date", nulls = Nulls.SKIP)
-        public Builder conditionEndDate(Optional<String> conditionEndDate) {
-            this.conditionEndDate = conditionEndDate;
-            return this;
-        }
-
-        public Builder conditionEndDate(String conditionEndDate) {
-            this.conditionEndDate = Optional.ofNullable(conditionEndDate);
-            return this;
-        }
-
-        @JsonSetter(value = "condition_end_datetime", nulls = Nulls.SKIP)
-        public Builder conditionEndDatetime(Optional<String> conditionEndDatetime) {
-            this.conditionEndDatetime = conditionEndDatetime;
-            return this;
-        }
-
-        public Builder conditionEndDatetime(String conditionEndDatetime) {
-            this.conditionEndDatetime = Optional.ofNullable(conditionEndDatetime);
-            return this;
-        }
-
-        @JsonSetter(value = "condition_type_concept_id", nulls = Nulls.SKIP)
-        public Builder conditionTypeConceptId(Optional<Long> conditionTypeConceptId) {
-            this.conditionTypeConceptId = conditionTypeConceptId;
-            return this;
-        }
-
-        public Builder conditionTypeConceptId(Long conditionTypeConceptId) {
-            this.conditionTypeConceptId = Optional.ofNullable(conditionTypeConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
-        public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
-            this.visitOccurrenceId = visitOccurrenceId;
-            return this;
-        }
-
-        public Builder visitOccurrenceId(Long visitOccurrenceId) {
-            this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
-            return this;
-        }
-
-        @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
-        public Builder providerId(Optional<Long> providerId) {
-            this.providerId = providerId;
-            return this;
-        }
-
-        public Builder providerId(Long providerId) {
-            this.providerId = Optional.ofNullable(providerId);
-            return this;
-        }
-
-        @JsonSetter(value = "condition_source_value", nulls = Nulls.SKIP)
-        public Builder conditionSourceValue(Optional<String> conditionSourceValue) {
-            this.conditionSourceValue = conditionSourceValue;
-            return this;
-        }
-
-        public Builder conditionSourceValue(String conditionSourceValue) {
-            this.conditionSourceValue = Optional.ofNullable(conditionSourceValue);
-            return this;
-        }
-
-        @JsonSetter(value = "condition_source_concept_id", nulls = Nulls.SKIP)
-        public Builder conditionSourceConceptId(Optional<Long> conditionSourceConceptId) {
-            this.conditionSourceConceptId = conditionSourceConceptId;
-            return this;
-        }
-
-        public Builder conditionSourceConceptId(Long conditionSourceConceptId) {
-            this.conditionSourceConceptId = Optional.ofNullable(conditionSourceConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "condition_status_source_value", nulls = Nulls.SKIP)
-        public Builder conditionStatusSourceValue(Optional<String> conditionStatusSourceValue) {
-            this.conditionStatusSourceValue = conditionStatusSourceValue;
-            return this;
-        }
-
-        public Builder conditionStatusSourceValue(String conditionStatusSourceValue) {
-            this.conditionStatusSourceValue = Optional.ofNullable(conditionStatusSourceValue);
-            return this;
-        }
-
-        public ConditionOccurrenceRow build() {
-            return new ConditionOccurrenceRow(
-                    conditionOccurrenceId,
-                    personId,
-                    conditionConceptId,
-                    conditionStartDate,
-                    conditionStartDatetime,
-                    conditionEndDate,
-                    conditionEndDatetime,
-                    conditionTypeConceptId,
-                    visitOccurrenceId,
-                    providerId,
-                    conditionSourceValue,
-                    conditionSourceConceptId,
-                    conditionStatusSourceValue,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    @JsonSetter(value = "condition_status_source_value", nulls = Nulls.SKIP)
+    public Builder conditionStatusSourceValue(Optional<String> conditionStatusSourceValue) {
+      this.conditionStatusSourceValue = conditionStatusSourceValue;
+      return this;
     }
+
+    public Builder conditionStatusSourceValue(String conditionStatusSourceValue) {
+      this.conditionStatusSourceValue = Optional.ofNullable(conditionStatusSourceValue);
+      return this;
+    }
+
+    public ConditionOccurrenceRow build() {
+      return new ConditionOccurrenceRow(
+        conditionOccurrenceId,
+        personId,
+        conditionConceptId,
+        conditionStartDate,
+        conditionStartDatetime,
+        conditionEndDate,
+        conditionEndDatetime,
+        conditionTypeConceptId,
+        visitOccurrenceId,
+        providerId,
+        conditionSourceValue,
+        conditionSourceConceptId,
+        conditionStatusSourceValue,
+        additionalProperties
+      );
+    }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("condition_occurrence_id") ||
+        key.equalsIgnoreCase("person_id") ||
+        key.equalsIgnoreCase("condition_concept_id") ||
+        key.equalsIgnoreCase("condition_start_date") ||
+        key.equalsIgnoreCase("condition_start_datetime") ||
+        key.equalsIgnoreCase("condition_end_date") ||
+        key.equalsIgnoreCase("condition_end_datetime") ||
+        key.equalsIgnoreCase("condition_type_concept_id") ||
+        key.equalsIgnoreCase("visit_occurrence_id") ||
+        key.equalsIgnoreCase("provider_id") ||
+        key.equalsIgnoreCase("condition_source_value") ||
+        key.equalsIgnoreCase("condition_source_concept_id") ||
+        key.equalsIgnoreCase("condition_status_source_value")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

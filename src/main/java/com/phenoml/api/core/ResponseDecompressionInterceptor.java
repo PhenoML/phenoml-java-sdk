@@ -21,36 +21,44 @@ import okio.Source;
  */
 public class ResponseDecompressionInterceptor implements Interceptor {
 
-    @Override
-    public Response intercept(Chain chain) throws IOException {
-        return decompress(chain.proceed(chain.request()));
-    }
+  @Override
+  public Response intercept(Chain chain) throws IOException {
+    return decompress(chain.proceed(chain.request()));
+  }
 
-    private Response decompress(Response response) {
-        ResponseBody body = response.body();
-        if (body == null) {
-            return response;
-        }
-        String encoding = response.header("Content-Encoding");
-        if (encoding == null) {
-            return response;
-        }
-        Source decompressedSource;
-        if (encoding.equalsIgnoreCase("gzip") || encoding.equalsIgnoreCase("x-gzip")) {
-            decompressedSource = new GzipSource(body.source());
-        } else if (encoding.equalsIgnoreCase("deflate")) {
-            decompressedSource = new InflaterSource(body.source(), new Inflater());
-        } else {
-            return response;
-        }
-        ResponseBody decompressedBody = ResponseBody.create(body.contentType(), -1L, Okio.buffer(decompressedSource));
-        return response.newBuilder()
-                .headers(response.headers()
-                        .newBuilder()
-                        .removeAll("Content-Encoding")
-                        .removeAll("Content-Length")
-                        .build())
-                .body(decompressedBody)
-                .build();
+  private Response decompress(Response response) {
+    ResponseBody body = response.body();
+    if (body == null) {
+      return response;
     }
+    String encoding = response.header("Content-Encoding");
+    if (encoding == null) {
+      return response;
+    }
+    Source decompressedSource;
+    if (encoding.equalsIgnoreCase("gzip") || encoding.equalsIgnoreCase("x-gzip")) {
+      decompressedSource = new GzipSource(body.source());
+    } else if (encoding.equalsIgnoreCase("deflate")) {
+      decompressedSource = new InflaterSource(body.source(), new Inflater());
+    } else {
+      return response;
+    }
+    ResponseBody decompressedBody = ResponseBody.create(
+      body.contentType(),
+      -1L,
+      Okio.buffer(decompressedSource)
+    );
+    return response
+      .newBuilder()
+      .headers(
+        response
+          .headers()
+          .newBuilder()
+          .removeAll("Content-Encoding")
+          .removeAll("Content-Length")
+          .build()
+      )
+      .body(decompressedBody)
+      .build();
+  }
 }

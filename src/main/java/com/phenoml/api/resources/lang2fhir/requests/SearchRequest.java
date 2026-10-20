@@ -19,18 +19,66 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = SearchRequest.Builder.class)
 public final class SearchRequest {
-    private final String text;
 
-    private final Map<String, Object> additionalProperties;
+  private final String text;
 
-    private SearchRequest(String text, Map<String, Object> additionalProperties) {
-        this.text = text;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
+  private SearchRequest(String text, Map<String, Object> additionalProperties) {
+    this.text = text;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Natural language text to convert into FHIR search parameters.
+   * The system will automatically identify the appropriate resource type and generate valid search parameters.
+   * <p>Examples:</p>
+   * <ul>
+   * <li>&quot;Appointments between March 2-9, 2025&quot; → Appointment search with date range</li>
+   * <li>&quot;Patients with diabetes&quot; → Condition search with code parameter</li>
+   * <li>&quot;Active medication requests for metformin&quot; → MedicationRequest search</li>
+   * <li>&quot;Lab results for creatinine&quot; → DiagnosticReport search</li>
+   * <li>&quot;Dr. Smith's schedule&quot; → Practitioner or Schedule search</li>
+   * </ul>
+   */
+  @JsonProperty("text")
+  public String getText() {
+    return text;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof SearchRequest && equalTo((SearchRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(SearchRequest other) {
+    return text.equals(other.text);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.text);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static TextStage builder() {
+    return new Builder();
+  }
+
+  public interface TextStage {
     /**
-     * @return Natural language text to convert into FHIR search parameters.
-     * The system will automatically identify the appropriate resource type and generate valid search parameters.
+     * <p>Natural language text to convert into FHIR search parameters.
+     * The system will automatically identify the appropriate resource type and generate valid search parameters.</p>
      * <p>Examples:</p>
      * <ul>
      * <li>&quot;Appointments between March 2-9, 2025&quot; → Appointment search with date range</li>
@@ -40,116 +88,77 @@ public final class SearchRequest {
      * <li>&quot;Dr. Smith's schedule&quot; → Practitioner or Schedule search</li>
      * </ul>
      */
-    @JsonProperty("text")
-    public String getText() {
-        return text;
+    _FinalStage text(@NotNull String text);
+
+    Builder from(SearchRequest other);
+  }
+
+  public interface _FinalStage {
+    SearchRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements TextStage, _FinalStage {
+
+    private String text;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(SearchRequest other) {
+      text(other.getText());
+      return this;
+    }
+
+    /**
+     * <p>Natural language text to convert into FHIR search parameters.
+     * The system will automatically identify the appropriate resource type and generate valid search parameters.</p>
+     * <p>Examples:</p>
+     * <ul>
+     * <li>&quot;Appointments between March 2-9, 2025&quot; → Appointment search with date range</li>
+     * <li>&quot;Patients with diabetes&quot; → Condition search with code parameter</li>
+     * <li>&quot;Active medication requests for metformin&quot; → MedicationRequest search</li>
+     * <li>&quot;Lab results for creatinine&quot; → DiagnosticReport search</li>
+     * <li>&quot;Dr. Smith's schedule&quot; → Practitioner or Schedule search</li>
+     * </ul>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("text")
+    public _FinalStage text(@NotNull String text) {
+      this.text = Objects.requireNonNull(text, "text must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof SearchRequest && equalTo((SearchRequest) other);
+    public SearchRequest build() {
+      return new SearchRequest(text, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(SearchRequest other) {
-        return text.equals(other.text);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.text);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("text")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static TextStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface TextStage {
-        /**
-         * <p>Natural language text to convert into FHIR search parameters.
-         * The system will automatically identify the appropriate resource type and generate valid search parameters.</p>
-         * <p>Examples:</p>
-         * <ul>
-         * <li>&quot;Appointments between March 2-9, 2025&quot; → Appointment search with date range</li>
-         * <li>&quot;Patients with diabetes&quot; → Condition search with code parameter</li>
-         * <li>&quot;Active medication requests for metformin&quot; → MedicationRequest search</li>
-         * <li>&quot;Lab results for creatinine&quot; → DiagnosticReport search</li>
-         * <li>&quot;Dr. Smith's schedule&quot; → Practitioner or Schedule search</li>
-         * </ul>
-         */
-        _FinalStage text(@NotNull String text);
-
-        Builder from(SearchRequest other);
-    }
-
-    public interface _FinalStage {
-        SearchRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements TextStage, _FinalStage {
-        private String text;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(SearchRequest other) {
-            text(other.getText());
-            return this;
-        }
-
-        /**
-         * <p>Natural language text to convert into FHIR search parameters.
-         * The system will automatically identify the appropriate resource type and generate valid search parameters.</p>
-         * <p>Examples:</p>
-         * <ul>
-         * <li>&quot;Appointments between March 2-9, 2025&quot; → Appointment search with date range</li>
-         * <li>&quot;Patients with diabetes&quot; → Condition search with code parameter</li>
-         * <li>&quot;Active medication requests for metformin&quot; → MedicationRequest search</li>
-         * <li>&quot;Lab results for creatinine&quot; → DiagnosticReport search</li>
-         * <li>&quot;Dr. Smith's schedule&quot; → Practitioner or Schedule search</li>
-         * </ul>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("text")
-        public _FinalStage text(@NotNull String text) {
-            this.text = Objects.requireNonNull(text, "text must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public SearchRequest build() {
-            return new SearchRequest(text, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

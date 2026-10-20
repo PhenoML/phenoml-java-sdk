@@ -22,228 +22,245 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = JwtAuth.Builder.class)
 public final class JwtAuth {
-    private final String clientId;
 
-    private final Optional<OffsetDateTime> credentialExpiry;
+  private final String clientId;
 
-    private final Optional<Role> role;
+  private final Optional<OffsetDateTime> credentialExpiry;
 
-    private final Optional<String> scopes;
+  private final Optional<Role> role;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> scopes;
 
-    private JwtAuth(
-            String clientId,
-            Optional<OffsetDateTime> credentialExpiry,
-            Optional<Role> role,
-            Optional<String> scopes,
-            Map<String, Object> additionalProperties) {
-        this.clientId = clientId;
-        this.credentialExpiry = credentialExpiry;
-        this.role = role;
-        this.scopes = scopes;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private JwtAuth(
+    String clientId,
+    Optional<OffsetDateTime> credentialExpiry,
+    Optional<Role> role,
+    Optional<String> scopes,
+    Map<String, Object> additionalProperties
+  ) {
+    this.clientId = clientId;
+    this.credentialExpiry = credentialExpiry;
+    this.role = role;
+    this.scopes = scopes;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return OAuth client ID
+   */
+  @JsonProperty("client_id")
+  public String getClientId() {
+    return clientId;
+  }
+
+  /**
+   * @return Expiry time for JWT credentials. If omitted, a default expiry is used.
+   */
+  @JsonProperty("credential_expiry")
+  public Optional<OffsetDateTime> getCredentialExpiry() {
+    return credentialExpiry;
+  }
+
+  @JsonProperty("role")
+  public Optional<Role> getRole() {
+    return role;
+  }
+
+  /**
+   * @return OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.
+   */
+  @JsonProperty("scopes")
+  public Optional<String> getScopes() {
+    return scopes;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof JwtAuth && equalTo((JwtAuth) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(JwtAuth other) {
+    return (
+      clientId.equals(other.clientId) &&
+      credentialExpiry.equals(other.credentialExpiry) &&
+      role.equals(other.role) &&
+      scopes.equals(other.scopes)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.clientId, this.credentialExpiry, this.role, this.scopes);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static ClientIdStage builder() {
+    return new Builder();
+  }
+
+  public interface ClientIdStage {
+    /**
+     * <p>OAuth client ID</p>
+     */
+    _FinalStage clientId(@NotNull String clientId);
+
+    Builder from(JwtAuth other);
+  }
+
+  public interface _FinalStage {
+    JwtAuth build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Expiry time for JWT credentials. If omitted, a default expiry is used.</p>
+     */
+    _FinalStage credentialExpiry(Optional<OffsetDateTime> credentialExpiry);
+
+    _FinalStage credentialExpiry(OffsetDateTime credentialExpiry);
+
+    _FinalStage role(Optional<Role> role);
+
+    _FinalStage role(Role role);
+
+    /**
+     * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.</p>
+     */
+    _FinalStage scopes(Optional<String> scopes);
+
+    _FinalStage scopes(String scopes);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements ClientIdStage, _FinalStage {
+
+    private String clientId;
+
+    private Optional<String> scopes = Optional.empty();
+
+    private Optional<Role> role = Optional.empty();
+
+    private Optional<OffsetDateTime> credentialExpiry = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(JwtAuth other) {
+      clientId(other.getClientId());
+      credentialExpiry(other.getCredentialExpiry());
+      role(other.getRole());
+      scopes(other.getScopes());
+      return this;
     }
 
     /**
-     * @return OAuth client ID
+     * <p>OAuth client ID</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("client_id")
-    public String getClientId() {
-        return clientId;
+    @java.lang.Override
+    @JsonSetter("client_id")
+    public _FinalStage clientId(@NotNull String clientId) {
+      this.clientId = Objects.requireNonNull(clientId, "clientId must not be null");
+      return this;
     }
 
     /**
-     * @return Expiry time for JWT credentials. If omitted, a default expiry is used.
+     * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("credential_expiry")
-    public Optional<OffsetDateTime> getCredentialExpiry() {
-        return credentialExpiry;
-    }
-
-    @JsonProperty("role")
-    public Optional<Role> getRole() {
-        return role;
+    @java.lang.Override
+    public _FinalStage scopes(String scopes) {
+      this.scopes = Optional.ofNullable(scopes);
+      return this;
     }
 
     /**
-     * @return OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.
+     * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.</p>
      */
-    @JsonProperty("scopes")
-    public Optional<String> getScopes() {
-        return scopes;
+    @java.lang.Override
+    @JsonSetter(value = "scopes", nulls = Nulls.SKIP)
+    public _FinalStage scopes(Optional<String> scopes) {
+      this.scopes = scopes;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof JwtAuth && equalTo((JwtAuth) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(JwtAuth other) {
-        return clientId.equals(other.clientId)
-                && credentialExpiry.equals(other.credentialExpiry)
-                && role.equals(other.role)
-                && scopes.equals(other.scopes);
+    public _FinalStage role(Role role) {
+      this.role = Optional.ofNullable(role);
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.clientId, this.credentialExpiry, this.role, this.scopes);
+    @JsonSetter(value = "role", nulls = Nulls.SKIP)
+    public _FinalStage role(Optional<Role> role) {
+      this.role = role;
+      return this;
+    }
+
+    /**
+     * <p>Expiry time for JWT credentials. If omitted, a default expiry is used.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage credentialExpiry(OffsetDateTime credentialExpiry) {
+      this.credentialExpiry = Optional.ofNullable(credentialExpiry);
+      return this;
+    }
+
+    /**
+     * <p>Expiry time for JWT credentials. If omitted, a default expiry is used.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "credential_expiry", nulls = Nulls.SKIP)
+    public _FinalStage credentialExpiry(Optional<OffsetDateTime> credentialExpiry) {
+      this.credentialExpiry = credentialExpiry;
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public JwtAuth build() {
+      return new JwtAuth(clientId, credentialExpiry, role, scopes, additionalProperties);
     }
 
-    public static ClientIdStage builder() {
-        return new Builder();
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("client_id") ||
+        key.equalsIgnoreCase("credential_expiry") ||
+        key.equalsIgnoreCase("role") ||
+        key.equalsIgnoreCase("scopes")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public interface ClientIdStage {
-        /**
-         * <p>OAuth client ID</p>
-         */
-        _FinalStage clientId(@NotNull String clientId);
-
-        Builder from(JwtAuth other);
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public interface _FinalStage {
-        JwtAuth build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Expiry time for JWT credentials. If omitted, a default expiry is used.</p>
-         */
-        _FinalStage credentialExpiry(Optional<OffsetDateTime> credentialExpiry);
-
-        _FinalStage credentialExpiry(OffsetDateTime credentialExpiry);
-
-        _FinalStage role(Optional<Role> role);
-
-        _FinalStage role(Role role);
-
-        /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.</p>
-         */
-        _FinalStage scopes(Optional<String> scopes);
-
-        _FinalStage scopes(String scopes);
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements ClientIdStage, _FinalStage {
-        private String clientId;
-
-        private Optional<String> scopes = Optional.empty();
-
-        private Optional<Role> role = Optional.empty();
-
-        private Optional<OffsetDateTime> credentialExpiry = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(JwtAuth other) {
-            clientId(other.getClientId());
-            credentialExpiry(other.getCredentialExpiry());
-            role(other.getRole());
-            scopes(other.getScopes());
-            return this;
-        }
-
-        /**
-         * <p>OAuth client ID</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("client_id")
-        public _FinalStage clientId(@NotNull String clientId) {
-            this.clientId = Objects.requireNonNull(clientId, "clientId must not be null");
-            return this;
-        }
-
-        /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage scopes(String scopes) {
-            this.scopes = Optional.ofNullable(scopes);
-            return this;
-        }
-
-        /**
-         * <p>OAuth scopes to request. Cannot be specified with role. If neither role nor scopes are specified, the provider-specific default role will be used.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "scopes", nulls = Nulls.SKIP)
-        public _FinalStage scopes(Optional<String> scopes) {
-            this.scopes = scopes;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage role(Role role) {
-            this.role = Optional.ofNullable(role);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "role", nulls = Nulls.SKIP)
-        public _FinalStage role(Optional<Role> role) {
-            this.role = role;
-            return this;
-        }
-
-        /**
-         * <p>Expiry time for JWT credentials. If omitted, a default expiry is used.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage credentialExpiry(OffsetDateTime credentialExpiry) {
-            this.credentialExpiry = Optional.ofNullable(credentialExpiry);
-            return this;
-        }
-
-        /**
-         * <p>Expiry time for JWT credentials. If omitted, a default expiry is used.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "credential_expiry", nulls = Nulls.SKIP)
-        public _FinalStage credentialExpiry(Optional<OffsetDateTime> credentialExpiry) {
-            this.credentialExpiry = credentialExpiry;
-            return this;
-        }
-
-        @java.lang.Override
-        public JwtAuth build() {
-            return new JwtAuth(clientId, credentialExpiry, role, scopes, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

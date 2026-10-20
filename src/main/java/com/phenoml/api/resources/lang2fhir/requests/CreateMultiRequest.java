@@ -26,449 +26,477 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateMultiRequest.Builder.class)
 public final class CreateMultiRequest {
-    private final String text;
 
-    private final Optional<String> version;
+  private final String text;
 
-    private final Optional<String> provider;
+  private final Optional<String> version;
 
-    private final Optional<PrimaryPatient> primaryPatient;
+  private final Optional<String> provider;
 
-    private final Optional<PatientReference> patientReference;
+  private final Optional<PrimaryPatient> primaryPatient;
 
-    private final Optional<String> implementationGuide;
+  private final Optional<PatientReference> patientReference;
 
-    private final Optional<CreateMultiRequestDetectionEffort> detectionEffort;
+  private final Optional<String> implementationGuide;
 
-    private final Optional<CreateMultiRequestValidationMethod> validationMethod;
+  private final Optional<CreateMultiRequestDetectionEffort> detectionEffort;
 
-    private final Optional<ResourceReview> resourceReview;
+  private final Optional<CreateMultiRequestValidationMethod> validationMethod;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<ResourceReview> resourceReview;
 
-    private CreateMultiRequest(
-            String text,
-            Optional<String> version,
-            Optional<String> provider,
-            Optional<PrimaryPatient> primaryPatient,
-            Optional<PatientReference> patientReference,
-            Optional<String> implementationGuide,
-            Optional<CreateMultiRequestDetectionEffort> detectionEffort,
-            Optional<CreateMultiRequestValidationMethod> validationMethod,
-            Optional<ResourceReview> resourceReview,
-            Map<String, Object> additionalProperties) {
-        this.text = text;
-        this.version = version;
-        this.provider = provider;
-        this.primaryPatient = primaryPatient;
-        this.patientReference = patientReference;
-        this.implementationGuide = implementationGuide;
-        this.detectionEffort = detectionEffort;
-        this.validationMethod = validationMethod;
-        this.resourceReview = resourceReview;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CreateMultiRequest(
+    String text,
+    Optional<String> version,
+    Optional<String> provider,
+    Optional<PrimaryPatient> primaryPatient,
+    Optional<PatientReference> patientReference,
+    Optional<String> implementationGuide,
+    Optional<CreateMultiRequestDetectionEffort> detectionEffort,
+    Optional<CreateMultiRequestValidationMethod> validationMethod,
+    Optional<ResourceReview> resourceReview,
+    Map<String, Object> additionalProperties
+  ) {
+    this.text = text;
+    this.version = version;
+    this.provider = provider;
+    this.primaryPatient = primaryPatient;
+    this.patientReference = patientReference;
+    this.implementationGuide = implementationGuide;
+    this.detectionEffort = detectionEffort;
+    this.validationMethod = validationMethod;
+    this.resourceReview = resourceReview;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Natural language text containing multiple clinical concepts to extract
+   */
+  @JsonProperty("text")
+  public String getText() {
+    return text;
+  }
+
+  /**
+   * @return FHIR version to use
+   */
+  @JsonProperty("version")
+  public Optional<String> getVersion() {
+    return version;
+  }
+
+  /**
+   * @return Optional FHIR provider name for provider-specific profiles
+   */
+  @JsonProperty("provider")
+  public Optional<String> getProvider() {
+    return provider;
+  }
+
+  @JsonProperty("primary_patient")
+  public Optional<PrimaryPatient> getPrimaryPatient() {
+    return primaryPatient;
+  }
+
+  /**
+   * @return Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.
+   */
+  @JsonProperty("patient_reference")
+  public Optional<PatientReference> getPatientReference() {
+    return patientReference;
+  }
+
+  /**
+   * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.
+   */
+  @JsonProperty("implementation_guide")
+  public Optional<String> getImplementationGuide() {
+    return implementationGuide;
+  }
+
+  /**
+   * @return Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.
+   */
+  @JsonProperty("detection_effort")
+  public Optional<CreateMultiRequestDetectionEffort> getDetectionEffort() {
+    return detectionEffort;
+  }
+
+  /**
+   * @return FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.
+   */
+  @JsonProperty("validation_method")
+  public Optional<CreateMultiRequestValidationMethod> getValidationMethod() {
+    return validationMethod;
+  }
+
+  @JsonProperty("resource_review")
+  public Optional<ResourceReview> getResourceReview() {
+    return resourceReview;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CreateMultiRequest && equalTo((CreateMultiRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CreateMultiRequest other) {
+    return (
+      text.equals(other.text) &&
+      version.equals(other.version) &&
+      provider.equals(other.provider) &&
+      primaryPatient.equals(other.primaryPatient) &&
+      patientReference.equals(other.patientReference) &&
+      implementationGuide.equals(other.implementationGuide) &&
+      detectionEffort.equals(other.detectionEffort) &&
+      validationMethod.equals(other.validationMethod) &&
+      resourceReview.equals(other.resourceReview)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.text,
+      this.version,
+      this.provider,
+      this.primaryPatient,
+      this.patientReference,
+      this.implementationGuide,
+      this.detectionEffort,
+      this.validationMethod,
+      this.resourceReview
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static TextStage builder() {
+    return new Builder();
+  }
+
+  public interface TextStage {
+    /**
+     * <p>Natural language text containing multiple clinical concepts to extract</p>
+     */
+    _FinalStage text(@NotNull String text);
+
+    Builder from(CreateMultiRequest other);
+  }
+
+  public interface _FinalStage {
+    CreateMultiRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>FHIR version to use</p>
+     */
+    _FinalStage version(Optional<String> version);
+
+    _FinalStage version(String version);
+
+    /**
+     * <p>Optional FHIR provider name for provider-specific profiles</p>
+     */
+    _FinalStage provider(Optional<String> provider);
+
+    _FinalStage provider(String provider);
+
+    _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient);
+
+    _FinalStage primaryPatient(PrimaryPatient primaryPatient);
+
+    /**
+     * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
+     */
+    _FinalStage patientReference(Optional<PatientReference> patientReference);
+
+    _FinalStage patientReference(PatientReference patientReference);
+
+    /**
+     * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
+     */
+    _FinalStage implementationGuide(Optional<String> implementationGuide);
+
+    _FinalStage implementationGuide(String implementationGuide);
+
+    /**
+     * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
+     */
+    _FinalStage detectionEffort(Optional<CreateMultiRequestDetectionEffort> detectionEffort);
+
+    _FinalStage detectionEffort(CreateMultiRequestDetectionEffort detectionEffort);
+
+    /**
+     * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
+     */
+    _FinalStage validationMethod(Optional<CreateMultiRequestValidationMethod> validationMethod);
+
+    _FinalStage validationMethod(CreateMultiRequestValidationMethod validationMethod);
+
+    _FinalStage resourceReview(Optional<ResourceReview> resourceReview);
+
+    _FinalStage resourceReview(ResourceReview resourceReview);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements TextStage, _FinalStage {
+
+    private String text;
+
+    private Optional<ResourceReview> resourceReview = Optional.empty();
+
+    private Optional<CreateMultiRequestValidationMethod> validationMethod = Optional.empty();
+
+    private Optional<CreateMultiRequestDetectionEffort> detectionEffort = Optional.empty();
+
+    private Optional<String> implementationGuide = Optional.empty();
+
+    private Optional<PatientReference> patientReference = Optional.empty();
+
+    private Optional<PrimaryPatient> primaryPatient = Optional.empty();
+
+    private Optional<String> provider = Optional.empty();
+
+    private Optional<String> version = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(CreateMultiRequest other) {
+      text(other.getText());
+      version(other.getVersion());
+      provider(other.getProvider());
+      primaryPatient(other.getPrimaryPatient());
+      patientReference(other.getPatientReference());
+      implementationGuide(other.getImplementationGuide());
+      detectionEffort(other.getDetectionEffort());
+      validationMethod(other.getValidationMethod());
+      resourceReview(other.getResourceReview());
+      return this;
     }
 
     /**
-     * @return Natural language text containing multiple clinical concepts to extract
+     * <p>Natural language text containing multiple clinical concepts to extract</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("text")
-    public String getText() {
-        return text;
-    }
-
-    /**
-     * @return FHIR version to use
-     */
-    @JsonProperty("version")
-    public Optional<String> getVersion() {
-        return version;
-    }
-
-    /**
-     * @return Optional FHIR provider name for provider-specific profiles
-     */
-    @JsonProperty("provider")
-    public Optional<String> getProvider() {
-        return provider;
-    }
-
-    @JsonProperty("primary_patient")
-    public Optional<PrimaryPatient> getPrimaryPatient() {
-        return primaryPatient;
-    }
-
-    /**
-     * @return Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.
-     */
-    @JsonProperty("patient_reference")
-    public Optional<PatientReference> getPatientReference() {
-        return patientReference;
-    }
-
-    /**
-     * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.
-     */
-    @JsonProperty("implementation_guide")
-    public Optional<String> getImplementationGuide() {
-        return implementationGuide;
-    }
-
-    /**
-     * @return Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.
-     */
-    @JsonProperty("detection_effort")
-    public Optional<CreateMultiRequestDetectionEffort> getDetectionEffort() {
-        return detectionEffort;
-    }
-
-    /**
-     * @return FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.
-     */
-    @JsonProperty("validation_method")
-    public Optional<CreateMultiRequestValidationMethod> getValidationMethod() {
-        return validationMethod;
-    }
-
-    @JsonProperty("resource_review")
-    public Optional<ResourceReview> getResourceReview() {
-        return resourceReview;
+    @java.lang.Override
+    @JsonSetter("text")
+    public _FinalStage text(@NotNull String text) {
+      this.text = Objects.requireNonNull(text, "text must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CreateMultiRequest && equalTo((CreateMultiRequest) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(CreateMultiRequest other) {
-        return text.equals(other.text)
-                && version.equals(other.version)
-                && provider.equals(other.provider)
-                && primaryPatient.equals(other.primaryPatient)
-                && patientReference.equals(other.patientReference)
-                && implementationGuide.equals(other.implementationGuide)
-                && detectionEffort.equals(other.detectionEffort)
-                && validationMethod.equals(other.validationMethod)
-                && resourceReview.equals(other.resourceReview);
+    public _FinalStage resourceReview(ResourceReview resourceReview) {
+      this.resourceReview = Optional.ofNullable(resourceReview);
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.text,
-                this.version,
-                this.provider,
-                this.primaryPatient,
-                this.patientReference,
-                this.implementationGuide,
-                this.detectionEffort,
-                this.validationMethod,
-                this.resourceReview);
+    @JsonSetter(value = "resource_review", nulls = Nulls.SKIP)
+    public _FinalStage resourceReview(Optional<ResourceReview> resourceReview) {
+      this.resourceReview = resourceReview;
+      return this;
+    }
+
+    /**
+     * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage validationMethod(CreateMultiRequestValidationMethod validationMethod) {
+      this.validationMethod = Optional.ofNullable(validationMethod);
+      return this;
+    }
+
+    /**
+     * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "validation_method", nulls = Nulls.SKIP)
+    public _FinalStage validationMethod(
+      Optional<CreateMultiRequestValidationMethod> validationMethod
+    ) {
+      this.validationMethod = validationMethod;
+      return this;
+    }
+
+    /**
+     * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage detectionEffort(CreateMultiRequestDetectionEffort detectionEffort) {
+      this.detectionEffort = Optional.ofNullable(detectionEffort);
+      return this;
+    }
+
+    /**
+     * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "detection_effort", nulls = Nulls.SKIP)
+    public _FinalStage detectionEffort(
+      Optional<CreateMultiRequestDetectionEffort> detectionEffort
+    ) {
+      this.detectionEffort = detectionEffort;
+      return this;
+    }
+
+    /**
+     * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage implementationGuide(String implementationGuide) {
+      this.implementationGuide = Optional.ofNullable(implementationGuide);
+      return this;
+    }
+
+    /**
+     * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
+    public _FinalStage implementationGuide(Optional<String> implementationGuide) {
+      this.implementationGuide = implementationGuide;
+      return this;
+    }
+
+    /**
+     * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage patientReference(PatientReference patientReference) {
+      this.patientReference = Optional.ofNullable(patientReference);
+      return this;
+    }
+
+    /**
+     * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "patient_reference", nulls = Nulls.SKIP)
+    public _FinalStage patientReference(Optional<PatientReference> patientReference) {
+      this.patientReference = patientReference;
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public _FinalStage primaryPatient(PrimaryPatient primaryPatient) {
+      this.primaryPatient = Optional.ofNullable(primaryPatient);
+      return this;
     }
 
-    public static TextStage builder() {
-        return new Builder();
+    @java.lang.Override
+    @JsonSetter(value = "primary_patient", nulls = Nulls.SKIP)
+    public _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient) {
+      this.primaryPatient = primaryPatient;
+      return this;
     }
 
-    public interface TextStage {
-        /**
-         * <p>Natural language text containing multiple clinical concepts to extract</p>
-         */
-        _FinalStage text(@NotNull String text);
-
-        Builder from(CreateMultiRequest other);
+    /**
+     * <p>Optional FHIR provider name for provider-specific profiles</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage provider(String provider) {
+      this.provider = Optional.ofNullable(provider);
+      return this;
     }
 
-    public interface _FinalStage {
-        CreateMultiRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>FHIR version to use</p>
-         */
-        _FinalStage version(Optional<String> version);
-
-        _FinalStage version(String version);
-
-        /**
-         * <p>Optional FHIR provider name for provider-specific profiles</p>
-         */
-        _FinalStage provider(Optional<String> provider);
-
-        _FinalStage provider(String provider);
-
-        _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient);
-
-        _FinalStage primaryPatient(PrimaryPatient primaryPatient);
-
-        /**
-         * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
-         */
-        _FinalStage patientReference(Optional<PatientReference> patientReference);
-
-        _FinalStage patientReference(PatientReference patientReference);
-
-        /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
-         */
-        _FinalStage implementationGuide(Optional<String> implementationGuide);
-
-        _FinalStage implementationGuide(String implementationGuide);
-
-        /**
-         * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
-         */
-        _FinalStage detectionEffort(Optional<CreateMultiRequestDetectionEffort> detectionEffort);
-
-        _FinalStage detectionEffort(CreateMultiRequestDetectionEffort detectionEffort);
-
-        /**
-         * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
-         */
-        _FinalStage validationMethod(Optional<CreateMultiRequestValidationMethod> validationMethod);
-
-        _FinalStage validationMethod(CreateMultiRequestValidationMethod validationMethod);
-
-        _FinalStage resourceReview(Optional<ResourceReview> resourceReview);
-
-        _FinalStage resourceReview(ResourceReview resourceReview);
+    /**
+     * <p>Optional FHIR provider name for provider-specific profiles</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "provider", nulls = Nulls.SKIP)
+    public _FinalStage provider(Optional<String> provider) {
+      this.provider = provider;
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements TextStage, _FinalStage {
-        private String text;
-
-        private Optional<ResourceReview> resourceReview = Optional.empty();
-
-        private Optional<CreateMultiRequestValidationMethod> validationMethod = Optional.empty();
-
-        private Optional<CreateMultiRequestDetectionEffort> detectionEffort = Optional.empty();
-
-        private Optional<String> implementationGuide = Optional.empty();
-
-        private Optional<PatientReference> patientReference = Optional.empty();
-
-        private Optional<PrimaryPatient> primaryPatient = Optional.empty();
-
-        private Optional<String> provider = Optional.empty();
-
-        private Optional<String> version = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(CreateMultiRequest other) {
-            text(other.getText());
-            version(other.getVersion());
-            provider(other.getProvider());
-            primaryPatient(other.getPrimaryPatient());
-            patientReference(other.getPatientReference());
-            implementationGuide(other.getImplementationGuide());
-            detectionEffort(other.getDetectionEffort());
-            validationMethod(other.getValidationMethod());
-            resourceReview(other.getResourceReview());
-            return this;
-        }
-
-        /**
-         * <p>Natural language text containing multiple clinical concepts to extract</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("text")
-        public _FinalStage text(@NotNull String text) {
-            this.text = Objects.requireNonNull(text, "text must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage resourceReview(ResourceReview resourceReview) {
-            this.resourceReview = Optional.ofNullable(resourceReview);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "resource_review", nulls = Nulls.SKIP)
-        public _FinalStage resourceReview(Optional<ResourceReview> resourceReview) {
-            this.resourceReview = resourceReview;
-            return this;
-        }
-
-        /**
-         * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage validationMethod(CreateMultiRequestValidationMethod validationMethod) {
-            this.validationMethod = Optional.ofNullable(validationMethod);
-            return this;
-        }
-
-        /**
-         * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "validation_method", nulls = Nulls.SKIP)
-        public _FinalStage validationMethod(Optional<CreateMultiRequestValidationMethod> validationMethod) {
-            this.validationMethod = validationMethod;
-            return this;
-        }
-
-        /**
-         * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage detectionEffort(CreateMultiRequestDetectionEffort detectionEffort) {
-            this.detectionEffort = Optional.ofNullable(detectionEffort);
-            return this;
-        }
-
-        /**
-         * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "detection_effort", nulls = Nulls.SKIP)
-        public _FinalStage detectionEffort(Optional<CreateMultiRequestDetectionEffort> detectionEffort) {
-            this.detectionEffort = detectionEffort;
-            return this;
-        }
-
-        /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage implementationGuide(String implementationGuide) {
-            this.implementationGuide = Optional.ofNullable(implementationGuide);
-            return this;
-        }
-
-        /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
-        public _FinalStage implementationGuide(Optional<String> implementationGuide) {
-            this.implementationGuide = implementationGuide;
-            return this;
-        }
-
-        /**
-         * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage patientReference(PatientReference patientReference) {
-            this.patientReference = Optional.ofNullable(patientReference);
-            return this;
-        }
-
-        /**
-         * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "patient_reference", nulls = Nulls.SKIP)
-        public _FinalStage patientReference(Optional<PatientReference> patientReference) {
-            this.patientReference = patientReference;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage primaryPatient(PrimaryPatient primaryPatient) {
-            this.primaryPatient = Optional.ofNullable(primaryPatient);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "primary_patient", nulls = Nulls.SKIP)
-        public _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient) {
-            this.primaryPatient = primaryPatient;
-            return this;
-        }
-
-        /**
-         * <p>Optional FHIR provider name for provider-specific profiles</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage provider(String provider) {
-            this.provider = Optional.ofNullable(provider);
-            return this;
-        }
-
-        /**
-         * <p>Optional FHIR provider name for provider-specific profiles</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "provider", nulls = Nulls.SKIP)
-        public _FinalStage provider(Optional<String> provider) {
-            this.provider = provider;
-            return this;
-        }
-
-        /**
-         * <p>FHIR version to use</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage version(String version) {
-            this.version = Optional.ofNullable(version);
-            return this;
-        }
-
-        /**
-         * <p>FHIR version to use</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "version", nulls = Nulls.SKIP)
-        public _FinalStage version(Optional<String> version) {
-            this.version = version;
-            return this;
-        }
-
-        @java.lang.Override
-        public CreateMultiRequest build() {
-            return new CreateMultiRequest(
-                    text,
-                    version,
-                    provider,
-                    primaryPatient,
-                    patientReference,
-                    implementationGuide,
-                    detectionEffort,
-                    validationMethod,
-                    resourceReview,
-                    additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    /**
+     * <p>FHIR version to use</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage version(String version) {
+      this.version = Optional.ofNullable(version);
+      return this;
     }
+
+    /**
+     * <p>FHIR version to use</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "version", nulls = Nulls.SKIP)
+    public _FinalStage version(Optional<String> version) {
+      this.version = version;
+      return this;
+    }
+
+    @java.lang.Override
+    public CreateMultiRequest build() {
+      return new CreateMultiRequest(
+        text,
+        version,
+        provider,
+        primaryPatient,
+        patientReference,
+        implementationGuide,
+        detectionEffort,
+        validationMethod,
+        resourceReview,
+        additionalProperties
+      );
+    }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("text") ||
+        key.equalsIgnoreCase("version") ||
+        key.equalsIgnoreCase("provider") ||
+        key.equalsIgnoreCase("primary_patient") ||
+        key.equalsIgnoreCase("patient_reference") ||
+        key.equalsIgnoreCase("implementation_guide") ||
+        key.equalsIgnoreCase("detection_effort") ||
+        key.equalsIgnoreCase("validation_method") ||
+        key.equalsIgnoreCase("resource_review")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

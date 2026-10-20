@@ -21,246 +21,281 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateMultiResponseResourcesItem.Builder.class)
 public final class CreateMultiResponseResourcesItem {
-    private final Optional<String> tempId;
 
-    private final Optional<String> resourceType;
+  private final Optional<String> tempId;
 
-    private final Optional<String> description;
+  private final Optional<String> resourceType;
 
-    private final Optional<String> originalText;
+  private final Optional<String> description;
 
-    private final Optional<String> group;
+  private final Optional<String> originalText;
 
-    private final Optional<List<Integer>> sourcePages;
+  private final Optional<String> group;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<Integer>> sourcePages;
 
-    private CreateMultiResponseResourcesItem(
-            Optional<String> tempId,
-            Optional<String> resourceType,
-            Optional<String> description,
-            Optional<String> originalText,
-            Optional<String> group,
-            Optional<List<Integer>> sourcePages,
-            Map<String, Object> additionalProperties) {
-        this.tempId = tempId;
-        this.resourceType = resourceType;
-        this.description = description;
-        this.originalText = originalText;
-        this.group = group;
-        this.sourcePages = sourcePages;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CreateMultiResponseResourcesItem(
+    Optional<String> tempId,
+    Optional<String> resourceType,
+    Optional<String> description,
+    Optional<String> originalText,
+    Optional<String> group,
+    Optional<List<Integer>> sourcePages,
+    Map<String, Object> additionalProperties
+  ) {
+    this.tempId = tempId;
+    this.resourceType = resourceType;
+    this.description = description;
+    this.originalText = originalText;
+    this.group = group;
+    this.sourcePages = sourcePages;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Temporary UUID for the resource
+   */
+  @JsonProperty("tempId")
+  public Optional<String> getTempId() {
+    return tempId;
+  }
+
+  /**
+   * @return FHIR resource type
+   */
+  @JsonProperty("resourceType")
+  public Optional<String> getResourceType() {
+    return resourceType;
+  }
+
+  /**
+   * @return Context-enriched rewritten text excerpt for this resource
+   */
+  @JsonProperty("description")
+  public Optional<String> getDescription() {
+    return description;
+  }
+
+  /**
+   * @return Verbatim text excerpt from the original clinical document
+   */
+  @JsonProperty("originalText")
+  public Optional<String> getOriginalText() {
+    return originalText;
+  }
+
+  /**
+   * @return Split classification id assigned to this resource by the /lang2fhir/document/multi endpoint. Omitted when the resource came only from ungrouped pages or raw-text create/multi.
+   */
+  @JsonProperty("group")
+  public Optional<String> getGroup() {
+    return group;
+  }
+
+  /**
+   * @return 1-indexed source document page number(s) this resource was extracted from. Populated only by the /lang2fhir/document/multi endpoint; omitted when the source page could not be determined (e.g. raw-text create/multi, or a resource with no verbatim source text).
+   */
+  @JsonProperty("sourcePages")
+  public Optional<List<Integer>> getSourcePages() {
+    return sourcePages;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof CreateMultiResponseResourcesItem &&
+      equalTo((CreateMultiResponseResourcesItem) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CreateMultiResponseResourcesItem other) {
+    return (
+      tempId.equals(other.tempId) &&
+      resourceType.equals(other.resourceType) &&
+      description.equals(other.description) &&
+      originalText.equals(other.originalText) &&
+      group.equals(other.group) &&
+      sourcePages.equals(other.sourcePages)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.tempId,
+      this.resourceType,
+      this.description,
+      this.originalText,
+      this.group,
+      this.sourcePages
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> tempId = Optional.empty();
+
+    private Optional<String> resourceType = Optional.empty();
+
+    private Optional<String> description = Optional.empty();
+
+    private Optional<String> originalText = Optional.empty();
+
+    private Optional<String> group = Optional.empty();
+
+    private Optional<List<Integer>> sourcePages = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(CreateMultiResponseResourcesItem other) {
+      tempId(other.getTempId());
+      resourceType(other.getResourceType());
+      description(other.getDescription());
+      originalText(other.getOriginalText());
+      group(other.getGroup());
+      sourcePages(other.getSourcePages());
+      return this;
     }
 
     /**
-     * @return Temporary UUID for the resource
+     * <p>Temporary UUID for the resource</p>
      */
-    @JsonProperty("tempId")
-    public Optional<String> getTempId() {
-        return tempId;
+    @JsonSetter(value = "tempId", nulls = Nulls.SKIP)
+    public Builder tempId(Optional<String> tempId) {
+      this.tempId = tempId;
+      return this;
+    }
+
+    public Builder tempId(String tempId) {
+      this.tempId = Optional.ofNullable(tempId);
+      return this;
     }
 
     /**
-     * @return FHIR resource type
+     * <p>FHIR resource type</p>
      */
-    @JsonProperty("resourceType")
-    public Optional<String> getResourceType() {
-        return resourceType;
+    @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
+    public Builder resourceType(Optional<String> resourceType) {
+      this.resourceType = resourceType;
+      return this;
+    }
+
+    public Builder resourceType(String resourceType) {
+      this.resourceType = Optional.ofNullable(resourceType);
+      return this;
     }
 
     /**
-     * @return Context-enriched rewritten text excerpt for this resource
+     * <p>Context-enriched rewritten text excerpt for this resource</p>
      */
-    @JsonProperty("description")
-    public Optional<String> getDescription() {
-        return description;
+    @JsonSetter(value = "description", nulls = Nulls.SKIP)
+    public Builder description(Optional<String> description) {
+      this.description = description;
+      return this;
+    }
+
+    public Builder description(String description) {
+      this.description = Optional.ofNullable(description);
+      return this;
     }
 
     /**
-     * @return Verbatim text excerpt from the original clinical document
+     * <p>Verbatim text excerpt from the original clinical document</p>
      */
-    @JsonProperty("originalText")
-    public Optional<String> getOriginalText() {
-        return originalText;
+    @JsonSetter(value = "originalText", nulls = Nulls.SKIP)
+    public Builder originalText(Optional<String> originalText) {
+      this.originalText = originalText;
+      return this;
+    }
+
+    public Builder originalText(String originalText) {
+      this.originalText = Optional.ofNullable(originalText);
+      return this;
     }
 
     /**
-     * @return Split classification id assigned to this resource by the /lang2fhir/document/multi endpoint. Omitted when the resource came only from ungrouped pages or raw-text create/multi.
+     * <p>Split classification id assigned to this resource by the /lang2fhir/document/multi endpoint. Omitted when the resource came only from ungrouped pages or raw-text create/multi.</p>
      */
-    @JsonProperty("group")
-    public Optional<String> getGroup() {
-        return group;
+    @JsonSetter(value = "group", nulls = Nulls.SKIP)
+    public Builder group(Optional<String> group) {
+      this.group = group;
+      return this;
+    }
+
+    public Builder group(String group) {
+      this.group = Optional.ofNullable(group);
+      return this;
     }
 
     /**
-     * @return 1-indexed source document page number(s) this resource was extracted from. Populated only by the /lang2fhir/document/multi endpoint; omitted when the source page could not be determined (e.g. raw-text create/multi, or a resource with no verbatim source text).
+     * <p>1-indexed source document page number(s) this resource was extracted from. Populated only by the /lang2fhir/document/multi endpoint; omitted when the source page could not be determined (e.g. raw-text create/multi, or a resource with no verbatim source text).</p>
      */
-    @JsonProperty("sourcePages")
-    public Optional<List<Integer>> getSourcePages() {
-        return sourcePages;
+    @JsonSetter(value = "sourcePages", nulls = Nulls.SKIP)
+    public Builder sourcePages(Optional<List<Integer>> sourcePages) {
+      this.sourcePages = sourcePages;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CreateMultiResponseResourcesItem && equalTo((CreateMultiResponseResourcesItem) other);
+    public Builder sourcePages(List<Integer> sourcePages) {
+      this.sourcePages = Optional.ofNullable(sourcePages);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public CreateMultiResponseResourcesItem build() {
+      return new CreateMultiResponseResourcesItem(
+        tempId,
+        resourceType,
+        description,
+        originalText,
+        group,
+        sourcePages,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(CreateMultiResponseResourcesItem other) {
-        return tempId.equals(other.tempId)
-                && resourceType.equals(other.resourceType)
-                && description.equals(other.description)
-                && originalText.equals(other.originalText)
-                && group.equals(other.group)
-                && sourcePages.equals(other.sourcePages);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("tempId") ||
+        key.equalsIgnoreCase("resourceType") ||
+        key.equalsIgnoreCase("description") ||
+        key.equalsIgnoreCase("originalText") ||
+        key.equalsIgnoreCase("group") ||
+        key.equalsIgnoreCase("sourcePages")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.tempId, this.resourceType, this.description, this.originalText, this.group, this.sourcePages);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> tempId = Optional.empty();
-
-        private Optional<String> resourceType = Optional.empty();
-
-        private Optional<String> description = Optional.empty();
-
-        private Optional<String> originalText = Optional.empty();
-
-        private Optional<String> group = Optional.empty();
-
-        private Optional<List<Integer>> sourcePages = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(CreateMultiResponseResourcesItem other) {
-            tempId(other.getTempId());
-            resourceType(other.getResourceType());
-            description(other.getDescription());
-            originalText(other.getOriginalText());
-            group(other.getGroup());
-            sourcePages(other.getSourcePages());
-            return this;
-        }
-
-        /**
-         * <p>Temporary UUID for the resource</p>
-         */
-        @JsonSetter(value = "tempId", nulls = Nulls.SKIP)
-        public Builder tempId(Optional<String> tempId) {
-            this.tempId = tempId;
-            return this;
-        }
-
-        public Builder tempId(String tempId) {
-            this.tempId = Optional.ofNullable(tempId);
-            return this;
-        }
-
-        /**
-         * <p>FHIR resource type</p>
-         */
-        @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
-        public Builder resourceType(Optional<String> resourceType) {
-            this.resourceType = resourceType;
-            return this;
-        }
-
-        public Builder resourceType(String resourceType) {
-            this.resourceType = Optional.ofNullable(resourceType);
-            return this;
-        }
-
-        /**
-         * <p>Context-enriched rewritten text excerpt for this resource</p>
-         */
-        @JsonSetter(value = "description", nulls = Nulls.SKIP)
-        public Builder description(Optional<String> description) {
-            this.description = description;
-            return this;
-        }
-
-        public Builder description(String description) {
-            this.description = Optional.ofNullable(description);
-            return this;
-        }
-
-        /**
-         * <p>Verbatim text excerpt from the original clinical document</p>
-         */
-        @JsonSetter(value = "originalText", nulls = Nulls.SKIP)
-        public Builder originalText(Optional<String> originalText) {
-            this.originalText = originalText;
-            return this;
-        }
-
-        public Builder originalText(String originalText) {
-            this.originalText = Optional.ofNullable(originalText);
-            return this;
-        }
-
-        /**
-         * <p>Split classification id assigned to this resource by the /lang2fhir/document/multi endpoint. Omitted when the resource came only from ungrouped pages or raw-text create/multi.</p>
-         */
-        @JsonSetter(value = "group", nulls = Nulls.SKIP)
-        public Builder group(Optional<String> group) {
-            this.group = group;
-            return this;
-        }
-
-        public Builder group(String group) {
-            this.group = Optional.ofNullable(group);
-            return this;
-        }
-
-        /**
-         * <p>1-indexed source document page number(s) this resource was extracted from. Populated only by the /lang2fhir/document/multi endpoint; omitted when the source page could not be determined (e.g. raw-text create/multi, or a resource with no verbatim source text).</p>
-         */
-        @JsonSetter(value = "sourcePages", nulls = Nulls.SKIP)
-        public Builder sourcePages(Optional<List<Integer>> sourcePages) {
-            this.sourcePages = sourcePages;
-            return this;
-        }
-
-        public Builder sourcePages(List<Integer> sourcePages) {
-            this.sourcePages = Optional.ofNullable(sourcePages);
-            return this;
-        }
-
-        public CreateMultiResponseResourcesItem build() {
-            return new CreateMultiResponseResourcesItem(
-                    tempId, resourceType, description, originalText, group, sourcePages, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -21,102 +21,114 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ResourceReview.Builder.class)
 public final class ResourceReview {
-    private final List<ResourceReviewTarget> targets;
 
-    private final Map<String, Object> additionalProperties;
+  private final List<ResourceReviewTarget> targets;
 
-    private ResourceReview(List<ResourceReviewTarget> targets, Map<String, Object> additionalProperties) {
-        this.targets = targets;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ResourceReview(
+    List<ResourceReviewTarget> targets,
+    Map<String, Object> additionalProperties
+  ) {
+    this.targets = targets;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return The resource types to audit and which date or clinical code field kinds to check.
+   */
+  @JsonProperty("targets")
+  public List<ResourceReviewTarget> getTargets() {
+    return targets;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ResourceReview && equalTo((ResourceReview) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ResourceReview other) {
+    return targets.equals(other.targets);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.targets);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private List<ResourceReviewTarget> targets = new ArrayList<>();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ResourceReview other) {
+      targets(other.getTargets());
+      return this;
     }
 
     /**
-     * @return The resource types to audit and which date or clinical code field kinds to check.
+     * <p>The resource types to audit and which date or clinical code field kinds to check.</p>
      */
-    @JsonProperty("targets")
-    public List<ResourceReviewTarget> getTargets() {
-        return targets;
+    @JsonSetter(value = "targets", nulls = Nulls.SKIP)
+    public Builder targets(List<ResourceReviewTarget> targets) {
+      this.targets.clear();
+      if (targets != null) {
+        this.targets.addAll(targets);
+      }
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ResourceReview && equalTo((ResourceReview) other);
+    public Builder addTargets(ResourceReviewTarget targets) {
+      this.targets.add(targets);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder addAllTargets(List<ResourceReviewTarget> targets) {
+      if (targets != null) {
+        this.targets.addAll(targets);
+      }
+      return this;
     }
 
-    private boolean equalTo(ResourceReview other) {
-        return targets.equals(other.targets);
+    public ResourceReview build() {
+      return new ResourceReview(targets, additionalProperties);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.targets);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("targets")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private List<ResourceReviewTarget> targets = new ArrayList<>();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ResourceReview other) {
-            targets(other.getTargets());
-            return this;
-        }
-
-        /**
-         * <p>The resource types to audit and which date or clinical code field kinds to check.</p>
-         */
-        @JsonSetter(value = "targets", nulls = Nulls.SKIP)
-        public Builder targets(List<ResourceReviewTarget> targets) {
-            this.targets.clear();
-            if (targets != null) {
-                this.targets.addAll(targets);
-            }
-            return this;
-        }
-
-        public Builder addTargets(ResourceReviewTarget targets) {
-            this.targets.add(targets);
-            return this;
-        }
-
-        public Builder addAllTargets(List<ResourceReviewTarget> targets) {
-            if (targets != null) {
-                this.targets.addAll(targets);
-            }
-            return this;
-        }
-
-        public ResourceReview build() {
-            return new ResourceReview(targets, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

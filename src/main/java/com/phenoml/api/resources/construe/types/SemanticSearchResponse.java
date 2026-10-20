@@ -22,159 +22,171 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = SemanticSearchResponse.Builder.class)
 public final class SemanticSearchResponse {
-    private final CodeSystemInfo system;
 
-    private final List<SemanticSearchResult> results;
+  private final CodeSystemInfo system;
 
-    private final Map<String, Object> additionalProperties;
+  private final List<SemanticSearchResult> results;
 
-    private SemanticSearchResponse(
-            CodeSystemInfo system, List<SemanticSearchResult> results, Map<String, Object> additionalProperties) {
-        this.system = system;
-        this.results = results;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private SemanticSearchResponse(
+    CodeSystemInfo system,
+    List<SemanticSearchResult> results,
+    Map<String, Object> additionalProperties
+  ) {
+    this.system = system;
+    this.results = results;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("system")
+  public CodeSystemInfo getSystem() {
+    return system;
+  }
+
+  /**
+   * @return Codes ordered by semantic similarity (most similar first)
+   */
+  @JsonProperty("results")
+  public List<SemanticSearchResult> getResults() {
+    return results;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof SemanticSearchResponse && equalTo((SemanticSearchResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(SemanticSearchResponse other) {
+    return system.equals(other.system) && results.equals(other.results);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.system, this.results);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static SystemStage builder() {
+    return new Builder();
+  }
+
+  public interface SystemStage {
+    _FinalStage system(@NotNull CodeSystemInfo system);
+
+    Builder from(SemanticSearchResponse other);
+  }
+
+  public interface _FinalStage {
+    SemanticSearchResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Codes ordered by semantic similarity (most similar first)</p>
+     */
+    _FinalStage results(List<SemanticSearchResult> results);
+
+    _FinalStage addResults(SemanticSearchResult results);
+
+    _FinalStage addAllResults(List<SemanticSearchResult> results);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements SystemStage, _FinalStage {
+
+    private CodeSystemInfo system;
+
+    private List<SemanticSearchResult> results = new ArrayList<>();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(SemanticSearchResponse other) {
+      system(other.getSystem());
+      results(other.getResults());
+      return this;
     }
 
-    @JsonProperty("system")
-    public CodeSystemInfo getSystem() {
-        return system;
+    @java.lang.Override
+    @JsonSetter("system")
+    public _FinalStage system(@NotNull CodeSystemInfo system) {
+      this.system = Objects.requireNonNull(system, "system must not be null");
+      return this;
     }
 
     /**
-     * @return Codes ordered by semantic similarity (most similar first)
+     * <p>Codes ordered by semantic similarity (most similar first)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("results")
-    public List<SemanticSearchResult> getResults() {
-        return results;
+    @java.lang.Override
+    public _FinalStage addAllResults(List<SemanticSearchResult> results) {
+      if (results != null) {
+        this.results.addAll(results);
+      }
+      return this;
+    }
+
+    /**
+     * <p>Codes ordered by semantic similarity (most similar first)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage addResults(SemanticSearchResult results) {
+      this.results.add(results);
+      return this;
+    }
+
+    /**
+     * <p>Codes ordered by semantic similarity (most similar first)</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "results", nulls = Nulls.SKIP)
+    public _FinalStage results(List<SemanticSearchResult> results) {
+      this.results.clear();
+      if (results != null) {
+        this.results.addAll(results);
+      }
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof SemanticSearchResponse && equalTo((SemanticSearchResponse) other);
+    public SemanticSearchResponse build() {
+      return new SemanticSearchResponse(system, results, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(SemanticSearchResponse other) {
-        return system.equals(other.system) && results.equals(other.results);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.system, this.results);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("system") || key.equalsIgnoreCase("results")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static SystemStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface SystemStage {
-        _FinalStage system(@NotNull CodeSystemInfo system);
-
-        Builder from(SemanticSearchResponse other);
-    }
-
-    public interface _FinalStage {
-        SemanticSearchResponse build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Codes ordered by semantic similarity (most similar first)</p>
-         */
-        _FinalStage results(List<SemanticSearchResult> results);
-
-        _FinalStage addResults(SemanticSearchResult results);
-
-        _FinalStage addAllResults(List<SemanticSearchResult> results);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements SystemStage, _FinalStage {
-        private CodeSystemInfo system;
-
-        private List<SemanticSearchResult> results = new ArrayList<>();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(SemanticSearchResponse other) {
-            system(other.getSystem());
-            results(other.getResults());
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("system")
-        public _FinalStage system(@NotNull CodeSystemInfo system) {
-            this.system = Objects.requireNonNull(system, "system must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Codes ordered by semantic similarity (most similar first)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addAllResults(List<SemanticSearchResult> results) {
-            if (results != null) {
-                this.results.addAll(results);
-            }
-            return this;
-        }
-
-        /**
-         * <p>Codes ordered by semantic similarity (most similar first)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addResults(SemanticSearchResult results) {
-            this.results.add(results);
-            return this;
-        }
-
-        /**
-         * <p>Codes ordered by semantic similarity (most similar first)</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "results", nulls = Nulls.SKIP)
-        public _FinalStage results(List<SemanticSearchResult> results) {
-            this.results.clear();
-            if (results != null) {
-                this.results.addAll(results);
-            }
-            return this;
-        }
-
-        @java.lang.Override
-        public SemanticSearchResponse build() {
-            return new SemanticSearchResponse(system, results, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

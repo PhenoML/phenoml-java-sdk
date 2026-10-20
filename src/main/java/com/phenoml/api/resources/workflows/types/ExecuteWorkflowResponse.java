@@ -20,178 +20,195 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ExecuteWorkflowResponse.Builder.class)
 public final class ExecuteWorkflowResponse {
-    private final Optional<Boolean> success;
 
-    private final Optional<String> message;
+  private final Optional<Boolean> success;
 
-    private final Optional<ExecuteWorkflowResponseResults> results;
+  private final Optional<String> message;
 
-    private final Optional<Boolean> preview;
+  private final Optional<ExecuteWorkflowResponseResults> results;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Boolean> preview;
 
-    private ExecuteWorkflowResponse(
-            Optional<Boolean> success,
-            Optional<String> message,
-            Optional<ExecuteWorkflowResponseResults> results,
-            Optional<Boolean> preview,
-            Map<String, Object> additionalProperties) {
-        this.success = success;
-        this.message = message;
-        this.results = results;
-        this.preview = preview;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ExecuteWorkflowResponse(
+    Optional<Boolean> success,
+    Optional<String> message,
+    Optional<ExecuteWorkflowResponseResults> results,
+    Optional<Boolean> preview,
+    Map<String, Object> additionalProperties
+  ) {
+    this.success = success;
+    this.message = message;
+    this.results = results;
+    this.preview = preview;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Whether the workflow execution was successful
+   */
+  @JsonProperty("success")
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  /**
+   * @return Status message with execution details
+   */
+  @JsonProperty("message")
+  public Optional<String> getMessage() {
+    return message;
+  }
+
+  @JsonProperty("results")
+  public Optional<ExecuteWorkflowResponseResults> getResults() {
+    return results;
+  }
+
+  /**
+   * @return Whether the workflow was executed in preview mode
+   */
+  @JsonProperty("preview")
+  public Optional<Boolean> getPreview() {
+    return preview;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ExecuteWorkflowResponse && equalTo((ExecuteWorkflowResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ExecuteWorkflowResponse other) {
+    return (
+      success.equals(other.success) &&
+      message.equals(other.message) &&
+      results.equals(other.results) &&
+      preview.equals(other.preview)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.success, this.message, this.results, this.preview);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<String> message = Optional.empty();
+
+    private Optional<ExecuteWorkflowResponseResults> results = Optional.empty();
+
+    private Optional<Boolean> preview = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ExecuteWorkflowResponse other) {
+      success(other.getSuccess());
+      message(other.getMessage());
+      results(other.getResults());
+      preview(other.getPreview());
+      return this;
     }
 
     /**
-     * @return Whether the workflow execution was successful
+     * <p>Whether the workflow execution was successful</p>
      */
-    @JsonProperty("success")
-    public Optional<Boolean> getSuccess() {
-        return success;
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
+    }
+
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
     }
 
     /**
-     * @return Status message with execution details
+     * <p>Status message with execution details</p>
      */
-    @JsonProperty("message")
-    public Optional<String> getMessage() {
-        return message;
+    @JsonSetter(value = "message", nulls = Nulls.SKIP)
+    public Builder message(Optional<String> message) {
+      this.message = message;
+      return this;
     }
 
-    @JsonProperty("results")
-    public Optional<ExecuteWorkflowResponseResults> getResults() {
-        return results;
+    public Builder message(String message) {
+      this.message = Optional.ofNullable(message);
+      return this;
+    }
+
+    @JsonSetter(value = "results", nulls = Nulls.SKIP)
+    public Builder results(Optional<ExecuteWorkflowResponseResults> results) {
+      this.results = results;
+      return this;
+    }
+
+    public Builder results(ExecuteWorkflowResponseResults results) {
+      this.results = Optional.ofNullable(results);
+      return this;
     }
 
     /**
-     * @return Whether the workflow was executed in preview mode
+     * <p>Whether the workflow was executed in preview mode</p>
      */
-    @JsonProperty("preview")
-    public Optional<Boolean> getPreview() {
-        return preview;
+    @JsonSetter(value = "preview", nulls = Nulls.SKIP)
+    public Builder preview(Optional<Boolean> preview) {
+      this.preview = preview;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ExecuteWorkflowResponse && equalTo((ExecuteWorkflowResponse) other);
+    public Builder preview(Boolean preview) {
+      this.preview = Optional.ofNullable(preview);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ExecuteWorkflowResponse build() {
+      return new ExecuteWorkflowResponse(success, message, results, preview, additionalProperties);
     }
 
-    private boolean equalTo(ExecuteWorkflowResponse other) {
-        return success.equals(other.success)
-                && message.equals(other.message)
-                && results.equals(other.results)
-                && preview.equals(other.preview);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("success") ||
+        key.equalsIgnoreCase("message") ||
+        key.equalsIgnoreCase("results") ||
+        key.equalsIgnoreCase("preview")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.success, this.message, this.results, this.preview);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<String> message = Optional.empty();
-
-        private Optional<ExecuteWorkflowResponseResults> results = Optional.empty();
-
-        private Optional<Boolean> preview = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ExecuteWorkflowResponse other) {
-            success(other.getSuccess());
-            message(other.getMessage());
-            results(other.getResults());
-            preview(other.getPreview());
-            return this;
-        }
-
-        /**
-         * <p>Whether the workflow execution was successful</p>
-         */
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        /**
-         * <p>Status message with execution details</p>
-         */
-        @JsonSetter(value = "message", nulls = Nulls.SKIP)
-        public Builder message(Optional<String> message) {
-            this.message = message;
-            return this;
-        }
-
-        public Builder message(String message) {
-            this.message = Optional.ofNullable(message);
-            return this;
-        }
-
-        @JsonSetter(value = "results", nulls = Nulls.SKIP)
-        public Builder results(Optional<ExecuteWorkflowResponseResults> results) {
-            this.results = results;
-            return this;
-        }
-
-        public Builder results(ExecuteWorkflowResponseResults results) {
-            this.results = Optional.ofNullable(results);
-            return this;
-        }
-
-        /**
-         * <p>Whether the workflow was executed in preview mode</p>
-         */
-        @JsonSetter(value = "preview", nulls = Nulls.SKIP)
-        public Builder preview(Optional<Boolean> preview) {
-            this.preview = preview;
-            return this;
-        }
-
-        public Builder preview(Boolean preview) {
-            this.preview = Optional.ofNullable(preview);
-            return this;
-        }
-
-        public ExecuteWorkflowResponse build() {
-            return new ExecuteWorkflowResponse(success, message, results, preview, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

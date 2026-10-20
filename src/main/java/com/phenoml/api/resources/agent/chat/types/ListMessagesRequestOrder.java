@@ -7,78 +7,84 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class ListMessagesRequestOrder {
-    public static final ListMessagesRequestOrder ASC = new ListMessagesRequestOrder(Value.ASC, "asc");
 
-    public static final ListMessagesRequestOrder DESC = new ListMessagesRequestOrder(Value.DESC, "desc");
+  public static final ListMessagesRequestOrder ASC = new ListMessagesRequestOrder(Value.ASC, "asc");
 
-    private final Value value;
+  public static final ListMessagesRequestOrder DESC = new ListMessagesRequestOrder(
+    Value.DESC,
+    "desc"
+  );
 
-    private final String string;
+  private final Value value;
 
-    ListMessagesRequestOrder(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  ListMessagesRequestOrder(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof ListMessagesRequestOrder &&
+        this.string.equals(((ListMessagesRequestOrder) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case ASC:
+        return visitor.visitAsc();
+      case DESC:
+        return visitor.visitDesc();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static ListMessagesRequestOrder valueOf(String value) {
+    switch (value) {
+      case "asc":
+        return ASC;
+      case "desc":
+        return DESC;
+      default:
+        return new ListMessagesRequestOrder(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    ASC,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof ListMessagesRequestOrder
-                        && this.string.equals(((ListMessagesRequestOrder) other).string));
-    }
+    DESC,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    UNKNOWN,
+  }
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case ASC:
-                return visitor.visitAsc();
-            case DESC:
-                return visitor.visitDesc();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+  public interface Visitor<T> {
+    T visitAsc();
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static ListMessagesRequestOrder valueOf(String value) {
-        switch (value) {
-            case "asc":
-                return ASC;
-            case "desc":
-                return DESC;
-            default:
-                return new ListMessagesRequestOrder(Value.UNKNOWN, value);
-        }
-    }
+    T visitDesc();
 
-    public enum Value {
-        ASC,
-
-        DESC,
-
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitAsc();
-
-        T visitDesc();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

@@ -20,160 +20,186 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateSummaryTemplateResponse.Builder.class)
 public final class CreateSummaryTemplateResponse {
-    private final Optional<Boolean> success;
 
-    private final Optional<String> message;
+  private final Optional<Boolean> success;
 
-    private final Optional<String> templateId;
+  private final Optional<String> message;
 
-    private final Optional<SummaryTemplate> template;
+  private final Optional<String> templateId;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<SummaryTemplate> template;
 
-    private CreateSummaryTemplateResponse(
-            Optional<Boolean> success,
-            Optional<String> message,
-            Optional<String> templateId,
-            Optional<SummaryTemplate> template,
-            Map<String, Object> additionalProperties) {
-        this.success = success;
-        this.message = message;
-        this.templateId = templateId;
-        this.template = template;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CreateSummaryTemplateResponse(
+    Optional<Boolean> success,
+    Optional<String> message,
+    Optional<String> templateId,
+    Optional<SummaryTemplate> template,
+    Map<String, Object> additionalProperties
+  ) {
+    this.success = success;
+    this.message = message;
+    this.templateId = templateId;
+    this.template = template;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("success")
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  @JsonProperty("message")
+  public Optional<String> getMessage() {
+    return message;
+  }
+
+  @JsonProperty("template_id")
+  public Optional<String> getTemplateId() {
+    return templateId;
+  }
+
+  @JsonProperty("template")
+  public Optional<SummaryTemplate> getTemplate() {
+    return template;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof CreateSummaryTemplateResponse &&
+      equalTo((CreateSummaryTemplateResponse) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CreateSummaryTemplateResponse other) {
+    return (
+      success.equals(other.success) &&
+      message.equals(other.message) &&
+      templateId.equals(other.templateId) &&
+      template.equals(other.template)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.success, this.message, this.templateId, this.template);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<String> message = Optional.empty();
+
+    private Optional<String> templateId = Optional.empty();
+
+    private Optional<SummaryTemplate> template = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(CreateSummaryTemplateResponse other) {
+      success(other.getSuccess());
+      message(other.getMessage());
+      templateId(other.getTemplateId());
+      template(other.getTemplate());
+      return this;
     }
 
-    @JsonProperty("success")
-    public Optional<Boolean> getSuccess() {
-        return success;
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
     }
 
-    @JsonProperty("message")
-    public Optional<String> getMessage() {
-        return message;
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
     }
 
-    @JsonProperty("template_id")
-    public Optional<String> getTemplateId() {
-        return templateId;
+    @JsonSetter(value = "message", nulls = Nulls.SKIP)
+    public Builder message(Optional<String> message) {
+      this.message = message;
+      return this;
     }
 
-    @JsonProperty("template")
-    public Optional<SummaryTemplate> getTemplate() {
-        return template;
+    public Builder message(String message) {
+      this.message = Optional.ofNullable(message);
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CreateSummaryTemplateResponse && equalTo((CreateSummaryTemplateResponse) other);
+    @JsonSetter(value = "template_id", nulls = Nulls.SKIP)
+    public Builder templateId(Optional<String> templateId) {
+      this.templateId = templateId;
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder templateId(String templateId) {
+      this.templateId = Optional.ofNullable(templateId);
+      return this;
     }
 
-    private boolean equalTo(CreateSummaryTemplateResponse other) {
-        return success.equals(other.success)
-                && message.equals(other.message)
-                && templateId.equals(other.templateId)
-                && template.equals(other.template);
+    @JsonSetter(value = "template", nulls = Nulls.SKIP)
+    public Builder template(Optional<SummaryTemplate> template) {
+      this.template = template;
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.success, this.message, this.templateId, this.template);
+    public Builder template(SummaryTemplate template) {
+      this.template = Optional.ofNullable(template);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public CreateSummaryTemplateResponse build() {
+      return new CreateSummaryTemplateResponse(
+        success,
+        message,
+        templateId,
+        template,
+        additionalProperties
+      );
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("success") ||
+        key.equalsIgnoreCase("message") ||
+        key.equalsIgnoreCase("template_id") ||
+        key.equalsIgnoreCase("template")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<String> message = Optional.empty();
-
-        private Optional<String> templateId = Optional.empty();
-
-        private Optional<SummaryTemplate> template = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(CreateSummaryTemplateResponse other) {
-            success(other.getSuccess());
-            message(other.getMessage());
-            templateId(other.getTemplateId());
-            template(other.getTemplate());
-            return this;
-        }
-
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        @JsonSetter(value = "message", nulls = Nulls.SKIP)
-        public Builder message(Optional<String> message) {
-            this.message = message;
-            return this;
-        }
-
-        public Builder message(String message) {
-            this.message = Optional.ofNullable(message);
-            return this;
-        }
-
-        @JsonSetter(value = "template_id", nulls = Nulls.SKIP)
-        public Builder templateId(Optional<String> templateId) {
-            this.templateId = templateId;
-            return this;
-        }
-
-        public Builder templateId(String templateId) {
-            this.templateId = Optional.ofNullable(templateId);
-            return this;
-        }
-
-        @JsonSetter(value = "template", nulls = Nulls.SKIP)
-        public Builder template(Optional<SummaryTemplate> template) {
-            this.template = template;
-            return this;
-        }
-
-        public Builder template(SummaryTemplate template) {
-            this.template = Optional.ofNullable(template);
-            return this;
-        }
-
-        public CreateSummaryTemplateResponse build() {
-            return new CreateSummaryTemplateResponse(success, message, templateId, template, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.profiles.profiles;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
@@ -34,499 +35,617 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class RawProfilesClient {
-    protected final ClientOptions clientOptions;
 
-    public RawProfilesClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-    }
+  protected final ClientOptions clientOptions;
 
-    /**
-     * Returns metadata for every custom (uploaded) FHIR profile on this
-     * instance, across all implementation guides. The full StructureDefinition
-     * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
-     * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
-     * stable key other platform features use to reference a profile (FHIR's
-     * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
-     * unique within a package. An unpinned <code>url</code> filter returns metadata for
-     * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
-     * resolve a retained version when present; otherwise they can fall back to
-     * the profile's current StructureDefinition, whose content can change
-     * through the profile update endpoint. A non-matching filter returns an
-     * empty list, not a 404.</p>
-     */
-    public PhenomlClientHttpResponse<ProfileListResponse> list() {
-        return list(ListRequest.builder().build());
-    }
+  public RawProfilesClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+  }
 
-    /**
-     * Returns metadata for every custom (uploaded) FHIR profile on this
-     * instance, across all implementation guides. The full StructureDefinition
-     * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
-     * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
-     * stable key other platform features use to reference a profile (FHIR's
-     * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
-     * unique within a package. An unpinned <code>url</code> filter returns metadata for
-     * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
-     * resolve a retained version when present; otherwise they can fall back to
-     * the profile's current StructureDefinition, whose content can change
-     * through the profile update endpoint. A non-matching filter returns an
-     * empty list, not a 404.</p>
-     */
-    public PhenomlClientHttpResponse<ProfileListResponse> list(RequestOptions requestOptions) {
-        return list(ListRequest.builder().build(), requestOptions);
-    }
+  /**
+   * Returns metadata for every custom (uploaded) FHIR profile on this
+   * instance, across all implementation guides. The full StructureDefinition
+   * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
+   * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
+   * stable key other platform features use to reference a profile (FHIR's
+   * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
+   * unique within a package. An unpinned <code>url</code> filter returns metadata for
+   * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
+   * resolve a retained version when present; otherwise they can fall back to
+   * the profile's current StructureDefinition, whose content can change
+   * through the profile update endpoint. A non-matching filter returns an
+   * empty list, not a 404.</p>
+   */
+  public PhenomlClientHttpResponse<ProfileListResponse> list() {
+    return list(ListRequest.builder().build());
+  }
 
-    /**
-     * Returns metadata for every custom (uploaded) FHIR profile on this
-     * instance, across all implementation guides. The full StructureDefinition
-     * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
-     * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
-     * stable key other platform features use to reference a profile (FHIR's
-     * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
-     * unique within a package. An unpinned <code>url</code> filter returns metadata for
-     * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
-     * resolve a retained version when present; otherwise they can fall back to
-     * the profile's current StructureDefinition, whose content can change
-     * through the profile update endpoint. A non-matching filter returns an
-     * empty list, not a 404.</p>
-     */
-    public PhenomlClientHttpResponse<ProfileListResponse> list(ListRequest request) {
-        return list(request, null);
-    }
+  /**
+   * Returns metadata for every custom (uploaded) FHIR profile on this
+   * instance, across all implementation guides. The full StructureDefinition
+   * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
+   * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
+   * stable key other platform features use to reference a profile (FHIR's
+   * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
+   * unique within a package. An unpinned <code>url</code> filter returns metadata for
+   * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
+   * resolve a retained version when present; otherwise they can fall back to
+   * the profile's current StructureDefinition, whose content can change
+   * through the profile update endpoint. A non-matching filter returns an
+   * empty list, not a 404.</p>
+   */
+  public PhenomlClientHttpResponse<ProfileListResponse> list(RequestOptions requestOptions) {
+    return list(ListRequest.builder().build(), requestOptions);
+  }
 
-    /**
-     * Returns metadata for every custom (uploaded) FHIR profile on this
-     * instance, across all implementation guides. The full StructureDefinition
-     * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
-     * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
-     * stable key other platform features use to reference a profile (FHIR's
-     * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
-     * unique within a package. An unpinned <code>url</code> filter returns metadata for
-     * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
-     * resolve a retained version when present; otherwise they can fall back to
-     * the profile's current StructureDefinition, whose content can change
-     * through the profile update endpoint. A non-matching filter returns an
-     * empty list, not a 404.</p>
-     */
-    public PhenomlClientHttpResponse<ProfileListResponse> list(ListRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir/profiles");
-        if (request.getUrl().isPresent()) {
-            QueryStringMapper.addQueryParameter(httpUrl, "url", request.getUrl().get(), false);
-        }
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("GET", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ProfileListResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Returns metadata for every custom (uploaded) FHIR profile on this
+   * instance, across all implementation guides. The full StructureDefinition
+   * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
+   * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
+   * stable key other platform features use to reference a profile (FHIR's
+   * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
+   * unique within a package. An unpinned <code>url</code> filter returns metadata for
+   * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
+   * resolve a retained version when present; otherwise they can fall back to
+   * the profile's current StructureDefinition, whose content can change
+   * through the profile update endpoint. A non-matching filter returns an
+   * empty list, not a 404.</p>
+   */
+  public PhenomlClientHttpResponse<ProfileListResponse> list(ListRequest request) {
+    return list(request, null);
+  }
 
-    /**
-     * Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
-     * object. Metadata such as version, resource type, and url is read from the
-     * StructureDefinition; the lowercase StructureDefinition id becomes the
-     * profile's lookup key. When id is omitted, a random UUID is assigned.
-     * Optionally group the profile under a named implementation guide.
-     */
-    public PhenomlClientHttpResponse<ProfileSummary> create(ProfileUploadRequest request) {
-        return create(request, null);
+  /**
+   * Returns metadata for every custom (uploaded) FHIR profile on this
+   * instance, across all implementation guides. The full StructureDefinition
+   * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
+   * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
+   * stable key other platform features use to reference a profile (FHIR's
+   * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
+   * unique within a package. An unpinned <code>url</code> filter returns metadata for
+   * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
+   * resolve a retained version when present; otherwise they can fall back to
+   * the profile's current StructureDefinition, whose content can change
+   * through the profile update endpoint. A non-matching filter returns an
+   * empty list, not a 404.</p>
+   */
+  public PhenomlClientHttpResponse<ProfileListResponse> list(
+    ListRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir/profiles");
+    if (request.getUrl().isPresent()) {
+      QueryStringMapper.addQueryParameter(httpUrl, "url", request.getUrl().get(), false);
     }
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
+    }
+    Request.Builder _requestBuilder = new Request.Builder()
+      .url(httpUrl.build())
+      .method("GET", null)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json");
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ProfileListResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 403:
+            throw new ForbiddenError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
-     * object. Metadata such as version, resource type, and url is read from the
-     * StructureDefinition; the lowercase StructureDefinition id becomes the
-     * profile's lookup key. When id is omitted, a random UUID is assigned.
-     * Optionally group the profile under a named implementation guide.
-     */
-    public PhenomlClientHttpResponse<ProfileSummary> create(
-            ProfileUploadRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir/profiles");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ProfileSummary.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
+   * object. Metadata such as version, resource type, and url is read from the
+   * StructureDefinition; the lowercase StructureDefinition id becomes the
+   * profile's lookup key. When id is omitted, a random UUID is assigned.
+   * Optionally group the profile under a named implementation guide.
+   */
+  public PhenomlClientHttpResponse<ProfileSummary> create(ProfileUploadRequest request) {
+    return create(request, null);
+  }
 
-    /**
-     * Returns a single custom profile by id, including its full StructureDefinition
-     * JSON.
-     */
-    public PhenomlClientHttpResponse<ProfileGetResponse> get(String id) {
-        return get(id, null);
+  /**
+   * Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
+   * object. Metadata such as version, resource type, and url is read from the
+   * StructureDefinition; the lowercase StructureDefinition id becomes the
+   * profile's lookup key. When id is omitted, a random UUID is assigned.
+   * Optionally group the profile under a named implementation guide.
+   */
+  public PhenomlClientHttpResponse<ProfileSummary> create(
+    ProfileUploadRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir/profiles");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("POST", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ProfileSummary.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 403:
+            throw new ForbiddenError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Returns a single custom profile by id, including its full StructureDefinition
-     * JSON.
-     */
-    public PhenomlClientHttpResponse<ProfileGetResponse> get(String id, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir/profiles")
-                .addPathSegment(id);
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("GET", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ProfileGetResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Returns a single custom profile by id, including its full StructureDefinition
+   * JSON.
+   */
+  public PhenomlClientHttpResponse<ProfileGetResponse> get(String id) {
+    return get(id, null);
+  }
 
-    /**
-     * Replaces an existing custom profile with a new StructureDefinition. The
-     * <code>id</code> path parameter is authoritative: if the StructureDefinition includes
-     * an <code>id</code> it must match the path parameter, and if it omits one the path
-     * parameter is used. The FHIR resource type of the profile cannot change.
-     * When <code>implementation_guide</code> is omitted, the profile keeps its existing
-     * implementation guide. A retained version string is allowed only when
-     * re-submitting the profile's current version with an unchanged
-     * StructureDefinition; otherwise it returns a conflict. While the profile
-     * has retained versions, its
-     * canonical URL cannot be changed.
-     */
-    public PhenomlClientHttpResponse<ProfileSummary> update(String id, ProfileUploadRequest request) {
-        return update(id, request, null);
+  /**
+   * Returns a single custom profile by id, including its full StructureDefinition
+   * JSON.
+   */
+  public PhenomlClientHttpResponse<ProfileGetResponse> get(
+    String id,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir/profiles")
+      .addPathSegment(id);
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("GET", null)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ProfileGetResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 403:
+            throw new ForbiddenError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Replaces an existing custom profile with a new StructureDefinition. The
-     * <code>id</code> path parameter is authoritative: if the StructureDefinition includes
-     * an <code>id</code> it must match the path parameter, and if it omits one the path
-     * parameter is used. The FHIR resource type of the profile cannot change.
-     * When <code>implementation_guide</code> is omitted, the profile keeps its existing
-     * implementation guide. A retained version string is allowed only when
-     * re-submitting the profile's current version with an unchanged
-     * StructureDefinition; otherwise it returns a conflict. While the profile
-     * has retained versions, its
-     * canonical URL cannot be changed.
-     */
-    public PhenomlClientHttpResponse<ProfileSummary> update(
-            String id, ProfileUploadRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir/profiles")
-                .addPathSegment(id);
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("PUT", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ProfileSummary.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 409:
-                        throw new ConflictError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Replaces an existing custom profile with a new StructureDefinition. The
+   * <code>id</code> path parameter is authoritative: if the StructureDefinition includes
+   * an <code>id</code> it must match the path parameter, and if it omits one the path
+   * parameter is used. The FHIR resource type of the profile cannot change.
+   * When <code>implementation_guide</code> is omitted, the profile keeps its existing
+   * implementation guide. A retained version string is allowed only when
+   * re-submitting the profile's current version with an unchanged
+   * StructureDefinition; otherwise it returns a conflict. While the profile
+   * has retained versions, its
+   * canonical URL cannot be changed.
+   */
+  public PhenomlClientHttpResponse<ProfileSummary> update(String id, ProfileUploadRequest request) {
+    return update(id, request, null);
+  }
 
-    /**
-     * Permanently deletes a custom profile by id. This also deletes all retained
-     * versions for that profile so the canonical URL can be reused by a later
-     * upload.
-     */
-    public PhenomlClientHttpResponse<Void> delete(String id) {
-        return delete(id, null);
+  /**
+   * Replaces an existing custom profile with a new StructureDefinition. The
+   * <code>id</code> path parameter is authoritative: if the StructureDefinition includes
+   * an <code>id</code> it must match the path parameter, and if it omits one the path
+   * parameter is used. The FHIR resource type of the profile cannot change.
+   * When <code>implementation_guide</code> is omitted, the profile keeps its existing
+   * implementation guide. A retained version string is allowed only when
+   * re-submitting the profile's current version with an unchanged
+   * StructureDefinition; otherwise it returns a conflict. While the profile
+   * has retained versions, its
+   * canonical URL cannot be changed.
+   */
+  public PhenomlClientHttpResponse<ProfileSummary> update(
+    String id,
+    ProfileUploadRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir/profiles")
+      .addPathSegment(id);
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("PUT", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ProfileSummary.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 403:
+            throw new ForbiddenError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 409:
+            throw new ConflictError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Permanently deletes a custom profile by id. This also deletes all retained
-     * versions for that profile so the canonical URL can be reused by a later
-     * upload.
-     */
-    public PhenomlClientHttpResponse<Void> delete(String id, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("fhir/profiles")
-                .addPathSegment(id);
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("DELETE", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(null, response);
-            }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 409:
-                        throw new ConflictError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
+  /**
+   * Permanently deletes a custom profile by id. This also deletes all retained
+   * versions for that profile so the canonical URL can be reused by a later
+   * upload.
+   */
+  public PhenomlClientHttpResponse<Void> delete(String id) {
+    return delete(id, null);
+  }
+
+  /**
+   * Permanently deletes a custom profile by id. This also deletes all retained
+   * versions for that profile so the canonical URL can be reused by a later
+   * upload.
+   */
+  public PhenomlClientHttpResponse<Void> delete(String id, RequestOptions requestOptions) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("fhir/profiles")
+      .addPathSegment(id);
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method(
+        "DELETE",
+        BodyProperties.toRequestBody(
+          requestOptions != null ? requestOptions.getBodyProperties() : null,
+          null
+        )
+      )
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(null, response);
+      }
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 403:
+            throw new ForbiddenError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 409:
+            throw new ConflictError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 }

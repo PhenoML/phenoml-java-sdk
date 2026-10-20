@@ -20,92 +20,101 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ListRequest.Builder.class)
 public final class ListRequest {
-    private final Optional<Boolean> verbose;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Boolean> verbose;
 
-    private ListRequest(Optional<Boolean> verbose, Map<String, Object> additionalProperties) {
-        this.verbose = verbose;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ListRequest(Optional<Boolean> verbose, Map<String, Object> additionalProperties) {
+    this.verbose = verbose;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return If true, includes full workflow implementation details in workflow_details field
+   */
+  @JsonProperty("verbose")
+  public Optional<Boolean> getVerbose() {
+    return verbose;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ListRequest && equalTo((ListRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ListRequest other) {
+    return verbose.equals(other.verbose);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.verbose);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Boolean> verbose = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ListRequest other) {
+      verbose(other.getVerbose());
+      return this;
     }
 
     /**
-     * @return If true, includes full workflow implementation details in workflow_details field
+     * <p>If true, includes full workflow implementation details in workflow_details field</p>
      */
-    @JsonProperty("verbose")
-    public Optional<Boolean> getVerbose() {
-        return verbose;
+    @JsonSetter(value = "verbose", nulls = Nulls.SKIP)
+    public Builder verbose(Optional<Boolean> verbose) {
+      this.verbose = verbose;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ListRequest && equalTo((ListRequest) other);
+    public Builder verbose(Boolean verbose) {
+      this.verbose = Optional.ofNullable(verbose);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ListRequest build() {
+      return new ListRequest(verbose, additionalProperties);
     }
 
-    private boolean equalTo(ListRequest other) {
-        return verbose.equals(other.verbose);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("verbose")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.verbose);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Boolean> verbose = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ListRequest other) {
-            verbose(other.getVerbose());
-            return this;
-        }
-
-        /**
-         * <p>If true, includes full workflow implementation details in workflow_details field</p>
-         */
-        @JsonSetter(value = "verbose", nulls = Nulls.SKIP)
-        public Builder verbose(Optional<Boolean> verbose) {
-            this.verbose = verbose;
-            return this;
-        }
-
-        public Builder verbose(Boolean verbose) {
-            this.verbose = Optional.ofNullable(verbose);
-            return this;
-        }
-
-        public ListRequest build() {
-            return new ListRequest(verbose, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

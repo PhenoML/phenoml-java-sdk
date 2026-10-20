@@ -19,122 +19,135 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = SemanticSearchResult.Builder.class)
 public final class SemanticSearchResult {
-    private final String code;
 
-    private final String description;
+  private final String code;
 
-    private final Map<String, Object> additionalProperties;
+  private final String description;
 
-    private SemanticSearchResult(String code, String description, Map<String, Object> additionalProperties) {
-        this.code = code;
-        this.description = description;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
-    @JsonProperty("code")
-    public String getCode() {
-        return code;
-    }
+  private SemanticSearchResult(
+    String code,
+    String description,
+    Map<String, Object> additionalProperties
+  ) {
+    this.code = code;
+    this.description = description;
+    this.additionalProperties = additionalProperties;
+  }
 
-    @JsonProperty("description")
-    public String getDescription() {
-        return description;
+  @JsonProperty("code")
+  public String getCode() {
+    return code;
+  }
+
+  @JsonProperty("description")
+  public String getDescription() {
+    return description;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof SemanticSearchResult && equalTo((SemanticSearchResult) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(SemanticSearchResult other) {
+    return code.equals(other.code) && description.equals(other.description);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.code, this.description);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static CodeStage builder() {
+    return new Builder();
+  }
+
+  public interface CodeStage {
+    DescriptionStage code(@NotNull String code);
+
+    Builder from(SemanticSearchResult other);
+  }
+
+  public interface DescriptionStage {
+    _FinalStage description(@NotNull String description);
+  }
+
+  public interface _FinalStage {
+    SemanticSearchResult build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements CodeStage, DescriptionStage, _FinalStage {
+
+    private String code;
+
+    private String description;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(SemanticSearchResult other) {
+      code(other.getCode());
+      description(other.getDescription());
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof SemanticSearchResult && equalTo((SemanticSearchResult) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(SemanticSearchResult other) {
-        return code.equals(other.code) && description.equals(other.description);
+    @JsonSetter("code")
+    public DescriptionStage code(@NotNull String code) {
+      this.code = Objects.requireNonNull(code, "code must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.code, this.description);
+    @JsonSetter("description")
+    public _FinalStage description(@NotNull String description) {
+      this.description = Objects.requireNonNull(description, "description must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public SemanticSearchResult build() {
+      return new SemanticSearchResult(code, description, additionalProperties);
     }
 
-    public static CodeStage builder() {
-        return new Builder();
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("code") || key.equalsIgnoreCase("description")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public interface CodeStage {
-        DescriptionStage code(@NotNull String code);
-
-        Builder from(SemanticSearchResult other);
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public interface DescriptionStage {
-        _FinalStage description(@NotNull String description);
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface _FinalStage {
-        SemanticSearchResult build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements CodeStage, DescriptionStage, _FinalStage {
-        private String code;
-
-        private String description;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(SemanticSearchResult other) {
-            code(other.getCode());
-            description(other.getDescription());
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("code")
-        public DescriptionStage code(@NotNull String code) {
-            this.code = Objects.requireNonNull(code, "code must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("description")
-        public _FinalStage description(@NotNull String description) {
-            this.description = Objects.requireNonNull(description, "description must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public SemanticSearchResult build() {
-            return new SemanticSearchResult(code, description, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

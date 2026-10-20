@@ -8,61 +8,62 @@ import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.tools.types.McpServerToolResponse;
 
 public class McpToolsClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawMcpToolsClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public McpToolsClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawMcpToolsClient(clientOptions);
-    }
+  private final RawMcpToolsClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawMcpToolsClient withRawResponse() {
-        return this.rawClient;
-    }
+  public McpToolsClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawMcpToolsClient(clientOptions);
+  }
 
-    /**
-     * Lists all MCP server tools for a specific MCP server
-     */
-    public McpServerToolResponse list(String mcpServerId) {
-        return this.rawClient.list(mcpServerId).body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawMcpToolsClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Lists all MCP server tools for a specific MCP server
-     */
-    public McpServerToolResponse list(String mcpServerId, RequestOptions requestOptions) {
-        return this.rawClient.list(mcpServerId, requestOptions).body();
-    }
+  /**
+   * Lists all MCP server tools for a specific MCP server
+   */
+  public McpServerToolResponse list(String mcpServerId) {
+    return this.rawClient.list(mcpServerId).body();
+  }
 
-    /**
-     * Gets a MCP server tool by ID
-     */
-    public McpServerToolResponse get(String mcpServerToolId) {
-        return this.rawClient.get(mcpServerToolId).body();
-    }
+  /**
+   * Lists all MCP server tools for a specific MCP server
+   */
+  public McpServerToolResponse list(String mcpServerId, RequestOptions requestOptions) {
+    return this.rawClient.list(mcpServerId, requestOptions).body();
+  }
 
-    /**
-     * Gets a MCP server tool by ID
-     */
-    public McpServerToolResponse get(String mcpServerToolId, RequestOptions requestOptions) {
-        return this.rawClient.get(mcpServerToolId, requestOptions).body();
-    }
+  /**
+   * Gets a MCP server tool by ID
+   */
+  public McpServerToolResponse get(String mcpServerToolId) {
+    return this.rawClient.get(mcpServerToolId).body();
+  }
 
-    /**
-     * Deletes a MCP server tool by ID
-     */
-    public McpServerToolResponse delete(String mcpServerToolId) {
-        return this.rawClient.delete(mcpServerToolId).body();
-    }
+  /**
+   * Gets a MCP server tool by ID
+   */
+  public McpServerToolResponse get(String mcpServerToolId, RequestOptions requestOptions) {
+    return this.rawClient.get(mcpServerToolId, requestOptions).body();
+  }
 
-    /**
-     * Deletes a MCP server tool by ID
-     */
-    public McpServerToolResponse delete(String mcpServerToolId, RequestOptions requestOptions) {
-        return this.rawClient.delete(mcpServerToolId, requestOptions).body();
-    }
+  /**
+   * Deletes a MCP server tool by ID
+   */
+  public McpServerToolResponse delete(String mcpServerToolId) {
+    return this.rawClient.delete(mcpServerToolId).body();
+  }
+
+  /**
+   * Deletes a MCP server tool by ID
+   */
+  public McpServerToolResponse delete(String mcpServerToolId, RequestOptions requestOptions) {
+    return this.rawClient.delete(mcpServerToolId, requestOptions).body();
+  }
 }

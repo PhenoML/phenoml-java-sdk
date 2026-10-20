@@ -20,207 +20,227 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ObservationPeriodRow.Builder.class)
 public final class ObservationPeriodRow {
-    private final Optional<Long> observationPeriodId;
 
-    private final Optional<Long> personId;
+  private final Optional<Long> observationPeriodId;
 
-    private final Optional<String> observationPeriodStartDate;
+  private final Optional<Long> personId;
 
-    private final Optional<String> observationPeriodEndDate;
+  private final Optional<String> observationPeriodStartDate;
 
-    private final Optional<Long> periodTypeConceptId;
+  private final Optional<String> observationPeriodEndDate;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Long> periodTypeConceptId;
 
-    private ObservationPeriodRow(
-            Optional<Long> observationPeriodId,
-            Optional<Long> personId,
-            Optional<String> observationPeriodStartDate,
-            Optional<String> observationPeriodEndDate,
-            Optional<Long> periodTypeConceptId,
-            Map<String, Object> additionalProperties) {
-        this.observationPeriodId = observationPeriodId;
-        this.personId = personId;
-        this.observationPeriodStartDate = observationPeriodStartDate;
-        this.observationPeriodEndDate = observationPeriodEndDate;
-        this.periodTypeConceptId = periodTypeConceptId;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ObservationPeriodRow(
+    Optional<Long> observationPeriodId,
+    Optional<Long> personId,
+    Optional<String> observationPeriodStartDate,
+    Optional<String> observationPeriodEndDate,
+    Optional<Long> periodTypeConceptId,
+    Map<String, Object> additionalProperties
+  ) {
+    this.observationPeriodId = observationPeriodId;
+    this.personId = personId;
+    this.observationPeriodStartDate = observationPeriodStartDate;
+    this.observationPeriodEndDate = observationPeriodEndDate;
+    this.periodTypeConceptId = periodTypeConceptId;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("observation_period_id")
+  public Optional<Long> getObservationPeriodId() {
+    return observationPeriodId;
+  }
+
+  @JsonProperty("person_id")
+  public Optional<Long> getPersonId() {
+    return personId;
+  }
+
+  /**
+   * @return Earliest date selected by the source timing rules from the person's visit, clinical, and death records in this request; not enrollment evidence.
+   */
+  @JsonProperty("observation_period_start_date")
+  public Optional<String> getObservationPeriodStartDate() {
+    return observationPeriodStartDate;
+  }
+
+  /**
+   * @return Latest date selected by the source timing rules from the person's visit, clinical, and death records in this request, including source end dates even when the output table has no end column; not enrollment evidence.
+   */
+  @JsonProperty("observation_period_end_date")
+  public Optional<String> getObservationPeriodEndDate() {
+    return observationPeriodEndDate;
+  }
+
+  @JsonProperty("period_type_concept_id")
+  public Optional<Long> getPeriodTypeConceptId() {
+    return periodTypeConceptId;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ObservationPeriodRow && equalTo((ObservationPeriodRow) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ObservationPeriodRow other) {
+    return (
+      observationPeriodId.equals(other.observationPeriodId) &&
+      personId.equals(other.personId) &&
+      observationPeriodStartDate.equals(other.observationPeriodStartDate) &&
+      observationPeriodEndDate.equals(other.observationPeriodEndDate) &&
+      periodTypeConceptId.equals(other.periodTypeConceptId)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.observationPeriodId,
+      this.personId,
+      this.observationPeriodStartDate,
+      this.observationPeriodEndDate,
+      this.periodTypeConceptId
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Long> observationPeriodId = Optional.empty();
+
+    private Optional<Long> personId = Optional.empty();
+
+    private Optional<String> observationPeriodStartDate = Optional.empty();
+
+    private Optional<String> observationPeriodEndDate = Optional.empty();
+
+    private Optional<Long> periodTypeConceptId = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ObservationPeriodRow other) {
+      observationPeriodId(other.getObservationPeriodId());
+      personId(other.getPersonId());
+      observationPeriodStartDate(other.getObservationPeriodStartDate());
+      observationPeriodEndDate(other.getObservationPeriodEndDate());
+      periodTypeConceptId(other.getPeriodTypeConceptId());
+      return this;
     }
 
-    @JsonProperty("observation_period_id")
-    public Optional<Long> getObservationPeriodId() {
-        return observationPeriodId;
+    @JsonSetter(value = "observation_period_id", nulls = Nulls.SKIP)
+    public Builder observationPeriodId(Optional<Long> observationPeriodId) {
+      this.observationPeriodId = observationPeriodId;
+      return this;
     }
 
-    @JsonProperty("person_id")
-    public Optional<Long> getPersonId() {
-        return personId;
+    public Builder observationPeriodId(Long observationPeriodId) {
+      this.observationPeriodId = Optional.ofNullable(observationPeriodId);
+      return this;
+    }
+
+    @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
+    public Builder personId(Optional<Long> personId) {
+      this.personId = personId;
+      return this;
+    }
+
+    public Builder personId(Long personId) {
+      this.personId = Optional.ofNullable(personId);
+      return this;
     }
 
     /**
-     * @return Earliest populated date among the person's visit, clinical, and death rows in this request; not enrollment evidence.
+     * <p>Earliest date selected by the source timing rules from the person's visit, clinical, and death records in this request; not enrollment evidence.</p>
      */
-    @JsonProperty("observation_period_start_date")
-    public Optional<String> getObservationPeriodStartDate() {
-        return observationPeriodStartDate;
+    @JsonSetter(value = "observation_period_start_date", nulls = Nulls.SKIP)
+    public Builder observationPeriodStartDate(Optional<String> observationPeriodStartDate) {
+      this.observationPeriodStartDate = observationPeriodStartDate;
+      return this;
+    }
+
+    public Builder observationPeriodStartDate(String observationPeriodStartDate) {
+      this.observationPeriodStartDate = Optional.ofNullable(observationPeriodStartDate);
+      return this;
     }
 
     /**
-     * @return Latest populated date, including end dates, among the person's visit, clinical, and death rows in this request; not enrollment evidence.
+     * <p>Latest date selected by the source timing rules from the person's visit, clinical, and death records in this request, including source end dates even when the output table has no end column; not enrollment evidence.</p>
      */
-    @JsonProperty("observation_period_end_date")
-    public Optional<String> getObservationPeriodEndDate() {
-        return observationPeriodEndDate;
+    @JsonSetter(value = "observation_period_end_date", nulls = Nulls.SKIP)
+    public Builder observationPeriodEndDate(Optional<String> observationPeriodEndDate) {
+      this.observationPeriodEndDate = observationPeriodEndDate;
+      return this;
     }
 
-    @JsonProperty("period_type_concept_id")
-    public Optional<Long> getPeriodTypeConceptId() {
-        return periodTypeConceptId;
+    public Builder observationPeriodEndDate(String observationPeriodEndDate) {
+      this.observationPeriodEndDate = Optional.ofNullable(observationPeriodEndDate);
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ObservationPeriodRow && equalTo((ObservationPeriodRow) other);
+    @JsonSetter(value = "period_type_concept_id", nulls = Nulls.SKIP)
+    public Builder periodTypeConceptId(Optional<Long> periodTypeConceptId) {
+      this.periodTypeConceptId = periodTypeConceptId;
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder periodTypeConceptId(Long periodTypeConceptId) {
+      this.periodTypeConceptId = Optional.ofNullable(periodTypeConceptId);
+      return this;
     }
 
-    private boolean equalTo(ObservationPeriodRow other) {
-        return observationPeriodId.equals(other.observationPeriodId)
-                && personId.equals(other.personId)
-                && observationPeriodStartDate.equals(other.observationPeriodStartDate)
-                && observationPeriodEndDate.equals(other.observationPeriodEndDate)
-                && periodTypeConceptId.equals(other.periodTypeConceptId);
+    public ObservationPeriodRow build() {
+      return new ObservationPeriodRow(
+        observationPeriodId,
+        personId,
+        observationPeriodStartDate,
+        observationPeriodEndDate,
+        periodTypeConceptId,
+        additionalProperties
+      );
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.observationPeriodId,
-                this.personId,
-                this.observationPeriodStartDate,
-                this.observationPeriodEndDate,
-                this.periodTypeConceptId);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("observation_period_id") ||
+        key.equalsIgnoreCase("person_id") ||
+        key.equalsIgnoreCase("observation_period_start_date") ||
+        key.equalsIgnoreCase("observation_period_end_date") ||
+        key.equalsIgnoreCase("period_type_concept_id")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Long> observationPeriodId = Optional.empty();
-
-        private Optional<Long> personId = Optional.empty();
-
-        private Optional<String> observationPeriodStartDate = Optional.empty();
-
-        private Optional<String> observationPeriodEndDate = Optional.empty();
-
-        private Optional<Long> periodTypeConceptId = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ObservationPeriodRow other) {
-            observationPeriodId(other.getObservationPeriodId());
-            personId(other.getPersonId());
-            observationPeriodStartDate(other.getObservationPeriodStartDate());
-            observationPeriodEndDate(other.getObservationPeriodEndDate());
-            periodTypeConceptId(other.getPeriodTypeConceptId());
-            return this;
-        }
-
-        @JsonSetter(value = "observation_period_id", nulls = Nulls.SKIP)
-        public Builder observationPeriodId(Optional<Long> observationPeriodId) {
-            this.observationPeriodId = observationPeriodId;
-            return this;
-        }
-
-        public Builder observationPeriodId(Long observationPeriodId) {
-            this.observationPeriodId = Optional.ofNullable(observationPeriodId);
-            return this;
-        }
-
-        @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
-        public Builder personId(Optional<Long> personId) {
-            this.personId = personId;
-            return this;
-        }
-
-        public Builder personId(Long personId) {
-            this.personId = Optional.ofNullable(personId);
-            return this;
-        }
-
-        /**
-         * <p>Earliest populated date among the person's visit, clinical, and death rows in this request; not enrollment evidence.</p>
-         */
-        @JsonSetter(value = "observation_period_start_date", nulls = Nulls.SKIP)
-        public Builder observationPeriodStartDate(Optional<String> observationPeriodStartDate) {
-            this.observationPeriodStartDate = observationPeriodStartDate;
-            return this;
-        }
-
-        public Builder observationPeriodStartDate(String observationPeriodStartDate) {
-            this.observationPeriodStartDate = Optional.ofNullable(observationPeriodStartDate);
-            return this;
-        }
-
-        /**
-         * <p>Latest populated date, including end dates, among the person's visit, clinical, and death rows in this request; not enrollment evidence.</p>
-         */
-        @JsonSetter(value = "observation_period_end_date", nulls = Nulls.SKIP)
-        public Builder observationPeriodEndDate(Optional<String> observationPeriodEndDate) {
-            this.observationPeriodEndDate = observationPeriodEndDate;
-            return this;
-        }
-
-        public Builder observationPeriodEndDate(String observationPeriodEndDate) {
-            this.observationPeriodEndDate = Optional.ofNullable(observationPeriodEndDate);
-            return this;
-        }
-
-        @JsonSetter(value = "period_type_concept_id", nulls = Nulls.SKIP)
-        public Builder periodTypeConceptId(Optional<Long> periodTypeConceptId) {
-            this.periodTypeConceptId = periodTypeConceptId;
-            return this;
-        }
-
-        public Builder periodTypeConceptId(Long periodTypeConceptId) {
-            this.periodTypeConceptId = Optional.ofNullable(periodTypeConceptId);
-            return this;
-        }
-
-        public ObservationPeriodRow build() {
-            return new ObservationPeriodRow(
-                    observationPeriodId,
-                    personId,
-                    observationPeriodStartDate,
-                    observationPeriodEndDate,
-                    periodTypeConceptId,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

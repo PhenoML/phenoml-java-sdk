@@ -20,175 +20,194 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateRequest.Builder.class)
 public final class CreateRequest {
-    private final String version;
 
-    private final CreateRequestResource resource;
+  private final String version;
 
-    private final String text;
+  private final CreateRequestResource resource;
 
-    private final Map<String, Object> additionalProperties;
+  private final String text;
 
-    private CreateRequest(
-            String version, CreateRequestResource resource, String text, Map<String, Object> additionalProperties) {
-        this.version = version;
-        this.resource = resource;
-        this.text = text;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CreateRequest(
+    String version,
+    CreateRequestResource resource,
+    String text,
+    Map<String, Object> additionalProperties
+  ) {
+    this.version = version;
+    this.resource = resource;
+    this.text = text;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return FHIR version to use
+   */
+  @JsonProperty("version")
+  public String getVersion() {
+    return version;
+  }
+
+  /**
+   * @return Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources; you can also use any custom profile you've uploaded (if you're a develop or launch customer).
+   */
+  @JsonProperty("resource")
+  public CreateRequestResource getResource() {
+    return resource;
+  }
+
+  /**
+   * @return Natural language text to convert
+   */
+  @JsonProperty("text")
+  public String getText() {
+    return text;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CreateRequest && equalTo((CreateRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CreateRequest other) {
+    return (
+      version.equals(other.version) && resource.equals(other.resource) && text.equals(other.text)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.version, this.resource, this.text);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static VersionStage builder() {
+    return new Builder();
+  }
+
+  public interface VersionStage {
+    /**
+     * <p>FHIR version to use</p>
+     */
+    ResourceStage version(@NotNull String version);
+
+    Builder from(CreateRequest other);
+  }
+
+  public interface ResourceStage {
+    /**
+     * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources; you can also use any custom profile you've uploaded (if you're a develop or launch customer).</p>
+     */
+    TextStage resource(@NotNull CreateRequestResource resource);
+  }
+
+  public interface TextStage {
+    /**
+     * <p>Natural language text to convert</p>
+     */
+    _FinalStage text(@NotNull String text);
+  }
+
+  public interface _FinalStage {
+    CreateRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements VersionStage, ResourceStage, TextStage, _FinalStage {
+
+    private String version;
+
+    private CreateRequestResource resource;
+
+    private String text;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(CreateRequest other) {
+      version(other.getVersion());
+      resource(other.getResource());
+      text(other.getText());
+      return this;
     }
 
     /**
-     * @return FHIR version to use
+     * <p>FHIR version to use</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("version")
-    public String getVersion() {
-        return version;
+    @java.lang.Override
+    @JsonSetter("version")
+    public ResourceStage version(@NotNull String version) {
+      this.version = Objects.requireNonNull(version, "version must not be null");
+      return this;
     }
 
     /**
-     * @return Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources; you can also use any custom profile you've uploaded (if you're a develop or launch customer).
+     * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources; you can also use any custom profile you've uploaded (if you're a develop or launch customer).</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("resource")
-    public CreateRequestResource getResource() {
-        return resource;
+    @java.lang.Override
+    @JsonSetter("resource")
+    public TextStage resource(@NotNull CreateRequestResource resource) {
+      this.resource = Objects.requireNonNull(resource, "resource must not be null");
+      return this;
     }
 
     /**
-     * @return Natural language text to convert
+     * <p>Natural language text to convert</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("text")
-    public String getText() {
-        return text;
+    @java.lang.Override
+    @JsonSetter("text")
+    public _FinalStage text(@NotNull String text) {
+      this.text = Objects.requireNonNull(text, "text must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CreateRequest && equalTo((CreateRequest) other);
+    public CreateRequest build() {
+      return new CreateRequest(version, resource, text, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(CreateRequest other) {
-        return version.equals(other.version) && resource.equals(other.resource) && text.equals(other.text);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.version, this.resource, this.text);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("version") ||
+        key.equalsIgnoreCase("resource") ||
+        key.equalsIgnoreCase("text")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static VersionStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface VersionStage {
-        /**
-         * <p>FHIR version to use</p>
-         */
-        ResourceStage version(@NotNull String version);
-
-        Builder from(CreateRequest other);
-    }
-
-    public interface ResourceStage {
-        /**
-         * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources; you can also use any custom profile you've uploaded (if you're a develop or launch customer).</p>
-         */
-        TextStage resource(@NotNull CreateRequestResource resource);
-    }
-
-    public interface TextStage {
-        /**
-         * <p>Natural language text to convert</p>
-         */
-        _FinalStage text(@NotNull String text);
-    }
-
-    public interface _FinalStage {
-        CreateRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements VersionStage, ResourceStage, TextStage, _FinalStage {
-        private String version;
-
-        private CreateRequestResource resource;
-
-        private String text;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(CreateRequest other) {
-            version(other.getVersion());
-            resource(other.getResource());
-            text(other.getText());
-            return this;
-        }
-
-        /**
-         * <p>FHIR version to use</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("version")
-        public ResourceStage version(@NotNull String version) {
-            this.version = Objects.requireNonNull(version, "version must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources; you can also use any custom profile you've uploaded (if you're a develop or launch customer).</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("resource")
-        public TextStage resource(@NotNull CreateRequestResource resource) {
-            this.resource = Objects.requireNonNull(resource, "resource must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Natural language text to convert</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("text")
-        public _FinalStage text(@NotNull String text) {
-            this.text = Objects.requireNonNull(text, "text must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public CreateRequest build() {
-            return new CreateRequest(version, resource, text, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

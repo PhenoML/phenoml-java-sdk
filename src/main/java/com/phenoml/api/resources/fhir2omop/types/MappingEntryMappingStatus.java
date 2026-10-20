@@ -7,100 +7,113 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class MappingEntryMappingStatus {
-    public static final MappingEntryMappingStatus ALREADY_STANDARD =
-            new MappingEntryMappingStatus(Value.ALREADY_STANDARD, "ALREADY_STANDARD");
 
-    public static final MappingEntryMappingStatus MAPPED = new MappingEntryMappingStatus(Value.MAPPED, "MAPPED");
+  public static final MappingEntryMappingStatus ALREADY_STANDARD = new MappingEntryMappingStatus(
+    Value.ALREADY_STANDARD,
+    "ALREADY_STANDARD"
+  );
 
-    public static final MappingEntryMappingStatus UNCHECKED =
-            new MappingEntryMappingStatus(Value.UNCHECKED, "UNCHECKED");
+  public static final MappingEntryMappingStatus MAPPED = new MappingEntryMappingStatus(
+    Value.MAPPED,
+    "MAPPED"
+  );
 
-    public static final MappingEntryMappingStatus UNMAPPED = new MappingEntryMappingStatus(Value.UNMAPPED, "UNMAPPED");
+  public static final MappingEntryMappingStatus UNCHECKED = new MappingEntryMappingStatus(
+    Value.UNCHECKED,
+    "UNCHECKED"
+  );
 
-    private final Value value;
+  public static final MappingEntryMappingStatus UNMAPPED = new MappingEntryMappingStatus(
+    Value.UNMAPPED,
+    "UNMAPPED"
+  );
 
-    private final String string;
+  private final Value value;
 
-    MappingEntryMappingStatus(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  MappingEntryMappingStatus(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof MappingEntryMappingStatus &&
+        this.string.equals(((MappingEntryMappingStatus) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case ALREADY_STANDARD:
+        return visitor.visitAlreadyStandard();
+      case MAPPED:
+        return visitor.visitMapped();
+      case UNCHECKED:
+        return visitor.visitUnchecked();
+      case UNMAPPED:
+        return visitor.visitUnmapped();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static MappingEntryMappingStatus valueOf(String value) {
+    switch (value) {
+      case "ALREADY_STANDARD":
+        return ALREADY_STANDARD;
+      case "MAPPED":
+        return MAPPED;
+      case "UNCHECKED":
+        return UNCHECKED;
+      case "UNMAPPED":
+        return UNMAPPED;
+      default:
+        return new MappingEntryMappingStatus(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    ALREADY_STANDARD,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof MappingEntryMappingStatus
-                        && this.string.equals(((MappingEntryMappingStatus) other).string));
-    }
+    MAPPED,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    UNCHECKED,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case ALREADY_STANDARD:
-                return visitor.visitAlreadyStandard();
-            case MAPPED:
-                return visitor.visitMapped();
-            case UNCHECKED:
-                return visitor.visitUnchecked();
-            case UNMAPPED:
-                return visitor.visitUnmapped();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    UNMAPPED,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static MappingEntryMappingStatus valueOf(String value) {
-        switch (value) {
-            case "ALREADY_STANDARD":
-                return ALREADY_STANDARD;
-            case "MAPPED":
-                return MAPPED;
-            case "UNCHECKED":
-                return UNCHECKED;
-            case "UNMAPPED":
-                return UNMAPPED;
-            default:
-                return new MappingEntryMappingStatus(Value.UNKNOWN, value);
-        }
-    }
+    UNKNOWN,
+  }
 
-    public enum Value {
-        ALREADY_STANDARD,
+  public interface Visitor<T> {
+    T visitAlreadyStandard();
 
-        MAPPED,
+    T visitMapped();
 
-        UNCHECKED,
+    T visitUnchecked();
 
-        UNMAPPED,
+    T visitUnmapped();
 
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitAlreadyStandard();
-
-        T visitMapped();
-
-        T visitUnchecked();
-
-        T visitUnmapped();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

@@ -21,185 +21,218 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Lang2FhirAndCreateMultiResponse.Builder.class)
 public final class Lang2FhirAndCreateMultiResponse {
-    private final Optional<Boolean> success;
 
-    private final Optional<String> message;
+  private final Optional<Boolean> success;
 
-    private final Optional<Lang2FhirAndCreateMultiResponseResponseBundle> responseBundle;
+  private final Optional<String> message;
 
-    private final Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> resourceInfo;
+  private final Optional<Lang2FhirAndCreateMultiResponseResponseBundle> responseBundle;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> resourceInfo;
 
-    private Lang2FhirAndCreateMultiResponse(
-            Optional<Boolean> success,
-            Optional<String> message,
-            Optional<Lang2FhirAndCreateMultiResponseResponseBundle> responseBundle,
-            Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> resourceInfo,
-            Map<String, Object> additionalProperties) {
-        this.success = success;
-        this.message = message;
-        this.responseBundle = responseBundle;
-        this.resourceInfo = resourceInfo;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private Lang2FhirAndCreateMultiResponse(
+    Optional<Boolean> success,
+    Optional<String> message,
+    Optional<Lang2FhirAndCreateMultiResponseResponseBundle> responseBundle,
+    Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> resourceInfo,
+    Map<String, Object> additionalProperties
+  ) {
+    this.success = success;
+    this.message = message;
+    this.responseBundle = responseBundle;
+    this.resourceInfo = resourceInfo;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Whether the resources were created successfully
+   */
+  @JsonProperty("success")
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  /**
+   * @return Status message
+   */
+  @JsonProperty("message")
+  public Optional<String> getMessage() {
+    return message;
+  }
+
+  /**
+   * @return FHIR transaction-response Bundle from the server with resolved resource IDs
+   */
+  @JsonProperty("response_bundle")
+  public Optional<Lang2FhirAndCreateMultiResponseResponseBundle> getResponseBundle() {
+    return responseBundle;
+  }
+
+  /**
+   * @return Metadata about created resources (temp IDs, types, descriptions)
+   */
+  @JsonProperty("resource_info")
+  public Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> getResourceInfo() {
+    return resourceInfo;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof Lang2FhirAndCreateMultiResponse &&
+      equalTo((Lang2FhirAndCreateMultiResponse) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(Lang2FhirAndCreateMultiResponse other) {
+    return (
+      success.equals(other.success) &&
+      message.equals(other.message) &&
+      responseBundle.equals(other.responseBundle) &&
+      resourceInfo.equals(other.resourceInfo)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.success, this.message, this.responseBundle, this.resourceInfo);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<String> message = Optional.empty();
+
+    private Optional<Lang2FhirAndCreateMultiResponseResponseBundle> responseBundle =
+      Optional.empty();
+
+    private Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> resourceInfo =
+      Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(Lang2FhirAndCreateMultiResponse other) {
+      success(other.getSuccess());
+      message(other.getMessage());
+      responseBundle(other.getResponseBundle());
+      resourceInfo(other.getResourceInfo());
+      return this;
     }
 
     /**
-     * @return Whether the resources were created successfully
+     * <p>Whether the resources were created successfully</p>
      */
-    @JsonProperty("success")
-    public Optional<Boolean> getSuccess() {
-        return success;
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
+    }
+
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
     }
 
     /**
-     * @return Status message
+     * <p>Status message</p>
      */
-    @JsonProperty("message")
-    public Optional<String> getMessage() {
-        return message;
+    @JsonSetter(value = "message", nulls = Nulls.SKIP)
+    public Builder message(Optional<String> message) {
+      this.message = message;
+      return this;
+    }
+
+    public Builder message(String message) {
+      this.message = Optional.ofNullable(message);
+      return this;
     }
 
     /**
-     * @return FHIR transaction-response Bundle from the server with resolved resource IDs
+     * <p>FHIR transaction-response Bundle from the server with resolved resource IDs</p>
      */
-    @JsonProperty("response_bundle")
-    public Optional<Lang2FhirAndCreateMultiResponseResponseBundle> getResponseBundle() {
-        return responseBundle;
+    @JsonSetter(value = "response_bundle", nulls = Nulls.SKIP)
+    public Builder responseBundle(
+      Optional<Lang2FhirAndCreateMultiResponseResponseBundle> responseBundle
+    ) {
+      this.responseBundle = responseBundle;
+      return this;
+    }
+
+    public Builder responseBundle(Lang2FhirAndCreateMultiResponseResponseBundle responseBundle) {
+      this.responseBundle = Optional.ofNullable(responseBundle);
+      return this;
     }
 
     /**
-     * @return Metadata about created resources (temp IDs, types, descriptions)
+     * <p>Metadata about created resources (temp IDs, types, descriptions)</p>
      */
-    @JsonProperty("resource_info")
-    public Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> getResourceInfo() {
-        return resourceInfo;
+    @JsonSetter(value = "resource_info", nulls = Nulls.SKIP)
+    public Builder resourceInfo(
+      Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> resourceInfo
+    ) {
+      this.resourceInfo = resourceInfo;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof Lang2FhirAndCreateMultiResponse && equalTo((Lang2FhirAndCreateMultiResponse) other);
+    public Builder resourceInfo(
+      List<Lang2FhirAndCreateMultiResponseResourceInfoItem> resourceInfo
+    ) {
+      this.resourceInfo = Optional.ofNullable(resourceInfo);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Lang2FhirAndCreateMultiResponse build() {
+      return new Lang2FhirAndCreateMultiResponse(
+        success,
+        message,
+        responseBundle,
+        resourceInfo,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(Lang2FhirAndCreateMultiResponse other) {
-        return success.equals(other.success)
-                && message.equals(other.message)
-                && responseBundle.equals(other.responseBundle)
-                && resourceInfo.equals(other.resourceInfo);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("success") ||
+        key.equalsIgnoreCase("message") ||
+        key.equalsIgnoreCase("response_bundle") ||
+        key.equalsIgnoreCase("resource_info")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.success, this.message, this.responseBundle, this.resourceInfo);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<String> message = Optional.empty();
-
-        private Optional<Lang2FhirAndCreateMultiResponseResponseBundle> responseBundle = Optional.empty();
-
-        private Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> resourceInfo = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(Lang2FhirAndCreateMultiResponse other) {
-            success(other.getSuccess());
-            message(other.getMessage());
-            responseBundle(other.getResponseBundle());
-            resourceInfo(other.getResourceInfo());
-            return this;
-        }
-
-        /**
-         * <p>Whether the resources were created successfully</p>
-         */
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        /**
-         * <p>Status message</p>
-         */
-        @JsonSetter(value = "message", nulls = Nulls.SKIP)
-        public Builder message(Optional<String> message) {
-            this.message = message;
-            return this;
-        }
-
-        public Builder message(String message) {
-            this.message = Optional.ofNullable(message);
-            return this;
-        }
-
-        /**
-         * <p>FHIR transaction-response Bundle from the server with resolved resource IDs</p>
-         */
-        @JsonSetter(value = "response_bundle", nulls = Nulls.SKIP)
-        public Builder responseBundle(Optional<Lang2FhirAndCreateMultiResponseResponseBundle> responseBundle) {
-            this.responseBundle = responseBundle;
-            return this;
-        }
-
-        public Builder responseBundle(Lang2FhirAndCreateMultiResponseResponseBundle responseBundle) {
-            this.responseBundle = Optional.ofNullable(responseBundle);
-            return this;
-        }
-
-        /**
-         * <p>Metadata about created resources (temp IDs, types, descriptions)</p>
-         */
-        @JsonSetter(value = "resource_info", nulls = Nulls.SKIP)
-        public Builder resourceInfo(Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> resourceInfo) {
-            this.resourceInfo = resourceInfo;
-            return this;
-        }
-
-        public Builder resourceInfo(List<Lang2FhirAndCreateMultiResponseResourceInfoItem> resourceInfo) {
-            this.resourceInfo = Optional.ofNullable(resourceInfo);
-            return this;
-        }
-
-        public Lang2FhirAndCreateMultiResponse build() {
-            return new Lang2FhirAndCreateMultiResponse(
-                    success, message, responseBundle, resourceInfo, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

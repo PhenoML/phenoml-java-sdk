@@ -21,229 +21,249 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PatchRequestBodyItem.Builder.class)
 public final class PatchRequestBodyItem {
-    private final PatchRequestBodyItemOp op;
 
-    private final String path;
+  private final PatchRequestBodyItemOp op;
 
-    private final Optional<Object> value;
+  private final String path;
 
-    private final Optional<String> from;
+  private final Optional<Object> value;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> from;
 
-    private PatchRequestBodyItem(
-            PatchRequestBodyItemOp op,
-            String path,
-            Optional<Object> value,
-            Optional<String> from,
-            Map<String, Object> additionalProperties) {
-        this.op = op;
-        this.path = path;
-        this.value = value;
-        this.from = from;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private PatchRequestBodyItem(
+    PatchRequestBodyItemOp op,
+    String path,
+    Optional<Object> value,
+    Optional<String> from,
+    Map<String, Object> additionalProperties
+  ) {
+    this.op = op;
+    this.path = path;
+    this.value = value;
+    this.from = from;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return The operation to perform
+   */
+  @JsonProperty("op")
+  public PatchRequestBodyItemOp getOp() {
+    return op;
+  }
+
+  /**
+   * @return JSON Pointer to the target location
+   */
+  @JsonProperty("path")
+  public String getPath() {
+    return path;
+  }
+
+  /**
+   * @return The value to use (required for add, replace, test operations)
+   */
+  @JsonProperty("value")
+  public Optional<Object> getValue() {
+    return value;
+  }
+
+  /**
+   * @return Source location for move and copy operations (JSON Pointer)
+   */
+  @JsonProperty("from")
+  public Optional<String> getFrom() {
+    return from;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof PatchRequestBodyItem && equalTo((PatchRequestBodyItem) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(PatchRequestBodyItem other) {
+    return (
+      op.equals(other.op) &&
+      path.equals(other.path) &&
+      value.equals(other.value) &&
+      from.equals(other.from)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.op, this.path, this.value, this.from);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static OpStage builder() {
+    return new Builder();
+  }
+
+  public interface OpStage {
+    /**
+     * <p>The operation to perform</p>
+     */
+    PathStage op(@NotNull PatchRequestBodyItemOp op);
+
+    Builder from(PatchRequestBodyItem other);
+  }
+
+  public interface PathStage {
+    /**
+     * <p>JSON Pointer to the target location</p>
+     */
+    _FinalStage path(@NotNull String path);
+  }
+
+  public interface _FinalStage {
+    PatchRequestBodyItem build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>The value to use (required for add, replace, test operations)</p>
+     */
+    _FinalStage value(Optional<Object> value);
+
+    _FinalStage value(Object value);
+
+    /**
+     * <p>Source location for move and copy operations (JSON Pointer)</p>
+     */
+    _FinalStage from(Optional<String> from);
+
+    _FinalStage from(String from);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements OpStage, PathStage, _FinalStage {
+
+    private PatchRequestBodyItemOp op;
+
+    private String path;
+
+    private Optional<String> from = Optional.empty();
+
+    private Optional<Object> value = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(PatchRequestBodyItem other) {
+      op(other.getOp());
+      path(other.getPath());
+      value(other.getValue());
+      from(other.getFrom());
+      return this;
     }
 
     /**
-     * @return The operation to perform
+     * <p>The operation to perform</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("op")
-    public PatchRequestBodyItemOp getOp() {
-        return op;
+    @java.lang.Override
+    @JsonSetter("op")
+    public PathStage op(@NotNull PatchRequestBodyItemOp op) {
+      this.op = Objects.requireNonNull(op, "op must not be null");
+      return this;
     }
 
     /**
-     * @return JSON Pointer to the target location
+     * <p>JSON Pointer to the target location</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("path")
-    public String getPath() {
-        return path;
+    @java.lang.Override
+    @JsonSetter("path")
+    public _FinalStage path(@NotNull String path) {
+      this.path = Objects.requireNonNull(path, "path must not be null");
+      return this;
     }
 
     /**
-     * @return The value to use (required for add, replace, test operations)
+     * <p>Source location for move and copy operations (JSON Pointer)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("value")
-    public Optional<Object> getValue() {
-        return value;
+    @java.lang.Override
+    public _FinalStage from(String from) {
+      this.from = Optional.ofNullable(from);
+      return this;
     }
 
     /**
-     * @return Source location for move and copy operations (JSON Pointer)
+     * <p>Source location for move and copy operations (JSON Pointer)</p>
      */
-    @JsonProperty("from")
-    public Optional<String> getFrom() {
-        return from;
+    @java.lang.Override
+    @JsonSetter(value = "from", nulls = Nulls.SKIP)
+    public _FinalStage from(Optional<String> from) {
+      this.from = from;
+      return this;
+    }
+
+    /**
+     * <p>The value to use (required for add, replace, test operations)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage value(Object value) {
+      this.value = Optional.ofNullable(value);
+      return this;
+    }
+
+    /**
+     * <p>The value to use (required for add, replace, test operations)</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "value", nulls = Nulls.SKIP)
+    public _FinalStage value(Optional<Object> value) {
+      this.value = value;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof PatchRequestBodyItem && equalTo((PatchRequestBodyItem) other);
+    public PatchRequestBodyItem build() {
+      return new PatchRequestBodyItem(op, path, value, from, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(PatchRequestBodyItem other) {
-        return op.equals(other.op) && path.equals(other.path) && value.equals(other.value) && from.equals(other.from);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("op") ||
+        key.equalsIgnoreCase("path") ||
+        key.equalsIgnoreCase("value") ||
+        key.equalsIgnoreCase("from")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.op, this.path, this.value, this.from);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static OpStage builder() {
-        return new Builder();
-    }
-
-    public interface OpStage {
-        /**
-         * <p>The operation to perform</p>
-         */
-        PathStage op(@NotNull PatchRequestBodyItemOp op);
-
-        Builder from(PatchRequestBodyItem other);
-    }
-
-    public interface PathStage {
-        /**
-         * <p>JSON Pointer to the target location</p>
-         */
-        _FinalStage path(@NotNull String path);
-    }
-
-    public interface _FinalStage {
-        PatchRequestBodyItem build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>The value to use (required for add, replace, test operations)</p>
-         */
-        _FinalStage value(Optional<Object> value);
-
-        _FinalStage value(Object value);
-
-        /**
-         * <p>Source location for move and copy operations (JSON Pointer)</p>
-         */
-        _FinalStage from(Optional<String> from);
-
-        _FinalStage from(String from);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements OpStage, PathStage, _FinalStage {
-        private PatchRequestBodyItemOp op;
-
-        private String path;
-
-        private Optional<String> from = Optional.empty();
-
-        private Optional<Object> value = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(PatchRequestBodyItem other) {
-            op(other.getOp());
-            path(other.getPath());
-            value(other.getValue());
-            from(other.getFrom());
-            return this;
-        }
-
-        /**
-         * <p>The operation to perform</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("op")
-        public PathStage op(@NotNull PatchRequestBodyItemOp op) {
-            this.op = Objects.requireNonNull(op, "op must not be null");
-            return this;
-        }
-
-        /**
-         * <p>JSON Pointer to the target location</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("path")
-        public _FinalStage path(@NotNull String path) {
-            this.path = Objects.requireNonNull(path, "path must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Source location for move and copy operations (JSON Pointer)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage from(String from) {
-            this.from = Optional.ofNullable(from);
-            return this;
-        }
-
-        /**
-         * <p>Source location for move and copy operations (JSON Pointer)</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "from", nulls = Nulls.SKIP)
-        public _FinalStage from(Optional<String> from) {
-            this.from = from;
-            return this;
-        }
-
-        /**
-         * <p>The value to use (required for add, replace, test operations)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage value(Object value) {
-            this.value = Optional.ofNullable(value);
-            return this;
-        }
-
-        /**
-         * <p>The value to use (required for add, replace, test operations)</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "value", nulls = Nulls.SKIP)
-        public _FinalStage value(Optional<Object> value) {
-            this.value = value;
-            return this;
-        }
-
-        @java.lang.Override
-        public PatchRequestBodyItem build() {
-            return new PatchRequestBodyItem(op, path, value, from, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -19,100 +19,115 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = GoogleHealthcareAuth.Builder.class)
 public final class GoogleHealthcareAuth {
-    private final ServiceAccountKey serviceAccountKey;
 
-    private final Map<String, Object> additionalProperties;
+  private final ServiceAccountKey serviceAccountKey;
 
-    private GoogleHealthcareAuth(ServiceAccountKey serviceAccountKey, Map<String, Object> additionalProperties) {
-        this.serviceAccountKey = serviceAccountKey;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
-    @JsonProperty("service_account_key")
-    public ServiceAccountKey getServiceAccountKey() {
-        return serviceAccountKey;
+  private GoogleHealthcareAuth(
+    ServiceAccountKey serviceAccountKey,
+    Map<String, Object> additionalProperties
+  ) {
+    this.serviceAccountKey = serviceAccountKey;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("service_account_key")
+  public ServiceAccountKey getServiceAccountKey() {
+    return serviceAccountKey;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof GoogleHealthcareAuth && equalTo((GoogleHealthcareAuth) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(GoogleHealthcareAuth other) {
+    return serviceAccountKey.equals(other.serviceAccountKey);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.serviceAccountKey);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static ServiceAccountKeyStage builder() {
+    return new Builder();
+  }
+
+  public interface ServiceAccountKeyStage {
+    _FinalStage serviceAccountKey(@NotNull ServiceAccountKey serviceAccountKey);
+
+    Builder from(GoogleHealthcareAuth other);
+  }
+
+  public interface _FinalStage {
+    GoogleHealthcareAuth build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements ServiceAccountKeyStage, _FinalStage {
+
+    private ServiceAccountKey serviceAccountKey;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(GoogleHealthcareAuth other) {
+      serviceAccountKey(other.getServiceAccountKey());
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof GoogleHealthcareAuth && equalTo((GoogleHealthcareAuth) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(GoogleHealthcareAuth other) {
-        return serviceAccountKey.equals(other.serviceAccountKey);
+    @JsonSetter("service_account_key")
+    public _FinalStage serviceAccountKey(@NotNull ServiceAccountKey serviceAccountKey) {
+      this.serviceAccountKey = Objects.requireNonNull(
+        serviceAccountKey,
+        "serviceAccountKey must not be null"
+      );
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.serviceAccountKey);
+    public GoogleHealthcareAuth build() {
+      return new GoogleHealthcareAuth(serviceAccountKey, additionalProperties);
+    }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("service_account_key")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static ServiceAccountKeyStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface ServiceAccountKeyStage {
-        _FinalStage serviceAccountKey(@NotNull ServiceAccountKey serviceAccountKey);
-
-        Builder from(GoogleHealthcareAuth other);
-    }
-
-    public interface _FinalStage {
-        GoogleHealthcareAuth build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements ServiceAccountKeyStage, _FinalStage {
-        private ServiceAccountKey serviceAccountKey;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(GoogleHealthcareAuth other) {
-            serviceAccountKey(other.getServiceAccountKey());
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("service_account_key")
-        public _FinalStage serviceAccountKey(@NotNull ServiceAccountKey serviceAccountKey) {
-            this.serviceAccountKey = Objects.requireNonNull(serviceAccountKey, "serviceAccountKey must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public GoogleHealthcareAuth build() {
-            return new GoogleHealthcareAuth(serviceAccountKey, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

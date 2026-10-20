@@ -16,94 +16,103 @@ import java.util.Objects;
 
 @JsonDeserialize(using = FhirProviderListResponseFhirProvidersItem.Deserializer.class)
 public final class FhirProviderListResponseFhirProvidersItem {
-    private final Object value;
 
-    private final int type;
+  private final Object value;
 
-    private FhirProviderListResponseFhirProvidersItem(Object value, int type) {
-        this.value = value;
-        this.type = type;
+  private final int type;
+
+  private FhirProviderListResponseFhirProvidersItem(Object value, int type) {
+    this.value = value;
+    this.type = type;
+  }
+
+  @JsonValue
+  public Object get() {
+    return this.value;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T visit(Visitor<T> visitor) {
+    if (this.type == 0) {
+      return visitor.visit((FhirProviderTemplate) this.value);
+    } else if (this.type == 1) {
+      return visitor.visit((FhirProviderSandboxInfo) this.value);
     }
+    throw new IllegalStateException("Failed to visit value. This should never happen.");
+  }
 
-    @JsonValue
-    public Object get() {
-        return this.value;
-    }
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof FhirProviderListResponseFhirProvidersItem &&
+      equalTo((FhirProviderListResponseFhirProvidersItem) other)
+    );
+  }
 
-    @SuppressWarnings("unchecked")
-    public <T> T visit(Visitor<T> visitor) {
-        if (this.type == 0) {
-            return visitor.visit((FhirProviderTemplate) this.value);
-        } else if (this.type == 1) {
-            return visitor.visit((FhirProviderSandboxInfo) this.value);
-        }
-        throw new IllegalStateException("Failed to visit value. This should never happen.");
+  private boolean equalTo(FhirProviderListResponseFhirProvidersItem other) {
+    return value.equals(other.value);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.value);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return this.value.toString();
+  }
+
+  public static FhirProviderListResponseFhirProvidersItem of(FhirProviderTemplate value) {
+    return new FhirProviderListResponseFhirProvidersItem(value, 0);
+  }
+
+  public static FhirProviderListResponseFhirProvidersItem of(FhirProviderSandboxInfo value) {
+    return new FhirProviderListResponseFhirProvidersItem(value, 1);
+  }
+
+  public interface Visitor<T> {
+    T visit(FhirProviderTemplate value);
+
+    T visit(FhirProviderSandboxInfo value);
+  }
+
+  static final class Deserializer
+    extends StdDeserializer<FhirProviderListResponseFhirProvidersItem> {
+
+    Deserializer() {
+      super(FhirProviderListResponseFhirProvidersItem.class);
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof FhirProviderListResponseFhirProvidersItem
-                && equalTo((FhirProviderListResponseFhirProvidersItem) other);
+    public FhirProviderListResponseFhirProvidersItem deserialize(
+      JsonParser p,
+      DeserializationContext context
+    ) throws IOException {
+      Object value = p.readValueAs(Object.class);
+      if (
+        value instanceof Map<?, ?> &&
+        ((Map<?, ?>) value).containsKey("id") &&
+        ((Map<?, ?>) value).containsKey("name") &&
+        ((Map<?, ?>) value).containsKey("provider") &&
+        ((Map<?, ?>) value).containsKey("auth_configs") &&
+        ((Map<?, ?>) value).containsKey("last_updated")
+      ) {
+        try {
+          return of(ObjectMappers.JSON_MAPPER.convertValue(value, FhirProviderTemplate.class));
+        } catch (RuntimeException e) {}
+      }
+      if (
+        value instanceof Map<?, ?> &&
+        ((Map<?, ?>) value).containsKey("id") &&
+        ((Map<?, ?>) value).containsKey("name")
+      ) {
+        try {
+          return of(ObjectMappers.JSON_MAPPER.convertValue(value, FhirProviderSandboxInfo.class));
+        } catch (RuntimeException e) {}
+      }
+      throw new JsonParseException(p, "Failed to deserialize");
     }
-
-    private boolean equalTo(FhirProviderListResponseFhirProvidersItem other) {
-        return value.equals(other.value);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.value);
-    }
-
-    @java.lang.Override
-    public String toString() {
-        return this.value.toString();
-    }
-
-    public static FhirProviderListResponseFhirProvidersItem of(FhirProviderTemplate value) {
-        return new FhirProviderListResponseFhirProvidersItem(value, 0);
-    }
-
-    public static FhirProviderListResponseFhirProvidersItem of(FhirProviderSandboxInfo value) {
-        return new FhirProviderListResponseFhirProvidersItem(value, 1);
-    }
-
-    public interface Visitor<T> {
-        T visit(FhirProviderTemplate value);
-
-        T visit(FhirProviderSandboxInfo value);
-    }
-
-    static final class Deserializer extends StdDeserializer<FhirProviderListResponseFhirProvidersItem> {
-        Deserializer() {
-            super(FhirProviderListResponseFhirProvidersItem.class);
-        }
-
-        @java.lang.Override
-        public FhirProviderListResponseFhirProvidersItem deserialize(JsonParser p, DeserializationContext context)
-                throws IOException {
-            Object value = p.readValueAs(Object.class);
-            if (value instanceof Map<?, ?>
-                    && ((Map<?, ?>) value).containsKey("id")
-                    && ((Map<?, ?>) value).containsKey("name")
-                    && ((Map<?, ?>) value).containsKey("provider")
-                    && ((Map<?, ?>) value).containsKey("auth_configs")
-                    && ((Map<?, ?>) value).containsKey("last_updated")) {
-                try {
-                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, FhirProviderTemplate.class));
-                } catch (RuntimeException e) {
-                }
-            }
-            if (value instanceof Map<?, ?>
-                    && ((Map<?, ?>) value).containsKey("id")
-                    && ((Map<?, ?>) value).containsKey("name")) {
-                try {
-                    return of(ObjectMappers.JSON_MAPPER.convertValue(value, FhirProviderSandboxInfo.class));
-                } catch (RuntimeException e) {
-                }
-            }
-            throw new JsonParseException(p, "Failed to deserialize");
-        }
-    }
+  }
 }

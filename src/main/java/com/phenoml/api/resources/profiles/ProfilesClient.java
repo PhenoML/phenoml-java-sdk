@@ -9,24 +9,28 @@ import com.phenoml.api.resources.profiles.versions.VersionsClient;
 import java.util.function.Supplier;
 
 public class ProfilesClient {
-    protected final ClientOptions clientOptions;
 
-    protected final Supplier<com.phenoml.api.resources.profiles.profiles.ProfilesClient> profilesClient;
+  protected final ClientOptions clientOptions;
 
-    protected final Supplier<VersionsClient> versionsClient;
+  protected final Supplier<
+    com.phenoml.api.resources.profiles.profiles.ProfilesClient
+  > profilesClient;
 
-    public ProfilesClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.profilesClient =
-                Suppliers.memoize(() -> new com.phenoml.api.resources.profiles.profiles.ProfilesClient(clientOptions));
-        this.versionsClient = Suppliers.memoize(() -> new VersionsClient(clientOptions));
-    }
+  protected final Supplier<VersionsClient> versionsClient;
 
-    public com.phenoml.api.resources.profiles.profiles.ProfilesClient profiles() {
-        return this.profilesClient.get();
-    }
+  public ProfilesClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.profilesClient = Suppliers.memoize(() ->
+      new com.phenoml.api.resources.profiles.profiles.ProfilesClient(clientOptions)
+    );
+    this.versionsClient = Suppliers.memoize(() -> new VersionsClient(clientOptions));
+  }
 
-    public VersionsClient versions() {
-        return this.versionsClient.get();
-    }
+  public com.phenoml.api.resources.profiles.profiles.ProfilesClient profiles() {
+    return this.profilesClient.get();
+  }
+
+  public VersionsClient versions() {
+    return this.versionsClient.get();
+  }
 }

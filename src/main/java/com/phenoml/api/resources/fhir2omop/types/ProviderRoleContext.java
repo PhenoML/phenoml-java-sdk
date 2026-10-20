@@ -21,436 +21,467 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ProviderRoleContext.Builder.class)
 public final class ProviderRoleContext {
-    private final long providerId;
 
-    private final Optional<String> roleSourceValue;
+  private final long providerId;
 
-    private final Optional<String> practitionerReference;
+  private final Optional<String> roleSourceValue;
 
-    private final Optional<ProviderRolePractitionerIdentifier> practitionerIdentifier;
+  private final Optional<String> practitionerReference;
 
-    private final Optional<List<ProviderRoleCodeableConcept>> roleCodes;
+  private final Optional<ProviderRolePractitionerIdentifier> practitionerIdentifier;
 
-    private final Optional<List<ProviderRoleCodeableConcept>> specialties;
+  private final Optional<List<ProviderRoleCodeableConcept>> roleCodes;
 
-    private final Optional<List<ProviderRoleCareSite>> careSites;
+  private final Optional<List<ProviderRoleCodeableConcept>> specialties;
 
-    private final Optional<Boolean> active;
+  private final Optional<List<ProviderRoleCareSite>> careSites;
 
-    private final Optional<String> periodStart;
+  private final Optional<Boolean> active;
 
-    private final Optional<String> periodEnd;
+  private final Optional<String> periodStart;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> periodEnd;
 
-    private ProviderRoleContext(
-            long providerId,
-            Optional<String> roleSourceValue,
-            Optional<String> practitionerReference,
-            Optional<ProviderRolePractitionerIdentifier> practitionerIdentifier,
-            Optional<List<ProviderRoleCodeableConcept>> roleCodes,
-            Optional<List<ProviderRoleCodeableConcept>> specialties,
-            Optional<List<ProviderRoleCareSite>> careSites,
-            Optional<Boolean> active,
-            Optional<String> periodStart,
-            Optional<String> periodEnd,
-            Map<String, Object> additionalProperties) {
-        this.providerId = providerId;
-        this.roleSourceValue = roleSourceValue;
-        this.practitionerReference = practitionerReference;
-        this.practitionerIdentifier = practitionerIdentifier;
-        this.roleCodes = roleCodes;
-        this.specialties = specialties;
-        this.careSites = careSites;
-        this.active = active;
-        this.periodStart = periodStart;
-        this.periodEnd = periodEnd;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
-    @JsonProperty("provider_id")
-    public long getProviderId() {
-        return providerId;
-    }
+  private ProviderRoleContext(
+    long providerId,
+    Optional<String> roleSourceValue,
+    Optional<String> practitionerReference,
+    Optional<ProviderRolePractitionerIdentifier> practitionerIdentifier,
+    Optional<List<ProviderRoleCodeableConcept>> roleCodes,
+    Optional<List<ProviderRoleCodeableConcept>> specialties,
+    Optional<List<ProviderRoleCareSite>> careSites,
+    Optional<Boolean> active,
+    Optional<String> periodStart,
+    Optional<String> periodEnd,
+    Map<String, Object> additionalProperties
+  ) {
+    this.providerId = providerId;
+    this.roleSourceValue = roleSourceValue;
+    this.practitionerReference = practitionerReference;
+    this.practitionerIdentifier = practitionerIdentifier;
+    this.roleCodes = roleCodes;
+    this.specialties = specialties;
+    this.careSites = careSites;
+    this.active = active;
+    this.periodStart = periodStart;
+    this.periodEnd = periodEnd;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("provider_id")
+  public long getProviderId() {
+    return providerId;
+  }
+
+  /**
+   * @return The PractitionerRole source identity: its FHIR id, identifier value,
+   * name, or fullUrl. When none is available, it is <code>PractitionerRole</code>.
+   */
+  @JsonProperty("role_source_value")
+  public Optional<String> getRoleSourceValue() {
+    return roleSourceValue;
+  }
+
+  /**
+   * @return The role's supplied practitioner reference, when present.
+   */
+  @JsonProperty("practitioner_reference")
+  public Optional<String> getPractitionerReference() {
+    return practitionerReference;
+  }
+
+  @JsonProperty("practitioner_identifier")
+  public Optional<ProviderRolePractitionerIdentifier> getPractitionerIdentifier() {
+    return practitionerIdentifier;
+  }
+
+  @JsonProperty("role_codes")
+  public Optional<List<ProviderRoleCodeableConcept>> getRoleCodes() {
+    return roleCodes;
+  }
+
+  @JsonProperty("specialties")
+  public Optional<List<ProviderRoleCodeableConcept>> getSpecialties() {
+    return specialties;
+  }
+
+  /**
+   * @return Every organization, healthcareService, or location reference supplied by the role.
+   */
+  @JsonProperty("care_sites")
+  public Optional<List<ProviderRoleCareSite>> getCareSites() {
+    return careSites;
+  }
+
+  @JsonProperty("active")
+  public Optional<Boolean> getActive() {
+    return active;
+  }
+
+  @JsonProperty("period_start")
+  public Optional<String> getPeriodStart() {
+    return periodStart;
+  }
+
+  @JsonProperty("period_end")
+  public Optional<String> getPeriodEnd() {
+    return periodEnd;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ProviderRoleContext && equalTo((ProviderRoleContext) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ProviderRoleContext other) {
+    return (
+      providerId == other.providerId &&
+      roleSourceValue.equals(other.roleSourceValue) &&
+      practitionerReference.equals(other.practitionerReference) &&
+      practitionerIdentifier.equals(other.practitionerIdentifier) &&
+      roleCodes.equals(other.roleCodes) &&
+      specialties.equals(other.specialties) &&
+      careSites.equals(other.careSites) &&
+      active.equals(other.active) &&
+      periodStart.equals(other.periodStart) &&
+      periodEnd.equals(other.periodEnd)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.providerId,
+      this.roleSourceValue,
+      this.practitionerReference,
+      this.practitionerIdentifier,
+      this.roleCodes,
+      this.specialties,
+      this.careSites,
+      this.active,
+      this.periodStart,
+      this.periodEnd
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static ProviderIdStage builder() {
+    return new Builder();
+  }
+
+  public interface ProviderIdStage {
+    _FinalStage providerId(long providerId);
+
+    Builder from(ProviderRoleContext other);
+  }
+
+  public interface _FinalStage {
+    ProviderRoleContext build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
     /**
-     * @return The PractitionerRole source identity: its FHIR id, identifier value,
-     * name, or fullUrl. When none is available, it is <code>PractitionerRole</code>.
+     * <p>The PractitionerRole source identity: its FHIR id, identifier value,
+     * name, or fullUrl. When none is available, it is <code>PractitionerRole</code>.</p>
      */
-    @JsonProperty("role_source_value")
-    public Optional<String> getRoleSourceValue() {
-        return roleSourceValue;
-    }
+    _FinalStage roleSourceValue(Optional<String> roleSourceValue);
+
+    _FinalStage roleSourceValue(String roleSourceValue);
 
     /**
-     * @return The role's supplied practitioner reference, when present.
+     * <p>The role's supplied practitioner reference, when present.</p>
      */
-    @JsonProperty("practitioner_reference")
-    public Optional<String> getPractitionerReference() {
-        return practitionerReference;
-    }
+    _FinalStage practitionerReference(Optional<String> practitionerReference);
 
-    @JsonProperty("practitioner_identifier")
-    public Optional<ProviderRolePractitionerIdentifier> getPractitionerIdentifier() {
-        return practitionerIdentifier;
-    }
+    _FinalStage practitionerReference(String practitionerReference);
 
-    @JsonProperty("role_codes")
-    public Optional<List<ProviderRoleCodeableConcept>> getRoleCodes() {
-        return roleCodes;
-    }
+    _FinalStage practitionerIdentifier(
+      Optional<ProviderRolePractitionerIdentifier> practitionerIdentifier
+    );
 
-    @JsonProperty("specialties")
-    public Optional<List<ProviderRoleCodeableConcept>> getSpecialties() {
-        return specialties;
-    }
+    _FinalStage practitionerIdentifier(ProviderRolePractitionerIdentifier practitionerIdentifier);
+
+    _FinalStage roleCodes(Optional<List<ProviderRoleCodeableConcept>> roleCodes);
+
+    _FinalStage roleCodes(List<ProviderRoleCodeableConcept> roleCodes);
+
+    _FinalStage specialties(Optional<List<ProviderRoleCodeableConcept>> specialties);
+
+    _FinalStage specialties(List<ProviderRoleCodeableConcept> specialties);
 
     /**
-     * @return Every organization, healthcareService, or location reference supplied by the role.
+     * <p>Every organization, healthcareService, or location reference supplied by the role.</p>
      */
-    @JsonProperty("care_sites")
-    public Optional<List<ProviderRoleCareSite>> getCareSites() {
-        return careSites;
-    }
+    _FinalStage careSites(Optional<List<ProviderRoleCareSite>> careSites);
 
-    @JsonProperty("active")
-    public Optional<Boolean> getActive() {
-        return active;
-    }
+    _FinalStage careSites(List<ProviderRoleCareSite> careSites);
 
-    @JsonProperty("period_start")
-    public Optional<String> getPeriodStart() {
-        return periodStart;
-    }
+    _FinalStage active(Optional<Boolean> active);
 
-    @JsonProperty("period_end")
-    public Optional<String> getPeriodEnd() {
-        return periodEnd;
+    _FinalStage active(Boolean active);
+
+    _FinalStage periodStart(Optional<String> periodStart);
+
+    _FinalStage periodStart(String periodStart);
+
+    _FinalStage periodEnd(Optional<String> periodEnd);
+
+    _FinalStage periodEnd(String periodEnd);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements ProviderIdStage, _FinalStage {
+
+    private long providerId;
+
+    private Optional<String> periodEnd = Optional.empty();
+
+    private Optional<String> periodStart = Optional.empty();
+
+    private Optional<Boolean> active = Optional.empty();
+
+    private Optional<List<ProviderRoleCareSite>> careSites = Optional.empty();
+
+    private Optional<List<ProviderRoleCodeableConcept>> specialties = Optional.empty();
+
+    private Optional<List<ProviderRoleCodeableConcept>> roleCodes = Optional.empty();
+
+    private Optional<ProviderRolePractitionerIdentifier> practitionerIdentifier = Optional.empty();
+
+    private Optional<String> practitionerReference = Optional.empty();
+
+    private Optional<String> roleSourceValue = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(ProviderRoleContext other) {
+      providerId(other.getProviderId());
+      roleSourceValue(other.getRoleSourceValue());
+      practitionerReference(other.getPractitionerReference());
+      practitionerIdentifier(other.getPractitionerIdentifier());
+      roleCodes(other.getRoleCodes());
+      specialties(other.getSpecialties());
+      careSites(other.getCareSites());
+      active(other.getActive());
+      periodStart(other.getPeriodStart());
+      periodEnd(other.getPeriodEnd());
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ProviderRoleContext && equalTo((ProviderRoleContext) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(ProviderRoleContext other) {
-        return providerId == other.providerId
-                && roleSourceValue.equals(other.roleSourceValue)
-                && practitionerReference.equals(other.practitionerReference)
-                && practitionerIdentifier.equals(other.practitionerIdentifier)
-                && roleCodes.equals(other.roleCodes)
-                && specialties.equals(other.specialties)
-                && careSites.equals(other.careSites)
-                && active.equals(other.active)
-                && periodStart.equals(other.periodStart)
-                && periodEnd.equals(other.periodEnd);
+    @JsonSetter("provider_id")
+    public _FinalStage providerId(long providerId) {
+      this.providerId = providerId;
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.providerId,
-                this.roleSourceValue,
-                this.practitionerReference,
-                this.practitionerIdentifier,
-                this.roleCodes,
-                this.specialties,
-                this.careSites,
-                this.active,
-                this.periodStart,
-                this.periodEnd);
+    public _FinalStage periodEnd(String periodEnd) {
+      this.periodEnd = Optional.ofNullable(periodEnd);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonSetter(value = "period_end", nulls = Nulls.SKIP)
+    public _FinalStage periodEnd(Optional<String> periodEnd) {
+      this.periodEnd = periodEnd;
+      return this;
     }
 
-    public static ProviderIdStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public _FinalStage periodStart(String periodStart) {
+      this.periodStart = Optional.ofNullable(periodStart);
+      return this;
     }
 
-    public interface ProviderIdStage {
-        _FinalStage providerId(long providerId);
-
-        Builder from(ProviderRoleContext other);
+    @java.lang.Override
+    @JsonSetter(value = "period_start", nulls = Nulls.SKIP)
+    public _FinalStage periodStart(Optional<String> periodStart) {
+      this.periodStart = periodStart;
+      return this;
     }
 
-    public interface _FinalStage {
-        ProviderRoleContext build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>The PractitionerRole source identity: its FHIR id, identifier value,
-         * name, or fullUrl. When none is available, it is <code>PractitionerRole</code>.</p>
-         */
-        _FinalStage roleSourceValue(Optional<String> roleSourceValue);
-
-        _FinalStage roleSourceValue(String roleSourceValue);
-
-        /**
-         * <p>The role's supplied practitioner reference, when present.</p>
-         */
-        _FinalStage practitionerReference(Optional<String> practitionerReference);
-
-        _FinalStage practitionerReference(String practitionerReference);
-
-        _FinalStage practitionerIdentifier(Optional<ProviderRolePractitionerIdentifier> practitionerIdentifier);
-
-        _FinalStage practitionerIdentifier(ProviderRolePractitionerIdentifier practitionerIdentifier);
-
-        _FinalStage roleCodes(Optional<List<ProviderRoleCodeableConcept>> roleCodes);
-
-        _FinalStage roleCodes(List<ProviderRoleCodeableConcept> roleCodes);
-
-        _FinalStage specialties(Optional<List<ProviderRoleCodeableConcept>> specialties);
-
-        _FinalStage specialties(List<ProviderRoleCodeableConcept> specialties);
-
-        /**
-         * <p>Every organization, healthcareService, or location reference supplied by the role.</p>
-         */
-        _FinalStage careSites(Optional<List<ProviderRoleCareSite>> careSites);
-
-        _FinalStage careSites(List<ProviderRoleCareSite> careSites);
-
-        _FinalStage active(Optional<Boolean> active);
-
-        _FinalStage active(Boolean active);
-
-        _FinalStage periodStart(Optional<String> periodStart);
-
-        _FinalStage periodStart(String periodStart);
-
-        _FinalStage periodEnd(Optional<String> periodEnd);
-
-        _FinalStage periodEnd(String periodEnd);
+    @java.lang.Override
+    public _FinalStage active(Boolean active) {
+      this.active = Optional.ofNullable(active);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements ProviderIdStage, _FinalStage {
-        private long providerId;
-
-        private Optional<String> periodEnd = Optional.empty();
-
-        private Optional<String> periodStart = Optional.empty();
-
-        private Optional<Boolean> active = Optional.empty();
-
-        private Optional<List<ProviderRoleCareSite>> careSites = Optional.empty();
-
-        private Optional<List<ProviderRoleCodeableConcept>> specialties = Optional.empty();
-
-        private Optional<List<ProviderRoleCodeableConcept>> roleCodes = Optional.empty();
-
-        private Optional<ProviderRolePractitionerIdentifier> practitionerIdentifier = Optional.empty();
-
-        private Optional<String> practitionerReference = Optional.empty();
-
-        private Optional<String> roleSourceValue = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(ProviderRoleContext other) {
-            providerId(other.getProviderId());
-            roleSourceValue(other.getRoleSourceValue());
-            practitionerReference(other.getPractitionerReference());
-            practitionerIdentifier(other.getPractitionerIdentifier());
-            roleCodes(other.getRoleCodes());
-            specialties(other.getSpecialties());
-            careSites(other.getCareSites());
-            active(other.getActive());
-            periodStart(other.getPeriodStart());
-            periodEnd(other.getPeriodEnd());
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("provider_id")
-        public _FinalStage providerId(long providerId) {
-            this.providerId = providerId;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage periodEnd(String periodEnd) {
-            this.periodEnd = Optional.ofNullable(periodEnd);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "period_end", nulls = Nulls.SKIP)
-        public _FinalStage periodEnd(Optional<String> periodEnd) {
-            this.periodEnd = periodEnd;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage periodStart(String periodStart) {
-            this.periodStart = Optional.ofNullable(periodStart);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "period_start", nulls = Nulls.SKIP)
-        public _FinalStage periodStart(Optional<String> periodStart) {
-            this.periodStart = periodStart;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage active(Boolean active) {
-            this.active = Optional.ofNullable(active);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "active", nulls = Nulls.SKIP)
-        public _FinalStage active(Optional<Boolean> active) {
-            this.active = active;
-            return this;
-        }
-
-        /**
-         * <p>Every organization, healthcareService, or location reference supplied by the role.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage careSites(List<ProviderRoleCareSite> careSites) {
-            this.careSites = Optional.ofNullable(careSites);
-            return this;
-        }
-
-        /**
-         * <p>Every organization, healthcareService, or location reference supplied by the role.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "care_sites", nulls = Nulls.SKIP)
-        public _FinalStage careSites(Optional<List<ProviderRoleCareSite>> careSites) {
-            this.careSites = careSites;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage specialties(List<ProviderRoleCodeableConcept> specialties) {
-            this.specialties = Optional.ofNullable(specialties);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "specialties", nulls = Nulls.SKIP)
-        public _FinalStage specialties(Optional<List<ProviderRoleCodeableConcept>> specialties) {
-            this.specialties = specialties;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage roleCodes(List<ProviderRoleCodeableConcept> roleCodes) {
-            this.roleCodes = Optional.ofNullable(roleCodes);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "role_codes", nulls = Nulls.SKIP)
-        public _FinalStage roleCodes(Optional<List<ProviderRoleCodeableConcept>> roleCodes) {
-            this.roleCodes = roleCodes;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage practitionerIdentifier(ProviderRolePractitionerIdentifier practitionerIdentifier) {
-            this.practitionerIdentifier = Optional.ofNullable(practitionerIdentifier);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "practitioner_identifier", nulls = Nulls.SKIP)
-        public _FinalStage practitionerIdentifier(Optional<ProviderRolePractitionerIdentifier> practitionerIdentifier) {
-            this.practitionerIdentifier = practitionerIdentifier;
-            return this;
-        }
-
-        /**
-         * <p>The role's supplied practitioner reference, when present.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage practitionerReference(String practitionerReference) {
-            this.practitionerReference = Optional.ofNullable(practitionerReference);
-            return this;
-        }
-
-        /**
-         * <p>The role's supplied practitioner reference, when present.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "practitioner_reference", nulls = Nulls.SKIP)
-        public _FinalStage practitionerReference(Optional<String> practitionerReference) {
-            this.practitionerReference = practitionerReference;
-            return this;
-        }
-
-        /**
-         * <p>The PractitionerRole source identity: its FHIR id, identifier value,
-         * name, or fullUrl. When none is available, it is <code>PractitionerRole</code>.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage roleSourceValue(String roleSourceValue) {
-            this.roleSourceValue = Optional.ofNullable(roleSourceValue);
-            return this;
-        }
-
-        /**
-         * <p>The PractitionerRole source identity: its FHIR id, identifier value,
-         * name, or fullUrl. When none is available, it is <code>PractitionerRole</code>.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "role_source_value", nulls = Nulls.SKIP)
-        public _FinalStage roleSourceValue(Optional<String> roleSourceValue) {
-            this.roleSourceValue = roleSourceValue;
-            return this;
-        }
-
-        @java.lang.Override
-        public ProviderRoleContext build() {
-            return new ProviderRoleContext(
-                    providerId,
-                    roleSourceValue,
-                    practitionerReference,
-                    practitionerIdentifier,
-                    roleCodes,
-                    specialties,
-                    careSites,
-                    active,
-                    periodStart,
-                    periodEnd,
-                    additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    @java.lang.Override
+    @JsonSetter(value = "active", nulls = Nulls.SKIP)
+    public _FinalStage active(Optional<Boolean> active) {
+      this.active = active;
+      return this;
     }
+
+    /**
+     * <p>Every organization, healthcareService, or location reference supplied by the role.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage careSites(List<ProviderRoleCareSite> careSites) {
+      this.careSites = Optional.ofNullable(careSites);
+      return this;
+    }
+
+    /**
+     * <p>Every organization, healthcareService, or location reference supplied by the role.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "care_sites", nulls = Nulls.SKIP)
+    public _FinalStage careSites(Optional<List<ProviderRoleCareSite>> careSites) {
+      this.careSites = careSites;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage specialties(List<ProviderRoleCodeableConcept> specialties) {
+      this.specialties = Optional.ofNullable(specialties);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(value = "specialties", nulls = Nulls.SKIP)
+    public _FinalStage specialties(Optional<List<ProviderRoleCodeableConcept>> specialties) {
+      this.specialties = specialties;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage roleCodes(List<ProviderRoleCodeableConcept> roleCodes) {
+      this.roleCodes = Optional.ofNullable(roleCodes);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(value = "role_codes", nulls = Nulls.SKIP)
+    public _FinalStage roleCodes(Optional<List<ProviderRoleCodeableConcept>> roleCodes) {
+      this.roleCodes = roleCodes;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage practitionerIdentifier(
+      ProviderRolePractitionerIdentifier practitionerIdentifier
+    ) {
+      this.practitionerIdentifier = Optional.ofNullable(practitionerIdentifier);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(value = "practitioner_identifier", nulls = Nulls.SKIP)
+    public _FinalStage practitionerIdentifier(
+      Optional<ProviderRolePractitionerIdentifier> practitionerIdentifier
+    ) {
+      this.practitionerIdentifier = practitionerIdentifier;
+      return this;
+    }
+
+    /**
+     * <p>The role's supplied practitioner reference, when present.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage practitionerReference(String practitionerReference) {
+      this.practitionerReference = Optional.ofNullable(practitionerReference);
+      return this;
+    }
+
+    /**
+     * <p>The role's supplied practitioner reference, when present.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "practitioner_reference", nulls = Nulls.SKIP)
+    public _FinalStage practitionerReference(Optional<String> practitionerReference) {
+      this.practitionerReference = practitionerReference;
+      return this;
+    }
+
+    /**
+     * <p>The PractitionerRole source identity: its FHIR id, identifier value,
+     * name, or fullUrl. When none is available, it is <code>PractitionerRole</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage roleSourceValue(String roleSourceValue) {
+      this.roleSourceValue = Optional.ofNullable(roleSourceValue);
+      return this;
+    }
+
+    /**
+     * <p>The PractitionerRole source identity: its FHIR id, identifier value,
+     * name, or fullUrl. When none is available, it is <code>PractitionerRole</code>.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "role_source_value", nulls = Nulls.SKIP)
+    public _FinalStage roleSourceValue(Optional<String> roleSourceValue) {
+      this.roleSourceValue = roleSourceValue;
+      return this;
+    }
+
+    @java.lang.Override
+    public ProviderRoleContext build() {
+      return new ProviderRoleContext(
+        providerId,
+        roleSourceValue,
+        practitionerReference,
+        practitionerIdentifier,
+        roleCodes,
+        specialties,
+        careSites,
+        active,
+        periodStart,
+        periodEnd,
+        additionalProperties
+      );
+    }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("provider_id") ||
+        key.equalsIgnoreCase("role_source_value") ||
+        key.equalsIgnoreCase("practitioner_reference") ||
+        key.equalsIgnoreCase("practitioner_identifier") ||
+        key.equalsIgnoreCase("role_codes") ||
+        key.equalsIgnoreCase("specialties") ||
+        key.equalsIgnoreCase("care_sites") ||
+        key.equalsIgnoreCase("active") ||
+        key.equalsIgnoreCase("period_start") ||
+        key.equalsIgnoreCase("period_end")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

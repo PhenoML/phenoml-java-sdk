@@ -21,148 +21,169 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = DocumentConfig.Builder.class)
 public final class DocumentConfig {
-    private final Optional<PageFilter> pageFilter;
 
-    private final Optional<List<SplitClassification>> splitClassifications;
+  private final Optional<PageFilter> pageFilter;
 
-    private final Optional<ResourceReview> resourceReview;
+  private final Optional<List<SplitClassification>> splitClassifications;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<ResourceReview> resourceReview;
 
-    private DocumentConfig(
-            Optional<PageFilter> pageFilter,
-            Optional<List<SplitClassification>> splitClassifications,
-            Optional<ResourceReview> resourceReview,
-            Map<String, Object> additionalProperties) {
-        this.pageFilter = pageFilter;
-        this.splitClassifications = splitClassifications;
-        this.resourceReview = resourceReview;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private DocumentConfig(
+    Optional<PageFilter> pageFilter,
+    Optional<List<SplitClassification>> splitClassifications,
+    Optional<ResourceReview> resourceReview,
+    Map<String, Object> additionalProperties
+  ) {
+    this.pageFilter = pageFilter;
+    this.splitClassifications = splitClassifications;
+    this.resourceReview = resourceReview;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Deprecated. Use split_classifications instead.
+   */
+  @JsonProperty("page_filter")
+  public Optional<PageFilter> getPageFilter() {
+    return pageFilter;
+  }
+
+  /**
+   * @return Optional per-page split classifications. Mutually exclusive with page_filter. This is a caller-defined list, not a fixed taxonomy: choose each classification id and write a natural-language description for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Pages matching operation=drop are removed before extraction. Pages matching operation=group are kept, and extracted resources attributed to those pages include the classification id in response metadata and FHIR meta.tag. Example ids such as clinical and admin are illustrative, not a fixed set.
+   */
+  @JsonProperty("split_classifications")
+  public Optional<List<SplitClassification>> getSplitClassifications() {
+    return splitClassifications;
+  }
+
+  @JsonProperty("resource_review")
+  public Optional<ResourceReview> getResourceReview() {
+    return resourceReview;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof DocumentConfig && equalTo((DocumentConfig) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(DocumentConfig other) {
+    return (
+      pageFilter.equals(other.pageFilter) &&
+      splitClassifications.equals(other.splitClassifications) &&
+      resourceReview.equals(other.resourceReview)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.pageFilter, this.splitClassifications, this.resourceReview);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<PageFilter> pageFilter = Optional.empty();
+
+    private Optional<List<SplitClassification>> splitClassifications = Optional.empty();
+
+    private Optional<ResourceReview> resourceReview = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(DocumentConfig other) {
+      pageFilter(other.getPageFilter());
+      splitClassifications(other.getSplitClassifications());
+      resourceReview(other.getResourceReview());
+      return this;
     }
 
     /**
-     * @return Deprecated. Use split_classifications instead.
+     * <p>Deprecated. Use split_classifications instead.</p>
      */
-    @JsonProperty("page_filter")
-    public Optional<PageFilter> getPageFilter() {
-        return pageFilter;
+    @JsonSetter(value = "page_filter", nulls = Nulls.SKIP)
+    public Builder pageFilter(Optional<PageFilter> pageFilter) {
+      this.pageFilter = pageFilter;
+      return this;
+    }
+
+    public Builder pageFilter(PageFilter pageFilter) {
+      this.pageFilter = Optional.ofNullable(pageFilter);
+      return this;
     }
 
     /**
-     * @return Optional per-page split classifications. Mutually exclusive with page_filter. This is a caller-defined list, not a fixed taxonomy: choose each classification id and write a natural-language description for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Pages matching operation=drop are removed before extraction. Pages matching operation=group are kept, and extracted resources attributed to those pages include the classification id in response metadata and FHIR meta.tag. Example ids such as clinical and admin are illustrative, not a fixed set.
+     * <p>Optional per-page split classifications. Mutually exclusive with page_filter. This is a caller-defined list, not a fixed taxonomy: choose each classification id and write a natural-language description for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Pages matching operation=drop are removed before extraction. Pages matching operation=group are kept, and extracted resources attributed to those pages include the classification id in response metadata and FHIR meta.tag. Example ids such as clinical and admin are illustrative, not a fixed set.</p>
      */
-    @JsonProperty("split_classifications")
-    public Optional<List<SplitClassification>> getSplitClassifications() {
-        return splitClassifications;
+    @JsonSetter(value = "split_classifications", nulls = Nulls.SKIP)
+    public Builder splitClassifications(Optional<List<SplitClassification>> splitClassifications) {
+      this.splitClassifications = splitClassifications;
+      return this;
     }
 
-    @JsonProperty("resource_review")
-    public Optional<ResourceReview> getResourceReview() {
-        return resourceReview;
+    public Builder splitClassifications(List<SplitClassification> splitClassifications) {
+      this.splitClassifications = Optional.ofNullable(splitClassifications);
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof DocumentConfig && equalTo((DocumentConfig) other);
+    @JsonSetter(value = "resource_review", nulls = Nulls.SKIP)
+    public Builder resourceReview(Optional<ResourceReview> resourceReview) {
+      this.resourceReview = resourceReview;
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder resourceReview(ResourceReview resourceReview) {
+      this.resourceReview = Optional.ofNullable(resourceReview);
+      return this;
     }
 
-    private boolean equalTo(DocumentConfig other) {
-        return pageFilter.equals(other.pageFilter)
-                && splitClassifications.equals(other.splitClassifications)
-                && resourceReview.equals(other.resourceReview);
+    public DocumentConfig build() {
+      return new DocumentConfig(
+        pageFilter,
+        splitClassifications,
+        resourceReview,
+        additionalProperties
+      );
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.pageFilter, this.splitClassifications, this.resourceReview);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("page_filter") ||
+        key.equalsIgnoreCase("split_classifications") ||
+        key.equalsIgnoreCase("resource_review")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<PageFilter> pageFilter = Optional.empty();
-
-        private Optional<List<SplitClassification>> splitClassifications = Optional.empty();
-
-        private Optional<ResourceReview> resourceReview = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(DocumentConfig other) {
-            pageFilter(other.getPageFilter());
-            splitClassifications(other.getSplitClassifications());
-            resourceReview(other.getResourceReview());
-            return this;
-        }
-
-        /**
-         * <p>Deprecated. Use split_classifications instead.</p>
-         */
-        @JsonSetter(value = "page_filter", nulls = Nulls.SKIP)
-        public Builder pageFilter(Optional<PageFilter> pageFilter) {
-            this.pageFilter = pageFilter;
-            return this;
-        }
-
-        public Builder pageFilter(PageFilter pageFilter) {
-            this.pageFilter = Optional.ofNullable(pageFilter);
-            return this;
-        }
-
-        /**
-         * <p>Optional per-page split classifications. Mutually exclusive with page_filter. This is a caller-defined list, not a fixed taxonomy: choose each classification id and write a natural-language description for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Pages matching operation=drop are removed before extraction. Pages matching operation=group are kept, and extracted resources attributed to those pages include the classification id in response metadata and FHIR meta.tag. Example ids such as clinical and admin are illustrative, not a fixed set.</p>
-         */
-        @JsonSetter(value = "split_classifications", nulls = Nulls.SKIP)
-        public Builder splitClassifications(Optional<List<SplitClassification>> splitClassifications) {
-            this.splitClassifications = splitClassifications;
-            return this;
-        }
-
-        public Builder splitClassifications(List<SplitClassification> splitClassifications) {
-            this.splitClassifications = Optional.ofNullable(splitClassifications);
-            return this;
-        }
-
-        @JsonSetter(value = "resource_review", nulls = Nulls.SKIP)
-        public Builder resourceReview(Optional<ResourceReview> resourceReview) {
-            this.resourceReview = resourceReview;
-            return this;
-        }
-
-        public Builder resourceReview(ResourceReview resourceReview) {
-            this.resourceReview = Optional.ofNullable(resourceReview);
-            return this;
-        }
-
-        public DocumentConfig build() {
-            return new DocumentConfig(pageFilter, splitClassifications, resourceReview, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

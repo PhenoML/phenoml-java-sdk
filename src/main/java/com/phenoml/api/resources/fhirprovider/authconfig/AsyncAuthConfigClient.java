@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.fhirprovider.authconfig;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.fhirprovider.authconfig.requests.FhirProviderRemoveAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.authconfig.requests.FhirProviderSetActiveAuthConfigRequest;
@@ -13,83 +14,151 @@ import com.phenoml.api.resources.fhirprovider.types.FhirProviderResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncAuthConfigClient {
-    protected final ClientOptions clientOptions;
 
-    private final AsyncRawAuthConfigClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public AsyncAuthConfigClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawAuthConfigClient(clientOptions);
-    }
+  private final AsyncRawAuthConfigClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawAuthConfigClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AsyncAuthConfigClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new AsyncRawAuthConfigClient(clientOptions);
+  }
 
-    /**
-     * Adds a new authentication configuration to an existing FHIR provider.
-     * This enables key rotation and multiple auth configurations per provider.
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public CompletableFuture<FhirProviderResponse> add(
-            String fhirProviderId, FhirProviderAddAuthConfigRequest request) {
-        return this.rawClient.add(fhirProviderId, request).thenApply(response -> response.body());
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public AsyncRawAuthConfigClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Adds a new authentication configuration to an existing FHIR provider.
-     * This enables key rotation and multiple auth configurations per provider.
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public CompletableFuture<FhirProviderResponse> add(
-            String fhirProviderId, FhirProviderAddAuthConfigRequest request, RequestOptions requestOptions) {
-        return this.rawClient.add(fhirProviderId, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Adds a new authentication configuration to an existing FHIR provider.
+   * This enables key rotation and multiple auth configurations per provider.
+   * <p>Note: Sandbox providers cannot be modified.</p>
+   */
+  public CompletableFuture<FhirProviderResponse> add(
+    String fhirProviderId,
+    FhirProviderAddAuthConfigRequest request
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<FhirProviderResponse>> rawFuture =
+      this.rawClient.add(fhirProviderId, request);
+    CompletableFuture<FhirProviderResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Sets which authentication configuration should be active for a FHIR provider.
-     * Only one auth config can be active at a time.
-     * <p>If the specified auth config is already active, the request succeeds without
-     * making any changes and returns a message indicating the config is already active.</p>
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public CompletableFuture<FhirProviderResponse> setActive(
-            String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request) {
-        return this.rawClient.setActive(fhirProviderId, request).thenApply(response -> response.body());
-    }
+  /**
+   * Adds a new authentication configuration to an existing FHIR provider.
+   * This enables key rotation and multiple auth configurations per provider.
+   * <p>Note: Sandbox providers cannot be modified.</p>
+   */
+  public CompletableFuture<FhirProviderResponse> add(
+    String fhirProviderId,
+    FhirProviderAddAuthConfigRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<FhirProviderResponse>> rawFuture =
+      this.rawClient.add(fhirProviderId, request, requestOptions);
+    CompletableFuture<FhirProviderResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Sets which authentication configuration should be active for a FHIR provider.
-     * Only one auth config can be active at a time.
-     * <p>If the specified auth config is already active, the request succeeds without
-     * making any changes and returns a message indicating the config is already active.</p>
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public CompletableFuture<FhirProviderResponse> setActive(
-            String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request, RequestOptions requestOptions) {
-        return this.rawClient.setActive(fhirProviderId, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Sets which authentication configuration should be active for a FHIR provider.
+   * Only one auth config can be active at a time.
+   * <p>If the specified auth config is already active, the request succeeds without
+   * making any changes and returns a message indicating the config is already active.</p>
+   * <p>Note: Sandbox providers cannot be modified.</p>
+   */
+  public CompletableFuture<FhirProviderResponse> setActive(
+    String fhirProviderId,
+    FhirProviderSetActiveAuthConfigRequest request
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<FhirProviderResponse>> rawFuture =
+      this.rawClient.setActive(fhirProviderId, request);
+    CompletableFuture<FhirProviderResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Removes an authentication configuration from a FHIR provider.
-     * Cannot remove the currently active auth configuration.
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public CompletableFuture<RemoveResponse> remove(
-            String fhirProviderId, FhirProviderRemoveAuthConfigRequest request) {
-        return this.rawClient.remove(fhirProviderId, request).thenApply(response -> response.body());
-    }
+  /**
+   * Sets which authentication configuration should be active for a FHIR provider.
+   * Only one auth config can be active at a time.
+   * <p>If the specified auth config is already active, the request succeeds without
+   * making any changes and returns a message indicating the config is already active.</p>
+   * <p>Note: Sandbox providers cannot be modified.</p>
+   */
+  public CompletableFuture<FhirProviderResponse> setActive(
+    String fhirProviderId,
+    FhirProviderSetActiveAuthConfigRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<FhirProviderResponse>> rawFuture =
+      this.rawClient.setActive(fhirProviderId, request, requestOptions);
+    CompletableFuture<FhirProviderResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Removes an authentication configuration from a FHIR provider.
-     * Cannot remove the currently active auth configuration.
-     * <p>Note: Sandbox providers cannot be modified.</p>
-     */
-    public CompletableFuture<RemoveResponse> remove(
-            String fhirProviderId, FhirProviderRemoveAuthConfigRequest request, RequestOptions requestOptions) {
-        return this.rawClient.remove(fhirProviderId, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Removes an authentication configuration from a FHIR provider.
+   * Cannot remove the currently active auth configuration.
+   * <p>Note: Sandbox providers cannot be modified.</p>
+   */
+  public CompletableFuture<RemoveResponse> remove(
+    String fhirProviderId,
+    FhirProviderRemoveAuthConfigRequest request
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<RemoveResponse>> rawFuture =
+      this.rawClient.remove(fhirProviderId, request);
+    CompletableFuture<RemoveResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
+
+  /**
+   * Removes an authentication configuration from a FHIR provider.
+   * Cannot remove the currently active auth configuration.
+   * <p>Note: Sandbox providers cannot be modified.</p>
+   */
+  public CompletableFuture<RemoveResponse> remove(
+    String fhirProviderId,
+    FhirProviderRemoveAuthConfigRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<RemoveResponse>> rawFuture =
+      this.rawClient.remove(fhirProviderId, request, requestOptions);
+    CompletableFuture<RemoveResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 }

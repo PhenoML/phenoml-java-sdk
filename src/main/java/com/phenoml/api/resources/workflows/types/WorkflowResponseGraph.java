@@ -21,92 +21,104 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = WorkflowResponseGraph.Builder.class)
 public final class WorkflowResponseGraph {
-    private final Optional<List<WorkflowStepSummary>> steps;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<WorkflowStepSummary>> steps;
 
-    private WorkflowResponseGraph(Optional<List<WorkflowStepSummary>> steps, Map<String, Object> additionalProperties) {
-        this.steps = steps;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private WorkflowResponseGraph(
+    Optional<List<WorkflowStepSummary>> steps,
+    Map<String, Object> additionalProperties
+  ) {
+    this.steps = steps;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Simplified list of workflow steps without operation details
+   */
+  @JsonProperty("steps")
+  public Optional<List<WorkflowStepSummary>> getSteps() {
+    return steps;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof WorkflowResponseGraph && equalTo((WorkflowResponseGraph) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(WorkflowResponseGraph other) {
+    return steps.equals(other.steps);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.steps);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<List<WorkflowStepSummary>> steps = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(WorkflowResponseGraph other) {
+      steps(other.getSteps());
+      return this;
     }
 
     /**
-     * @return Simplified list of workflow steps without operation details
+     * <p>Simplified list of workflow steps without operation details</p>
      */
-    @JsonProperty("steps")
-    public Optional<List<WorkflowStepSummary>> getSteps() {
-        return steps;
+    @JsonSetter(value = "steps", nulls = Nulls.SKIP)
+    public Builder steps(Optional<List<WorkflowStepSummary>> steps) {
+      this.steps = steps;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof WorkflowResponseGraph && equalTo((WorkflowResponseGraph) other);
+    public Builder steps(List<WorkflowStepSummary> steps) {
+      this.steps = Optional.ofNullable(steps);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public WorkflowResponseGraph build() {
+      return new WorkflowResponseGraph(steps, additionalProperties);
     }
 
-    private boolean equalTo(WorkflowResponseGraph other) {
-        return steps.equals(other.steps);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("steps")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.steps);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<List<WorkflowStepSummary>> steps = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(WorkflowResponseGraph other) {
-            steps(other.getSteps());
-            return this;
-        }
-
-        /**
-         * <p>Simplified list of workflow steps without operation details</p>
-         */
-        @JsonSetter(value = "steps", nulls = Nulls.SKIP)
-        public Builder steps(Optional<List<WorkflowStepSummary>> steps) {
-            this.steps = steps;
-            return this;
-        }
-
-        public Builder steps(List<WorkflowStepSummary> steps) {
-            this.steps = Optional.ofNullable(steps);
-            return this;
-        }
-
-        public WorkflowResponseGraph build() {
-            return new WorkflowResponseGraph(steps, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -7,27 +7,27 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 public interface IProfileSummary {
-    String getId();
+  String getId();
 
-    ProfileSummarySource getSource();
+  ProfileSummarySource getSource();
 
-    String getResourceType();
+  String getResourceType();
 
-    String getUrl();
+  String getUrl();
 
-    String getVersion();
+  String getVersion();
 
-    Optional<String> getStatus();
+  Optional<String> getStatus();
 
-    Optional<String> getDate();
+  Optional<String> getDate();
 
-    String getCanonical();
+  String getCanonical();
 
-    String getFhirVersion();
+  String getFhirVersion();
 
-    String getImplementationGuide();
+  String getImplementationGuide();
 
-    OffsetDateTime getCreatedAt();
+  OffsetDateTime getCreatedAt();
 
-    OffsetDateTime getUpdatedAt();
+  OffsetDateTime getUpdatedAt();
 }

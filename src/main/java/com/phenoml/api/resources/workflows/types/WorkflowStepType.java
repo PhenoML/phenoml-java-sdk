@@ -7,97 +7,103 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class WorkflowStepType {
-    public static final WorkflowStepType WORKFLOW = new WorkflowStepType(Value.WORKFLOW, "workflow");
 
-    public static final WorkflowStepType SEARCH = new WorkflowStepType(Value.SEARCH, "search");
+  public static final WorkflowStepType WORKFLOW = new WorkflowStepType(Value.WORKFLOW, "workflow");
 
-    public static final WorkflowStepType DECISION_NODE = new WorkflowStepType(Value.DECISION_NODE, "decision_node");
+  public static final WorkflowStepType SEARCH = new WorkflowStepType(Value.SEARCH, "search");
 
-    public static final WorkflowStepType CREATE = new WorkflowStepType(Value.CREATE, "create");
+  public static final WorkflowStepType DECISION_NODE = new WorkflowStepType(
+    Value.DECISION_NODE,
+    "decision_node"
+  );
 
-    private final Value value;
+  public static final WorkflowStepType CREATE = new WorkflowStepType(Value.CREATE, "create");
 
-    private final String string;
+  private final Value value;
 
-    WorkflowStepType(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  WorkflowStepType(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof WorkflowStepType && this.string.equals(((WorkflowStepType) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case WORKFLOW:
+        return visitor.visitWorkflow();
+      case SEARCH:
+        return visitor.visitSearch();
+      case DECISION_NODE:
+        return visitor.visitDecisionNode();
+      case CREATE:
+        return visitor.visitCreate();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static WorkflowStepType valueOf(String value) {
+    switch (value) {
+      case "workflow":
+        return WORKFLOW;
+      case "search":
+        return SEARCH;
+      case "decision_node":
+        return DECISION_NODE;
+      case "create":
+        return CREATE;
+      default:
+        return new WorkflowStepType(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    SEARCH,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof WorkflowStepType && this.string.equals(((WorkflowStepType) other).string));
-    }
+    CREATE,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    WORKFLOW,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case WORKFLOW:
-                return visitor.visitWorkflow();
-            case SEARCH:
-                return visitor.visitSearch();
-            case DECISION_NODE:
-                return visitor.visitDecisionNode();
-            case CREATE:
-                return visitor.visitCreate();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    DECISION_NODE,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static WorkflowStepType valueOf(String value) {
-        switch (value) {
-            case "workflow":
-                return WORKFLOW;
-            case "search":
-                return SEARCH;
-            case "decision_node":
-                return DECISION_NODE;
-            case "create":
-                return CREATE;
-            default:
-                return new WorkflowStepType(Value.UNKNOWN, value);
-        }
-    }
+    UNKNOWN,
+  }
 
-    public enum Value {
-        SEARCH,
+  public interface Visitor<T> {
+    T visitSearch();
 
-        CREATE,
+    T visitCreate();
 
-        WORKFLOW,
+    T visitWorkflow();
 
-        DECISION_NODE,
+    T visitDecisionNode();
 
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitSearch();
-
-        T visitCreate();
-
-        T visitWorkflow();
-
-        T visitDecisionNode();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

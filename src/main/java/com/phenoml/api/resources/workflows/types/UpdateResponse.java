@@ -20,172 +20,189 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = UpdateResponse.Builder.class)
 public final class UpdateResponse {
-    private final Optional<Boolean> success;
 
-    private final Optional<String> message;
+  private final Optional<Boolean> success;
 
-    private final Optional<WorkflowResponse> workflow;
+  private final Optional<String> message;
 
-    private final Optional<WorkflowDefinition> workflowDetails;
+  private final Optional<WorkflowResponse> workflow;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<WorkflowDefinition> workflowDetails;
 
-    private UpdateResponse(
-            Optional<Boolean> success,
-            Optional<String> message,
-            Optional<WorkflowResponse> workflow,
-            Optional<WorkflowDefinition> workflowDetails,
-            Map<String, Object> additionalProperties) {
-        this.success = success;
-        this.message = message;
-        this.workflow = workflow;
-        this.workflowDetails = workflowDetails;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private UpdateResponse(
+    Optional<Boolean> success,
+    Optional<String> message,
+    Optional<WorkflowResponse> workflow,
+    Optional<WorkflowDefinition> workflowDetails,
+    Map<String, Object> additionalProperties
+  ) {
+    this.success = success;
+    this.message = message;
+    this.workflow = workflow;
+    this.workflowDetails = workflowDetails;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("success")
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  @JsonProperty("message")
+  public Optional<String> getMessage() {
+    return message;
+  }
+
+  /**
+   * @return Simplified workflow response with only essential step information
+   */
+  @JsonProperty("workflow")
+  public Optional<WorkflowResponse> getWorkflow() {
+    return workflow;
+  }
+
+  /**
+   * @return Only included when verbose=true - contains full implementation details
+   */
+  @JsonProperty("workflow_details")
+  public Optional<WorkflowDefinition> getWorkflowDetails() {
+    return workflowDetails;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof UpdateResponse && equalTo((UpdateResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(UpdateResponse other) {
+    return (
+      success.equals(other.success) &&
+      message.equals(other.message) &&
+      workflow.equals(other.workflow) &&
+      workflowDetails.equals(other.workflowDetails)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.success, this.message, this.workflow, this.workflowDetails);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<String> message = Optional.empty();
+
+    private Optional<WorkflowResponse> workflow = Optional.empty();
+
+    private Optional<WorkflowDefinition> workflowDetails = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(UpdateResponse other) {
+      success(other.getSuccess());
+      message(other.getMessage());
+      workflow(other.getWorkflow());
+      workflowDetails(other.getWorkflowDetails());
+      return this;
     }
 
-    @JsonProperty("success")
-    public Optional<Boolean> getSuccess() {
-        return success;
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
     }
 
-    @JsonProperty("message")
-    public Optional<String> getMessage() {
-        return message;
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
+    }
+
+    @JsonSetter(value = "message", nulls = Nulls.SKIP)
+    public Builder message(Optional<String> message) {
+      this.message = message;
+      return this;
+    }
+
+    public Builder message(String message) {
+      this.message = Optional.ofNullable(message);
+      return this;
     }
 
     /**
-     * @return Simplified workflow response with only essential step information
+     * <p>Simplified workflow response with only essential step information</p>
      */
-    @JsonProperty("workflow")
-    public Optional<WorkflowResponse> getWorkflow() {
-        return workflow;
+    @JsonSetter(value = "workflow", nulls = Nulls.SKIP)
+    public Builder workflow(Optional<WorkflowResponse> workflow) {
+      this.workflow = workflow;
+      return this;
+    }
+
+    public Builder workflow(WorkflowResponse workflow) {
+      this.workflow = Optional.ofNullable(workflow);
+      return this;
     }
 
     /**
-     * @return Only included when verbose=true - contains full implementation details
+     * <p>Only included when verbose=true - contains full implementation details</p>
      */
-    @JsonProperty("workflow_details")
-    public Optional<WorkflowDefinition> getWorkflowDetails() {
-        return workflowDetails;
+    @JsonSetter(value = "workflow_details", nulls = Nulls.SKIP)
+    public Builder workflowDetails(Optional<WorkflowDefinition> workflowDetails) {
+      this.workflowDetails = workflowDetails;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof UpdateResponse && equalTo((UpdateResponse) other);
+    public Builder workflowDetails(WorkflowDefinition workflowDetails) {
+      this.workflowDetails = Optional.ofNullable(workflowDetails);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public UpdateResponse build() {
+      return new UpdateResponse(success, message, workflow, workflowDetails, additionalProperties);
     }
 
-    private boolean equalTo(UpdateResponse other) {
-        return success.equals(other.success)
-                && message.equals(other.message)
-                && workflow.equals(other.workflow)
-                && workflowDetails.equals(other.workflowDetails);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("success") ||
+        key.equalsIgnoreCase("message") ||
+        key.equalsIgnoreCase("workflow") ||
+        key.equalsIgnoreCase("workflow_details")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.success, this.message, this.workflow, this.workflowDetails);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<String> message = Optional.empty();
-
-        private Optional<WorkflowResponse> workflow = Optional.empty();
-
-        private Optional<WorkflowDefinition> workflowDetails = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(UpdateResponse other) {
-            success(other.getSuccess());
-            message(other.getMessage());
-            workflow(other.getWorkflow());
-            workflowDetails(other.getWorkflowDetails());
-            return this;
-        }
-
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        @JsonSetter(value = "message", nulls = Nulls.SKIP)
-        public Builder message(Optional<String> message) {
-            this.message = message;
-            return this;
-        }
-
-        public Builder message(String message) {
-            this.message = Optional.ofNullable(message);
-            return this;
-        }
-
-        /**
-         * <p>Simplified workflow response with only essential step information</p>
-         */
-        @JsonSetter(value = "workflow", nulls = Nulls.SKIP)
-        public Builder workflow(Optional<WorkflowResponse> workflow) {
-            this.workflow = workflow;
-            return this;
-        }
-
-        public Builder workflow(WorkflowResponse workflow) {
-            this.workflow = Optional.ofNullable(workflow);
-            return this;
-        }
-
-        /**
-         * <p>Only included when verbose=true - contains full implementation details</p>
-         */
-        @JsonSetter(value = "workflow_details", nulls = Nulls.SKIP)
-        public Builder workflowDetails(Optional<WorkflowDefinition> workflowDetails) {
-            this.workflowDetails = workflowDetails;
-            return this;
-        }
-
-        public Builder workflowDetails(WorkflowDefinition workflowDetails) {
-            this.workflowDetails = Optional.ofNullable(workflowDetails);
-            return this;
-        }
-
-        public UpdateResponse build() {
-            return new UpdateResponse(success, message, workflow, workflowDetails, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

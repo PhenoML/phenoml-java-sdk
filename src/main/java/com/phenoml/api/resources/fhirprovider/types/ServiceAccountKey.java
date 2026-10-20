@@ -19,378 +19,413 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ServiceAccountKey.Builder.class)
 public final class ServiceAccountKey {
-    private final String type;
 
-    private final String projectId;
+  private final String type;
 
-    private final String privateKeyId;
+  private final String projectId;
 
-    private final String privateKey;
+  private final String privateKeyId;
 
-    private final String clientEmail;
+  private final String privateKey;
 
-    private final String clientId;
+  private final String clientEmail;
 
-    private final String authUri;
+  private final String clientId;
 
-    private final String tokenUri;
+  private final String authUri;
 
-    private final String authProviderX509CertUrl;
+  private final String tokenUri;
 
-    private final String clientX509CertUrl;
+  private final String authProviderX509CertUrl;
 
-    private final String universeDomain;
+  private final String clientX509CertUrl;
 
-    private final Map<String, Object> additionalProperties;
+  private final String universeDomain;
 
-    private ServiceAccountKey(
-            String type,
-            String projectId,
-            String privateKeyId,
-            String privateKey,
-            String clientEmail,
-            String clientId,
-            String authUri,
-            String tokenUri,
-            String authProviderX509CertUrl,
-            String clientX509CertUrl,
-            String universeDomain,
-            Map<String, Object> additionalProperties) {
-        this.type = type;
-        this.projectId = projectId;
-        this.privateKeyId = privateKeyId;
-        this.privateKey = privateKey;
-        this.clientEmail = clientEmail;
-        this.clientId = clientId;
-        this.authUri = authUri;
-        this.tokenUri = tokenUri;
-        this.authProviderX509CertUrl = authProviderX509CertUrl;
-        this.clientX509CertUrl = clientX509CertUrl;
-        this.universeDomain = universeDomain;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
-    @JsonProperty("type")
-    public String getType() {
-        return type;
-    }
+  private ServiceAccountKey(
+    String type,
+    String projectId,
+    String privateKeyId,
+    String privateKey,
+    String clientEmail,
+    String clientId,
+    String authUri,
+    String tokenUri,
+    String authProviderX509CertUrl,
+    String clientX509CertUrl,
+    String universeDomain,
+    Map<String, Object> additionalProperties
+  ) {
+    this.type = type;
+    this.projectId = projectId;
+    this.privateKeyId = privateKeyId;
+    this.privateKey = privateKey;
+    this.clientEmail = clientEmail;
+    this.clientId = clientId;
+    this.authUri = authUri;
+    this.tokenUri = tokenUri;
+    this.authProviderX509CertUrl = authProviderX509CertUrl;
+    this.clientX509CertUrl = clientX509CertUrl;
+    this.universeDomain = universeDomain;
+    this.additionalProperties = additionalProperties;
+  }
 
-    @JsonProperty("project_id")
-    public String getProjectId() {
-        return projectId;
-    }
+  @JsonProperty("type")
+  public String getType() {
+    return type;
+  }
 
-    @JsonProperty("private_key_id")
-    public String getPrivateKeyId() {
-        return privateKeyId;
-    }
+  @JsonProperty("project_id")
+  public String getProjectId() {
+    return projectId;
+  }
 
-    @JsonProperty("private_key")
-    public String getPrivateKey() {
-        return privateKey;
-    }
+  @JsonProperty("private_key_id")
+  public String getPrivateKeyId() {
+    return privateKeyId;
+  }
 
-    @JsonProperty("client_email")
-    public String getClientEmail() {
-        return clientEmail;
-    }
+  @JsonProperty("private_key")
+  public String getPrivateKey() {
+    return privateKey;
+  }
 
-    @JsonProperty("client_id")
-    public String getClientId() {
-        return clientId;
-    }
+  @JsonProperty("client_email")
+  public String getClientEmail() {
+    return clientEmail;
+  }
 
-    @JsonProperty("auth_uri")
-    public String getAuthUri() {
-        return authUri;
-    }
+  @JsonProperty("client_id")
+  public String getClientId() {
+    return clientId;
+  }
 
-    @JsonProperty("token_uri")
-    public String getTokenUri() {
-        return tokenUri;
-    }
+  @JsonProperty("auth_uri")
+  public String getAuthUri() {
+    return authUri;
+  }
 
-    @JsonProperty("auth_provider_x509_cert_url")
-    public String getAuthProviderX509CertUrl() {
-        return authProviderX509CertUrl;
-    }
+  @JsonProperty("token_uri")
+  public String getTokenUri() {
+    return tokenUri;
+  }
 
-    @JsonProperty("client_x509_cert_url")
-    public String getClientX509CertUrl() {
-        return clientX509CertUrl;
-    }
+  @JsonProperty("auth_provider_x509_cert_url")
+  public String getAuthProviderX509CertUrl() {
+    return authProviderX509CertUrl;
+  }
 
-    @JsonProperty("universe_domain")
-    public String getUniverseDomain() {
-        return universeDomain;
+  @JsonProperty("client_x509_cert_url")
+  public String getClientX509CertUrl() {
+    return clientX509CertUrl;
+  }
+
+  @JsonProperty("universe_domain")
+  public String getUniverseDomain() {
+    return universeDomain;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ServiceAccountKey && equalTo((ServiceAccountKey) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ServiceAccountKey other) {
+    return (
+      type.equals(other.type) &&
+      projectId.equals(other.projectId) &&
+      privateKeyId.equals(other.privateKeyId) &&
+      privateKey.equals(other.privateKey) &&
+      clientEmail.equals(other.clientEmail) &&
+      clientId.equals(other.clientId) &&
+      authUri.equals(other.authUri) &&
+      tokenUri.equals(other.tokenUri) &&
+      authProviderX509CertUrl.equals(other.authProviderX509CertUrl) &&
+      clientX509CertUrl.equals(other.clientX509CertUrl) &&
+      universeDomain.equals(other.universeDomain)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.type,
+      this.projectId,
+      this.privateKeyId,
+      this.privateKey,
+      this.clientEmail,
+      this.clientId,
+      this.authUri,
+      this.tokenUri,
+      this.authProviderX509CertUrl,
+      this.clientX509CertUrl,
+      this.universeDomain
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static TypeStage builder() {
+    return new Builder();
+  }
+
+  public interface TypeStage {
+    ProjectIdStage type(@NotNull String type);
+
+    Builder from(ServiceAccountKey other);
+  }
+
+  public interface ProjectIdStage {
+    PrivateKeyIdStage projectId(@NotNull String projectId);
+  }
+
+  public interface PrivateKeyIdStage {
+    PrivateKeyStage privateKeyId(@NotNull String privateKeyId);
+  }
+
+  public interface PrivateKeyStage {
+    ClientEmailStage privateKey(@NotNull String privateKey);
+  }
+
+  public interface ClientEmailStage {
+    ClientIdStage clientEmail(@NotNull String clientEmail);
+  }
+
+  public interface ClientIdStage {
+    AuthUriStage clientId(@NotNull String clientId);
+  }
+
+  public interface AuthUriStage {
+    TokenUriStage authUri(@NotNull String authUri);
+  }
+
+  public interface TokenUriStage {
+    AuthProviderX509CertUrlStage tokenUri(@NotNull String tokenUri);
+  }
+
+  public interface AuthProviderX509CertUrlStage {
+    ClientX509CertUrlStage authProviderX509CertUrl(@NotNull String authProviderX509CertUrl);
+  }
+
+  public interface ClientX509CertUrlStage {
+    UniverseDomainStage clientX509CertUrl(@NotNull String clientX509CertUrl);
+  }
+
+  public interface UniverseDomainStage {
+    _FinalStage universeDomain(@NotNull String universeDomain);
+  }
+
+  public interface _FinalStage {
+    ServiceAccountKey build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements
+      TypeStage,
+      ProjectIdStage,
+      PrivateKeyIdStage,
+      PrivateKeyStage,
+      ClientEmailStage,
+      ClientIdStage,
+      AuthUriStage,
+      TokenUriStage,
+      AuthProviderX509CertUrlStage,
+      ClientX509CertUrlStage,
+      UniverseDomainStage,
+      _FinalStage {
+
+    private String type;
+
+    private String projectId;
+
+    private String privateKeyId;
+
+    private String privateKey;
+
+    private String clientEmail;
+
+    private String clientId;
+
+    private String authUri;
+
+    private String tokenUri;
+
+    private String authProviderX509CertUrl;
+
+    private String clientX509CertUrl;
+
+    private String universeDomain;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(ServiceAccountKey other) {
+      type(other.getType());
+      projectId(other.getProjectId());
+      privateKeyId(other.getPrivateKeyId());
+      privateKey(other.getPrivateKey());
+      clientEmail(other.getClientEmail());
+      clientId(other.getClientId());
+      authUri(other.getAuthUri());
+      tokenUri(other.getTokenUri());
+      authProviderX509CertUrl(other.getAuthProviderX509CertUrl());
+      clientX509CertUrl(other.getClientX509CertUrl());
+      universeDomain(other.getUniverseDomain());
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ServiceAccountKey && equalTo((ServiceAccountKey) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(ServiceAccountKey other) {
-        return type.equals(other.type)
-                && projectId.equals(other.projectId)
-                && privateKeyId.equals(other.privateKeyId)
-                && privateKey.equals(other.privateKey)
-                && clientEmail.equals(other.clientEmail)
-                && clientId.equals(other.clientId)
-                && authUri.equals(other.authUri)
-                && tokenUri.equals(other.tokenUri)
-                && authProviderX509CertUrl.equals(other.authProviderX509CertUrl)
-                && clientX509CertUrl.equals(other.clientX509CertUrl)
-                && universeDomain.equals(other.universeDomain);
+    @JsonSetter("type")
+    public ProjectIdStage type(@NotNull String type) {
+      this.type = Objects.requireNonNull(type, "type must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.type,
-                this.projectId,
-                this.privateKeyId,
-                this.privateKey,
-                this.clientEmail,
-                this.clientId,
-                this.authUri,
-                this.tokenUri,
-                this.authProviderX509CertUrl,
-                this.clientX509CertUrl,
-                this.universeDomain);
+    @JsonSetter("project_id")
+    public PrivateKeyIdStage projectId(@NotNull String projectId) {
+      this.projectId = Objects.requireNonNull(projectId, "projectId must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonSetter("private_key_id")
+    public PrivateKeyStage privateKeyId(@NotNull String privateKeyId) {
+      this.privateKeyId = Objects.requireNonNull(privateKeyId, "privateKeyId must not be null");
+      return this;
     }
 
-    public static TypeStage builder() {
-        return new Builder();
+    @java.lang.Override
+    @JsonSetter("private_key")
+    public ClientEmailStage privateKey(@NotNull String privateKey) {
+      this.privateKey = Objects.requireNonNull(privateKey, "privateKey must not be null");
+      return this;
     }
 
-    public interface TypeStage {
-        ProjectIdStage type(@NotNull String type);
-
-        Builder from(ServiceAccountKey other);
+    @java.lang.Override
+    @JsonSetter("client_email")
+    public ClientIdStage clientEmail(@NotNull String clientEmail) {
+      this.clientEmail = Objects.requireNonNull(clientEmail, "clientEmail must not be null");
+      return this;
     }
 
-    public interface ProjectIdStage {
-        PrivateKeyIdStage projectId(@NotNull String projectId);
+    @java.lang.Override
+    @JsonSetter("client_id")
+    public AuthUriStage clientId(@NotNull String clientId) {
+      this.clientId = Objects.requireNonNull(clientId, "clientId must not be null");
+      return this;
     }
 
-    public interface PrivateKeyIdStage {
-        PrivateKeyStage privateKeyId(@NotNull String privateKeyId);
+    @java.lang.Override
+    @JsonSetter("auth_uri")
+    public TokenUriStage authUri(@NotNull String authUri) {
+      this.authUri = Objects.requireNonNull(authUri, "authUri must not be null");
+      return this;
     }
 
-    public interface PrivateKeyStage {
-        ClientEmailStage privateKey(@NotNull String privateKey);
+    @java.lang.Override
+    @JsonSetter("token_uri")
+    public AuthProviderX509CertUrlStage tokenUri(@NotNull String tokenUri) {
+      this.tokenUri = Objects.requireNonNull(tokenUri, "tokenUri must not be null");
+      return this;
     }
 
-    public interface ClientEmailStage {
-        ClientIdStage clientEmail(@NotNull String clientEmail);
+    @java.lang.Override
+    @JsonSetter("auth_provider_x509_cert_url")
+    public ClientX509CertUrlStage authProviderX509CertUrl(@NotNull String authProviderX509CertUrl) {
+      this.authProviderX509CertUrl = Objects.requireNonNull(
+        authProviderX509CertUrl,
+        "authProviderX509CertUrl must not be null"
+      );
+      return this;
     }
 
-    public interface ClientIdStage {
-        AuthUriStage clientId(@NotNull String clientId);
+    @java.lang.Override
+    @JsonSetter("client_x509_cert_url")
+    public UniverseDomainStage clientX509CertUrl(@NotNull String clientX509CertUrl) {
+      this.clientX509CertUrl = Objects.requireNonNull(
+        clientX509CertUrl,
+        "clientX509CertUrl must not be null"
+      );
+      return this;
     }
 
-    public interface AuthUriStage {
-        TokenUriStage authUri(@NotNull String authUri);
+    @java.lang.Override
+    @JsonSetter("universe_domain")
+    public _FinalStage universeDomain(@NotNull String universeDomain) {
+      this.universeDomain = Objects.requireNonNull(
+        universeDomain,
+        "universeDomain must not be null"
+      );
+      return this;
     }
 
-    public interface TokenUriStage {
-        AuthProviderX509CertUrlStage tokenUri(@NotNull String tokenUri);
+    @java.lang.Override
+    public ServiceAccountKey build() {
+      return new ServiceAccountKey(
+        type,
+        projectId,
+        privateKeyId,
+        privateKey,
+        clientEmail,
+        clientId,
+        authUri,
+        tokenUri,
+        authProviderX509CertUrl,
+        clientX509CertUrl,
+        universeDomain,
+        additionalProperties
+      );
     }
 
-    public interface AuthProviderX509CertUrlStage {
-        ClientX509CertUrlStage authProviderX509CertUrl(@NotNull String authProviderX509CertUrl);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("type") ||
+        key.equalsIgnoreCase("project_id") ||
+        key.equalsIgnoreCase("private_key_id") ||
+        key.equalsIgnoreCase("private_key") ||
+        key.equalsIgnoreCase("client_email") ||
+        key.equalsIgnoreCase("client_id") ||
+        key.equalsIgnoreCase("auth_uri") ||
+        key.equalsIgnoreCase("token_uri") ||
+        key.equalsIgnoreCase("auth_provider_x509_cert_url") ||
+        key.equalsIgnoreCase("client_x509_cert_url") ||
+        key.equalsIgnoreCase("universe_domain")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public interface ClientX509CertUrlStage {
-        UniverseDomainStage clientX509CertUrl(@NotNull String clientX509CertUrl);
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public interface UniverseDomainStage {
-        _FinalStage universeDomain(@NotNull String universeDomain);
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface _FinalStage {
-        ServiceAccountKey build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder
-            implements TypeStage,
-                    ProjectIdStage,
-                    PrivateKeyIdStage,
-                    PrivateKeyStage,
-                    ClientEmailStage,
-                    ClientIdStage,
-                    AuthUriStage,
-                    TokenUriStage,
-                    AuthProviderX509CertUrlStage,
-                    ClientX509CertUrlStage,
-                    UniverseDomainStage,
-                    _FinalStage {
-        private String type;
-
-        private String projectId;
-
-        private String privateKeyId;
-
-        private String privateKey;
-
-        private String clientEmail;
-
-        private String clientId;
-
-        private String authUri;
-
-        private String tokenUri;
-
-        private String authProviderX509CertUrl;
-
-        private String clientX509CertUrl;
-
-        private String universeDomain;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(ServiceAccountKey other) {
-            type(other.getType());
-            projectId(other.getProjectId());
-            privateKeyId(other.getPrivateKeyId());
-            privateKey(other.getPrivateKey());
-            clientEmail(other.getClientEmail());
-            clientId(other.getClientId());
-            authUri(other.getAuthUri());
-            tokenUri(other.getTokenUri());
-            authProviderX509CertUrl(other.getAuthProviderX509CertUrl());
-            clientX509CertUrl(other.getClientX509CertUrl());
-            universeDomain(other.getUniverseDomain());
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("type")
-        public ProjectIdStage type(@NotNull String type) {
-            this.type = Objects.requireNonNull(type, "type must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("project_id")
-        public PrivateKeyIdStage projectId(@NotNull String projectId) {
-            this.projectId = Objects.requireNonNull(projectId, "projectId must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("private_key_id")
-        public PrivateKeyStage privateKeyId(@NotNull String privateKeyId) {
-            this.privateKeyId = Objects.requireNonNull(privateKeyId, "privateKeyId must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("private_key")
-        public ClientEmailStage privateKey(@NotNull String privateKey) {
-            this.privateKey = Objects.requireNonNull(privateKey, "privateKey must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("client_email")
-        public ClientIdStage clientEmail(@NotNull String clientEmail) {
-            this.clientEmail = Objects.requireNonNull(clientEmail, "clientEmail must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("client_id")
-        public AuthUriStage clientId(@NotNull String clientId) {
-            this.clientId = Objects.requireNonNull(clientId, "clientId must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("auth_uri")
-        public TokenUriStage authUri(@NotNull String authUri) {
-            this.authUri = Objects.requireNonNull(authUri, "authUri must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("token_uri")
-        public AuthProviderX509CertUrlStage tokenUri(@NotNull String tokenUri) {
-            this.tokenUri = Objects.requireNonNull(tokenUri, "tokenUri must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("auth_provider_x509_cert_url")
-        public ClientX509CertUrlStage authProviderX509CertUrl(@NotNull String authProviderX509CertUrl) {
-            this.authProviderX509CertUrl =
-                    Objects.requireNonNull(authProviderX509CertUrl, "authProviderX509CertUrl must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("client_x509_cert_url")
-        public UniverseDomainStage clientX509CertUrl(@NotNull String clientX509CertUrl) {
-            this.clientX509CertUrl = Objects.requireNonNull(clientX509CertUrl, "clientX509CertUrl must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("universe_domain")
-        public _FinalStage universeDomain(@NotNull String universeDomain) {
-            this.universeDomain = Objects.requireNonNull(universeDomain, "universeDomain must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public ServiceAccountKey build() {
-            return new ServiceAccountKey(
-                    type,
-                    projectId,
-                    privateKeyId,
-                    privateKey,
-                    clientEmail,
-                    clientId,
-                    authUri,
-                    tokenUri,
-                    authProviderX509CertUrl,
-                    clientX509CertUrl,
-                    universeDomain,
-                    additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

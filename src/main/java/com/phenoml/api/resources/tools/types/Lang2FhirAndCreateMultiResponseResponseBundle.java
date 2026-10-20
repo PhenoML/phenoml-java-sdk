@@ -21,135 +21,160 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Lang2FhirAndCreateMultiResponseResponseBundle.Builder.class)
 public final class Lang2FhirAndCreateMultiResponseResponseBundle {
-    private final Optional<String> resourceType;
 
-    private final Optional<String> type;
+  private final Optional<String> resourceType;
 
-    private final Optional<List<Map<String, Object>>> entry;
+  private final Optional<String> type;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<Map<String, Object>>> entry;
 
-    private Lang2FhirAndCreateMultiResponseResponseBundle(
-            Optional<String> resourceType,
-            Optional<String> type,
-            Optional<List<Map<String, Object>>> entry,
-            Map<String, Object> additionalProperties) {
-        this.resourceType = resourceType;
-        this.type = type;
-        this.entry = entry;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private Lang2FhirAndCreateMultiResponseResponseBundle(
+    Optional<String> resourceType,
+    Optional<String> type,
+    Optional<List<Map<String, Object>>> entry,
+    Map<String, Object> additionalProperties
+  ) {
+    this.resourceType = resourceType;
+    this.type = type;
+    this.entry = entry;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("resourceType")
+  public Optional<String> getResourceType() {
+    return resourceType;
+  }
+
+  @JsonProperty("type")
+  public Optional<String> getType() {
+    return type;
+  }
+
+  @JsonProperty("entry")
+  public Optional<List<Map<String, Object>>> getEntry() {
+    return entry;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof Lang2FhirAndCreateMultiResponseResponseBundle &&
+      equalTo((Lang2FhirAndCreateMultiResponseResponseBundle) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(Lang2FhirAndCreateMultiResponseResponseBundle other) {
+    return (
+      resourceType.equals(other.resourceType) &&
+      type.equals(other.type) &&
+      entry.equals(other.entry)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.resourceType, this.type, this.entry);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> resourceType = Optional.empty();
+
+    private Optional<String> type = Optional.empty();
+
+    private Optional<List<Map<String, Object>>> entry = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(Lang2FhirAndCreateMultiResponseResponseBundle other) {
+      resourceType(other.getResourceType());
+      type(other.getType());
+      entry(other.getEntry());
+      return this;
     }
 
-    @JsonProperty("resourceType")
-    public Optional<String> getResourceType() {
-        return resourceType;
+    @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
+    public Builder resourceType(Optional<String> resourceType) {
+      this.resourceType = resourceType;
+      return this;
     }
 
-    @JsonProperty("type")
-    public Optional<String> getType() {
-        return type;
+    public Builder resourceType(String resourceType) {
+      this.resourceType = Optional.ofNullable(resourceType);
+      return this;
     }
 
-    @JsonProperty("entry")
-    public Optional<List<Map<String, Object>>> getEntry() {
-        return entry;
+    @JsonSetter(value = "type", nulls = Nulls.SKIP)
+    public Builder type(Optional<String> type) {
+      this.type = type;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof Lang2FhirAndCreateMultiResponseResponseBundle
-                && equalTo((Lang2FhirAndCreateMultiResponseResponseBundle) other);
+    public Builder type(String type) {
+      this.type = Optional.ofNullable(type);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    @JsonSetter(value = "entry", nulls = Nulls.SKIP)
+    public Builder entry(Optional<List<Map<String, Object>>> entry) {
+      this.entry = entry;
+      return this;
     }
 
-    private boolean equalTo(Lang2FhirAndCreateMultiResponseResponseBundle other) {
-        return resourceType.equals(other.resourceType) && type.equals(other.type) && entry.equals(other.entry);
+    public Builder entry(List<Map<String, Object>> entry) {
+      this.entry = Optional.ofNullable(entry);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.resourceType, this.type, this.entry);
+    public Lang2FhirAndCreateMultiResponseResponseBundle build() {
+      return new Lang2FhirAndCreateMultiResponseResponseBundle(
+        resourceType,
+        type,
+        entry,
+        additionalProperties
+      );
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("resourceType") ||
+        key.equalsIgnoreCase("type") ||
+        key.equalsIgnoreCase("entry")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> resourceType = Optional.empty();
-
-        private Optional<String> type = Optional.empty();
-
-        private Optional<List<Map<String, Object>>> entry = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(Lang2FhirAndCreateMultiResponseResponseBundle other) {
-            resourceType(other.getResourceType());
-            type(other.getType());
-            entry(other.getEntry());
-            return this;
-        }
-
-        @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
-        public Builder resourceType(Optional<String> resourceType) {
-            this.resourceType = resourceType;
-            return this;
-        }
-
-        public Builder resourceType(String resourceType) {
-            this.resourceType = Optional.ofNullable(resourceType);
-            return this;
-        }
-
-        @JsonSetter(value = "type", nulls = Nulls.SKIP)
-        public Builder type(Optional<String> type) {
-            this.type = type;
-            return this;
-        }
-
-        public Builder type(String type) {
-            this.type = Optional.ofNullable(type);
-            return this;
-        }
-
-        @JsonSetter(value = "entry", nulls = Nulls.SKIP)
-        public Builder entry(Optional<List<Map<String, Object>>> entry) {
-            this.entry = entry;
-            return this;
-        }
-
-        public Builder entry(List<Map<String, Object>> entry) {
-            this.entry = Optional.ofNullable(entry);
-            return this;
-        }
-
-        public Lang2FhirAndCreateMultiResponseResponseBundle build() {
-            return new Lang2FhirAndCreateMultiResponseResponseBundle(resourceType, type, entry, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

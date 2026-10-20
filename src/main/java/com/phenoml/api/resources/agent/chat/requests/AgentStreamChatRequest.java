@@ -22,382 +22,402 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = AgentStreamChatRequest.Builder.class)
 public final class AgentStreamChatRequest {
-    private final Optional<String> phenomlOnBehalfOf;
 
-    private final Optional<String> phenomlFhirProvider;
+  private final Optional<String> phenomlOnBehalfOf;
 
-    private final String message;
+  private final Optional<String> phenomlFhirProvider;
 
-    private final Optional<String> context;
+  private final String message;
 
-    private final Optional<String> sessionId;
+  private final Optional<String> context;
 
-    private final String agentId;
+  private final Optional<String> sessionId;
 
-    private final Optional<Boolean> enhancedReasoning;
+  private final String agentId;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Boolean> enhancedReasoning;
 
-    private AgentStreamChatRequest(
-            Optional<String> phenomlOnBehalfOf,
-            Optional<String> phenomlFhirProvider,
-            String message,
-            Optional<String> context,
-            Optional<String> sessionId,
-            String agentId,
-            Optional<Boolean> enhancedReasoning,
-            Map<String, Object> additionalProperties) {
-        this.phenomlOnBehalfOf = phenomlOnBehalfOf;
-        this.phenomlFhirProvider = phenomlFhirProvider;
-        this.message = message;
-        this.context = context;
-        this.sessionId = sessionId;
-        this.agentId = agentId;
-        this.enhancedReasoning = enhancedReasoning;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private AgentStreamChatRequest(
+    Optional<String> phenomlOnBehalfOf,
+    Optional<String> phenomlFhirProvider,
+    String message,
+    Optional<String> context,
+    Optional<String> sessionId,
+    String agentId,
+    Optional<Boolean> enhancedReasoning,
+    Map<String, Object> additionalProperties
+  ) {
+    this.phenomlOnBehalfOf = phenomlOnBehalfOf;
+    this.phenomlFhirProvider = phenomlFhirProvider;
+    this.message = message;
+    this.context = context;
+    this.sessionId = sessionId;
+    this.agentId = agentId;
+    this.enhancedReasoning = enhancedReasoning;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+   * Must be in the format: Patient/{uuid} or Practitioner/{uuid}
+   */
+  @JsonIgnore
+  public Optional<String> getPhenomlOnBehalfOf() {
+    return phenomlOnBehalfOf;
+  }
+
+  /**
+   * @return Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+   * Multiple FHIR provider integrations can be provided as comma-separated values.
+   */
+  @JsonIgnore
+  public Optional<String> getPhenomlFhirProvider() {
+    return phenomlFhirProvider;
+  }
+
+  /**
+   * @return The message to send to the agent
+   */
+  @JsonProperty("message")
+  public String getMessage() {
+    return message;
+  }
+
+  /**
+   * @return Optional context for the conversation
+   */
+  @JsonProperty("context")
+  public Optional<String> getContext() {
+    return context;
+  }
+
+  /**
+   * @return Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.
+   */
+  @JsonProperty("session_id")
+  public Optional<String> getSessionId() {
+    return sessionId;
+  }
+
+  /**
+   * @return The ID of the agent to chat with
+   */
+  @JsonProperty("agent_id")
+  public String getAgentId() {
+    return agentId;
+  }
+
+  /**
+   * @return Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.
+   */
+  @JsonProperty("enhanced_reasoning")
+  public Optional<Boolean> getEnhancedReasoning() {
+    return enhancedReasoning;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof AgentStreamChatRequest && equalTo((AgentStreamChatRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(AgentStreamChatRequest other) {
+    return (
+      phenomlOnBehalfOf.equals(other.phenomlOnBehalfOf) &&
+      phenomlFhirProvider.equals(other.phenomlFhirProvider) &&
+      message.equals(other.message) &&
+      context.equals(other.context) &&
+      sessionId.equals(other.sessionId) &&
+      agentId.equals(other.agentId) &&
+      enhancedReasoning.equals(other.enhancedReasoning)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.phenomlOnBehalfOf,
+      this.phenomlFhirProvider,
+      this.message,
+      this.context,
+      this.sessionId,
+      this.agentId,
+      this.enhancedReasoning
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static MessageStage builder() {
+    return new Builder();
+  }
+
+  public interface MessageStage {
+    /**
+     * <p>The message to send to the agent</p>
+     */
+    AgentIdStage message(@NotNull String message);
+
+    Builder from(AgentStreamChatRequest other);
+  }
+
+  public interface AgentIdStage {
+    /**
+     * <p>The ID of the agent to chat with</p>
+     */
+    _FinalStage agentId(@NotNull String agentId);
+  }
+
+  public interface _FinalStage {
+    AgentStreamChatRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
+     */
+    _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf);
+
+    _FinalStage phenomlOnBehalfOf(String phenomlOnBehalfOf);
+
+    /**
+     * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+     * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+     */
+    _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider);
+
+    _FinalStage phenomlFhirProvider(String phenomlFhirProvider);
+
+    /**
+     * <p>Optional context for the conversation</p>
+     */
+    _FinalStage context(Optional<String> context);
+
+    _FinalStage context(String context);
+
+    /**
+     * <p>Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.</p>
+     */
+    _FinalStage sessionId(Optional<String> sessionId);
+
+    _FinalStage sessionId(String sessionId);
+
+    /**
+     * <p>Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.</p>
+     */
+    _FinalStage enhancedReasoning(Optional<Boolean> enhancedReasoning);
+
+    _FinalStage enhancedReasoning(Boolean enhancedReasoning);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements MessageStage, AgentIdStage, _FinalStage {
+
+    private String message;
+
+    private String agentId;
+
+    private Optional<Boolean> enhancedReasoning = Optional.empty();
+
+    private Optional<String> sessionId = Optional.empty();
+
+    private Optional<String> context = Optional.empty();
+
+    private Optional<String> phenomlFhirProvider = Optional.empty();
+
+    private Optional<String> phenomlOnBehalfOf = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(AgentStreamChatRequest other) {
+      phenomlOnBehalfOf(other.getPhenomlOnBehalfOf());
+      phenomlFhirProvider(other.getPhenomlFhirProvider());
+      message(other.getMessage());
+      context(other.getContext());
+      sessionId(other.getSessionId());
+      agentId(other.getAgentId());
+      enhancedReasoning(other.getEnhancedReasoning());
+      return this;
     }
 
     /**
-     * @return Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
-     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}
+     * <p>The message to send to the agent</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonIgnore
-    public Optional<String> getPhenomlOnBehalfOf() {
-        return phenomlOnBehalfOf;
+    @java.lang.Override
+    @JsonSetter("message")
+    public AgentIdStage message(@NotNull String message) {
+      this.message = Objects.requireNonNull(message, "message must not be null");
+      return this;
     }
 
     /**
-     * @return Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
-     * Multiple FHIR provider integrations can be provided as comma-separated values.
+     * <p>The ID of the agent to chat with</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonIgnore
-    public Optional<String> getPhenomlFhirProvider() {
-        return phenomlFhirProvider;
+    @java.lang.Override
+    @JsonSetter("agent_id")
+    public _FinalStage agentId(@NotNull String agentId) {
+      this.agentId = Objects.requireNonNull(agentId, "agentId must not be null");
+      return this;
     }
 
     /**
-     * @return The message to send to the agent
+     * <p>Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("message")
-    public String getMessage() {
-        return message;
+    @java.lang.Override
+    public _FinalStage enhancedReasoning(Boolean enhancedReasoning) {
+      this.enhancedReasoning = Optional.ofNullable(enhancedReasoning);
+      return this;
     }
 
     /**
-     * @return Optional context for the conversation
+     * <p>Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.</p>
      */
-    @JsonProperty("context")
-    public Optional<String> getContext() {
-        return context;
+    @java.lang.Override
+    @JsonSetter(value = "enhanced_reasoning", nulls = Nulls.SKIP)
+    public _FinalStage enhancedReasoning(Optional<Boolean> enhancedReasoning) {
+      this.enhancedReasoning = enhancedReasoning;
+      return this;
     }
 
     /**
-     * @return Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.
+     * <p>Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("session_id")
-    public Optional<String> getSessionId() {
-        return sessionId;
+    @java.lang.Override
+    public _FinalStage sessionId(String sessionId) {
+      this.sessionId = Optional.ofNullable(sessionId);
+      return this;
     }
 
     /**
-     * @return The ID of the agent to chat with
+     * <p>Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.</p>
      */
-    @JsonProperty("agent_id")
-    public String getAgentId() {
-        return agentId;
+    @java.lang.Override
+    @JsonSetter(value = "session_id", nulls = Nulls.SKIP)
+    public _FinalStage sessionId(Optional<String> sessionId) {
+      this.sessionId = sessionId;
+      return this;
     }
 
     /**
-     * @return Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.
+     * <p>Optional context for the conversation</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("enhanced_reasoning")
-    public Optional<Boolean> getEnhancedReasoning() {
-        return enhancedReasoning;
+    @java.lang.Override
+    public _FinalStage context(String context) {
+      this.context = Optional.ofNullable(context);
+      return this;
+    }
+
+    /**
+     * <p>Optional context for the conversation</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "context", nulls = Nulls.SKIP)
+    public _FinalStage context(Optional<String> context) {
+      this.context = context;
+      return this;
+    }
+
+    /**
+     * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+     * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage phenomlFhirProvider(String phenomlFhirProvider) {
+      this.phenomlFhirProvider = Optional.ofNullable(phenomlFhirProvider);
+      return this;
+    }
+
+    /**
+     * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+     * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+     */
+    @java.lang.Override
+    public _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider) {
+      this.phenomlFhirProvider = phenomlFhirProvider;
+      return this;
+    }
+
+    /**
+     * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage phenomlOnBehalfOf(String phenomlOnBehalfOf) {
+      this.phenomlOnBehalfOf = Optional.ofNullable(phenomlOnBehalfOf);
+      return this;
+    }
+
+    /**
+     * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
+     */
+    @java.lang.Override
+    public _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf) {
+      this.phenomlOnBehalfOf = phenomlOnBehalfOf;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof AgentStreamChatRequest && equalTo((AgentStreamChatRequest) other);
+    public AgentStreamChatRequest build() {
+      return new AgentStreamChatRequest(
+        phenomlOnBehalfOf,
+        phenomlFhirProvider,
+        message,
+        context,
+        sessionId,
+        agentId,
+        enhancedReasoning,
+        additionalProperties
+      );
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(AgentStreamChatRequest other) {
-        return phenomlOnBehalfOf.equals(other.phenomlOnBehalfOf)
-                && phenomlFhirProvider.equals(other.phenomlFhirProvider)
-                && message.equals(other.message)
-                && context.equals(other.context)
-                && sessionId.equals(other.sessionId)
-                && agentId.equals(other.agentId)
-                && enhancedReasoning.equals(other.enhancedReasoning);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.phenomlOnBehalfOf,
-                this.phenomlFhirProvider,
-                this.message,
-                this.context,
-                this.sessionId,
-                this.agentId,
-                this.enhancedReasoning);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("message") ||
+        key.equalsIgnoreCase("context") ||
+        key.equalsIgnoreCase("session_id") ||
+        key.equalsIgnoreCase("agent_id") ||
+        key.equalsIgnoreCase("enhanced_reasoning")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static MessageStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface MessageStage {
-        /**
-         * <p>The message to send to the agent</p>
-         */
-        AgentIdStage message(@NotNull String message);
-
-        Builder from(AgentStreamChatRequest other);
-    }
-
-    public interface AgentIdStage {
-        /**
-         * <p>The ID of the agent to chat with</p>
-         */
-        _FinalStage agentId(@NotNull String agentId);
-    }
-
-    public interface _FinalStage {
-        AgentStreamChatRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
-         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
-         */
-        _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf);
-
-        _FinalStage phenomlOnBehalfOf(String phenomlOnBehalfOf);
-
-        /**
-         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
-         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
-         */
-        _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider);
-
-        _FinalStage phenomlFhirProvider(String phenomlFhirProvider);
-
-        /**
-         * <p>Optional context for the conversation</p>
-         */
-        _FinalStage context(Optional<String> context);
-
-        _FinalStage context(String context);
-
-        /**
-         * <p>Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.</p>
-         */
-        _FinalStage sessionId(Optional<String> sessionId);
-
-        _FinalStage sessionId(String sessionId);
-
-        /**
-         * <p>Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.</p>
-         */
-        _FinalStage enhancedReasoning(Optional<Boolean> enhancedReasoning);
-
-        _FinalStage enhancedReasoning(Boolean enhancedReasoning);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements MessageStage, AgentIdStage, _FinalStage {
-        private String message;
-
-        private String agentId;
-
-        private Optional<Boolean> enhancedReasoning = Optional.empty();
-
-        private Optional<String> sessionId = Optional.empty();
-
-        private Optional<String> context = Optional.empty();
-
-        private Optional<String> phenomlFhirProvider = Optional.empty();
-
-        private Optional<String> phenomlOnBehalfOf = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(AgentStreamChatRequest other) {
-            phenomlOnBehalfOf(other.getPhenomlOnBehalfOf());
-            phenomlFhirProvider(other.getPhenomlFhirProvider());
-            message(other.getMessage());
-            context(other.getContext());
-            sessionId(other.getSessionId());
-            agentId(other.getAgentId());
-            enhancedReasoning(other.getEnhancedReasoning());
-            return this;
-        }
-
-        /**
-         * <p>The message to send to the agent</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("message")
-        public AgentIdStage message(@NotNull String message) {
-            this.message = Objects.requireNonNull(message, "message must not be null");
-            return this;
-        }
-
-        /**
-         * <p>The ID of the agent to chat with</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("agent_id")
-        public _FinalStage agentId(@NotNull String agentId) {
-            this.agentId = Objects.requireNonNull(agentId, "agentId must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage enhancedReasoning(Boolean enhancedReasoning) {
-            this.enhancedReasoning = Optional.ofNullable(enhancedReasoning);
-            return this;
-        }
-
-        /**
-         * <p>Enable enhanced reasoning capabilities. Increases latency but improves response quality and reliability.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "enhanced_reasoning", nulls = Nulls.SKIP)
-        public _FinalStage enhancedReasoning(Optional<Boolean> enhancedReasoning) {
-            this.enhancedReasoning = enhancedReasoning;
-            return this;
-        }
-
-        /**
-         * <p>Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage sessionId(String sessionId) {
-            this.sessionId = Optional.ofNullable(sessionId);
-            return this;
-        }
-
-        /**
-         * <p>Optional session ID for conversation continuity. Only one request may be active for a session at a time; overlapping turns for the same session return 409 Conflict.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "session_id", nulls = Nulls.SKIP)
-        public _FinalStage sessionId(Optional<String> sessionId) {
-            this.sessionId = sessionId;
-            return this;
-        }
-
-        /**
-         * <p>Optional context for the conversation</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage context(String context) {
-            this.context = Optional.ofNullable(context);
-            return this;
-        }
-
-        /**
-         * <p>Optional context for the conversation</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "context", nulls = Nulls.SKIP)
-        public _FinalStage context(Optional<String> context) {
-            this.context = context;
-            return this;
-        }
-
-        /**
-         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
-         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage phenomlFhirProvider(String phenomlFhirProvider) {
-            this.phenomlFhirProvider = Optional.ofNullable(phenomlFhirProvider);
-            return this;
-        }
-
-        /**
-         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
-         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
-         */
-        @java.lang.Override
-        public _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider) {
-            this.phenomlFhirProvider = phenomlFhirProvider;
-            return this;
-        }
-
-        /**
-         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
-         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage phenomlOnBehalfOf(String phenomlOnBehalfOf) {
-            this.phenomlOnBehalfOf = Optional.ofNullable(phenomlOnBehalfOf);
-            return this;
-        }
-
-        /**
-         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
-         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
-         */
-        @java.lang.Override
-        public _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf) {
-            this.phenomlOnBehalfOf = phenomlOnBehalfOf;
-            return this;
-        }
-
-        @java.lang.Override
-        public AgentStreamChatRequest build() {
-            return new AgentStreamChatRequest(
-                    phenomlOnBehalfOf,
-                    phenomlFhirProvider,
-                    message,
-                    context,
-                    sessionId,
-                    agentId,
-                    enhancedReasoning,
-                    additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

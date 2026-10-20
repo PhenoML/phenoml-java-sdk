@@ -18,131 +18,143 @@ import com.phenoml.api.resources.workflows.types.ListWorkflowsResponse;
 import com.phenoml.api.resources.workflows.types.UpdateResponse;
 
 public class WorkflowsClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawWorkflowsClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public WorkflowsClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawWorkflowsClient(clientOptions);
-    }
+  private final RawWorkflowsClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawWorkflowsClient withRawResponse() {
-        return this.rawClient;
-    }
+  public WorkflowsClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawWorkflowsClient(clientOptions);
+  }
 
-    /**
-     * Retrieves all workflow definitions for the authenticated user
-     */
-    public ListWorkflowsResponse list() {
-        return this.rawClient.list().body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawWorkflowsClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Retrieves all workflow definitions for the authenticated user
-     */
-    public ListWorkflowsResponse list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).body();
-    }
+  /**
+   * Retrieves all workflow definitions for the authenticated user
+   */
+  public ListWorkflowsResponse list() {
+    return this.rawClient.list().body();
+  }
 
-    /**
-     * Retrieves all workflow definitions for the authenticated user
-     */
-    public ListWorkflowsResponse list(ListRequest request) {
-        return this.rawClient.list(request).body();
-    }
+  /**
+   * Retrieves all workflow definitions for the authenticated user
+   */
+  public ListWorkflowsResponse list(RequestOptions requestOptions) {
+    return this.rawClient.list(requestOptions).body();
+  }
 
-    /**
-     * Retrieves all workflow definitions for the authenticated user
-     */
-    public ListWorkflowsResponse list(ListRequest request, RequestOptions requestOptions) {
-        return this.rawClient.list(request, requestOptions).body();
-    }
+  /**
+   * Retrieves all workflow definitions for the authenticated user
+   */
+  public ListWorkflowsResponse list(ListRequest request) {
+    return this.rawClient.list(request).body();
+  }
 
-    /**
-     * Creates a new workflow definition with graph generation from workflow instructions
-     */
-    public CreateWorkflowResponse create(CreateWorkflowRequest request) {
-        return this.rawClient.create(request).body();
-    }
+  /**
+   * Retrieves all workflow definitions for the authenticated user
+   */
+  public ListWorkflowsResponse list(ListRequest request, RequestOptions requestOptions) {
+    return this.rawClient.list(request, requestOptions).body();
+  }
 
-    /**
-     * Creates a new workflow definition with graph generation from workflow instructions
-     */
-    public CreateWorkflowResponse create(CreateWorkflowRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).body();
-    }
+  /**
+   * Creates a new workflow definition with graph generation from workflow instructions
+   */
+  public CreateWorkflowResponse create(CreateWorkflowRequest request) {
+    return this.rawClient.create(request).body();
+  }
 
-    /**
-     * Retrieves a workflow definition by its ID
-     */
-    public GetResponse get(String id) {
-        return this.rawClient.get(id).body();
-    }
+  /**
+   * Creates a new workflow definition with graph generation from workflow instructions
+   */
+  public CreateWorkflowResponse create(
+    CreateWorkflowRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.create(request, requestOptions).body();
+  }
 
-    /**
-     * Retrieves a workflow definition by its ID
-     */
-    public GetResponse get(String id, RequestOptions requestOptions) {
-        return this.rawClient.get(id, requestOptions).body();
-    }
+  /**
+   * Retrieves a workflow definition by its ID
+   */
+  public GetResponse get(String id) {
+    return this.rawClient.get(id).body();
+  }
 
-    /**
-     * Retrieves a workflow definition by its ID
-     */
-    public GetResponse get(String id, GetRequest request) {
-        return this.rawClient.get(id, request).body();
-    }
+  /**
+   * Retrieves a workflow definition by its ID
+   */
+  public GetResponse get(String id, RequestOptions requestOptions) {
+    return this.rawClient.get(id, requestOptions).body();
+  }
 
-    /**
-     * Retrieves a workflow definition by its ID
-     */
-    public GetResponse get(String id, GetRequest request, RequestOptions requestOptions) {
-        return this.rawClient.get(id, request, requestOptions).body();
-    }
+  /**
+   * Retrieves a workflow definition by its ID
+   */
+  public GetResponse get(String id, GetRequest request) {
+    return this.rawClient.get(id, request).body();
+  }
 
-    /**
-     * Updates an existing workflow definition
-     */
-    public UpdateResponse update(String id, UpdateWorkflowRequest request) {
-        return this.rawClient.update(id, request).body();
-    }
+  /**
+   * Retrieves a workflow definition by its ID
+   */
+  public GetResponse get(String id, GetRequest request, RequestOptions requestOptions) {
+    return this.rawClient.get(id, request, requestOptions).body();
+  }
 
-    /**
-     * Updates an existing workflow definition
-     */
-    public UpdateResponse update(String id, UpdateWorkflowRequest request, RequestOptions requestOptions) {
-        return this.rawClient.update(id, request, requestOptions).body();
-    }
+  /**
+   * Updates an existing workflow definition
+   */
+  public UpdateResponse update(String id, UpdateWorkflowRequest request) {
+    return this.rawClient.update(id, request).body();
+  }
 
-    /**
-     * Deletes a workflow definition by its ID
-     */
-    public DeleteResponse delete(String id) {
-        return this.rawClient.delete(id).body();
-    }
+  /**
+   * Updates an existing workflow definition
+   */
+  public UpdateResponse update(
+    String id,
+    UpdateWorkflowRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.update(id, request, requestOptions).body();
+  }
 
-    /**
-     * Deletes a workflow definition by its ID
-     */
-    public DeleteResponse delete(String id, RequestOptions requestOptions) {
-        return this.rawClient.delete(id, requestOptions).body();
-    }
+  /**
+   * Deletes a workflow definition by its ID
+   */
+  public DeleteResponse delete(String id) {
+    return this.rawClient.delete(id).body();
+  }
 
-    /**
-     * Executes a workflow with provided input data and returns results
-     */
-    public ExecuteWorkflowResponse execute(String id, ExecuteWorkflowRequest request) {
-        return this.rawClient.execute(id, request).body();
-    }
+  /**
+   * Deletes a workflow definition by its ID
+   */
+  public DeleteResponse delete(String id, RequestOptions requestOptions) {
+    return this.rawClient.delete(id, requestOptions).body();
+  }
 
-    /**
-     * Executes a workflow with provided input data and returns results
-     */
-    public ExecuteWorkflowResponse execute(String id, ExecuteWorkflowRequest request, RequestOptions requestOptions) {
-        return this.rawClient.execute(id, request, requestOptions).body();
-    }
+  /**
+   * Executes a workflow with provided input data and returns results
+   */
+  public ExecuteWorkflowResponse execute(String id, ExecuteWorkflowRequest request) {
+    return this.rawClient.execute(id, request).body();
+  }
+
+  /**
+   * Executes a workflow with provided input data and returns results
+   */
+  public ExecuteWorkflowResponse execute(
+    String id,
+    ExecuteWorkflowRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.execute(id, request, requestOptions).body();
+  }
 }

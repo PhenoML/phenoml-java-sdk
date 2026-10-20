@@ -26,455 +26,483 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = DocumentMultiRequest.Builder.class)
 public final class DocumentMultiRequest {
-    private final String version;
 
-    private final String content;
+  private final String version;
 
-    private final Optional<String> provider;
+  private final String content;
 
-    private final Optional<PrimaryPatient> primaryPatient;
+  private final Optional<String> provider;
 
-    private final Optional<PatientReference> patientReference;
+  private final Optional<PrimaryPatient> primaryPatient;
 
-    private final Optional<String> implementationGuide;
+  private final Optional<PatientReference> patientReference;
 
-    private final Optional<DocumentMultiRequestDetectionEffort> detectionEffort;
+  private final Optional<String> implementationGuide;
 
-    private final Optional<DocumentMultiRequestValidationMethod> validationMethod;
+  private final Optional<DocumentMultiRequestDetectionEffort> detectionEffort;
 
-    private final Optional<DocumentConfig> config;
+  private final Optional<DocumentMultiRequestValidationMethod> validationMethod;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<DocumentConfig> config;
 
-    private DocumentMultiRequest(
-            String version,
-            String content,
-            Optional<String> provider,
-            Optional<PrimaryPatient> primaryPatient,
-            Optional<PatientReference> patientReference,
-            Optional<String> implementationGuide,
-            Optional<DocumentMultiRequestDetectionEffort> detectionEffort,
-            Optional<DocumentMultiRequestValidationMethod> validationMethod,
-            Optional<DocumentConfig> config,
-            Map<String, Object> additionalProperties) {
-        this.version = version;
-        this.content = content;
-        this.provider = provider;
-        this.primaryPatient = primaryPatient;
-        this.patientReference = patientReference;
-        this.implementationGuide = implementationGuide;
-        this.detectionEffort = detectionEffort;
-        this.validationMethod = validationMethod;
-        this.config = config;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
+  private DocumentMultiRequest(
+    String version,
+    String content,
+    Optional<String> provider,
+    Optional<PrimaryPatient> primaryPatient,
+    Optional<PatientReference> patientReference,
+    Optional<String> implementationGuide,
+    Optional<DocumentMultiRequestDetectionEffort> detectionEffort,
+    Optional<DocumentMultiRequestValidationMethod> validationMethod,
+    Optional<DocumentConfig> config,
+    Map<String, Object> additionalProperties
+  ) {
+    this.version = version;
+    this.content = content;
+    this.provider = provider;
+    this.primaryPatient = primaryPatient;
+    this.patientReference = patientReference;
+    this.implementationGuide = implementationGuide;
+    this.detectionEffort = detectionEffort;
+    this.validationMethod = validationMethod;
+    this.config = config;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return FHIR version to use
+   */
+  @JsonProperty("version")
+  public String getVersion() {
+    return version;
+  }
+
+  /**
+   * @return Base64 encoded file content.
+   * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
+   * TIFF, RTF, and XML/C-CDA uploads are available on dedicated instances only.
+   * File type is auto-detected from content magic bytes.
+   * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
+   * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.
+   */
+  @JsonProperty("content")
+  public String getContent() {
+    return content;
+  }
+
+  /**
+   * @return Optional FHIR provider name for provider-specific profiles
+   */
+  @JsonProperty("provider")
+  public Optional<String> getProvider() {
+    return provider;
+  }
+
+  @JsonProperty("primary_patient")
+  public Optional<PrimaryPatient> getPrimaryPatient() {
+    return primaryPatient;
+  }
+
+  /**
+   * @return Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.
+   */
+  @JsonProperty("patient_reference")
+  public Optional<PatientReference> getPatientReference() {
+    return patientReference;
+  }
+
+  /**
+   * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.
+   */
+  @JsonProperty("implementation_guide")
+  public Optional<String> getImplementationGuide() {
+    return implementationGuide;
+  }
+
+  /**
+   * @return Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.
+   */
+  @JsonProperty("detection_effort")
+  public Optional<DocumentMultiRequestDetectionEffort> getDetectionEffort() {
+    return detectionEffort;
+  }
+
+  /**
+   * @return FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.
+   */
+  @JsonProperty("validation_method")
+  public Optional<DocumentMultiRequestValidationMethod> getValidationMethod() {
+    return validationMethod;
+  }
+
+  @JsonProperty("config")
+  public Optional<DocumentConfig> getConfig() {
+    return config;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof DocumentMultiRequest && equalTo((DocumentMultiRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(DocumentMultiRequest other) {
+    return (
+      version.equals(other.version) &&
+      content.equals(other.content) &&
+      provider.equals(other.provider) &&
+      primaryPatient.equals(other.primaryPatient) &&
+      patientReference.equals(other.patientReference) &&
+      implementationGuide.equals(other.implementationGuide) &&
+      detectionEffort.equals(other.detectionEffort) &&
+      validationMethod.equals(other.validationMethod) &&
+      config.equals(other.config)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.version,
+      this.content,
+      this.provider,
+      this.primaryPatient,
+      this.patientReference,
+      this.implementationGuide,
+      this.detectionEffort,
+      this.validationMethod,
+      this.config
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static VersionStage builder() {
+    return new Builder();
+  }
+
+  public interface VersionStage {
     /**
-     * @return FHIR version to use
+     * <p>FHIR version to use</p>
      */
-    @JsonProperty("version")
-    public String getVersion() {
-        return version;
-    }
+    ContentStage version(@NotNull String version);
 
+    Builder from(DocumentMultiRequest other);
+  }
+
+  public interface ContentStage {
     /**
-     * @return Base64 encoded file content.
+     * <p>Base64 encoded file content.
      * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
      * TIFF, RTF, and XML/C-CDA uploads are available on dedicated instances only.
      * File type is auto-detected from content magic bytes.
      * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
-     * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.
+     * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.</p>
      */
-    @JsonProperty("content")
-    public String getContent() {
-        return content;
+    _FinalStage content(@NotNull String content);
+  }
+
+  public interface _FinalStage {
+    DocumentMultiRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Optional FHIR provider name for provider-specific profiles</p>
+     */
+    _FinalStage provider(Optional<String> provider);
+
+    _FinalStage provider(String provider);
+
+    _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient);
+
+    _FinalStage primaryPatient(PrimaryPatient primaryPatient);
+
+    /**
+     * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
+     */
+    _FinalStage patientReference(Optional<PatientReference> patientReference);
+
+    _FinalStage patientReference(PatientReference patientReference);
+
+    /**
+     * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
+     */
+    _FinalStage implementationGuide(Optional<String> implementationGuide);
+
+    _FinalStage implementationGuide(String implementationGuide);
+
+    /**
+     * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
+     */
+    _FinalStage detectionEffort(Optional<DocumentMultiRequestDetectionEffort> detectionEffort);
+
+    _FinalStage detectionEffort(DocumentMultiRequestDetectionEffort detectionEffort);
+
+    /**
+     * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
+     */
+    _FinalStage validationMethod(Optional<DocumentMultiRequestValidationMethod> validationMethod);
+
+    _FinalStage validationMethod(DocumentMultiRequestValidationMethod validationMethod);
+
+    _FinalStage config(Optional<DocumentConfig> config);
+
+    _FinalStage config(DocumentConfig config);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements VersionStage, ContentStage, _FinalStage {
+
+    private String version;
+
+    private String content;
+
+    private Optional<DocumentConfig> config = Optional.empty();
+
+    private Optional<DocumentMultiRequestValidationMethod> validationMethod = Optional.empty();
+
+    private Optional<DocumentMultiRequestDetectionEffort> detectionEffort = Optional.empty();
+
+    private Optional<String> implementationGuide = Optional.empty();
+
+    private Optional<PatientReference> patientReference = Optional.empty();
+
+    private Optional<PrimaryPatient> primaryPatient = Optional.empty();
+
+    private Optional<String> provider = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(DocumentMultiRequest other) {
+      version(other.getVersion());
+      content(other.getContent());
+      provider(other.getProvider());
+      primaryPatient(other.getPrimaryPatient());
+      patientReference(other.getPatientReference());
+      implementationGuide(other.getImplementationGuide());
+      detectionEffort(other.getDetectionEffort());
+      validationMethod(other.getValidationMethod());
+      config(other.getConfig());
+      return this;
     }
 
     /**
-     * @return Optional FHIR provider name for provider-specific profiles
+     * <p>FHIR version to use</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("provider")
-    public Optional<String> getProvider() {
-        return provider;
-    }
-
-    @JsonProperty("primary_patient")
-    public Optional<PrimaryPatient> getPrimaryPatient() {
-        return primaryPatient;
+    @java.lang.Override
+    @JsonSetter("version")
+    public ContentStage version(@NotNull String version) {
+      this.version = Objects.requireNonNull(version, "version must not be null");
+      return this;
     }
 
     /**
-     * @return Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.
+     * <p>Base64 encoded file content.
+     * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
+     * TIFF, RTF, and XML/C-CDA uploads are available on dedicated instances only.
+     * File type is auto-detected from content magic bytes.
+     * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
+     * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("patient_reference")
-    public Optional<PatientReference> getPatientReference() {
-        return patientReference;
-    }
-
-    /**
-     * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.
-     */
-    @JsonProperty("implementation_guide")
-    public Optional<String> getImplementationGuide() {
-        return implementationGuide;
-    }
-
-    /**
-     * @return Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.
-     */
-    @JsonProperty("detection_effort")
-    public Optional<DocumentMultiRequestDetectionEffort> getDetectionEffort() {
-        return detectionEffort;
-    }
-
-    /**
-     * @return FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.
-     */
-    @JsonProperty("validation_method")
-    public Optional<DocumentMultiRequestValidationMethod> getValidationMethod() {
-        return validationMethod;
-    }
-
-    @JsonProperty("config")
-    public Optional<DocumentConfig> getConfig() {
-        return config;
+    @java.lang.Override
+    @JsonSetter("content")
+    public _FinalStage content(@NotNull String content) {
+      this.content = Objects.requireNonNull(content, "content must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof DocumentMultiRequest && equalTo((DocumentMultiRequest) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(DocumentMultiRequest other) {
-        return version.equals(other.version)
-                && content.equals(other.content)
-                && provider.equals(other.provider)
-                && primaryPatient.equals(other.primaryPatient)
-                && patientReference.equals(other.patientReference)
-                && implementationGuide.equals(other.implementationGuide)
-                && detectionEffort.equals(other.detectionEffort)
-                && validationMethod.equals(other.validationMethod)
-                && config.equals(other.config);
+    public _FinalStage config(DocumentConfig config) {
+      this.config = Optional.ofNullable(config);
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.version,
-                this.content,
-                this.provider,
-                this.primaryPatient,
-                this.patientReference,
-                this.implementationGuide,
-                this.detectionEffort,
-                this.validationMethod,
-                this.config);
+    @JsonSetter(value = "config", nulls = Nulls.SKIP)
+    public _FinalStage config(Optional<DocumentConfig> config) {
+      this.config = config;
+      return this;
+    }
+
+    /**
+     * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage validationMethod(DocumentMultiRequestValidationMethod validationMethod) {
+      this.validationMethod = Optional.ofNullable(validationMethod);
+      return this;
+    }
+
+    /**
+     * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "validation_method", nulls = Nulls.SKIP)
+    public _FinalStage validationMethod(
+      Optional<DocumentMultiRequestValidationMethod> validationMethod
+    ) {
+      this.validationMethod = validationMethod;
+      return this;
+    }
+
+    /**
+     * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage detectionEffort(DocumentMultiRequestDetectionEffort detectionEffort) {
+      this.detectionEffort = Optional.ofNullable(detectionEffort);
+      return this;
+    }
+
+    /**
+     * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "detection_effort", nulls = Nulls.SKIP)
+    public _FinalStage detectionEffort(
+      Optional<DocumentMultiRequestDetectionEffort> detectionEffort
+    ) {
+      this.detectionEffort = detectionEffort;
+      return this;
+    }
+
+    /**
+     * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage implementationGuide(String implementationGuide) {
+      this.implementationGuide = Optional.ofNullable(implementationGuide);
+      return this;
+    }
+
+    /**
+     * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
+    public _FinalStage implementationGuide(Optional<String> implementationGuide) {
+      this.implementationGuide = implementationGuide;
+      return this;
+    }
+
+    /**
+     * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage patientReference(PatientReference patientReference) {
+      this.patientReference = Optional.ofNullable(patientReference);
+      return this;
+    }
+
+    /**
+     * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "patient_reference", nulls = Nulls.SKIP)
+    public _FinalStage patientReference(Optional<PatientReference> patientReference) {
+      this.patientReference = patientReference;
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public _FinalStage primaryPatient(PrimaryPatient primaryPatient) {
+      this.primaryPatient = Optional.ofNullable(primaryPatient);
+      return this;
     }
 
-    public static VersionStage builder() {
-        return new Builder();
+    @java.lang.Override
+    @JsonSetter(value = "primary_patient", nulls = Nulls.SKIP)
+    public _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient) {
+      this.primaryPatient = primaryPatient;
+      return this;
     }
 
-    public interface VersionStage {
-        /**
-         * <p>FHIR version to use</p>
-         */
-        ContentStage version(@NotNull String version);
-
-        Builder from(DocumentMultiRequest other);
+    /**
+     * <p>Optional FHIR provider name for provider-specific profiles</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage provider(String provider) {
+      this.provider = Optional.ofNullable(provider);
+      return this;
     }
 
-    public interface ContentStage {
-        /**
-         * <p>Base64 encoded file content.
-         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
-         * TIFF, RTF, and XML/C-CDA uploads are available on dedicated instances only.
-         * File type is auto-detected from content magic bytes.
-         * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
-         * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.</p>
-         */
-        _FinalStage content(@NotNull String content);
+    /**
+     * <p>Optional FHIR provider name for provider-specific profiles</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "provider", nulls = Nulls.SKIP)
+    public _FinalStage provider(Optional<String> provider) {
+      this.provider = provider;
+      return this;
     }
 
-    public interface _FinalStage {
-        DocumentMultiRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Optional FHIR provider name for provider-specific profiles</p>
-         */
-        _FinalStage provider(Optional<String> provider);
-
-        _FinalStage provider(String provider);
-
-        _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient);
-
-        _FinalStage primaryPatient(PrimaryPatient primaryPatient);
-
-        /**
-         * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
-         */
-        _FinalStage patientReference(Optional<PatientReference> patientReference);
-
-        _FinalStage patientReference(PatientReference patientReference);
-
-        /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
-         */
-        _FinalStage implementationGuide(Optional<String> implementationGuide);
-
-        _FinalStage implementationGuide(String implementationGuide);
-
-        /**
-         * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
-         */
-        _FinalStage detectionEffort(Optional<DocumentMultiRequestDetectionEffort> detectionEffort);
-
-        _FinalStage detectionEffort(DocumentMultiRequestDetectionEffort detectionEffort);
-
-        /**
-         * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
-         */
-        _FinalStage validationMethod(Optional<DocumentMultiRequestValidationMethod> validationMethod);
-
-        _FinalStage validationMethod(DocumentMultiRequestValidationMethod validationMethod);
-
-        _FinalStage config(Optional<DocumentConfig> config);
-
-        _FinalStage config(DocumentConfig config);
+    @java.lang.Override
+    public DocumentMultiRequest build() {
+      return new DocumentMultiRequest(
+        version,
+        content,
+        provider,
+        primaryPatient,
+        patientReference,
+        implementationGuide,
+        detectionEffort,
+        validationMethod,
+        config,
+        additionalProperties
+      );
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements VersionStage, ContentStage, _FinalStage {
-        private String version;
-
-        private String content;
-
-        private Optional<DocumentConfig> config = Optional.empty();
-
-        private Optional<DocumentMultiRequestValidationMethod> validationMethod = Optional.empty();
-
-        private Optional<DocumentMultiRequestDetectionEffort> detectionEffort = Optional.empty();
-
-        private Optional<String> implementationGuide = Optional.empty();
-
-        private Optional<PatientReference> patientReference = Optional.empty();
-
-        private Optional<PrimaryPatient> primaryPatient = Optional.empty();
-
-        private Optional<String> provider = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(DocumentMultiRequest other) {
-            version(other.getVersion());
-            content(other.getContent());
-            provider(other.getProvider());
-            primaryPatient(other.getPrimaryPatient());
-            patientReference(other.getPatientReference());
-            implementationGuide(other.getImplementationGuide());
-            detectionEffort(other.getDetectionEffort());
-            validationMethod(other.getValidationMethod());
-            config(other.getConfig());
-            return this;
-        }
-
-        /**
-         * <p>FHIR version to use</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("version")
-        public ContentStage version(@NotNull String version) {
-            this.version = Objects.requireNonNull(version, "version must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Base64 encoded file content.
-         * Supported file types: PDF (application/pdf), PNG (image/png), JPEG (image/jpeg), TIFF (image/tiff), RTF (application/rtf), XML/C-CDA (text/xml).
-         * TIFF, RTF, and XML/C-CDA uploads are available on dedicated instances only.
-         * File type is auto-detected from content magic bytes.
-         * The decoded file must not exceed 20 MiB. RTF and XML/C-CDA documents whose extracted text exceeds 1 MiB are rejected.
-         * Generic XML must include an XML declaration; C-CDA documents rooted at <code>ClinicalDocument</code> may omit it.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("content")
-        public _FinalStage content(@NotNull String content) {
-            this.content = Objects.requireNonNull(content, "content must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage config(DocumentConfig config) {
-            this.config = Optional.ofNullable(config);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "config", nulls = Nulls.SKIP)
-        public _FinalStage config(Optional<DocumentConfig> config) {
-            this.config = config;
-            return this;
-        }
-
-        /**
-         * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage validationMethod(DocumentMultiRequestValidationMethod validationMethod) {
-            this.validationMethod = Optional.ofNullable(validationMethod);
-            return this;
-        }
-
-        /**
-         * <p>FHIR validation method to apply to the generated bundle. 'none' skips validation (default). 'check' runs the bundle through a FHIR structure validator and includes the results in the response. 'fix' runs validation and attempts to auto-correct errors using an LLM (up to 3 validation passes). The response includes results from each pass. Warning: 'fix' can significantly increase latency due to multiple LLM and validation round-trips.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "validation_method", nulls = Nulls.SKIP)
-        public _FinalStage validationMethod(Optional<DocumentMultiRequestValidationMethod> validationMethod) {
-            this.validationMethod = validationMethod;
-            return this;
-        }
-
-        /**
-         * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage detectionEffort(DocumentMultiRequestDetectionEffort detectionEffort) {
-            this.detectionEffort = Optional.ofNullable(detectionEffort);
-            return this;
-        }
-
-        /**
-         * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "detection_effort", nulls = Nulls.SKIP)
-        public _FinalStage detectionEffort(Optional<DocumentMultiRequestDetectionEffort> detectionEffort) {
-            this.detectionEffort = detectionEffort;
-            return this;
-        }
-
-        /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage implementationGuide(String implementationGuide) {
-            this.implementationGuide = Optional.ofNullable(implementationGuide);
-            return this;
-        }
-
-        /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
-        public _FinalStage implementationGuide(Optional<String> implementationGuide) {
-            this.implementationGuide = implementationGuide;
-            return this;
-        }
-
-        /**
-         * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage patientReference(PatientReference patientReference) {
-            this.patientReference = Optional.ofNullable(patientReference);
-            return this;
-        }
-
-        /**
-         * <p>Deprecated compatibility alias for primary_patient.identifier. Cannot be combined with primary_patient.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "patient_reference", nulls = Nulls.SKIP)
-        public _FinalStage patientReference(Optional<PatientReference> patientReference) {
-            this.patientReference = patientReference;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage primaryPatient(PrimaryPatient primaryPatient) {
-            this.primaryPatient = Optional.ofNullable(primaryPatient);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "primary_patient", nulls = Nulls.SKIP)
-        public _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient) {
-            this.primaryPatient = primaryPatient;
-            return this;
-        }
-
-        /**
-         * <p>Optional FHIR provider name for provider-specific profiles</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage provider(String provider) {
-            this.provider = Optional.ofNullable(provider);
-            return this;
-        }
-
-        /**
-         * <p>Optional FHIR provider name for provider-specific profiles</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "provider", nulls = Nulls.SKIP)
-        public _FinalStage provider(Optional<String> provider) {
-            this.provider = provider;
-            return this;
-        }
-
-        @java.lang.Override
-        public DocumentMultiRequest build() {
-            return new DocumentMultiRequest(
-                    version,
-                    content,
-                    provider,
-                    primaryPatient,
-                    patientReference,
-                    implementationGuide,
-                    detectionEffort,
-                    validationMethod,
-                    config,
-                    additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("version") ||
+        key.equalsIgnoreCase("content") ||
+        key.equalsIgnoreCase("provider") ||
+        key.equalsIgnoreCase("primary_patient") ||
+        key.equalsIgnoreCase("patient_reference") ||
+        key.equalsIgnoreCase("implementation_guide") ||
+        key.equalsIgnoreCase("detection_effort") ||
+        key.equalsIgnoreCase("validation_method") ||
+        key.equalsIgnoreCase("config")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

@@ -21,152 +21,164 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = OAuthError.Builder.class)
 public final class OAuthError {
-    private final OAuthErrorError error;
 
-    private final Optional<String> errorDescription;
+  private final OAuthErrorError error;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> errorDescription;
 
-    private OAuthError(
-            OAuthErrorError error, Optional<String> errorDescription, Map<String, Object> additionalProperties) {
-        this.error = error;
-        this.errorDescription = errorDescription;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private OAuthError(
+    OAuthErrorError error,
+    Optional<String> errorDescription,
+    Map<String, Object> additionalProperties
+  ) {
+    this.error = error;
+    this.errorDescription = errorDescription;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Error code
+   */
+  @JsonProperty("error")
+  public OAuthErrorError getError() {
+    return error;
+  }
+
+  /**
+   * @return Human-readable error description
+   */
+  @JsonProperty("error_description")
+  public Optional<String> getErrorDescription() {
+    return errorDescription;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof OAuthError && equalTo((OAuthError) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(OAuthError other) {
+    return error.equals(other.error) && errorDescription.equals(other.errorDescription);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.error, this.errorDescription);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static ErrorStage builder() {
+    return new Builder();
+  }
+
+  public interface ErrorStage {
+    /**
+     * <p>Error code</p>
+     */
+    _FinalStage error(@NotNull OAuthErrorError error);
+
+    Builder from(OAuthError other);
+  }
+
+  public interface _FinalStage {
+    OAuthError build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Human-readable error description</p>
+     */
+    _FinalStage errorDescription(Optional<String> errorDescription);
+
+    _FinalStage errorDescription(String errorDescription);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements ErrorStage, _FinalStage {
+
+    private OAuthErrorError error;
+
+    private Optional<String> errorDescription = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(OAuthError other) {
+      error(other.getError());
+      errorDescription(other.getErrorDescription());
+      return this;
     }
 
     /**
-     * @return Error code
+     * <p>Error code</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("error")
-    public OAuthErrorError getError() {
-        return error;
+    @java.lang.Override
+    @JsonSetter("error")
+    public _FinalStage error(@NotNull OAuthErrorError error) {
+      this.error = Objects.requireNonNull(error, "error must not be null");
+      return this;
     }
 
     /**
-     * @return Human-readable error description
+     * <p>Human-readable error description</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("error_description")
-    public Optional<String> getErrorDescription() {
-        return errorDescription;
+    @java.lang.Override
+    public _FinalStage errorDescription(String errorDescription) {
+      this.errorDescription = Optional.ofNullable(errorDescription);
+      return this;
+    }
+
+    /**
+     * <p>Human-readable error description</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "error_description", nulls = Nulls.SKIP)
+    public _FinalStage errorDescription(Optional<String> errorDescription) {
+      this.errorDescription = errorDescription;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof OAuthError && equalTo((OAuthError) other);
+    public OAuthError build() {
+      return new OAuthError(error, errorDescription, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(OAuthError other) {
-        return error.equals(other.error) && errorDescription.equals(other.errorDescription);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.error, this.errorDescription);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("error") || key.equalsIgnoreCase("error_description")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static ErrorStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface ErrorStage {
-        /**
-         * <p>Error code</p>
-         */
-        _FinalStage error(@NotNull OAuthErrorError error);
-
-        Builder from(OAuthError other);
-    }
-
-    public interface _FinalStage {
-        OAuthError build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Human-readable error description</p>
-         */
-        _FinalStage errorDescription(Optional<String> errorDescription);
-
-        _FinalStage errorDescription(String errorDescription);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements ErrorStage, _FinalStage {
-        private OAuthErrorError error;
-
-        private Optional<String> errorDescription = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(OAuthError other) {
-            error(other.getError());
-            errorDescription(other.getErrorDescription());
-            return this;
-        }
-
-        /**
-         * <p>Error code</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("error")
-        public _FinalStage error(@NotNull OAuthErrorError error) {
-            this.error = Objects.requireNonNull(error, "error must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Human-readable error description</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage errorDescription(String errorDescription) {
-            this.errorDescription = Optional.ofNullable(errorDescription);
-            return this;
-        }
-
-        /**
-         * <p>Human-readable error description</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "error_description", nulls = Nulls.SKIP)
-        public _FinalStage errorDescription(Optional<String> errorDescription) {
-            this.errorDescription = errorDescription;
-            return this;
-        }
-
-        @java.lang.Override
-        public OAuthError build() {
-            return new OAuthError(error, errorDescription, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

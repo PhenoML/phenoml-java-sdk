@@ -20,96 +20,105 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateBatchRequest.Builder.class)
 public final class CreateBatchRequest {
-    private final Optional<String> requestId;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> requestId;
 
-    private CreateBatchRequest(Optional<String> requestId, Map<String, Object> additionalProperties) {
-        this.requestId = requestId;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CreateBatchRequest(Optional<String> requestId, Map<String, Object> additionalProperties) {
+    this.requestId = requestId;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Optional client idempotency token (at most 256 UTF-8 bytes). A
+   * retried create with the same token returns the original job instead
+   * of opening a second one.
+   */
+  @JsonProperty("request_id")
+  public Optional<String> getRequestId() {
+    return requestId;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CreateBatchRequest && equalTo((CreateBatchRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CreateBatchRequest other) {
+    return requestId.equals(other.requestId);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.requestId);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> requestId = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(CreateBatchRequest other) {
+      requestId(other.getRequestId());
+      return this;
     }
 
     /**
-     * @return Optional client idempotency token (at most 256 UTF-8 bytes). A
+     * <p>Optional client idempotency token (at most 256 UTF-8 bytes). A
      * retried create with the same token returns the original job instead
-     * of opening a second one.
+     * of opening a second one.</p>
      */
-    @JsonProperty("request_id")
-    public Optional<String> getRequestId() {
-        return requestId;
+    @JsonSetter(value = "request_id", nulls = Nulls.SKIP)
+    public Builder requestId(Optional<String> requestId) {
+      this.requestId = requestId;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CreateBatchRequest && equalTo((CreateBatchRequest) other);
+    public Builder requestId(String requestId) {
+      this.requestId = Optional.ofNullable(requestId);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public CreateBatchRequest build() {
+      return new CreateBatchRequest(requestId, additionalProperties);
     }
 
-    private boolean equalTo(CreateBatchRequest other) {
-        return requestId.equals(other.requestId);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("request_id")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.requestId);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> requestId = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(CreateBatchRequest other) {
-            requestId(other.getRequestId());
-            return this;
-        }
-
-        /**
-         * <p>Optional client idempotency token (at most 256 UTF-8 bytes). A
-         * retried create with the same token returns the original job instead
-         * of opening a second one.</p>
-         */
-        @JsonSetter(value = "request_id", nulls = Nulls.SKIP)
-        public Builder requestId(Optional<String> requestId) {
-            this.requestId = requestId;
-            return this;
-        }
-
-        public Builder requestId(String requestId) {
-            this.requestId = Optional.ofNullable(requestId);
-            return this;
-        }
-
-        public CreateBatchRequest build() {
-            return new CreateBatchRequest(requestId, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

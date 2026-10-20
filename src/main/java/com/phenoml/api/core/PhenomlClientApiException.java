@@ -13,61 +13,77 @@ import okhttp3.Response;
  * This exception type will be thrown for any non-2XX API responses.
  */
 public class PhenomlClientApiException extends PhenomlClientException {
-    /**
-     * The error code of the response that triggered the exception.
-     */
-    private final int statusCode;
 
-    /**
-     * The body of the response that triggered the exception.
-     */
-    private final Object body;
+  /**
+   * The error code of the response that triggered the exception.
+   */
+  private final int statusCode;
 
-    private final Map<String, List<String>> headers;
+  /**
+   * The body of the response that triggered the exception.
+   */
+  private final Object body;
 
-    public PhenomlClientApiException(String message, int statusCode, Object body) {
-        super(message);
-        this.statusCode = statusCode;
-        this.body = body;
-        this.headers = new HashMap<>();
-    }
+  private final Map<String, List<String>> headers;
 
-    public PhenomlClientApiException(String message, int statusCode, Object body, Response rawResponse) {
-        super(message);
-        this.statusCode = statusCode;
-        this.body = body;
-        this.headers = new HashMap<>();
-        rawResponse.headers().forEach(header -> {
-            String key = header.component1();
-            String value = header.component2();
-            this.headers.computeIfAbsent(key, _str -> new ArrayList<>()).add(value);
-        });
-    }
+  public PhenomlClientApiException(String message, int statusCode, Object body) {
+    super(message);
+    this.statusCode = statusCode;
+    this.body = body;
+    this.headers = new HashMap<>();
+  }
 
-    /**
-     * @return the statusCode
-     */
-    public int statusCode() {
-        return this.statusCode;
-    }
+  public PhenomlClientApiException(
+    String message,
+    int statusCode,
+    Object body,
+    Response rawResponse
+  ) {
+    super(message);
+    this.statusCode = statusCode;
+    this.body = body;
+    this.headers = new HashMap<>();
+    rawResponse
+      .headers()
+      .forEach(header -> {
+        String key = header.component1();
+        String value = header.component2();
+        this.headers.computeIfAbsent(key, _str -> new ArrayList<>()).add(value);
+      });
+  }
 
-    /**
-     * @return the body
-     */
-    public Object body() {
-        return this.body;
-    }
+  /**
+   * @return the statusCode
+   */
+  public int statusCode() {
+    return this.statusCode;
+  }
 
-    /**
-     * @return the headers
-     */
-    public Map<String, List<String>> headers() {
-        return this.headers;
-    }
+  /**
+   * @return the body
+   */
+  public Object body() {
+    return this.body;
+  }
 
-    @Override
-    public String toString() {
-        return "PhenomlClientApiException{" + "message: " + getMessage() + ", statusCode: " + statusCode + ", body: "
-                + ObjectMappers.stringify(body) + "}";
-    }
+  /**
+   * @return the headers
+   */
+  public Map<String, List<String>> headers() {
+    return this.headers;
+  }
+
+  @Override
+  public String toString() {
+    return (
+      "PhenomlClientApiException{" +
+      "message: " +
+      getMessage() +
+      ", statusCode: " +
+      statusCode +
+      ", body: " +
+      ObjectMappers.stringify(body) +
+      "}"
+    );
+  }
 }

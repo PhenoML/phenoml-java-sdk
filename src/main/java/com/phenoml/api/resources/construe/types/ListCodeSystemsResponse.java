@@ -21,96 +21,108 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ListCodeSystemsResponse.Builder.class)
 public final class ListCodeSystemsResponse {
-    private final List<CodeSystemDetails> systems;
 
-    private final Map<String, Object> additionalProperties;
+  private final List<CodeSystemDetails> systems;
 
-    private ListCodeSystemsResponse(List<CodeSystemDetails> systems, Map<String, Object> additionalProperties) {
-        this.systems = systems;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ListCodeSystemsResponse(
+    List<CodeSystemDetails> systems,
+    Map<String, Object> additionalProperties
+  ) {
+    this.systems = systems;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("systems")
+  public List<CodeSystemDetails> getSystems() {
+    return systems;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ListCodeSystemsResponse && equalTo((ListCodeSystemsResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ListCodeSystemsResponse other) {
+    return systems.equals(other.systems);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.systems);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private List<CodeSystemDetails> systems = new ArrayList<>();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ListCodeSystemsResponse other) {
+      systems(other.getSystems());
+      return this;
     }
 
-    @JsonProperty("systems")
-    public List<CodeSystemDetails> getSystems() {
-        return systems;
+    @JsonSetter(value = "systems", nulls = Nulls.SKIP)
+    public Builder systems(List<CodeSystemDetails> systems) {
+      this.systems.clear();
+      if (systems != null) {
+        this.systems.addAll(systems);
+      }
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ListCodeSystemsResponse && equalTo((ListCodeSystemsResponse) other);
+    public Builder addSystems(CodeSystemDetails systems) {
+      this.systems.add(systems);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder addAllSystems(List<CodeSystemDetails> systems) {
+      if (systems != null) {
+        this.systems.addAll(systems);
+      }
+      return this;
     }
 
-    private boolean equalTo(ListCodeSystemsResponse other) {
-        return systems.equals(other.systems);
+    public ListCodeSystemsResponse build() {
+      return new ListCodeSystemsResponse(systems, additionalProperties);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.systems);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("systems")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private List<CodeSystemDetails> systems = new ArrayList<>();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ListCodeSystemsResponse other) {
-            systems(other.getSystems());
-            return this;
-        }
-
-        @JsonSetter(value = "systems", nulls = Nulls.SKIP)
-        public Builder systems(List<CodeSystemDetails> systems) {
-            this.systems.clear();
-            if (systems != null) {
-                this.systems.addAll(systems);
-            }
-            return this;
-        }
-
-        public Builder addSystems(CodeSystemDetails systems) {
-            this.systems.add(systems);
-            return this;
-        }
-
-        public Builder addAllSystems(List<CodeSystemDetails> systems) {
-            if (systems != null) {
-                this.systems.addAll(systems);
-            }
-            return this;
-        }
-
-        public ListCodeSystemsResponse build() {
-            return new ListCodeSystemsResponse(systems, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

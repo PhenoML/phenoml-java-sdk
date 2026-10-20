@@ -23,284 +23,318 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CrosswalkResponse.Builder.class)
 public final class CrosswalkResponse {
-    private final String resolvedUmlsRelease;
 
-    private final String system;
+  private final String resolvedUmlsRelease;
 
-    private final String code;
+  private final String system;
 
-    private final Optional<String> reasonCode;
+  private final String code;
 
-    private final List<CrosswalkTarget> targets;
+  private final Optional<String> reasonCode;
 
-    private final Map<String, Object> additionalProperties;
+  private final List<CrosswalkTarget> targets;
 
-    private CrosswalkResponse(
-            String resolvedUmlsRelease,
-            String system,
-            String code,
-            Optional<String> reasonCode,
-            List<CrosswalkTarget> targets,
-            Map<String, Object> additionalProperties) {
-        this.resolvedUmlsRelease = resolvedUmlsRelease;
-        this.system = system;
-        this.code = code;
-        this.reasonCode = reasonCode;
-        this.targets = targets;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CrosswalkResponse(
+    String resolvedUmlsRelease,
+    String system,
+    String code,
+    Optional<String> reasonCode,
+    List<CrosswalkTarget> targets,
+    Map<String, Object> additionalProperties
+  ) {
+    this.resolvedUmlsRelease = resolvedUmlsRelease;
+    this.system = system;
+    this.code = code;
+    this.reasonCode = reasonCode;
+    this.targets = targets;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return UMLS release used for the crosswalk.
+   */
+  @JsonProperty("resolved_umls_release")
+  public String getResolvedUmlsRelease() {
+    return resolvedUmlsRelease;
+  }
+
+  /**
+   * @return Source FHIR code-system URI.
+   */
+  @JsonProperty("system")
+  public String getSystem() {
+    return system;
+  }
+
+  /**
+   * @return Source code that was mapped.
+   */
+  @JsonProperty("code")
+  public String getCode() {
+    return code;
+  }
+
+  /**
+   * @return Item-level reason code when the source code could not be mapped.
+   */
+  @JsonProperty("reason_code")
+  public Optional<String> getReasonCode() {
+    return reasonCode;
+  }
+
+  /**
+   * @return Crosswalk matches grouped by requested target code-system URI.
+   */
+  @JsonProperty("targets")
+  public List<CrosswalkTarget> getTargets() {
+    return targets;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CrosswalkResponse && equalTo((CrosswalkResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CrosswalkResponse other) {
+    return (
+      resolvedUmlsRelease.equals(other.resolvedUmlsRelease) &&
+      system.equals(other.system) &&
+      code.equals(other.code) &&
+      reasonCode.equals(other.reasonCode) &&
+      targets.equals(other.targets)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.resolvedUmlsRelease,
+      this.system,
+      this.code,
+      this.reasonCode,
+      this.targets
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static ResolvedUmlsReleaseStage builder() {
+    return new Builder();
+  }
+
+  public interface ResolvedUmlsReleaseStage {
+    /**
+     * <p>UMLS release used for the crosswalk.</p>
+     */
+    SystemStage resolvedUmlsRelease(@NotNull String resolvedUmlsRelease);
+
+    Builder from(CrosswalkResponse other);
+  }
+
+  public interface SystemStage {
+    /**
+     * <p>Source FHIR code-system URI.</p>
+     */
+    CodeStage system(@NotNull String system);
+  }
+
+  public interface CodeStage {
+    /**
+     * <p>Source code that was mapped.</p>
+     */
+    _FinalStage code(@NotNull String code);
+  }
+
+  public interface _FinalStage {
+    CrosswalkResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Item-level reason code when the source code could not be mapped.</p>
+     */
+    _FinalStage reasonCode(Optional<String> reasonCode);
+
+    _FinalStage reasonCode(String reasonCode);
+
+    /**
+     * <p>Crosswalk matches grouped by requested target code-system URI.</p>
+     */
+    _FinalStage targets(List<CrosswalkTarget> targets);
+
+    _FinalStage addTargets(CrosswalkTarget targets);
+
+    _FinalStage addAllTargets(List<CrosswalkTarget> targets);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements ResolvedUmlsReleaseStage, SystemStage, CodeStage, _FinalStage {
+
+    private String resolvedUmlsRelease;
+
+    private String system;
+
+    private String code;
+
+    private List<CrosswalkTarget> targets = new ArrayList<>();
+
+    private Optional<String> reasonCode = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(CrosswalkResponse other) {
+      resolvedUmlsRelease(other.getResolvedUmlsRelease());
+      system(other.getSystem());
+      code(other.getCode());
+      reasonCode(other.getReasonCode());
+      targets(other.getTargets());
+      return this;
     }
 
     /**
-     * @return UMLS release used for the crosswalk.
+     * <p>UMLS release used for the crosswalk.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("resolved_umls_release")
-    public String getResolvedUmlsRelease() {
-        return resolvedUmlsRelease;
+    @java.lang.Override
+    @JsonSetter("resolved_umls_release")
+    public SystemStage resolvedUmlsRelease(@NotNull String resolvedUmlsRelease) {
+      this.resolvedUmlsRelease = Objects.requireNonNull(
+        resolvedUmlsRelease,
+        "resolvedUmlsRelease must not be null"
+      );
+      return this;
     }
 
     /**
-     * @return Source FHIR code-system URI.
+     * <p>Source FHIR code-system URI.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("system")
-    public String getSystem() {
-        return system;
+    @java.lang.Override
+    @JsonSetter("system")
+    public CodeStage system(@NotNull String system) {
+      this.system = Objects.requireNonNull(system, "system must not be null");
+      return this;
     }
 
     /**
-     * @return Source code that was mapped.
+     * <p>Source code that was mapped.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("code")
-    public String getCode() {
-        return code;
+    @java.lang.Override
+    @JsonSetter("code")
+    public _FinalStage code(@NotNull String code) {
+      this.code = Objects.requireNonNull(code, "code must not be null");
+      return this;
     }
 
     /**
-     * @return Item-level reason code when the source code could not be mapped.
+     * <p>Crosswalk matches grouped by requested target code-system URI.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("reason_code")
-    public Optional<String> getReasonCode() {
-        return reasonCode;
+    @java.lang.Override
+    public _FinalStage addAllTargets(List<CrosswalkTarget> targets) {
+      if (targets != null) {
+        this.targets.addAll(targets);
+      }
+      return this;
     }
 
     /**
-     * @return Crosswalk matches grouped by requested target code-system URI.
+     * <p>Crosswalk matches grouped by requested target code-system URI.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("targets")
-    public List<CrosswalkTarget> getTargets() {
-        return targets;
+    @java.lang.Override
+    public _FinalStage addTargets(CrosswalkTarget targets) {
+      this.targets.add(targets);
+      return this;
+    }
+
+    /**
+     * <p>Crosswalk matches grouped by requested target code-system URI.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "targets", nulls = Nulls.SKIP)
+    public _FinalStage targets(List<CrosswalkTarget> targets) {
+      this.targets.clear();
+      if (targets != null) {
+        this.targets.addAll(targets);
+      }
+      return this;
+    }
+
+    /**
+     * <p>Item-level reason code when the source code could not be mapped.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage reasonCode(String reasonCode) {
+      this.reasonCode = Optional.ofNullable(reasonCode);
+      return this;
+    }
+
+    /**
+     * <p>Item-level reason code when the source code could not be mapped.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "reason_code", nulls = Nulls.SKIP)
+    public _FinalStage reasonCode(Optional<String> reasonCode) {
+      this.reasonCode = reasonCode;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CrosswalkResponse && equalTo((CrosswalkResponse) other);
+    public CrosswalkResponse build() {
+      return new CrosswalkResponse(
+        resolvedUmlsRelease,
+        system,
+        code,
+        reasonCode,
+        targets,
+        additionalProperties
+      );
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(CrosswalkResponse other) {
-        return resolvedUmlsRelease.equals(other.resolvedUmlsRelease)
-                && system.equals(other.system)
-                && code.equals(other.code)
-                && reasonCode.equals(other.reasonCode)
-                && targets.equals(other.targets);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("resolved_umls_release") ||
+        key.equalsIgnoreCase("system") ||
+        key.equalsIgnoreCase("code") ||
+        key.equalsIgnoreCase("reason_code") ||
+        key.equalsIgnoreCase("targets")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.resolvedUmlsRelease, this.system, this.code, this.reasonCode, this.targets);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static ResolvedUmlsReleaseStage builder() {
-        return new Builder();
-    }
-
-    public interface ResolvedUmlsReleaseStage {
-        /**
-         * <p>UMLS release used for the crosswalk.</p>
-         */
-        SystemStage resolvedUmlsRelease(@NotNull String resolvedUmlsRelease);
-
-        Builder from(CrosswalkResponse other);
-    }
-
-    public interface SystemStage {
-        /**
-         * <p>Source FHIR code-system URI.</p>
-         */
-        CodeStage system(@NotNull String system);
-    }
-
-    public interface CodeStage {
-        /**
-         * <p>Source code that was mapped.</p>
-         */
-        _FinalStage code(@NotNull String code);
-    }
-
-    public interface _FinalStage {
-        CrosswalkResponse build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Item-level reason code when the source code could not be mapped.</p>
-         */
-        _FinalStage reasonCode(Optional<String> reasonCode);
-
-        _FinalStage reasonCode(String reasonCode);
-
-        /**
-         * <p>Crosswalk matches grouped by requested target code-system URI.</p>
-         */
-        _FinalStage targets(List<CrosswalkTarget> targets);
-
-        _FinalStage addTargets(CrosswalkTarget targets);
-
-        _FinalStage addAllTargets(List<CrosswalkTarget> targets);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements ResolvedUmlsReleaseStage, SystemStage, CodeStage, _FinalStage {
-        private String resolvedUmlsRelease;
-
-        private String system;
-
-        private String code;
-
-        private List<CrosswalkTarget> targets = new ArrayList<>();
-
-        private Optional<String> reasonCode = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(CrosswalkResponse other) {
-            resolvedUmlsRelease(other.getResolvedUmlsRelease());
-            system(other.getSystem());
-            code(other.getCode());
-            reasonCode(other.getReasonCode());
-            targets(other.getTargets());
-            return this;
-        }
-
-        /**
-         * <p>UMLS release used for the crosswalk.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("resolved_umls_release")
-        public SystemStage resolvedUmlsRelease(@NotNull String resolvedUmlsRelease) {
-            this.resolvedUmlsRelease =
-                    Objects.requireNonNull(resolvedUmlsRelease, "resolvedUmlsRelease must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Source FHIR code-system URI.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("system")
-        public CodeStage system(@NotNull String system) {
-            this.system = Objects.requireNonNull(system, "system must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Source code that was mapped.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("code")
-        public _FinalStage code(@NotNull String code) {
-            this.code = Objects.requireNonNull(code, "code must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Crosswalk matches grouped by requested target code-system URI.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addAllTargets(List<CrosswalkTarget> targets) {
-            if (targets != null) {
-                this.targets.addAll(targets);
-            }
-            return this;
-        }
-
-        /**
-         * <p>Crosswalk matches grouped by requested target code-system URI.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addTargets(CrosswalkTarget targets) {
-            this.targets.add(targets);
-            return this;
-        }
-
-        /**
-         * <p>Crosswalk matches grouped by requested target code-system URI.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "targets", nulls = Nulls.SKIP)
-        public _FinalStage targets(List<CrosswalkTarget> targets) {
-            this.targets.clear();
-            if (targets != null) {
-                this.targets.addAll(targets);
-            }
-            return this;
-        }
-
-        /**
-         * <p>Item-level reason code when the source code could not be mapped.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage reasonCode(String reasonCode) {
-            this.reasonCode = Optional.ofNullable(reasonCode);
-            return this;
-        }
-
-        /**
-         * <p>Item-level reason code when the source code could not be mapped.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "reason_code", nulls = Nulls.SKIP)
-        public _FinalStage reasonCode(Optional<String> reasonCode) {
-            this.reasonCode = reasonCode;
-            return this;
-        }
-
-        @java.lang.Override
-        public CrosswalkResponse build() {
-            return new CrosswalkResponse(resolvedUmlsRelease, system, code, reasonCode, targets, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

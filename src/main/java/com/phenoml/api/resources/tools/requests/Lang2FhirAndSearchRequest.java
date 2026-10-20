@@ -22,335 +22,365 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Lang2FhirAndSearchRequest.Builder.class)
 public final class Lang2FhirAndSearchRequest {
-    private final Optional<String> phenomlOnBehalfOf;
 
-    private final Optional<String> phenomlFhirProvider;
+  private final Optional<String> phenomlOnBehalfOf;
 
-    private final String text;
+  private final Optional<String> phenomlFhirProvider;
 
-    private final Optional<String> patientId;
+  private final String text;
 
-    private final Optional<Integer> count;
+  private final Optional<String> patientId;
 
-    private final Optional<String> provider;
+  private final Optional<Integer> count;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> provider;
 
-    private Lang2FhirAndSearchRequest(
-            Optional<String> phenomlOnBehalfOf,
-            Optional<String> phenomlFhirProvider,
-            String text,
-            Optional<String> patientId,
-            Optional<Integer> count,
-            Optional<String> provider,
-            Map<String, Object> additionalProperties) {
-        this.phenomlOnBehalfOf = phenomlOnBehalfOf;
-        this.phenomlFhirProvider = phenomlFhirProvider;
-        this.text = text;
-        this.patientId = patientId;
-        this.count = count;
-        this.provider = provider;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private Lang2FhirAndSearchRequest(
+    Optional<String> phenomlOnBehalfOf,
+    Optional<String> phenomlFhirProvider,
+    String text,
+    Optional<String> patientId,
+    Optional<Integer> count,
+    Optional<String> provider,
+    Map<String, Object> additionalProperties
+  ) {
+    this.phenomlOnBehalfOf = phenomlOnBehalfOf;
+    this.phenomlFhirProvider = phenomlFhirProvider;
+    this.text = text;
+    this.patientId = patientId;
+    this.count = count;
+    this.provider = provider;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+   * Must be in the format: Patient/{uuid} or Practitioner/{uuid}
+   */
+  @JsonIgnore
+  public Optional<String> getPhenomlOnBehalfOf() {
+    return phenomlOnBehalfOf;
+  }
+
+  /**
+   * @return Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+   * Multiple FHIR provider integrations can be provided as comma-separated values.
+   */
+  @JsonIgnore
+  public Optional<String> getPhenomlFhirProvider() {
+    return phenomlFhirProvider;
+  }
+
+  /**
+   * @return Natural language text to convert to FHIR search parameters
+   */
+  @JsonProperty("text")
+  public String getText() {
+    return text;
+  }
+
+  /**
+   * @return Patient ID to filter results
+   */
+  @JsonProperty("patient_id")
+  public Optional<String> getPatientId() {
+    return patientId;
+  }
+
+  /**
+   * @return Maximum number of results to return
+   */
+  @JsonProperty("count")
+  public Optional<Integer> getCount() {
+    return count;
+  }
+
+  /**
+   * @return FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)
+   */
+  @JsonProperty("provider")
+  public Optional<String> getProvider() {
+    return provider;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof Lang2FhirAndSearchRequest && equalTo((Lang2FhirAndSearchRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(Lang2FhirAndSearchRequest other) {
+    return (
+      phenomlOnBehalfOf.equals(other.phenomlOnBehalfOf) &&
+      phenomlFhirProvider.equals(other.phenomlFhirProvider) &&
+      text.equals(other.text) &&
+      patientId.equals(other.patientId) &&
+      count.equals(other.count) &&
+      provider.equals(other.provider)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.phenomlOnBehalfOf,
+      this.phenomlFhirProvider,
+      this.text,
+      this.patientId,
+      this.count,
+      this.provider
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static TextStage builder() {
+    return new Builder();
+  }
+
+  public interface TextStage {
+    /**
+     * <p>Natural language text to convert to FHIR search parameters</p>
+     */
+    _FinalStage text(@NotNull String text);
+
+    Builder from(Lang2FhirAndSearchRequest other);
+  }
+
+  public interface _FinalStage {
+    Lang2FhirAndSearchRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
+     */
+    _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf);
+
+    _FinalStage phenomlOnBehalfOf(String phenomlOnBehalfOf);
+
+    /**
+     * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+     * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+     */
+    _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider);
+
+    _FinalStage phenomlFhirProvider(String phenomlFhirProvider);
+
+    /**
+     * <p>Patient ID to filter results</p>
+     */
+    _FinalStage patientId(Optional<String> patientId);
+
+    _FinalStage patientId(String patientId);
+
+    /**
+     * <p>Maximum number of results to return</p>
+     */
+    _FinalStage count(Optional<Integer> count);
+
+    _FinalStage count(Integer count);
+
+    /**
+     * <p>FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)</p>
+     */
+    _FinalStage provider(Optional<String> provider);
+
+    _FinalStage provider(String provider);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements TextStage, _FinalStage {
+
+    private String text;
+
+    private Optional<String> provider = Optional.empty();
+
+    private Optional<Integer> count = Optional.empty();
+
+    private Optional<String> patientId = Optional.empty();
+
+    private Optional<String> phenomlFhirProvider = Optional.empty();
+
+    private Optional<String> phenomlOnBehalfOf = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(Lang2FhirAndSearchRequest other) {
+      phenomlOnBehalfOf(other.getPhenomlOnBehalfOf());
+      phenomlFhirProvider(other.getPhenomlFhirProvider());
+      text(other.getText());
+      patientId(other.getPatientId());
+      count(other.getCount());
+      provider(other.getProvider());
+      return this;
     }
 
     /**
-     * @return Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
-     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}
+     * <p>Natural language text to convert to FHIR search parameters</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonIgnore
-    public Optional<String> getPhenomlOnBehalfOf() {
-        return phenomlOnBehalfOf;
+    @java.lang.Override
+    @JsonSetter("text")
+    public _FinalStage text(@NotNull String text) {
+      this.text = Objects.requireNonNull(text, "text must not be null");
+      return this;
     }
 
     /**
-     * @return Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
-     * Multiple FHIR provider integrations can be provided as comma-separated values.
+     * <p>FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonIgnore
-    public Optional<String> getPhenomlFhirProvider() {
-        return phenomlFhirProvider;
+    @java.lang.Override
+    public _FinalStage provider(String provider) {
+      this.provider = Optional.ofNullable(provider);
+      return this;
     }
 
     /**
-     * @return Natural language text to convert to FHIR search parameters
+     * <p>FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)</p>
      */
-    @JsonProperty("text")
-    public String getText() {
-        return text;
+    @java.lang.Override
+    @JsonSetter(value = "provider", nulls = Nulls.SKIP)
+    public _FinalStage provider(Optional<String> provider) {
+      this.provider = provider;
+      return this;
     }
 
     /**
-     * @return Patient ID to filter results
+     * <p>Maximum number of results to return</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("patient_id")
-    public Optional<String> getPatientId() {
-        return patientId;
+    @java.lang.Override
+    public _FinalStage count(Integer count) {
+      this.count = Optional.ofNullable(count);
+      return this;
     }
 
     /**
-     * @return Maximum number of results to return
+     * <p>Maximum number of results to return</p>
      */
-    @JsonProperty("count")
-    public Optional<Integer> getCount() {
-        return count;
+    @java.lang.Override
+    @JsonSetter(value = "count", nulls = Nulls.SKIP)
+    public _FinalStage count(Optional<Integer> count) {
+      this.count = count;
+      return this;
     }
 
     /**
-     * @return FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)
+     * <p>Patient ID to filter results</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("provider")
-    public Optional<String> getProvider() {
-        return provider;
+    @java.lang.Override
+    public _FinalStage patientId(String patientId) {
+      this.patientId = Optional.ofNullable(patientId);
+      return this;
+    }
+
+    /**
+     * <p>Patient ID to filter results</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "patient_id", nulls = Nulls.SKIP)
+    public _FinalStage patientId(Optional<String> patientId) {
+      this.patientId = patientId;
+      return this;
+    }
+
+    /**
+     * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+     * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage phenomlFhirProvider(String phenomlFhirProvider) {
+      this.phenomlFhirProvider = Optional.ofNullable(phenomlFhirProvider);
+      return this;
+    }
+
+    /**
+     * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
+     * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
+     */
+    @java.lang.Override
+    public _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider) {
+      this.phenomlFhirProvider = phenomlFhirProvider;
+      return this;
+    }
+
+    /**
+     * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage phenomlOnBehalfOf(String phenomlOnBehalfOf) {
+      this.phenomlOnBehalfOf = Optional.ofNullable(phenomlOnBehalfOf);
+      return this;
+    }
+
+    /**
+     * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
+     * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
+     */
+    @java.lang.Override
+    public _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf) {
+      this.phenomlOnBehalfOf = phenomlOnBehalfOf;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof Lang2FhirAndSearchRequest && equalTo((Lang2FhirAndSearchRequest) other);
+    public Lang2FhirAndSearchRequest build() {
+      return new Lang2FhirAndSearchRequest(
+        phenomlOnBehalfOf,
+        phenomlFhirProvider,
+        text,
+        patientId,
+        count,
+        provider,
+        additionalProperties
+      );
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(Lang2FhirAndSearchRequest other) {
-        return phenomlOnBehalfOf.equals(other.phenomlOnBehalfOf)
-                && phenomlFhirProvider.equals(other.phenomlFhirProvider)
-                && text.equals(other.text)
-                && patientId.equals(other.patientId)
-                && count.equals(other.count)
-                && provider.equals(other.provider);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("text") ||
+        key.equalsIgnoreCase("patient_id") ||
+        key.equalsIgnoreCase("count") ||
+        key.equalsIgnoreCase("provider")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.phenomlOnBehalfOf, this.phenomlFhirProvider, this.text, this.patientId, this.count, this.provider);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static TextStage builder() {
-        return new Builder();
-    }
-
-    public interface TextStage {
-        /**
-         * <p>Natural language text to convert to FHIR search parameters</p>
-         */
-        _FinalStage text(@NotNull String text);
-
-        Builder from(Lang2FhirAndSearchRequest other);
-    }
-
-    public interface _FinalStage {
-        Lang2FhirAndSearchRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
-         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
-         */
-        _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf);
-
-        _FinalStage phenomlOnBehalfOf(String phenomlOnBehalfOf);
-
-        /**
-         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
-         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
-         */
-        _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider);
-
-        _FinalStage phenomlFhirProvider(String phenomlFhirProvider);
-
-        /**
-         * <p>Patient ID to filter results</p>
-         */
-        _FinalStage patientId(Optional<String> patientId);
-
-        _FinalStage patientId(String patientId);
-
-        /**
-         * <p>Maximum number of results to return</p>
-         */
-        _FinalStage count(Optional<Integer> count);
-
-        _FinalStage count(Integer count);
-
-        /**
-         * <p>FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)</p>
-         */
-        _FinalStage provider(Optional<String> provider);
-
-        _FinalStage provider(String provider);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements TextStage, _FinalStage {
-        private String text;
-
-        private Optional<String> provider = Optional.empty();
-
-        private Optional<Integer> count = Optional.empty();
-
-        private Optional<String> patientId = Optional.empty();
-
-        private Optional<String> phenomlFhirProvider = Optional.empty();
-
-        private Optional<String> phenomlOnBehalfOf = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(Lang2FhirAndSearchRequest other) {
-            phenomlOnBehalfOf(other.getPhenomlOnBehalfOf());
-            phenomlFhirProvider(other.getPhenomlFhirProvider());
-            text(other.getText());
-            patientId(other.getPatientId());
-            count(other.getCount());
-            provider(other.getProvider());
-            return this;
-        }
-
-        /**
-         * <p>Natural language text to convert to FHIR search parameters</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("text")
-        public _FinalStage text(@NotNull String text) {
-            this.text = Objects.requireNonNull(text, "text must not be null");
-            return this;
-        }
-
-        /**
-         * <p>FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage provider(String provider) {
-            this.provider = Optional.ofNullable(provider);
-            return this;
-        }
-
-        /**
-         * <p>FHIR provider ID - must be a valid UUID from existing FHIR providers. also supports provider by name (e.g. medplum)</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "provider", nulls = Nulls.SKIP)
-        public _FinalStage provider(Optional<String> provider) {
-            this.provider = provider;
-            return this;
-        }
-
-        /**
-         * <p>Maximum number of results to return</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage count(Integer count) {
-            this.count = Optional.ofNullable(count);
-            return this;
-        }
-
-        /**
-         * <p>Maximum number of results to return</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "count", nulls = Nulls.SKIP)
-        public _FinalStage count(Optional<Integer> count) {
-            this.count = count;
-            return this;
-        }
-
-        /**
-         * <p>Patient ID to filter results</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage patientId(String patientId) {
-            this.patientId = Optional.ofNullable(patientId);
-            return this;
-        }
-
-        /**
-         * <p>Patient ID to filter results</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "patient_id", nulls = Nulls.SKIP)
-        public _FinalStage patientId(Optional<String> patientId) {
-            this.patientId = patientId;
-            return this;
-        }
-
-        /**
-         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
-         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage phenomlFhirProvider(String phenomlFhirProvider) {
-            this.phenomlFhirProvider = Optional.ofNullable(phenomlFhirProvider);
-            return this;
-        }
-
-        /**
-         * <p>Optional header for FHIR provider authentication. Contains credentials in the format {fhir_provider_id}:{oauth2_token}.
-         * Multiple FHIR provider integrations can be provided as comma-separated values.</p>
-         */
-        @java.lang.Override
-        public _FinalStage phenomlFhirProvider(Optional<String> phenomlFhirProvider) {
-            this.phenomlFhirProvider = phenomlFhirProvider;
-            return this;
-        }
-
-        /**
-         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
-         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage phenomlOnBehalfOf(String phenomlOnBehalfOf) {
-            this.phenomlOnBehalfOf = Optional.ofNullable(phenomlOnBehalfOf);
-            return this;
-        }
-
-        /**
-         * <p>Optional header for on-behalf-of authentication. Used when making requests on behalf of another user or entity.
-         * Must be in the format: Patient/{uuid} or Practitioner/{uuid}</p>
-         */
-        @java.lang.Override
-        public _FinalStage phenomlOnBehalfOf(Optional<String> phenomlOnBehalfOf) {
-            this.phenomlOnBehalfOf = phenomlOnBehalfOf;
-            return this;
-        }
-
-        @java.lang.Override
-        public Lang2FhirAndSearchRequest build() {
-            return new Lang2FhirAndSearchRequest(
-                    phenomlOnBehalfOf, phenomlFhirProvider, text, patientId, count, provider, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

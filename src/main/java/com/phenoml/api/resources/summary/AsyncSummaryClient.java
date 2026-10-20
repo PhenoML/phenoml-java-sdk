@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.summary;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.summary.requests.CreateSummaryRequest;
@@ -13,51 +14,74 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public class AsyncSummaryClient {
-    protected final ClientOptions clientOptions;
 
-    private final AsyncRawSummaryClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    protected final Supplier<AsyncTemplatesClient> templatesClient;
+  private final AsyncRawSummaryClient rawClient;
 
-    public AsyncSummaryClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawSummaryClient(clientOptions);
-        this.templatesClient = Suppliers.memoize(() -> new AsyncTemplatesClient(clientOptions));
-    }
+  protected final Supplier<AsyncTemplatesClient> templatesClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawSummaryClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AsyncSummaryClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new AsyncRawSummaryClient(clientOptions);
+    this.templatesClient = Suppliers.memoize(() -> new AsyncTemplatesClient(clientOptions));
+  }
 
-    /**
-     * Creates a summary from FHIR resources using one of three modes:
-     * <ul>
-     * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
-     * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
-     * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
-     * </ul>
-     */
-    public CompletableFuture<CreateSummaryResponse> create(CreateSummaryRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public AsyncRawSummaryClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Creates a summary from FHIR resources using one of three modes:
-     * <ul>
-     * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
-     * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
-     * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
-     * </ul>
-     */
-    public CompletableFuture<CreateSummaryResponse> create(
-            CreateSummaryRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Creates a summary from FHIR resources using one of three modes:
+   * <ul>
+   * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
+   * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
+   * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
+   * </ul>
+   */
+  public CompletableFuture<CreateSummaryResponse> create(CreateSummaryRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<CreateSummaryResponse>> rawFuture =
+      this.rawClient.create(request);
+    CompletableFuture<CreateSummaryResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    public AsyncTemplatesClient templates() {
-        return this.templatesClient.get();
-    }
+  /**
+   * Creates a summary from FHIR resources using one of three modes:
+   * <ul>
+   * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
+   * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
+   * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
+   * </ul>
+   */
+  public CompletableFuture<CreateSummaryResponse> create(
+    CreateSummaryRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<CreateSummaryResponse>> rawFuture =
+      this.rawClient.create(request, requestOptions);
+    CompletableFuture<CreateSummaryResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
+
+  public AsyncTemplatesClient templates() {
+    return this.templatesClient.get();
+  }
 }

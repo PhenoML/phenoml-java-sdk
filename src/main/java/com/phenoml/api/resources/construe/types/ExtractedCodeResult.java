@@ -22,370 +22,406 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ExtractedCodeResult.Builder.class)
 public final class ExtractedCodeResult {
-    private final String code;
 
-    private final String description;
+  private final String code;
 
-    private final boolean valid;
+  private final String description;
 
-    private final Optional<String> reason;
+  private final boolean valid;
 
-    private final Optional<Boolean> isAncestor;
+  private final Optional<String> reason;
 
-    private final Optional<List<Citation>> citations;
+  private final Optional<Boolean> isAncestor;
 
-    private final Optional<List<CodeCategory>> categories;
+  private final Optional<List<Citation>> citations;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<CodeCategory>> categories;
 
-    private ExtractedCodeResult(
-            String code,
-            String description,
-            boolean valid,
-            Optional<String> reason,
-            Optional<Boolean> isAncestor,
-            Optional<List<Citation>> citations,
-            Optional<List<CodeCategory>> categories,
-            Map<String, Object> additionalProperties) {
-        this.code = code;
-        this.description = description;
-        this.valid = valid;
-        this.reason = reason;
-        this.isAncestor = isAncestor;
-        this.citations = citations;
-        this.categories = categories;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
+  private ExtractedCodeResult(
+    String code,
+    String description,
+    boolean valid,
+    Optional<String> reason,
+    Optional<Boolean> isAncestor,
+    Optional<List<Citation>> citations,
+    Optional<List<CodeCategory>> categories,
+    Map<String, Object> additionalProperties
+  ) {
+    this.code = code;
+    this.description = description;
+    this.valid = valid;
+    this.reason = reason;
+    this.isAncestor = isAncestor;
+    this.citations = citations;
+    this.categories = categories;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return The extracted code
+   */
+  @JsonProperty("code")
+  public String getCode() {
+    return code;
+  }
+
+  /**
+   * @return Short description of the code
+   */
+  @JsonProperty("description")
+  public String getDescription() {
+    return description;
+  }
+
+  /**
+   * @return Whether the code passed validation. Always true unless include_invalid is set to true, in which case invalid codes will have this set to false.
+   */
+  @JsonProperty("valid")
+  public boolean getValid() {
+    return valid;
+  }
+
+  /**
+   * @return Explanation for why this code was extracted (if include_rationale is true)
+   */
+  @JsonProperty("reason")
+  public Optional<String> getReason() {
+    return reason;
+  }
+
+  /**
+   * @return Whether this code is an ancestor (parent) of an extracted code rather than directly extracted.
+   * Only present when include_ancestors is true.
+   */
+  @JsonProperty("is_ancestor")
+  public Optional<Boolean> getIsAncestor() {
+    return isAncestor;
+  }
+
+  /**
+   * @return Source text references showing where this code was found in the input.
+   * Only present when include_citations is true and chunking method supports it.
+   * Ancestor codes do not receive citations.
+   */
+  @JsonProperty("citations")
+  public Optional<List<Citation>> getCitations() {
+    return citations;
+  }
+
+  /**
+   * @return Higher-level groupings the extracted code belongs to (e.g. HPO category terms).
+   * Only populated by full-extraction chunking methods such as &quot;fasthpocr&quot;.
+   */
+  @JsonProperty("categories")
+  public Optional<List<CodeCategory>> getCategories() {
+    return categories;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ExtractedCodeResult && equalTo((ExtractedCodeResult) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ExtractedCodeResult other) {
+    return (
+      code.equals(other.code) &&
+      description.equals(other.description) &&
+      valid == other.valid &&
+      reason.equals(other.reason) &&
+      isAncestor.equals(other.isAncestor) &&
+      citations.equals(other.citations) &&
+      categories.equals(other.categories)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.code,
+      this.description,
+      this.valid,
+      this.reason,
+      this.isAncestor,
+      this.citations,
+      this.categories
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static CodeStage builder() {
+    return new Builder();
+  }
+
+  public interface CodeStage {
     /**
-     * @return The extracted code
+     * <p>The extracted code</p>
      */
-    @JsonProperty("code")
-    public String getCode() {
-        return code;
-    }
+    DescriptionStage code(@NotNull String code);
 
+    Builder from(ExtractedCodeResult other);
+  }
+
+  public interface DescriptionStage {
     /**
-     * @return Short description of the code
+     * <p>Short description of the code</p>
      */
-    @JsonProperty("description")
-    public String getDescription() {
-        return description;
-    }
+    ValidStage description(@NotNull String description);
+  }
 
+  public interface ValidStage {
     /**
-     * @return Whether the code passed validation. Always true unless include_invalid is set to true, in which case invalid codes will have this set to false.
+     * <p>Whether the code passed validation. Always true unless include_invalid is set to true, in which case invalid codes will have this set to false.</p>
      */
-    @JsonProperty("valid")
-    public boolean getValid() {
-        return valid;
-    }
+    _FinalStage valid(boolean valid);
+  }
+
+  public interface _FinalStage {
+    ExtractedCodeResult build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
     /**
-     * @return Explanation for why this code was extracted (if include_rationale is true)
+     * <p>Explanation for why this code was extracted (if include_rationale is true)</p>
      */
-    @JsonProperty("reason")
-    public Optional<String> getReason() {
-        return reason;
-    }
+    _FinalStage reason(Optional<String> reason);
+
+    _FinalStage reason(String reason);
 
     /**
-     * @return Whether this code is an ancestor (parent) of an extracted code rather than directly extracted.
-     * Only present when include_ancestors is true.
+     * <p>Whether this code is an ancestor (parent) of an extracted code rather than directly extracted.
+     * Only present when include_ancestors is true.</p>
      */
-    @JsonProperty("is_ancestor")
-    public Optional<Boolean> getIsAncestor() {
-        return isAncestor;
-    }
+    _FinalStage isAncestor(Optional<Boolean> isAncestor);
+
+    _FinalStage isAncestor(Boolean isAncestor);
 
     /**
-     * @return Source text references showing where this code was found in the input.
+     * <p>Source text references showing where this code was found in the input.
      * Only present when include_citations is true and chunking method supports it.
-     * Ancestor codes do not receive citations.
+     * Ancestor codes do not receive citations.</p>
      */
-    @JsonProperty("citations")
-    public Optional<List<Citation>> getCitations() {
-        return citations;
+    _FinalStage citations(Optional<List<Citation>> citations);
+
+    _FinalStage citations(List<Citation> citations);
+
+    /**
+     * <p>Higher-level groupings the extracted code belongs to (e.g. HPO category terms).
+     * Only populated by full-extraction chunking methods such as &quot;fasthpocr&quot;.</p>
+     */
+    _FinalStage categories(Optional<List<CodeCategory>> categories);
+
+    _FinalStage categories(List<CodeCategory> categories);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements CodeStage, DescriptionStage, ValidStage, _FinalStage {
+
+    private String code;
+
+    private String description;
+
+    private boolean valid;
+
+    private Optional<List<CodeCategory>> categories = Optional.empty();
+
+    private Optional<List<Citation>> citations = Optional.empty();
+
+    private Optional<Boolean> isAncestor = Optional.empty();
+
+    private Optional<String> reason = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(ExtractedCodeResult other) {
+      code(other.getCode());
+      description(other.getDescription());
+      valid(other.getValid());
+      reason(other.getReason());
+      isAncestor(other.getIsAncestor());
+      citations(other.getCitations());
+      categories(other.getCategories());
+      return this;
     }
 
     /**
-     * @return Higher-level groupings the extracted code belongs to (e.g. HPO category terms).
-     * Only populated by full-extraction chunking methods such as &quot;fasthpocr&quot;.
+     * <p>The extracted code</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("categories")
-    public Optional<List<CodeCategory>> getCategories() {
-        return categories;
+    @java.lang.Override
+    @JsonSetter("code")
+    public DescriptionStage code(@NotNull String code) {
+      this.code = Objects.requireNonNull(code, "code must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Short description of the code</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("description")
+    public ValidStage description(@NotNull String description) {
+      this.description = Objects.requireNonNull(description, "description must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Whether the code passed validation. Always true unless include_invalid is set to true, in which case invalid codes will have this set to false.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("valid")
+    public _FinalStage valid(boolean valid) {
+      this.valid = valid;
+      return this;
+    }
+
+    /**
+     * <p>Higher-level groupings the extracted code belongs to (e.g. HPO category terms).
+     * Only populated by full-extraction chunking methods such as &quot;fasthpocr&quot;.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage categories(List<CodeCategory> categories) {
+      this.categories = Optional.ofNullable(categories);
+      return this;
+    }
+
+    /**
+     * <p>Higher-level groupings the extracted code belongs to (e.g. HPO category terms).
+     * Only populated by full-extraction chunking methods such as &quot;fasthpocr&quot;.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "categories", nulls = Nulls.SKIP)
+    public _FinalStage categories(Optional<List<CodeCategory>> categories) {
+      this.categories = categories;
+      return this;
+    }
+
+    /**
+     * <p>Source text references showing where this code was found in the input.
+     * Only present when include_citations is true and chunking method supports it.
+     * Ancestor codes do not receive citations.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage citations(List<Citation> citations) {
+      this.citations = Optional.ofNullable(citations);
+      return this;
+    }
+
+    /**
+     * <p>Source text references showing where this code was found in the input.
+     * Only present when include_citations is true and chunking method supports it.
+     * Ancestor codes do not receive citations.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "citations", nulls = Nulls.SKIP)
+    public _FinalStage citations(Optional<List<Citation>> citations) {
+      this.citations = citations;
+      return this;
+    }
+
+    /**
+     * <p>Whether this code is an ancestor (parent) of an extracted code rather than directly extracted.
+     * Only present when include_ancestors is true.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage isAncestor(Boolean isAncestor) {
+      this.isAncestor = Optional.ofNullable(isAncestor);
+      return this;
+    }
+
+    /**
+     * <p>Whether this code is an ancestor (parent) of an extracted code rather than directly extracted.
+     * Only present when include_ancestors is true.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "is_ancestor", nulls = Nulls.SKIP)
+    public _FinalStage isAncestor(Optional<Boolean> isAncestor) {
+      this.isAncestor = isAncestor;
+      return this;
+    }
+
+    /**
+     * <p>Explanation for why this code was extracted (if include_rationale is true)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage reason(String reason) {
+      this.reason = Optional.ofNullable(reason);
+      return this;
+    }
+
+    /**
+     * <p>Explanation for why this code was extracted (if include_rationale is true)</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "reason", nulls = Nulls.SKIP)
+    public _FinalStage reason(Optional<String> reason) {
+      this.reason = reason;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ExtractedCodeResult && equalTo((ExtractedCodeResult) other);
+    public ExtractedCodeResult build() {
+      return new ExtractedCodeResult(
+        code,
+        description,
+        valid,
+        reason,
+        isAncestor,
+        citations,
+        categories,
+        additionalProperties
+      );
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(ExtractedCodeResult other) {
-        return code.equals(other.code)
-                && description.equals(other.description)
-                && valid == other.valid
-                && reason.equals(other.reason)
-                && isAncestor.equals(other.isAncestor)
-                && citations.equals(other.citations)
-                && categories.equals(other.categories);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("code") ||
+        key.equalsIgnoreCase("description") ||
+        key.equalsIgnoreCase("valid") ||
+        key.equalsIgnoreCase("reason") ||
+        key.equalsIgnoreCase("is_ancestor") ||
+        key.equalsIgnoreCase("citations") ||
+        key.equalsIgnoreCase("categories")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.code, this.description, this.valid, this.reason, this.isAncestor, this.citations, this.categories);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static CodeStage builder() {
-        return new Builder();
-    }
-
-    public interface CodeStage {
-        /**
-         * <p>The extracted code</p>
-         */
-        DescriptionStage code(@NotNull String code);
-
-        Builder from(ExtractedCodeResult other);
-    }
-
-    public interface DescriptionStage {
-        /**
-         * <p>Short description of the code</p>
-         */
-        ValidStage description(@NotNull String description);
-    }
-
-    public interface ValidStage {
-        /**
-         * <p>Whether the code passed validation. Always true unless include_invalid is set to true, in which case invalid codes will have this set to false.</p>
-         */
-        _FinalStage valid(boolean valid);
-    }
-
-    public interface _FinalStage {
-        ExtractedCodeResult build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Explanation for why this code was extracted (if include_rationale is true)</p>
-         */
-        _FinalStage reason(Optional<String> reason);
-
-        _FinalStage reason(String reason);
-
-        /**
-         * <p>Whether this code is an ancestor (parent) of an extracted code rather than directly extracted.
-         * Only present when include_ancestors is true.</p>
-         */
-        _FinalStage isAncestor(Optional<Boolean> isAncestor);
-
-        _FinalStage isAncestor(Boolean isAncestor);
-
-        /**
-         * <p>Source text references showing where this code was found in the input.
-         * Only present when include_citations is true and chunking method supports it.
-         * Ancestor codes do not receive citations.</p>
-         */
-        _FinalStage citations(Optional<List<Citation>> citations);
-
-        _FinalStage citations(List<Citation> citations);
-
-        /**
-         * <p>Higher-level groupings the extracted code belongs to (e.g. HPO category terms).
-         * Only populated by full-extraction chunking methods such as &quot;fasthpocr&quot;.</p>
-         */
-        _FinalStage categories(Optional<List<CodeCategory>> categories);
-
-        _FinalStage categories(List<CodeCategory> categories);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements CodeStage, DescriptionStage, ValidStage, _FinalStage {
-        private String code;
-
-        private String description;
-
-        private boolean valid;
-
-        private Optional<List<CodeCategory>> categories = Optional.empty();
-
-        private Optional<List<Citation>> citations = Optional.empty();
-
-        private Optional<Boolean> isAncestor = Optional.empty();
-
-        private Optional<String> reason = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(ExtractedCodeResult other) {
-            code(other.getCode());
-            description(other.getDescription());
-            valid(other.getValid());
-            reason(other.getReason());
-            isAncestor(other.getIsAncestor());
-            citations(other.getCitations());
-            categories(other.getCategories());
-            return this;
-        }
-
-        /**
-         * <p>The extracted code</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("code")
-        public DescriptionStage code(@NotNull String code) {
-            this.code = Objects.requireNonNull(code, "code must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Short description of the code</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("description")
-        public ValidStage description(@NotNull String description) {
-            this.description = Objects.requireNonNull(description, "description must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Whether the code passed validation. Always true unless include_invalid is set to true, in which case invalid codes will have this set to false.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("valid")
-        public _FinalStage valid(boolean valid) {
-            this.valid = valid;
-            return this;
-        }
-
-        /**
-         * <p>Higher-level groupings the extracted code belongs to (e.g. HPO category terms).
-         * Only populated by full-extraction chunking methods such as &quot;fasthpocr&quot;.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage categories(List<CodeCategory> categories) {
-            this.categories = Optional.ofNullable(categories);
-            return this;
-        }
-
-        /**
-         * <p>Higher-level groupings the extracted code belongs to (e.g. HPO category terms).
-         * Only populated by full-extraction chunking methods such as &quot;fasthpocr&quot;.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "categories", nulls = Nulls.SKIP)
-        public _FinalStage categories(Optional<List<CodeCategory>> categories) {
-            this.categories = categories;
-            return this;
-        }
-
-        /**
-         * <p>Source text references showing where this code was found in the input.
-         * Only present when include_citations is true and chunking method supports it.
-         * Ancestor codes do not receive citations.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage citations(List<Citation> citations) {
-            this.citations = Optional.ofNullable(citations);
-            return this;
-        }
-
-        /**
-         * <p>Source text references showing where this code was found in the input.
-         * Only present when include_citations is true and chunking method supports it.
-         * Ancestor codes do not receive citations.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "citations", nulls = Nulls.SKIP)
-        public _FinalStage citations(Optional<List<Citation>> citations) {
-            this.citations = citations;
-            return this;
-        }
-
-        /**
-         * <p>Whether this code is an ancestor (parent) of an extracted code rather than directly extracted.
-         * Only present when include_ancestors is true.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage isAncestor(Boolean isAncestor) {
-            this.isAncestor = Optional.ofNullable(isAncestor);
-            return this;
-        }
-
-        /**
-         * <p>Whether this code is an ancestor (parent) of an extracted code rather than directly extracted.
-         * Only present when include_ancestors is true.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "is_ancestor", nulls = Nulls.SKIP)
-        public _FinalStage isAncestor(Optional<Boolean> isAncestor) {
-            this.isAncestor = isAncestor;
-            return this;
-        }
-
-        /**
-         * <p>Explanation for why this code was extracted (if include_rationale is true)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage reason(String reason) {
-            this.reason = Optional.ofNullable(reason);
-            return this;
-        }
-
-        /**
-         * <p>Explanation for why this code was extracted (if include_rationale is true)</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "reason", nulls = Nulls.SKIP)
-        public _FinalStage reason(Optional<String> reason) {
-            this.reason = reason;
-            return this;
-        }
-
-        @java.lang.Override
-        public ExtractedCodeResult build() {
-            return new ExtractedCodeResult(
-                    code, description, valid, reason, isAncestor, citations, categories, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

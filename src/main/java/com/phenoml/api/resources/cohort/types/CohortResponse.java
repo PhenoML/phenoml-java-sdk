@@ -21,152 +21,170 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CohortResponse.Builder.class)
 public final class CohortResponse {
-    private final Optional<Boolean> success;
 
-    private final Optional<String> message;
+  private final Optional<Boolean> success;
 
-    private final Optional<List<SearchConcept>> queries;
+  private final Optional<String> message;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<SearchConcept>> queries;
 
-    private CohortResponse(
-            Optional<Boolean> success,
-            Optional<String> message,
-            Optional<List<SearchConcept>> queries,
-            Map<String, Object> additionalProperties) {
-        this.success = success;
-        this.message = message;
-        this.queries = queries;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CohortResponse(
+    Optional<Boolean> success,
+    Optional<String> message,
+    Optional<List<SearchConcept>> queries,
+    Map<String, Object> additionalProperties
+  ) {
+    this.success = success;
+    this.message = message;
+    this.queries = queries;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Whether the cohort analysis was successful
+   */
+  @JsonProperty("success")
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  /**
+   * @return Human-readable message about the analysis result
+   */
+  @JsonProperty("message")
+  public Optional<String> getMessage() {
+    return message;
+  }
+
+  /**
+   * @return Array of search concepts converted to FHIR search queries
+   */
+  @JsonProperty("queries")
+  public Optional<List<SearchConcept>> getQueries() {
+    return queries;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CohortResponse && equalTo((CohortResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CohortResponse other) {
+    return (
+      success.equals(other.success) &&
+      message.equals(other.message) &&
+      queries.equals(other.queries)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.success, this.message, this.queries);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<String> message = Optional.empty();
+
+    private Optional<List<SearchConcept>> queries = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(CohortResponse other) {
+      success(other.getSuccess());
+      message(other.getMessage());
+      queries(other.getQueries());
+      return this;
     }
 
     /**
-     * @return Whether the cohort analysis was successful
+     * <p>Whether the cohort analysis was successful</p>
      */
-    @JsonProperty("success")
-    public Optional<Boolean> getSuccess() {
-        return success;
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
+    }
+
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
     }
 
     /**
-     * @return Human-readable message about the analysis result
+     * <p>Human-readable message about the analysis result</p>
      */
-    @JsonProperty("message")
-    public Optional<String> getMessage() {
-        return message;
+    @JsonSetter(value = "message", nulls = Nulls.SKIP)
+    public Builder message(Optional<String> message) {
+      this.message = message;
+      return this;
+    }
+
+    public Builder message(String message) {
+      this.message = Optional.ofNullable(message);
+      return this;
     }
 
     /**
-     * @return Array of search concepts converted to FHIR search queries
+     * <p>Array of search concepts converted to FHIR search queries</p>
      */
-    @JsonProperty("queries")
-    public Optional<List<SearchConcept>> getQueries() {
-        return queries;
+    @JsonSetter(value = "queries", nulls = Nulls.SKIP)
+    public Builder queries(Optional<List<SearchConcept>> queries) {
+      this.queries = queries;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CohortResponse && equalTo((CohortResponse) other);
+    public Builder queries(List<SearchConcept> queries) {
+      this.queries = Optional.ofNullable(queries);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public CohortResponse build() {
+      return new CohortResponse(success, message, queries, additionalProperties);
     }
 
-    private boolean equalTo(CohortResponse other) {
-        return success.equals(other.success) && message.equals(other.message) && queries.equals(other.queries);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("success") ||
+        key.equalsIgnoreCase("message") ||
+        key.equalsIgnoreCase("queries")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.success, this.message, this.queries);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<String> message = Optional.empty();
-
-        private Optional<List<SearchConcept>> queries = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(CohortResponse other) {
-            success(other.getSuccess());
-            message(other.getMessage());
-            queries(other.getQueries());
-            return this;
-        }
-
-        /**
-         * <p>Whether the cohort analysis was successful</p>
-         */
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        /**
-         * <p>Human-readable message about the analysis result</p>
-         */
-        @JsonSetter(value = "message", nulls = Nulls.SKIP)
-        public Builder message(Optional<String> message) {
-            this.message = message;
-            return this;
-        }
-
-        public Builder message(String message) {
-            this.message = Optional.ofNullable(message);
-            return this;
-        }
-
-        /**
-         * <p>Array of search concepts converted to FHIR search queries</p>
-         */
-        @JsonSetter(value = "queries", nulls = Nulls.SKIP)
-        public Builder queries(Optional<List<SearchConcept>> queries) {
-            this.queries = queries;
-            return this;
-        }
-
-        public Builder queries(List<SearchConcept> queries) {
-            this.queries = Optional.ofNullable(queries);
-            return this;
-        }
-
-        public CohortResponse build() {
-            return new CohortResponse(success, message, queries, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

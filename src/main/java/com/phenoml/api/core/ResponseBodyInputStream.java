@@ -17,29 +17,30 @@ import okhttp3.Response;
  * premature closure of the underlying HTTP connection.
  */
 public class ResponseBodyInputStream extends FilterInputStream {
-    private final Response response;
 
-    /**
-     * Constructs a ResponseBodyInputStream that wraps the InputStream from the given OkHttp
-     * Response object.
-     *
-     * @param response the OkHttp Response object from which the InputStream is retrieved
-     * @throws IOException if an I/O error occurs while retrieving the InputStream
-     */
-    public ResponseBodyInputStream(Response response) throws IOException {
-        super(response.body().byteStream());
-        this.response = response;
-    }
+  private final Response response;
 
-    /**
-     * Closes the InputStream and the associated OkHttp Response object. This ensures that the
-     * underlying HTTP connection is properly closed after the stream is no longer needed.
-     *
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    public void close() throws IOException {
-        super.close();
-        response.close(); // Ensure the response is closed when the stream is closed
-    }
+  /**
+   * Constructs a ResponseBodyInputStream that wraps the InputStream from the given OkHttp
+   * Response object.
+   *
+   * @param response the OkHttp Response object from which the InputStream is retrieved
+   * @throws IOException if an I/O error occurs while retrieving the InputStream
+   */
+  public ResponseBodyInputStream(Response response) throws IOException {
+    super(response.body().byteStream());
+    this.response = response;
+  }
+
+  /**
+   * Closes the InputStream and the associated OkHttp Response object. This ensures that the
+   * underlying HTTP connection is properly closed after the stream is no longer needed.
+   *
+   * @throws IOException if an I/O error occurs
+   */
+  @Override
+  public void close() throws IOException {
+    super.close();
+    response.close(); // Ensure the response is closed when the stream is closed
+  }
 }

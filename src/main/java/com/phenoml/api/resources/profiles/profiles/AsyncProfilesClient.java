@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.profiles.profiles;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.profiles.profiles.requests.ListRequest;
 import com.phenoml.api.resources.profiles.types.ProfileGetResponse;
@@ -13,180 +14,289 @@ import com.phenoml.api.resources.profiles.types.ProfileUploadRequest;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncProfilesClient {
-    protected final ClientOptions clientOptions;
 
-    private final AsyncRawProfilesClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public AsyncProfilesClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawProfilesClient(clientOptions);
-    }
+  private final AsyncRawProfilesClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawProfilesClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AsyncProfilesClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new AsyncRawProfilesClient(clientOptions);
+  }
 
-    /**
-     * Returns metadata for every custom (uploaded) FHIR profile on this
-     * instance, across all implementation guides. The full StructureDefinition
-     * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
-     * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
-     * stable key other platform features use to reference a profile (FHIR's
-     * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
-     * unique within a package. An unpinned <code>url</code> filter returns metadata for
-     * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
-     * resolve a retained version when present; otherwise they can fall back to
-     * the profile's current StructureDefinition, whose content can change
-     * through the profile update endpoint. A non-matching filter returns an
-     * empty list, not a 404.</p>
-     */
-    public CompletableFuture<ProfileListResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public AsyncRawProfilesClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Returns metadata for every custom (uploaded) FHIR profile on this
-     * instance, across all implementation guides. The full StructureDefinition
-     * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
-     * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
-     * stable key other platform features use to reference a profile (FHIR's
-     * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
-     * unique within a package. An unpinned <code>url</code> filter returns metadata for
-     * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
-     * resolve a retained version when present; otherwise they can fall back to
-     * the profile's current StructureDefinition, whose content can change
-     * through the profile update endpoint. A non-matching filter returns an
-     * empty list, not a 404.</p>
-     */
-    public CompletableFuture<ProfileListResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Returns metadata for every custom (uploaded) FHIR profile on this
+   * instance, across all implementation guides. The full StructureDefinition
+   * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
+   * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
+   * stable key other platform features use to reference a profile (FHIR's
+   * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
+   * unique within a package. An unpinned <code>url</code> filter returns metadata for
+   * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
+   * resolve a retained version when present; otherwise they can fall back to
+   * the profile's current StructureDefinition, whose content can change
+   * through the profile update endpoint. A non-matching filter returns an
+   * empty list, not a 404.</p>
+   */
+  public CompletableFuture<ProfileListResponse> list() {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileListResponse>> rawFuture =
+      this.rawClient.list();
+    CompletableFuture<ProfileListResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns metadata for every custom (uploaded) FHIR profile on this
-     * instance, across all implementation guides. The full StructureDefinition
-     * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
-     * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
-     * stable key other platform features use to reference a profile (FHIR's
-     * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
-     * unique within a package. An unpinned <code>url</code> filter returns metadata for
-     * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
-     * resolve a retained version when present; otherwise they can fall back to
-     * the profile's current StructureDefinition, whose content can change
-     * through the profile update endpoint. A non-matching filter returns an
-     * empty list, not a 404.</p>
-     */
-    public CompletableFuture<ProfileListResponse> list(ListRequest request) {
-        return this.rawClient.list(request).thenApply(response -> response.body());
-    }
+  /**
+   * Returns metadata for every custom (uploaded) FHIR profile on this
+   * instance, across all implementation guides. The full StructureDefinition
+   * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
+   * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
+   * stable key other platform features use to reference a profile (FHIR's
+   * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
+   * unique within a package. An unpinned <code>url</code> filter returns metadata for
+   * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
+   * resolve a retained version when present; otherwise they can fall back to
+   * the profile's current StructureDefinition, whose content can change
+   * through the profile update endpoint. A non-matching filter returns an
+   * empty list, not a 404.</p>
+   */
+  public CompletableFuture<ProfileListResponse> list(RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileListResponse>> rawFuture =
+      this.rawClient.list(requestOptions);
+    CompletableFuture<ProfileListResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns metadata for every custom (uploaded) FHIR profile on this
-     * instance, across all implementation guides. The full StructureDefinition
-     * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
-     * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
-     * stable key other platform features use to reference a profile (FHIR's
-     * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
-     * unique within a package. An unpinned <code>url</code> filter returns metadata for
-     * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
-     * resolve a retained version when present; otherwise they can fall back to
-     * the profile's current StructureDefinition, whose content can change
-     * through the profile update endpoint. A non-matching filter returns an
-     * empty list, not a 404.</p>
-     */
-    public CompletableFuture<ProfileListResponse> list(ListRequest request, RequestOptions requestOptions) {
-        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Returns metadata for every custom (uploaded) FHIR profile on this
+   * instance, across all implementation guides. The full StructureDefinition
+   * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
+   * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
+   * stable key other platform features use to reference a profile (FHIR's
+   * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
+   * unique within a package. An unpinned <code>url</code> filter returns metadata for
+   * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
+   * resolve a retained version when present; otherwise they can fall back to
+   * the profile's current StructureDefinition, whose content can change
+   * through the profile update endpoint. A non-matching filter returns an
+   * empty list, not a 404.</p>
+   */
+  public CompletableFuture<ProfileListResponse> list(ListRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileListResponse>> rawFuture =
+      this.rawClient.list(request);
+    CompletableFuture<ProfileListResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
-     * object. Metadata such as version, resource type, and url is read from the
-     * StructureDefinition; the lowercase StructureDefinition id becomes the
-     * profile's lookup key. When id is omitted, a random UUID is assigned.
-     * Optionally group the profile under a named implementation guide.
-     */
-    public CompletableFuture<ProfileSummary> create(ProfileUploadRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
-    }
+  /**
+   * Returns metadata for every custom (uploaded) FHIR profile on this
+   * instance, across all implementation guides. The full StructureDefinition
+   * JSON is omitted from each entry; fetch a single profile by id to retrieve it.
+   * <p>The <code>url</code> query parameter filters by canonical URL. The canonical URL is the
+   * stable key other platform features use to reference a profile (FHIR's
+   * <code>meta.profile</code>, <code>baseDefinition</code>), since StructureDefinition ids are only
+   * unique within a package. An unpinned <code>url</code> filter returns metadata for
+   * the profile's current StructureDefinition. Pinned <code>url|version</code> filters
+   * resolve a retained version when present; otherwise they can fall back to
+   * the profile's current StructureDefinition, whose content can change
+   * through the profile update endpoint. A non-matching filter returns an
+   * empty list, not a 404.</p>
+   */
+  public CompletableFuture<ProfileListResponse> list(
+    ListRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileListResponse>> rawFuture =
+      this.rawClient.list(request, requestOptions);
+    CompletableFuture<ProfileListResponse> future = rawFuture.thenApply(response -> response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
-     * object. Metadata such as version, resource type, and url is read from the
-     * StructureDefinition; the lowercase StructureDefinition id becomes the
-     * profile's lookup key. When id is omitted, a random UUID is assigned.
-     * Optionally group the profile under a named implementation guide.
-     */
-    public CompletableFuture<ProfileSummary> create(ProfileUploadRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
+   * object. Metadata such as version, resource type, and url is read from the
+   * StructureDefinition; the lowercase StructureDefinition id becomes the
+   * profile's lookup key. When id is omitted, a random UUID is assigned.
+   * Optionally group the profile under a named implementation guide.
+   */
+  public CompletableFuture<ProfileSummary> create(ProfileUploadRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileSummary>> rawFuture =
+      this.rawClient.create(request);
+    CompletableFuture<ProfileSummary> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a single custom profile by id, including its full StructureDefinition
-     * JSON.
-     */
-    public CompletableFuture<ProfileGetResponse> get(String id) {
-        return this.rawClient.get(id).thenApply(response -> response.body());
-    }
+  /**
+   * Creates a custom profile from a FHIR StructureDefinition supplied as a JSON
+   * object. Metadata such as version, resource type, and url is read from the
+   * StructureDefinition; the lowercase StructureDefinition id becomes the
+   * profile's lookup key. When id is omitted, a random UUID is assigned.
+   * Optionally group the profile under a named implementation guide.
+   */
+  public CompletableFuture<ProfileSummary> create(
+    ProfileUploadRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileSummary>> rawFuture =
+      this.rawClient.create(request, requestOptions);
+    CompletableFuture<ProfileSummary> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a single custom profile by id, including its full StructureDefinition
-     * JSON.
-     */
-    public CompletableFuture<ProfileGetResponse> get(String id, RequestOptions requestOptions) {
-        return this.rawClient.get(id, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a single custom profile by id, including its full StructureDefinition
+   * JSON.
+   */
+  public CompletableFuture<ProfileGetResponse> get(String id) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileGetResponse>> rawFuture =
+      this.rawClient.get(id);
+    CompletableFuture<ProfileGetResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Replaces an existing custom profile with a new StructureDefinition. The
-     * <code>id</code> path parameter is authoritative: if the StructureDefinition includes
-     * an <code>id</code> it must match the path parameter, and if it omits one the path
-     * parameter is used. The FHIR resource type of the profile cannot change.
-     * When <code>implementation_guide</code> is omitted, the profile keeps its existing
-     * implementation guide. A retained version string is allowed only when
-     * re-submitting the profile's current version with an unchanged
-     * StructureDefinition; otherwise it returns a conflict. While the profile
-     * has retained versions, its
-     * canonical URL cannot be changed.
-     */
-    public CompletableFuture<ProfileSummary> update(String id, ProfileUploadRequest request) {
-        return this.rawClient.update(id, request).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a single custom profile by id, including its full StructureDefinition
+   * JSON.
+   */
+  public CompletableFuture<ProfileGetResponse> get(String id, RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileGetResponse>> rawFuture =
+      this.rawClient.get(id, requestOptions);
+    CompletableFuture<ProfileGetResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Replaces an existing custom profile with a new StructureDefinition. The
-     * <code>id</code> path parameter is authoritative: if the StructureDefinition includes
-     * an <code>id</code> it must match the path parameter, and if it omits one the path
-     * parameter is used. The FHIR resource type of the profile cannot change.
-     * When <code>implementation_guide</code> is omitted, the profile keeps its existing
-     * implementation guide. A retained version string is allowed only when
-     * re-submitting the profile's current version with an unchanged
-     * StructureDefinition; otherwise it returns a conflict. While the profile
-     * has retained versions, its
-     * canonical URL cannot be changed.
-     */
-    public CompletableFuture<ProfileSummary> update(
-            String id, ProfileUploadRequest request, RequestOptions requestOptions) {
-        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Replaces an existing custom profile with a new StructureDefinition. The
+   * <code>id</code> path parameter is authoritative: if the StructureDefinition includes
+   * an <code>id</code> it must match the path parameter, and if it omits one the path
+   * parameter is used. The FHIR resource type of the profile cannot change.
+   * When <code>implementation_guide</code> is omitted, the profile keeps its existing
+   * implementation guide. A retained version string is allowed only when
+   * re-submitting the profile's current version with an unchanged
+   * StructureDefinition; otherwise it returns a conflict. While the profile
+   * has retained versions, its
+   * canonical URL cannot be changed.
+   */
+  public CompletableFuture<ProfileSummary> update(String id, ProfileUploadRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileSummary>> rawFuture =
+      this.rawClient.update(id, request);
+    CompletableFuture<ProfileSummary> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Permanently deletes a custom profile by id. This also deletes all retained
-     * versions for that profile so the canonical URL can be reused by a later
-     * upload.
-     */
-    public CompletableFuture<Void> delete(String id) {
-        return this.rawClient.delete(id).thenApply(response -> response.body());
-    }
+  /**
+   * Replaces an existing custom profile with a new StructureDefinition. The
+   * <code>id</code> path parameter is authoritative: if the StructureDefinition includes
+   * an <code>id</code> it must match the path parameter, and if it omits one the path
+   * parameter is used. The FHIR resource type of the profile cannot change.
+   * When <code>implementation_guide</code> is omitted, the profile keeps its existing
+   * implementation guide. A retained version string is allowed only when
+   * re-submitting the profile's current version with an unchanged
+   * StructureDefinition; otherwise it returns a conflict. While the profile
+   * has retained versions, its
+   * canonical URL cannot be changed.
+   */
+  public CompletableFuture<ProfileSummary> update(
+    String id,
+    ProfileUploadRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileSummary>> rawFuture =
+      this.rawClient.update(id, request, requestOptions);
+    CompletableFuture<ProfileSummary> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Permanently deletes a custom profile by id. This also deletes all retained
-     * versions for that profile so the canonical URL can be reused by a later
-     * upload.
-     */
-    public CompletableFuture<Void> delete(String id, RequestOptions requestOptions) {
-        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Permanently deletes a custom profile by id. This also deletes all retained
+   * versions for that profile so the canonical URL can be reused by a later
+   * upload.
+   */
+  public CompletableFuture<Void> delete(String id) {
+    CompletableFuture<PhenomlClientHttpResponse<Void>> rawFuture = this.rawClient.delete(id);
+    CompletableFuture<Void> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
+
+  /**
+   * Permanently deletes a custom profile by id. This also deletes all retained
+   * versions for that profile so the canonical URL can be reused by a later
+   * upload.
+   */
+  public CompletableFuture<Void> delete(String id, RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<Void>> rawFuture =
+      this.rawClient.delete(id, requestOptions);
+    CompletableFuture<Void> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 }

@@ -20,132 +20,145 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PhenoCrRequest.Builder.class)
 public final class PhenoCrRequest {
-    private final String text;
 
-    private final PhenocrExtractRequestSystem system;
+  private final String text;
 
-    private final Map<String, Object> additionalProperties;
+  private final PhenocrExtractRequestSystem system;
 
-    private PhenoCrRequest(String text, PhenocrExtractRequestSystem system, Map<String, Object> additionalProperties) {
-        this.text = text;
-        this.system = system;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private PhenoCrRequest(
+    String text,
+    PhenocrExtractRequestSystem system,
+    Map<String, Object> additionalProperties
+  ) {
+    this.text = text;
+    this.system = system;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Natural language text to extract codes from
+   */
+  @JsonProperty("text")
+  public String getText() {
+    return text;
+  }
+
+  @JsonProperty("system")
+  public PhenocrExtractRequestSystem getSystem() {
+    return system;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof PhenoCrRequest && equalTo((PhenoCrRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(PhenoCrRequest other) {
+    return text.equals(other.text) && system.equals(other.system);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.text, this.system);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static TextStage builder() {
+    return new Builder();
+  }
+
+  public interface TextStage {
+    /**
+     * <p>Natural language text to extract codes from</p>
+     */
+    SystemStage text(@NotNull String text);
+
+    Builder from(PhenoCrRequest other);
+  }
+
+  public interface SystemStage {
+    _FinalStage system(@NotNull PhenocrExtractRequestSystem system);
+  }
+
+  public interface _FinalStage {
+    PhenoCrRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements TextStage, SystemStage, _FinalStage {
+
+    private String text;
+
+    private PhenocrExtractRequestSystem system;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(PhenoCrRequest other) {
+      text(other.getText());
+      system(other.getSystem());
+      return this;
     }
 
     /**
-     * @return Natural language text to extract codes from
+     * <p>Natural language text to extract codes from</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("text")
-    public String getText() {
-        return text;
-    }
-
-    @JsonProperty("system")
-    public PhenocrExtractRequestSystem getSystem() {
-        return system;
+    @java.lang.Override
+    @JsonSetter("text")
+    public SystemStage text(@NotNull String text) {
+      this.text = Objects.requireNonNull(text, "text must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof PhenoCrRequest && equalTo((PhenoCrRequest) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(PhenoCrRequest other) {
-        return text.equals(other.text) && system.equals(other.system);
+    @JsonSetter("system")
+    public _FinalStage system(@NotNull PhenocrExtractRequestSystem system) {
+      this.system = Objects.requireNonNull(system, "system must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.text, this.system);
+    public PhenoCrRequest build() {
+      return new PhenoCrRequest(text, system, additionalProperties);
+    }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("text") || key.equalsIgnoreCase("system")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static TextStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface TextStage {
-        /**
-         * <p>Natural language text to extract codes from</p>
-         */
-        SystemStage text(@NotNull String text);
-
-        Builder from(PhenoCrRequest other);
-    }
-
-    public interface SystemStage {
-        _FinalStage system(@NotNull PhenocrExtractRequestSystem system);
-    }
-
-    public interface _FinalStage {
-        PhenoCrRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements TextStage, SystemStage, _FinalStage {
-        private String text;
-
-        private PhenocrExtractRequestSystem system;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(PhenoCrRequest other) {
-            text(other.getText());
-            system(other.getSystem());
-            return this;
-        }
-
-        /**
-         * <p>Natural language text to extract codes from</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("text")
-        public SystemStage text(@NotNull String text) {
-            this.text = Objects.requireNonNull(text, "text must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("system")
-        public _FinalStage system(@NotNull PhenocrExtractRequestSystem system) {
-            this.system = Objects.requireNonNull(system, "system must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public PhenoCrRequest build() {
-            return new PhenoCrRequest(text, system, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -19,210 +19,232 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CodeSystemDetails.Builder.class)
 public final class CodeSystemDetails {
-    private final String name;
 
-    private final String version;
+  private final String name;
 
-    private final int codeCount;
+  private final String version;
 
-    private final boolean builtin;
+  private final int codeCount;
 
-    private final Map<String, Object> additionalProperties;
+  private final boolean builtin;
 
-    private CodeSystemDetails(
-            String name, String version, int codeCount, boolean builtin, Map<String, Object> additionalProperties) {
-        this.name = name;
-        this.version = version;
-        this.codeCount = codeCount;
-        this.builtin = builtin;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CodeSystemDetails(
+    String name,
+    String version,
+    int codeCount,
+    boolean builtin,
+    Map<String, Object> additionalProperties
+  ) {
+    this.name = name;
+    this.version = version;
+    this.codeCount = codeCount;
+    this.builtin = builtin;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Code system name
+   */
+  @JsonProperty("name")
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @return Code system version
+   */
+  @JsonProperty("version")
+  public String getVersion() {
+    return version;
+  }
+
+  /**
+   * @return Total number of codes in the system
+   */
+  @JsonProperty("code_count")
+  public int getCodeCount() {
+    return codeCount;
+  }
+
+  /**
+   * @return Whether this is a built-in system (vs custom uploaded)
+   */
+  @JsonProperty("builtin")
+  public boolean getBuiltin() {
+    return builtin;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CodeSystemDetails && equalTo((CodeSystemDetails) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CodeSystemDetails other) {
+    return (
+      name.equals(other.name) &&
+      version.equals(other.version) &&
+      codeCount == other.codeCount &&
+      builtin == other.builtin
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.name, this.version, this.codeCount, this.builtin);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static NameStage builder() {
+    return new Builder();
+  }
+
+  public interface NameStage {
+    /**
+     * <p>Code system name</p>
+     */
+    VersionStage name(@NotNull String name);
+
+    Builder from(CodeSystemDetails other);
+  }
+
+  public interface VersionStage {
+    /**
+     * <p>Code system version</p>
+     */
+    CodeCountStage version(@NotNull String version);
+  }
+
+  public interface CodeCountStage {
+    /**
+     * <p>Total number of codes in the system</p>
+     */
+    BuiltinStage codeCount(int codeCount);
+  }
+
+  public interface BuiltinStage {
+    /**
+     * <p>Whether this is a built-in system (vs custom uploaded)</p>
+     */
+    _FinalStage builtin(boolean builtin);
+  }
+
+  public interface _FinalStage {
+    CodeSystemDetails build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements NameStage, VersionStage, CodeCountStage, BuiltinStage, _FinalStage {
+
+    private String name;
+
+    private String version;
+
+    private int codeCount;
+
+    private boolean builtin;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(CodeSystemDetails other) {
+      name(other.getName());
+      version(other.getVersion());
+      codeCount(other.getCodeCount());
+      builtin(other.getBuiltin());
+      return this;
     }
 
     /**
-     * @return Code system name
+     * <p>Code system name</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("name")
-    public String getName() {
-        return name;
+    @java.lang.Override
+    @JsonSetter("name")
+    public VersionStage name(@NotNull String name) {
+      this.name = Objects.requireNonNull(name, "name must not be null");
+      return this;
     }
 
     /**
-     * @return Code system version
+     * <p>Code system version</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("version")
-    public String getVersion() {
-        return version;
+    @java.lang.Override
+    @JsonSetter("version")
+    public CodeCountStage version(@NotNull String version) {
+      this.version = Objects.requireNonNull(version, "version must not be null");
+      return this;
     }
 
     /**
-     * @return Total number of codes in the system
+     * <p>Total number of codes in the system</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("code_count")
-    public int getCodeCount() {
-        return codeCount;
+    @java.lang.Override
+    @JsonSetter("code_count")
+    public BuiltinStage codeCount(int codeCount) {
+      this.codeCount = codeCount;
+      return this;
     }
 
     /**
-     * @return Whether this is a built-in system (vs custom uploaded)
+     * <p>Whether this is a built-in system (vs custom uploaded)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("builtin")
-    public boolean getBuiltin() {
-        return builtin;
+    @java.lang.Override
+    @JsonSetter("builtin")
+    public _FinalStage builtin(boolean builtin) {
+      this.builtin = builtin;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CodeSystemDetails && equalTo((CodeSystemDetails) other);
+    public CodeSystemDetails build() {
+      return new CodeSystemDetails(name, version, codeCount, builtin, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(CodeSystemDetails other) {
-        return name.equals(other.name)
-                && version.equals(other.version)
-                && codeCount == other.codeCount
-                && builtin == other.builtin;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.name, this.version, this.codeCount, this.builtin);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("version") ||
+        key.equalsIgnoreCase("code_count") ||
+        key.equalsIgnoreCase("builtin")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static NameStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface NameStage {
-        /**
-         * <p>Code system name</p>
-         */
-        VersionStage name(@NotNull String name);
-
-        Builder from(CodeSystemDetails other);
-    }
-
-    public interface VersionStage {
-        /**
-         * <p>Code system version</p>
-         */
-        CodeCountStage version(@NotNull String version);
-    }
-
-    public interface CodeCountStage {
-        /**
-         * <p>Total number of codes in the system</p>
-         */
-        BuiltinStage codeCount(int codeCount);
-    }
-
-    public interface BuiltinStage {
-        /**
-         * <p>Whether this is a built-in system (vs custom uploaded)</p>
-         */
-        _FinalStage builtin(boolean builtin);
-    }
-
-    public interface _FinalStage {
-        CodeSystemDetails build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements NameStage, VersionStage, CodeCountStage, BuiltinStage, _FinalStage {
-        private String name;
-
-        private String version;
-
-        private int codeCount;
-
-        private boolean builtin;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(CodeSystemDetails other) {
-            name(other.getName());
-            version(other.getVersion());
-            codeCount(other.getCodeCount());
-            builtin(other.getBuiltin());
-            return this;
-        }
-
-        /**
-         * <p>Code system name</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("name")
-        public VersionStage name(@NotNull String name) {
-            this.name = Objects.requireNonNull(name, "name must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Code system version</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("version")
-        public CodeCountStage version(@NotNull String version) {
-            this.version = Objects.requireNonNull(version, "version must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Total number of codes in the system</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("code_count")
-        public BuiltinStage codeCount(int codeCount) {
-            this.codeCount = codeCount;
-            return this;
-        }
-
-        /**
-         * <p>Whether this is a built-in system (vs custom uploaded)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("builtin")
-        public _FinalStage builtin(boolean builtin) {
-            this.builtin = builtin;
-            return this;
-        }
-
-        @java.lang.Override
-        public CodeSystemDetails build() {
-            return new CodeSystemDetails(name, version, codeCount, builtin, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

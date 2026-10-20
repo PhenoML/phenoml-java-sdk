@@ -20,127 +20,137 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = SearchResponse.Builder.class)
 public final class SearchResponse {
-    private final Optional<SearchResponseResourceType> resourceType;
 
-    private final Optional<String> searchParams;
+  private final Optional<SearchResponseResourceType> resourceType;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> searchParams;
 
-    private SearchResponse(
-            Optional<SearchResponseResourceType> resourceType,
-            Optional<String> searchParams,
-            Map<String, Object> additionalProperties) {
-        this.resourceType = resourceType;
-        this.searchParams = searchParams;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private SearchResponse(
+    Optional<SearchResponseResourceType> resourceType,
+    Optional<String> searchParams,
+    Map<String, Object> additionalProperties
+  ) {
+    this.resourceType = resourceType;
+    this.searchParams = searchParams;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return The FHIR resource type identified for the search
+   */
+  @JsonProperty("resource_type")
+  public Optional<SearchResponseResourceType> getResourceType() {
+    return resourceType;
+  }
+
+  /**
+   * @return FHIR search parameters in standard query string format.
+   * Parameters are formatted according to the FHIR specification with appropriate operators.
+   * Code parameters are resolved to standard terminology codes (SNOMED CT, LOINC, RxNorm, ICD-10-CM).
+   */
+  @JsonProperty("search_params")
+  public Optional<String> getSearchParams() {
+    return searchParams;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof SearchResponse && equalTo((SearchResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(SearchResponse other) {
+    return resourceType.equals(other.resourceType) && searchParams.equals(other.searchParams);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.resourceType, this.searchParams);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<SearchResponseResourceType> resourceType = Optional.empty();
+
+    private Optional<String> searchParams = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(SearchResponse other) {
+      resourceType(other.getResourceType());
+      searchParams(other.getSearchParams());
+      return this;
     }
 
     /**
-     * @return The FHIR resource type identified for the search
+     * <p>The FHIR resource type identified for the search</p>
      */
-    @JsonProperty("resource_type")
-    public Optional<SearchResponseResourceType> getResourceType() {
-        return resourceType;
+    @JsonSetter(value = "resource_type", nulls = Nulls.SKIP)
+    public Builder resourceType(Optional<SearchResponseResourceType> resourceType) {
+      this.resourceType = resourceType;
+      return this;
+    }
+
+    public Builder resourceType(SearchResponseResourceType resourceType) {
+      this.resourceType = Optional.ofNullable(resourceType);
+      return this;
     }
 
     /**
-     * @return FHIR search parameters in standard query string format.
+     * <p>FHIR search parameters in standard query string format.
      * Parameters are formatted according to the FHIR specification with appropriate operators.
-     * Code parameters are resolved to standard terminology codes (SNOMED CT, LOINC, RxNorm, ICD-10-CM).
+     * Code parameters are resolved to standard terminology codes (SNOMED CT, LOINC, RxNorm, ICD-10-CM).</p>
      */
-    @JsonProperty("search_params")
-    public Optional<String> getSearchParams() {
-        return searchParams;
+    @JsonSetter(value = "search_params", nulls = Nulls.SKIP)
+    public Builder searchParams(Optional<String> searchParams) {
+      this.searchParams = searchParams;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof SearchResponse && equalTo((SearchResponse) other);
+    public Builder searchParams(String searchParams) {
+      this.searchParams = Optional.ofNullable(searchParams);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public SearchResponse build() {
+      return new SearchResponse(resourceType, searchParams, additionalProperties);
     }
 
-    private boolean equalTo(SearchResponse other) {
-        return resourceType.equals(other.resourceType) && searchParams.equals(other.searchParams);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("resource_type") || key.equalsIgnoreCase("search_params")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.resourceType, this.searchParams);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<SearchResponseResourceType> resourceType = Optional.empty();
-
-        private Optional<String> searchParams = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(SearchResponse other) {
-            resourceType(other.getResourceType());
-            searchParams(other.getSearchParams());
-            return this;
-        }
-
-        /**
-         * <p>The FHIR resource type identified for the search</p>
-         */
-        @JsonSetter(value = "resource_type", nulls = Nulls.SKIP)
-        public Builder resourceType(Optional<SearchResponseResourceType> resourceType) {
-            this.resourceType = resourceType;
-            return this;
-        }
-
-        public Builder resourceType(SearchResponseResourceType resourceType) {
-            this.resourceType = Optional.ofNullable(resourceType);
-            return this;
-        }
-
-        /**
-         * <p>FHIR search parameters in standard query string format.
-         * Parameters are formatted according to the FHIR specification with appropriate operators.
-         * Code parameters are resolved to standard terminology codes (SNOMED CT, LOINC, RxNorm, ICD-10-CM).</p>
-         */
-        @JsonSetter(value = "search_params", nulls = Nulls.SKIP)
-        public Builder searchParams(Optional<String> searchParams) {
-            this.searchParams = searchParams;
-            return this;
-        }
-
-        public Builder searchParams(String searchParams) {
-            this.searchParams = Optional.ofNullable(searchParams);
-            return this;
-        }
-
-        public SearchResponse build() {
-            return new SearchResponse(resourceType, searchParams, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

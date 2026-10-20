@@ -20,92 +20,101 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ListRequest.Builder.class)
 public final class ListRequest {
-    private final Optional<String> url;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> url;
 
-    private ListRequest(Optional<String> url, Map<String, Object> additionalProperties) {
-        this.url = url;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ListRequest(Optional<String> url, Map<String, Object> additionalProperties) {
+    this.url = url;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Filter by canonical URL. Accepts the FHIR pinned form <code>url|version</code>; without a version pin, returns the profile's current StructureDefinition metadata.
+   */
+  @JsonProperty("url")
+  public Optional<String> getUrl() {
+    return url;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ListRequest && equalTo((ListRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ListRequest other) {
+    return url.equals(other.url);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.url);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> url = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ListRequest other) {
+      url(other.getUrl());
+      return this;
     }
 
     /**
-     * @return Filter by canonical URL. Accepts the FHIR pinned form <code>url|version</code>; without a version pin, returns the profile's current StructureDefinition metadata.
+     * <p>Filter by canonical URL. Accepts the FHIR pinned form <code>url|version</code>; without a version pin, returns the profile's current StructureDefinition metadata.</p>
      */
-    @JsonProperty("url")
-    public Optional<String> getUrl() {
-        return url;
+    @JsonSetter(value = "url", nulls = Nulls.SKIP)
+    public Builder url(Optional<String> url) {
+      this.url = url;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ListRequest && equalTo((ListRequest) other);
+    public Builder url(String url) {
+      this.url = Optional.ofNullable(url);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ListRequest build() {
+      return new ListRequest(url, additionalProperties);
     }
 
-    private boolean equalTo(ListRequest other) {
-        return url.equals(other.url);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("url")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.url);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> url = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ListRequest other) {
-            url(other.getUrl());
-            return this;
-        }
-
-        /**
-         * <p>Filter by canonical URL. Accepts the FHIR pinned form <code>url|version</code>; without a version pin, returns the profile's current StructureDefinition metadata.</p>
-         */
-        @JsonSetter(value = "url", nulls = Nulls.SKIP)
-        public Builder url(Optional<String> url) {
-            this.url = url;
-            return this;
-        }
-
-        public Builder url(String url) {
-            this.url = Optional.ofNullable(url);
-            return this;
-        }
-
-        public ListRequest build() {
-            return new ListRequest(url, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

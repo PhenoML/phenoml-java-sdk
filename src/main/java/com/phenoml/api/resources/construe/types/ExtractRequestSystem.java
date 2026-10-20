@@ -20,21 +20,105 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ExtractRequestSystem.Builder.class)
 public final class ExtractRequestSystem {
-    private final Optional<String> name;
 
-    private final Optional<String> version;
+  private final Optional<String> name;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> version;
 
-    private ExtractRequestSystem(
-            Optional<String> name, Optional<String> version, Map<String, Object> additionalProperties) {
-        this.name = name;
-        this.version = version;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ExtractRequestSystem(
+    Optional<String> name,
+    Optional<String> version,
+    Map<String, Object> additionalProperties
+  ) {
+    this.name = name;
+    this.version = version;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Code system name. Can be a built-in system or a custom system name.
+   * <p>Built-in systems:</p>
+   * <ul>
+   * <li>CPT</li>
+   * <li>HCPCS</li>
+   * <li>HPO</li>
+   * <li>ICD-10</li>
+   * <li>ICD-10-CM</li>
+   * <li>ICD-10-PCS</li>
+   * <li>LOINC</li>
+   * <li>RXNORM</li>
+   * <li>SNOMED_CT_US</li>
+   * <li>SNOMED_CT_US_LITE</li>
+   * </ul>
+   * <p>Custom systems:</p>
+   * <ul>
+   * <li>Any valid system name uploaded via /construe/upload. Requires a paid plan.</li>
+   * </ul>
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  @JsonProperty("name")
+  public Optional<String> getName() {
+    return name;
+  }
+
+  /**
+   * @return Specific code system version.
+   */
+  @JsonProperty("version")
+  public Optional<String> getVersion() {
+    return version;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ExtractRequestSystem && equalTo((ExtractRequestSystem) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ExtractRequestSystem other) {
+    return name.equals(other.name) && version.equals(other.version);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.name, this.version);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> name = Optional.empty();
+
+    private Optional<String> version = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ExtractRequestSystem other) {
+      name(other.getName());
+      version(other.getVersion());
+      return this;
     }
 
     /**
-     * @return Code system name. Can be a built-in system or a custom system name.
+     * <p>Code system name. Can be a built-in system or a custom system name.</p>
      * <p>Built-in systems:</p>
      * <ul>
      * <li>CPT</li>
@@ -54,123 +138,51 @@ public final class ExtractRequestSystem {
      * </ul>
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
-    @JsonProperty("name")
-    public Optional<String> getName() {
-        return name;
+    @JsonSetter(value = "name", nulls = Nulls.SKIP)
+    public Builder name(Optional<String> name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.name = Optional.ofNullable(name);
+      return this;
     }
 
     /**
-     * @return Specific code system version.
+     * <p>Specific code system version.</p>
      */
-    @JsonProperty("version")
-    public Optional<String> getVersion() {
-        return version;
+    @JsonSetter(value = "version", nulls = Nulls.SKIP)
+    public Builder version(Optional<String> version) {
+      this.version = version;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ExtractRequestSystem && equalTo((ExtractRequestSystem) other);
+    public Builder version(String version) {
+      this.version = Optional.ofNullable(version);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ExtractRequestSystem build() {
+      return new ExtractRequestSystem(name, version, additionalProperties);
     }
 
-    private boolean equalTo(ExtractRequestSystem other) {
-        return name.equals(other.name) && version.equals(other.version);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("name") || key.equalsIgnoreCase("version")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.name, this.version);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> name = Optional.empty();
-
-        private Optional<String> version = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ExtractRequestSystem other) {
-            name(other.getName());
-            version(other.getVersion());
-            return this;
-        }
-
-        /**
-         * <p>Code system name. Can be a built-in system or a custom system name.</p>
-         * <p>Built-in systems:</p>
-         * <ul>
-         * <li>CPT</li>
-         * <li>HCPCS</li>
-         * <li>HPO</li>
-         * <li>ICD-10</li>
-         * <li>ICD-10-CM</li>
-         * <li>ICD-10-PCS</li>
-         * <li>LOINC</li>
-         * <li>RXNORM</li>
-         * <li>SNOMED_CT_US</li>
-         * <li>SNOMED_CT_US_LITE</li>
-         * </ul>
-         * <p>Custom systems:</p>
-         * <ul>
-         * <li>Any valid system name uploaded via /construe/upload. Requires a paid plan.</li>
-         * </ul>
-         * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-         */
-        @JsonSetter(value = "name", nulls = Nulls.SKIP)
-        public Builder name(Optional<String> name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = Optional.ofNullable(name);
-            return this;
-        }
-
-        /**
-         * <p>Specific code system version.</p>
-         */
-        @JsonSetter(value = "version", nulls = Nulls.SKIP)
-        public Builder version(Optional<String> version) {
-            this.version = version;
-            return this;
-        }
-
-        public Builder version(String version) {
-            this.version = Optional.ofNullable(version);
-            return this;
-        }
-
-        public ExtractRequestSystem build() {
-            return new ExtractRequestSystem(name, version, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

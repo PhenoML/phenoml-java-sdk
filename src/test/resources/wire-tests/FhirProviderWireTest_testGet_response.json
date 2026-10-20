@@ -29,10 +29,7 @@
           "token_endpoint": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token",
           "issuer": "https://fhir.epic.com/interconnect-fhir-oauth",
           "jwks_uri": "https://fhir.epic.com/interconnect-fhir-oauth/.well-known/jwks",
-          "scopes_supported": [
-            "patient/*.read",
-            "system/*.read"
-          ]
+          "scopes_supported": ["patient/*.read", "system/*.read"]
         },
         "service_account_metadata": {
           "type": "service_account",

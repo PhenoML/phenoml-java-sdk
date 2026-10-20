@@ -7,91 +7,94 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class CreateMultiRequestValidationMethod {
-    public static final CreateMultiRequestValidationMethod CHECK =
-            new CreateMultiRequestValidationMethod(Value.CHECK, "check");
 
-    public static final CreateMultiRequestValidationMethod FIX =
-            new CreateMultiRequestValidationMethod(Value.FIX, "fix");
+  public static final CreateMultiRequestValidationMethod CHECK =
+    new CreateMultiRequestValidationMethod(Value.CHECK, "check");
 
-    public static final CreateMultiRequestValidationMethod NONE =
-            new CreateMultiRequestValidationMethod(Value.NONE, "none");
+  public static final CreateMultiRequestValidationMethod FIX =
+    new CreateMultiRequestValidationMethod(Value.FIX, "fix");
 
-    private final Value value;
+  public static final CreateMultiRequestValidationMethod NONE =
+    new CreateMultiRequestValidationMethod(Value.NONE, "none");
 
-    private final String string;
+  private final Value value;
 
-    CreateMultiRequestValidationMethod(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  CreateMultiRequestValidationMethod(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof CreateMultiRequestValidationMethod &&
+        this.string.equals(((CreateMultiRequestValidationMethod) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case CHECK:
+        return visitor.visitCheck();
+      case FIX:
+        return visitor.visitFix();
+      case NONE:
+        return visitor.visitNone();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static CreateMultiRequestValidationMethod valueOf(String value) {
+    switch (value) {
+      case "check":
+        return CHECK;
+      case "fix":
+        return FIX;
+      case "none":
+        return NONE;
+      default:
+        return new CreateMultiRequestValidationMethod(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    NONE,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof CreateMultiRequestValidationMethod
-                        && this.string.equals(((CreateMultiRequestValidationMethod) other).string));
-    }
+    CHECK,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    FIX,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case CHECK:
-                return visitor.visitCheck();
-            case FIX:
-                return visitor.visitFix();
-            case NONE:
-                return visitor.visitNone();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    UNKNOWN,
+  }
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static CreateMultiRequestValidationMethod valueOf(String value) {
-        switch (value) {
-            case "check":
-                return CHECK;
-            case "fix":
-                return FIX;
-            case "none":
-                return NONE;
-            default:
-                return new CreateMultiRequestValidationMethod(Value.UNKNOWN, value);
-        }
-    }
+  public interface Visitor<T> {
+    T visitNone();
 
-    public enum Value {
-        NONE,
+    T visitCheck();
 
-        CHECK,
+    T visitFix();
 
-        FIX,
-
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitNone();
-
-        T visitCheck();
-
-        T visitFix();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

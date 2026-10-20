@@ -9,75 +9,76 @@ import com.phenoml.api.resources.tools.mcpservers.requests.McpServerCreateReques
 import com.phenoml.api.resources.tools.types.McpServerResponse;
 
 public class McpServersClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawMcpServersClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public McpServersClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawMcpServersClient(clientOptions);
-    }
+  private final RawMcpServersClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawMcpServersClient withRawResponse() {
-        return this.rawClient;
-    }
+  public McpServersClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawMcpServersClient(clientOptions);
+  }
 
-    /**
-     * Creates a new MCP server
-     */
-    public McpServerResponse create(McpServerCreateRequest request) {
-        return this.rawClient.create(request).body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawMcpServersClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Creates a new MCP server
-     */
-    public McpServerResponse create(McpServerCreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).body();
-    }
+  /**
+   * Creates a new MCP server
+   */
+  public McpServerResponse create(McpServerCreateRequest request) {
+    return this.rawClient.create(request).body();
+  }
 
-    /**
-     * Lists all MCP servers for a specific user
-     */
-    public McpServerResponse list() {
-        return this.rawClient.list().body();
-    }
+  /**
+   * Creates a new MCP server
+   */
+  public McpServerResponse create(McpServerCreateRequest request, RequestOptions requestOptions) {
+    return this.rawClient.create(request, requestOptions).body();
+  }
 
-    /**
-     * Lists all MCP servers for a specific user
-     */
-    public McpServerResponse list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).body();
-    }
+  /**
+   * Lists all MCP servers for a specific user
+   */
+  public McpServerResponse list() {
+    return this.rawClient.list().body();
+  }
 
-    /**
-     * Gets a MCP server by ID
-     */
-    public McpServerResponse get(String mcpServerId) {
-        return this.rawClient.get(mcpServerId).body();
-    }
+  /**
+   * Lists all MCP servers for a specific user
+   */
+  public McpServerResponse list(RequestOptions requestOptions) {
+    return this.rawClient.list(requestOptions).body();
+  }
 
-    /**
-     * Gets a MCP server by ID
-     */
-    public McpServerResponse get(String mcpServerId, RequestOptions requestOptions) {
-        return this.rawClient.get(mcpServerId, requestOptions).body();
-    }
+  /**
+   * Gets a MCP server by ID
+   */
+  public McpServerResponse get(String mcpServerId) {
+    return this.rawClient.get(mcpServerId).body();
+  }
 
-    /**
-     * Deletes a MCP server by ID
-     */
-    public McpServerResponse delete(String mcpServerId) {
-        return this.rawClient.delete(mcpServerId).body();
-    }
+  /**
+   * Gets a MCP server by ID
+   */
+  public McpServerResponse get(String mcpServerId, RequestOptions requestOptions) {
+    return this.rawClient.get(mcpServerId, requestOptions).body();
+  }
 
-    /**
-     * Deletes a MCP server by ID
-     */
-    public McpServerResponse delete(String mcpServerId, RequestOptions requestOptions) {
-        return this.rawClient.delete(mcpServerId, requestOptions).body();
-    }
+  /**
+   * Deletes a MCP server by ID
+   */
+  public McpServerResponse delete(String mcpServerId) {
+    return this.rawClient.delete(mcpServerId).body();
+  }
+
+  /**
+   * Deletes a MCP server by ID
+   */
+  public McpServerResponse delete(String mcpServerId, RequestOptions requestOptions) {
+    return this.rawClient.delete(mcpServerId, requestOptions).body();
+  }
 }

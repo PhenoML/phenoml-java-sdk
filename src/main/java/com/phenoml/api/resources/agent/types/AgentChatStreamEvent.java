@@ -20,321 +20,344 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = AgentChatStreamEvent.Builder.class)
 public final class AgentChatStreamEvent {
-    private final Optional<AgentChatStreamEventType> type;
 
-    private final Optional<String> sessionId;
+  private final Optional<AgentChatStreamEventType> type;
 
-    private final Optional<String> content;
+  private final Optional<String> sessionId;
 
-    private final Optional<Boolean> success;
+  private final Optional<String> content;
 
-    private final Optional<String> message;
+  private final Optional<Boolean> success;
 
-    private final Optional<String> functionName;
+  private final Optional<String> message;
 
-    private final Optional<Map<String, Object>> functionArgs;
+  private final Optional<String> functionName;
 
-    private final Optional<Map<String, Object>> functionResult;
+  private final Optional<Map<String, Object>> functionArgs;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Map<String, Object>> functionResult;
 
-    private AgentChatStreamEvent(
-            Optional<AgentChatStreamEventType> type,
-            Optional<String> sessionId,
-            Optional<String> content,
-            Optional<Boolean> success,
-            Optional<String> message,
-            Optional<String> functionName,
-            Optional<Map<String, Object>> functionArgs,
-            Optional<Map<String, Object>> functionResult,
-            Map<String, Object> additionalProperties) {
-        this.type = type;
-        this.sessionId = sessionId;
-        this.content = content;
-        this.success = success;
-        this.message = message;
-        this.functionName = functionName;
-        this.functionArgs = functionArgs;
-        this.functionResult = functionResult;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private AgentChatStreamEvent(
+    Optional<AgentChatStreamEventType> type,
+    Optional<String> sessionId,
+    Optional<String> content,
+    Optional<Boolean> success,
+    Optional<String> message,
+    Optional<String> functionName,
+    Optional<Map<String, Object>> functionArgs,
+    Optional<Map<String, Object>> functionResult,
+    Map<String, Object> additionalProperties
+  ) {
+    this.type = type;
+    this.sessionId = sessionId;
+    this.content = content;
+    this.success = success;
+    this.message = message;
+    this.functionName = functionName;
+    this.functionArgs = functionArgs;
+    this.functionResult = functionResult;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return The event type
+   */
+  @JsonProperty("type")
+  public Optional<AgentChatStreamEventType> getType() {
+    return type;
+  }
+
+  /**
+   * @return Chat session ID
+   */
+  @JsonProperty("session_id")
+  public Optional<String> getSessionId() {
+    return sessionId;
+  }
+
+  /**
+   * @return Incremental text content (present in content_delta events)
+   */
+  @JsonProperty("content")
+  public Optional<String> getContent() {
+    return content;
+  }
+
+  /**
+   * @return Whether the operation was successful
+   */
+  @JsonProperty("success")
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  /**
+   * @return Status message
+   */
+  @JsonProperty("message")
+  public Optional<String> getMessage() {
+    return message;
+  }
+
+  /**
+   * @return Tool/function name (present in tool_use and tool_result events)
+   */
+  @JsonProperty("function_name")
+  public Optional<String> getFunctionName() {
+    return functionName;
+  }
+
+  /**
+   * @return Tool arguments (present in tool_use events)
+   */
+  @JsonProperty("function_args")
+  public Optional<Map<String, Object>> getFunctionArgs() {
+    return functionArgs;
+  }
+
+  /**
+   * @return Tool execution result (present in tool_result events)
+   */
+  @JsonProperty("function_result")
+  public Optional<Map<String, Object>> getFunctionResult() {
+    return functionResult;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof AgentChatStreamEvent && equalTo((AgentChatStreamEvent) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(AgentChatStreamEvent other) {
+    return (
+      type.equals(other.type) &&
+      sessionId.equals(other.sessionId) &&
+      content.equals(other.content) &&
+      success.equals(other.success) &&
+      message.equals(other.message) &&
+      functionName.equals(other.functionName) &&
+      functionArgs.equals(other.functionArgs) &&
+      functionResult.equals(other.functionResult)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.type,
+      this.sessionId,
+      this.content,
+      this.success,
+      this.message,
+      this.functionName,
+      this.functionArgs,
+      this.functionResult
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<AgentChatStreamEventType> type = Optional.empty();
+
+    private Optional<String> sessionId = Optional.empty();
+
+    private Optional<String> content = Optional.empty();
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<String> message = Optional.empty();
+
+    private Optional<String> functionName = Optional.empty();
+
+    private Optional<Map<String, Object>> functionArgs = Optional.empty();
+
+    private Optional<Map<String, Object>> functionResult = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(AgentChatStreamEvent other) {
+      type(other.getType());
+      sessionId(other.getSessionId());
+      content(other.getContent());
+      success(other.getSuccess());
+      message(other.getMessage());
+      functionName(other.getFunctionName());
+      functionArgs(other.getFunctionArgs());
+      functionResult(other.getFunctionResult());
+      return this;
     }
 
     /**
-     * @return The event type
+     * <p>The event type</p>
      */
-    @JsonProperty("type")
-    public Optional<AgentChatStreamEventType> getType() {
-        return type;
+    @JsonSetter(value = "type", nulls = Nulls.SKIP)
+    public Builder type(Optional<AgentChatStreamEventType> type) {
+      this.type = type;
+      return this;
+    }
+
+    public Builder type(AgentChatStreamEventType type) {
+      this.type = Optional.ofNullable(type);
+      return this;
     }
 
     /**
-     * @return Chat session ID
+     * <p>Chat session ID</p>
      */
-    @JsonProperty("session_id")
-    public Optional<String> getSessionId() {
-        return sessionId;
+    @JsonSetter(value = "session_id", nulls = Nulls.SKIP)
+    public Builder sessionId(Optional<String> sessionId) {
+      this.sessionId = sessionId;
+      return this;
+    }
+
+    public Builder sessionId(String sessionId) {
+      this.sessionId = Optional.ofNullable(sessionId);
+      return this;
     }
 
     /**
-     * @return Incremental text content (present in content_delta events)
+     * <p>Incremental text content (present in content_delta events)</p>
      */
-    @JsonProperty("content")
-    public Optional<String> getContent() {
-        return content;
+    @JsonSetter(value = "content", nulls = Nulls.SKIP)
+    public Builder content(Optional<String> content) {
+      this.content = content;
+      return this;
+    }
+
+    public Builder content(String content) {
+      this.content = Optional.ofNullable(content);
+      return this;
     }
 
     /**
-     * @return Whether the operation was successful
+     * <p>Whether the operation was successful</p>
      */
-    @JsonProperty("success")
-    public Optional<Boolean> getSuccess() {
-        return success;
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
+    }
+
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
     }
 
     /**
-     * @return Status message
+     * <p>Status message</p>
      */
-    @JsonProperty("message")
-    public Optional<String> getMessage() {
-        return message;
+    @JsonSetter(value = "message", nulls = Nulls.SKIP)
+    public Builder message(Optional<String> message) {
+      this.message = message;
+      return this;
+    }
+
+    public Builder message(String message) {
+      this.message = Optional.ofNullable(message);
+      return this;
     }
 
     /**
-     * @return Tool/function name (present in tool_use and tool_result events)
+     * <p>Tool/function name (present in tool_use and tool_result events)</p>
      */
-    @JsonProperty("function_name")
-    public Optional<String> getFunctionName() {
-        return functionName;
+    @JsonSetter(value = "function_name", nulls = Nulls.SKIP)
+    public Builder functionName(Optional<String> functionName) {
+      this.functionName = functionName;
+      return this;
+    }
+
+    public Builder functionName(String functionName) {
+      this.functionName = Optional.ofNullable(functionName);
+      return this;
     }
 
     /**
-     * @return Tool arguments (present in tool_use events)
+     * <p>Tool arguments (present in tool_use events)</p>
      */
-    @JsonProperty("function_args")
-    public Optional<Map<String, Object>> getFunctionArgs() {
-        return functionArgs;
+    @JsonSetter(value = "function_args", nulls = Nulls.SKIP)
+    public Builder functionArgs(Optional<Map<String, Object>> functionArgs) {
+      this.functionArgs = functionArgs;
+      return this;
+    }
+
+    public Builder functionArgs(Map<String, Object> functionArgs) {
+      this.functionArgs = Optional.ofNullable(functionArgs);
+      return this;
     }
 
     /**
-     * @return Tool execution result (present in tool_result events)
+     * <p>Tool execution result (present in tool_result events)</p>
      */
-    @JsonProperty("function_result")
-    public Optional<Map<String, Object>> getFunctionResult() {
-        return functionResult;
+    @JsonSetter(value = "function_result", nulls = Nulls.SKIP)
+    public Builder functionResult(Optional<Map<String, Object>> functionResult) {
+      this.functionResult = functionResult;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof AgentChatStreamEvent && equalTo((AgentChatStreamEvent) other);
+    public Builder functionResult(Map<String, Object> functionResult) {
+      this.functionResult = Optional.ofNullable(functionResult);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public AgentChatStreamEvent build() {
+      return new AgentChatStreamEvent(
+        type,
+        sessionId,
+        content,
+        success,
+        message,
+        functionName,
+        functionArgs,
+        functionResult,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(AgentChatStreamEvent other) {
-        return type.equals(other.type)
-                && sessionId.equals(other.sessionId)
-                && content.equals(other.content)
-                && success.equals(other.success)
-                && message.equals(other.message)
-                && functionName.equals(other.functionName)
-                && functionArgs.equals(other.functionArgs)
-                && functionResult.equals(other.functionResult);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("type") ||
+        key.equalsIgnoreCase("session_id") ||
+        key.equalsIgnoreCase("content") ||
+        key.equalsIgnoreCase("success") ||
+        key.equalsIgnoreCase("message") ||
+        key.equalsIgnoreCase("function_name") ||
+        key.equalsIgnoreCase("function_args") ||
+        key.equalsIgnoreCase("function_result")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.type,
-                this.sessionId,
-                this.content,
-                this.success,
-                this.message,
-                this.functionName,
-                this.functionArgs,
-                this.functionResult);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<AgentChatStreamEventType> type = Optional.empty();
-
-        private Optional<String> sessionId = Optional.empty();
-
-        private Optional<String> content = Optional.empty();
-
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<String> message = Optional.empty();
-
-        private Optional<String> functionName = Optional.empty();
-
-        private Optional<Map<String, Object>> functionArgs = Optional.empty();
-
-        private Optional<Map<String, Object>> functionResult = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(AgentChatStreamEvent other) {
-            type(other.getType());
-            sessionId(other.getSessionId());
-            content(other.getContent());
-            success(other.getSuccess());
-            message(other.getMessage());
-            functionName(other.getFunctionName());
-            functionArgs(other.getFunctionArgs());
-            functionResult(other.getFunctionResult());
-            return this;
-        }
-
-        /**
-         * <p>The event type</p>
-         */
-        @JsonSetter(value = "type", nulls = Nulls.SKIP)
-        public Builder type(Optional<AgentChatStreamEventType> type) {
-            this.type = type;
-            return this;
-        }
-
-        public Builder type(AgentChatStreamEventType type) {
-            this.type = Optional.ofNullable(type);
-            return this;
-        }
-
-        /**
-         * <p>Chat session ID</p>
-         */
-        @JsonSetter(value = "session_id", nulls = Nulls.SKIP)
-        public Builder sessionId(Optional<String> sessionId) {
-            this.sessionId = sessionId;
-            return this;
-        }
-
-        public Builder sessionId(String sessionId) {
-            this.sessionId = Optional.ofNullable(sessionId);
-            return this;
-        }
-
-        /**
-         * <p>Incremental text content (present in content_delta events)</p>
-         */
-        @JsonSetter(value = "content", nulls = Nulls.SKIP)
-        public Builder content(Optional<String> content) {
-            this.content = content;
-            return this;
-        }
-
-        public Builder content(String content) {
-            this.content = Optional.ofNullable(content);
-            return this;
-        }
-
-        /**
-         * <p>Whether the operation was successful</p>
-         */
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        /**
-         * <p>Status message</p>
-         */
-        @JsonSetter(value = "message", nulls = Nulls.SKIP)
-        public Builder message(Optional<String> message) {
-            this.message = message;
-            return this;
-        }
-
-        public Builder message(String message) {
-            this.message = Optional.ofNullable(message);
-            return this;
-        }
-
-        /**
-         * <p>Tool/function name (present in tool_use and tool_result events)</p>
-         */
-        @JsonSetter(value = "function_name", nulls = Nulls.SKIP)
-        public Builder functionName(Optional<String> functionName) {
-            this.functionName = functionName;
-            return this;
-        }
-
-        public Builder functionName(String functionName) {
-            this.functionName = Optional.ofNullable(functionName);
-            return this;
-        }
-
-        /**
-         * <p>Tool arguments (present in tool_use events)</p>
-         */
-        @JsonSetter(value = "function_args", nulls = Nulls.SKIP)
-        public Builder functionArgs(Optional<Map<String, Object>> functionArgs) {
-            this.functionArgs = functionArgs;
-            return this;
-        }
-
-        public Builder functionArgs(Map<String, Object> functionArgs) {
-            this.functionArgs = Optional.ofNullable(functionArgs);
-            return this;
-        }
-
-        /**
-         * <p>Tool execution result (present in tool_result events)</p>
-         */
-        @JsonSetter(value = "function_result", nulls = Nulls.SKIP)
-        public Builder functionResult(Optional<Map<String, Object>> functionResult) {
-            this.functionResult = functionResult;
-            return this;
-        }
-
-        public Builder functionResult(Map<String, Object> functionResult) {
-            this.functionResult = Optional.ofNullable(functionResult);
-            return this;
-        }
-
-        public AgentChatStreamEvent build() {
-            return new AgentChatStreamEvent(
-                    type,
-                    sessionId,
-                    content,
-                    success,
-                    message,
-                    functionName,
-                    functionArgs,
-                    functionResult,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

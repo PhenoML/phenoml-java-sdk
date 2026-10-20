@@ -32,67 +32,68 @@ package com.phenoml.api.core;
  */
 public final class LogConfig {
 
-    private final LogLevel level;
-    private final ILogger logger;
-    private final boolean silent;
+  private final LogLevel level;
+  private final ILogger logger;
+  private final boolean silent;
 
-    private LogConfig(LogLevel level, ILogger logger, boolean silent) {
-        this.level = level;
-        this.logger = logger;
-        this.silent = silent;
+  private LogConfig(LogLevel level, ILogger logger, boolean silent) {
+    this.level = level;
+    this.logger = logger;
+    this.silent = silent;
+  }
+
+  public LogLevel level() {
+    return level;
+  }
+
+  public ILogger logger() {
+    return logger;
+  }
+
+  public boolean silent() {
+    return silent;
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static final class Builder {
+
+    private LogLevel level = LogLevel.INFO;
+    private ILogger logger = new ConsoleLogger();
+    private boolean silent = true;
+
+    private Builder() {}
+
+    /**
+     * Set the minimum log level. Only messages at this level or above will be logged.
+     * Defaults to {@link LogLevel#INFO}.
+     */
+    public Builder level(LogLevel level) {
+      this.level = level;
+      return this;
     }
 
-    public LogLevel level() {
-        return level;
+    /**
+     * Set a custom logger implementation. Defaults to {@link ConsoleLogger}.
+     */
+    public Builder logger(ILogger logger) {
+      this.logger = logger;
+      return this;
     }
 
-    public ILogger logger() {
-        return logger;
+    /**
+     * Set whether logging is silent (disabled). Defaults to {@code true}.
+     * Set to {@code false} to enable log output.
+     */
+    public Builder silent(boolean silent) {
+      this.silent = silent;
+      return this;
     }
 
-    public boolean silent() {
-        return silent;
+    public LogConfig build() {
+      return new LogConfig(level, logger, silent);
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static final class Builder {
-        private LogLevel level = LogLevel.INFO;
-        private ILogger logger = new ConsoleLogger();
-        private boolean silent = true;
-
-        private Builder() {}
-
-        /**
-         * Set the minimum log level. Only messages at this level or above will be logged.
-         * Defaults to {@link LogLevel#INFO}.
-         */
-        public Builder level(LogLevel level) {
-            this.level = level;
-            return this;
-        }
-
-        /**
-         * Set a custom logger implementation. Defaults to {@link ConsoleLogger}.
-         */
-        public Builder logger(ILogger logger) {
-            this.logger = logger;
-            return this;
-        }
-
-        /**
-         * Set whether logging is silent (disabled). Defaults to {@code true}.
-         * Set to {@code false} to enable log output.
-         */
-        public Builder silent(boolean silent) {
-            this.silent = silent;
-            return this;
-        }
-
-        public LogConfig build() {
-            return new LogConfig(level, logger, silent);
-        }
-    }
+  }
 }

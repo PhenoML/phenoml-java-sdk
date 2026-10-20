@@ -14,33 +14,33 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 
 public final class ObjectMappers {
-    public static final ObjectMapper JSON_MAPPER = JsonMapper.builder()
-            .addModule(new Jdk8Module())
-            .addModule(new JavaTimeModule())
-            .addModule(DateTimeDeserializer.getModule())
-            .addModule(DoubleSerializer.getModule())
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-            .build();
 
-    private ObjectMappers() {}
+  public static final ObjectMapper JSON_MAPPER = JsonMapper.builder()
+    .addModule(new Jdk8Module())
+    .addModule(new JavaTimeModule())
+    .addModule(DateTimeDeserializer.getModule())
+    .addModule(DoubleSerializer.getModule())
+    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    .build();
 
-    public static String stringify(Object o) {
-        try {
-            return JSON_MAPPER
-                    .setSerializationInclusion(JsonInclude.Include.ALWAYS)
-                    .writerWithDefaultPrettyPrinter()
-                    .writeValueAsString(o);
-        } catch (IOException e) {
-            return o.getClass().getName() + "@" + Integer.toHexString(o.hashCode());
-        }
+  private ObjectMappers() {}
+
+  public static String stringify(Object o) {
+    try {
+      return JSON_MAPPER.setSerializationInclusion(JsonInclude.Include.ALWAYS)
+        .writerWithDefaultPrettyPrinter()
+        .writeValueAsString(o);
+    } catch (IOException e) {
+      return o.getClass().getName() + "@" + Integer.toHexString(o.hashCode());
     }
+  }
 
-    public static Object parseErrorBody(String responseBodyString) {
-        try {
-            return JSON_MAPPER.readValue(responseBodyString, Object.class);
-        } catch (JsonProcessingException ignored) {
-            return responseBodyString;
-        }
+  public static Object parseErrorBody(String responseBodyString) {
+    try {
+      return JSON_MAPPER.readValue(responseBodyString, Object.class);
+    } catch (JsonProcessingException ignored) {
+      return responseBodyString;
     }
+  }
 }

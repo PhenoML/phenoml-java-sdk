@@ -23,213 +23,231 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CrosswalkTarget.Builder.class)
 public final class CrosswalkTarget {
-    private final String system;
 
-    private final Optional<String> reasonCode;
+  private final String system;
 
-    private final List<CrosswalkMatch> matches;
+  private final Optional<String> reasonCode;
 
-    private final Map<String, Object> additionalProperties;
+  private final List<CrosswalkMatch> matches;
 
-    private CrosswalkTarget(
-            String system,
-            Optional<String> reasonCode,
-            List<CrosswalkMatch> matches,
-            Map<String, Object> additionalProperties) {
-        this.system = system;
-        this.reasonCode = reasonCode;
-        this.matches = matches;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CrosswalkTarget(
+    String system,
+    Optional<String> reasonCode,
+    List<CrosswalkMatch> matches,
+    Map<String, Object> additionalProperties
+  ) {
+    this.system = system;
+    this.reasonCode = reasonCode;
+    this.matches = matches;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Target FHIR code-system URI.
+   */
+  @JsonProperty("system")
+  public String getSystem() {
+    return system;
+  }
+
+  /**
+   * @return Target-level reason code when this target has no matches.
+   */
+  @JsonProperty("reason_code")
+  public Optional<String> getReasonCode() {
+    return reasonCode;
+  }
+
+  /**
+   * @return Codes in this target system that share a UMLS CUI with the source code.
+   */
+  @JsonProperty("matches")
+  public List<CrosswalkMatch> getMatches() {
+    return matches;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CrosswalkTarget && equalTo((CrosswalkTarget) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CrosswalkTarget other) {
+    return (
+      system.equals(other.system) &&
+      reasonCode.equals(other.reasonCode) &&
+      matches.equals(other.matches)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.system, this.reasonCode, this.matches);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static SystemStage builder() {
+    return new Builder();
+  }
+
+  public interface SystemStage {
+    /**
+     * <p>Target FHIR code-system URI.</p>
+     */
+    _FinalStage system(@NotNull String system);
+
+    Builder from(CrosswalkTarget other);
+  }
+
+  public interface _FinalStage {
+    CrosswalkTarget build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Target-level reason code when this target has no matches.</p>
+     */
+    _FinalStage reasonCode(Optional<String> reasonCode);
+
+    _FinalStage reasonCode(String reasonCode);
+
+    /**
+     * <p>Codes in this target system that share a UMLS CUI with the source code.</p>
+     */
+    _FinalStage matches(List<CrosswalkMatch> matches);
+
+    _FinalStage addMatches(CrosswalkMatch matches);
+
+    _FinalStage addAllMatches(List<CrosswalkMatch> matches);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements SystemStage, _FinalStage {
+
+    private String system;
+
+    private List<CrosswalkMatch> matches = new ArrayList<>();
+
+    private Optional<String> reasonCode = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(CrosswalkTarget other) {
+      system(other.getSystem());
+      reasonCode(other.getReasonCode());
+      matches(other.getMatches());
+      return this;
     }
 
     /**
-     * @return Target FHIR code-system URI.
+     * <p>Target FHIR code-system URI.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("system")
-    public String getSystem() {
-        return system;
+    @java.lang.Override
+    @JsonSetter("system")
+    public _FinalStage system(@NotNull String system) {
+      this.system = Objects.requireNonNull(system, "system must not be null");
+      return this;
     }
 
     /**
-     * @return Target-level reason code when this target has no matches.
+     * <p>Codes in this target system that share a UMLS CUI with the source code.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("reason_code")
-    public Optional<String> getReasonCode() {
-        return reasonCode;
+    @java.lang.Override
+    public _FinalStage addAllMatches(List<CrosswalkMatch> matches) {
+      if (matches != null) {
+        this.matches.addAll(matches);
+      }
+      return this;
     }
 
     /**
-     * @return Codes in this target system that share a UMLS CUI with the source code.
+     * <p>Codes in this target system that share a UMLS CUI with the source code.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("matches")
-    public List<CrosswalkMatch> getMatches() {
-        return matches;
+    @java.lang.Override
+    public _FinalStage addMatches(CrosswalkMatch matches) {
+      this.matches.add(matches);
+      return this;
+    }
+
+    /**
+     * <p>Codes in this target system that share a UMLS CUI with the source code.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "matches", nulls = Nulls.SKIP)
+    public _FinalStage matches(List<CrosswalkMatch> matches) {
+      this.matches.clear();
+      if (matches != null) {
+        this.matches.addAll(matches);
+      }
+      return this;
+    }
+
+    /**
+     * <p>Target-level reason code when this target has no matches.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage reasonCode(String reasonCode) {
+      this.reasonCode = Optional.ofNullable(reasonCode);
+      return this;
+    }
+
+    /**
+     * <p>Target-level reason code when this target has no matches.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "reason_code", nulls = Nulls.SKIP)
+    public _FinalStage reasonCode(Optional<String> reasonCode) {
+      this.reasonCode = reasonCode;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CrosswalkTarget && equalTo((CrosswalkTarget) other);
+    public CrosswalkTarget build() {
+      return new CrosswalkTarget(system, reasonCode, matches, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(CrosswalkTarget other) {
-        return system.equals(other.system) && reasonCode.equals(other.reasonCode) && matches.equals(other.matches);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.system, this.reasonCode, this.matches);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("system") ||
+        key.equalsIgnoreCase("reason_code") ||
+        key.equalsIgnoreCase("matches")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static SystemStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface SystemStage {
-        /**
-         * <p>Target FHIR code-system URI.</p>
-         */
-        _FinalStage system(@NotNull String system);
-
-        Builder from(CrosswalkTarget other);
-    }
-
-    public interface _FinalStage {
-        CrosswalkTarget build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Target-level reason code when this target has no matches.</p>
-         */
-        _FinalStage reasonCode(Optional<String> reasonCode);
-
-        _FinalStage reasonCode(String reasonCode);
-
-        /**
-         * <p>Codes in this target system that share a UMLS CUI with the source code.</p>
-         */
-        _FinalStage matches(List<CrosswalkMatch> matches);
-
-        _FinalStage addMatches(CrosswalkMatch matches);
-
-        _FinalStage addAllMatches(List<CrosswalkMatch> matches);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements SystemStage, _FinalStage {
-        private String system;
-
-        private List<CrosswalkMatch> matches = new ArrayList<>();
-
-        private Optional<String> reasonCode = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(CrosswalkTarget other) {
-            system(other.getSystem());
-            reasonCode(other.getReasonCode());
-            matches(other.getMatches());
-            return this;
-        }
-
-        /**
-         * <p>Target FHIR code-system URI.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("system")
-        public _FinalStage system(@NotNull String system) {
-            this.system = Objects.requireNonNull(system, "system must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Codes in this target system that share a UMLS CUI with the source code.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addAllMatches(List<CrosswalkMatch> matches) {
-            if (matches != null) {
-                this.matches.addAll(matches);
-            }
-            return this;
-        }
-
-        /**
-         * <p>Codes in this target system that share a UMLS CUI with the source code.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addMatches(CrosswalkMatch matches) {
-            this.matches.add(matches);
-            return this;
-        }
-
-        /**
-         * <p>Codes in this target system that share a UMLS CUI with the source code.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "matches", nulls = Nulls.SKIP)
-        public _FinalStage matches(List<CrosswalkMatch> matches) {
-            this.matches.clear();
-            if (matches != null) {
-                this.matches.addAll(matches);
-            }
-            return this;
-        }
-
-        /**
-         * <p>Target-level reason code when this target has no matches.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage reasonCode(String reasonCode) {
-            this.reasonCode = Optional.ofNullable(reasonCode);
-            return this;
-        }
-
-        /**
-         * <p>Target-level reason code when this target has no matches.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "reason_code", nulls = Nulls.SKIP)
-        public _FinalStage reasonCode(Optional<String> reasonCode) {
-            this.reasonCode = reasonCode;
-            return this;
-        }
-
-        @java.lang.Override
-        public CrosswalkTarget build() {
-            return new CrosswalkTarget(system, reasonCode, matches, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

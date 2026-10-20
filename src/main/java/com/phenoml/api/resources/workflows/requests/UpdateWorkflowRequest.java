@@ -24,341 +24,366 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = UpdateWorkflowRequest.Builder.class)
 public final class UpdateWorkflowRequest {
-    private final Optional<Boolean> verbose;
 
-    private final String name;
+  private final Optional<Boolean> verbose;
 
-    private final String workflowInstructions;
+  private final String name;
 
-    private final Map<String, Object> sampleData;
+  private final String workflowInstructions;
 
-    private final UpdateWorkflowRequestFhirProviderId fhirProviderId;
+  private final Map<String, Object> sampleData;
 
-    private final Optional<Boolean> dynamicGeneration;
+  private final UpdateWorkflowRequestFhirProviderId fhirProviderId;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Boolean> dynamicGeneration;
 
-    private UpdateWorkflowRequest(
-            Optional<Boolean> verbose,
-            String name,
-            String workflowInstructions,
-            Map<String, Object> sampleData,
-            UpdateWorkflowRequestFhirProviderId fhirProviderId,
-            Optional<Boolean> dynamicGeneration,
-            Map<String, Object> additionalProperties) {
-        this.verbose = verbose;
-        this.name = name;
-        this.workflowInstructions = workflowInstructions;
-        this.sampleData = sampleData;
-        this.fhirProviderId = fhirProviderId;
-        this.dynamicGeneration = dynamicGeneration;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private UpdateWorkflowRequest(
+    Optional<Boolean> verbose,
+    String name,
+    String workflowInstructions,
+    Map<String, Object> sampleData,
+    UpdateWorkflowRequestFhirProviderId fhirProviderId,
+    Optional<Boolean> dynamicGeneration,
+    Map<String, Object> additionalProperties
+  ) {
+    this.verbose = verbose;
+    this.name = name;
+    this.workflowInstructions = workflowInstructions;
+    this.sampleData = sampleData;
+    this.fhirProviderId = fhirProviderId;
+    this.dynamicGeneration = dynamicGeneration;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return If true, includes full workflow implementation details in workflow_details field
+   */
+  @JsonIgnore
+  public Optional<Boolean> getVerbose() {
+    return verbose;
+  }
+
+  /**
+   * @return Human-readable name for the workflow
+   */
+  @JsonProperty("name")
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @return Natural language instructions that define the workflow logic
+   */
+  @JsonProperty("workflow_instructions")
+  public String getWorkflowInstructions() {
+    return workflowInstructions;
+  }
+
+  /**
+   * @return Sample data to use for workflow graph generation
+   */
+  @JsonProperty("sample_data")
+  public Map<String, Object> getSampleData() {
+    return sampleData;
+  }
+
+  /**
+   * @return FHIR provider ID(s) - must be valid UUID(s) from existing FHIR providers
+   */
+  @JsonProperty("fhir_provider_id")
+  public UpdateWorkflowRequestFhirProviderId getFhirProviderId() {
+    return fhirProviderId;
+  }
+
+  /**
+   * @return Enable dynamic lang2fhir calls instead of pre-populated templates
+   */
+  @JsonProperty("dynamic_generation")
+  public Optional<Boolean> getDynamicGeneration() {
+    return dynamicGeneration;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof UpdateWorkflowRequest && equalTo((UpdateWorkflowRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(UpdateWorkflowRequest other) {
+    return (
+      verbose.equals(other.verbose) &&
+      name.equals(other.name) &&
+      workflowInstructions.equals(other.workflowInstructions) &&
+      sampleData.equals(other.sampleData) &&
+      fhirProviderId.equals(other.fhirProviderId) &&
+      dynamicGeneration.equals(other.dynamicGeneration)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.verbose,
+      this.name,
+      this.workflowInstructions,
+      this.sampleData,
+      this.fhirProviderId,
+      this.dynamicGeneration
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static NameStage builder() {
+    return new Builder();
+  }
+
+  public interface NameStage {
+    /**
+     * <p>Human-readable name for the workflow</p>
+     */
+    WorkflowInstructionsStage name(@NotNull String name);
+
+    Builder from(UpdateWorkflowRequest other);
+  }
+
+  public interface WorkflowInstructionsStage {
+    /**
+     * <p>Natural language instructions that define the workflow logic</p>
+     */
+    FhirProviderIdStage workflowInstructions(@NotNull String workflowInstructions);
+  }
+
+  public interface FhirProviderIdStage {
+    /**
+     * <p>FHIR provider ID(s) - must be valid UUID(s) from existing FHIR providers</p>
+     */
+    _FinalStage fhirProviderId(@NotNull UpdateWorkflowRequestFhirProviderId fhirProviderId);
+  }
+
+  public interface _FinalStage {
+    UpdateWorkflowRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>If true, includes full workflow implementation details in workflow_details field</p>
+     */
+    _FinalStage verbose(Optional<Boolean> verbose);
+
+    _FinalStage verbose(Boolean verbose);
+
+    /**
+     * <p>Sample data to use for workflow graph generation</p>
+     */
+    _FinalStage sampleData(Map<String, Object> sampleData);
+
+    _FinalStage putAllSampleData(Map<String, Object> sampleData);
+
+    _FinalStage sampleData(String key, Object value);
+
+    /**
+     * <p>Enable dynamic lang2fhir calls instead of pre-populated templates</p>
+     */
+    _FinalStage dynamicGeneration(Optional<Boolean> dynamicGeneration);
+
+    _FinalStage dynamicGeneration(Boolean dynamicGeneration);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements NameStage, WorkflowInstructionsStage, FhirProviderIdStage, _FinalStage {
+
+    private String name;
+
+    private String workflowInstructions;
+
+    private UpdateWorkflowRequestFhirProviderId fhirProviderId;
+
+    private Optional<Boolean> dynamicGeneration = Optional.empty();
+
+    private Map<String, Object> sampleData = new LinkedHashMap<>();
+
+    private Optional<Boolean> verbose = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(UpdateWorkflowRequest other) {
+      verbose(other.getVerbose());
+      name(other.getName());
+      workflowInstructions(other.getWorkflowInstructions());
+      sampleData(other.getSampleData());
+      fhirProviderId(other.getFhirProviderId());
+      dynamicGeneration(other.getDynamicGeneration());
+      return this;
     }
 
     /**
-     * @return If true, includes full workflow implementation details in workflow_details field
+     * <p>Human-readable name for the workflow</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonIgnore
-    public Optional<Boolean> getVerbose() {
-        return verbose;
+    @java.lang.Override
+    @JsonSetter("name")
+    public WorkflowInstructionsStage name(@NotNull String name) {
+      this.name = Objects.requireNonNull(name, "name must not be null");
+      return this;
     }
 
     /**
-     * @return Human-readable name for the workflow
+     * <p>Natural language instructions that define the workflow logic</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("name")
-    public String getName() {
-        return name;
+    @java.lang.Override
+    @JsonSetter("workflow_instructions")
+    public FhirProviderIdStage workflowInstructions(@NotNull String workflowInstructions) {
+      this.workflowInstructions = Objects.requireNonNull(
+        workflowInstructions,
+        "workflowInstructions must not be null"
+      );
+      return this;
     }
 
     /**
-     * @return Natural language instructions that define the workflow logic
+     * <p>FHIR provider ID(s) - must be valid UUID(s) from existing FHIR providers</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("workflow_instructions")
-    public String getWorkflowInstructions() {
-        return workflowInstructions;
+    @java.lang.Override
+    @JsonSetter("fhir_provider_id")
+    public _FinalStage fhirProviderId(@NotNull UpdateWorkflowRequestFhirProviderId fhirProviderId) {
+      this.fhirProviderId = Objects.requireNonNull(
+        fhirProviderId,
+        "fhirProviderId must not be null"
+      );
+      return this;
     }
 
     /**
-     * @return Sample data to use for workflow graph generation
+     * <p>Enable dynamic lang2fhir calls instead of pre-populated templates</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("sample_data")
-    public Map<String, Object> getSampleData() {
-        return sampleData;
+    @java.lang.Override
+    public _FinalStage dynamicGeneration(Boolean dynamicGeneration) {
+      this.dynamicGeneration = Optional.ofNullable(dynamicGeneration);
+      return this;
     }
 
     /**
-     * @return FHIR provider ID(s) - must be valid UUID(s) from existing FHIR providers
+     * <p>Enable dynamic lang2fhir calls instead of pre-populated templates</p>
      */
-    @JsonProperty("fhir_provider_id")
-    public UpdateWorkflowRequestFhirProviderId getFhirProviderId() {
-        return fhirProviderId;
+    @java.lang.Override
+    @JsonSetter(value = "dynamic_generation", nulls = Nulls.SKIP)
+    public _FinalStage dynamicGeneration(Optional<Boolean> dynamicGeneration) {
+      this.dynamicGeneration = dynamicGeneration;
+      return this;
     }
 
     /**
-     * @return Enable dynamic lang2fhir calls instead of pre-populated templates
+     * <p>Sample data to use for workflow graph generation</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("dynamic_generation")
-    public Optional<Boolean> getDynamicGeneration() {
-        return dynamicGeneration;
+    @java.lang.Override
+    public _FinalStage sampleData(String key, Object value) {
+      this.sampleData.put(key, value);
+      return this;
+    }
+
+    /**
+     * <p>Sample data to use for workflow graph generation</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage putAllSampleData(Map<String, Object> sampleData) {
+      if (sampleData != null) {
+        this.sampleData.putAll(sampleData);
+      }
+      return this;
+    }
+
+    /**
+     * <p>Sample data to use for workflow graph generation</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "sample_data", nulls = Nulls.SKIP)
+    public _FinalStage sampleData(Map<String, Object> sampleData) {
+      this.sampleData.clear();
+      if (sampleData != null) {
+        this.sampleData.putAll(sampleData);
+      }
+      return this;
+    }
+
+    /**
+     * <p>If true, includes full workflow implementation details in workflow_details field</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage verbose(Boolean verbose) {
+      this.verbose = Optional.ofNullable(verbose);
+      return this;
+    }
+
+    /**
+     * <p>If true, includes full workflow implementation details in workflow_details field</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "verbose", nulls = Nulls.SKIP)
+    public _FinalStage verbose(Optional<Boolean> verbose) {
+      this.verbose = verbose;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof UpdateWorkflowRequest && equalTo((UpdateWorkflowRequest) other);
+    public UpdateWorkflowRequest build() {
+      return new UpdateWorkflowRequest(
+        verbose,
+        name,
+        workflowInstructions,
+        sampleData,
+        fhirProviderId,
+        dynamicGeneration,
+        additionalProperties
+      );
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(UpdateWorkflowRequest other) {
-        return verbose.equals(other.verbose)
-                && name.equals(other.name)
-                && workflowInstructions.equals(other.workflowInstructions)
-                && sampleData.equals(other.sampleData)
-                && fhirProviderId.equals(other.fhirProviderId)
-                && dynamicGeneration.equals(other.dynamicGeneration);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.verbose,
-                this.name,
-                this.workflowInstructions,
-                this.sampleData,
-                this.fhirProviderId,
-                this.dynamicGeneration);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("workflow_instructions") ||
+        key.equalsIgnoreCase("sample_data") ||
+        key.equalsIgnoreCase("fhir_provider_id") ||
+        key.equalsIgnoreCase("dynamic_generation")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static NameStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface NameStage {
-        /**
-         * <p>Human-readable name for the workflow</p>
-         */
-        WorkflowInstructionsStage name(@NotNull String name);
-
-        Builder from(UpdateWorkflowRequest other);
-    }
-
-    public interface WorkflowInstructionsStage {
-        /**
-         * <p>Natural language instructions that define the workflow logic</p>
-         */
-        FhirProviderIdStage workflowInstructions(@NotNull String workflowInstructions);
-    }
-
-    public interface FhirProviderIdStage {
-        /**
-         * <p>FHIR provider ID(s) - must be valid UUID(s) from existing FHIR providers</p>
-         */
-        _FinalStage fhirProviderId(@NotNull UpdateWorkflowRequestFhirProviderId fhirProviderId);
-    }
-
-    public interface _FinalStage {
-        UpdateWorkflowRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>If true, includes full workflow implementation details in workflow_details field</p>
-         */
-        _FinalStage verbose(Optional<Boolean> verbose);
-
-        _FinalStage verbose(Boolean verbose);
-
-        /**
-         * <p>Sample data to use for workflow graph generation</p>
-         */
-        _FinalStage sampleData(Map<String, Object> sampleData);
-
-        _FinalStage putAllSampleData(Map<String, Object> sampleData);
-
-        _FinalStage sampleData(String key, Object value);
-
-        /**
-         * <p>Enable dynamic lang2fhir calls instead of pre-populated templates</p>
-         */
-        _FinalStage dynamicGeneration(Optional<Boolean> dynamicGeneration);
-
-        _FinalStage dynamicGeneration(Boolean dynamicGeneration);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder
-            implements NameStage, WorkflowInstructionsStage, FhirProviderIdStage, _FinalStage {
-        private String name;
-
-        private String workflowInstructions;
-
-        private UpdateWorkflowRequestFhirProviderId fhirProviderId;
-
-        private Optional<Boolean> dynamicGeneration = Optional.empty();
-
-        private Map<String, Object> sampleData = new LinkedHashMap<>();
-
-        private Optional<Boolean> verbose = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(UpdateWorkflowRequest other) {
-            verbose(other.getVerbose());
-            name(other.getName());
-            workflowInstructions(other.getWorkflowInstructions());
-            sampleData(other.getSampleData());
-            fhirProviderId(other.getFhirProviderId());
-            dynamicGeneration(other.getDynamicGeneration());
-            return this;
-        }
-
-        /**
-         * <p>Human-readable name for the workflow</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("name")
-        public WorkflowInstructionsStage name(@NotNull String name) {
-            this.name = Objects.requireNonNull(name, "name must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Natural language instructions that define the workflow logic</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("workflow_instructions")
-        public FhirProviderIdStage workflowInstructions(@NotNull String workflowInstructions) {
-            this.workflowInstructions =
-                    Objects.requireNonNull(workflowInstructions, "workflowInstructions must not be null");
-            return this;
-        }
-
-        /**
-         * <p>FHIR provider ID(s) - must be valid UUID(s) from existing FHIR providers</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("fhir_provider_id")
-        public _FinalStage fhirProviderId(@NotNull UpdateWorkflowRequestFhirProviderId fhirProviderId) {
-            this.fhirProviderId = Objects.requireNonNull(fhirProviderId, "fhirProviderId must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Enable dynamic lang2fhir calls instead of pre-populated templates</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage dynamicGeneration(Boolean dynamicGeneration) {
-            this.dynamicGeneration = Optional.ofNullable(dynamicGeneration);
-            return this;
-        }
-
-        /**
-         * <p>Enable dynamic lang2fhir calls instead of pre-populated templates</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "dynamic_generation", nulls = Nulls.SKIP)
-        public _FinalStage dynamicGeneration(Optional<Boolean> dynamicGeneration) {
-            this.dynamicGeneration = dynamicGeneration;
-            return this;
-        }
-
-        /**
-         * <p>Sample data to use for workflow graph generation</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage sampleData(String key, Object value) {
-            this.sampleData.put(key, value);
-            return this;
-        }
-
-        /**
-         * <p>Sample data to use for workflow graph generation</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage putAllSampleData(Map<String, Object> sampleData) {
-            if (sampleData != null) {
-                this.sampleData.putAll(sampleData);
-            }
-            return this;
-        }
-
-        /**
-         * <p>Sample data to use for workflow graph generation</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "sample_data", nulls = Nulls.SKIP)
-        public _FinalStage sampleData(Map<String, Object> sampleData) {
-            this.sampleData.clear();
-            if (sampleData != null) {
-                this.sampleData.putAll(sampleData);
-            }
-            return this;
-        }
-
-        /**
-         * <p>If true, includes full workflow implementation details in workflow_details field</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage verbose(Boolean verbose) {
-            this.verbose = Optional.ofNullable(verbose);
-            return this;
-        }
-
-        /**
-         * <p>If true, includes full workflow implementation details in workflow_details field</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "verbose", nulls = Nulls.SKIP)
-        public _FinalStage verbose(Optional<Boolean> verbose) {
-            this.verbose = verbose;
-            return this;
-        }
-
-        @java.lang.Override
-        public UpdateWorkflowRequest build() {
-            return new UpdateWorkflowRequest(
-                    verbose,
-                    name,
-                    workflowInstructions,
-                    sampleData,
-                    fhirProviderId,
-                    dynamicGeneration,
-                    additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

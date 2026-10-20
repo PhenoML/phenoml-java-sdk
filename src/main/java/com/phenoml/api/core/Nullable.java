@@ -8,133 +8,135 @@ import java.util.function.Function;
 
 public final class Nullable<T> {
 
-    private final Either<Optional<T>, Null> value;
+  private final Either<Optional<T>, Null> value;
 
-    private Nullable() {
-        this.value = Either.left(Optional.empty());
+  private Nullable() {
+    this.value = Either.left(Optional.empty());
+  }
+
+  private Nullable(T value) {
+    if (value == null) {
+      this.value = Either.right(Null.INSTANCE);
+    } else {
+      this.value = Either.left(Optional.of(value));
+    }
+  }
+
+  public static <T> Nullable<T> ofNull() {
+    return new Nullable<>(null);
+  }
+
+  public static <T> Nullable<T> of(T value) {
+    return new Nullable<>(value);
+  }
+
+  public static <T> Nullable<T> empty() {
+    return new Nullable<>();
+  }
+
+  public static <T> Nullable<T> ofOptional(Optional<T> value) {
+    if (value.isPresent()) {
+      return of(value.get());
+    } else {
+      return empty();
+    }
+  }
+
+  public boolean isNull() {
+    return this.value.isRight();
+  }
+
+  public boolean isEmpty() {
+    return this.value.isLeft() && !this.value.getLeft().isPresent();
+  }
+
+  public T get() {
+    if (this.isNull()) {
+      return null;
     }
 
-    private Nullable(T value) {
-        if (value == null) {
-            this.value = Either.right(Null.INSTANCE);
-        } else {
-            this.value = Either.left(Optional.of(value));
-        }
+    return this.value.getLeft().get();
+  }
+
+  public <U> Nullable<U> map(Function<? super T, ? extends U> mapper) {
+    if (this.isNull()) {
+      return Nullable.ofNull();
     }
 
-    public static <T> Nullable<T> ofNull() {
-        return new Nullable<>(null);
+    return Nullable.ofOptional(this.value.getLeft().map(mapper));
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof Nullable)) {
+      return false;
     }
 
-    public static <T> Nullable<T> of(T value) {
-        return new Nullable<>(value);
+    if (((Nullable<?>) other).isNull() && this.isNull()) {
+      return true;
     }
 
-    public static <T> Nullable<T> empty() {
-        return new Nullable<>();
+    return this.value.getLeft().equals(((Nullable<?>) other).value.getLeft());
+  }
+
+  private static final class Either<L, R> {
+
+    private L left = null;
+    private R right = null;
+
+    private Either(L left, R right) {
+      if (left != null && right != null) {
+        throw new IllegalArgumentException("Left and right argument cannot both be non-null.");
+      }
+
+      if (left == null && right == null) {
+        throw new IllegalArgumentException("Left and right argument cannot both be null.");
+      }
+
+      if (left != null) {
+        this.left = left;
+      }
+
+      if (right != null) {
+        this.right = right;
+      }
     }
 
-    public static <T> Nullable<T> ofOptional(Optional<T> value) {
-        if (value.isPresent()) {
-            return of(value.get());
-        } else {
-            return empty();
-        }
+    public static <L, R> Either<L, R> left(L left) {
+      return new Either<>(left, null);
     }
 
-    public boolean isNull() {
-        return this.value.isRight();
+    public static <L, R> Either<L, R> right(R right) {
+      return new Either<>(null, right);
     }
 
-    public boolean isEmpty() {
-        return this.value.isLeft() && !this.value.getLeft().isPresent();
+    public boolean isLeft() {
+      return this.left != null;
     }
 
-    public T get() {
-        if (this.isNull()) {
-            return null;
-        }
-
-        return this.value.getLeft().get();
+    public boolean isRight() {
+      return this.right != null;
     }
 
-    public <U> Nullable<U> map(Function<? super T, ? extends U> mapper) {
-        if (this.isNull()) {
-            return Nullable.ofNull();
-        }
-
-        return Nullable.ofOptional(this.value.getLeft().map(mapper));
+    public L getLeft() {
+      if (!this.isLeft()) {
+        throw new IllegalArgumentException("Cannot get left from right Either.");
+      }
+      return this.left;
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof Nullable)) {
-            return false;
-        }
-
-        if (((Nullable<?>) other).isNull() && this.isNull()) {
-            return true;
-        }
-
-        return this.value.getLeft().equals(((Nullable<?>) other).value.getLeft());
+    public R getRight() {
+      if (!this.isRight()) {
+        throw new IllegalArgumentException("Cannot get right from left Either.");
+      }
+      return this.right;
     }
+  }
 
-    private static final class Either<L, R> {
-        private L left = null;
-        private R right = null;
+  private static final class Null {
 
-        private Either(L left, R right) {
-            if (left != null && right != null) {
-                throw new IllegalArgumentException("Left and right argument cannot both be non-null.");
-            }
+    private static final Null INSTANCE = new Null();
 
-            if (left == null && right == null) {
-                throw new IllegalArgumentException("Left and right argument cannot both be null.");
-            }
-
-            if (left != null) {
-                this.left = left;
-            }
-
-            if (right != null) {
-                this.right = right;
-            }
-        }
-
-        public static <L, R> Either<L, R> left(L left) {
-            return new Either<>(left, null);
-        }
-
-        public static <L, R> Either<L, R> right(R right) {
-            return new Either<>(null, right);
-        }
-
-        public boolean isLeft() {
-            return this.left != null;
-        }
-
-        public boolean isRight() {
-            return this.right != null;
-        }
-
-        public L getLeft() {
-            if (!this.isLeft()) {
-                throw new IllegalArgumentException("Cannot get left from right Either.");
-            }
-            return this.left;
-        }
-
-        public R getRight() {
-            if (!this.isRight()) {
-                throw new IllegalArgumentException("Cannot get right from left Either.");
-            }
-            return this.right;
-        }
-    }
-
-    private static final class Null {
-        private static final Null INSTANCE = new Null();
-
-        private Null() {}
-    }
+    private Null() {}
+  }
 }

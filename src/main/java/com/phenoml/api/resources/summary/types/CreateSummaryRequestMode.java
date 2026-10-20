@@ -7,88 +7,97 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class CreateSummaryRequestMode {
-    public static final CreateSummaryRequestMode FLATTEN = new CreateSummaryRequestMode(Value.FLATTEN, "flatten");
 
-    public static final CreateSummaryRequestMode NARRATIVE = new CreateSummaryRequestMode(Value.NARRATIVE, "narrative");
+  public static final CreateSummaryRequestMode FLATTEN = new CreateSummaryRequestMode(
+    Value.FLATTEN,
+    "flatten"
+  );
 
-    public static final CreateSummaryRequestMode IPS = new CreateSummaryRequestMode(Value.IPS, "ips");
+  public static final CreateSummaryRequestMode NARRATIVE = new CreateSummaryRequestMode(
+    Value.NARRATIVE,
+    "narrative"
+  );
 
-    private final Value value;
+  public static final CreateSummaryRequestMode IPS = new CreateSummaryRequestMode(Value.IPS, "ips");
 
-    private final String string;
+  private final Value value;
 
-    CreateSummaryRequestMode(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  CreateSummaryRequestMode(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof CreateSummaryRequestMode &&
+        this.string.equals(((CreateSummaryRequestMode) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case FLATTEN:
+        return visitor.visitFlatten();
+      case NARRATIVE:
+        return visitor.visitNarrative();
+      case IPS:
+        return visitor.visitIps();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static CreateSummaryRequestMode valueOf(String value) {
+    switch (value) {
+      case "flatten":
+        return FLATTEN;
+      case "narrative":
+        return NARRATIVE;
+      case "ips":
+        return IPS;
+      default:
+        return new CreateSummaryRequestMode(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    NARRATIVE,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof CreateSummaryRequestMode
-                        && this.string.equals(((CreateSummaryRequestMode) other).string));
-    }
+    FLATTEN,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    IPS,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case FLATTEN:
-                return visitor.visitFlatten();
-            case NARRATIVE:
-                return visitor.visitNarrative();
-            case IPS:
-                return visitor.visitIps();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    UNKNOWN,
+  }
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static CreateSummaryRequestMode valueOf(String value) {
-        switch (value) {
-            case "flatten":
-                return FLATTEN;
-            case "narrative":
-                return NARRATIVE;
-            case "ips":
-                return IPS;
-            default:
-                return new CreateSummaryRequestMode(Value.UNKNOWN, value);
-        }
-    }
+  public interface Visitor<T> {
+    T visitNarrative();
 
-    public enum Value {
-        NARRATIVE,
+    T visitFlatten();
 
-        FLATTEN,
+    T visitIps();
 
-        IPS,
-
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitNarrative();
-
-        T visitFlatten();
-
-        T visitIps();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

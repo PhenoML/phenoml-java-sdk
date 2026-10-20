@@ -7,98 +7,113 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class ListMessagesRequestRole {
-    public static final ListMessagesRequestRole FUNCTION = new ListMessagesRequestRole(Value.FUNCTION, "function");
 
-    public static final ListMessagesRequestRole MODEL = new ListMessagesRequestRole(Value.MODEL, "model");
+  public static final ListMessagesRequestRole FUNCTION = new ListMessagesRequestRole(
+    Value.FUNCTION,
+    "function"
+  );
 
-    public static final ListMessagesRequestRole USER = new ListMessagesRequestRole(Value.USER, "user");
+  public static final ListMessagesRequestRole MODEL = new ListMessagesRequestRole(
+    Value.MODEL,
+    "model"
+  );
 
-    public static final ListMessagesRequestRole ASSISTANT = new ListMessagesRequestRole(Value.ASSISTANT, "assistant");
+  public static final ListMessagesRequestRole USER = new ListMessagesRequestRole(
+    Value.USER,
+    "user"
+  );
 
-    private final Value value;
+  public static final ListMessagesRequestRole ASSISTANT = new ListMessagesRequestRole(
+    Value.ASSISTANT,
+    "assistant"
+  );
 
-    private final String string;
+  private final Value value;
 
-    ListMessagesRequestRole(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  ListMessagesRequestRole(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof ListMessagesRequestRole &&
+        this.string.equals(((ListMessagesRequestRole) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case FUNCTION:
+        return visitor.visitFunction();
+      case MODEL:
+        return visitor.visitModel();
+      case USER:
+        return visitor.visitUser();
+      case ASSISTANT:
+        return visitor.visitAssistant();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static ListMessagesRequestRole valueOf(String value) {
+    switch (value) {
+      case "function":
+        return FUNCTION;
+      case "model":
+        return MODEL;
+      case "user":
+        return USER;
+      case "assistant":
+        return ASSISTANT;
+      default:
+        return new ListMessagesRequestRole(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    USER,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof ListMessagesRequestRole
-                        && this.string.equals(((ListMessagesRequestRole) other).string));
-    }
+    ASSISTANT,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    MODEL,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case FUNCTION:
-                return visitor.visitFunction();
-            case MODEL:
-                return visitor.visitModel();
-            case USER:
-                return visitor.visitUser();
-            case ASSISTANT:
-                return visitor.visitAssistant();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    FUNCTION,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static ListMessagesRequestRole valueOf(String value) {
-        switch (value) {
-            case "function":
-                return FUNCTION;
-            case "model":
-                return MODEL;
-            case "user":
-                return USER;
-            case "assistant":
-                return ASSISTANT;
-            default:
-                return new ListMessagesRequestRole(Value.UNKNOWN, value);
-        }
-    }
+    UNKNOWN,
+  }
 
-    public enum Value {
-        USER,
+  public interface Visitor<T> {
+    T visitUser();
 
-        ASSISTANT,
+    T visitAssistant();
 
-        MODEL,
+    T visitModel();
 
-        FUNCTION,
+    T visitFunction();
 
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitUser();
-
-        T visitAssistant();
-
-        T visitModel();
-
-        T visitFunction();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

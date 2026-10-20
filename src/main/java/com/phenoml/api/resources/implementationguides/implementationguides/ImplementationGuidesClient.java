@@ -13,138 +13,151 @@ import com.phenoml.api.resources.implementationguides.types.ImplementationGuideS
 import com.phenoml.api.resources.implementationguides.types.ImplementationGuideVersionDetail;
 
 public class ImplementationGuidesClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawImplementationGuidesClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public ImplementationGuidesClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawImplementationGuidesClient(clientOptions);
-    }
+  private final RawImplementationGuidesClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawImplementationGuidesClient withRawResponse() {
-        return this.rawClient;
-    }
+  public ImplementationGuidesClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawImplementationGuidesClient(clientOptions);
+  }
 
-    /**
-     * Returns every implementation guide on this instance — both guides that
-     * have stored metadata (a profile_context) and guides referenced by at
-     * least one custom profile — with the number of profiles in each.
-     */
-    public ImplementationGuideListResponse list() {
-        return this.rawClient.list().body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawImplementationGuidesClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Returns every implementation guide on this instance — both guides that
-     * have stored metadata (a profile_context) and guides referenced by at
-     * least one custom profile — with the number of profiles in each.
-     */
-    public ImplementationGuideListResponse list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).body();
-    }
+  /**
+   * Returns every implementation guide on this instance — both guides that
+   * have stored metadata (a profile_context) and guides referenced by at
+   * least one custom profile — with the number of profiles in each.
+   */
+  public ImplementationGuideListResponse list() {
+    return this.rawClient.list().body();
+  }
 
-    /**
-     * Returns a single implementation guide, including its profile_context and
-     * the ids of the profiles that belong to it.
-     */
-    public ImplementationGuideDetail get(String name) {
-        return this.rawClient.get(name).body();
-    }
+  /**
+   * Returns every implementation guide on this instance — both guides that
+   * have stored metadata (a profile_context) and guides referenced by at
+   * least one custom profile — with the number of profiles in each.
+   */
+  public ImplementationGuideListResponse list(RequestOptions requestOptions) {
+    return this.rawClient.list(requestOptions).body();
+  }
 
-    /**
-     * Returns a single implementation guide, including its profile_context and
-     * the ids of the profiles that belong to it.
-     */
-    public ImplementationGuideDetail get(String name, RequestOptions requestOptions) {
-        return this.rawClient.get(name, requestOptions).body();
-    }
+  /**
+   * Returns a single implementation guide, including its profile_context and
+   * the ids of the profiles that belong to it.
+   */
+  public ImplementationGuideDetail get(String name) {
+    return this.rawClient.get(name).body();
+  }
 
-    /**
-     * Sets (or clears, with an empty value) the natural-language profile_context
-     * for an implementation guide. The context is injected into the LLM during
-     * resource detection to help select the right profiles from this guide.
-     * It applies to every profile in the guide.
-     */
-    public ImplementationGuideSummary update(String name) {
-        return this.rawClient.update(name).body();
-    }
+  /**
+   * Returns a single implementation guide, including its profile_context and
+   * the ids of the profiles that belong to it.
+   */
+  public ImplementationGuideDetail get(String name, RequestOptions requestOptions) {
+    return this.rawClient.get(name, requestOptions).body();
+  }
 
-    /**
-     * Sets (or clears, with an empty value) the natural-language profile_context
-     * for an implementation guide. The context is injected into the LLM during
-     * resource detection to help select the right profiles from this guide.
-     * It applies to every profile in the guide.
-     */
-    public ImplementationGuideSummary update(String name, RequestOptions requestOptions) {
-        return this.rawClient.update(name, requestOptions).body();
-    }
+  /**
+   * Sets (or clears, with an empty value) the natural-language profile_context
+   * for an implementation guide. The context is injected into the LLM during
+   * resource detection to help select the right profiles from this guide.
+   * It applies to every profile in the guide.
+   */
+  public ImplementationGuideSummary update(String name) {
+    return this.rawClient.update(name).body();
+  }
 
-    /**
-     * Sets (or clears, with an empty value) the natural-language profile_context
-     * for an implementation guide. The context is injected into the LLM during
-     * resource detection to help select the right profiles from this guide.
-     * It applies to every profile in the guide.
-     */
-    public ImplementationGuideSummary update(String name, UpdateImplementationGuideRequest request) {
-        return this.rawClient.update(name, request).body();
-    }
+  /**
+   * Sets (or clears, with an empty value) the natural-language profile_context
+   * for an implementation guide. The context is injected into the LLM during
+   * resource detection to help select the right profiles from this guide.
+   * It applies to every profile in the guide.
+   */
+  public ImplementationGuideSummary update(String name, RequestOptions requestOptions) {
+    return this.rawClient.update(name, requestOptions).body();
+  }
 
-    /**
-     * Sets (or clears, with an empty value) the natural-language profile_context
-     * for an implementation guide. The context is injected into the LLM during
-     * resource detection to help select the right profiles from this guide.
-     * It applies to every profile in the guide.
-     */
-    public ImplementationGuideSummary update(
-            String name, UpdateImplementationGuideRequest request, RequestOptions requestOptions) {
-        return this.rawClient.update(name, request, requestOptions).body();
-    }
+  /**
+   * Sets (or clears, with an empty value) the natural-language profile_context
+   * for an implementation guide. The context is injected into the LLM during
+   * resource detection to help select the right profiles from this guide.
+   * It applies to every profile in the guide.
+   */
+  public ImplementationGuideSummary update(String name, UpdateImplementationGuideRequest request) {
+    return this.rawClient.update(name, request).body();
+  }
 
-    /**
-     * Deletes the guide's metadata and all its canonical package versions.
-     * Custom profiles and their implementation-guide assignments are preserved.
-     */
-    public void delete(String name) {
-        this.rawClient.delete(name).body();
-    }
+  /**
+   * Sets (or clears, with an empty value) the natural-language profile_context
+   * for an implementation guide. The context is injected into the LLM during
+   * resource detection to help select the right profiles from this guide.
+   * It applies to every profile in the guide.
+   */
+  public ImplementationGuideSummary update(
+    String name,
+    UpdateImplementationGuideRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.update(name, request, requestOptions).body();
+  }
 
-    /**
-     * Deletes the guide's metadata and all its canonical package versions.
-     * Custom profiles and their implementation-guide assignments are preserved.
-     */
-    public void delete(String name, RequestOptions requestOptions) {
-        this.rawClient.delete(name, requestOptions).body();
-    }
+  /**
+   * Deletes the guide's metadata and all its canonical package versions.
+   * Custom profiles and their implementation-guide assignments are preserved.
+   */
+  public void delete(String name) {
+    this.rawClient.delete(name).body();
+  }
 
-    /**
-     * Publishes an exact package beneath this guide family. Each guide family
-     * supports one exact package version. Publishing another version returns
-     * <code>409 Conflict</code>.
-     */
-    public ImplementationGuideVersionDetail createVersion(
-            String name, CreateCanonicalImplementationGuideRequest request) {
-        return this.rawClient.createVersion(name, request).body();
-    }
+  /**
+   * Deletes the guide's metadata and all its canonical package versions.
+   * Custom profiles and their implementation-guide assignments are preserved.
+   */
+  public void delete(String name, RequestOptions requestOptions) {
+    this.rawClient.delete(name, requestOptions).body();
+  }
 
-    /**
-     * Publishes an exact package beneath this guide family. Each guide family
-     * supports one exact package version. Publishing another version returns
-     * <code>409 Conflict</code>.
-     */
-    public ImplementationGuideVersionDetail createVersion(
-            String name, CreateCanonicalImplementationGuideRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createVersion(name, request, requestOptions).body();
-    }
+  /**
+   * Publishes an exact package beneath this guide family. Each guide family
+   * supports one exact package version. Publishing another version returns
+   * <code>409 Conflict</code>.
+   */
+  public ImplementationGuideVersionDetail createVersion(
+    String name,
+    CreateCanonicalImplementationGuideRequest request
+  ) {
+    return this.rawClient.createVersion(name, request).body();
+  }
 
-    public ImplementationGuideVersionDetail getVersion(String name, String version) {
-        return this.rawClient.getVersion(name, version).body();
-    }
+  /**
+   * Publishes an exact package beneath this guide family. Each guide family
+   * supports one exact package version. Publishing another version returns
+   * <code>409 Conflict</code>.
+   */
+  public ImplementationGuideVersionDetail createVersion(
+    String name,
+    CreateCanonicalImplementationGuideRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.createVersion(name, request, requestOptions).body();
+  }
 
-    public ImplementationGuideVersionDetail getVersion(String name, String version, RequestOptions requestOptions) {
-        return this.rawClient.getVersion(name, version, requestOptions).body();
-    }
+  public ImplementationGuideVersionDetail getVersion(String name, String version) {
+    return this.rawClient.getVersion(name, version).body();
+  }
+
+  public ImplementationGuideVersionDetail getVersion(
+    String name,
+    String version,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.getVersion(name, version, requestOptions).body();
+  }
 }

@@ -20,389 +20,416 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ProcedureOccurrenceRow.Builder.class)
 public final class ProcedureOccurrenceRow {
-    private final Optional<Long> procedureOccurrenceId;
 
-    private final Optional<Long> personId;
+  private final Optional<Long> procedureOccurrenceId;
 
-    private final Optional<Long> procedureConceptId;
+  private final Optional<Long> personId;
 
-    private final Optional<String> procedureDate;
+  private final Optional<Long> procedureConceptId;
 
-    private final Optional<String> procedureDatetime;
+  private final Optional<String> procedureDate;
 
-    private final Optional<String> procedureEndDate;
+  private final Optional<String> procedureDatetime;
 
-    private final Optional<String> procedureEndDatetime;
+  private final Optional<String> procedureEndDate;
 
-    private final Optional<Long> procedureTypeConceptId;
+  private final Optional<String> procedureEndDatetime;
 
-    private final Optional<Long> visitOccurrenceId;
+  private final Optional<Long> procedureTypeConceptId;
 
-    private final Optional<Long> providerId;
+  private final Optional<Long> visitOccurrenceId;
 
-    private final Optional<String> procedureSourceValue;
+  private final Optional<Long> providerId;
 
-    private final Optional<Long> procedureSourceConceptId;
+  private final Optional<String> procedureSourceValue;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Long> procedureSourceConceptId;
 
-    private ProcedureOccurrenceRow(
-            Optional<Long> procedureOccurrenceId,
-            Optional<Long> personId,
-            Optional<Long> procedureConceptId,
-            Optional<String> procedureDate,
-            Optional<String> procedureDatetime,
-            Optional<String> procedureEndDate,
-            Optional<String> procedureEndDatetime,
-            Optional<Long> procedureTypeConceptId,
-            Optional<Long> visitOccurrenceId,
-            Optional<Long> providerId,
-            Optional<String> procedureSourceValue,
-            Optional<Long> procedureSourceConceptId,
-            Map<String, Object> additionalProperties) {
-        this.procedureOccurrenceId = procedureOccurrenceId;
-        this.personId = personId;
-        this.procedureConceptId = procedureConceptId;
-        this.procedureDate = procedureDate;
-        this.procedureDatetime = procedureDatetime;
-        this.procedureEndDate = procedureEndDate;
-        this.procedureEndDatetime = procedureEndDatetime;
-        this.procedureTypeConceptId = procedureTypeConceptId;
-        this.visitOccurrenceId = visitOccurrenceId;
-        this.providerId = providerId;
-        this.procedureSourceValue = procedureSourceValue;
-        this.procedureSourceConceptId = procedureSourceConceptId;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ProcedureOccurrenceRow(
+    Optional<Long> procedureOccurrenceId,
+    Optional<Long> personId,
+    Optional<Long> procedureConceptId,
+    Optional<String> procedureDate,
+    Optional<String> procedureDatetime,
+    Optional<String> procedureEndDate,
+    Optional<String> procedureEndDatetime,
+    Optional<Long> procedureTypeConceptId,
+    Optional<Long> visitOccurrenceId,
+    Optional<Long> providerId,
+    Optional<String> procedureSourceValue,
+    Optional<Long> procedureSourceConceptId,
+    Map<String, Object> additionalProperties
+  ) {
+    this.procedureOccurrenceId = procedureOccurrenceId;
+    this.personId = personId;
+    this.procedureConceptId = procedureConceptId;
+    this.procedureDate = procedureDate;
+    this.procedureDatetime = procedureDatetime;
+    this.procedureEndDate = procedureEndDate;
+    this.procedureEndDatetime = procedureEndDatetime;
+    this.procedureTypeConceptId = procedureTypeConceptId;
+    this.visitOccurrenceId = visitOccurrenceId;
+    this.providerId = providerId;
+    this.procedureSourceValue = procedureSourceValue;
+    this.procedureSourceConceptId = procedureSourceConceptId;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("procedure_occurrence_id")
+  public Optional<Long> getProcedureOccurrenceId() {
+    return procedureOccurrenceId;
+  }
+
+  @JsonProperty("person_id")
+  public Optional<Long> getPersonId() {
+    return personId;
+  }
+
+  @JsonProperty("procedure_concept_id")
+  public Optional<Long> getProcedureConceptId() {
+    return procedureConceptId;
+  }
+
+  /**
+   * @return Start date selected by the source resource's timing rules. For a Procedure, performedDateTime or performedPeriod.start; see the endpoint's timing sources for other resources.
+   */
+  @JsonProperty("procedure_date")
+  public Optional<String> getProcedureDate() {
+    return procedureDate;
+  }
+
+  @JsonProperty("procedure_datetime")
+  public Optional<String> getProcedureDatetime() {
+    return procedureDatetime;
+  }
+
+  /**
+   * @return End date selected by the source resource's timing rules, when available. For a Procedure, performedPeriod.end; see the endpoint's timing sources for other resources.
+   */
+  @JsonProperty("procedure_end_date")
+  public Optional<String> getProcedureEndDate() {
+    return procedureEndDate;
+  }
+
+  @JsonProperty("procedure_end_datetime")
+  public Optional<String> getProcedureEndDatetime() {
+    return procedureEndDatetime;
+  }
+
+  @JsonProperty("procedure_type_concept_id")
+  public Optional<Long> getProcedureTypeConceptId() {
+    return procedureTypeConceptId;
+  }
+
+  @JsonProperty("visit_occurrence_id")
+  public Optional<Long> getVisitOccurrenceId() {
+    return visitOccurrenceId;
+  }
+
+  @JsonProperty("provider_id")
+  public Optional<Long> getProviderId() {
+    return providerId;
+  }
+
+  @JsonProperty("procedure_source_value")
+  public Optional<String> getProcedureSourceValue() {
+    return procedureSourceValue;
+  }
+
+  @JsonProperty("procedure_source_concept_id")
+  public Optional<Long> getProcedureSourceConceptId() {
+    return procedureSourceConceptId;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ProcedureOccurrenceRow && equalTo((ProcedureOccurrenceRow) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ProcedureOccurrenceRow other) {
+    return (
+      procedureOccurrenceId.equals(other.procedureOccurrenceId) &&
+      personId.equals(other.personId) &&
+      procedureConceptId.equals(other.procedureConceptId) &&
+      procedureDate.equals(other.procedureDate) &&
+      procedureDatetime.equals(other.procedureDatetime) &&
+      procedureEndDate.equals(other.procedureEndDate) &&
+      procedureEndDatetime.equals(other.procedureEndDatetime) &&
+      procedureTypeConceptId.equals(other.procedureTypeConceptId) &&
+      visitOccurrenceId.equals(other.visitOccurrenceId) &&
+      providerId.equals(other.providerId) &&
+      procedureSourceValue.equals(other.procedureSourceValue) &&
+      procedureSourceConceptId.equals(other.procedureSourceConceptId)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.procedureOccurrenceId,
+      this.personId,
+      this.procedureConceptId,
+      this.procedureDate,
+      this.procedureDatetime,
+      this.procedureEndDate,
+      this.procedureEndDatetime,
+      this.procedureTypeConceptId,
+      this.visitOccurrenceId,
+      this.providerId,
+      this.procedureSourceValue,
+      this.procedureSourceConceptId
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Long> procedureOccurrenceId = Optional.empty();
+
+    private Optional<Long> personId = Optional.empty();
+
+    private Optional<Long> procedureConceptId = Optional.empty();
+
+    private Optional<String> procedureDate = Optional.empty();
+
+    private Optional<String> procedureDatetime = Optional.empty();
+
+    private Optional<String> procedureEndDate = Optional.empty();
+
+    private Optional<String> procedureEndDatetime = Optional.empty();
+
+    private Optional<Long> procedureTypeConceptId = Optional.empty();
+
+    private Optional<Long> visitOccurrenceId = Optional.empty();
+
+    private Optional<Long> providerId = Optional.empty();
+
+    private Optional<String> procedureSourceValue = Optional.empty();
+
+    private Optional<Long> procedureSourceConceptId = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ProcedureOccurrenceRow other) {
+      procedureOccurrenceId(other.getProcedureOccurrenceId());
+      personId(other.getPersonId());
+      procedureConceptId(other.getProcedureConceptId());
+      procedureDate(other.getProcedureDate());
+      procedureDatetime(other.getProcedureDatetime());
+      procedureEndDate(other.getProcedureEndDate());
+      procedureEndDatetime(other.getProcedureEndDatetime());
+      procedureTypeConceptId(other.getProcedureTypeConceptId());
+      visitOccurrenceId(other.getVisitOccurrenceId());
+      providerId(other.getProviderId());
+      procedureSourceValue(other.getProcedureSourceValue());
+      procedureSourceConceptId(other.getProcedureSourceConceptId());
+      return this;
     }
 
-    @JsonProperty("procedure_occurrence_id")
-    public Optional<Long> getProcedureOccurrenceId() {
-        return procedureOccurrenceId;
+    @JsonSetter(value = "procedure_occurrence_id", nulls = Nulls.SKIP)
+    public Builder procedureOccurrenceId(Optional<Long> procedureOccurrenceId) {
+      this.procedureOccurrenceId = procedureOccurrenceId;
+      return this;
     }
 
-    @JsonProperty("person_id")
-    public Optional<Long> getPersonId() {
-        return personId;
+    public Builder procedureOccurrenceId(Long procedureOccurrenceId) {
+      this.procedureOccurrenceId = Optional.ofNullable(procedureOccurrenceId);
+      return this;
     }
 
-    @JsonProperty("procedure_concept_id")
-    public Optional<Long> getProcedureConceptId() {
-        return procedureConceptId;
+    @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
+    public Builder personId(Optional<Long> personId) {
+      this.personId = personId;
+      return this;
+    }
+
+    public Builder personId(Long personId) {
+      this.personId = Optional.ofNullable(personId);
+      return this;
+    }
+
+    @JsonSetter(value = "procedure_concept_id", nulls = Nulls.SKIP)
+    public Builder procedureConceptId(Optional<Long> procedureConceptId) {
+      this.procedureConceptId = procedureConceptId;
+      return this;
+    }
+
+    public Builder procedureConceptId(Long procedureConceptId) {
+      this.procedureConceptId = Optional.ofNullable(procedureConceptId);
+      return this;
     }
 
     /**
-     * @return Date from Procedure.performedDateTime or performedPeriod.start.
+     * <p>Start date selected by the source resource's timing rules. For a Procedure, performedDateTime or performedPeriod.start; see the endpoint's timing sources for other resources.</p>
      */
-    @JsonProperty("procedure_date")
-    public Optional<String> getProcedureDate() {
-        return procedureDate;
+    @JsonSetter(value = "procedure_date", nulls = Nulls.SKIP)
+    public Builder procedureDate(Optional<String> procedureDate) {
+      this.procedureDate = procedureDate;
+      return this;
     }
 
-    @JsonProperty("procedure_datetime")
-    public Optional<String> getProcedureDatetime() {
-        return procedureDatetime;
+    public Builder procedureDate(String procedureDate) {
+      this.procedureDate = Optional.ofNullable(procedureDate);
+      return this;
+    }
+
+    @JsonSetter(value = "procedure_datetime", nulls = Nulls.SKIP)
+    public Builder procedureDatetime(Optional<String> procedureDatetime) {
+      this.procedureDatetime = procedureDatetime;
+      return this;
+    }
+
+    public Builder procedureDatetime(String procedureDatetime) {
+      this.procedureDatetime = Optional.ofNullable(procedureDatetime);
+      return this;
     }
 
     /**
-     * @return Date from Procedure.performedPeriod.end.
+     * <p>End date selected by the source resource's timing rules, when available. For a Procedure, performedPeriod.end; see the endpoint's timing sources for other resources.</p>
      */
-    @JsonProperty("procedure_end_date")
-    public Optional<String> getProcedureEndDate() {
-        return procedureEndDate;
+    @JsonSetter(value = "procedure_end_date", nulls = Nulls.SKIP)
+    public Builder procedureEndDate(Optional<String> procedureEndDate) {
+      this.procedureEndDate = procedureEndDate;
+      return this;
     }
 
-    @JsonProperty("procedure_end_datetime")
-    public Optional<String> getProcedureEndDatetime() {
-        return procedureEndDatetime;
+    public Builder procedureEndDate(String procedureEndDate) {
+      this.procedureEndDate = Optional.ofNullable(procedureEndDate);
+      return this;
     }
 
-    @JsonProperty("procedure_type_concept_id")
-    public Optional<Long> getProcedureTypeConceptId() {
-        return procedureTypeConceptId;
+    @JsonSetter(value = "procedure_end_datetime", nulls = Nulls.SKIP)
+    public Builder procedureEndDatetime(Optional<String> procedureEndDatetime) {
+      this.procedureEndDatetime = procedureEndDatetime;
+      return this;
     }
 
-    @JsonProperty("visit_occurrence_id")
-    public Optional<Long> getVisitOccurrenceId() {
-        return visitOccurrenceId;
+    public Builder procedureEndDatetime(String procedureEndDatetime) {
+      this.procedureEndDatetime = Optional.ofNullable(procedureEndDatetime);
+      return this;
     }
 
-    @JsonProperty("provider_id")
-    public Optional<Long> getProviderId() {
-        return providerId;
+    @JsonSetter(value = "procedure_type_concept_id", nulls = Nulls.SKIP)
+    public Builder procedureTypeConceptId(Optional<Long> procedureTypeConceptId) {
+      this.procedureTypeConceptId = procedureTypeConceptId;
+      return this;
     }
 
-    @JsonProperty("procedure_source_value")
-    public Optional<String> getProcedureSourceValue() {
-        return procedureSourceValue;
+    public Builder procedureTypeConceptId(Long procedureTypeConceptId) {
+      this.procedureTypeConceptId = Optional.ofNullable(procedureTypeConceptId);
+      return this;
     }
 
-    @JsonProperty("procedure_source_concept_id")
-    public Optional<Long> getProcedureSourceConceptId() {
-        return procedureSourceConceptId;
+    @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
+    public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
+      this.visitOccurrenceId = visitOccurrenceId;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ProcedureOccurrenceRow && equalTo((ProcedureOccurrenceRow) other);
+    public Builder visitOccurrenceId(Long visitOccurrenceId) {
+      this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
+    public Builder providerId(Optional<Long> providerId) {
+      this.providerId = providerId;
+      return this;
     }
 
-    private boolean equalTo(ProcedureOccurrenceRow other) {
-        return procedureOccurrenceId.equals(other.procedureOccurrenceId)
-                && personId.equals(other.personId)
-                && procedureConceptId.equals(other.procedureConceptId)
-                && procedureDate.equals(other.procedureDate)
-                && procedureDatetime.equals(other.procedureDatetime)
-                && procedureEndDate.equals(other.procedureEndDate)
-                && procedureEndDatetime.equals(other.procedureEndDatetime)
-                && procedureTypeConceptId.equals(other.procedureTypeConceptId)
-                && visitOccurrenceId.equals(other.visitOccurrenceId)
-                && providerId.equals(other.providerId)
-                && procedureSourceValue.equals(other.procedureSourceValue)
-                && procedureSourceConceptId.equals(other.procedureSourceConceptId);
+    public Builder providerId(Long providerId) {
+      this.providerId = Optional.ofNullable(providerId);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.procedureOccurrenceId,
-                this.personId,
-                this.procedureConceptId,
-                this.procedureDate,
-                this.procedureDatetime,
-                this.procedureEndDate,
-                this.procedureEndDatetime,
-                this.procedureTypeConceptId,
-                this.visitOccurrenceId,
-                this.providerId,
-                this.procedureSourceValue,
-                this.procedureSourceConceptId);
+    @JsonSetter(value = "procedure_source_value", nulls = Nulls.SKIP)
+    public Builder procedureSourceValue(Optional<String> procedureSourceValue) {
+      this.procedureSourceValue = procedureSourceValue;
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder procedureSourceValue(String procedureSourceValue) {
+      this.procedureSourceValue = Optional.ofNullable(procedureSourceValue);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @JsonSetter(value = "procedure_source_concept_id", nulls = Nulls.SKIP)
+    public Builder procedureSourceConceptId(Optional<Long> procedureSourceConceptId) {
+      this.procedureSourceConceptId = procedureSourceConceptId;
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Long> procedureOccurrenceId = Optional.empty();
-
-        private Optional<Long> personId = Optional.empty();
-
-        private Optional<Long> procedureConceptId = Optional.empty();
-
-        private Optional<String> procedureDate = Optional.empty();
-
-        private Optional<String> procedureDatetime = Optional.empty();
-
-        private Optional<String> procedureEndDate = Optional.empty();
-
-        private Optional<String> procedureEndDatetime = Optional.empty();
-
-        private Optional<Long> procedureTypeConceptId = Optional.empty();
-
-        private Optional<Long> visitOccurrenceId = Optional.empty();
-
-        private Optional<Long> providerId = Optional.empty();
-
-        private Optional<String> procedureSourceValue = Optional.empty();
-
-        private Optional<Long> procedureSourceConceptId = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ProcedureOccurrenceRow other) {
-            procedureOccurrenceId(other.getProcedureOccurrenceId());
-            personId(other.getPersonId());
-            procedureConceptId(other.getProcedureConceptId());
-            procedureDate(other.getProcedureDate());
-            procedureDatetime(other.getProcedureDatetime());
-            procedureEndDate(other.getProcedureEndDate());
-            procedureEndDatetime(other.getProcedureEndDatetime());
-            procedureTypeConceptId(other.getProcedureTypeConceptId());
-            visitOccurrenceId(other.getVisitOccurrenceId());
-            providerId(other.getProviderId());
-            procedureSourceValue(other.getProcedureSourceValue());
-            procedureSourceConceptId(other.getProcedureSourceConceptId());
-            return this;
-        }
-
-        @JsonSetter(value = "procedure_occurrence_id", nulls = Nulls.SKIP)
-        public Builder procedureOccurrenceId(Optional<Long> procedureOccurrenceId) {
-            this.procedureOccurrenceId = procedureOccurrenceId;
-            return this;
-        }
-
-        public Builder procedureOccurrenceId(Long procedureOccurrenceId) {
-            this.procedureOccurrenceId = Optional.ofNullable(procedureOccurrenceId);
-            return this;
-        }
-
-        @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
-        public Builder personId(Optional<Long> personId) {
-            this.personId = personId;
-            return this;
-        }
-
-        public Builder personId(Long personId) {
-            this.personId = Optional.ofNullable(personId);
-            return this;
-        }
-
-        @JsonSetter(value = "procedure_concept_id", nulls = Nulls.SKIP)
-        public Builder procedureConceptId(Optional<Long> procedureConceptId) {
-            this.procedureConceptId = procedureConceptId;
-            return this;
-        }
-
-        public Builder procedureConceptId(Long procedureConceptId) {
-            this.procedureConceptId = Optional.ofNullable(procedureConceptId);
-            return this;
-        }
-
-        /**
-         * <p>Date from Procedure.performedDateTime or performedPeriod.start.</p>
-         */
-        @JsonSetter(value = "procedure_date", nulls = Nulls.SKIP)
-        public Builder procedureDate(Optional<String> procedureDate) {
-            this.procedureDate = procedureDate;
-            return this;
-        }
-
-        public Builder procedureDate(String procedureDate) {
-            this.procedureDate = Optional.ofNullable(procedureDate);
-            return this;
-        }
-
-        @JsonSetter(value = "procedure_datetime", nulls = Nulls.SKIP)
-        public Builder procedureDatetime(Optional<String> procedureDatetime) {
-            this.procedureDatetime = procedureDatetime;
-            return this;
-        }
-
-        public Builder procedureDatetime(String procedureDatetime) {
-            this.procedureDatetime = Optional.ofNullable(procedureDatetime);
-            return this;
-        }
-
-        /**
-         * <p>Date from Procedure.performedPeriod.end.</p>
-         */
-        @JsonSetter(value = "procedure_end_date", nulls = Nulls.SKIP)
-        public Builder procedureEndDate(Optional<String> procedureEndDate) {
-            this.procedureEndDate = procedureEndDate;
-            return this;
-        }
-
-        public Builder procedureEndDate(String procedureEndDate) {
-            this.procedureEndDate = Optional.ofNullable(procedureEndDate);
-            return this;
-        }
-
-        @JsonSetter(value = "procedure_end_datetime", nulls = Nulls.SKIP)
-        public Builder procedureEndDatetime(Optional<String> procedureEndDatetime) {
-            this.procedureEndDatetime = procedureEndDatetime;
-            return this;
-        }
-
-        public Builder procedureEndDatetime(String procedureEndDatetime) {
-            this.procedureEndDatetime = Optional.ofNullable(procedureEndDatetime);
-            return this;
-        }
-
-        @JsonSetter(value = "procedure_type_concept_id", nulls = Nulls.SKIP)
-        public Builder procedureTypeConceptId(Optional<Long> procedureTypeConceptId) {
-            this.procedureTypeConceptId = procedureTypeConceptId;
-            return this;
-        }
-
-        public Builder procedureTypeConceptId(Long procedureTypeConceptId) {
-            this.procedureTypeConceptId = Optional.ofNullable(procedureTypeConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
-        public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
-            this.visitOccurrenceId = visitOccurrenceId;
-            return this;
-        }
-
-        public Builder visitOccurrenceId(Long visitOccurrenceId) {
-            this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
-            return this;
-        }
-
-        @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
-        public Builder providerId(Optional<Long> providerId) {
-            this.providerId = providerId;
-            return this;
-        }
-
-        public Builder providerId(Long providerId) {
-            this.providerId = Optional.ofNullable(providerId);
-            return this;
-        }
-
-        @JsonSetter(value = "procedure_source_value", nulls = Nulls.SKIP)
-        public Builder procedureSourceValue(Optional<String> procedureSourceValue) {
-            this.procedureSourceValue = procedureSourceValue;
-            return this;
-        }
-
-        public Builder procedureSourceValue(String procedureSourceValue) {
-            this.procedureSourceValue = Optional.ofNullable(procedureSourceValue);
-            return this;
-        }
-
-        @JsonSetter(value = "procedure_source_concept_id", nulls = Nulls.SKIP)
-        public Builder procedureSourceConceptId(Optional<Long> procedureSourceConceptId) {
-            this.procedureSourceConceptId = procedureSourceConceptId;
-            return this;
-        }
-
-        public Builder procedureSourceConceptId(Long procedureSourceConceptId) {
-            this.procedureSourceConceptId = Optional.ofNullable(procedureSourceConceptId);
-            return this;
-        }
-
-        public ProcedureOccurrenceRow build() {
-            return new ProcedureOccurrenceRow(
-                    procedureOccurrenceId,
-                    personId,
-                    procedureConceptId,
-                    procedureDate,
-                    procedureDatetime,
-                    procedureEndDate,
-                    procedureEndDatetime,
-                    procedureTypeConceptId,
-                    visitOccurrenceId,
-                    providerId,
-                    procedureSourceValue,
-                    procedureSourceConceptId,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder procedureSourceConceptId(Long procedureSourceConceptId) {
+      this.procedureSourceConceptId = Optional.ofNullable(procedureSourceConceptId);
+      return this;
     }
+
+    public ProcedureOccurrenceRow build() {
+      return new ProcedureOccurrenceRow(
+        procedureOccurrenceId,
+        personId,
+        procedureConceptId,
+        procedureDate,
+        procedureDatetime,
+        procedureEndDate,
+        procedureEndDatetime,
+        procedureTypeConceptId,
+        visitOccurrenceId,
+        providerId,
+        procedureSourceValue,
+        procedureSourceConceptId,
+        additionalProperties
+      );
+    }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("procedure_occurrence_id") ||
+        key.equalsIgnoreCase("person_id") ||
+        key.equalsIgnoreCase("procedure_concept_id") ||
+        key.equalsIgnoreCase("procedure_date") ||
+        key.equalsIgnoreCase("procedure_datetime") ||
+        key.equalsIgnoreCase("procedure_end_date") ||
+        key.equalsIgnoreCase("procedure_end_datetime") ||
+        key.equalsIgnoreCase("procedure_type_concept_id") ||
+        key.equalsIgnoreCase("visit_occurrence_id") ||
+        key.equalsIgnoreCase("provider_id") ||
+        key.equalsIgnoreCase("procedure_source_value") ||
+        key.equalsIgnoreCase("procedure_source_concept_id")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

@@ -22,203 +22,233 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = FeedbackRequest.Builder.class)
 public final class FeedbackRequest {
-    private final String text;
 
-    private final ExtractCodesResult receivedResult;
+  private final String text;
 
-    private final ExtractCodesResult expectedResult;
+  private final ExtractCodesResult receivedResult;
 
-    private final Optional<String> detail;
+  private final ExtractCodesResult expectedResult;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> detail;
 
-    private FeedbackRequest(
-            String text,
-            ExtractCodesResult receivedResult,
-            ExtractCodesResult expectedResult,
-            Optional<String> detail,
-            Map<String, Object> additionalProperties) {
-        this.text = text;
-        this.receivedResult = receivedResult;
-        this.expectedResult = expectedResult;
-        this.detail = detail;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private FeedbackRequest(
+    String text,
+    ExtractCodesResult receivedResult,
+    ExtractCodesResult expectedResult,
+    Optional<String> detail,
+    Map<String, Object> additionalProperties
+  ) {
+    this.text = text;
+    this.receivedResult = receivedResult;
+    this.expectedResult = expectedResult;
+    this.detail = detail;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return The natural language text that was used for code extraction
+   */
+  @JsonProperty("text")
+  public String getText() {
+    return text;
+  }
+
+  @JsonProperty("received_result")
+  public ExtractCodesResult getReceivedResult() {
+    return receivedResult;
+  }
+
+  @JsonProperty("expected_result")
+  public ExtractCodesResult getExpectedResult() {
+    return expectedResult;
+  }
+
+  /**
+   * @return Optional details explaining the feedback
+   */
+  @JsonProperty("detail")
+  public Optional<String> getDetail() {
+    return detail;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof FeedbackRequest && equalTo((FeedbackRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(FeedbackRequest other) {
+    return (
+      text.equals(other.text) &&
+      receivedResult.equals(other.receivedResult) &&
+      expectedResult.equals(other.expectedResult) &&
+      detail.equals(other.detail)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.text, this.receivedResult, this.expectedResult, this.detail);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static TextStage builder() {
+    return new Builder();
+  }
+
+  public interface TextStage {
+    /**
+     * <p>The natural language text that was used for code extraction</p>
+     */
+    ReceivedResultStage text(@NotNull String text);
+
+    Builder from(FeedbackRequest other);
+  }
+
+  public interface ReceivedResultStage {
+    ExpectedResultStage receivedResult(@NotNull ExtractCodesResult receivedResult);
+  }
+
+  public interface ExpectedResultStage {
+    _FinalStage expectedResult(@NotNull ExtractCodesResult expectedResult);
+  }
+
+  public interface _FinalStage {
+    FeedbackRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Optional details explaining the feedback</p>
+     */
+    _FinalStage detail(Optional<String> detail);
+
+    _FinalStage detail(String detail);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements TextStage, ReceivedResultStage, ExpectedResultStage, _FinalStage {
+
+    private String text;
+
+    private ExtractCodesResult receivedResult;
+
+    private ExtractCodesResult expectedResult;
+
+    private Optional<String> detail = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(FeedbackRequest other) {
+      text(other.getText());
+      receivedResult(other.getReceivedResult());
+      expectedResult(other.getExpectedResult());
+      detail(other.getDetail());
+      return this;
     }
 
     /**
-     * @return The natural language text that was used for code extraction
+     * <p>The natural language text that was used for code extraction</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("text")
-    public String getText() {
-        return text;
+    @java.lang.Override
+    @JsonSetter("text")
+    public ReceivedResultStage text(@NotNull String text) {
+      this.text = Objects.requireNonNull(text, "text must not be null");
+      return this;
     }
 
-    @JsonProperty("received_result")
-    public ExtractCodesResult getReceivedResult() {
-        return receivedResult;
+    @java.lang.Override
+    @JsonSetter("received_result")
+    public ExpectedResultStage receivedResult(@NotNull ExtractCodesResult receivedResult) {
+      this.receivedResult = Objects.requireNonNull(
+        receivedResult,
+        "receivedResult must not be null"
+      );
+      return this;
     }
 
-    @JsonProperty("expected_result")
-    public ExtractCodesResult getExpectedResult() {
-        return expectedResult;
+    @java.lang.Override
+    @JsonSetter("expected_result")
+    public _FinalStage expectedResult(@NotNull ExtractCodesResult expectedResult) {
+      this.expectedResult = Objects.requireNonNull(
+        expectedResult,
+        "expectedResult must not be null"
+      );
+      return this;
     }
 
     /**
-     * @return Optional details explaining the feedback
+     * <p>Optional details explaining the feedback</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("detail")
-    public Optional<String> getDetail() {
-        return detail;
+    @java.lang.Override
+    public _FinalStage detail(String detail) {
+      this.detail = Optional.ofNullable(detail);
+      return this;
+    }
+
+    /**
+     * <p>Optional details explaining the feedback</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "detail", nulls = Nulls.SKIP)
+    public _FinalStage detail(Optional<String> detail) {
+      this.detail = detail;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof FeedbackRequest && equalTo((FeedbackRequest) other);
+    public FeedbackRequest build() {
+      return new FeedbackRequest(
+        text,
+        receivedResult,
+        expectedResult,
+        detail,
+        additionalProperties
+      );
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(FeedbackRequest other) {
-        return text.equals(other.text)
-                && receivedResult.equals(other.receivedResult)
-                && expectedResult.equals(other.expectedResult)
-                && detail.equals(other.detail);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("text") ||
+        key.equalsIgnoreCase("received_result") ||
+        key.equalsIgnoreCase("expected_result") ||
+        key.equalsIgnoreCase("detail")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.text, this.receivedResult, this.expectedResult, this.detail);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static TextStage builder() {
-        return new Builder();
-    }
-
-    public interface TextStage {
-        /**
-         * <p>The natural language text that was used for code extraction</p>
-         */
-        ReceivedResultStage text(@NotNull String text);
-
-        Builder from(FeedbackRequest other);
-    }
-
-    public interface ReceivedResultStage {
-        ExpectedResultStage receivedResult(@NotNull ExtractCodesResult receivedResult);
-    }
-
-    public interface ExpectedResultStage {
-        _FinalStage expectedResult(@NotNull ExtractCodesResult expectedResult);
-    }
-
-    public interface _FinalStage {
-        FeedbackRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Optional details explaining the feedback</p>
-         */
-        _FinalStage detail(Optional<String> detail);
-
-        _FinalStage detail(String detail);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements TextStage, ReceivedResultStage, ExpectedResultStage, _FinalStage {
-        private String text;
-
-        private ExtractCodesResult receivedResult;
-
-        private ExtractCodesResult expectedResult;
-
-        private Optional<String> detail = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(FeedbackRequest other) {
-            text(other.getText());
-            receivedResult(other.getReceivedResult());
-            expectedResult(other.getExpectedResult());
-            detail(other.getDetail());
-            return this;
-        }
-
-        /**
-         * <p>The natural language text that was used for code extraction</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("text")
-        public ReceivedResultStage text(@NotNull String text) {
-            this.text = Objects.requireNonNull(text, "text must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("received_result")
-        public ExpectedResultStage receivedResult(@NotNull ExtractCodesResult receivedResult) {
-            this.receivedResult = Objects.requireNonNull(receivedResult, "receivedResult must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("expected_result")
-        public _FinalStage expectedResult(@NotNull ExtractCodesResult expectedResult) {
-            this.expectedResult = Objects.requireNonNull(expectedResult, "expectedResult must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Optional details explaining the feedback</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage detail(String detail) {
-            this.detail = Optional.ofNullable(detail);
-            return this;
-        }
-
-        /**
-         * <p>Optional details explaining the feedback</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "detail", nulls = Nulls.SKIP)
-        public _FinalStage detail(Optional<String> detail) {
-            this.detail = detail;
-            return this;
-        }
-
-        @java.lang.Override
-        public FeedbackRequest build() {
-            return new FeedbackRequest(text, receivedResult, expectedResult, detail, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

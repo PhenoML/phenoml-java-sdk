@@ -22,282 +22,319 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = FhirImplementationGuide.Builder.class)
 public final class FhirImplementationGuide {
-    private final Optional<String> id;
 
-    private final String url;
+  private final Optional<String> id;
 
-    private final String version;
+  private final String url;
 
-    private final Optional<String> name;
+  private final String version;
 
-    private final Optional<String> status;
+  private final Optional<String> name;
 
-    private final Optional<String> packageId;
+  private final Optional<String> status;
 
-    private final Optional<List<String>> fhirVersion;
+  private final Optional<String> packageId;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<String>> fhirVersion;
 
-    private FhirImplementationGuide(
-            Optional<String> id,
-            String url,
-            String version,
-            Optional<String> name,
-            Optional<String> status,
-            Optional<String> packageId,
-            Optional<List<String>> fhirVersion,
-            Map<String, Object> additionalProperties) {
-        this.id = id;
-        this.url = url;
-        this.version = version;
-        this.name = name;
-        this.status = status;
-        this.packageId = packageId;
-        this.fhirVersion = fhirVersion;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
-    @JsonProperty("resourceType")
-    public String getResourceType() {
-        return "ImplementationGuide";
-    }
+  private FhirImplementationGuide(
+    Optional<String> id,
+    String url,
+    String version,
+    Optional<String> name,
+    Optional<String> status,
+    Optional<String> packageId,
+    Optional<List<String>> fhirVersion,
+    Map<String, Object> additionalProperties
+  ) {
+    this.id = id;
+    this.url = url;
+    this.version = version;
+    this.name = name;
+    this.status = status;
+    this.packageId = packageId;
+    this.fhirVersion = fhirVersion;
+    this.additionalProperties = additionalProperties;
+  }
 
-    @JsonProperty("id")
-    public Optional<String> getId() {
-        return id;
-    }
+  @JsonProperty("resourceType")
+  public String getResourceType() {
+    return "ImplementationGuide";
+  }
 
-    @JsonProperty("url")
-    public String getUrl() {
-        return url;
-    }
+  @JsonProperty("id")
+  public Optional<String> getId() {
+    return id;
+  }
 
-    @JsonProperty("version")
-    public String getVersion() {
-        return version;
-    }
+  @JsonProperty("url")
+  public String getUrl() {
+    return url;
+  }
 
-    @JsonProperty("name")
-    public Optional<String> getName() {
-        return name;
-    }
+  @JsonProperty("version")
+  public String getVersion() {
+    return version;
+  }
 
-    @JsonProperty("status")
-    public Optional<String> getStatus() {
-        return status;
-    }
+  @JsonProperty("name")
+  public Optional<String> getName() {
+    return name;
+  }
 
-    @JsonProperty("packageId")
-    public Optional<String> getPackageId() {
-        return packageId;
-    }
+  @JsonProperty("status")
+  public Optional<String> getStatus() {
+    return status;
+  }
 
-    @JsonProperty("fhirVersion")
-    public Optional<List<String>> getFhirVersion() {
-        return fhirVersion;
+  @JsonProperty("packageId")
+  public Optional<String> getPackageId() {
+    return packageId;
+  }
+
+  @JsonProperty("fhirVersion")
+  public Optional<List<String>> getFhirVersion() {
+    return fhirVersion;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof FhirImplementationGuide && equalTo((FhirImplementationGuide) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(FhirImplementationGuide other) {
+    return (
+      id.equals(other.id) &&
+      url.equals(other.url) &&
+      version.equals(other.version) &&
+      name.equals(other.name) &&
+      status.equals(other.status) &&
+      packageId.equals(other.packageId) &&
+      fhirVersion.equals(other.fhirVersion)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.id,
+      this.url,
+      this.version,
+      this.name,
+      this.status,
+      this.packageId,
+      this.fhirVersion
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static UrlStage builder() {
+    return new Builder();
+  }
+
+  public interface UrlStage {
+    VersionStage url(@NotNull String url);
+
+    Builder from(FhirImplementationGuide other);
+  }
+
+  public interface VersionStage {
+    _FinalStage version(@NotNull String version);
+  }
+
+  public interface _FinalStage {
+    FhirImplementationGuide build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    _FinalStage id(Optional<String> id);
+
+    _FinalStage id(String id);
+
+    _FinalStage name(Optional<String> name);
+
+    _FinalStage name(String name);
+
+    _FinalStage status(Optional<String> status);
+
+    _FinalStage status(String status);
+
+    _FinalStage packageId(Optional<String> packageId);
+
+    _FinalStage packageId(String packageId);
+
+    _FinalStage fhirVersion(Optional<List<String>> fhirVersion);
+
+    _FinalStage fhirVersion(List<String> fhirVersion);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements UrlStage, VersionStage, _FinalStage {
+
+    private String url;
+
+    private String version;
+
+    private Optional<List<String>> fhirVersion = Optional.empty();
+
+    private Optional<String> packageId = Optional.empty();
+
+    private Optional<String> status = Optional.empty();
+
+    private Optional<String> name = Optional.empty();
+
+    private Optional<String> id = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(FhirImplementationGuide other) {
+      id(other.getId());
+      url(other.getUrl());
+      version(other.getVersion());
+      name(other.getName());
+      status(other.getStatus());
+      packageId(other.getPackageId());
+      fhirVersion(other.getFhirVersion());
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof FhirImplementationGuide && equalTo((FhirImplementationGuide) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(FhirImplementationGuide other) {
-        return id.equals(other.id)
-                && url.equals(other.url)
-                && version.equals(other.version)
-                && name.equals(other.name)
-                && status.equals(other.status)
-                && packageId.equals(other.packageId)
-                && fhirVersion.equals(other.fhirVersion);
+    @JsonSetter("url")
+    public VersionStage url(@NotNull String url) {
+      this.url = Objects.requireNonNull(url, "url must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.id, this.url, this.version, this.name, this.status, this.packageId, this.fhirVersion);
+    @JsonSetter("version")
+    public _FinalStage version(@NotNull String version) {
+      this.version = Objects.requireNonNull(version, "version must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public _FinalStage fhirVersion(List<String> fhirVersion) {
+      this.fhirVersion = Optional.ofNullable(fhirVersion);
+      return this;
     }
 
-    public static UrlStage builder() {
-        return new Builder();
+    @java.lang.Override
+    @JsonSetter(value = "fhirVersion", nulls = Nulls.SKIP)
+    public _FinalStage fhirVersion(Optional<List<String>> fhirVersion) {
+      this.fhirVersion = fhirVersion;
+      return this;
     }
 
-    public interface UrlStage {
-        VersionStage url(@NotNull String url);
-
-        Builder from(FhirImplementationGuide other);
+    @java.lang.Override
+    public _FinalStage packageId(String packageId) {
+      this.packageId = Optional.ofNullable(packageId);
+      return this;
     }
 
-    public interface VersionStage {
-        _FinalStage version(@NotNull String version);
+    @java.lang.Override
+    @JsonSetter(value = "packageId", nulls = Nulls.SKIP)
+    public _FinalStage packageId(Optional<String> packageId) {
+      this.packageId = packageId;
+      return this;
     }
 
-    public interface _FinalStage {
-        FhirImplementationGuide build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        _FinalStage id(Optional<String> id);
-
-        _FinalStage id(String id);
-
-        _FinalStage name(Optional<String> name);
-
-        _FinalStage name(String name);
-
-        _FinalStage status(Optional<String> status);
-
-        _FinalStage status(String status);
-
-        _FinalStage packageId(Optional<String> packageId);
-
-        _FinalStage packageId(String packageId);
-
-        _FinalStage fhirVersion(Optional<List<String>> fhirVersion);
-
-        _FinalStage fhirVersion(List<String> fhirVersion);
+    @java.lang.Override
+    public _FinalStage status(String status) {
+      this.status = Optional.ofNullable(status);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements UrlStage, VersionStage, _FinalStage {
-        private String url;
-
-        private String version;
-
-        private Optional<List<String>> fhirVersion = Optional.empty();
-
-        private Optional<String> packageId = Optional.empty();
-
-        private Optional<String> status = Optional.empty();
-
-        private Optional<String> name = Optional.empty();
-
-        private Optional<String> id = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(FhirImplementationGuide other) {
-            id(other.getId());
-            url(other.getUrl());
-            version(other.getVersion());
-            name(other.getName());
-            status(other.getStatus());
-            packageId(other.getPackageId());
-            fhirVersion(other.getFhirVersion());
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("url")
-        public VersionStage url(@NotNull String url) {
-            this.url = Objects.requireNonNull(url, "url must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("version")
-        public _FinalStage version(@NotNull String version) {
-            this.version = Objects.requireNonNull(version, "version must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage fhirVersion(List<String> fhirVersion) {
-            this.fhirVersion = Optional.ofNullable(fhirVersion);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "fhirVersion", nulls = Nulls.SKIP)
-        public _FinalStage fhirVersion(Optional<List<String>> fhirVersion) {
-            this.fhirVersion = fhirVersion;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage packageId(String packageId) {
-            this.packageId = Optional.ofNullable(packageId);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "packageId", nulls = Nulls.SKIP)
-        public _FinalStage packageId(Optional<String> packageId) {
-            this.packageId = packageId;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage status(String status) {
-            this.status = Optional.ofNullable(status);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "status", nulls = Nulls.SKIP)
-        public _FinalStage status(Optional<String> status) {
-            this.status = status;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage name(String name) {
-            this.name = Optional.ofNullable(name);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "name", nulls = Nulls.SKIP)
-        public _FinalStage name(Optional<String> name) {
-            this.name = name;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage id(String id) {
-            this.id = Optional.ofNullable(id);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "id", nulls = Nulls.SKIP)
-        public _FinalStage id(Optional<String> id) {
-            this.id = id;
-            return this;
-        }
-
-        @java.lang.Override
-        public FhirImplementationGuide build() {
-            return new FhirImplementationGuide(
-                    id, url, version, name, status, packageId, fhirVersion, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    @java.lang.Override
+    @JsonSetter(value = "status", nulls = Nulls.SKIP)
+    public _FinalStage status(Optional<String> status) {
+      this.status = status;
+      return this;
     }
+
+    @java.lang.Override
+    public _FinalStage name(String name) {
+      this.name = Optional.ofNullable(name);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(value = "name", nulls = Nulls.SKIP)
+    public _FinalStage name(Optional<String> name) {
+      this.name = name;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage id(String id) {
+      this.id = Optional.ofNullable(id);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(value = "id", nulls = Nulls.SKIP)
+    public _FinalStage id(Optional<String> id) {
+      this.id = id;
+      return this;
+    }
+
+    @java.lang.Override
+    public FhirImplementationGuide build() {
+      return new FhirImplementationGuide(
+        id,
+        url,
+        version,
+        name,
+        status,
+        packageId,
+        fhirVersion,
+        additionalProperties
+      );
+    }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("resourceType") ||
+        key.equalsIgnoreCase("id") ||
+        key.equalsIgnoreCase("url") ||
+        key.equalsIgnoreCase("version") ||
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("status") ||
+        key.equalsIgnoreCase("packageId") ||
+        key.equalsIgnoreCase("fhirVersion")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
+    }
+
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

@@ -37,170 +37,221 @@ import okhttp3.ResponseBody;
 import org.jetbrains.annotations.NotNull;
 
 public class AsyncRawVoiceClient {
-    protected final ClientOptions clientOptions;
 
-    public AsyncRawVoiceClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
+  protected final ClientOptions clientOptions;
+
+  public AsyncRawVoiceClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+  }
+
+  /**
+   * Transcribes an uploaded audio recording and returns the transcript.
+   * Send the raw audio bytes as the request body; the audio format is
+   * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
+   * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
+   * minutes of audio per request. This duration limit is independent of file
+   * size or format, so a compressed recording within the body-size limit can
+   * still be rejected for being too long. Pair the transcript with a
+   * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
+   * FHIR resource.</p>
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> transcribe(byte[] body) {
+    return transcribe(TranscribeRequest.builder().body(body).build());
+  }
+
+  /**
+   * Transcribes an uploaded audio recording and returns the transcript.
+   * Send the raw audio bytes as the request body; the audio format is
+   * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
+   * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
+   * minutes of audio per request. This duration limit is independent of file
+   * size or format, so a compressed recording within the body-size limit can
+   * still be rejected for being too long. Pair the transcript with a
+   * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
+   * FHIR resource.</p>
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> transcribe(
+    byte[] body,
+    RequestOptions requestOptions
+  ) {
+    return transcribe(TranscribeRequest.builder().body(body).build(), requestOptions);
+  }
+
+  /**
+   * Transcribes an uploaded audio recording and returns the transcript.
+   * Send the raw audio bytes as the request body; the audio format is
+   * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
+   * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
+   * minutes of audio per request. This duration limit is independent of file
+   * size or format, so a compressed recording within the body-size limit can
+   * still be rejected for being too long. Pair the transcript with a
+   * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
+   * FHIR resource.</p>
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> transcribe(
+    TranscribeRequest request
+  ) {
+    return transcribe(request, null);
+  }
+
+  /**
+   * Transcribes an uploaded audio recording and returns the transcript.
+   * Send the raw audio bytes as the request body; the audio format is
+   * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
+   * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
+   * minutes of audio per request. This duration limit is independent of file
+   * size or format, so a compressed recording within the body-size limit can
+   * still be rejected for being too long. Pair the transcript with a
+   * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
+   * FHIR resource.</p>
+   */
+  public CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> transcribe(
+    TranscribeRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("transcribe");
+    if (request.getLanguage().isPresent()) {
+      QueryStringMapper.addQueryParameter(httpUrl, "language", request.getLanguage().get(), true);
     }
-
-    /**
-     * Transcribes an uploaded audio recording and returns the transcript.
-     * Send the raw audio bytes as the request body; the audio format is
-     * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
-     * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
-     * minutes of audio per request. This duration limit is independent of file
-     * size or format, so a compressed recording within the body-size limit can
-     * still be rejected for being too long. Pair the transcript with a
-     * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
-     * FHIR resource.</p>
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> transcribe(byte[] body) {
-        return transcribe(TranscribeRequest.builder().body(body).build());
-    }
-
-    /**
-     * Transcribes an uploaded audio recording and returns the transcript.
-     * Send the raw audio bytes as the request body; the audio format is
-     * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
-     * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
-     * minutes of audio per request. This duration limit is independent of file
-     * size or format, so a compressed recording within the body-size limit can
-     * still be rejected for being too long. Pair the transcript with a
-     * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
-     * FHIR resource.</p>
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> transcribe(
-            byte[] body, RequestOptions requestOptions) {
-        return transcribe(TranscribeRequest.builder().body(body).build(), requestOptions);
-    }
-
-    /**
-     * Transcribes an uploaded audio recording and returns the transcript.
-     * Send the raw audio bytes as the request body; the audio format is
-     * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
-     * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
-     * minutes of audio per request. This duration limit is independent of file
-     * size or format, so a compressed recording within the body-size limit can
-     * still be rejected for being too long. Pair the transcript with a
-     * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
-     * FHIR resource.</p>
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> transcribe(TranscribeRequest request) {
-        return transcribe(request, null);
-    }
-
-    /**
-     * Transcribes an uploaded audio recording and returns the transcript.
-     * Send the raw audio bytes as the request body; the audio format is
-     * detected automatically (WAV, FLAC, MP3, OGG/WebM Opus).
-     * <p>The raw audio request body is limited to 32 MiB. Supports up to ~5
-     * minutes of audio per request. This duration limit is independent of file
-     * size or format, so a compressed recording within the body-size limit can
-     * still be rejected for being too long. Pair the transcript with a
-     * downstream text step (e.g. <code>POST /lang2fhir/create</code>) to turn it into a
-     * FHIR resource.</p>
-     */
-    public CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> transcribe(
-            TranscribeRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("transcribe");
-        if (request.getLanguage().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "language", request.getLanguage().get(), true);
-        }
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body = new InputStreamRequestBody(
-                MediaType.parse("application/octet-stream"), new ByteArrayInputStream(request.getBody()));
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/octet-stream")
-                .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-                    if (response.isSuccessful()) {
-                        future.complete(new PhenomlClientHttpResponse<>(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TranscribeResponse.class),
-                                response));
-                        return;
-                    }
-                    try {
-                        switch (response.code()) {
-                            case 400:
-                                future.completeExceptionally(new BadRequestError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 401:
-                                future.completeExceptionally(new UnauthorizedError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 402:
-                                future.completeExceptionally(new PaymentRequiredError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 502:
-                                future.completeExceptionally(new BadGatewayError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 503:
-                                future.completeExceptionally(new ServiceUnavailableError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                            case 504:
-                                future.completeExceptionally(new GatewayTimeoutError(
-                                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
-                                        response));
-                                return;
-                        }
-                    } catch (JsonProcessingException ignored) {
-                        // unable to map error response, throwing generic error
-                    }
-                    Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-                    future.completeExceptionally(new PhenomlClientApiException(
-                            "Error with status code " + response.code(), response.code(), errorBody, response));
-                    return;
-                } catch (JsonProcessingException e) {
-                    future.completeExceptionally(
-                            new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e));
-                } catch (IOException e) {
-                    future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
-            }
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
         });
-        return future;
     }
+    RequestBody body = new InputStreamRequestBody(
+      MediaType.parse("application/octet-stream"),
+      new ByteArrayInputStream(request.getBody())
+    );
+    Request.Builder _requestBuilder = new Request.Builder()
+      .url(httpUrl.build())
+      .method("POST", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/octet-stream")
+      .addHeader("Accept", "application/json");
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> future =
+      new CompletableFuture<>();
+    RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+    okhttpCall.enqueue(
+      new Callback() {
+        @Override
+        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+          try (ResponseBody responseBody = response.body()) {
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+              future.complete(
+                new PhenomlClientHttpResponse<>(
+                  ObjectMappers.JSON_MAPPER.readValue(responseBodyString, TranscribeResponse.class),
+                  response
+                )
+              );
+              return;
+            }
+            try {
+              switch (response.code()) {
+                case 400:
+                  future.completeExceptionally(
+                    new BadRequestError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 401:
+                  future.completeExceptionally(
+                    new UnauthorizedError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 402:
+                  future.completeExceptionally(
+                    new PaymentRequiredError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 502:
+                  future.completeExceptionally(
+                    new BadGatewayError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 503:
+                  future.completeExceptionally(
+                    new ServiceUnavailableError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+                case 504:
+                  future.completeExceptionally(
+                    new GatewayTimeoutError(
+                      ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+                      response
+                    )
+                  );
+                  return;
+              }
+            } catch (JsonProcessingException ignored) {
+              // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            future.completeExceptionally(
+              new PhenomlClientApiException(
+                "Error with status code " + response.code(),
+                response.code(),
+                errorBody,
+                response
+              )
+            );
+            return;
+          } catch (JsonProcessingException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e)
+            );
+          } catch (IOException e) {
+            future.completeExceptionally(
+              new PhenomlClientException("Network error executing HTTP request", e)
+            );
+          }
+        }
+
+        @Override
+        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+          future.completeExceptionally(
+            new PhenomlClientException("Network error executing HTTP request", e)
+          );
+        }
+      }
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        okhttpCall.cancel();
+      }
+    });
+    return future;
+  }
 }

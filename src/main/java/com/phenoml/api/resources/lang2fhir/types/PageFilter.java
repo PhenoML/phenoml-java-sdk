@@ -19,110 +19,119 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PageFilter.Builder.class)
 public final class PageFilter {
-    private final String context;
 
-    private final Map<String, Object> additionalProperties;
+  private final String context;
 
-    private PageFilter(String context, Map<String, Object> additionalProperties) {
-        this.context = context;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private PageFilter(String context, Map<String, Object> additionalProperties) {
+    this.context = context;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Natural-language description of what IS relevant to the extraction goal. Pages that do not match are dropped from downstream FHIR extraction.
+   */
+  @JsonProperty("context")
+  public String getContext() {
+    return context;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof PageFilter && equalTo((PageFilter) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(PageFilter other) {
+    return context.equals(other.context);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.context);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static ContextStage builder() {
+    return new Builder();
+  }
+
+  public interface ContextStage {
+    /**
+     * <p>Natural-language description of what IS relevant to the extraction goal. Pages that do not match are dropped from downstream FHIR extraction.</p>
+     */
+    _FinalStage context(@NotNull String context);
+
+    Builder from(PageFilter other);
+  }
+
+  public interface _FinalStage {
+    PageFilter build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements ContextStage, _FinalStage {
+
+    private String context;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(PageFilter other) {
+      context(other.getContext());
+      return this;
     }
 
     /**
-     * @return Natural-language description of what IS relevant to the extraction goal. Pages that do not match are dropped from downstream FHIR extraction.
+     * <p>Natural-language description of what IS relevant to the extraction goal. Pages that do not match are dropped from downstream FHIR extraction.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("context")
-    public String getContext() {
-        return context;
+    @java.lang.Override
+    @JsonSetter("context")
+    public _FinalStage context(@NotNull String context) {
+      this.context = Objects.requireNonNull(context, "context must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof PageFilter && equalTo((PageFilter) other);
+    public PageFilter build() {
+      return new PageFilter(context, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(PageFilter other) {
-        return context.equals(other.context);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.context);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("context")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static ContextStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface ContextStage {
-        /**
-         * <p>Natural-language description of what IS relevant to the extraction goal. Pages that do not match are dropped from downstream FHIR extraction.</p>
-         */
-        _FinalStage context(@NotNull String context);
-
-        Builder from(PageFilter other);
-    }
-
-    public interface _FinalStage {
-        PageFilter build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements ContextStage, _FinalStage {
-        private String context;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(PageFilter other) {
-            context(other.getContext());
-            return this;
-        }
-
-        /**
-         * <p>Natural-language description of what IS relevant to the extraction goal. Pages that do not match are dropped from downstream FHIR extraction.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("context")
-        public _FinalStage context(@NotNull String context) {
-            this.context = Objects.requireNonNull(context, "context must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public PageFilter build() {
-            return new PageFilter(context, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

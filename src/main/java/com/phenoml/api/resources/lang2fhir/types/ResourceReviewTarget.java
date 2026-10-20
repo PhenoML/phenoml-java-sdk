@@ -22,154 +22,164 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ResourceReviewTarget.Builder.class)
 public final class ResourceReviewTarget {
-    private final String resourceType;
 
-    private final Optional<List<ResourceReviewTargetFieldsItem>> fields;
+  private final String resourceType;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<ResourceReviewTargetFieldsItem>> fields;
 
-    private ResourceReviewTarget(
-            String resourceType,
-            Optional<List<ResourceReviewTargetFieldsItem>> fields,
-            Map<String, Object> additionalProperties) {
-        this.resourceType = resourceType;
-        this.fields = fields;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ResourceReviewTarget(
+    String resourceType,
+    Optional<List<ResourceReviewTargetFieldsItem>> fields,
+    Map<String, Object> additionalProperties
+  ) {
+    this.resourceType = resourceType;
+    this.fields = fields;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return FHIR resourceType to audit (e.g. Condition, Procedure, Observation, Encounter, MedicationRequest), matched against each generated resource's resourceType. Patient is not supported.
+   */
+  @JsonProperty("resource_type")
+  public String getResourceType() {
+    return resourceType;
+  }
+
+  /**
+   * @return Field kinds to check for this resource type. Defaults to [&quot;dates&quot;] when omitted; use &quot;codes&quot; to audit clinical code concepts.
+   */
+  @JsonProperty("fields")
+  public Optional<List<ResourceReviewTargetFieldsItem>> getFields() {
+    return fields;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ResourceReviewTarget && equalTo((ResourceReviewTarget) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ResourceReviewTarget other) {
+    return resourceType.equals(other.resourceType) && fields.equals(other.fields);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.resourceType, this.fields);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static ResourceTypeStage builder() {
+    return new Builder();
+  }
+
+  public interface ResourceTypeStage {
+    /**
+     * <p>FHIR resourceType to audit (e.g. Condition, Procedure, Observation, Encounter, MedicationRequest), matched against each generated resource's resourceType. Patient is not supported.</p>
+     */
+    _FinalStage resourceType(@NotNull String resourceType);
+
+    Builder from(ResourceReviewTarget other);
+  }
+
+  public interface _FinalStage {
+    ResourceReviewTarget build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Field kinds to check for this resource type. Defaults to [&quot;dates&quot;] when omitted; use &quot;codes&quot; to audit clinical code concepts.</p>
+     */
+    _FinalStage fields(Optional<List<ResourceReviewTargetFieldsItem>> fields);
+
+    _FinalStage fields(List<ResourceReviewTargetFieldsItem> fields);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements ResourceTypeStage, _FinalStage {
+
+    private String resourceType;
+
+    private Optional<List<ResourceReviewTargetFieldsItem>> fields = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(ResourceReviewTarget other) {
+      resourceType(other.getResourceType());
+      fields(other.getFields());
+      return this;
     }
 
     /**
-     * @return FHIR resourceType to audit (e.g. Condition, Procedure, Observation, Encounter, MedicationRequest), matched against each generated resource's resourceType. Patient is not supported.
+     * <p>FHIR resourceType to audit (e.g. Condition, Procedure, Observation, Encounter, MedicationRequest), matched against each generated resource's resourceType. Patient is not supported.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("resource_type")
-    public String getResourceType() {
-        return resourceType;
+    @java.lang.Override
+    @JsonSetter("resource_type")
+    public _FinalStage resourceType(@NotNull String resourceType) {
+      this.resourceType = Objects.requireNonNull(resourceType, "resourceType must not be null");
+      return this;
     }
 
     /**
-     * @return Field kinds to check for this resource type. Defaults to [&quot;dates&quot;] when omitted; use &quot;codes&quot; to audit clinical code concepts.
+     * <p>Field kinds to check for this resource type. Defaults to [&quot;dates&quot;] when omitted; use &quot;codes&quot; to audit clinical code concepts.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("fields")
-    public Optional<List<ResourceReviewTargetFieldsItem>> getFields() {
-        return fields;
+    @java.lang.Override
+    public _FinalStage fields(List<ResourceReviewTargetFieldsItem> fields) {
+      this.fields = Optional.ofNullable(fields);
+      return this;
+    }
+
+    /**
+     * <p>Field kinds to check for this resource type. Defaults to [&quot;dates&quot;] when omitted; use &quot;codes&quot; to audit clinical code concepts.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "fields", nulls = Nulls.SKIP)
+    public _FinalStage fields(Optional<List<ResourceReviewTargetFieldsItem>> fields) {
+      this.fields = fields;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ResourceReviewTarget && equalTo((ResourceReviewTarget) other);
+    public ResourceReviewTarget build() {
+      return new ResourceReviewTarget(resourceType, fields, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(ResourceReviewTarget other) {
-        return resourceType.equals(other.resourceType) && fields.equals(other.fields);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.resourceType, this.fields);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("resource_type") || key.equalsIgnoreCase("fields")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static ResourceTypeStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface ResourceTypeStage {
-        /**
-         * <p>FHIR resourceType to audit (e.g. Condition, Procedure, Observation, Encounter, MedicationRequest), matched against each generated resource's resourceType. Patient is not supported.</p>
-         */
-        _FinalStage resourceType(@NotNull String resourceType);
-
-        Builder from(ResourceReviewTarget other);
-    }
-
-    public interface _FinalStage {
-        ResourceReviewTarget build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Field kinds to check for this resource type. Defaults to [&quot;dates&quot;] when omitted; use &quot;codes&quot; to audit clinical code concepts.</p>
-         */
-        _FinalStage fields(Optional<List<ResourceReviewTargetFieldsItem>> fields);
-
-        _FinalStage fields(List<ResourceReviewTargetFieldsItem> fields);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements ResourceTypeStage, _FinalStage {
-        private String resourceType;
-
-        private Optional<List<ResourceReviewTargetFieldsItem>> fields = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(ResourceReviewTarget other) {
-            resourceType(other.getResourceType());
-            fields(other.getFields());
-            return this;
-        }
-
-        /**
-         * <p>FHIR resourceType to audit (e.g. Condition, Procedure, Observation, Encounter, MedicationRequest), matched against each generated resource's resourceType. Patient is not supported.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("resource_type")
-        public _FinalStage resourceType(@NotNull String resourceType) {
-            this.resourceType = Objects.requireNonNull(resourceType, "resourceType must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Field kinds to check for this resource type. Defaults to [&quot;dates&quot;] when omitted; use &quot;codes&quot; to audit clinical code concepts.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage fields(List<ResourceReviewTargetFieldsItem> fields) {
-            this.fields = Optional.ofNullable(fields);
-            return this;
-        }
-
-        /**
-         * <p>Field kinds to check for this resource type. Defaults to [&quot;dates&quot;] when omitted; use &quot;codes&quot; to audit clinical code concepts.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "fields", nulls = Nulls.SKIP)
-        public _FinalStage fields(Optional<List<ResourceReviewTargetFieldsItem>> fields) {
-            this.fields = fields;
-            return this;
-        }
-
-        @java.lang.Override
-        public ResourceReviewTarget build() {
-            return new ResourceReviewTarget(resourceType, fields, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

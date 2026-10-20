@@ -1,0 +1,68 @@
+{
+  "system": {
+    "name": "SNOMED_CT_US_LITE",
+    "version": "20240901"
+  },
+  "codes": [
+    {
+      "code": "29857009",
+      "description": "Chest pain",
+      "valid": true,
+      "reason": "Patient presents with chest pain radiating to left arm",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "chest pain radiating to left arm",
+          "begin_offset": 31,
+          "end_offset": 63
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    },
+    {
+      "code": "267036007",
+      "description": "Dyspnea",
+      "valid": true,
+      "reason": "Patient reports shortness of breath",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "shortness of breath",
+          "begin_offset": 65,
+          "end_offset": 84
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    },
+    {
+      "code": "415690000",
+      "description": "Sweating",
+      "valid": true,
+      "reason": "Diaphoresis noted on presentation",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "diaphoresis",
+          "begin_offset": 90,
+          "end_offset": 101
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    }
+  ]
+}

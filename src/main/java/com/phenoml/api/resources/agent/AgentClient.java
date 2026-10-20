@@ -18,131 +18,140 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class AgentClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawAgentClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    protected final Supplier<ChatClient> chatClient;
+  private final RawAgentClient rawClient;
 
-    protected final Supplier<PromptsClient> promptsClient;
+  protected final Supplier<ChatClient> chatClient;
 
-    public AgentClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawAgentClient(clientOptions);
-        this.chatClient = Suppliers.memoize(() -> new ChatClient(clientOptions));
-        this.promptsClient = Suppliers.memoize(() -> new PromptsClient(clientOptions));
-    }
+  protected final Supplier<PromptsClient> promptsClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawAgentClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AgentClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawAgentClient(clientOptions);
+    this.chatClient = Suppliers.memoize(() -> new ChatClient(clientOptions));
+    this.promptsClient = Suppliers.memoize(() -> new PromptsClient(clientOptions));
+  }
 
-    /**
-     * Creates a new PhenoAgent with specified configuration
-     */
-    public AgentResponse create(AgentCreateRequest request) {
-        return this.rawClient.create(request).body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawAgentClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Creates a new PhenoAgent with specified configuration
-     */
-    public AgentResponse create(AgentCreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).body();
-    }
+  /**
+   * Creates a new PhenoAgent with specified configuration
+   */
+  public AgentResponse create(AgentCreateRequest request) {
+    return this.rawClient.create(request).body();
+  }
 
-    /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
-     */
-    public ListResponse list() {
-        return this.rawClient.list().body();
-    }
+  /**
+   * Creates a new PhenoAgent with specified configuration
+   */
+  public AgentResponse create(AgentCreateRequest request, RequestOptions requestOptions) {
+    return this.rawClient.create(request, requestOptions).body();
+  }
 
-    /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
-     */
-    public ListResponse list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).body();
-    }
+  /**
+   * Retrieves a list of PhenoAgents belonging to the authenticated user
+   */
+  public ListResponse list() {
+    return this.rawClient.list().body();
+  }
 
-    /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
-     */
-    public ListResponse list(ListRequest request) {
-        return this.rawClient.list(request).body();
-    }
+  /**
+   * Retrieves a list of PhenoAgents belonging to the authenticated user
+   */
+  public ListResponse list(RequestOptions requestOptions) {
+    return this.rawClient.list(requestOptions).body();
+  }
 
-    /**
-     * Retrieves a list of PhenoAgents belonging to the authenticated user
-     */
-    public ListResponse list(ListRequest request, RequestOptions requestOptions) {
-        return this.rawClient.list(request, requestOptions).body();
-    }
+  /**
+   * Retrieves a list of PhenoAgents belonging to the authenticated user
+   */
+  public ListResponse list(ListRequest request) {
+    return this.rawClient.list(request).body();
+  }
 
-    /**
-     * Retrieves a specific agent by its ID
-     */
-    public AgentResponse get(String id) {
-        return this.rawClient.get(id).body();
-    }
+  /**
+   * Retrieves a list of PhenoAgents belonging to the authenticated user
+   */
+  public ListResponse list(ListRequest request, RequestOptions requestOptions) {
+    return this.rawClient.list(request, requestOptions).body();
+  }
 
-    /**
-     * Retrieves a specific agent by its ID
-     */
-    public AgentResponse get(String id, RequestOptions requestOptions) {
-        return this.rawClient.get(id, requestOptions).body();
-    }
+  /**
+   * Retrieves a specific agent by its ID
+   */
+  public AgentResponse get(String id) {
+    return this.rawClient.get(id).body();
+  }
 
-    /**
-     * Updates an existing agent's configuration
-     */
-    public AgentResponse update(String id, AgentCreateRequest request) {
-        return this.rawClient.update(id, request).body();
-    }
+  /**
+   * Retrieves a specific agent by its ID
+   */
+  public AgentResponse get(String id, RequestOptions requestOptions) {
+    return this.rawClient.get(id, requestOptions).body();
+  }
 
-    /**
-     * Updates an existing agent's configuration
-     */
-    public AgentResponse update(String id, AgentCreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.update(id, request, requestOptions).body();
-    }
+  /**
+   * Updates an existing agent's configuration
+   */
+  public AgentResponse update(String id, AgentCreateRequest request) {
+    return this.rawClient.update(id, request).body();
+  }
 
-    /**
-     * Deletes an existing agent
-     */
-    public DeleteResponse delete(String id) {
-        return this.rawClient.delete(id).body();
-    }
+  /**
+   * Updates an existing agent's configuration
+   */
+  public AgentResponse update(
+    String id,
+    AgentCreateRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.update(id, request, requestOptions).body();
+  }
 
-    /**
-     * Deletes an existing agent
-     */
-    public DeleteResponse delete(String id, RequestOptions requestOptions) {
-        return this.rawClient.delete(id, requestOptions).body();
-    }
+  /**
+   * Deletes an existing agent
+   */
+  public DeleteResponse delete(String id) {
+    return this.rawClient.delete(id).body();
+  }
 
-    /**
-     * Patches an existing agent's configuration
-     */
-    public AgentResponse patch(String id, List<JsonPatchOperation> request) {
-        return this.rawClient.patch(id, request).body();
-    }
+  /**
+   * Deletes an existing agent
+   */
+  public DeleteResponse delete(String id, RequestOptions requestOptions) {
+    return this.rawClient.delete(id, requestOptions).body();
+  }
 
-    /**
-     * Patches an existing agent's configuration
-     */
-    public AgentResponse patch(String id, List<JsonPatchOperation> request, RequestOptions requestOptions) {
-        return this.rawClient.patch(id, request, requestOptions).body();
-    }
+  /**
+   * Patches an existing agent's configuration
+   */
+  public AgentResponse patch(String id, List<JsonPatchOperation> request) {
+    return this.rawClient.patch(id, request).body();
+  }
 
-    public ChatClient chat() {
-        return this.chatClient.get();
-    }
+  /**
+   * Patches an existing agent's configuration
+   */
+  public AgentResponse patch(
+    String id,
+    List<JsonPatchOperation> request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.patch(id, request, requestOptions).body();
+  }
 
-    public PromptsClient prompts() {
-        return this.promptsClient.get();
-    }
+  public ChatClient chat() {
+    return this.chatClient.get();
+  }
+
+  public PromptsClient prompts() {
+    return this.promptsClient.get();
+  }
 }

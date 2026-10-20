@@ -21,213 +21,231 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = GetCodeResponse.Builder.class)
 public final class GetCodeResponse {
-    private final CodeSystemInfo system;
 
-    private final String code;
+  private final CodeSystemInfo system;
 
-    private final String description;
+  private final String code;
 
-    private final Optional<String> definition;
+  private final String description;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> definition;
 
-    private GetCodeResponse(
-            CodeSystemInfo system,
-            String code,
-            String description,
-            Optional<String> definition,
-            Map<String, Object> additionalProperties) {
-        this.system = system;
-        this.code = code;
-        this.description = description;
-        this.definition = definition;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
-    @JsonProperty("system")
-    public CodeSystemInfo getSystem() {
-        return system;
-    }
+  private GetCodeResponse(
+    CodeSystemInfo system,
+    String code,
+    String description,
+    Optional<String> definition,
+    Map<String, Object> additionalProperties
+  ) {
+    this.system = system;
+    this.code = code;
+    this.description = description;
+    this.definition = definition;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("system")
+  public CodeSystemInfo getSystem() {
+    return system;
+  }
+
+  /**
+   * @return The code identifier
+   */
+  @JsonProperty("code")
+  public String getCode() {
+    return code;
+  }
+
+  /**
+   * @return Short description of the code
+   */
+  @JsonProperty("description")
+  public String getDescription() {
+    return description;
+  }
+
+  /**
+   * @return Extended definition of the code (if available)
+   */
+  @JsonProperty("definition")
+  public Optional<String> getDefinition() {
+    return definition;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof GetCodeResponse && equalTo((GetCodeResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(GetCodeResponse other) {
+    return (
+      system.equals(other.system) &&
+      code.equals(other.code) &&
+      description.equals(other.description) &&
+      definition.equals(other.definition)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.system, this.code, this.description, this.definition);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static SystemStage builder() {
+    return new Builder();
+  }
+
+  public interface SystemStage {
+    CodeStage system(@NotNull CodeSystemInfo system);
+
+    Builder from(GetCodeResponse other);
+  }
+
+  public interface CodeStage {
+    /**
+     * <p>The code identifier</p>
+     */
+    DescriptionStage code(@NotNull String code);
+  }
+
+  public interface DescriptionStage {
+    /**
+     * <p>Short description of the code</p>
+     */
+    _FinalStage description(@NotNull String description);
+  }
+
+  public interface _FinalStage {
+    GetCodeResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
     /**
-     * @return The code identifier
+     * <p>Extended definition of the code (if available)</p>
      */
-    @JsonProperty("code")
-    public String getCode() {
-        return code;
-    }
+    _FinalStage definition(Optional<String> definition);
 
-    /**
-     * @return Short description of the code
-     */
-    @JsonProperty("description")
-    public String getDescription() {
-        return description;
-    }
+    _FinalStage definition(String definition);
+  }
 
-    /**
-     * @return Extended definition of the code (if available)
-     */
-    @JsonProperty("definition")
-    public Optional<String> getDefinition() {
-        return definition;
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements SystemStage, CodeStage, DescriptionStage, _FinalStage {
+
+    private CodeSystemInfo system;
+
+    private String code;
+
+    private String description;
+
+    private Optional<String> definition = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(GetCodeResponse other) {
+      system(other.getSystem());
+      code(other.getCode());
+      description(other.getDescription());
+      definition(other.getDefinition());
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof GetCodeResponse && equalTo((GetCodeResponse) other);
+    @JsonSetter("system")
+    public CodeStage system(@NotNull CodeSystemInfo system) {
+      this.system = Objects.requireNonNull(system, "system must not be null");
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    /**
+     * <p>The code identifier</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("code")
+    public DescriptionStage code(@NotNull String code) {
+      this.code = Objects.requireNonNull(code, "code must not be null");
+      return this;
     }
 
-    private boolean equalTo(GetCodeResponse other) {
-        return system.equals(other.system)
-                && code.equals(other.code)
-                && description.equals(other.description)
-                && definition.equals(other.definition);
+    /**
+     * <p>Short description of the code</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("description")
+    public _FinalStage description(@NotNull String description) {
+      this.description = Objects.requireNonNull(description, "description must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Extended definition of the code (if available)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage definition(String definition) {
+      this.definition = Optional.ofNullable(definition);
+      return this;
+    }
+
+    /**
+     * <p>Extended definition of the code (if available)</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "definition", nulls = Nulls.SKIP)
+    public _FinalStage definition(Optional<String> definition) {
+      this.definition = definition;
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.system, this.code, this.description, this.definition);
+    public GetCodeResponse build() {
+      return new GetCodeResponse(system, code, description, definition, additionalProperties);
+    }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("system") ||
+        key.equalsIgnoreCase("code") ||
+        key.equalsIgnoreCase("description") ||
+        key.equalsIgnoreCase("definition")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static SystemStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface SystemStage {
-        CodeStage system(@NotNull CodeSystemInfo system);
-
-        Builder from(GetCodeResponse other);
-    }
-
-    public interface CodeStage {
-        /**
-         * <p>The code identifier</p>
-         */
-        DescriptionStage code(@NotNull String code);
-    }
-
-    public interface DescriptionStage {
-        /**
-         * <p>Short description of the code</p>
-         */
-        _FinalStage description(@NotNull String description);
-    }
-
-    public interface _FinalStage {
-        GetCodeResponse build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Extended definition of the code (if available)</p>
-         */
-        _FinalStage definition(Optional<String> definition);
-
-        _FinalStage definition(String definition);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements SystemStage, CodeStage, DescriptionStage, _FinalStage {
-        private CodeSystemInfo system;
-
-        private String code;
-
-        private String description;
-
-        private Optional<String> definition = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(GetCodeResponse other) {
-            system(other.getSystem());
-            code(other.getCode());
-            description(other.getDescription());
-            definition(other.getDefinition());
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("system")
-        public CodeStage system(@NotNull CodeSystemInfo system) {
-            this.system = Objects.requireNonNull(system, "system must not be null");
-            return this;
-        }
-
-        /**
-         * <p>The code identifier</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("code")
-        public DescriptionStage code(@NotNull String code) {
-            this.code = Objects.requireNonNull(code, "code must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Short description of the code</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("description")
-        public _FinalStage description(@NotNull String description) {
-            this.description = Objects.requireNonNull(description, "description must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Extended definition of the code (if available)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage definition(String definition) {
-            this.definition = Optional.ofNullable(definition);
-            return this;
-        }
-
-        /**
-         * <p>Extended definition of the code (if available)</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "definition", nulls = Nulls.SKIP)
-        public _FinalStage definition(Optional<String> definition) {
-            this.definition = definition;
-            return this;
-        }
-
-        @java.lang.Override
-        public GetCodeResponse build() {
-            return new GetCodeResponse(system, code, description, definition, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

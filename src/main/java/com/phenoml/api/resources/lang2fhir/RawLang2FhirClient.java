@@ -5,6 +5,7 @@ package com.phenoml.api.resources.lang2fhir;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
@@ -42,598 +43,775 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class RawLang2FhirClient {
-    protected final ClientOptions clientOptions;
 
-    public RawLang2FhirClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-    }
+  protected final ClientOptions clientOptions;
 
-    /**
-     * Converts natural language text into a structured FHIR resource.
-     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
-     * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
-     */
-    public PhenomlClientHttpResponse<Map<String, Object>> create(CreateRequest request) {
-        return create(request, null);
-    }
+  public RawLang2FhirClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+  }
 
-    /**
-     * Converts natural language text into a structured FHIR resource.
-     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
-     * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
-     */
-    public PhenomlClientHttpResponse<Map<String, Object>> create(CreateRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/create");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, new TypeReference<Map<String, Object>>() {}),
-                        response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 422:
-                        throw new UnprocessableEntityError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Converts natural language text into a structured FHIR resource.
+   * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
+   * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+   */
+  public PhenomlClientHttpResponse<Map<String, Object>> create(CreateRequest request) {
+    return create(request, null);
+  }
 
-    /**
-     * Analyzes natural language text and extracts multiple FHIR resources, returning them as a transaction Bundle.
-     * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
-     * Resources are linked with proper references (e.g., Conditions reference the Patient).
-     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
-     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
-     */
-    public PhenomlClientHttpResponse<CreateMultiResponse> createMulti(CreateMultiRequest request) {
-        return createMulti(request, null);
+  /**
+   * Converts natural language text into a structured FHIR resource.
+   * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
+   * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+   */
+  public PhenomlClientHttpResponse<Map<String, Object>> create(
+    CreateRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/create");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("POST", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(
+            responseBodyString,
+            new TypeReference<Map<String, Object>>() {}
+          ),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 422:
+            throw new UnprocessableEntityError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Analyzes natural language text and extracts multiple FHIR resources, returning them as a transaction Bundle.
-     * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
-     * Resources are linked with proper references (e.g., Conditions reference the Patient).
-     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
-     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
-     */
-    public PhenomlClientHttpResponse<CreateMultiResponse> createMulti(
-            CreateMultiRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/create/multi");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, CreateMultiResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 422:
-                        throw new UnprocessableEntityError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Analyzes natural language text and extracts multiple FHIR resources, returning them as a transaction Bundle.
+   * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
+   * Resources are linked with proper references (e.g., Conditions reference the Patient).
+   * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
+   * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+   */
+  public PhenomlClientHttpResponse<CreateMultiResponse> createMulti(CreateMultiRequest request) {
+    return createMulti(request, null);
+  }
 
-    /**
-     * Converts natural language text into FHIR search parameters.
-     * Automatically identifies the appropriate FHIR resource type and generates valid search query parameters.
-     * <p>Supported resource types include: AllergyIntolerance, Appointment, CarePlan, CareTeam, Condition,
-     * Coverage, Device, DiagnosticReport, DocumentReference, Encounter, Goal, Immunization, Location,
-     * Medication, MedicationRequest, Observation, Organization, Patient, PlanDefinition, Practitioner,
-     * PractitionerRole, Procedure, Provenance, Questionnaire, QuestionnaireResponse, RelatedPerson,
-     * Schedule, ServiceRequest, Slot, and Specimen.</p>
-     */
-    public PhenomlClientHttpResponse<SearchResponse> search(SearchRequest request) {
-        return search(request, null);
+  /**
+   * Analyzes natural language text and extracts multiple FHIR resources, returning them as a transaction Bundle.
+   * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
+   * Resources are linked with proper references (e.g., Conditions reference the Patient).
+   * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
+   * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+   */
+  public PhenomlClientHttpResponse<CreateMultiResponse> createMulti(
+    CreateMultiRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/create/multi");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("POST", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, CreateMultiResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 422:
+            throw new UnprocessableEntityError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Converts natural language text into FHIR search parameters.
-     * Automatically identifies the appropriate FHIR resource type and generates valid search query parameters.
-     * <p>Supported resource types include: AllergyIntolerance, Appointment, CarePlan, CareTeam, Condition,
-     * Coverage, Device, DiagnosticReport, DocumentReference, Encounter, Goal, Immunization, Location,
-     * Medication, MedicationRequest, Observation, Organization, Patient, PlanDefinition, Practitioner,
-     * PractitionerRole, Procedure, Provenance, Questionnaire, QuestionnaireResponse, RelatedPerson,
-     * Schedule, ServiceRequest, Slot, and Specimen.</p>
-     */
-    public PhenomlClientHttpResponse<SearchResponse> search(SearchRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/search");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SearchResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Converts natural language text into FHIR search parameters.
+   * Automatically identifies the appropriate FHIR resource type and generates valid search query parameters.
+   * <p>Supported resource types include: AllergyIntolerance, Appointment, CarePlan, CareTeam, Condition,
+   * Coverage, Device, DiagnosticReport, DocumentReference, Encounter, Goal, Immunization, Location,
+   * Medication, MedicationRequest, Observation, Organization, Patient, PlanDefinition, Practitioner,
+   * PractitionerRole, Procedure, Provenance, Questionnaire, QuestionnaireResponse, RelatedPerson,
+   * Schedule, ServiceRequest, Slot, and Specimen.</p>
+   */
+  public PhenomlClientHttpResponse<SearchResponse> search(SearchRequest request) {
+    return search(request, null);
+  }
 
-    /**
-     * <strong>Deprecated — use <code>POST /fhir/profiles</code> instead.</strong> This route continues to work
-     * and operates on the same custom profiles, so no migration is required; it
-     * will be removed in a future release. Note that <code>POST /fhir/profiles</code> does not
-     * accept <code>profile_context</code>; set implementation-guide context with
-     * <code>PUT /fhir/implementation-guides/{name}</code>.
-     * <p>Upload a custom FHIR StructureDefinition profile for use with the lang2fhir service.</p>
-     * <p>All metadata is derived from the StructureDefinition JSON itself. The lowercase <code>id</code> field
-     * from the StructureDefinition is used as the profile's unique identifier and lookup key.
-     * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
-     * <p>Uploads will be rejected if:</p>
-     * <ul>
-     * <li>A built-in US Core or R4 base profile already exists with the same id</li>
-     * <li>A custom profile with the same id has already been uploaded</li>
-     * <li>A custom profile with the same url has already been uploaded</li>
-     * </ul>
-     */
-    public PhenomlClientHttpResponse<UploadProfileResponse> uploadProfile(ProfileUploadRequest request) {
-        return uploadProfile(request, null);
+  /**
+   * Converts natural language text into FHIR search parameters.
+   * Automatically identifies the appropriate FHIR resource type and generates valid search query parameters.
+   * <p>Supported resource types include: AllergyIntolerance, Appointment, CarePlan, CareTeam, Condition,
+   * Coverage, Device, DiagnosticReport, DocumentReference, Encounter, Goal, Immunization, Location,
+   * Medication, MedicationRequest, Observation, Organization, Patient, PlanDefinition, Practitioner,
+   * PractitionerRole, Procedure, Provenance, Questionnaire, QuestionnaireResponse, RelatedPerson,
+   * Schedule, ServiceRequest, Slot, and Specimen.</p>
+   */
+  public PhenomlClientHttpResponse<SearchResponse> search(
+    SearchRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/search");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("POST", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SearchResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * <strong>Deprecated — use <code>POST /fhir/profiles</code> instead.</strong> This route continues to work
-     * and operates on the same custom profiles, so no migration is required; it
-     * will be removed in a future release. Note that <code>POST /fhir/profiles</code> does not
-     * accept <code>profile_context</code>; set implementation-guide context with
-     * <code>PUT /fhir/implementation-guides/{name}</code>.
-     * <p>Upload a custom FHIR StructureDefinition profile for use with the lang2fhir service.</p>
-     * <p>All metadata is derived from the StructureDefinition JSON itself. The lowercase <code>id</code> field
-     * from the StructureDefinition is used as the profile's unique identifier and lookup key.
-     * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
-     * <p>Uploads will be rejected if:</p>
-     * <ul>
-     * <li>A built-in US Core or R4 base profile already exists with the same id</li>
-     * <li>A custom profile with the same id has already been uploaded</li>
-     * <li>A custom profile with the same url has already been uploaded</li>
-     * </ul>
-     */
-    public PhenomlClientHttpResponse<UploadProfileResponse> uploadProfile(
-            ProfileUploadRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/profile/upload");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadProfileResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * <strong>Deprecated — use <code>POST /fhir/profiles</code> instead.</strong> This route continues to work
+   * and operates on the same custom profiles, so no migration is required; it
+   * will be removed in a future release. Note that <code>POST /fhir/profiles</code> does not
+   * accept <code>profile_context</code>; set implementation-guide context with
+   * <code>PUT /fhir/implementation-guides/{name}</code>.
+   * <p>Upload a custom FHIR StructureDefinition profile for use with the lang2fhir service.</p>
+   * <p>All metadata is derived from the StructureDefinition JSON itself. The lowercase <code>id</code> field
+   * from the StructureDefinition is used as the profile's unique identifier and lookup key.
+   * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
+   * <p>Uploads will be rejected if:</p>
+   * <ul>
+   * <li>A built-in US Core or R4 base profile already exists with the same id</li>
+   * <li>A custom profile with the same id has already been uploaded</li>
+   * <li>A custom profile with the same url has already been uploaded</li>
+   * </ul>
+   */
+  public PhenomlClientHttpResponse<UploadProfileResponse> uploadProfile(
+    ProfileUploadRequest request
+  ) {
+    return uploadProfile(request, null);
+  }
 
-    /**
-     * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into a structured FHIR resource.
-     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
-     * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
-     */
-    public PhenomlClientHttpResponse<Map<String, Object>> document(DocumentRequest request) {
-        return document(request, null);
+  /**
+   * <strong>Deprecated — use <code>POST /fhir/profiles</code> instead.</strong> This route continues to work
+   * and operates on the same custom profiles, so no migration is required; it
+   * will be removed in a future release. Note that <code>POST /fhir/profiles</code> does not
+   * accept <code>profile_context</code>; set implementation-guide context with
+   * <code>PUT /fhir/implementation-guides/{name}</code>.
+   * <p>Upload a custom FHIR StructureDefinition profile for use with the lang2fhir service.</p>
+   * <p>All metadata is derived from the StructureDefinition JSON itself. The lowercase <code>id</code> field
+   * from the StructureDefinition is used as the profile's unique identifier and lookup key.
+   * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
+   * <p>Uploads will be rejected if:</p>
+   * <ul>
+   * <li>A built-in US Core or R4 base profile already exists with the same id</li>
+   * <li>A custom profile with the same id has already been uploaded</li>
+   * <li>A custom profile with the same url has already been uploaded</li>
+   * </ul>
+   */
+  public PhenomlClientHttpResponse<UploadProfileResponse> uploadProfile(
+    ProfileUploadRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/profile/upload");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("POST", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadProfileResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 403:
+            throw new ForbiddenError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into a structured FHIR resource.
-     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
-     * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
-     */
-    public PhenomlClientHttpResponse<Map<String, Object>> document(
-            DocumentRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/document");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, new TypeReference<Map<String, Object>>() {}),
-                        response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 422:
-                        throw new UnprocessableEntityError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into a structured FHIR resource.
+   * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
+   * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+   */
+  public PhenomlClientHttpResponse<Map<String, Object>> document(DocumentRequest request) {
+    return document(request, null);
+  }
 
-    /**
-     * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into multiple FHIR resources,
-     * returned as a transaction Bundle. Combines document text extraction with multi-resource detection.
-     * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
-     * Resources are linked with proper references (e.g., Conditions reference the Patient).
-     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
-     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
-     * <p><strong>Split classifications (optional).</strong> <code>config.split_classifications</code> is a caller-defined list, not a fixed taxonomy. Choose each classification <code>id</code> and write a natural-language <code>description</code> for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Classifications with <code>operation: &quot;group&quot;</code> keep matching pages and label resources extracted from those pages; classifications with <code>operation: &quot;drop&quot;</code> remove matching pages before extraction. The <code>clinical</code> and <code>admin</code> ids in the example are illustrative, not a fixed set.</p>
-     */
-    public PhenomlClientHttpResponse<DocumentMultiResponse> documentMulti(DocumentMultiRequest request) {
-        return documentMulti(request, null);
+  /**
+   * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into a structured FHIR resource.
+   * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
+   * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+   */
+  public PhenomlClientHttpResponse<Map<String, Object>> document(
+    DocumentRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/document");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("POST", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(
+            responseBodyString,
+            new TypeReference<Map<String, Object>>() {}
+          ),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 403:
+            throw new ForbiddenError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 422:
+            throw new UnprocessableEntityError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into multiple FHIR resources,
-     * returned as a transaction Bundle. Combines document text extraction with multi-resource detection.
-     * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
-     * Resources are linked with proper references (e.g., Conditions reference the Patient).
-     * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
-     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
-     * <p><strong>Split classifications (optional).</strong> <code>config.split_classifications</code> is a caller-defined list, not a fixed taxonomy. Choose each classification <code>id</code> and write a natural-language <code>description</code> for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Classifications with <code>operation: &quot;group&quot;</code> keep matching pages and label resources extracted from those pages; classifications with <code>operation: &quot;drop&quot;</code> remove matching pages before extraction. The <code>clinical</code> and <code>admin</code> ids in the example are illustrative, not a fixed set.</p>
-     */
-    public PhenomlClientHttpResponse<DocumentMultiResponse> documentMulti(
-            DocumentMultiRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/document/multi");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DocumentMultiResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 403:
-                        throw new ForbiddenError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 422:
-                        throw new UnprocessableEntityError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
+  /**
+   * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into multiple FHIR resources,
+   * returned as a transaction Bundle. Combines document text extraction with multi-resource detection.
+   * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
+   * Resources are linked with proper references (e.g., Conditions reference the Patient).
+   * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
+   * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+   * <p><strong>Split classifications (optional).</strong> <code>config.split_classifications</code> is a caller-defined list, not a fixed taxonomy. Choose each classification <code>id</code> and write a natural-language <code>description</code> for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Classifications with <code>operation: &quot;group&quot;</code> keep matching pages and label resources extracted from those pages; classifications with <code>operation: &quot;drop&quot;</code> remove matching pages before extraction. The <code>clinical</code> and <code>admin</code> ids in the example are illustrative, not a fixed set.</p>
+   */
+  public PhenomlClientHttpResponse<DocumentMultiResponse> documentMulti(
+    DocumentMultiRequest request
+  ) {
+    return documentMulti(request, null);
+  }
+
+  /**
+   * Extracts text from a PDF, image, RTF, or XML/C-CDA document and converts it into multiple FHIR resources,
+   * returned as a transaction Bundle. Combines document text extraction with multi-resource detection.
+   * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
+   * Resources are linked with proper references (e.g., Conditions reference the Patient).
+   * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
+   * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+   * <p><strong>Split classifications (optional).</strong> <code>config.split_classifications</code> is a caller-defined list, not a fixed taxonomy. Choose each classification <code>id</code> and write a natural-language <code>description</code> for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Classifications with <code>operation: &quot;group&quot;</code> keep matching pages and label resources extracted from those pages; classifications with <code>operation: &quot;drop&quot;</code> remove matching pages before extraction. The <code>clinical</code> and <code>admin</code> ids in the example are illustrative, not a fixed set.</p>
+   */
+  public PhenomlClientHttpResponse<DocumentMultiResponse> documentMulti(
+    DocumentMultiRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/document/multi");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("POST", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, DocumentMultiResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 403:
+            throw new ForbiddenError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 422:
+            throw new UnprocessableEntityError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 }

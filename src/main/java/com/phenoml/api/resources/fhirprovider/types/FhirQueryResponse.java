@@ -20,166 +20,183 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = FhirQueryResponse.Builder.class)
 public final class FhirQueryResponse {
-    private final Optional<Boolean> success;
 
-    private final Optional<Integer> status;
+  private final Optional<Boolean> success;
 
-    private final Optional<String> message;
+  private final Optional<Integer> status;
 
-    private final Optional<FhirQueryResponseData> data;
+  private final Optional<String> message;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<FhirQueryResponseData> data;
 
-    private FhirQueryResponse(
-            Optional<Boolean> success,
-            Optional<Integer> status,
-            Optional<String> message,
-            Optional<FhirQueryResponseData> data,
-            Map<String, Object> additionalProperties) {
-        this.success = success;
-        this.status = status;
-        this.message = message;
-        this.data = data;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private FhirQueryResponse(
+    Optional<Boolean> success,
+    Optional<Integer> status,
+    Optional<String> message,
+    Optional<FhirQueryResponseData> data,
+    Map<String, Object> additionalProperties
+  ) {
+    this.success = success;
+    this.status = status;
+    this.message = message;
+    this.data = data;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("success")
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  /**
+   * @return HTTP status code from the FHIR server response
+   */
+  @JsonProperty("status")
+  public Optional<Integer> getStatus() {
+    return status;
+  }
+
+  @JsonProperty("message")
+  public Optional<String> getMessage() {
+    return message;
+  }
+
+  @JsonProperty("data")
+  public Optional<FhirQueryResponseData> getData() {
+    return data;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof FhirQueryResponse && equalTo((FhirQueryResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(FhirQueryResponse other) {
+    return (
+      success.equals(other.success) &&
+      status.equals(other.status) &&
+      message.equals(other.message) &&
+      data.equals(other.data)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.success, this.status, this.message, this.data);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<Integer> status = Optional.empty();
+
+    private Optional<String> message = Optional.empty();
+
+    private Optional<FhirQueryResponseData> data = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(FhirQueryResponse other) {
+      success(other.getSuccess());
+      status(other.getStatus());
+      message(other.getMessage());
+      data(other.getData());
+      return this;
     }
 
-    @JsonProperty("success")
-    public Optional<Boolean> getSuccess() {
-        return success;
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
+    }
+
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
     }
 
     /**
-     * @return HTTP status code from the FHIR server response
+     * <p>HTTP status code from the FHIR server response</p>
      */
-    @JsonProperty("status")
-    public Optional<Integer> getStatus() {
-        return status;
+    @JsonSetter(value = "status", nulls = Nulls.SKIP)
+    public Builder status(Optional<Integer> status) {
+      this.status = status;
+      return this;
     }
 
-    @JsonProperty("message")
-    public Optional<String> getMessage() {
-        return message;
+    public Builder status(Integer status) {
+      this.status = Optional.ofNullable(status);
+      return this;
     }
 
-    @JsonProperty("data")
-    public Optional<FhirQueryResponseData> getData() {
-        return data;
+    @JsonSetter(value = "message", nulls = Nulls.SKIP)
+    public Builder message(Optional<String> message) {
+      this.message = message;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof FhirQueryResponse && equalTo((FhirQueryResponse) other);
+    public Builder message(String message) {
+      this.message = Optional.ofNullable(message);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    @JsonSetter(value = "data", nulls = Nulls.SKIP)
+    public Builder data(Optional<FhirQueryResponseData> data) {
+      this.data = data;
+      return this;
     }
 
-    private boolean equalTo(FhirQueryResponse other) {
-        return success.equals(other.success)
-                && status.equals(other.status)
-                && message.equals(other.message)
-                && data.equals(other.data);
+    public Builder data(FhirQueryResponseData data) {
+      this.data = Optional.ofNullable(data);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.success, this.status, this.message, this.data);
+    public FhirQueryResponse build() {
+      return new FhirQueryResponse(success, status, message, data, additionalProperties);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("success") ||
+        key.equalsIgnoreCase("status") ||
+        key.equalsIgnoreCase("message") ||
+        key.equalsIgnoreCase("data")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<Integer> status = Optional.empty();
-
-        private Optional<String> message = Optional.empty();
-
-        private Optional<FhirQueryResponseData> data = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(FhirQueryResponse other) {
-            success(other.getSuccess());
-            status(other.getStatus());
-            message(other.getMessage());
-            data(other.getData());
-            return this;
-        }
-
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        /**
-         * <p>HTTP status code from the FHIR server response</p>
-         */
-        @JsonSetter(value = "status", nulls = Nulls.SKIP)
-        public Builder status(Optional<Integer> status) {
-            this.status = status;
-            return this;
-        }
-
-        public Builder status(Integer status) {
-            this.status = Optional.ofNullable(status);
-            return this;
-        }
-
-        @JsonSetter(value = "message", nulls = Nulls.SKIP)
-        public Builder message(Optional<String> message) {
-            this.message = message;
-            return this;
-        }
-
-        public Builder message(String message) {
-            this.message = Optional.ofNullable(message);
-            return this;
-        }
-
-        @JsonSetter(value = "data", nulls = Nulls.SKIP)
-        public Builder data(Optional<FhirQueryResponseData> data) {
-            this.data = data;
-            return this;
-        }
-
-        public Builder data(FhirQueryResponseData data) {
-            this.data = Optional.ofNullable(data);
-            return this;
-        }
-
-        public FhirQueryResponse build() {
-            return new FhirQueryResponse(success, status, message, data, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

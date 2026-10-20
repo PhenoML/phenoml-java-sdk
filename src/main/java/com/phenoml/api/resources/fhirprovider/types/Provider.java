@@ -7,176 +7,183 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class Provider {
-    public static final Provider HAPI = new Provider(Value.HAPI, "hapi");
 
-    public static final Provider EPIC = new Provider(Value.EPIC, "epic");
+  public static final Provider HAPI = new Provider(Value.HAPI, "hapi");
 
-    public static final Provider MEDITECH = new Provider(Value.MEDITECH, "meditech");
+  public static final Provider EPIC = new Provider(Value.EPIC, "epic");
 
-    public static final Provider PHENOSTORE = new Provider(Value.PHENOSTORE, "phenostore");
+  public static final Provider MEDITECH = new Provider(Value.MEDITECH, "meditech");
 
-    public static final Provider CERNER = new Provider(Value.CERNER, "cerner");
+  public static final Provider PHENOSTORE = new Provider(Value.PHENOSTORE, "phenostore");
 
-    public static final Provider AIDBOX = new Provider(Value.AIDBOX, "aidbox");
+  public static final Provider CERNER = new Provider(Value.CERNER, "cerner");
 
-    public static final Provider ATHENAHEALTH = new Provider(Value.ATHENAHEALTH, "athenahealth");
+  public static final Provider AIDBOX = new Provider(Value.AIDBOX, "aidbox");
 
-    public static final Provider CANVAS = new Provider(Value.CANVAS, "canvas");
+  public static final Provider ATHENAHEALTH = new Provider(Value.ATHENAHEALTH, "athenahealth");
 
-    public static final Provider ELATION = new Provider(Value.ELATION, "elation");
+  public static final Provider CANVAS = new Provider(Value.CANVAS, "canvas");
 
-    public static final Provider SANDBOX = new Provider(Value.SANDBOX, "sandbox");
+  public static final Provider ELATION = new Provider(Value.ELATION, "elation");
 
-    public static final Provider GOOGLE_HEALTHCARE = new Provider(Value.GOOGLE_HEALTHCARE, "google_healthcare");
+  public static final Provider SANDBOX = new Provider(Value.SANDBOX, "sandbox");
 
-    public static final Provider MEDPLUM = new Provider(Value.MEDPLUM, "medplum");
+  public static final Provider GOOGLE_HEALTHCARE = new Provider(
+    Value.GOOGLE_HEALTHCARE,
+    "google_healthcare"
+  );
 
-    private final Value value;
+  public static final Provider MEDPLUM = new Provider(Value.MEDPLUM, "medplum");
 
-    private final String string;
+  private final Value value;
 
-    Provider(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  Provider(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof Provider && this.string.equals(((Provider) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case HAPI:
+        return visitor.visitHapi();
+      case EPIC:
+        return visitor.visitEpic();
+      case MEDITECH:
+        return visitor.visitMeditech();
+      case PHENOSTORE:
+        return visitor.visitPhenostore();
+      case CERNER:
+        return visitor.visitCerner();
+      case AIDBOX:
+        return visitor.visitAidbox();
+      case ATHENAHEALTH:
+        return visitor.visitAthenahealth();
+      case CANVAS:
+        return visitor.visitCanvas();
+      case ELATION:
+        return visitor.visitElation();
+      case SANDBOX:
+        return visitor.visitSandbox();
+      case GOOGLE_HEALTHCARE:
+        return visitor.visitGoogleHealthcare();
+      case MEDPLUM:
+        return visitor.visitMedplum();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static Provider valueOf(String value) {
+    switch (value) {
+      case "hapi":
+        return HAPI;
+      case "epic":
+        return EPIC;
+      case "meditech":
+        return MEDITECH;
+      case "phenostore":
+        return PHENOSTORE;
+      case "cerner":
+        return CERNER;
+      case "aidbox":
+        return AIDBOX;
+      case "athenahealth":
+        return ATHENAHEALTH;
+      case "canvas":
+        return CANVAS;
+      case "elation":
+        return ELATION;
+      case "sandbox":
+        return SANDBOX;
+      case "google_healthcare":
+        return GOOGLE_HEALTHCARE;
+      case "medplum":
+        return MEDPLUM;
+      default:
+        return new Provider(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    AIDBOX,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other) || (other instanceof Provider && this.string.equals(((Provider) other).string));
-    }
+    ATHENAHEALTH,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    CANVAS,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case HAPI:
-                return visitor.visitHapi();
-            case EPIC:
-                return visitor.visitEpic();
-            case MEDITECH:
-                return visitor.visitMeditech();
-            case PHENOSTORE:
-                return visitor.visitPhenostore();
-            case CERNER:
-                return visitor.visitCerner();
-            case AIDBOX:
-                return visitor.visitAidbox();
-            case ATHENAHEALTH:
-                return visitor.visitAthenahealth();
-            case CANVAS:
-                return visitor.visitCanvas();
-            case ELATION:
-                return visitor.visitElation();
-            case SANDBOX:
-                return visitor.visitSandbox();
-            case GOOGLE_HEALTHCARE:
-                return visitor.visitGoogleHealthcare();
-            case MEDPLUM:
-                return visitor.visitMedplum();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    CERNER,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static Provider valueOf(String value) {
-        switch (value) {
-            case "hapi":
-                return HAPI;
-            case "epic":
-                return EPIC;
-            case "meditech":
-                return MEDITECH;
-            case "phenostore":
-                return PHENOSTORE;
-            case "cerner":
-                return CERNER;
-            case "aidbox":
-                return AIDBOX;
-            case "athenahealth":
-                return ATHENAHEALTH;
-            case "canvas":
-                return CANVAS;
-            case "elation":
-                return ELATION;
-            case "sandbox":
-                return SANDBOX;
-            case "google_healthcare":
-                return GOOGLE_HEALTHCARE;
-            case "medplum":
-                return MEDPLUM;
-            default:
-                return new Provider(Value.UNKNOWN, value);
-        }
-    }
+    ELATION,
 
-    public enum Value {
-        AIDBOX,
+    EPIC,
 
-        ATHENAHEALTH,
+    GOOGLE_HEALTHCARE,
 
-        CANVAS,
+    HAPI,
 
-        CERNER,
+    MEDITECH,
 
-        ELATION,
+    MEDPLUM,
 
-        EPIC,
+    PHENOSTORE,
 
-        GOOGLE_HEALTHCARE,
+    SANDBOX,
 
-        HAPI,
+    UNKNOWN,
+  }
 
-        MEDITECH,
+  public interface Visitor<T> {
+    T visitAidbox();
 
-        MEDPLUM,
+    T visitAthenahealth();
 
-        PHENOSTORE,
+    T visitCanvas();
 
-        SANDBOX,
+    T visitCerner();
 
-        UNKNOWN
-    }
+    T visitElation();
 
-    public interface Visitor<T> {
-        T visitAidbox();
+    T visitEpic();
 
-        T visitAthenahealth();
+    T visitGoogleHealthcare();
 
-        T visitCanvas();
+    T visitHapi();
 
-        T visitCerner();
+    T visitMeditech();
 
-        T visitElation();
+    T visitMedplum();
 
-        T visitEpic();
+    T visitPhenostore();
 
-        T visitGoogleHealthcare();
+    T visitSandbox();
 
-        T visitHapi();
-
-        T visitMeditech();
-
-        T visitMedplum();
-
-        T visitPhenostore();
-
-        T visitSandbox();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

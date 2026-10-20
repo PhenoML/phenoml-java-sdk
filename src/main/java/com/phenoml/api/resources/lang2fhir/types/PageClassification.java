@@ -20,184 +20,207 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PageClassification.Builder.class)
 public final class PageClassification {
-    private final Optional<Integer> pageNumber;
 
-    private final Optional<Boolean> include;
+  private final Optional<Integer> pageNumber;
 
-    private final Optional<String> classificationId;
+  private final Optional<Boolean> include;
 
-    private final Optional<String> reason;
+  private final Optional<String> classificationId;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> reason;
 
-    private PageClassification(
-            Optional<Integer> pageNumber,
-            Optional<Boolean> include,
-            Optional<String> classificationId,
-            Optional<String> reason,
-            Map<String, Object> additionalProperties) {
-        this.pageNumber = pageNumber;
-        this.include = include;
-        this.classificationId = classificationId;
-        this.reason = reason;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private PageClassification(
+    Optional<Integer> pageNumber,
+    Optional<Boolean> include,
+    Optional<String> classificationId,
+    Optional<String> reason,
+    Map<String, Object> additionalProperties
+  ) {
+    this.pageNumber = pageNumber;
+    this.include = include;
+    this.classificationId = classificationId;
+    this.reason = reason;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return 1-indexed page number.
+   */
+  @JsonProperty("page_number")
+  public Optional<Integer> getPageNumber() {
+    return pageNumber;
+  }
+
+  /**
+   * @return Whether the page was kept (true) or dropped (false) from FHIR extraction.
+   */
+  @JsonProperty("include")
+  public Optional<Boolean> getInclude() {
+    return include;
+  }
+
+  /**
+   * @return Split classification id assigned to the page. Omitted or empty for the ungrouped/default bucket.
+   */
+  @JsonProperty("classification_id")
+  public Optional<String> getClassificationId() {
+    return classificationId;
+  }
+
+  /**
+   * @return Short LLM-generated explanation of the decision.
+   */
+  @JsonProperty("reason")
+  public Optional<String> getReason() {
+    return reason;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof PageClassification && equalTo((PageClassification) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(PageClassification other) {
+    return (
+      pageNumber.equals(other.pageNumber) &&
+      include.equals(other.include) &&
+      classificationId.equals(other.classificationId) &&
+      reason.equals(other.reason)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.pageNumber, this.include, this.classificationId, this.reason);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Integer> pageNumber = Optional.empty();
+
+    private Optional<Boolean> include = Optional.empty();
+
+    private Optional<String> classificationId = Optional.empty();
+
+    private Optional<String> reason = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(PageClassification other) {
+      pageNumber(other.getPageNumber());
+      include(other.getInclude());
+      classificationId(other.getClassificationId());
+      reason(other.getReason());
+      return this;
     }
 
     /**
-     * @return 1-indexed page number.
+     * <p>1-indexed page number.</p>
      */
-    @JsonProperty("page_number")
-    public Optional<Integer> getPageNumber() {
-        return pageNumber;
+    @JsonSetter(value = "page_number", nulls = Nulls.SKIP)
+    public Builder pageNumber(Optional<Integer> pageNumber) {
+      this.pageNumber = pageNumber;
+      return this;
+    }
+
+    public Builder pageNumber(Integer pageNumber) {
+      this.pageNumber = Optional.ofNullable(pageNumber);
+      return this;
     }
 
     /**
-     * @return Whether the page was kept (true) or dropped (false) from FHIR extraction.
+     * <p>Whether the page was kept (true) or dropped (false) from FHIR extraction.</p>
      */
-    @JsonProperty("include")
-    public Optional<Boolean> getInclude() {
-        return include;
+    @JsonSetter(value = "include", nulls = Nulls.SKIP)
+    public Builder include(Optional<Boolean> include) {
+      this.include = include;
+      return this;
+    }
+
+    public Builder include(Boolean include) {
+      this.include = Optional.ofNullable(include);
+      return this;
     }
 
     /**
-     * @return Split classification id assigned to the page. Omitted or empty for the ungrouped/default bucket.
+     * <p>Split classification id assigned to the page. Omitted or empty for the ungrouped/default bucket.</p>
      */
-    @JsonProperty("classification_id")
-    public Optional<String> getClassificationId() {
-        return classificationId;
+    @JsonSetter(value = "classification_id", nulls = Nulls.SKIP)
+    public Builder classificationId(Optional<String> classificationId) {
+      this.classificationId = classificationId;
+      return this;
+    }
+
+    public Builder classificationId(String classificationId) {
+      this.classificationId = Optional.ofNullable(classificationId);
+      return this;
     }
 
     /**
-     * @return Short LLM-generated explanation of the decision.
+     * <p>Short LLM-generated explanation of the decision.</p>
      */
-    @JsonProperty("reason")
-    public Optional<String> getReason() {
-        return reason;
+    @JsonSetter(value = "reason", nulls = Nulls.SKIP)
+    public Builder reason(Optional<String> reason) {
+      this.reason = reason;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof PageClassification && equalTo((PageClassification) other);
+    public Builder reason(String reason) {
+      this.reason = Optional.ofNullable(reason);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public PageClassification build() {
+      return new PageClassification(
+        pageNumber,
+        include,
+        classificationId,
+        reason,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(PageClassification other) {
-        return pageNumber.equals(other.pageNumber)
-                && include.equals(other.include)
-                && classificationId.equals(other.classificationId)
-                && reason.equals(other.reason);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("page_number") ||
+        key.equalsIgnoreCase("include") ||
+        key.equalsIgnoreCase("classification_id") ||
+        key.equalsIgnoreCase("reason")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.pageNumber, this.include, this.classificationId, this.reason);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Integer> pageNumber = Optional.empty();
-
-        private Optional<Boolean> include = Optional.empty();
-
-        private Optional<String> classificationId = Optional.empty();
-
-        private Optional<String> reason = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(PageClassification other) {
-            pageNumber(other.getPageNumber());
-            include(other.getInclude());
-            classificationId(other.getClassificationId());
-            reason(other.getReason());
-            return this;
-        }
-
-        /**
-         * <p>1-indexed page number.</p>
-         */
-        @JsonSetter(value = "page_number", nulls = Nulls.SKIP)
-        public Builder pageNumber(Optional<Integer> pageNumber) {
-            this.pageNumber = pageNumber;
-            return this;
-        }
-
-        public Builder pageNumber(Integer pageNumber) {
-            this.pageNumber = Optional.ofNullable(pageNumber);
-            return this;
-        }
-
-        /**
-         * <p>Whether the page was kept (true) or dropped (false) from FHIR extraction.</p>
-         */
-        @JsonSetter(value = "include", nulls = Nulls.SKIP)
-        public Builder include(Optional<Boolean> include) {
-            this.include = include;
-            return this;
-        }
-
-        public Builder include(Boolean include) {
-            this.include = Optional.ofNullable(include);
-            return this;
-        }
-
-        /**
-         * <p>Split classification id assigned to the page. Omitted or empty for the ungrouped/default bucket.</p>
-         */
-        @JsonSetter(value = "classification_id", nulls = Nulls.SKIP)
-        public Builder classificationId(Optional<String> classificationId) {
-            this.classificationId = classificationId;
-            return this;
-        }
-
-        public Builder classificationId(String classificationId) {
-            this.classificationId = Optional.ofNullable(classificationId);
-            return this;
-        }
-
-        /**
-         * <p>Short LLM-generated explanation of the decision.</p>
-         */
-        @JsonSetter(value = "reason", nulls = Nulls.SKIP)
-        public Builder reason(Optional<String> reason) {
-            this.reason = reason;
-            return this;
-        }
-
-        public Builder reason(String reason) {
-            this.reason = Optional.ofNullable(reason);
-            return this;
-        }
-
-        public PageClassification build() {
-            return new PageClassification(pageNumber, include, classificationId, reason, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -18,199 +18,217 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = BatchCounts.Builder.class)
 public final class BatchCounts {
-    private final int total;
 
-    private final int pending;
+  private final int total;
 
-    private final int processing;
+  private final int pending;
 
-    private final int succeeded;
+  private final int processing;
 
-    private final int failed;
+  private final int succeeded;
 
-    private final Map<String, Object> additionalProperties;
+  private final int failed;
 
-    private BatchCounts(
-            int total,
-            int pending,
-            int processing,
-            int succeeded,
-            int failed,
-            Map<String, Object> additionalProperties) {
-        this.total = total;
-        this.pending = pending;
-        this.processing = processing;
-        this.succeeded = succeeded;
-        this.failed = failed;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
-    @JsonProperty("total")
-    public int getTotal() {
-        return total;
-    }
+  private BatchCounts(
+    int total,
+    int pending,
+    int processing,
+    int succeeded,
+    int failed,
+    Map<String, Object> additionalProperties
+  ) {
+    this.total = total;
+    this.pending = pending;
+    this.processing = processing;
+    this.succeeded = succeeded;
+    this.failed = failed;
+    this.additionalProperties = additionalProperties;
+  }
 
-    @JsonProperty("pending")
-    public int getPending() {
-        return pending;
-    }
+  @JsonProperty("total")
+  public int getTotal() {
+    return total;
+  }
 
-    @JsonProperty("processing")
-    public int getProcessing() {
-        return processing;
-    }
+  @JsonProperty("pending")
+  public int getPending() {
+    return pending;
+  }
 
-    @JsonProperty("succeeded")
-    public int getSucceeded() {
-        return succeeded;
-    }
+  @JsonProperty("processing")
+  public int getProcessing() {
+    return processing;
+  }
 
-    @JsonProperty("failed")
-    public int getFailed() {
-        return failed;
+  @JsonProperty("succeeded")
+  public int getSucceeded() {
+    return succeeded;
+  }
+
+  @JsonProperty("failed")
+  public int getFailed() {
+    return failed;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof BatchCounts && equalTo((BatchCounts) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(BatchCounts other) {
+    return (
+      total == other.total &&
+      pending == other.pending &&
+      processing == other.processing &&
+      succeeded == other.succeeded &&
+      failed == other.failed
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.total, this.pending, this.processing, this.succeeded, this.failed);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static TotalStage builder() {
+    return new Builder();
+  }
+
+  public interface TotalStage {
+    PendingStage total(int total);
+
+    Builder from(BatchCounts other);
+  }
+
+  public interface PendingStage {
+    ProcessingStage pending(int pending);
+  }
+
+  public interface ProcessingStage {
+    SucceededStage processing(int processing);
+  }
+
+  public interface SucceededStage {
+    FailedStage succeeded(int succeeded);
+  }
+
+  public interface FailedStage {
+    _FinalStage failed(int failed);
+  }
+
+  public interface _FinalStage {
+    BatchCounts build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements TotalStage, PendingStage, ProcessingStage, SucceededStage, FailedStage, _FinalStage {
+
+    private int total;
+
+    private int pending;
+
+    private int processing;
+
+    private int succeeded;
+
+    private int failed;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(BatchCounts other) {
+      total(other.getTotal());
+      pending(other.getPending());
+      processing(other.getProcessing());
+      succeeded(other.getSucceeded());
+      failed(other.getFailed());
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof BatchCounts && equalTo((BatchCounts) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(BatchCounts other) {
-        return total == other.total
-                && pending == other.pending
-                && processing == other.processing
-                && succeeded == other.succeeded
-                && failed == other.failed;
+    @JsonSetter("total")
+    public PendingStage total(int total) {
+      this.total = total;
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.total, this.pending, this.processing, this.succeeded, this.failed);
+    @JsonSetter("pending")
+    public ProcessingStage pending(int pending) {
+      this.pending = pending;
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonSetter("processing")
+    public SucceededStage processing(int processing) {
+      this.processing = processing;
+      return this;
     }
 
-    public static TotalStage builder() {
-        return new Builder();
+    @java.lang.Override
+    @JsonSetter("succeeded")
+    public FailedStage succeeded(int succeeded) {
+      this.succeeded = succeeded;
+      return this;
     }
 
-    public interface TotalStage {
-        PendingStage total(int total);
-
-        Builder from(BatchCounts other);
+    @java.lang.Override
+    @JsonSetter("failed")
+    public _FinalStage failed(int failed) {
+      this.failed = failed;
+      return this;
     }
 
-    public interface PendingStage {
-        ProcessingStage pending(int pending);
+    @java.lang.Override
+    public BatchCounts build() {
+      return new BatchCounts(total, pending, processing, succeeded, failed, additionalProperties);
     }
 
-    public interface ProcessingStage {
-        SucceededStage processing(int processing);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("total") ||
+        key.equalsIgnoreCase("pending") ||
+        key.equalsIgnoreCase("processing") ||
+        key.equalsIgnoreCase("succeeded") ||
+        key.equalsIgnoreCase("failed")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public interface SucceededStage {
-        FailedStage succeeded(int succeeded);
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public interface FailedStage {
-        _FinalStage failed(int failed);
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface _FinalStage {
-        BatchCounts build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder
-            implements TotalStage, PendingStage, ProcessingStage, SucceededStage, FailedStage, _FinalStage {
-        private int total;
-
-        private int pending;
-
-        private int processing;
-
-        private int succeeded;
-
-        private int failed;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(BatchCounts other) {
-            total(other.getTotal());
-            pending(other.getPending());
-            processing(other.getProcessing());
-            succeeded(other.getSucceeded());
-            failed(other.getFailed());
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("total")
-        public PendingStage total(int total) {
-            this.total = total;
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("pending")
-        public ProcessingStage pending(int pending) {
-            this.pending = pending;
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("processing")
-        public SucceededStage processing(int processing) {
-            this.processing = processing;
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("succeeded")
-        public FailedStage succeeded(int succeeded) {
-            this.succeeded = succeeded;
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("failed")
-        public _FinalStage failed(int failed) {
-            this.failed = failed;
-            return this;
-        }
-
-        @java.lang.Override
-        public BatchCounts build() {
-            return new BatchCounts(total, pending, processing, succeeded, failed, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

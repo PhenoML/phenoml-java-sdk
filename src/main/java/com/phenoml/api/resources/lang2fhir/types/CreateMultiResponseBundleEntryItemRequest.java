@@ -20,110 +20,124 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateMultiResponseBundleEntryItemRequest.Builder.class)
 public final class CreateMultiResponseBundleEntryItemRequest {
-    private final Optional<String> method;
 
-    private final Optional<String> url;
+  private final Optional<String> method;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> url;
 
-    private CreateMultiResponseBundleEntryItemRequest(
-            Optional<String> method, Optional<String> url, Map<String, Object> additionalProperties) {
-        this.method = method;
-        this.url = url;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CreateMultiResponseBundleEntryItemRequest(
+    Optional<String> method,
+    Optional<String> url,
+    Map<String, Object> additionalProperties
+  ) {
+    this.method = method;
+    this.url = url;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("method")
+  public Optional<String> getMethod() {
+    return method;
+  }
+
+  @JsonProperty("url")
+  public Optional<String> getUrl() {
+    return url;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof CreateMultiResponseBundleEntryItemRequest &&
+      equalTo((CreateMultiResponseBundleEntryItemRequest) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CreateMultiResponseBundleEntryItemRequest other) {
+    return method.equals(other.method) && url.equals(other.url);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.method, this.url);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> method = Optional.empty();
+
+    private Optional<String> url = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(CreateMultiResponseBundleEntryItemRequest other) {
+      method(other.getMethod());
+      url(other.getUrl());
+      return this;
     }
 
-    @JsonProperty("method")
-    public Optional<String> getMethod() {
-        return method;
+    @JsonSetter(value = "method", nulls = Nulls.SKIP)
+    public Builder method(Optional<String> method) {
+      this.method = method;
+      return this;
     }
 
-    @JsonProperty("url")
-    public Optional<String> getUrl() {
-        return url;
+    public Builder method(String method) {
+      this.method = Optional.ofNullable(method);
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CreateMultiResponseBundleEntryItemRequest
-                && equalTo((CreateMultiResponseBundleEntryItemRequest) other);
+    @JsonSetter(value = "url", nulls = Nulls.SKIP)
+    public Builder url(Optional<String> url) {
+      this.url = url;
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder url(String url) {
+      this.url = Optional.ofNullable(url);
+      return this;
     }
 
-    private boolean equalTo(CreateMultiResponseBundleEntryItemRequest other) {
-        return method.equals(other.method) && url.equals(other.url);
+    public CreateMultiResponseBundleEntryItemRequest build() {
+      return new CreateMultiResponseBundleEntryItemRequest(method, url, additionalProperties);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.method, this.url);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("method") || key.equalsIgnoreCase("url")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> method = Optional.empty();
-
-        private Optional<String> url = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(CreateMultiResponseBundleEntryItemRequest other) {
-            method(other.getMethod());
-            url(other.getUrl());
-            return this;
-        }
-
-        @JsonSetter(value = "method", nulls = Nulls.SKIP)
-        public Builder method(Optional<String> method) {
-            this.method = method;
-            return this;
-        }
-
-        public Builder method(String method) {
-            this.method = Optional.ofNullable(method);
-            return this;
-        }
-
-        @JsonSetter(value = "url", nulls = Nulls.SKIP)
-        public Builder url(Optional<String> url) {
-            this.url = url;
-            return this;
-        }
-
-        public Builder url(String url) {
-            this.url = Optional.ofNullable(url);
-            return this;
-        }
-
-        public CreateMultiResponseBundleEntryItemRequest build() {
-            return new CreateMultiResponseBundleEntryItemRequest(method, url, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

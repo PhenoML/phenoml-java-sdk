@@ -20,253 +20,275 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = DeathRow.Builder.class)
 public final class DeathRow {
-    private final Optional<Long> personId;
 
-    private final Optional<String> deathDate;
+  private final Optional<Long> personId;
 
-    private final Optional<String> deathDatetime;
+  private final Optional<String> deathDate;
 
-    private final Optional<Long> deathTypeConceptId;
+  private final Optional<String> deathDatetime;
 
-    private final Optional<Long> causeConceptId;
+  private final Optional<Long> deathTypeConceptId;
 
-    private final Optional<String> causeSourceValue;
+  private final Optional<Long> causeConceptId;
 
-    private final Optional<Long> causeSourceConceptId;
+  private final Optional<String> causeSourceValue;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Long> causeSourceConceptId;
 
-    private DeathRow(
-            Optional<Long> personId,
-            Optional<String> deathDate,
-            Optional<String> deathDatetime,
-            Optional<Long> deathTypeConceptId,
-            Optional<Long> causeConceptId,
-            Optional<String> causeSourceValue,
-            Optional<Long> causeSourceConceptId,
-            Map<String, Object> additionalProperties) {
-        this.personId = personId;
-        this.deathDate = deathDate;
-        this.deathDatetime = deathDatetime;
-        this.deathTypeConceptId = deathTypeConceptId;
-        this.causeConceptId = causeConceptId;
-        this.causeSourceValue = causeSourceValue;
-        this.causeSourceConceptId = causeSourceConceptId;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private DeathRow(
+    Optional<Long> personId,
+    Optional<String> deathDate,
+    Optional<String> deathDatetime,
+    Optional<Long> deathTypeConceptId,
+    Optional<Long> causeConceptId,
+    Optional<String> causeSourceValue,
+    Optional<Long> causeSourceConceptId,
+    Map<String, Object> additionalProperties
+  ) {
+    this.personId = personId;
+    this.deathDate = deathDate;
+    this.deathDatetime = deathDatetime;
+    this.deathTypeConceptId = deathTypeConceptId;
+    this.causeConceptId = causeConceptId;
+    this.causeSourceValue = causeSourceValue;
+    this.causeSourceConceptId = causeSourceConceptId;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("person_id")
+  public Optional<Long> getPersonId() {
+    return personId;
+  }
+
+  /**
+   * @return Date from Patient.deceasedDateTime; unset for a boolean-only or partial value.
+   */
+  @JsonProperty("death_date")
+  public Optional<String> getDeathDate() {
+    return deathDate;
+  }
+
+  @JsonProperty("death_datetime")
+  public Optional<String> getDeathDatetime() {
+    return deathDatetime;
+  }
+
+  @JsonProperty("death_type_concept_id")
+  public Optional<Long> getDeathTypeConceptId() {
+    return deathTypeConceptId;
+  }
+
+  @JsonProperty("cause_concept_id")
+  public Optional<Long> getCauseConceptId() {
+    return causeConceptId;
+  }
+
+  @JsonProperty("cause_source_value")
+  public Optional<String> getCauseSourceValue() {
+    return causeSourceValue;
+  }
+
+  @JsonProperty("cause_source_concept_id")
+  public Optional<Long> getCauseSourceConceptId() {
+    return causeSourceConceptId;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof DeathRow && equalTo((DeathRow) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(DeathRow other) {
+    return (
+      personId.equals(other.personId) &&
+      deathDate.equals(other.deathDate) &&
+      deathDatetime.equals(other.deathDatetime) &&
+      deathTypeConceptId.equals(other.deathTypeConceptId) &&
+      causeConceptId.equals(other.causeConceptId) &&
+      causeSourceValue.equals(other.causeSourceValue) &&
+      causeSourceConceptId.equals(other.causeSourceConceptId)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.personId,
+      this.deathDate,
+      this.deathDatetime,
+      this.deathTypeConceptId,
+      this.causeConceptId,
+      this.causeSourceValue,
+      this.causeSourceConceptId
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Long> personId = Optional.empty();
+
+    private Optional<String> deathDate = Optional.empty();
+
+    private Optional<String> deathDatetime = Optional.empty();
+
+    private Optional<Long> deathTypeConceptId = Optional.empty();
+
+    private Optional<Long> causeConceptId = Optional.empty();
+
+    private Optional<String> causeSourceValue = Optional.empty();
+
+    private Optional<Long> causeSourceConceptId = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(DeathRow other) {
+      personId(other.getPersonId());
+      deathDate(other.getDeathDate());
+      deathDatetime(other.getDeathDatetime());
+      deathTypeConceptId(other.getDeathTypeConceptId());
+      causeConceptId(other.getCauseConceptId());
+      causeSourceValue(other.getCauseSourceValue());
+      causeSourceConceptId(other.getCauseSourceConceptId());
+      return this;
     }
 
-    @JsonProperty("person_id")
-    public Optional<Long> getPersonId() {
-        return personId;
+    @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
+    public Builder personId(Optional<Long> personId) {
+      this.personId = personId;
+      return this;
+    }
+
+    public Builder personId(Long personId) {
+      this.personId = Optional.ofNullable(personId);
+      return this;
     }
 
     /**
-     * @return Date from Patient.deceasedDateTime; unset for a boolean-only or partial value.
+     * <p>Date from Patient.deceasedDateTime; unset for a boolean-only or partial value.</p>
      */
-    @JsonProperty("death_date")
-    public Optional<String> getDeathDate() {
-        return deathDate;
+    @JsonSetter(value = "death_date", nulls = Nulls.SKIP)
+    public Builder deathDate(Optional<String> deathDate) {
+      this.deathDate = deathDate;
+      return this;
     }
 
-    @JsonProperty("death_datetime")
-    public Optional<String> getDeathDatetime() {
-        return deathDatetime;
+    public Builder deathDate(String deathDate) {
+      this.deathDate = Optional.ofNullable(deathDate);
+      return this;
     }
 
-    @JsonProperty("death_type_concept_id")
-    public Optional<Long> getDeathTypeConceptId() {
-        return deathTypeConceptId;
+    @JsonSetter(value = "death_datetime", nulls = Nulls.SKIP)
+    public Builder deathDatetime(Optional<String> deathDatetime) {
+      this.deathDatetime = deathDatetime;
+      return this;
     }
 
-    @JsonProperty("cause_concept_id")
-    public Optional<Long> getCauseConceptId() {
-        return causeConceptId;
+    public Builder deathDatetime(String deathDatetime) {
+      this.deathDatetime = Optional.ofNullable(deathDatetime);
+      return this;
     }
 
-    @JsonProperty("cause_source_value")
-    public Optional<String> getCauseSourceValue() {
-        return causeSourceValue;
+    @JsonSetter(value = "death_type_concept_id", nulls = Nulls.SKIP)
+    public Builder deathTypeConceptId(Optional<Long> deathTypeConceptId) {
+      this.deathTypeConceptId = deathTypeConceptId;
+      return this;
     }
 
-    @JsonProperty("cause_source_concept_id")
-    public Optional<Long> getCauseSourceConceptId() {
-        return causeSourceConceptId;
+    public Builder deathTypeConceptId(Long deathTypeConceptId) {
+      this.deathTypeConceptId = Optional.ofNullable(deathTypeConceptId);
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof DeathRow && equalTo((DeathRow) other);
+    @JsonSetter(value = "cause_concept_id", nulls = Nulls.SKIP)
+    public Builder causeConceptId(Optional<Long> causeConceptId) {
+      this.causeConceptId = causeConceptId;
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder causeConceptId(Long causeConceptId) {
+      this.causeConceptId = Optional.ofNullable(causeConceptId);
+      return this;
     }
 
-    private boolean equalTo(DeathRow other) {
-        return personId.equals(other.personId)
-                && deathDate.equals(other.deathDate)
-                && deathDatetime.equals(other.deathDatetime)
-                && deathTypeConceptId.equals(other.deathTypeConceptId)
-                && causeConceptId.equals(other.causeConceptId)
-                && causeSourceValue.equals(other.causeSourceValue)
-                && causeSourceConceptId.equals(other.causeSourceConceptId);
+    @JsonSetter(value = "cause_source_value", nulls = Nulls.SKIP)
+    public Builder causeSourceValue(Optional<String> causeSourceValue) {
+      this.causeSourceValue = causeSourceValue;
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.personId,
-                this.deathDate,
-                this.deathDatetime,
-                this.deathTypeConceptId,
-                this.causeConceptId,
-                this.causeSourceValue,
-                this.causeSourceConceptId);
+    public Builder causeSourceValue(String causeSourceValue) {
+      this.causeSourceValue = Optional.ofNullable(causeSourceValue);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonSetter(value = "cause_source_concept_id", nulls = Nulls.SKIP)
+    public Builder causeSourceConceptId(Optional<Long> causeSourceConceptId) {
+      this.causeSourceConceptId = causeSourceConceptId;
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder causeSourceConceptId(Long causeSourceConceptId) {
+      this.causeSourceConceptId = Optional.ofNullable(causeSourceConceptId);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Long> personId = Optional.empty();
-
-        private Optional<String> deathDate = Optional.empty();
-
-        private Optional<String> deathDatetime = Optional.empty();
-
-        private Optional<Long> deathTypeConceptId = Optional.empty();
-
-        private Optional<Long> causeConceptId = Optional.empty();
-
-        private Optional<String> causeSourceValue = Optional.empty();
-
-        private Optional<Long> causeSourceConceptId = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(DeathRow other) {
-            personId(other.getPersonId());
-            deathDate(other.getDeathDate());
-            deathDatetime(other.getDeathDatetime());
-            deathTypeConceptId(other.getDeathTypeConceptId());
-            causeConceptId(other.getCauseConceptId());
-            causeSourceValue(other.getCauseSourceValue());
-            causeSourceConceptId(other.getCauseSourceConceptId());
-            return this;
-        }
-
-        @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
-        public Builder personId(Optional<Long> personId) {
-            this.personId = personId;
-            return this;
-        }
-
-        public Builder personId(Long personId) {
-            this.personId = Optional.ofNullable(personId);
-            return this;
-        }
-
-        /**
-         * <p>Date from Patient.deceasedDateTime; unset for a boolean-only or partial value.</p>
-         */
-        @JsonSetter(value = "death_date", nulls = Nulls.SKIP)
-        public Builder deathDate(Optional<String> deathDate) {
-            this.deathDate = deathDate;
-            return this;
-        }
-
-        public Builder deathDate(String deathDate) {
-            this.deathDate = Optional.ofNullable(deathDate);
-            return this;
-        }
-
-        @JsonSetter(value = "death_datetime", nulls = Nulls.SKIP)
-        public Builder deathDatetime(Optional<String> deathDatetime) {
-            this.deathDatetime = deathDatetime;
-            return this;
-        }
-
-        public Builder deathDatetime(String deathDatetime) {
-            this.deathDatetime = Optional.ofNullable(deathDatetime);
-            return this;
-        }
-
-        @JsonSetter(value = "death_type_concept_id", nulls = Nulls.SKIP)
-        public Builder deathTypeConceptId(Optional<Long> deathTypeConceptId) {
-            this.deathTypeConceptId = deathTypeConceptId;
-            return this;
-        }
-
-        public Builder deathTypeConceptId(Long deathTypeConceptId) {
-            this.deathTypeConceptId = Optional.ofNullable(deathTypeConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "cause_concept_id", nulls = Nulls.SKIP)
-        public Builder causeConceptId(Optional<Long> causeConceptId) {
-            this.causeConceptId = causeConceptId;
-            return this;
-        }
-
-        public Builder causeConceptId(Long causeConceptId) {
-            this.causeConceptId = Optional.ofNullable(causeConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "cause_source_value", nulls = Nulls.SKIP)
-        public Builder causeSourceValue(Optional<String> causeSourceValue) {
-            this.causeSourceValue = causeSourceValue;
-            return this;
-        }
-
-        public Builder causeSourceValue(String causeSourceValue) {
-            this.causeSourceValue = Optional.ofNullable(causeSourceValue);
-            return this;
-        }
-
-        @JsonSetter(value = "cause_source_concept_id", nulls = Nulls.SKIP)
-        public Builder causeSourceConceptId(Optional<Long> causeSourceConceptId) {
-            this.causeSourceConceptId = causeSourceConceptId;
-            return this;
-        }
-
-        public Builder causeSourceConceptId(Long causeSourceConceptId) {
-            this.causeSourceConceptId = Optional.ofNullable(causeSourceConceptId);
-            return this;
-        }
-
-        public DeathRow build() {
-            return new DeathRow(
-                    personId,
-                    deathDate,
-                    deathDatetime,
-                    deathTypeConceptId,
-                    causeConceptId,
-                    causeSourceValue,
-                    causeSourceConceptId,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public DeathRow build() {
+      return new DeathRow(
+        personId,
+        deathDate,
+        deathDatetime,
+        deathTypeConceptId,
+        causeConceptId,
+        causeSourceValue,
+        causeSourceConceptId,
+        additionalProperties
+      );
     }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("person_id") ||
+        key.equalsIgnoreCase("death_date") ||
+        key.equalsIgnoreCase("death_datetime") ||
+        key.equalsIgnoreCase("death_type_concept_id") ||
+        key.equalsIgnoreCase("cause_concept_id") ||
+        key.equalsIgnoreCase("cause_source_value") ||
+        key.equalsIgnoreCase("cause_source_concept_id")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

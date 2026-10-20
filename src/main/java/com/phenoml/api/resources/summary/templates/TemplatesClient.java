@@ -14,89 +14,97 @@ import com.phenoml.api.resources.summary.templates.types.UpdateResponse;
 import com.phenoml.api.resources.summary.types.CreateSummaryTemplateResponse;
 
 public class TemplatesClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawTemplatesClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public TemplatesClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawTemplatesClient(clientOptions);
-    }
+  private final RawTemplatesClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawTemplatesClient withRawResponse() {
-        return this.rawClient;
-    }
+  public TemplatesClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawTemplatesClient(clientOptions);
+  }
 
-    /**
-     * Retrieves all summary templates for the authenticated user
-     */
-    public ListResponse list() {
-        return this.rawClient.list().body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawTemplatesClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Retrieves all summary templates for the authenticated user
-     */
-    public ListResponse list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).body();
-    }
+  /**
+   * Retrieves all summary templates for the authenticated user
+   */
+  public ListResponse list() {
+    return this.rawClient.list().body();
+  }
 
-    /**
-     * Creates a summary template from an example using LLM function calling
-     */
-    public CreateSummaryTemplateResponse create(CreateSummaryTemplateRequest request) {
-        return this.rawClient.create(request).body();
-    }
+  /**
+   * Retrieves all summary templates for the authenticated user
+   */
+  public ListResponse list(RequestOptions requestOptions) {
+    return this.rawClient.list(requestOptions).body();
+  }
 
-    /**
-     * Creates a summary template from an example using LLM function calling
-     */
-    public CreateSummaryTemplateResponse create(CreateSummaryTemplateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).body();
-    }
+  /**
+   * Creates a summary template from an example using LLM function calling
+   */
+  public CreateSummaryTemplateResponse create(CreateSummaryTemplateRequest request) {
+    return this.rawClient.create(request).body();
+  }
 
-    /**
-     * Retrieves a specific summary template
-     */
-    public GetResponse get(String id) {
-        return this.rawClient.get(id).body();
-    }
+  /**
+   * Creates a summary template from an example using LLM function calling
+   */
+  public CreateSummaryTemplateResponse create(
+    CreateSummaryTemplateRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.create(request, requestOptions).body();
+  }
 
-    /**
-     * Retrieves a specific summary template
-     */
-    public GetResponse get(String id, RequestOptions requestOptions) {
-        return this.rawClient.get(id, requestOptions).body();
-    }
+  /**
+   * Retrieves a specific summary template
+   */
+  public GetResponse get(String id) {
+    return this.rawClient.get(id).body();
+  }
 
-    /**
-     * Updates an existing summary template
-     */
-    public UpdateResponse update(String id, UpdateSummaryTemplateRequest request) {
-        return this.rawClient.update(id, request).body();
-    }
+  /**
+   * Retrieves a specific summary template
+   */
+  public GetResponse get(String id, RequestOptions requestOptions) {
+    return this.rawClient.get(id, requestOptions).body();
+  }
 
-    /**
-     * Updates an existing summary template
-     */
-    public UpdateResponse update(String id, UpdateSummaryTemplateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.update(id, request, requestOptions).body();
-    }
+  /**
+   * Updates an existing summary template
+   */
+  public UpdateResponse update(String id, UpdateSummaryTemplateRequest request) {
+    return this.rawClient.update(id, request).body();
+  }
 
-    /**
-     * Deletes a summary template
-     */
-    public DeleteResponse delete(String id) {
-        return this.rawClient.delete(id).body();
-    }
+  /**
+   * Updates an existing summary template
+   */
+  public UpdateResponse update(
+    String id,
+    UpdateSummaryTemplateRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.update(id, request, requestOptions).body();
+  }
 
-    /**
-     * Deletes a summary template
-     */
-    public DeleteResponse delete(String id, RequestOptions requestOptions) {
-        return this.rawClient.delete(id, requestOptions).body();
-    }
+  /**
+   * Deletes a summary template
+   */
+  public DeleteResponse delete(String id) {
+    return this.rawClient.delete(id).body();
+  }
+
+  /**
+   * Deletes a summary template
+   */
+  public DeleteResponse delete(String id, RequestOptions requestOptions) {
+    return this.rawClient.delete(id, requestOptions).body();
+  }
 }

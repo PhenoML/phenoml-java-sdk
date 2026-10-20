@@ -20,545 +20,623 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = MeasurementRow.Builder.class)
 public final class MeasurementRow {
-    private final Optional<Long> measurementId;
 
-    private final Optional<Long> personId;
+  private final Optional<Long> measurementId;
 
-    private final Optional<Long> measurementConceptId;
+  private final Optional<Long> personId;
 
-    private final Optional<String> measurementDate;
+  private final Optional<Long> measurementConceptId;
 
-    private final Optional<String> measurementDatetime;
+  private final Optional<String> measurementDate;
 
-    private final Optional<Long> measurementTypeConceptId;
+  private final Optional<String> measurementDatetime;
 
-    private final Optional<Double> valueAsNumber;
+  private final Optional<Long> measurementTypeConceptId;
 
-    private final Optional<Long> operatorConceptId;
+  private final Optional<Double> valueAsNumber;
 
-    private final Optional<Long> valueAsConceptId;
+  private final Optional<Long> operatorConceptId;
 
-    private final Optional<Long> unitConceptId;
+  private final Optional<Long> valueAsConceptId;
 
-    private final Optional<Double> rangeLow;
+  private final Optional<Long> unitConceptId;
 
-    private final Optional<Double> rangeHigh;
+  private final Optional<Double> rangeLow;
 
-    private final Optional<Long> visitOccurrenceId;
+  private final Optional<Double> rangeHigh;
 
-    private final Optional<Long> providerId;
+  private final Optional<Long> visitOccurrenceId;
 
-    private final Optional<String> measurementSourceValue;
+  private final Optional<Long> providerId;
 
-    private final Optional<Long> measurementSourceConceptId;
+  private final Optional<String> measurementSourceValue;
 
-    private final Optional<String> unitSourceValue;
+  private final Optional<Long> measurementSourceConceptId;
 
-    private final Optional<String> valueSourceValue;
+  private final Optional<Long> unitSourceConceptId;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> unitSourceValue;
 
-    private MeasurementRow(
-            Optional<Long> measurementId,
-            Optional<Long> personId,
-            Optional<Long> measurementConceptId,
-            Optional<String> measurementDate,
-            Optional<String> measurementDatetime,
-            Optional<Long> measurementTypeConceptId,
-            Optional<Double> valueAsNumber,
-            Optional<Long> operatorConceptId,
-            Optional<Long> valueAsConceptId,
-            Optional<Long> unitConceptId,
-            Optional<Double> rangeLow,
-            Optional<Double> rangeHigh,
-            Optional<Long> visitOccurrenceId,
-            Optional<Long> providerId,
-            Optional<String> measurementSourceValue,
-            Optional<Long> measurementSourceConceptId,
-            Optional<String> unitSourceValue,
-            Optional<String> valueSourceValue,
-            Map<String, Object> additionalProperties) {
-        this.measurementId = measurementId;
-        this.personId = personId;
-        this.measurementConceptId = measurementConceptId;
-        this.measurementDate = measurementDate;
-        this.measurementDatetime = measurementDatetime;
-        this.measurementTypeConceptId = measurementTypeConceptId;
-        this.valueAsNumber = valueAsNumber;
-        this.operatorConceptId = operatorConceptId;
-        this.valueAsConceptId = valueAsConceptId;
-        this.unitConceptId = unitConceptId;
-        this.rangeLow = rangeLow;
-        this.rangeHigh = rangeHigh;
-        this.visitOccurrenceId = visitOccurrenceId;
-        this.providerId = providerId;
-        this.measurementSourceValue = measurementSourceValue;
-        this.measurementSourceConceptId = measurementSourceConceptId;
-        this.unitSourceValue = unitSourceValue;
-        this.valueSourceValue = valueSourceValue;
-        this.additionalProperties = additionalProperties;
+  private final Optional<String> valueSourceValue;
+
+  private final Map<String, Object> additionalProperties;
+
+  private MeasurementRow(
+    Optional<Long> measurementId,
+    Optional<Long> personId,
+    Optional<Long> measurementConceptId,
+    Optional<String> measurementDate,
+    Optional<String> measurementDatetime,
+    Optional<Long> measurementTypeConceptId,
+    Optional<Double> valueAsNumber,
+    Optional<Long> operatorConceptId,
+    Optional<Long> valueAsConceptId,
+    Optional<Long> unitConceptId,
+    Optional<Double> rangeLow,
+    Optional<Double> rangeHigh,
+    Optional<Long> visitOccurrenceId,
+    Optional<Long> providerId,
+    Optional<String> measurementSourceValue,
+    Optional<Long> measurementSourceConceptId,
+    Optional<Long> unitSourceConceptId,
+    Optional<String> unitSourceValue,
+    Optional<String> valueSourceValue,
+    Map<String, Object> additionalProperties
+  ) {
+    this.measurementId = measurementId;
+    this.personId = personId;
+    this.measurementConceptId = measurementConceptId;
+    this.measurementDate = measurementDate;
+    this.measurementDatetime = measurementDatetime;
+    this.measurementTypeConceptId = measurementTypeConceptId;
+    this.valueAsNumber = valueAsNumber;
+    this.operatorConceptId = operatorConceptId;
+    this.valueAsConceptId = valueAsConceptId;
+    this.unitConceptId = unitConceptId;
+    this.rangeLow = rangeLow;
+    this.rangeHigh = rangeHigh;
+    this.visitOccurrenceId = visitOccurrenceId;
+    this.providerId = providerId;
+    this.measurementSourceValue = measurementSourceValue;
+    this.measurementSourceConceptId = measurementSourceConceptId;
+    this.unitSourceConceptId = unitSourceConceptId;
+    this.unitSourceValue = unitSourceValue;
+    this.valueSourceValue = valueSourceValue;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("measurement_id")
+  public Optional<Long> getMeasurementId() {
+    return measurementId;
+  }
+
+  @JsonProperty("person_id")
+  public Optional<Long> getPersonId() {
+    return personId;
+  }
+
+  @JsonProperty("measurement_concept_id")
+  public Optional<Long> getMeasurementConceptId() {
+    return measurementConceptId;
+  }
+
+  /**
+   * @return Start date selected by the source resource's timing rules. For an Observation, effectiveDateTime, effectivePeriod.start, or effectiveInstant; see the endpoint's timing sources for other resources.
+   */
+  @JsonProperty("measurement_date")
+  public Optional<String> getMeasurementDate() {
+    return measurementDate;
+  }
+
+  @JsonProperty("measurement_datetime")
+  public Optional<String> getMeasurementDatetime() {
+    return measurementDatetime;
+  }
+
+  @JsonProperty("measurement_type_concept_id")
+  public Optional<Long> getMeasurementTypeConceptId() {
+    return measurementTypeConceptId;
+  }
+
+  @JsonProperty("value_as_number")
+  public Optional<Double> getValueAsNumber() {
+    return valueAsNumber;
+  }
+
+  /**
+   * @return OMOP &quot;Meas Value Operator&quot; standard concept qualifying value_as_number (&lt;, &lt;=, &gt;, &gt;=), parsed from a numeric-string value or a FHIR valueQuantity.comparator. 0 when no operator (a bare number).
+   */
+  @JsonProperty("operator_concept_id")
+  public Optional<Long> getOperatorConceptId() {
+    return operatorConceptId;
+  }
+
+  @JsonProperty("value_as_concept_id")
+  public Optional<Long> getValueAsConceptId() {
+    return valueAsConceptId;
+  }
+
+  /**
+   * @return Valid standard Unit concept for coded UCUM; 0 for supplied but unmapped units, null for absent units. Always present in JSON.
+   */
+  @JsonProperty("unit_concept_id")
+  public Optional<Long> getUnitConceptId() {
+    return unitConceptId;
+  }
+
+  @JsonProperty("range_low")
+  public Optional<Double> getRangeLow() {
+    return rangeLow;
+  }
+
+  @JsonProperty("range_high")
+  public Optional<Double> getRangeHigh() {
+    return rangeHigh;
+  }
+
+  @JsonProperty("visit_occurrence_id")
+  public Optional<Long> getVisitOccurrenceId() {
+    return visitOccurrenceId;
+  }
+
+  @JsonProperty("provider_id")
+  public Optional<Long> getProviderId() {
+    return providerId;
+  }
+
+  @JsonProperty("measurement_source_value")
+  public Optional<String> getMeasurementSourceValue() {
+    return measurementSourceValue;
+  }
+
+  @JsonProperty("measurement_source_concept_id")
+  public Optional<Long> getMeasurementSourceConceptId() {
+    return measurementSourceConceptId;
+  }
+
+  /**
+   * @return OMOP source concept ID corresponding to Quantity.system/code; 0 for supplied units without a matching source concept, null for absent units. Always present in JSON.
+   */
+  @JsonProperty("unit_source_concept_id")
+  public Optional<Long> getUnitSourceConceptId() {
+    return unitSourceConceptId;
+  }
+
+  /**
+   * @return Original Quantity.code if supplied, otherwise Quantity.unit; human-readable unit text is preserved in the unit mapping's source_name.
+   */
+  @JsonProperty("unit_source_value")
+  public Optional<String> getUnitSourceValue() {
+    return unitSourceValue;
+  }
+
+  @JsonProperty("value_source_value")
+  public Optional<String> getValueSourceValue() {
+    return valueSourceValue;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof MeasurementRow && equalTo((MeasurementRow) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(MeasurementRow other) {
+    return (
+      measurementId.equals(other.measurementId) &&
+      personId.equals(other.personId) &&
+      measurementConceptId.equals(other.measurementConceptId) &&
+      measurementDate.equals(other.measurementDate) &&
+      measurementDatetime.equals(other.measurementDatetime) &&
+      measurementTypeConceptId.equals(other.measurementTypeConceptId) &&
+      valueAsNumber.equals(other.valueAsNumber) &&
+      operatorConceptId.equals(other.operatorConceptId) &&
+      valueAsConceptId.equals(other.valueAsConceptId) &&
+      unitConceptId.equals(other.unitConceptId) &&
+      rangeLow.equals(other.rangeLow) &&
+      rangeHigh.equals(other.rangeHigh) &&
+      visitOccurrenceId.equals(other.visitOccurrenceId) &&
+      providerId.equals(other.providerId) &&
+      measurementSourceValue.equals(other.measurementSourceValue) &&
+      measurementSourceConceptId.equals(other.measurementSourceConceptId) &&
+      unitSourceConceptId.equals(other.unitSourceConceptId) &&
+      unitSourceValue.equals(other.unitSourceValue) &&
+      valueSourceValue.equals(other.valueSourceValue)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.measurementId,
+      this.personId,
+      this.measurementConceptId,
+      this.measurementDate,
+      this.measurementDatetime,
+      this.measurementTypeConceptId,
+      this.valueAsNumber,
+      this.operatorConceptId,
+      this.valueAsConceptId,
+      this.unitConceptId,
+      this.rangeLow,
+      this.rangeHigh,
+      this.visitOccurrenceId,
+      this.providerId,
+      this.measurementSourceValue,
+      this.measurementSourceConceptId,
+      this.unitSourceConceptId,
+      this.unitSourceValue,
+      this.valueSourceValue
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Long> measurementId = Optional.empty();
+
+    private Optional<Long> personId = Optional.empty();
+
+    private Optional<Long> measurementConceptId = Optional.empty();
+
+    private Optional<String> measurementDate = Optional.empty();
+
+    private Optional<String> measurementDatetime = Optional.empty();
+
+    private Optional<Long> measurementTypeConceptId = Optional.empty();
+
+    private Optional<Double> valueAsNumber = Optional.empty();
+
+    private Optional<Long> operatorConceptId = Optional.empty();
+
+    private Optional<Long> valueAsConceptId = Optional.empty();
+
+    private Optional<Long> unitConceptId = Optional.empty();
+
+    private Optional<Double> rangeLow = Optional.empty();
+
+    private Optional<Double> rangeHigh = Optional.empty();
+
+    private Optional<Long> visitOccurrenceId = Optional.empty();
+
+    private Optional<Long> providerId = Optional.empty();
+
+    private Optional<String> measurementSourceValue = Optional.empty();
+
+    private Optional<Long> measurementSourceConceptId = Optional.empty();
+
+    private Optional<Long> unitSourceConceptId = Optional.empty();
+
+    private Optional<String> unitSourceValue = Optional.empty();
+
+    private Optional<String> valueSourceValue = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(MeasurementRow other) {
+      measurementId(other.getMeasurementId());
+      personId(other.getPersonId());
+      measurementConceptId(other.getMeasurementConceptId());
+      measurementDate(other.getMeasurementDate());
+      measurementDatetime(other.getMeasurementDatetime());
+      measurementTypeConceptId(other.getMeasurementTypeConceptId());
+      valueAsNumber(other.getValueAsNumber());
+      operatorConceptId(other.getOperatorConceptId());
+      valueAsConceptId(other.getValueAsConceptId());
+      unitConceptId(other.getUnitConceptId());
+      rangeLow(other.getRangeLow());
+      rangeHigh(other.getRangeHigh());
+      visitOccurrenceId(other.getVisitOccurrenceId());
+      providerId(other.getProviderId());
+      measurementSourceValue(other.getMeasurementSourceValue());
+      measurementSourceConceptId(other.getMeasurementSourceConceptId());
+      unitSourceConceptId(other.getUnitSourceConceptId());
+      unitSourceValue(other.getUnitSourceValue());
+      valueSourceValue(other.getValueSourceValue());
+      return this;
     }
 
-    @JsonProperty("measurement_id")
-    public Optional<Long> getMeasurementId() {
-        return measurementId;
+    @JsonSetter(value = "measurement_id", nulls = Nulls.SKIP)
+    public Builder measurementId(Optional<Long> measurementId) {
+      this.measurementId = measurementId;
+      return this;
     }
 
-    @JsonProperty("person_id")
-    public Optional<Long> getPersonId() {
-        return personId;
+    public Builder measurementId(Long measurementId) {
+      this.measurementId = Optional.ofNullable(measurementId);
+      return this;
     }
 
-    @JsonProperty("measurement_concept_id")
-    public Optional<Long> getMeasurementConceptId() {
-        return measurementConceptId;
+    @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
+    public Builder personId(Optional<Long> personId) {
+      this.personId = personId;
+      return this;
+    }
+
+    public Builder personId(Long personId) {
+      this.personId = Optional.ofNullable(personId);
+      return this;
+    }
+
+    @JsonSetter(value = "measurement_concept_id", nulls = Nulls.SKIP)
+    public Builder measurementConceptId(Optional<Long> measurementConceptId) {
+      this.measurementConceptId = measurementConceptId;
+      return this;
+    }
+
+    public Builder measurementConceptId(Long measurementConceptId) {
+      this.measurementConceptId = Optional.ofNullable(measurementConceptId);
+      return this;
     }
 
     /**
-     * @return Date from Observation.effectiveDateTime, effectivePeriod.start, or effectiveInstant.
+     * <p>Start date selected by the source resource's timing rules. For an Observation, effectiveDateTime, effectivePeriod.start, or effectiveInstant; see the endpoint's timing sources for other resources.</p>
      */
-    @JsonProperty("measurement_date")
-    public Optional<String> getMeasurementDate() {
-        return measurementDate;
+    @JsonSetter(value = "measurement_date", nulls = Nulls.SKIP)
+    public Builder measurementDate(Optional<String> measurementDate) {
+      this.measurementDate = measurementDate;
+      return this;
     }
 
-    @JsonProperty("measurement_datetime")
-    public Optional<String> getMeasurementDatetime() {
-        return measurementDatetime;
+    public Builder measurementDate(String measurementDate) {
+      this.measurementDate = Optional.ofNullable(measurementDate);
+      return this;
     }
 
-    @JsonProperty("measurement_type_concept_id")
-    public Optional<Long> getMeasurementTypeConceptId() {
-        return measurementTypeConceptId;
+    @JsonSetter(value = "measurement_datetime", nulls = Nulls.SKIP)
+    public Builder measurementDatetime(Optional<String> measurementDatetime) {
+      this.measurementDatetime = measurementDatetime;
+      return this;
     }
 
-    @JsonProperty("value_as_number")
-    public Optional<Double> getValueAsNumber() {
-        return valueAsNumber;
+    public Builder measurementDatetime(String measurementDatetime) {
+      this.measurementDatetime = Optional.ofNullable(measurementDatetime);
+      return this;
+    }
+
+    @JsonSetter(value = "measurement_type_concept_id", nulls = Nulls.SKIP)
+    public Builder measurementTypeConceptId(Optional<Long> measurementTypeConceptId) {
+      this.measurementTypeConceptId = measurementTypeConceptId;
+      return this;
+    }
+
+    public Builder measurementTypeConceptId(Long measurementTypeConceptId) {
+      this.measurementTypeConceptId = Optional.ofNullable(measurementTypeConceptId);
+      return this;
+    }
+
+    @JsonSetter(value = "value_as_number", nulls = Nulls.SKIP)
+    public Builder valueAsNumber(Optional<Double> valueAsNumber) {
+      this.valueAsNumber = valueAsNumber;
+      return this;
+    }
+
+    public Builder valueAsNumber(Double valueAsNumber) {
+      this.valueAsNumber = Optional.ofNullable(valueAsNumber);
+      return this;
     }
 
     /**
-     * @return OMOP &quot;Meas Value Operator&quot; standard concept qualifying value_as_number (&lt;, &lt;=, &gt;, &gt;=), parsed from a numeric-string value or a FHIR valueQuantity.comparator. 0 when no operator (a bare number).
+     * <p>OMOP &quot;Meas Value Operator&quot; standard concept qualifying value_as_number (&lt;, &lt;=, &gt;, &gt;=), parsed from a numeric-string value or a FHIR valueQuantity.comparator. 0 when no operator (a bare number).</p>
      */
-    @JsonProperty("operator_concept_id")
-    public Optional<Long> getOperatorConceptId() {
-        return operatorConceptId;
+    @JsonSetter(value = "operator_concept_id", nulls = Nulls.SKIP)
+    public Builder operatorConceptId(Optional<Long> operatorConceptId) {
+      this.operatorConceptId = operatorConceptId;
+      return this;
     }
 
-    @JsonProperty("value_as_concept_id")
-    public Optional<Long> getValueAsConceptId() {
-        return valueAsConceptId;
+    public Builder operatorConceptId(Long operatorConceptId) {
+      this.operatorConceptId = Optional.ofNullable(operatorConceptId);
+      return this;
     }
 
-    @JsonProperty("unit_concept_id")
-    public Optional<Long> getUnitConceptId() {
-        return unitConceptId;
+    @JsonSetter(value = "value_as_concept_id", nulls = Nulls.SKIP)
+    public Builder valueAsConceptId(Optional<Long> valueAsConceptId) {
+      this.valueAsConceptId = valueAsConceptId;
+      return this;
     }
 
-    @JsonProperty("range_low")
-    public Optional<Double> getRangeLow() {
-        return rangeLow;
+    public Builder valueAsConceptId(Long valueAsConceptId) {
+      this.valueAsConceptId = Optional.ofNullable(valueAsConceptId);
+      return this;
     }
 
-    @JsonProperty("range_high")
-    public Optional<Double> getRangeHigh() {
-        return rangeHigh;
+    /**
+     * <p>Valid standard Unit concept for coded UCUM; 0 for supplied but unmapped units, null for absent units. Always present in JSON.</p>
+     */
+    @JsonSetter(value = "unit_concept_id", nulls = Nulls.SKIP)
+    public Builder unitConceptId(Optional<Long> unitConceptId) {
+      this.unitConceptId = unitConceptId;
+      return this;
     }
 
-    @JsonProperty("visit_occurrence_id")
-    public Optional<Long> getVisitOccurrenceId() {
-        return visitOccurrenceId;
+    public Builder unitConceptId(Long unitConceptId) {
+      this.unitConceptId = Optional.ofNullable(unitConceptId);
+      return this;
     }
 
-    @JsonProperty("provider_id")
-    public Optional<Long> getProviderId() {
-        return providerId;
+    @JsonSetter(value = "range_low", nulls = Nulls.SKIP)
+    public Builder rangeLow(Optional<Double> rangeLow) {
+      this.rangeLow = rangeLow;
+      return this;
     }
 
-    @JsonProperty("measurement_source_value")
-    public Optional<String> getMeasurementSourceValue() {
-        return measurementSourceValue;
+    public Builder rangeLow(Double rangeLow) {
+      this.rangeLow = Optional.ofNullable(rangeLow);
+      return this;
     }
 
-    @JsonProperty("measurement_source_concept_id")
-    public Optional<Long> getMeasurementSourceConceptId() {
-        return measurementSourceConceptId;
+    @JsonSetter(value = "range_high", nulls = Nulls.SKIP)
+    public Builder rangeHigh(Optional<Double> rangeHigh) {
+      this.rangeHigh = rangeHigh;
+      return this;
     }
 
-    @JsonProperty("unit_source_value")
-    public Optional<String> getUnitSourceValue() {
-        return unitSourceValue;
+    public Builder rangeHigh(Double rangeHigh) {
+      this.rangeHigh = Optional.ofNullable(rangeHigh);
+      return this;
     }
 
-    @JsonProperty("value_source_value")
-    public Optional<String> getValueSourceValue() {
-        return valueSourceValue;
+    @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
+    public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
+      this.visitOccurrenceId = visitOccurrenceId;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof MeasurementRow && equalTo((MeasurementRow) other);
+    public Builder visitOccurrenceId(Long visitOccurrenceId) {
+      this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
+    public Builder providerId(Optional<Long> providerId) {
+      this.providerId = providerId;
+      return this;
     }
 
-    private boolean equalTo(MeasurementRow other) {
-        return measurementId.equals(other.measurementId)
-                && personId.equals(other.personId)
-                && measurementConceptId.equals(other.measurementConceptId)
-                && measurementDate.equals(other.measurementDate)
-                && measurementDatetime.equals(other.measurementDatetime)
-                && measurementTypeConceptId.equals(other.measurementTypeConceptId)
-                && valueAsNumber.equals(other.valueAsNumber)
-                && operatorConceptId.equals(other.operatorConceptId)
-                && valueAsConceptId.equals(other.valueAsConceptId)
-                && unitConceptId.equals(other.unitConceptId)
-                && rangeLow.equals(other.rangeLow)
-                && rangeHigh.equals(other.rangeHigh)
-                && visitOccurrenceId.equals(other.visitOccurrenceId)
-                && providerId.equals(other.providerId)
-                && measurementSourceValue.equals(other.measurementSourceValue)
-                && measurementSourceConceptId.equals(other.measurementSourceConceptId)
-                && unitSourceValue.equals(other.unitSourceValue)
-                && valueSourceValue.equals(other.valueSourceValue);
+    public Builder providerId(Long providerId) {
+      this.providerId = Optional.ofNullable(providerId);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.measurementId,
-                this.personId,
-                this.measurementConceptId,
-                this.measurementDate,
-                this.measurementDatetime,
-                this.measurementTypeConceptId,
-                this.valueAsNumber,
-                this.operatorConceptId,
-                this.valueAsConceptId,
-                this.unitConceptId,
-                this.rangeLow,
-                this.rangeHigh,
-                this.visitOccurrenceId,
-                this.providerId,
-                this.measurementSourceValue,
-                this.measurementSourceConceptId,
-                this.unitSourceValue,
-                this.valueSourceValue);
+    @JsonSetter(value = "measurement_source_value", nulls = Nulls.SKIP)
+    public Builder measurementSourceValue(Optional<String> measurementSourceValue) {
+      this.measurementSourceValue = measurementSourceValue;
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder measurementSourceValue(String measurementSourceValue) {
+      this.measurementSourceValue = Optional.ofNullable(measurementSourceValue);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @JsonSetter(value = "measurement_source_concept_id", nulls = Nulls.SKIP)
+    public Builder measurementSourceConceptId(Optional<Long> measurementSourceConceptId) {
+      this.measurementSourceConceptId = measurementSourceConceptId;
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Long> measurementId = Optional.empty();
-
-        private Optional<Long> personId = Optional.empty();
-
-        private Optional<Long> measurementConceptId = Optional.empty();
-
-        private Optional<String> measurementDate = Optional.empty();
-
-        private Optional<String> measurementDatetime = Optional.empty();
-
-        private Optional<Long> measurementTypeConceptId = Optional.empty();
-
-        private Optional<Double> valueAsNumber = Optional.empty();
-
-        private Optional<Long> operatorConceptId = Optional.empty();
-
-        private Optional<Long> valueAsConceptId = Optional.empty();
-
-        private Optional<Long> unitConceptId = Optional.empty();
-
-        private Optional<Double> rangeLow = Optional.empty();
-
-        private Optional<Double> rangeHigh = Optional.empty();
-
-        private Optional<Long> visitOccurrenceId = Optional.empty();
-
-        private Optional<Long> providerId = Optional.empty();
-
-        private Optional<String> measurementSourceValue = Optional.empty();
-
-        private Optional<Long> measurementSourceConceptId = Optional.empty();
-
-        private Optional<String> unitSourceValue = Optional.empty();
-
-        private Optional<String> valueSourceValue = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(MeasurementRow other) {
-            measurementId(other.getMeasurementId());
-            personId(other.getPersonId());
-            measurementConceptId(other.getMeasurementConceptId());
-            measurementDate(other.getMeasurementDate());
-            measurementDatetime(other.getMeasurementDatetime());
-            measurementTypeConceptId(other.getMeasurementTypeConceptId());
-            valueAsNumber(other.getValueAsNumber());
-            operatorConceptId(other.getOperatorConceptId());
-            valueAsConceptId(other.getValueAsConceptId());
-            unitConceptId(other.getUnitConceptId());
-            rangeLow(other.getRangeLow());
-            rangeHigh(other.getRangeHigh());
-            visitOccurrenceId(other.getVisitOccurrenceId());
-            providerId(other.getProviderId());
-            measurementSourceValue(other.getMeasurementSourceValue());
-            measurementSourceConceptId(other.getMeasurementSourceConceptId());
-            unitSourceValue(other.getUnitSourceValue());
-            valueSourceValue(other.getValueSourceValue());
-            return this;
-        }
-
-        @JsonSetter(value = "measurement_id", nulls = Nulls.SKIP)
-        public Builder measurementId(Optional<Long> measurementId) {
-            this.measurementId = measurementId;
-            return this;
-        }
-
-        public Builder measurementId(Long measurementId) {
-            this.measurementId = Optional.ofNullable(measurementId);
-            return this;
-        }
-
-        @JsonSetter(value = "person_id", nulls = Nulls.SKIP)
-        public Builder personId(Optional<Long> personId) {
-            this.personId = personId;
-            return this;
-        }
-
-        public Builder personId(Long personId) {
-            this.personId = Optional.ofNullable(personId);
-            return this;
-        }
-
-        @JsonSetter(value = "measurement_concept_id", nulls = Nulls.SKIP)
-        public Builder measurementConceptId(Optional<Long> measurementConceptId) {
-            this.measurementConceptId = measurementConceptId;
-            return this;
-        }
-
-        public Builder measurementConceptId(Long measurementConceptId) {
-            this.measurementConceptId = Optional.ofNullable(measurementConceptId);
-            return this;
-        }
-
-        /**
-         * <p>Date from Observation.effectiveDateTime, effectivePeriod.start, or effectiveInstant.</p>
-         */
-        @JsonSetter(value = "measurement_date", nulls = Nulls.SKIP)
-        public Builder measurementDate(Optional<String> measurementDate) {
-            this.measurementDate = measurementDate;
-            return this;
-        }
-
-        public Builder measurementDate(String measurementDate) {
-            this.measurementDate = Optional.ofNullable(measurementDate);
-            return this;
-        }
-
-        @JsonSetter(value = "measurement_datetime", nulls = Nulls.SKIP)
-        public Builder measurementDatetime(Optional<String> measurementDatetime) {
-            this.measurementDatetime = measurementDatetime;
-            return this;
-        }
-
-        public Builder measurementDatetime(String measurementDatetime) {
-            this.measurementDatetime = Optional.ofNullable(measurementDatetime);
-            return this;
-        }
-
-        @JsonSetter(value = "measurement_type_concept_id", nulls = Nulls.SKIP)
-        public Builder measurementTypeConceptId(Optional<Long> measurementTypeConceptId) {
-            this.measurementTypeConceptId = measurementTypeConceptId;
-            return this;
-        }
-
-        public Builder measurementTypeConceptId(Long measurementTypeConceptId) {
-            this.measurementTypeConceptId = Optional.ofNullable(measurementTypeConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "value_as_number", nulls = Nulls.SKIP)
-        public Builder valueAsNumber(Optional<Double> valueAsNumber) {
-            this.valueAsNumber = valueAsNumber;
-            return this;
-        }
-
-        public Builder valueAsNumber(Double valueAsNumber) {
-            this.valueAsNumber = Optional.ofNullable(valueAsNumber);
-            return this;
-        }
-
-        /**
-         * <p>OMOP &quot;Meas Value Operator&quot; standard concept qualifying value_as_number (&lt;, &lt;=, &gt;, &gt;=), parsed from a numeric-string value or a FHIR valueQuantity.comparator. 0 when no operator (a bare number).</p>
-         */
-        @JsonSetter(value = "operator_concept_id", nulls = Nulls.SKIP)
-        public Builder operatorConceptId(Optional<Long> operatorConceptId) {
-            this.operatorConceptId = operatorConceptId;
-            return this;
-        }
-
-        public Builder operatorConceptId(Long operatorConceptId) {
-            this.operatorConceptId = Optional.ofNullable(operatorConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "value_as_concept_id", nulls = Nulls.SKIP)
-        public Builder valueAsConceptId(Optional<Long> valueAsConceptId) {
-            this.valueAsConceptId = valueAsConceptId;
-            return this;
-        }
-
-        public Builder valueAsConceptId(Long valueAsConceptId) {
-            this.valueAsConceptId = Optional.ofNullable(valueAsConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "unit_concept_id", nulls = Nulls.SKIP)
-        public Builder unitConceptId(Optional<Long> unitConceptId) {
-            this.unitConceptId = unitConceptId;
-            return this;
-        }
-
-        public Builder unitConceptId(Long unitConceptId) {
-            this.unitConceptId = Optional.ofNullable(unitConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "range_low", nulls = Nulls.SKIP)
-        public Builder rangeLow(Optional<Double> rangeLow) {
-            this.rangeLow = rangeLow;
-            return this;
-        }
-
-        public Builder rangeLow(Double rangeLow) {
-            this.rangeLow = Optional.ofNullable(rangeLow);
-            return this;
-        }
-
-        @JsonSetter(value = "range_high", nulls = Nulls.SKIP)
-        public Builder rangeHigh(Optional<Double> rangeHigh) {
-            this.rangeHigh = rangeHigh;
-            return this;
-        }
-
-        public Builder rangeHigh(Double rangeHigh) {
-            this.rangeHigh = Optional.ofNullable(rangeHigh);
-            return this;
-        }
-
-        @JsonSetter(value = "visit_occurrence_id", nulls = Nulls.SKIP)
-        public Builder visitOccurrenceId(Optional<Long> visitOccurrenceId) {
-            this.visitOccurrenceId = visitOccurrenceId;
-            return this;
-        }
-
-        public Builder visitOccurrenceId(Long visitOccurrenceId) {
-            this.visitOccurrenceId = Optional.ofNullable(visitOccurrenceId);
-            return this;
-        }
-
-        @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
-        public Builder providerId(Optional<Long> providerId) {
-            this.providerId = providerId;
-            return this;
-        }
-
-        public Builder providerId(Long providerId) {
-            this.providerId = Optional.ofNullable(providerId);
-            return this;
-        }
-
-        @JsonSetter(value = "measurement_source_value", nulls = Nulls.SKIP)
-        public Builder measurementSourceValue(Optional<String> measurementSourceValue) {
-            this.measurementSourceValue = measurementSourceValue;
-            return this;
-        }
-
-        public Builder measurementSourceValue(String measurementSourceValue) {
-            this.measurementSourceValue = Optional.ofNullable(measurementSourceValue);
-            return this;
-        }
-
-        @JsonSetter(value = "measurement_source_concept_id", nulls = Nulls.SKIP)
-        public Builder measurementSourceConceptId(Optional<Long> measurementSourceConceptId) {
-            this.measurementSourceConceptId = measurementSourceConceptId;
-            return this;
-        }
-
-        public Builder measurementSourceConceptId(Long measurementSourceConceptId) {
-            this.measurementSourceConceptId = Optional.ofNullable(measurementSourceConceptId);
-            return this;
-        }
-
-        @JsonSetter(value = "unit_source_value", nulls = Nulls.SKIP)
-        public Builder unitSourceValue(Optional<String> unitSourceValue) {
-            this.unitSourceValue = unitSourceValue;
-            return this;
-        }
-
-        public Builder unitSourceValue(String unitSourceValue) {
-            this.unitSourceValue = Optional.ofNullable(unitSourceValue);
-            return this;
-        }
-
-        @JsonSetter(value = "value_source_value", nulls = Nulls.SKIP)
-        public Builder valueSourceValue(Optional<String> valueSourceValue) {
-            this.valueSourceValue = valueSourceValue;
-            return this;
-        }
-
-        public Builder valueSourceValue(String valueSourceValue) {
-            this.valueSourceValue = Optional.ofNullable(valueSourceValue);
-            return this;
-        }
-
-        public MeasurementRow build() {
-            return new MeasurementRow(
-                    measurementId,
-                    personId,
-                    measurementConceptId,
-                    measurementDate,
-                    measurementDatetime,
-                    measurementTypeConceptId,
-                    valueAsNumber,
-                    operatorConceptId,
-                    valueAsConceptId,
-                    unitConceptId,
-                    rangeLow,
-                    rangeHigh,
-                    visitOccurrenceId,
-                    providerId,
-                    measurementSourceValue,
-                    measurementSourceConceptId,
-                    unitSourceValue,
-                    valueSourceValue,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder measurementSourceConceptId(Long measurementSourceConceptId) {
+      this.measurementSourceConceptId = Optional.ofNullable(measurementSourceConceptId);
+      return this;
     }
+
+    /**
+     * <p>OMOP source concept ID corresponding to Quantity.system/code; 0 for supplied units without a matching source concept, null for absent units. Always present in JSON.</p>
+     */
+    @JsonSetter(value = "unit_source_concept_id", nulls = Nulls.SKIP)
+    public Builder unitSourceConceptId(Optional<Long> unitSourceConceptId) {
+      this.unitSourceConceptId = unitSourceConceptId;
+      return this;
+    }
+
+    public Builder unitSourceConceptId(Long unitSourceConceptId) {
+      this.unitSourceConceptId = Optional.ofNullable(unitSourceConceptId);
+      return this;
+    }
+
+    /**
+     * <p>Original Quantity.code if supplied, otherwise Quantity.unit; human-readable unit text is preserved in the unit mapping's source_name.</p>
+     */
+    @JsonSetter(value = "unit_source_value", nulls = Nulls.SKIP)
+    public Builder unitSourceValue(Optional<String> unitSourceValue) {
+      this.unitSourceValue = unitSourceValue;
+      return this;
+    }
+
+    public Builder unitSourceValue(String unitSourceValue) {
+      this.unitSourceValue = Optional.ofNullable(unitSourceValue);
+      return this;
+    }
+
+    @JsonSetter(value = "value_source_value", nulls = Nulls.SKIP)
+    public Builder valueSourceValue(Optional<String> valueSourceValue) {
+      this.valueSourceValue = valueSourceValue;
+      return this;
+    }
+
+    public Builder valueSourceValue(String valueSourceValue) {
+      this.valueSourceValue = Optional.ofNullable(valueSourceValue);
+      return this;
+    }
+
+    public MeasurementRow build() {
+      return new MeasurementRow(
+        measurementId,
+        personId,
+        measurementConceptId,
+        measurementDate,
+        measurementDatetime,
+        measurementTypeConceptId,
+        valueAsNumber,
+        operatorConceptId,
+        valueAsConceptId,
+        unitConceptId,
+        rangeLow,
+        rangeHigh,
+        visitOccurrenceId,
+        providerId,
+        measurementSourceValue,
+        measurementSourceConceptId,
+        unitSourceConceptId,
+        unitSourceValue,
+        valueSourceValue,
+        additionalProperties
+      );
+    }
+
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("measurement_id") ||
+        key.equalsIgnoreCase("person_id") ||
+        key.equalsIgnoreCase("measurement_concept_id") ||
+        key.equalsIgnoreCase("measurement_date") ||
+        key.equalsIgnoreCase("measurement_datetime") ||
+        key.equalsIgnoreCase("measurement_type_concept_id") ||
+        key.equalsIgnoreCase("value_as_number") ||
+        key.equalsIgnoreCase("operator_concept_id") ||
+        key.equalsIgnoreCase("value_as_concept_id") ||
+        key.equalsIgnoreCase("unit_concept_id") ||
+        key.equalsIgnoreCase("range_low") ||
+        key.equalsIgnoreCase("range_high") ||
+        key.equalsIgnoreCase("visit_occurrence_id") ||
+        key.equalsIgnoreCase("provider_id") ||
+        key.equalsIgnoreCase("measurement_source_value") ||
+        key.equalsIgnoreCase("measurement_source_concept_id") ||
+        key.equalsIgnoreCase("unit_source_concept_id") ||
+        key.equalsIgnoreCase("unit_source_value") ||
+        key.equalsIgnoreCase("value_source_value")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
+    }
+
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
+    }
+
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
+    }
+  }
 }

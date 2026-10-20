@@ -23,383 +23,418 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = AgentCreateRequest.Builder.class)
 public final class AgentCreateRequest {
-    private final String name;
 
-    private final Optional<String> description;
+  private final String name;
 
-    private final List<String> prompts;
+  private final Optional<String> description;
 
-    private final Optional<List<String>> tools;
+  private final List<String> prompts;
 
-    private final Optional<List<String>> workflows;
+  private final Optional<List<String>> tools;
 
-    private final Optional<List<String>> tags;
+  private final Optional<List<String>> workflows;
 
-    private final AgentCreateRequestProvider provider;
+  private final Optional<List<String>> tags;
 
-    private final Map<String, Object> additionalProperties;
+  private final AgentCreateRequestProvider provider;
 
-    private AgentCreateRequest(
-            String name,
-            Optional<String> description,
-            List<String> prompts,
-            Optional<List<String>> tools,
-            Optional<List<String>> workflows,
-            Optional<List<String>> tags,
-            AgentCreateRequestProvider provider,
-            Map<String, Object> additionalProperties) {
-        this.name = name;
-        this.description = description;
-        this.prompts = prompts;
-        this.tools = tools;
-        this.workflows = workflows;
-        this.tags = tags;
-        this.provider = provider;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private AgentCreateRequest(
+    String name,
+    Optional<String> description,
+    List<String> prompts,
+    Optional<List<String>> tools,
+    Optional<List<String>> workflows,
+    Optional<List<String>> tags,
+    AgentCreateRequestProvider provider,
+    Map<String, Object> additionalProperties
+  ) {
+    this.name = name;
+    this.description = description;
+    this.prompts = prompts;
+    this.tools = tools;
+    this.workflows = workflows;
+    this.tags = tags;
+    this.provider = provider;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Agent name
+   */
+  @JsonProperty("name")
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @return Agent description
+   */
+  @JsonProperty("description")
+  public Optional<String> getDescription() {
+    return description;
+  }
+
+  /**
+   * @return Array of prompt IDs to use for this agent
+   */
+  @JsonProperty("prompts")
+  public List<String> getPrompts() {
+    return prompts;
+  }
+
+  /**
+   * @return Array of MCP server tool IDs to use for this agent
+   */
+  @JsonProperty("tools")
+  public Optional<List<String>> getTools() {
+    return tools;
+  }
+
+  /**
+   * @return Array of workflow IDs to expose as tools for this agent
+   */
+  @JsonProperty("workflows")
+  public Optional<List<String>> getWorkflows() {
+    return workflows;
+  }
+
+  /**
+   * @return Tags for categorizing the agent
+   */
+  @JsonProperty("tags")
+  public Optional<List<String>> getTags() {
+    return tags;
+  }
+
+  /**
+   * @return FHIR provider ID(s) for this agent. Required.
+   * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.
+   */
+  @JsonProperty("provider")
+  public AgentCreateRequestProvider getProvider() {
+    return provider;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof AgentCreateRequest && equalTo((AgentCreateRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(AgentCreateRequest other) {
+    return (
+      name.equals(other.name) &&
+      description.equals(other.description) &&
+      prompts.equals(other.prompts) &&
+      tools.equals(other.tools) &&
+      workflows.equals(other.workflows) &&
+      tags.equals(other.tags) &&
+      provider.equals(other.provider)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.name,
+      this.description,
+      this.prompts,
+      this.tools,
+      this.workflows,
+      this.tags,
+      this.provider
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static NameStage builder() {
+    return new Builder();
+  }
+
+  public interface NameStage {
+    /**
+     * <p>Agent name</p>
+     */
+    ProviderStage name(@NotNull String name);
+
+    Builder from(AgentCreateRequest other);
+  }
+
+  public interface ProviderStage {
+    /**
+     * <p>FHIR provider ID(s) for this agent. Required.
+     * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.</p>
+     */
+    _FinalStage provider(@NotNull AgentCreateRequestProvider provider);
+  }
+
+  public interface _FinalStage {
+    AgentCreateRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Agent description</p>
+     */
+    _FinalStage description(Optional<String> description);
+
+    _FinalStage description(String description);
+
+    /**
+     * <p>Array of prompt IDs to use for this agent</p>
+     */
+    _FinalStage prompts(List<String> prompts);
+
+    _FinalStage addPrompts(String prompts);
+
+    _FinalStage addAllPrompts(List<String> prompts);
+
+    /**
+     * <p>Array of MCP server tool IDs to use for this agent</p>
+     */
+    _FinalStage tools(Optional<List<String>> tools);
+
+    _FinalStage tools(List<String> tools);
+
+    /**
+     * <p>Array of workflow IDs to expose as tools for this agent</p>
+     */
+    _FinalStage workflows(Optional<List<String>> workflows);
+
+    _FinalStage workflows(List<String> workflows);
+
+    /**
+     * <p>Tags for categorizing the agent</p>
+     */
+    _FinalStage tags(Optional<List<String>> tags);
+
+    _FinalStage tags(List<String> tags);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements NameStage, ProviderStage, _FinalStage {
+
+    private String name;
+
+    private AgentCreateRequestProvider provider;
+
+    private Optional<List<String>> tags = Optional.empty();
+
+    private Optional<List<String>> workflows = Optional.empty();
+
+    private Optional<List<String>> tools = Optional.empty();
+
+    private List<String> prompts = new ArrayList<>();
+
+    private Optional<String> description = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(AgentCreateRequest other) {
+      name(other.getName());
+      description(other.getDescription());
+      prompts(other.getPrompts());
+      tools(other.getTools());
+      workflows(other.getWorkflows());
+      tags(other.getTags());
+      provider(other.getProvider());
+      return this;
     }
 
     /**
-     * @return Agent name
+     * <p>Agent name</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("name")
-    public String getName() {
-        return name;
+    @java.lang.Override
+    @JsonSetter("name")
+    public ProviderStage name(@NotNull String name) {
+      this.name = Objects.requireNonNull(name, "name must not be null");
+      return this;
     }
 
     /**
-     * @return Agent description
+     * <p>FHIR provider ID(s) for this agent. Required.
+     * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("description")
-    public Optional<String> getDescription() {
-        return description;
+    @java.lang.Override
+    @JsonSetter("provider")
+    public _FinalStage provider(@NotNull AgentCreateRequestProvider provider) {
+      this.provider = Objects.requireNonNull(provider, "provider must not be null");
+      return this;
     }
 
     /**
-     * @return Array of prompt IDs to use for this agent
+     * <p>Tags for categorizing the agent</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("prompts")
-    public List<String> getPrompts() {
-        return prompts;
+    @java.lang.Override
+    public _FinalStage tags(List<String> tags) {
+      this.tags = Optional.ofNullable(tags);
+      return this;
     }
 
     /**
-     * @return Array of MCP server tool IDs to use for this agent
+     * <p>Tags for categorizing the agent</p>
      */
-    @JsonProperty("tools")
-    public Optional<List<String>> getTools() {
-        return tools;
+    @java.lang.Override
+    @JsonSetter(value = "tags", nulls = Nulls.SKIP)
+    public _FinalStage tags(Optional<List<String>> tags) {
+      this.tags = tags;
+      return this;
     }
 
     /**
-     * @return Array of workflow IDs to expose as tools for this agent
+     * <p>Array of workflow IDs to expose as tools for this agent</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("workflows")
-    public Optional<List<String>> getWorkflows() {
-        return workflows;
+    @java.lang.Override
+    public _FinalStage workflows(List<String> workflows) {
+      this.workflows = Optional.ofNullable(workflows);
+      return this;
     }
 
     /**
-     * @return Tags for categorizing the agent
+     * <p>Array of workflow IDs to expose as tools for this agent</p>
      */
-    @JsonProperty("tags")
-    public Optional<List<String>> getTags() {
-        return tags;
+    @java.lang.Override
+    @JsonSetter(value = "workflows", nulls = Nulls.SKIP)
+    public _FinalStage workflows(Optional<List<String>> workflows) {
+      this.workflows = workflows;
+      return this;
     }
 
     /**
-     * @return FHIR provider ID(s) for this agent. Required.
-     * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.
+     * <p>Array of MCP server tool IDs to use for this agent</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("provider")
-    public AgentCreateRequestProvider getProvider() {
-        return provider;
+    @java.lang.Override
+    public _FinalStage tools(List<String> tools) {
+      this.tools = Optional.ofNullable(tools);
+      return this;
+    }
+
+    /**
+     * <p>Array of MCP server tool IDs to use for this agent</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "tools", nulls = Nulls.SKIP)
+    public _FinalStage tools(Optional<List<String>> tools) {
+      this.tools = tools;
+      return this;
+    }
+
+    /**
+     * <p>Array of prompt IDs to use for this agent</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage addAllPrompts(List<String> prompts) {
+      if (prompts != null) {
+        this.prompts.addAll(prompts);
+      }
+      return this;
+    }
+
+    /**
+     * <p>Array of prompt IDs to use for this agent</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage addPrompts(String prompts) {
+      this.prompts.add(prompts);
+      return this;
+    }
+
+    /**
+     * <p>Array of prompt IDs to use for this agent</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "prompts", nulls = Nulls.SKIP)
+    public _FinalStage prompts(List<String> prompts) {
+      this.prompts.clear();
+      if (prompts != null) {
+        this.prompts.addAll(prompts);
+      }
+      return this;
+    }
+
+    /**
+     * <p>Agent description</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage description(String description) {
+      this.description = Optional.ofNullable(description);
+      return this;
+    }
+
+    /**
+     * <p>Agent description</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "description", nulls = Nulls.SKIP)
+    public _FinalStage description(Optional<String> description) {
+      this.description = description;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof AgentCreateRequest && equalTo((AgentCreateRequest) other);
+    public AgentCreateRequest build() {
+      return new AgentCreateRequest(
+        name,
+        description,
+        prompts,
+        tools,
+        workflows,
+        tags,
+        provider,
+        additionalProperties
+      );
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(AgentCreateRequest other) {
-        return name.equals(other.name)
-                && description.equals(other.description)
-                && prompts.equals(other.prompts)
-                && tools.equals(other.tools)
-                && workflows.equals(other.workflows)
-                && tags.equals(other.tags)
-                && provider.equals(other.provider);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("description") ||
+        key.equalsIgnoreCase("prompts") ||
+        key.equalsIgnoreCase("tools") ||
+        key.equalsIgnoreCase("workflows") ||
+        key.equalsIgnoreCase("tags") ||
+        key.equalsIgnoreCase("provider")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.name, this.description, this.prompts, this.tools, this.workflows, this.tags, this.provider);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static NameStage builder() {
-        return new Builder();
-    }
-
-    public interface NameStage {
-        /**
-         * <p>Agent name</p>
-         */
-        ProviderStage name(@NotNull String name);
-
-        Builder from(AgentCreateRequest other);
-    }
-
-    public interface ProviderStage {
-        /**
-         * <p>FHIR provider ID(s) for this agent. Required.
-         * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.</p>
-         */
-        _FinalStage provider(@NotNull AgentCreateRequestProvider provider);
-    }
-
-    public interface _FinalStage {
-        AgentCreateRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Agent description</p>
-         */
-        _FinalStage description(Optional<String> description);
-
-        _FinalStage description(String description);
-
-        /**
-         * <p>Array of prompt IDs to use for this agent</p>
-         */
-        _FinalStage prompts(List<String> prompts);
-
-        _FinalStage addPrompts(String prompts);
-
-        _FinalStage addAllPrompts(List<String> prompts);
-
-        /**
-         * <p>Array of MCP server tool IDs to use for this agent</p>
-         */
-        _FinalStage tools(Optional<List<String>> tools);
-
-        _FinalStage tools(List<String> tools);
-
-        /**
-         * <p>Array of workflow IDs to expose as tools for this agent</p>
-         */
-        _FinalStage workflows(Optional<List<String>> workflows);
-
-        _FinalStage workflows(List<String> workflows);
-
-        /**
-         * <p>Tags for categorizing the agent</p>
-         */
-        _FinalStage tags(Optional<List<String>> tags);
-
-        _FinalStage tags(List<String> tags);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements NameStage, ProviderStage, _FinalStage {
-        private String name;
-
-        private AgentCreateRequestProvider provider;
-
-        private Optional<List<String>> tags = Optional.empty();
-
-        private Optional<List<String>> workflows = Optional.empty();
-
-        private Optional<List<String>> tools = Optional.empty();
-
-        private List<String> prompts = new ArrayList<>();
-
-        private Optional<String> description = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(AgentCreateRequest other) {
-            name(other.getName());
-            description(other.getDescription());
-            prompts(other.getPrompts());
-            tools(other.getTools());
-            workflows(other.getWorkflows());
-            tags(other.getTags());
-            provider(other.getProvider());
-            return this;
-        }
-
-        /**
-         * <p>Agent name</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("name")
-        public ProviderStage name(@NotNull String name) {
-            this.name = Objects.requireNonNull(name, "name must not be null");
-            return this;
-        }
-
-        /**
-         * <p>FHIR provider ID(s) for this agent. Required.
-         * In shared/experiment environments, the default sandbox provider is used if a different provider is not explicitly specified.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("provider")
-        public _FinalStage provider(@NotNull AgentCreateRequestProvider provider) {
-            this.provider = Objects.requireNonNull(provider, "provider must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Tags for categorizing the agent</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage tags(List<String> tags) {
-            this.tags = Optional.ofNullable(tags);
-            return this;
-        }
-
-        /**
-         * <p>Tags for categorizing the agent</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "tags", nulls = Nulls.SKIP)
-        public _FinalStage tags(Optional<List<String>> tags) {
-            this.tags = tags;
-            return this;
-        }
-
-        /**
-         * <p>Array of workflow IDs to expose as tools for this agent</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage workflows(List<String> workflows) {
-            this.workflows = Optional.ofNullable(workflows);
-            return this;
-        }
-
-        /**
-         * <p>Array of workflow IDs to expose as tools for this agent</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "workflows", nulls = Nulls.SKIP)
-        public _FinalStage workflows(Optional<List<String>> workflows) {
-            this.workflows = workflows;
-            return this;
-        }
-
-        /**
-         * <p>Array of MCP server tool IDs to use for this agent</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage tools(List<String> tools) {
-            this.tools = Optional.ofNullable(tools);
-            return this;
-        }
-
-        /**
-         * <p>Array of MCP server tool IDs to use for this agent</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "tools", nulls = Nulls.SKIP)
-        public _FinalStage tools(Optional<List<String>> tools) {
-            this.tools = tools;
-            return this;
-        }
-
-        /**
-         * <p>Array of prompt IDs to use for this agent</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addAllPrompts(List<String> prompts) {
-            if (prompts != null) {
-                this.prompts.addAll(prompts);
-            }
-            return this;
-        }
-
-        /**
-         * <p>Array of prompt IDs to use for this agent</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addPrompts(String prompts) {
-            this.prompts.add(prompts);
-            return this;
-        }
-
-        /**
-         * <p>Array of prompt IDs to use for this agent</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "prompts", nulls = Nulls.SKIP)
-        public _FinalStage prompts(List<String> prompts) {
-            this.prompts.clear();
-            if (prompts != null) {
-                this.prompts.addAll(prompts);
-            }
-            return this;
-        }
-
-        /**
-         * <p>Agent description</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage description(String description) {
-            this.description = Optional.ofNullable(description);
-            return this;
-        }
-
-        /**
-         * <p>Agent description</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "description", nulls = Nulls.SKIP)
-        public _FinalStage description(Optional<String> description) {
-            this.description = description;
-            return this;
-        }
-
-        @java.lang.Override
-        public AgentCreateRequest build() {
-            return new AgentCreateRequest(
-                    name, description, prompts, tools, workflows, tags, provider, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

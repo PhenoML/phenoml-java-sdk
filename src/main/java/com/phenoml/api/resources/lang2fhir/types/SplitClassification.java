@@ -19,178 +19,197 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = SplitClassification.Builder.class)
 public final class SplitClassification {
-    private final String id;
 
-    private final String description;
+  private final String id;
 
-    private final SplitClassificationOperation operation;
+  private final String description;
 
-    private final Map<String, Object> additionalProperties;
+  private final SplitClassificationOperation operation;
 
-    private SplitClassification(
-            String id,
-            String description,
-            SplitClassificationOperation operation,
-            Map<String, Object> additionalProperties) {
-        this.id = id;
-        this.description = description;
-        this.operation = operation;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private SplitClassification(
+    String id,
+    String description,
+    SplitClassificationOperation operation,
+    Map<String, Object> additionalProperties
+  ) {
+    this.id = id;
+    this.description = description;
+    this.operation = operation;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Unique classification id. The reserved id &quot;<strong>ungrouped</strong>&quot; is not allowed.
+   */
+  @JsonProperty("id")
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * @return Natural-language description of pages that belong to this classification.
+   */
+  @JsonProperty("description")
+  public String getDescription() {
+    return description;
+  }
+
+  /**
+   * @return Operation applied to pages assigned this classification.
+   */
+  @JsonProperty("operation")
+  public SplitClassificationOperation getOperation() {
+    return operation;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof SplitClassification && equalTo((SplitClassification) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(SplitClassification other) {
+    return (
+      id.equals(other.id) &&
+      description.equals(other.description) &&
+      operation.equals(other.operation)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.id, this.description, this.operation);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static IdStage builder() {
+    return new Builder();
+  }
+
+  public interface IdStage {
+    /**
+     * <p>Unique classification id. The reserved id &quot;<strong>ungrouped</strong>&quot; is not allowed.</p>
+     */
+    DescriptionStage id(@NotNull String id);
+
+    Builder from(SplitClassification other);
+  }
+
+  public interface DescriptionStage {
+    /**
+     * <p>Natural-language description of pages that belong to this classification.</p>
+     */
+    OperationStage description(@NotNull String description);
+  }
+
+  public interface OperationStage {
+    /**
+     * <p>Operation applied to pages assigned this classification.</p>
+     */
+    _FinalStage operation(@NotNull SplitClassificationOperation operation);
+  }
+
+  public interface _FinalStage {
+    SplitClassification build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements IdStage, DescriptionStage, OperationStage, _FinalStage {
+
+    private String id;
+
+    private String description;
+
+    private SplitClassificationOperation operation;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(SplitClassification other) {
+      id(other.getId());
+      description(other.getDescription());
+      operation(other.getOperation());
+      return this;
     }
 
     /**
-     * @return Unique classification id. The reserved id &quot;<strong>ungrouped</strong>&quot; is not allowed.
+     * <p>Unique classification id. The reserved id &quot;<strong>ungrouped</strong>&quot; is not allowed.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("id")
-    public String getId() {
-        return id;
+    @java.lang.Override
+    @JsonSetter("id")
+    public DescriptionStage id(@NotNull String id) {
+      this.id = Objects.requireNonNull(id, "id must not be null");
+      return this;
     }
 
     /**
-     * @return Natural-language description of pages that belong to this classification.
+     * <p>Natural-language description of pages that belong to this classification.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("description")
-    public String getDescription() {
-        return description;
+    @java.lang.Override
+    @JsonSetter("description")
+    public OperationStage description(@NotNull String description) {
+      this.description = Objects.requireNonNull(description, "description must not be null");
+      return this;
     }
 
     /**
-     * @return Operation applied to pages assigned this classification.
+     * <p>Operation applied to pages assigned this classification.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("operation")
-    public SplitClassificationOperation getOperation() {
-        return operation;
+    @java.lang.Override
+    @JsonSetter("operation")
+    public _FinalStage operation(@NotNull SplitClassificationOperation operation) {
+      this.operation = Objects.requireNonNull(operation, "operation must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof SplitClassification && equalTo((SplitClassification) other);
+    public SplitClassification build() {
+      return new SplitClassification(id, description, operation, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(SplitClassification other) {
-        return id.equals(other.id) && description.equals(other.description) && operation.equals(other.operation);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.id, this.description, this.operation);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("id") ||
+        key.equalsIgnoreCase("description") ||
+        key.equalsIgnoreCase("operation")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static IdStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface IdStage {
-        /**
-         * <p>Unique classification id. The reserved id &quot;<strong>ungrouped</strong>&quot; is not allowed.</p>
-         */
-        DescriptionStage id(@NotNull String id);
-
-        Builder from(SplitClassification other);
-    }
-
-    public interface DescriptionStage {
-        /**
-         * <p>Natural-language description of pages that belong to this classification.</p>
-         */
-        OperationStage description(@NotNull String description);
-    }
-
-    public interface OperationStage {
-        /**
-         * <p>Operation applied to pages assigned this classification.</p>
-         */
-        _FinalStage operation(@NotNull SplitClassificationOperation operation);
-    }
-
-    public interface _FinalStage {
-        SplitClassification build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements IdStage, DescriptionStage, OperationStage, _FinalStage {
-        private String id;
-
-        private String description;
-
-        private SplitClassificationOperation operation;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(SplitClassification other) {
-            id(other.getId());
-            description(other.getDescription());
-            operation(other.getOperation());
-            return this;
-        }
-
-        /**
-         * <p>Unique classification id. The reserved id &quot;<strong>ungrouped</strong>&quot; is not allowed.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("id")
-        public DescriptionStage id(@NotNull String id) {
-            this.id = Objects.requireNonNull(id, "id must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Natural-language description of pages that belong to this classification.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("description")
-        public OperationStage description(@NotNull String description) {
-            this.description = Objects.requireNonNull(description, "description must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Operation applied to pages assigned this classification.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("operation")
-        public _FinalStage operation(@NotNull SplitClassificationOperation operation) {
-            this.operation = Objects.requireNonNull(operation, "operation must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public SplitClassification build() {
-            return new SplitClassification(id, description, operation, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -20,134 +20,148 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = UploadResponse.Builder.class)
 public final class UploadResponse {
-    private final Optional<String> status;
 
-    private final Optional<String> name;
+  private final Optional<String> status;
 
-    private final Optional<String> version;
+  private final Optional<String> name;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> version;
 
-    private UploadResponse(
-            Optional<String> status,
-            Optional<String> name,
-            Optional<String> version,
-            Map<String, Object> additionalProperties) {
-        this.status = status;
-        this.name = name;
-        this.version = version;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private UploadResponse(
+    Optional<String> status,
+    Optional<String> name,
+    Optional<String> version,
+    Map<String, Object> additionalProperties
+  ) {
+    this.status = status;
+    this.name = name;
+    this.version = version;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("status")
+  public Optional<String> getStatus() {
+    return status;
+  }
+
+  @JsonProperty("name")
+  public Optional<String> getName() {
+    return name;
+  }
+
+  @JsonProperty("version")
+  public Optional<String> getVersion() {
+    return version;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof UploadResponse && equalTo((UploadResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(UploadResponse other) {
+    return status.equals(other.status) && name.equals(other.name) && version.equals(other.version);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.status, this.name, this.version);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> status = Optional.empty();
+
+    private Optional<String> name = Optional.empty();
+
+    private Optional<String> version = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(UploadResponse other) {
+      status(other.getStatus());
+      name(other.getName());
+      version(other.getVersion());
+      return this;
     }
 
-    @JsonProperty("status")
-    public Optional<String> getStatus() {
-        return status;
+    @JsonSetter(value = "status", nulls = Nulls.SKIP)
+    public Builder status(Optional<String> status) {
+      this.status = status;
+      return this;
     }
 
-    @JsonProperty("name")
-    public Optional<String> getName() {
-        return name;
+    public Builder status(String status) {
+      this.status = Optional.ofNullable(status);
+      return this;
     }
 
-    @JsonProperty("version")
-    public Optional<String> getVersion() {
-        return version;
+    @JsonSetter(value = "name", nulls = Nulls.SKIP)
+    public Builder name(Optional<String> name) {
+      this.name = name;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof UploadResponse && equalTo((UploadResponse) other);
+    public Builder name(String name) {
+      this.name = Optional.ofNullable(name);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    @JsonSetter(value = "version", nulls = Nulls.SKIP)
+    public Builder version(Optional<String> version) {
+      this.version = version;
+      return this;
     }
 
-    private boolean equalTo(UploadResponse other) {
-        return status.equals(other.status) && name.equals(other.name) && version.equals(other.version);
+    public Builder version(String version) {
+      this.version = Optional.ofNullable(version);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.status, this.name, this.version);
+    public UploadResponse build() {
+      return new UploadResponse(status, name, version, additionalProperties);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("status") ||
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("version")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> status = Optional.empty();
-
-        private Optional<String> name = Optional.empty();
-
-        private Optional<String> version = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(UploadResponse other) {
-            status(other.getStatus());
-            name(other.getName());
-            version(other.getVersion());
-            return this;
-        }
-
-        @JsonSetter(value = "status", nulls = Nulls.SKIP)
-        public Builder status(Optional<String> status) {
-            this.status = status;
-            return this;
-        }
-
-        public Builder status(String status) {
-            this.status = Optional.ofNullable(status);
-            return this;
-        }
-
-        @JsonSetter(value = "name", nulls = Nulls.SKIP)
-        public Builder name(Optional<String> name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = Optional.ofNullable(name);
-            return this;
-        }
-
-        @JsonSetter(value = "version", nulls = Nulls.SKIP)
-        public Builder version(Optional<String> version) {
-            this.version = version;
-            return this;
-        }
-
-        public Builder version(String version) {
-            this.version = Optional.ofNullable(version);
-            return this;
-        }
-
-        public UploadResponse build() {
-            return new UploadResponse(status, name, version, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

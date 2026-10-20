@@ -21,96 +21,108 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ProfileListResponse.Builder.class)
 public final class ProfileListResponse {
-    private final List<ProfileSummary> profiles;
 
-    private final Map<String, Object> additionalProperties;
+  private final List<ProfileSummary> profiles;
 
-    private ProfileListResponse(List<ProfileSummary> profiles, Map<String, Object> additionalProperties) {
-        this.profiles = profiles;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ProfileListResponse(
+    List<ProfileSummary> profiles,
+    Map<String, Object> additionalProperties
+  ) {
+    this.profiles = profiles;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("profiles")
+  public List<ProfileSummary> getProfiles() {
+    return profiles;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ProfileListResponse && equalTo((ProfileListResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ProfileListResponse other) {
+    return profiles.equals(other.profiles);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.profiles);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private List<ProfileSummary> profiles = new ArrayList<>();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ProfileListResponse other) {
+      profiles(other.getProfiles());
+      return this;
     }
 
-    @JsonProperty("profiles")
-    public List<ProfileSummary> getProfiles() {
-        return profiles;
+    @JsonSetter(value = "profiles", nulls = Nulls.SKIP)
+    public Builder profiles(List<ProfileSummary> profiles) {
+      this.profiles.clear();
+      if (profiles != null) {
+        this.profiles.addAll(profiles);
+      }
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ProfileListResponse && equalTo((ProfileListResponse) other);
+    public Builder addProfiles(ProfileSummary profiles) {
+      this.profiles.add(profiles);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder addAllProfiles(List<ProfileSummary> profiles) {
+      if (profiles != null) {
+        this.profiles.addAll(profiles);
+      }
+      return this;
     }
 
-    private boolean equalTo(ProfileListResponse other) {
-        return profiles.equals(other.profiles);
+    public ProfileListResponse build() {
+      return new ProfileListResponse(profiles, additionalProperties);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.profiles);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("profiles")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private List<ProfileSummary> profiles = new ArrayList<>();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ProfileListResponse other) {
-            profiles(other.getProfiles());
-            return this;
-        }
-
-        @JsonSetter(value = "profiles", nulls = Nulls.SKIP)
-        public Builder profiles(List<ProfileSummary> profiles) {
-            this.profiles.clear();
-            if (profiles != null) {
-                this.profiles.addAll(profiles);
-            }
-            return this;
-        }
-
-        public Builder addProfiles(ProfileSummary profiles) {
-            this.profiles.add(profiles);
-            return this;
-        }
-
-        public Builder addAllProfiles(List<ProfileSummary> profiles) {
-            if (profiles != null) {
-                this.profiles.addAll(profiles);
-            }
-            return this;
-        }
-
-        public ProfileListResponse build() {
-            return new ProfileListResponse(profiles, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

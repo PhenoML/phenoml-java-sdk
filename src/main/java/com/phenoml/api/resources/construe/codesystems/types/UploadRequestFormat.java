@@ -7,77 +7,81 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class UploadRequestFormat {
-    public static final UploadRequestFormat CSV = new UploadRequestFormat(Value.CSV, "csv");
 
-    public static final UploadRequestFormat JSON = new UploadRequestFormat(Value.JSON, "json");
+  public static final UploadRequestFormat CSV = new UploadRequestFormat(Value.CSV, "csv");
 
-    private final Value value;
+  public static final UploadRequestFormat JSON = new UploadRequestFormat(Value.JSON, "json");
 
-    private final String string;
+  private final Value value;
 
-    UploadRequestFormat(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  UploadRequestFormat(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof UploadRequestFormat &&
+        this.string.equals(((UploadRequestFormat) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case CSV:
+        return visitor.visitCsv();
+      case JSON:
+        return visitor.visitJson();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static UploadRequestFormat valueOf(String value) {
+    switch (value) {
+      case "csv":
+        return CSV;
+      case "json":
+        return JSON;
+      default:
+        return new UploadRequestFormat(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    CSV,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof UploadRequestFormat && this.string.equals(((UploadRequestFormat) other).string));
-    }
+    JSON,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    UNKNOWN,
+  }
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case CSV:
-                return visitor.visitCsv();
-            case JSON:
-                return visitor.visitJson();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+  public interface Visitor<T> {
+    T visitCsv();
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static UploadRequestFormat valueOf(String value) {
-        switch (value) {
-            case "csv":
-                return CSV;
-            case "json":
-                return JSON;
-            default:
-                return new UploadRequestFormat(Value.UNKNOWN, value);
-        }
-    }
+    T visitJson();
 
-    public enum Value {
-        CSV,
-
-        JSON,
-
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitCsv();
-
-        T visitJson();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

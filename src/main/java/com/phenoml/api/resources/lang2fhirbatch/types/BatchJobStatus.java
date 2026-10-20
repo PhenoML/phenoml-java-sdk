@@ -7,107 +7,113 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class BatchJobStatus {
-    public static final BatchJobStatus FAILED = new BatchJobStatus(Value.FAILED, "failed");
 
-    public static final BatchJobStatus PENDING = new BatchJobStatus(Value.PENDING, "pending");
+  public static final BatchJobStatus FAILED = new BatchJobStatus(Value.FAILED, "failed");
 
-    public static final BatchJobStatus PROCESSING = new BatchJobStatus(Value.PROCESSING, "processing");
+  public static final BatchJobStatus PENDING = new BatchJobStatus(Value.PENDING, "pending");
 
-    public static final BatchJobStatus CANCELED = new BatchJobStatus(Value.CANCELED, "canceled");
+  public static final BatchJobStatus PROCESSING = new BatchJobStatus(
+    Value.PROCESSING,
+    "processing"
+  );
 
-    public static final BatchJobStatus COMPLETED = new BatchJobStatus(Value.COMPLETED, "completed");
+  public static final BatchJobStatus CANCELED = new BatchJobStatus(Value.CANCELED, "canceled");
 
-    private final Value value;
+  public static final BatchJobStatus COMPLETED = new BatchJobStatus(Value.COMPLETED, "completed");
 
-    private final String string;
+  private final Value value;
 
-    BatchJobStatus(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  BatchJobStatus(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof BatchJobStatus && this.string.equals(((BatchJobStatus) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case FAILED:
+        return visitor.visitFailed();
+      case PENDING:
+        return visitor.visitPending();
+      case PROCESSING:
+        return visitor.visitProcessing();
+      case CANCELED:
+        return visitor.visitCanceled();
+      case COMPLETED:
+        return visitor.visitCompleted();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static BatchJobStatus valueOf(String value) {
+    switch (value) {
+      case "failed":
+        return FAILED;
+      case "pending":
+        return PENDING;
+      case "processing":
+        return PROCESSING;
+      case "canceled":
+        return CANCELED;
+      case "completed":
+        return COMPLETED;
+      default:
+        return new BatchJobStatus(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    PENDING,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof BatchJobStatus && this.string.equals(((BatchJobStatus) other).string));
-    }
+    PROCESSING,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    COMPLETED,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case FAILED:
-                return visitor.visitFailed();
-            case PENDING:
-                return visitor.visitPending();
-            case PROCESSING:
-                return visitor.visitProcessing();
-            case CANCELED:
-                return visitor.visitCanceled();
-            case COMPLETED:
-                return visitor.visitCompleted();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    FAILED,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static BatchJobStatus valueOf(String value) {
-        switch (value) {
-            case "failed":
-                return FAILED;
-            case "pending":
-                return PENDING;
-            case "processing":
-                return PROCESSING;
-            case "canceled":
-                return CANCELED;
-            case "completed":
-                return COMPLETED;
-            default:
-                return new BatchJobStatus(Value.UNKNOWN, value);
-        }
-    }
+    CANCELED,
 
-    public enum Value {
-        PENDING,
+    UNKNOWN,
+  }
 
-        PROCESSING,
+  public interface Visitor<T> {
+    T visitPending();
 
-        COMPLETED,
+    T visitProcessing();
 
-        FAILED,
+    T visitCompleted();
 
-        CANCELED,
+    T visitFailed();
 
-        UNKNOWN
-    }
+    T visitCanceled();
 
-    public interface Visitor<T> {
-        T visitPending();
-
-        T visitProcessing();
-
-        T visitCompleted();
-
-        T visitFailed();
-
-        T visitCanceled();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

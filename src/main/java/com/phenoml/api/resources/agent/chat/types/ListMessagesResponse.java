@@ -22,134 +22,152 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ListMessagesResponse.Builder.class)
 public final class ListMessagesResponse {
-    private final Optional<List<ChatMessageTemplate>> messages;
 
-    private final Optional<Integer> total;
+  private final Optional<List<ChatMessageTemplate>> messages;
 
-    private final Optional<String> sessionId;
+  private final Optional<Integer> total;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> sessionId;
 
-    private ListMessagesResponse(
-            Optional<List<ChatMessageTemplate>> messages,
-            Optional<Integer> total,
-            Optional<String> sessionId,
-            Map<String, Object> additionalProperties) {
-        this.messages = messages;
-        this.total = total;
-        this.sessionId = sessionId;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ListMessagesResponse(
+    Optional<List<ChatMessageTemplate>> messages,
+    Optional<Integer> total,
+    Optional<String> sessionId,
+    Map<String, Object> additionalProperties
+  ) {
+    this.messages = messages;
+    this.total = total;
+    this.sessionId = sessionId;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("messages")
+  public Optional<List<ChatMessageTemplate>> getMessages() {
+    return messages;
+  }
+
+  @JsonProperty("total")
+  public Optional<Integer> getTotal() {
+    return total;
+  }
+
+  @JsonProperty("session_id")
+  public Optional<String> getSessionId() {
+    return sessionId;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ListMessagesResponse && equalTo((ListMessagesResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ListMessagesResponse other) {
+    return (
+      messages.equals(other.messages) &&
+      total.equals(other.total) &&
+      sessionId.equals(other.sessionId)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.messages, this.total, this.sessionId);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<List<ChatMessageTemplate>> messages = Optional.empty();
+
+    private Optional<Integer> total = Optional.empty();
+
+    private Optional<String> sessionId = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ListMessagesResponse other) {
+      messages(other.getMessages());
+      total(other.getTotal());
+      sessionId(other.getSessionId());
+      return this;
     }
 
-    @JsonProperty("messages")
-    public Optional<List<ChatMessageTemplate>> getMessages() {
-        return messages;
+    @JsonSetter(value = "messages", nulls = Nulls.SKIP)
+    public Builder messages(Optional<List<ChatMessageTemplate>> messages) {
+      this.messages = messages;
+      return this;
     }
 
-    @JsonProperty("total")
-    public Optional<Integer> getTotal() {
-        return total;
+    public Builder messages(List<ChatMessageTemplate> messages) {
+      this.messages = Optional.ofNullable(messages);
+      return this;
     }
 
-    @JsonProperty("session_id")
-    public Optional<String> getSessionId() {
-        return sessionId;
+    @JsonSetter(value = "total", nulls = Nulls.SKIP)
+    public Builder total(Optional<Integer> total) {
+      this.total = total;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ListMessagesResponse && equalTo((ListMessagesResponse) other);
+    public Builder total(Integer total) {
+      this.total = Optional.ofNullable(total);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    @JsonSetter(value = "session_id", nulls = Nulls.SKIP)
+    public Builder sessionId(Optional<String> sessionId) {
+      this.sessionId = sessionId;
+      return this;
     }
 
-    private boolean equalTo(ListMessagesResponse other) {
-        return messages.equals(other.messages) && total.equals(other.total) && sessionId.equals(other.sessionId);
+    public Builder sessionId(String sessionId) {
+      this.sessionId = Optional.ofNullable(sessionId);
+      return this;
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.messages, this.total, this.sessionId);
+    public ListMessagesResponse build() {
+      return new ListMessagesResponse(messages, total, sessionId, additionalProperties);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("messages") ||
+        key.equalsIgnoreCase("total") ||
+        key.equalsIgnoreCase("session_id")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<List<ChatMessageTemplate>> messages = Optional.empty();
-
-        private Optional<Integer> total = Optional.empty();
-
-        private Optional<String> sessionId = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ListMessagesResponse other) {
-            messages(other.getMessages());
-            total(other.getTotal());
-            sessionId(other.getSessionId());
-            return this;
-        }
-
-        @JsonSetter(value = "messages", nulls = Nulls.SKIP)
-        public Builder messages(Optional<List<ChatMessageTemplate>> messages) {
-            this.messages = messages;
-            return this;
-        }
-
-        public Builder messages(List<ChatMessageTemplate> messages) {
-            this.messages = Optional.ofNullable(messages);
-            return this;
-        }
-
-        @JsonSetter(value = "total", nulls = Nulls.SKIP)
-        public Builder total(Optional<Integer> total) {
-            this.total = total;
-            return this;
-        }
-
-        public Builder total(Integer total) {
-            this.total = Optional.ofNullable(total);
-            return this;
-        }
-
-        @JsonSetter(value = "session_id", nulls = Nulls.SKIP)
-        public Builder sessionId(Optional<String> sessionId) {
-            this.sessionId = sessionId;
-            return this;
-        }
-
-        public Builder sessionId(String sessionId) {
-            this.sessionId = Optional.ofNullable(sessionId);
-            return this;
-        }
-
-        public ListMessagesResponse build() {
-            return new ListMessagesResponse(messages, total, sessionId, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

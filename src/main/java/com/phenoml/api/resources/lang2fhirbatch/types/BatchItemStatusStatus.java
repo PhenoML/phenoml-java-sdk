@@ -7,98 +7,113 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class BatchItemStatusStatus {
-    public static final BatchItemStatusStatus FAILED = new BatchItemStatusStatus(Value.FAILED, "failed");
 
-    public static final BatchItemStatusStatus SUCCEEDED = new BatchItemStatusStatus(Value.SUCCEEDED, "succeeded");
+  public static final BatchItemStatusStatus FAILED = new BatchItemStatusStatus(
+    Value.FAILED,
+    "failed"
+  );
 
-    public static final BatchItemStatusStatus PENDING = new BatchItemStatusStatus(Value.PENDING, "pending");
+  public static final BatchItemStatusStatus SUCCEEDED = new BatchItemStatusStatus(
+    Value.SUCCEEDED,
+    "succeeded"
+  );
 
-    public static final BatchItemStatusStatus PROCESSING = new BatchItemStatusStatus(Value.PROCESSING, "processing");
+  public static final BatchItemStatusStatus PENDING = new BatchItemStatusStatus(
+    Value.PENDING,
+    "pending"
+  );
 
-    private final Value value;
+  public static final BatchItemStatusStatus PROCESSING = new BatchItemStatusStatus(
+    Value.PROCESSING,
+    "processing"
+  );
 
-    private final String string;
+  private final Value value;
 
-    BatchItemStatusStatus(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  BatchItemStatusStatus(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof BatchItemStatusStatus &&
+        this.string.equals(((BatchItemStatusStatus) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case FAILED:
+        return visitor.visitFailed();
+      case SUCCEEDED:
+        return visitor.visitSucceeded();
+      case PENDING:
+        return visitor.visitPending();
+      case PROCESSING:
+        return visitor.visitProcessing();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static BatchItemStatusStatus valueOf(String value) {
+    switch (value) {
+      case "failed":
+        return FAILED;
+      case "succeeded":
+        return SUCCEEDED;
+      case "pending":
+        return PENDING;
+      case "processing":
+        return PROCESSING;
+      default:
+        return new BatchItemStatusStatus(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    PENDING,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof BatchItemStatusStatus
-                        && this.string.equals(((BatchItemStatusStatus) other).string));
-    }
+    PROCESSING,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    SUCCEEDED,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case FAILED:
-                return visitor.visitFailed();
-            case SUCCEEDED:
-                return visitor.visitSucceeded();
-            case PENDING:
-                return visitor.visitPending();
-            case PROCESSING:
-                return visitor.visitProcessing();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    FAILED,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static BatchItemStatusStatus valueOf(String value) {
-        switch (value) {
-            case "failed":
-                return FAILED;
-            case "succeeded":
-                return SUCCEEDED;
-            case "pending":
-                return PENDING;
-            case "processing":
-                return PROCESSING;
-            default:
-                return new BatchItemStatusStatus(Value.UNKNOWN, value);
-        }
-    }
+    UNKNOWN,
+  }
 
-    public enum Value {
-        PENDING,
+  public interface Visitor<T> {
+    T visitPending();
 
-        PROCESSING,
+    T visitProcessing();
 
-        SUCCEEDED,
+    T visitSucceeded();
 
-        FAILED,
+    T visitFailed();
 
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitPending();
-
-        T visitProcessing();
-
-        T visitSucceeded();
-
-        T visitFailed();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

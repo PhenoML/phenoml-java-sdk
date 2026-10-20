@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.construe.codes;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.construe.codes.requests.CodesListRequest;
 import com.phenoml.api.resources.construe.codes.requests.CrosswalkRequest;
@@ -21,253 +22,437 @@ import com.phenoml.api.resources.construe.types.TextSearchResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncCodesClient {
-    protected final ClientOptions clientOptions;
 
-    private final AsyncRawCodesClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public AsyncCodesClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawCodesClient(clientOptions);
-    }
+  private final AsyncRawCodesClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawCodesClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AsyncCodesClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new AsyncRawCodesClient(clientOptions);
+  }
 
-    /**
-     * Converts natural language text into structured medical codes.
-     * <p>Pass <code>system.version</code> to select a specific code system version, for example
-     * <code>umls-2026aa</code> for UMLS 2026AA-backed systems.</p>
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<ExtractCodesResult> extract(ExtractRequest request) {
-        return this.rawClient.extract(request).thenApply(response -> response.body());
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public AsyncRawCodesClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Converts natural language text into structured medical codes.
-     * <p>Pass <code>system.version</code> to select a specific code system version, for example
-     * <code>umls-2026aa</code> for UMLS 2026AA-backed systems.</p>
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<ExtractCodesResult> extract(ExtractRequest request, RequestOptions requestOptions) {
-        return this.rawClient.extract(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Converts natural language text into structured medical codes.
+   * <p>Pass <code>system.version</code> to select a specific code system version, for example
+   * <code>umls-2026aa</code> for UMLS 2026AA-backed systems.</p>
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<ExtractCodesResult> extract(ExtractRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<ExtractCodesResult>> rawFuture =
+      this.rawClient.extract(request);
+    CompletableFuture<ExtractCodesResult> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * <strong>Alpha:</strong> phenocr is an alpha feature. Request parameters, response
-     * shape, and results may change between releases. Do not depend on it for
-     * production workloads yet.
-     * <p>Extracts medical codes from natural language clinical text using phenocr.</p>
-     * <p>Supported code systems: HPO, ICD-10-CM, RXNORM, and SNOMED_CT_US. The
-     * code system name and version are both required.</p>
-     */
-    public CompletableFuture<ExtractCodesResult> phenocr(PhenoCrRequest request) {
-        return this.rawClient.phenocr(request).thenApply(response -> response.body());
-    }
+  /**
+   * Converts natural language text into structured medical codes.
+   * <p>Pass <code>system.version</code> to select a specific code system version, for example
+   * <code>umls-2026aa</code> for UMLS 2026AA-backed systems.</p>
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<ExtractCodesResult> extract(
+    ExtractRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ExtractCodesResult>> rawFuture =
+      this.rawClient.extract(request, requestOptions);
+    CompletableFuture<ExtractCodesResult> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * <strong>Alpha:</strong> phenocr is an alpha feature. Request parameters, response
-     * shape, and results may change between releases. Do not depend on it for
-     * production workloads yet.
-     * <p>Extracts medical codes from natural language clinical text using phenocr.</p>
-     * <p>Supported code systems: HPO, ICD-10-CM, RXNORM, and SNOMED_CT_US. The
-     * code system name and version are both required.</p>
-     */
-    public CompletableFuture<ExtractCodesResult> phenocr(PhenoCrRequest request, RequestOptions requestOptions) {
-        return this.rawClient.phenocr(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * <strong>Alpha:</strong> phenocr is an alpha feature. Request parameters, response
+   * shape, and results may change between releases. Do not depend on it for
+   * production workloads yet.
+   * <p>Extracts medical codes from natural language clinical text using phenocr.</p>
+   * <p>Supported code systems: HPO, ICD-10-CM, RXNORM, and SNOMED_CT_US. The
+   * code system name and version are both required.</p>
+   */
+  public CompletableFuture<ExtractCodesResult> phenocr(PhenoCrRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<ExtractCodesResult>> rawFuture =
+      this.rawClient.phenocr(request);
+    CompletableFuture<ExtractCodesResult> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Maps one source medical code to one or more target code-system URIs using
-     * shared UMLS CUIs. A successful response is HTTP 200 even when the source
-     * code or a target has no matches; inspect <code>reason_code</code> on the item and
-     * target entries for miss details.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<CrosswalkResponse> crosswalk(CrosswalkRequest request) {
-        return this.rawClient.crosswalk(request).thenApply(response -> response.body());
-    }
+  /**
+   * <strong>Alpha:</strong> phenocr is an alpha feature. Request parameters, response
+   * shape, and results may change between releases. Do not depend on it for
+   * production workloads yet.
+   * <p>Extracts medical codes from natural language clinical text using phenocr.</p>
+   * <p>Supported code systems: HPO, ICD-10-CM, RXNORM, and SNOMED_CT_US. The
+   * code system name and version are both required.</p>
+   */
+  public CompletableFuture<ExtractCodesResult> phenocr(
+    PhenoCrRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ExtractCodesResult>> rawFuture =
+      this.rawClient.phenocr(request, requestOptions);
+    CompletableFuture<ExtractCodesResult> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Maps one source medical code to one or more target code-system URIs using
-     * shared UMLS CUIs. A successful response is HTTP 200 even when the source
-     * code or a target has no matches; inspect <code>reason_code</code> on the item and
-     * target entries for miss details.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<CrosswalkResponse> crosswalk(CrosswalkRequest request, RequestOptions requestOptions) {
-        return this.rawClient.crosswalk(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Maps one source medical code to one or more target code-system URIs using
+   * shared UMLS CUIs. A successful response is HTTP 200 even when the source
+   * code or a target has no matches; inspect <code>reason_code</code> on the item and
+   * target entries for miss details.
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<CrosswalkResponse> crosswalk(CrosswalkRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<CrosswalkResponse>> rawFuture =
+      this.rawClient.crosswalk(request);
+    CompletableFuture<CrosswalkResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a paginated list of all codes in the specified code system.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<ListCodesResponse> list(String codesystem) {
-        return this.rawClient.list(codesystem).thenApply(response -> response.body());
-    }
+  /**
+   * Maps one source medical code to one or more target code-system URIs using
+   * shared UMLS CUIs. A successful response is HTTP 200 even when the source
+   * code or a target has no matches; inspect <code>reason_code</code> on the item and
+   * target entries for miss details.
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<CrosswalkResponse> crosswalk(
+    CrosswalkRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<CrosswalkResponse>> rawFuture =
+      this.rawClient.crosswalk(request, requestOptions);
+    CompletableFuture<CrosswalkResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a paginated list of all codes in the specified code system.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<ListCodesResponse> list(String codesystem, RequestOptions requestOptions) {
-        return this.rawClient.list(codesystem, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a paginated list of all codes in the specified code system.
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<ListCodesResponse> list(String codesystem) {
+    CompletableFuture<PhenomlClientHttpResponse<ListCodesResponse>> rawFuture =
+      this.rawClient.list(codesystem);
+    CompletableFuture<ListCodesResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a paginated list of all codes in the specified code system.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<ListCodesResponse> list(String codesystem, CodesListRequest request) {
-        return this.rawClient.list(codesystem, request).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a paginated list of all codes in the specified code system.
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<ListCodesResponse> list(
+    String codesystem,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ListCodesResponse>> rawFuture =
+      this.rawClient.list(codesystem, requestOptions);
+    CompletableFuture<ListCodesResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns a paginated list of all codes in the specified code system.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<ListCodesResponse> list(
-            String codesystem, CodesListRequest request, RequestOptions requestOptions) {
-        return this.rawClient.list(codesystem, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a paginated list of all codes in the specified code system.
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<ListCodesResponse> list(String codesystem, CodesListRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<ListCodesResponse>> rawFuture =
+      this.rawClient.list(codesystem, request);
+    CompletableFuture<ListCodesResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Looks up a specific code and returns its details.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<GetCodeResponse> lookup(String codesystem, String codeId) {
-        return this.rawClient.lookup(codesystem, codeId).thenApply(response -> response.body());
-    }
+  /**
+   * Returns a paginated list of all codes in the specified code system.
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<ListCodesResponse> list(
+    String codesystem,
+    CodesListRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ListCodesResponse>> rawFuture =
+      this.rawClient.list(codesystem, request, requestOptions);
+    CompletableFuture<ListCodesResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Looks up a specific code and returns its details.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<GetCodeResponse> lookup(String codesystem, String codeId, RequestOptions requestOptions) {
-        return this.rawClient.lookup(codesystem, codeId, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Looks up a specific code and returns its details.
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<GetCodeResponse> lookup(String codesystem, String codeId) {
+    CompletableFuture<PhenomlClientHttpResponse<GetCodeResponse>> rawFuture =
+      this.rawClient.lookup(codesystem, codeId);
+    CompletableFuture<GetCodeResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Looks up a specific code and returns its details.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<GetCodeResponse> lookup(String codesystem, String codeId, LookupRequest request) {
-        return this.rawClient.lookup(codesystem, codeId, request).thenApply(response -> response.body());
-    }
+  /**
+   * Looks up a specific code and returns its details.
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<GetCodeResponse> lookup(
+    String codesystem,
+    String codeId,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<GetCodeResponse>> rawFuture =
+      this.rawClient.lookup(codesystem, codeId, requestOptions);
+    CompletableFuture<GetCodeResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Looks up a specific code and returns its details.
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<GetCodeResponse> lookup(
-            String codesystem, String codeId, LookupRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .lookup(codesystem, codeId, request, requestOptions)
-                .thenApply(response -> response.body());
-    }
+  /**
+   * Looks up a specific code and returns its details.
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<GetCodeResponse> lookup(
+    String codesystem,
+    String codeId,
+    LookupRequest request
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<GetCodeResponse>> rawFuture =
+      this.rawClient.lookup(codesystem, codeId, request);
+    CompletableFuture<GetCodeResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Performs semantic similarity search using vector embeddings.
-     * <p><strong>Availability</strong>: This endpoint works for both <strong>built-in and custom</strong> code systems.</p>
-     * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
-     * related codes, even when different terminology is used. The search understands meaning,
-     * not just keywords.</p>
-     * <p><strong>Examples</strong>:</p>
-     * <ul>
-     * <li>Query &quot;trouble breathing at night&quot; finds codes like &quot;Sleep apnea&quot;, &quot;Orthopnea&quot;,
-     * &quot;Nocturnal dyspnea&quot; — semantically related but no exact keyword matches</li>
-     * <li>Query &quot;heart problems&quot; finds &quot;Myocardial infarction&quot;, &quot;Cardiac arrest&quot;, &quot;Arrhythmia&quot;</li>
-     * </ul>
-     * <p><strong>Trade-offs</strong>: Slower than text search (requires embedding generation), but finds
-     * conceptually similar results that keyword search would miss.</p>
-     * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<SemanticSearchResponse> searchSemantic(String codesystem, SearchSemanticRequest request) {
-        return this.rawClient.searchSemantic(codesystem, request).thenApply(response -> response.body());
-    }
+  /**
+   * Looks up a specific code and returns its details.
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<GetCodeResponse> lookup(
+    String codesystem,
+    String codeId,
+    LookupRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<GetCodeResponse>> rawFuture =
+      this.rawClient.lookup(codesystem, codeId, request, requestOptions);
+    CompletableFuture<GetCodeResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Performs semantic similarity search using vector embeddings.
-     * <p><strong>Availability</strong>: This endpoint works for both <strong>built-in and custom</strong> code systems.</p>
-     * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
-     * related codes, even when different terminology is used. The search understands meaning,
-     * not just keywords.</p>
-     * <p><strong>Examples</strong>:</p>
-     * <ul>
-     * <li>Query &quot;trouble breathing at night&quot; finds codes like &quot;Sleep apnea&quot;, &quot;Orthopnea&quot;,
-     * &quot;Nocturnal dyspnea&quot; — semantically related but no exact keyword matches</li>
-     * <li>Query &quot;heart problems&quot; finds &quot;Myocardial infarction&quot;, &quot;Cardiac arrest&quot;, &quot;Arrhythmia&quot;</li>
-     * </ul>
-     * <p><strong>Trade-offs</strong>: Slower than text search (requires embedding generation), but finds
-     * conceptually similar results that keyword search would miss.</p>
-     * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<SemanticSearchResponse> searchSemantic(
-            String codesystem, SearchSemanticRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .searchSemantic(codesystem, request, requestOptions)
-                .thenApply(response -> response.body());
-    }
+  /**
+   * Performs semantic similarity search using vector embeddings.
+   * <p><strong>Availability</strong>: This endpoint works for both <strong>built-in and custom</strong> code systems.</p>
+   * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
+   * related codes, even when different terminology is used. The search understands meaning,
+   * not just keywords.</p>
+   * <p><strong>Examples</strong>:</p>
+   * <ul>
+   * <li>Query &quot;trouble breathing at night&quot; finds codes like &quot;Sleep apnea&quot;, &quot;Orthopnea&quot;,
+   * &quot;Nocturnal dyspnea&quot; — semantically related but no exact keyword matches</li>
+   * <li>Query &quot;heart problems&quot; finds &quot;Myocardial infarction&quot;, &quot;Cardiac arrest&quot;, &quot;Arrhythmia&quot;</li>
+   * </ul>
+   * <p><strong>Trade-offs</strong>: Slower than text search (requires embedding generation), but finds
+   * conceptually similar results that keyword search would miss.</p>
+   * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<SemanticSearchResponse> searchSemantic(
+    String codesystem,
+    SearchSemanticRequest request
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<SemanticSearchResponse>> rawFuture =
+      this.rawClient.searchSemantic(codesystem, request);
+    CompletableFuture<SemanticSearchResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Performs fast full-text search over code IDs and descriptions.
-     * <p><strong>Availability</strong>: This endpoint is only available for <strong>built-in code systems</strong>.
-     * Custom code systems uploaded via <code>/construe/upload</code> are not indexed for full-text search
-     * and will return empty results. Use <code>/search/semantic</code> to search custom code systems.</p>
-     * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
-     * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
-     * <p><strong>Features</strong>:</p>
-     * <ul>
-     * <li>Substring matching on code IDs (e.g., &quot;11.65&quot; finds &quot;E11.65&quot;)</li>
-     * <li>Typo tolerance on descriptions (not on code IDs)</li>
-     * <li>Fast response times (~10-50ms)</li>
-     * </ul>
-     * <p><strong>Examples</strong>:</p>
-     * <ul>
-     * <li>Query &quot;E11&quot; finds all codes starting with E11 (diabetes codes)</li>
-     * <li>Query &quot;diabtes&quot; (typo) still finds &quot;diabetes&quot; codes</li>
-     * </ul>
-     * <p><strong>Trade-offs</strong>: Faster than semantic search, but only matches keywords/substrings.
-     * Won't find conceptually related codes with different terminology.</p>
-     * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<TextSearchResponse> searchText(String codesystem, SearchTextRequest request) {
-        return this.rawClient.searchText(codesystem, request).thenApply(response -> response.body());
-    }
+  /**
+   * Performs semantic similarity search using vector embeddings.
+   * <p><strong>Availability</strong>: This endpoint works for both <strong>built-in and custom</strong> code systems.</p>
+   * <p><strong>When to use</strong>: Best for natural language queries where you want to find conceptually
+   * related codes, even when different terminology is used. The search understands meaning,
+   * not just keywords.</p>
+   * <p><strong>Examples</strong>:</p>
+   * <ul>
+   * <li>Query &quot;trouble breathing at night&quot; finds codes like &quot;Sleep apnea&quot;, &quot;Orthopnea&quot;,
+   * &quot;Nocturnal dyspnea&quot; — semantically related but no exact keyword matches</li>
+   * <li>Query &quot;heart problems&quot; finds &quot;Myocardial infarction&quot;, &quot;Cardiac arrest&quot;, &quot;Arrhythmia&quot;</li>
+   * </ul>
+   * <p><strong>Trade-offs</strong>: Slower than text search (requires embedding generation), but finds
+   * conceptually similar results that keyword search would miss.</p>
+   * <p>See also: <code>/search/text</code> for faster keyword-based lookup with typo tolerance.</p>
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<SemanticSearchResponse> searchSemantic(
+    String codesystem,
+    SearchSemanticRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<SemanticSearchResponse>> rawFuture =
+      this.rawClient.searchSemantic(codesystem, request, requestOptions);
+    CompletableFuture<SemanticSearchResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Performs fast full-text search over code IDs and descriptions.
-     * <p><strong>Availability</strong>: This endpoint is only available for <strong>built-in code systems</strong>.
-     * Custom code systems uploaded via <code>/construe/upload</code> are not indexed for full-text search
-     * and will return empty results. Use <code>/search/semantic</code> to search custom code systems.</p>
-     * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
-     * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
-     * <p><strong>Features</strong>:</p>
-     * <ul>
-     * <li>Substring matching on code IDs (e.g., &quot;11.65&quot; finds &quot;E11.65&quot;)</li>
-     * <li>Typo tolerance on descriptions (not on code IDs)</li>
-     * <li>Fast response times (~10-50ms)</li>
-     * </ul>
-     * <p><strong>Examples</strong>:</p>
-     * <ul>
-     * <li>Query &quot;E11&quot; finds all codes starting with E11 (diabetes codes)</li>
-     * <li>Query &quot;diabtes&quot; (typo) still finds &quot;diabetes&quot; codes</li>
-     * </ul>
-     * <p><strong>Trade-offs</strong>: Faster than semantic search, but only matches keywords/substrings.
-     * Won't find conceptually related codes with different terminology.</p>
-     * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
-     * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
-     */
-    public CompletableFuture<TextSearchResponse> searchText(
-            String codesystem, SearchTextRequest request, RequestOptions requestOptions) {
-        return this.rawClient.searchText(codesystem, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Performs fast full-text search over code IDs and descriptions.
+   * <p><strong>Availability</strong>: This endpoint is only available for <strong>built-in code systems</strong>.
+   * Custom code systems uploaded via <code>/construe/upload</code> are not indexed for full-text search
+   * and will return empty results. Use <code>/search/semantic</code> to search custom code systems.</p>
+   * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
+   * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
+   * <p><strong>Features</strong>:</p>
+   * <ul>
+   * <li>Substring matching on code IDs (e.g., &quot;11.65&quot; finds &quot;E11.65&quot;)</li>
+   * <li>Typo tolerance on descriptions (not on code IDs)</li>
+   * <li>Fast response times (~10-50ms)</li>
+   * </ul>
+   * <p><strong>Examples</strong>:</p>
+   * <ul>
+   * <li>Query &quot;E11&quot; finds all codes starting with E11 (diabetes codes)</li>
+   * <li>Query &quot;diabtes&quot; (typo) still finds &quot;diabetes&quot; codes</li>
+   * </ul>
+   * <p><strong>Trade-offs</strong>: Faster than semantic search, but only matches keywords/substrings.
+   * Won't find conceptually related codes with different terminology.</p>
+   * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<TextSearchResponse> searchText(
+    String codesystem,
+    SearchTextRequest request
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<TextSearchResponse>> rawFuture =
+      this.rawClient.searchText(codesystem, request);
+    CompletableFuture<TextSearchResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
+
+  /**
+   * Performs fast full-text search over code IDs and descriptions.
+   * <p><strong>Availability</strong>: This endpoint is only available for <strong>built-in code systems</strong>.
+   * Custom code systems uploaded via <code>/construe/upload</code> are not indexed for full-text search
+   * and will return empty results. Use <code>/search/semantic</code> to search custom code systems.</p>
+   * <p><strong>When to use</strong>: Best for autocomplete UIs, code lookup, or when users know part of
+   * the code ID or specific keywords. Fast response times suitable for typeahead interfaces.</p>
+   * <p><strong>Features</strong>:</p>
+   * <ul>
+   * <li>Substring matching on code IDs (e.g., &quot;11.65&quot; finds &quot;E11.65&quot;)</li>
+   * <li>Typo tolerance on descriptions (not on code IDs)</li>
+   * <li>Fast response times (~10-50ms)</li>
+   * </ul>
+   * <p><strong>Examples</strong>:</p>
+   * <ul>
+   * <li>Query &quot;E11&quot; finds all codes starting with E11 (diabetes codes)</li>
+   * <li>Query &quot;diabtes&quot; (typo) still finds &quot;diabetes&quot; codes</li>
+   * </ul>
+   * <p><strong>Trade-offs</strong>: Faster than semantic search, but only matches keywords/substrings.
+   * Won't find conceptually related codes with different terminology.</p>
+   * <p>See also: <code>/search/semantic</code> for finding conceptually similar codes.</p>
+   * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
+   */
+  public CompletableFuture<TextSearchResponse> searchText(
+    String codesystem,
+    SearchTextRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<TextSearchResponse>> rawFuture =
+      this.rawClient.searchText(codesystem, request, requestOptions);
+    CompletableFuture<TextSearchResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 }

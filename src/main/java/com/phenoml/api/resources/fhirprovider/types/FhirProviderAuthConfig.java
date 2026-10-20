@@ -21,425 +21,452 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = FhirProviderAuthConfig.Builder.class)
 public final class FhirProviderAuthConfig {
-    private final Optional<String> authConfigId;
 
-    private final Optional<AuthMethod> authMethod;
+  private final Optional<String> authConfigId;
 
-    private final Optional<Boolean> isActiveAuthConfig;
+  private final Optional<AuthMethod> authMethod;
 
-    private final Optional<OffsetDateTime> createdAt;
+  private final Optional<Boolean> isActiveAuthConfig;
 
-    private final Optional<OffsetDateTime> updatedAt;
+  private final Optional<OffsetDateTime> createdAt;
 
-    private final Optional<String> publicKeyCertPem;
+  private final Optional<OffsetDateTime> updatedAt;
 
-    private final Optional<JsonWebKey> jsonWebKey;
+  private final Optional<String> publicKeyCertPem;
 
-    private final Optional<OffsetDateTime> credentialExpiry;
+  private final Optional<JsonWebKey> jsonWebKey;
 
-    private final Optional<SmartConfiguration> smartConfiguration;
+  private final Optional<OffsetDateTime> credentialExpiry;
 
-    private final Optional<ServiceAccountMetadata> serviceAccountMetadata;
+  private final Optional<SmartConfiguration> smartConfiguration;
 
-    private final Optional<String> scopes;
+  private final Optional<ServiceAccountMetadata> serviceAccountMetadata;
 
-    private final Optional<String> clientId;
+  private final Optional<String> scopes;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> clientId;
 
-    private FhirProviderAuthConfig(
-            Optional<String> authConfigId,
-            Optional<AuthMethod> authMethod,
-            Optional<Boolean> isActiveAuthConfig,
-            Optional<OffsetDateTime> createdAt,
-            Optional<OffsetDateTime> updatedAt,
-            Optional<String> publicKeyCertPem,
-            Optional<JsonWebKey> jsonWebKey,
-            Optional<OffsetDateTime> credentialExpiry,
-            Optional<SmartConfiguration> smartConfiguration,
-            Optional<ServiceAccountMetadata> serviceAccountMetadata,
-            Optional<String> scopes,
-            Optional<String> clientId,
-            Map<String, Object> additionalProperties) {
-        this.authConfigId = authConfigId;
-        this.authMethod = authMethod;
-        this.isActiveAuthConfig = isActiveAuthConfig;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.publicKeyCertPem = publicKeyCertPem;
-        this.jsonWebKey = jsonWebKey;
-        this.credentialExpiry = credentialExpiry;
-        this.smartConfiguration = smartConfiguration;
-        this.serviceAccountMetadata = serviceAccountMetadata;
-        this.scopes = scopes;
-        this.clientId = clientId;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private FhirProviderAuthConfig(
+    Optional<String> authConfigId,
+    Optional<AuthMethod> authMethod,
+    Optional<Boolean> isActiveAuthConfig,
+    Optional<OffsetDateTime> createdAt,
+    Optional<OffsetDateTime> updatedAt,
+    Optional<String> publicKeyCertPem,
+    Optional<JsonWebKey> jsonWebKey,
+    Optional<OffsetDateTime> credentialExpiry,
+    Optional<SmartConfiguration> smartConfiguration,
+    Optional<ServiceAccountMetadata> serviceAccountMetadata,
+    Optional<String> scopes,
+    Optional<String> clientId,
+    Map<String, Object> additionalProperties
+  ) {
+    this.authConfigId = authConfigId;
+    this.authMethod = authMethod;
+    this.isActiveAuthConfig = isActiveAuthConfig;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.publicKeyCertPem = publicKeyCertPem;
+    this.jsonWebKey = jsonWebKey;
+    this.credentialExpiry = credentialExpiry;
+    this.smartConfiguration = smartConfiguration;
+    this.serviceAccountMetadata = serviceAccountMetadata;
+    this.scopes = scopes;
+    this.clientId = clientId;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Unique identifier for this auth configuration
+   */
+  @JsonProperty("auth_config_id")
+  public Optional<String> getAuthConfigId() {
+    return authConfigId;
+  }
+
+  @JsonProperty("auth_method")
+  public Optional<AuthMethod> getAuthMethod() {
+    return authMethod;
+  }
+
+  /**
+   * @return Whether this auth configuration is currently active
+   */
+  @JsonProperty("is_active_auth_config")
+  public Optional<Boolean> getIsActiveAuthConfig() {
+    return isActiveAuthConfig;
+  }
+
+  /**
+   * @return Timestamp when this auth configuration was created
+   */
+  @JsonProperty("created_at")
+  public Optional<OffsetDateTime> getCreatedAt() {
+    return createdAt;
+  }
+
+  /**
+   * @return Timestamp when this auth configuration was last updated
+   */
+  @JsonProperty("updated_at")
+  public Optional<OffsetDateTime> getUpdatedAt() {
+    return updatedAt;
+  }
+
+  /**
+   * @return Public key certificate in PEM format (visible for JWT auth)
+   */
+  @JsonProperty("public_key_cert_pem")
+  public Optional<String> getPublicKeyCertPem() {
+    return publicKeyCertPem;
+  }
+
+  @JsonProperty("json_web_key")
+  public Optional<JsonWebKey> getJsonWebKey() {
+    return jsonWebKey;
+  }
+
+  /**
+   * @return Expiry time for credentials (JWT auth only)
+   */
+  @JsonProperty("credential_expiry")
+  public Optional<OffsetDateTime> getCredentialExpiry() {
+    return credentialExpiry;
+  }
+
+  @JsonProperty("smart_configuration")
+  public Optional<SmartConfiguration> getSmartConfiguration() {
+    return smartConfiguration;
+  }
+
+  @JsonProperty("service_account_metadata")
+  public Optional<ServiceAccountMetadata> getServiceAccountMetadata() {
+    return serviceAccountMetadata;
+  }
+
+  /**
+   * @return OAuth scopes
+   */
+  @JsonProperty("scopes")
+  public Optional<String> getScopes() {
+    return scopes;
+  }
+
+  /**
+   * @return OAuth client ID for this auth configuration. When set, takes precedence over the provider-level client_id.
+   */
+  @JsonProperty("client_id")
+  public Optional<String> getClientId() {
+    return clientId;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof FhirProviderAuthConfig && equalTo((FhirProviderAuthConfig) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(FhirProviderAuthConfig other) {
+    return (
+      authConfigId.equals(other.authConfigId) &&
+      authMethod.equals(other.authMethod) &&
+      isActiveAuthConfig.equals(other.isActiveAuthConfig) &&
+      createdAt.equals(other.createdAt) &&
+      updatedAt.equals(other.updatedAt) &&
+      publicKeyCertPem.equals(other.publicKeyCertPem) &&
+      jsonWebKey.equals(other.jsonWebKey) &&
+      credentialExpiry.equals(other.credentialExpiry) &&
+      smartConfiguration.equals(other.smartConfiguration) &&
+      serviceAccountMetadata.equals(other.serviceAccountMetadata) &&
+      scopes.equals(other.scopes) &&
+      clientId.equals(other.clientId)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.authConfigId,
+      this.authMethod,
+      this.isActiveAuthConfig,
+      this.createdAt,
+      this.updatedAt,
+      this.publicKeyCertPem,
+      this.jsonWebKey,
+      this.credentialExpiry,
+      this.smartConfiguration,
+      this.serviceAccountMetadata,
+      this.scopes,
+      this.clientId
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> authConfigId = Optional.empty();
+
+    private Optional<AuthMethod> authMethod = Optional.empty();
+
+    private Optional<Boolean> isActiveAuthConfig = Optional.empty();
+
+    private Optional<OffsetDateTime> createdAt = Optional.empty();
+
+    private Optional<OffsetDateTime> updatedAt = Optional.empty();
+
+    private Optional<String> publicKeyCertPem = Optional.empty();
+
+    private Optional<JsonWebKey> jsonWebKey = Optional.empty();
+
+    private Optional<OffsetDateTime> credentialExpiry = Optional.empty();
+
+    private Optional<SmartConfiguration> smartConfiguration = Optional.empty();
+
+    private Optional<ServiceAccountMetadata> serviceAccountMetadata = Optional.empty();
+
+    private Optional<String> scopes = Optional.empty();
+
+    private Optional<String> clientId = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(FhirProviderAuthConfig other) {
+      authConfigId(other.getAuthConfigId());
+      authMethod(other.getAuthMethod());
+      isActiveAuthConfig(other.getIsActiveAuthConfig());
+      createdAt(other.getCreatedAt());
+      updatedAt(other.getUpdatedAt());
+      publicKeyCertPem(other.getPublicKeyCertPem());
+      jsonWebKey(other.getJsonWebKey());
+      credentialExpiry(other.getCredentialExpiry());
+      smartConfiguration(other.getSmartConfiguration());
+      serviceAccountMetadata(other.getServiceAccountMetadata());
+      scopes(other.getScopes());
+      clientId(other.getClientId());
+      return this;
     }
 
     /**
-     * @return Unique identifier for this auth configuration
+     * <p>Unique identifier for this auth configuration</p>
      */
-    @JsonProperty("auth_config_id")
-    public Optional<String> getAuthConfigId() {
-        return authConfigId;
+    @JsonSetter(value = "auth_config_id", nulls = Nulls.SKIP)
+    public Builder authConfigId(Optional<String> authConfigId) {
+      this.authConfigId = authConfigId;
+      return this;
     }
 
-    @JsonProperty("auth_method")
-    public Optional<AuthMethod> getAuthMethod() {
-        return authMethod;
+    public Builder authConfigId(String authConfigId) {
+      this.authConfigId = Optional.ofNullable(authConfigId);
+      return this;
+    }
+
+    @JsonSetter(value = "auth_method", nulls = Nulls.SKIP)
+    public Builder authMethod(Optional<AuthMethod> authMethod) {
+      this.authMethod = authMethod;
+      return this;
+    }
+
+    public Builder authMethod(AuthMethod authMethod) {
+      this.authMethod = Optional.ofNullable(authMethod);
+      return this;
     }
 
     /**
-     * @return Whether this auth configuration is currently active
+     * <p>Whether this auth configuration is currently active</p>
      */
-    @JsonProperty("is_active_auth_config")
-    public Optional<Boolean> getIsActiveAuthConfig() {
-        return isActiveAuthConfig;
+    @JsonSetter(value = "is_active_auth_config", nulls = Nulls.SKIP)
+    public Builder isActiveAuthConfig(Optional<Boolean> isActiveAuthConfig) {
+      this.isActiveAuthConfig = isActiveAuthConfig;
+      return this;
+    }
+
+    public Builder isActiveAuthConfig(Boolean isActiveAuthConfig) {
+      this.isActiveAuthConfig = Optional.ofNullable(isActiveAuthConfig);
+      return this;
     }
 
     /**
-     * @return Timestamp when this auth configuration was created
+     * <p>Timestamp when this auth configuration was created</p>
      */
-    @JsonProperty("created_at")
-    public Optional<OffsetDateTime> getCreatedAt() {
-        return createdAt;
+    @JsonSetter(value = "created_at", nulls = Nulls.SKIP)
+    public Builder createdAt(Optional<OffsetDateTime> createdAt) {
+      this.createdAt = createdAt;
+      return this;
+    }
+
+    public Builder createdAt(OffsetDateTime createdAt) {
+      this.createdAt = Optional.ofNullable(createdAt);
+      return this;
     }
 
     /**
-     * @return Timestamp when this auth configuration was last updated
+     * <p>Timestamp when this auth configuration was last updated</p>
      */
-    @JsonProperty("updated_at")
-    public Optional<OffsetDateTime> getUpdatedAt() {
-        return updatedAt;
+    @JsonSetter(value = "updated_at", nulls = Nulls.SKIP)
+    public Builder updatedAt(Optional<OffsetDateTime> updatedAt) {
+      this.updatedAt = updatedAt;
+      return this;
+    }
+
+    public Builder updatedAt(OffsetDateTime updatedAt) {
+      this.updatedAt = Optional.ofNullable(updatedAt);
+      return this;
     }
 
     /**
-     * @return Public key certificate in PEM format (visible for JWT auth)
+     * <p>Public key certificate in PEM format (visible for JWT auth)</p>
      */
-    @JsonProperty("public_key_cert_pem")
-    public Optional<String> getPublicKeyCertPem() {
-        return publicKeyCertPem;
+    @JsonSetter(value = "public_key_cert_pem", nulls = Nulls.SKIP)
+    public Builder publicKeyCertPem(Optional<String> publicKeyCertPem) {
+      this.publicKeyCertPem = publicKeyCertPem;
+      return this;
     }
 
-    @JsonProperty("json_web_key")
-    public Optional<JsonWebKey> getJsonWebKey() {
-        return jsonWebKey;
+    public Builder publicKeyCertPem(String publicKeyCertPem) {
+      this.publicKeyCertPem = Optional.ofNullable(publicKeyCertPem);
+      return this;
+    }
+
+    @JsonSetter(value = "json_web_key", nulls = Nulls.SKIP)
+    public Builder jsonWebKey(Optional<JsonWebKey> jsonWebKey) {
+      this.jsonWebKey = jsonWebKey;
+      return this;
+    }
+
+    public Builder jsonWebKey(JsonWebKey jsonWebKey) {
+      this.jsonWebKey = Optional.ofNullable(jsonWebKey);
+      return this;
     }
 
     /**
-     * @return Expiry time for credentials (JWT auth only)
+     * <p>Expiry time for credentials (JWT auth only)</p>
      */
-    @JsonProperty("credential_expiry")
-    public Optional<OffsetDateTime> getCredentialExpiry() {
-        return credentialExpiry;
+    @JsonSetter(value = "credential_expiry", nulls = Nulls.SKIP)
+    public Builder credentialExpiry(Optional<OffsetDateTime> credentialExpiry) {
+      this.credentialExpiry = credentialExpiry;
+      return this;
     }
 
-    @JsonProperty("smart_configuration")
-    public Optional<SmartConfiguration> getSmartConfiguration() {
-        return smartConfiguration;
+    public Builder credentialExpiry(OffsetDateTime credentialExpiry) {
+      this.credentialExpiry = Optional.ofNullable(credentialExpiry);
+      return this;
     }
 
-    @JsonProperty("service_account_metadata")
-    public Optional<ServiceAccountMetadata> getServiceAccountMetadata() {
-        return serviceAccountMetadata;
+    @JsonSetter(value = "smart_configuration", nulls = Nulls.SKIP)
+    public Builder smartConfiguration(Optional<SmartConfiguration> smartConfiguration) {
+      this.smartConfiguration = smartConfiguration;
+      return this;
+    }
+
+    public Builder smartConfiguration(SmartConfiguration smartConfiguration) {
+      this.smartConfiguration = Optional.ofNullable(smartConfiguration);
+      return this;
+    }
+
+    @JsonSetter(value = "service_account_metadata", nulls = Nulls.SKIP)
+    public Builder serviceAccountMetadata(Optional<ServiceAccountMetadata> serviceAccountMetadata) {
+      this.serviceAccountMetadata = serviceAccountMetadata;
+      return this;
+    }
+
+    public Builder serviceAccountMetadata(ServiceAccountMetadata serviceAccountMetadata) {
+      this.serviceAccountMetadata = Optional.ofNullable(serviceAccountMetadata);
+      return this;
     }
 
     /**
-     * @return OAuth scopes
+     * <p>OAuth scopes</p>
      */
-    @JsonProperty("scopes")
-    public Optional<String> getScopes() {
-        return scopes;
+    @JsonSetter(value = "scopes", nulls = Nulls.SKIP)
+    public Builder scopes(Optional<String> scopes) {
+      this.scopes = scopes;
+      return this;
+    }
+
+    public Builder scopes(String scopes) {
+      this.scopes = Optional.ofNullable(scopes);
+      return this;
     }
 
     /**
-     * @return OAuth client ID for this auth configuration. When set, takes precedence over the provider-level client_id.
+     * <p>OAuth client ID for this auth configuration. When set, takes precedence over the provider-level client_id.</p>
      */
-    @JsonProperty("client_id")
-    public Optional<String> getClientId() {
-        return clientId;
+    @JsonSetter(value = "client_id", nulls = Nulls.SKIP)
+    public Builder clientId(Optional<String> clientId) {
+      this.clientId = clientId;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof FhirProviderAuthConfig && equalTo((FhirProviderAuthConfig) other);
+    public Builder clientId(String clientId) {
+      this.clientId = Optional.ofNullable(clientId);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public FhirProviderAuthConfig build() {
+      return new FhirProviderAuthConfig(
+        authConfigId,
+        authMethod,
+        isActiveAuthConfig,
+        createdAt,
+        updatedAt,
+        publicKeyCertPem,
+        jsonWebKey,
+        credentialExpiry,
+        smartConfiguration,
+        serviceAccountMetadata,
+        scopes,
+        clientId,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(FhirProviderAuthConfig other) {
-        return authConfigId.equals(other.authConfigId)
-                && authMethod.equals(other.authMethod)
-                && isActiveAuthConfig.equals(other.isActiveAuthConfig)
-                && createdAt.equals(other.createdAt)
-                && updatedAt.equals(other.updatedAt)
-                && publicKeyCertPem.equals(other.publicKeyCertPem)
-                && jsonWebKey.equals(other.jsonWebKey)
-                && credentialExpiry.equals(other.credentialExpiry)
-                && smartConfiguration.equals(other.smartConfiguration)
-                && serviceAccountMetadata.equals(other.serviceAccountMetadata)
-                && scopes.equals(other.scopes)
-                && clientId.equals(other.clientId);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("auth_config_id") ||
+        key.equalsIgnoreCase("auth_method") ||
+        key.equalsIgnoreCase("is_active_auth_config") ||
+        key.equalsIgnoreCase("created_at") ||
+        key.equalsIgnoreCase("updated_at") ||
+        key.equalsIgnoreCase("public_key_cert_pem") ||
+        key.equalsIgnoreCase("json_web_key") ||
+        key.equalsIgnoreCase("credential_expiry") ||
+        key.equalsIgnoreCase("smart_configuration") ||
+        key.equalsIgnoreCase("service_account_metadata") ||
+        key.equalsIgnoreCase("scopes") ||
+        key.equalsIgnoreCase("client_id")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.authConfigId,
-                this.authMethod,
-                this.isActiveAuthConfig,
-                this.createdAt,
-                this.updatedAt,
-                this.publicKeyCertPem,
-                this.jsonWebKey,
-                this.credentialExpiry,
-                this.smartConfiguration,
-                this.serviceAccountMetadata,
-                this.scopes,
-                this.clientId);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> authConfigId = Optional.empty();
-
-        private Optional<AuthMethod> authMethod = Optional.empty();
-
-        private Optional<Boolean> isActiveAuthConfig = Optional.empty();
-
-        private Optional<OffsetDateTime> createdAt = Optional.empty();
-
-        private Optional<OffsetDateTime> updatedAt = Optional.empty();
-
-        private Optional<String> publicKeyCertPem = Optional.empty();
-
-        private Optional<JsonWebKey> jsonWebKey = Optional.empty();
-
-        private Optional<OffsetDateTime> credentialExpiry = Optional.empty();
-
-        private Optional<SmartConfiguration> smartConfiguration = Optional.empty();
-
-        private Optional<ServiceAccountMetadata> serviceAccountMetadata = Optional.empty();
-
-        private Optional<String> scopes = Optional.empty();
-
-        private Optional<String> clientId = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(FhirProviderAuthConfig other) {
-            authConfigId(other.getAuthConfigId());
-            authMethod(other.getAuthMethod());
-            isActiveAuthConfig(other.getIsActiveAuthConfig());
-            createdAt(other.getCreatedAt());
-            updatedAt(other.getUpdatedAt());
-            publicKeyCertPem(other.getPublicKeyCertPem());
-            jsonWebKey(other.getJsonWebKey());
-            credentialExpiry(other.getCredentialExpiry());
-            smartConfiguration(other.getSmartConfiguration());
-            serviceAccountMetadata(other.getServiceAccountMetadata());
-            scopes(other.getScopes());
-            clientId(other.getClientId());
-            return this;
-        }
-
-        /**
-         * <p>Unique identifier for this auth configuration</p>
-         */
-        @JsonSetter(value = "auth_config_id", nulls = Nulls.SKIP)
-        public Builder authConfigId(Optional<String> authConfigId) {
-            this.authConfigId = authConfigId;
-            return this;
-        }
-
-        public Builder authConfigId(String authConfigId) {
-            this.authConfigId = Optional.ofNullable(authConfigId);
-            return this;
-        }
-
-        @JsonSetter(value = "auth_method", nulls = Nulls.SKIP)
-        public Builder authMethod(Optional<AuthMethod> authMethod) {
-            this.authMethod = authMethod;
-            return this;
-        }
-
-        public Builder authMethod(AuthMethod authMethod) {
-            this.authMethod = Optional.ofNullable(authMethod);
-            return this;
-        }
-
-        /**
-         * <p>Whether this auth configuration is currently active</p>
-         */
-        @JsonSetter(value = "is_active_auth_config", nulls = Nulls.SKIP)
-        public Builder isActiveAuthConfig(Optional<Boolean> isActiveAuthConfig) {
-            this.isActiveAuthConfig = isActiveAuthConfig;
-            return this;
-        }
-
-        public Builder isActiveAuthConfig(Boolean isActiveAuthConfig) {
-            this.isActiveAuthConfig = Optional.ofNullable(isActiveAuthConfig);
-            return this;
-        }
-
-        /**
-         * <p>Timestamp when this auth configuration was created</p>
-         */
-        @JsonSetter(value = "created_at", nulls = Nulls.SKIP)
-        public Builder createdAt(Optional<OffsetDateTime> createdAt) {
-            this.createdAt = createdAt;
-            return this;
-        }
-
-        public Builder createdAt(OffsetDateTime createdAt) {
-            this.createdAt = Optional.ofNullable(createdAt);
-            return this;
-        }
-
-        /**
-         * <p>Timestamp when this auth configuration was last updated</p>
-         */
-        @JsonSetter(value = "updated_at", nulls = Nulls.SKIP)
-        public Builder updatedAt(Optional<OffsetDateTime> updatedAt) {
-            this.updatedAt = updatedAt;
-            return this;
-        }
-
-        public Builder updatedAt(OffsetDateTime updatedAt) {
-            this.updatedAt = Optional.ofNullable(updatedAt);
-            return this;
-        }
-
-        /**
-         * <p>Public key certificate in PEM format (visible for JWT auth)</p>
-         */
-        @JsonSetter(value = "public_key_cert_pem", nulls = Nulls.SKIP)
-        public Builder publicKeyCertPem(Optional<String> publicKeyCertPem) {
-            this.publicKeyCertPem = publicKeyCertPem;
-            return this;
-        }
-
-        public Builder publicKeyCertPem(String publicKeyCertPem) {
-            this.publicKeyCertPem = Optional.ofNullable(publicKeyCertPem);
-            return this;
-        }
-
-        @JsonSetter(value = "json_web_key", nulls = Nulls.SKIP)
-        public Builder jsonWebKey(Optional<JsonWebKey> jsonWebKey) {
-            this.jsonWebKey = jsonWebKey;
-            return this;
-        }
-
-        public Builder jsonWebKey(JsonWebKey jsonWebKey) {
-            this.jsonWebKey = Optional.ofNullable(jsonWebKey);
-            return this;
-        }
-
-        /**
-         * <p>Expiry time for credentials (JWT auth only)</p>
-         */
-        @JsonSetter(value = "credential_expiry", nulls = Nulls.SKIP)
-        public Builder credentialExpiry(Optional<OffsetDateTime> credentialExpiry) {
-            this.credentialExpiry = credentialExpiry;
-            return this;
-        }
-
-        public Builder credentialExpiry(OffsetDateTime credentialExpiry) {
-            this.credentialExpiry = Optional.ofNullable(credentialExpiry);
-            return this;
-        }
-
-        @JsonSetter(value = "smart_configuration", nulls = Nulls.SKIP)
-        public Builder smartConfiguration(Optional<SmartConfiguration> smartConfiguration) {
-            this.smartConfiguration = smartConfiguration;
-            return this;
-        }
-
-        public Builder smartConfiguration(SmartConfiguration smartConfiguration) {
-            this.smartConfiguration = Optional.ofNullable(smartConfiguration);
-            return this;
-        }
-
-        @JsonSetter(value = "service_account_metadata", nulls = Nulls.SKIP)
-        public Builder serviceAccountMetadata(Optional<ServiceAccountMetadata> serviceAccountMetadata) {
-            this.serviceAccountMetadata = serviceAccountMetadata;
-            return this;
-        }
-
-        public Builder serviceAccountMetadata(ServiceAccountMetadata serviceAccountMetadata) {
-            this.serviceAccountMetadata = Optional.ofNullable(serviceAccountMetadata);
-            return this;
-        }
-
-        /**
-         * <p>OAuth scopes</p>
-         */
-        @JsonSetter(value = "scopes", nulls = Nulls.SKIP)
-        public Builder scopes(Optional<String> scopes) {
-            this.scopes = scopes;
-            return this;
-        }
-
-        public Builder scopes(String scopes) {
-            this.scopes = Optional.ofNullable(scopes);
-            return this;
-        }
-
-        /**
-         * <p>OAuth client ID for this auth configuration. When set, takes precedence over the provider-level client_id.</p>
-         */
-        @JsonSetter(value = "client_id", nulls = Nulls.SKIP)
-        public Builder clientId(Optional<String> clientId) {
-            this.clientId = clientId;
-            return this;
-        }
-
-        public Builder clientId(String clientId) {
-            this.clientId = Optional.ofNullable(clientId);
-            return this;
-        }
-
-        public FhirProviderAuthConfig build() {
-            return new FhirProviderAuthConfig(
-                    authConfigId,
-                    authMethod,
-                    isActiveAuthConfig,
-                    createdAt,
-                    updatedAt,
-                    publicKeyCertPem,
-                    jsonWebKey,
-                    credentialExpiry,
-                    smartConfiguration,
-                    serviceAccountMetadata,
-                    scopes,
-                    clientId,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

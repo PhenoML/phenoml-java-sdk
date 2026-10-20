@@ -20,92 +20,101 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ExportRequest.Builder.class)
 public final class ExportRequest {
-    private final Optional<String> version;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> version;
 
-    private ExportRequest(Optional<String> version, Map<String, Object> additionalProperties) {
-        this.version = version;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ExportRequest(Optional<String> version, Map<String, Object> additionalProperties) {
+    this.version = version;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Specific version of the custom code system.
+   */
+  @JsonProperty("version")
+  public Optional<String> getVersion() {
+    return version;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ExportRequest && equalTo((ExportRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ExportRequest other) {
+    return version.equals(other.version);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.version);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> version = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ExportRequest other) {
+      version(other.getVersion());
+      return this;
     }
 
     /**
-     * @return Specific version of the custom code system.
+     * <p>Specific version of the custom code system.</p>
      */
-    @JsonProperty("version")
-    public Optional<String> getVersion() {
-        return version;
+    @JsonSetter(value = "version", nulls = Nulls.SKIP)
+    public Builder version(Optional<String> version) {
+      this.version = version;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ExportRequest && equalTo((ExportRequest) other);
+    public Builder version(String version) {
+      this.version = Optional.ofNullable(version);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ExportRequest build() {
+      return new ExportRequest(version, additionalProperties);
     }
 
-    private boolean equalTo(ExportRequest other) {
-        return version.equals(other.version);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("version")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.version);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> version = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ExportRequest other) {
-            version(other.getVersion());
-            return this;
-        }
-
-        /**
-         * <p>Specific version of the custom code system.</p>
-         */
-        @JsonSetter(value = "version", nulls = Nulls.SKIP)
-        public Builder version(Optional<String> version) {
-            this.version = version;
-            return this;
-        }
-
-        public Builder version(String version) {
-            this.version = Optional.ofNullable(version);
-            return this;
-        }
-
-        public ExportRequest build() {
-            return new ExportRequest(version, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

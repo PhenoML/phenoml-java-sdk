@@ -21,178 +21,201 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ResourceReviewRemediated.Builder.class)
 public final class ResourceReviewRemediated {
-    private final Optional<String> tempId;
 
-    private final Optional<String> resourceType;
+  private final Optional<String> tempId;
 
-    private final Optional<String> action;
+  private final Optional<String> resourceType;
 
-    private final Optional<List<ResourceReviewFinding>> findings;
+  private final Optional<String> action;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<ResourceReviewFinding>> findings;
 
-    private ResourceReviewRemediated(
-            Optional<String> tempId,
-            Optional<String> resourceType,
-            Optional<String> action,
-            Optional<List<ResourceReviewFinding>> findings,
-            Map<String, Object> additionalProperties) {
-        this.tempId = tempId;
-        this.resourceType = resourceType;
-        this.action = action;
-        this.findings = findings;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ResourceReviewRemediated(
+    Optional<String> tempId,
+    Optional<String> resourceType,
+    Optional<String> action,
+    Optional<List<ResourceReviewFinding>> findings,
+    Map<String, Object> additionalProperties
+  ) {
+    this.tempId = tempId;
+    this.resourceType = resourceType;
+    this.action = action;
+    this.findings = findings;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return The urn:uuid of the remediated resource (its bundle fullUrl).
+   */
+  @JsonProperty("tempId")
+  public Optional<String> getTempId() {
+    return tempId;
+  }
+
+  @JsonProperty("resourceType")
+  public Optional<String> getResourceType() {
+    return resourceType;
+  }
+
+  /**
+   * @return The safe change applied to the resource in the returned bundle.
+   */
+  @JsonProperty("action")
+  public Optional<String> getAction() {
+    return action;
+  }
+
+  /**
+   * @return Findings for fields in the pre-remediation resource that caused this action.
+   */
+  @JsonProperty("findings")
+  public Optional<List<ResourceReviewFinding>> getFindings() {
+    return findings;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ResourceReviewRemediated && equalTo((ResourceReviewRemediated) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ResourceReviewRemediated other) {
+    return (
+      tempId.equals(other.tempId) &&
+      resourceType.equals(other.resourceType) &&
+      action.equals(other.action) &&
+      findings.equals(other.findings)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.tempId, this.resourceType, this.action, this.findings);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> tempId = Optional.empty();
+
+    private Optional<String> resourceType = Optional.empty();
+
+    private Optional<String> action = Optional.empty();
+
+    private Optional<List<ResourceReviewFinding>> findings = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ResourceReviewRemediated other) {
+      tempId(other.getTempId());
+      resourceType(other.getResourceType());
+      action(other.getAction());
+      findings(other.getFindings());
+      return this;
     }
 
     /**
-     * @return The urn:uuid of the remediated resource (its bundle fullUrl).
+     * <p>The urn:uuid of the remediated resource (its bundle fullUrl).</p>
      */
-    @JsonProperty("tempId")
-    public Optional<String> getTempId() {
-        return tempId;
+    @JsonSetter(value = "tempId", nulls = Nulls.SKIP)
+    public Builder tempId(Optional<String> tempId) {
+      this.tempId = tempId;
+      return this;
     }
 
-    @JsonProperty("resourceType")
-    public Optional<String> getResourceType() {
-        return resourceType;
+    public Builder tempId(String tempId) {
+      this.tempId = Optional.ofNullable(tempId);
+      return this;
+    }
+
+    @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
+    public Builder resourceType(Optional<String> resourceType) {
+      this.resourceType = resourceType;
+      return this;
+    }
+
+    public Builder resourceType(String resourceType) {
+      this.resourceType = Optional.ofNullable(resourceType);
+      return this;
     }
 
     /**
-     * @return The safe change applied to the resource in the returned bundle.
+     * <p>The safe change applied to the resource in the returned bundle.</p>
      */
-    @JsonProperty("action")
-    public Optional<String> getAction() {
-        return action;
+    @JsonSetter(value = "action", nulls = Nulls.SKIP)
+    public Builder action(Optional<String> action) {
+      this.action = action;
+      return this;
+    }
+
+    public Builder action(String action) {
+      this.action = Optional.ofNullable(action);
+      return this;
     }
 
     /**
-     * @return Findings for fields in the pre-remediation resource that caused this action.
+     * <p>Findings for fields in the pre-remediation resource that caused this action.</p>
      */
-    @JsonProperty("findings")
-    public Optional<List<ResourceReviewFinding>> getFindings() {
-        return findings;
+    @JsonSetter(value = "findings", nulls = Nulls.SKIP)
+    public Builder findings(Optional<List<ResourceReviewFinding>> findings) {
+      this.findings = findings;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ResourceReviewRemediated && equalTo((ResourceReviewRemediated) other);
+    public Builder findings(List<ResourceReviewFinding> findings) {
+      this.findings = Optional.ofNullable(findings);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ResourceReviewRemediated build() {
+      return new ResourceReviewRemediated(
+        tempId,
+        resourceType,
+        action,
+        findings,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(ResourceReviewRemediated other) {
-        return tempId.equals(other.tempId)
-                && resourceType.equals(other.resourceType)
-                && action.equals(other.action)
-                && findings.equals(other.findings);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("tempId") ||
+        key.equalsIgnoreCase("resourceType") ||
+        key.equalsIgnoreCase("action") ||
+        key.equalsIgnoreCase("findings")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.tempId, this.resourceType, this.action, this.findings);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> tempId = Optional.empty();
-
-        private Optional<String> resourceType = Optional.empty();
-
-        private Optional<String> action = Optional.empty();
-
-        private Optional<List<ResourceReviewFinding>> findings = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ResourceReviewRemediated other) {
-            tempId(other.getTempId());
-            resourceType(other.getResourceType());
-            action(other.getAction());
-            findings(other.getFindings());
-            return this;
-        }
-
-        /**
-         * <p>The urn:uuid of the remediated resource (its bundle fullUrl).</p>
-         */
-        @JsonSetter(value = "tempId", nulls = Nulls.SKIP)
-        public Builder tempId(Optional<String> tempId) {
-            this.tempId = tempId;
-            return this;
-        }
-
-        public Builder tempId(String tempId) {
-            this.tempId = Optional.ofNullable(tempId);
-            return this;
-        }
-
-        @JsonSetter(value = "resourceType", nulls = Nulls.SKIP)
-        public Builder resourceType(Optional<String> resourceType) {
-            this.resourceType = resourceType;
-            return this;
-        }
-
-        public Builder resourceType(String resourceType) {
-            this.resourceType = Optional.ofNullable(resourceType);
-            return this;
-        }
-
-        /**
-         * <p>The safe change applied to the resource in the returned bundle.</p>
-         */
-        @JsonSetter(value = "action", nulls = Nulls.SKIP)
-        public Builder action(Optional<String> action) {
-            this.action = action;
-            return this;
-        }
-
-        public Builder action(String action) {
-            this.action = Optional.ofNullable(action);
-            return this;
-        }
-
-        /**
-         * <p>Findings for fields in the pre-remediation resource that caused this action.</p>
-         */
-        @JsonSetter(value = "findings", nulls = Nulls.SKIP)
-        public Builder findings(Optional<List<ResourceReviewFinding>> findings) {
-            this.findings = findings;
-            return this;
-        }
-
-        public Builder findings(List<ResourceReviewFinding> findings) {
-            this.findings = Optional.ofNullable(findings);
-            return this;
-        }
-
-        public ResourceReviewRemediated build() {
-            return new ResourceReviewRemediated(tempId, resourceType, action, findings, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

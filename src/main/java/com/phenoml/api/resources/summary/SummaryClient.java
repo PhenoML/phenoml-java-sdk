@@ -12,50 +12,51 @@ import com.phenoml.api.resources.summary.types.CreateSummaryResponse;
 import java.util.function.Supplier;
 
 public class SummaryClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawSummaryClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    protected final Supplier<TemplatesClient> templatesClient;
+  private final RawSummaryClient rawClient;
 
-    public SummaryClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawSummaryClient(clientOptions);
-        this.templatesClient = Suppliers.memoize(() -> new TemplatesClient(clientOptions));
-    }
+  protected final Supplier<TemplatesClient> templatesClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawSummaryClient withRawResponse() {
-        return this.rawClient;
-    }
+  public SummaryClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawSummaryClient(clientOptions);
+    this.templatesClient = Suppliers.memoize(() -> new TemplatesClient(clientOptions));
+  }
 
-    /**
-     * Creates a summary from FHIR resources using one of three modes:
-     * <ul>
-     * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
-     * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
-     * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
-     * </ul>
-     */
-    public CreateSummaryResponse create(CreateSummaryRequest request) {
-        return this.rawClient.create(request).body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawSummaryClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Creates a summary from FHIR resources using one of three modes:
-     * <ul>
-     * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
-     * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
-     * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
-     * </ul>
-     */
-    public CreateSummaryResponse create(CreateSummaryRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).body();
-    }
+  /**
+   * Creates a summary from FHIR resources using one of three modes:
+   * <ul>
+   * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
+   * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
+   * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
+   * </ul>
+   */
+  public CreateSummaryResponse create(CreateSummaryRequest request) {
+    return this.rawClient.create(request).body();
+  }
 
-    public TemplatesClient templates() {
-        return this.templatesClient.get();
-    }
+  /**
+   * Creates a summary from FHIR resources using one of three modes:
+   * <ul>
+   * <li><strong>narrative</strong>: Uses a template to substitute FHIR data into placeholders (requires template_id)</li>
+   * <li><strong>flatten</strong>: Flattens FHIR resources into a searchable format for RAG/search (no template needed)</li>
+   * <li><strong>ips</strong>: Generates an International Patient Summary (IPS) narrative per ISO 27269/HL7 FHIR IPS IG. Requires a Bundle with exactly one Patient resource (returns 400 error if no Patient or multiple Patients are present). Automatically filters resources to those referencing the patient and generates sections for allergies, medications, problems, immunizations, procedures, and vital signs.</li>
+   * </ul>
+   */
+  public CreateSummaryResponse create(CreateSummaryRequest request, RequestOptions requestOptions) {
+    return this.rawClient.create(request, requestOptions).body();
+  }
+
+  public TemplatesClient templates() {
+    return this.templatesClient.get();
+  }
 }

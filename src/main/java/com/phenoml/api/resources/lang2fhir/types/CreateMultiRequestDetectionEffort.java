@@ -7,80 +7,83 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class CreateMultiRequestDetectionEffort {
-    public static final CreateMultiRequestDetectionEffort DEEP =
-            new CreateMultiRequestDetectionEffort(Value.DEEP, "deep");
 
-    public static final CreateMultiRequestDetectionEffort STANDARD =
-            new CreateMultiRequestDetectionEffort(Value.STANDARD, "standard");
+  public static final CreateMultiRequestDetectionEffort DEEP =
+    new CreateMultiRequestDetectionEffort(Value.DEEP, "deep");
 
-    private final Value value;
+  public static final CreateMultiRequestDetectionEffort STANDARD =
+    new CreateMultiRequestDetectionEffort(Value.STANDARD, "standard");
 
-    private final String string;
+  private final Value value;
 
-    CreateMultiRequestDetectionEffort(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  CreateMultiRequestDetectionEffort(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof CreateMultiRequestDetectionEffort &&
+        this.string.equals(((CreateMultiRequestDetectionEffort) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case DEEP:
+        return visitor.visitDeep();
+      case STANDARD:
+        return visitor.visitStandard();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static CreateMultiRequestDetectionEffort valueOf(String value) {
+    switch (value) {
+      case "deep":
+        return DEEP;
+      case "standard":
+        return STANDARD;
+      default:
+        return new CreateMultiRequestDetectionEffort(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    STANDARD,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof CreateMultiRequestDetectionEffort
-                        && this.string.equals(((CreateMultiRequestDetectionEffort) other).string));
-    }
+    DEEP,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    UNKNOWN,
+  }
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case DEEP:
-                return visitor.visitDeep();
-            case STANDARD:
-                return visitor.visitStandard();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+  public interface Visitor<T> {
+    T visitStandard();
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static CreateMultiRequestDetectionEffort valueOf(String value) {
-        switch (value) {
-            case "deep":
-                return DEEP;
-            case "standard":
-                return STANDARD;
-            default:
-                return new CreateMultiRequestDetectionEffort(Value.UNKNOWN, value);
-        }
-    }
+    T visitDeep();
 
-    public enum Value {
-        STANDARD,
-
-        DEEP,
-
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitStandard();
-
-        T visitDeep();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

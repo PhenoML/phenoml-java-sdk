@@ -7,26 +7,27 @@ import com.phenoml.api.core.PhenomlClientApiException;
 import okhttp3.Response;
 
 public final class NotImplementedError extends PhenomlClientApiException {
-    /**
-     * The body of the response that triggered the exception.
-     */
-    private final Object body;
 
-    public NotImplementedError(Object body) {
-        super("NotImplementedError", 501, body);
-        this.body = body;
-    }
+  /**
+   * The body of the response that triggered the exception.
+   */
+  private final Object body;
 
-    public NotImplementedError(Object body, Response rawResponse) {
-        super("NotImplementedError", 501, body, rawResponse);
-        this.body = body;
-    }
+  public NotImplementedError(Object body) {
+    super("NotImplementedError", 501, body);
+    this.body = body;
+  }
 
-    /**
-     * @return the body
-     */
-    @java.lang.Override
-    public Object body() {
-        return this.body;
-    }
+  public NotImplementedError(Object body, Response rawResponse) {
+    super("NotImplementedError", 501, body, rawResponse);
+    this.body = body;
+  }
+
+  /**
+   * @return the body
+   */
+  @java.lang.Override
+  public Object body() {
+    return this.body;
+  }
 }

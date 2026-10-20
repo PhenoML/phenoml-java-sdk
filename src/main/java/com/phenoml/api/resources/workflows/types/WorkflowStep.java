@@ -21,315 +21,338 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = WorkflowStep.Builder.class)
 public final class WorkflowStep {
-    private final Optional<String> id;
 
-    private final Optional<String> name;
+  private final Optional<String> id;
 
-    private final Optional<String> description;
+  private final Optional<String> name;
 
-    private final Optional<WorkflowStepType> type;
+  private final Optional<String> description;
 
-    private final Optional<StepOperation> operation;
+  private final Optional<WorkflowStepType> type;
 
-    private final Optional<String> providerId;
+  private final Optional<StepOperation> operation;
 
-    private final Optional<List<String>> dependencies;
+  private final Optional<String> providerId;
 
-    private final Optional<Boolean> dynamicGeneration;
+  private final Optional<List<String>> dependencies;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Boolean> dynamicGeneration;
 
-    private WorkflowStep(
-            Optional<String> id,
-            Optional<String> name,
-            Optional<String> description,
-            Optional<WorkflowStepType> type,
-            Optional<StepOperation> operation,
-            Optional<String> providerId,
-            Optional<List<String>> dependencies,
-            Optional<Boolean> dynamicGeneration,
-            Map<String, Object> additionalProperties) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.type = type;
-        this.operation = operation;
-        this.providerId = providerId;
-        this.dependencies = dependencies;
-        this.dynamicGeneration = dynamicGeneration;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private WorkflowStep(
+    Optional<String> id,
+    Optional<String> name,
+    Optional<String> description,
+    Optional<WorkflowStepType> type,
+    Optional<StepOperation> operation,
+    Optional<String> providerId,
+    Optional<List<String>> dependencies,
+    Optional<Boolean> dynamicGeneration,
+    Map<String, Object> additionalProperties
+  ) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.type = type;
+    this.operation = operation;
+    this.providerId = providerId;
+    this.dependencies = dependencies;
+    this.dynamicGeneration = dynamicGeneration;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Unique identifier for the step
+   */
+  @JsonProperty("id")
+  public Optional<String> getId() {
+    return id;
+  }
+
+  /**
+   * @return Human-readable name for the step
+   */
+  @JsonProperty("name")
+  public Optional<String> getName() {
+    return name;
+  }
+
+  /**
+   * @return Detailed description of what the step does
+   */
+  @JsonProperty("description")
+  public Optional<String> getDescription() {
+    return description;
+  }
+
+  /**
+   * @return Type of operation this step performs
+   */
+  @JsonProperty("type")
+  public Optional<WorkflowStepType> getType() {
+    return type;
+  }
+
+  @JsonProperty("operation")
+  public Optional<StepOperation> getOperation() {
+    return operation;
+  }
+
+  /**
+   * @return Selected FHIR provider ID for this step
+   */
+  @JsonProperty("provider_id")
+  public Optional<String> getProviderId() {
+    return providerId;
+  }
+
+  /**
+   * @return IDs of steps this step depends on
+   */
+  @JsonProperty("dependencies")
+  public Optional<List<String>> getDependencies() {
+    return dependencies;
+  }
+
+  /**
+   * @return Whether to use dynamic lang2fhir generation for this step
+   */
+  @JsonProperty("dynamic_generation")
+  public Optional<Boolean> getDynamicGeneration() {
+    return dynamicGeneration;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof WorkflowStep && equalTo((WorkflowStep) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(WorkflowStep other) {
+    return (
+      id.equals(other.id) &&
+      name.equals(other.name) &&
+      description.equals(other.description) &&
+      type.equals(other.type) &&
+      operation.equals(other.operation) &&
+      providerId.equals(other.providerId) &&
+      dependencies.equals(other.dependencies) &&
+      dynamicGeneration.equals(other.dynamicGeneration)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.id,
+      this.name,
+      this.description,
+      this.type,
+      this.operation,
+      this.providerId,
+      this.dependencies,
+      this.dynamicGeneration
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> id = Optional.empty();
+
+    private Optional<String> name = Optional.empty();
+
+    private Optional<String> description = Optional.empty();
+
+    private Optional<WorkflowStepType> type = Optional.empty();
+
+    private Optional<StepOperation> operation = Optional.empty();
+
+    private Optional<String> providerId = Optional.empty();
+
+    private Optional<List<String>> dependencies = Optional.empty();
+
+    private Optional<Boolean> dynamicGeneration = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(WorkflowStep other) {
+      id(other.getId());
+      name(other.getName());
+      description(other.getDescription());
+      type(other.getType());
+      operation(other.getOperation());
+      providerId(other.getProviderId());
+      dependencies(other.getDependencies());
+      dynamicGeneration(other.getDynamicGeneration());
+      return this;
     }
 
     /**
-     * @return Unique identifier for the step
+     * <p>Unique identifier for the step</p>
      */
-    @JsonProperty("id")
-    public Optional<String> getId() {
-        return id;
+    @JsonSetter(value = "id", nulls = Nulls.SKIP)
+    public Builder id(Optional<String> id) {
+      this.id = id;
+      return this;
+    }
+
+    public Builder id(String id) {
+      this.id = Optional.ofNullable(id);
+      return this;
     }
 
     /**
-     * @return Human-readable name for the step
+     * <p>Human-readable name for the step</p>
      */
-    @JsonProperty("name")
-    public Optional<String> getName() {
-        return name;
+    @JsonSetter(value = "name", nulls = Nulls.SKIP)
+    public Builder name(Optional<String> name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.name = Optional.ofNullable(name);
+      return this;
     }
 
     /**
-     * @return Detailed description of what the step does
+     * <p>Detailed description of what the step does</p>
      */
-    @JsonProperty("description")
-    public Optional<String> getDescription() {
-        return description;
+    @JsonSetter(value = "description", nulls = Nulls.SKIP)
+    public Builder description(Optional<String> description) {
+      this.description = description;
+      return this;
+    }
+
+    public Builder description(String description) {
+      this.description = Optional.ofNullable(description);
+      return this;
     }
 
     /**
-     * @return Type of operation this step performs
+     * <p>Type of operation this step performs</p>
      */
-    @JsonProperty("type")
-    public Optional<WorkflowStepType> getType() {
-        return type;
+    @JsonSetter(value = "type", nulls = Nulls.SKIP)
+    public Builder type(Optional<WorkflowStepType> type) {
+      this.type = type;
+      return this;
     }
 
-    @JsonProperty("operation")
-    public Optional<StepOperation> getOperation() {
-        return operation;
+    public Builder type(WorkflowStepType type) {
+      this.type = Optional.ofNullable(type);
+      return this;
+    }
+
+    @JsonSetter(value = "operation", nulls = Nulls.SKIP)
+    public Builder operation(Optional<StepOperation> operation) {
+      this.operation = operation;
+      return this;
+    }
+
+    public Builder operation(StepOperation operation) {
+      this.operation = Optional.ofNullable(operation);
+      return this;
     }
 
     /**
-     * @return Selected FHIR provider ID for this step
+     * <p>Selected FHIR provider ID for this step</p>
      */
-    @JsonProperty("provider_id")
-    public Optional<String> getProviderId() {
-        return providerId;
+    @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
+    public Builder providerId(Optional<String> providerId) {
+      this.providerId = providerId;
+      return this;
+    }
+
+    public Builder providerId(String providerId) {
+      this.providerId = Optional.ofNullable(providerId);
+      return this;
     }
 
     /**
-     * @return IDs of steps this step depends on
+     * <p>IDs of steps this step depends on</p>
      */
-    @JsonProperty("dependencies")
-    public Optional<List<String>> getDependencies() {
-        return dependencies;
+    @JsonSetter(value = "dependencies", nulls = Nulls.SKIP)
+    public Builder dependencies(Optional<List<String>> dependencies) {
+      this.dependencies = dependencies;
+      return this;
+    }
+
+    public Builder dependencies(List<String> dependencies) {
+      this.dependencies = Optional.ofNullable(dependencies);
+      return this;
     }
 
     /**
-     * @return Whether to use dynamic lang2fhir generation for this step
+     * <p>Whether to use dynamic lang2fhir generation for this step</p>
      */
-    @JsonProperty("dynamic_generation")
-    public Optional<Boolean> getDynamicGeneration() {
-        return dynamicGeneration;
+    @JsonSetter(value = "dynamic_generation", nulls = Nulls.SKIP)
+    public Builder dynamicGeneration(Optional<Boolean> dynamicGeneration) {
+      this.dynamicGeneration = dynamicGeneration;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof WorkflowStep && equalTo((WorkflowStep) other);
+    public Builder dynamicGeneration(Boolean dynamicGeneration) {
+      this.dynamicGeneration = Optional.ofNullable(dynamicGeneration);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public WorkflowStep build() {
+      return new WorkflowStep(
+        id,
+        name,
+        description,
+        type,
+        operation,
+        providerId,
+        dependencies,
+        dynamicGeneration,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(WorkflowStep other) {
-        return id.equals(other.id)
-                && name.equals(other.name)
-                && description.equals(other.description)
-                && type.equals(other.type)
-                && operation.equals(other.operation)
-                && providerId.equals(other.providerId)
-                && dependencies.equals(other.dependencies)
-                && dynamicGeneration.equals(other.dynamicGeneration);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("id") ||
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("description") ||
+        key.equalsIgnoreCase("type") ||
+        key.equalsIgnoreCase("operation") ||
+        key.equalsIgnoreCase("provider_id") ||
+        key.equalsIgnoreCase("dependencies") ||
+        key.equalsIgnoreCase("dynamic_generation")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.id,
-                this.name,
-                this.description,
-                this.type,
-                this.operation,
-                this.providerId,
-                this.dependencies,
-                this.dynamicGeneration);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> id = Optional.empty();
-
-        private Optional<String> name = Optional.empty();
-
-        private Optional<String> description = Optional.empty();
-
-        private Optional<WorkflowStepType> type = Optional.empty();
-
-        private Optional<StepOperation> operation = Optional.empty();
-
-        private Optional<String> providerId = Optional.empty();
-
-        private Optional<List<String>> dependencies = Optional.empty();
-
-        private Optional<Boolean> dynamicGeneration = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(WorkflowStep other) {
-            id(other.getId());
-            name(other.getName());
-            description(other.getDescription());
-            type(other.getType());
-            operation(other.getOperation());
-            providerId(other.getProviderId());
-            dependencies(other.getDependencies());
-            dynamicGeneration(other.getDynamicGeneration());
-            return this;
-        }
-
-        /**
-         * <p>Unique identifier for the step</p>
-         */
-        @JsonSetter(value = "id", nulls = Nulls.SKIP)
-        public Builder id(Optional<String> id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder id(String id) {
-            this.id = Optional.ofNullable(id);
-            return this;
-        }
-
-        /**
-         * <p>Human-readable name for the step</p>
-         */
-        @JsonSetter(value = "name", nulls = Nulls.SKIP)
-        public Builder name(Optional<String> name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = Optional.ofNullable(name);
-            return this;
-        }
-
-        /**
-         * <p>Detailed description of what the step does</p>
-         */
-        @JsonSetter(value = "description", nulls = Nulls.SKIP)
-        public Builder description(Optional<String> description) {
-            this.description = description;
-            return this;
-        }
-
-        public Builder description(String description) {
-            this.description = Optional.ofNullable(description);
-            return this;
-        }
-
-        /**
-         * <p>Type of operation this step performs</p>
-         */
-        @JsonSetter(value = "type", nulls = Nulls.SKIP)
-        public Builder type(Optional<WorkflowStepType> type) {
-            this.type = type;
-            return this;
-        }
-
-        public Builder type(WorkflowStepType type) {
-            this.type = Optional.ofNullable(type);
-            return this;
-        }
-
-        @JsonSetter(value = "operation", nulls = Nulls.SKIP)
-        public Builder operation(Optional<StepOperation> operation) {
-            this.operation = operation;
-            return this;
-        }
-
-        public Builder operation(StepOperation operation) {
-            this.operation = Optional.ofNullable(operation);
-            return this;
-        }
-
-        /**
-         * <p>Selected FHIR provider ID for this step</p>
-         */
-        @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
-        public Builder providerId(Optional<String> providerId) {
-            this.providerId = providerId;
-            return this;
-        }
-
-        public Builder providerId(String providerId) {
-            this.providerId = Optional.ofNullable(providerId);
-            return this;
-        }
-
-        /**
-         * <p>IDs of steps this step depends on</p>
-         */
-        @JsonSetter(value = "dependencies", nulls = Nulls.SKIP)
-        public Builder dependencies(Optional<List<String>> dependencies) {
-            this.dependencies = dependencies;
-            return this;
-        }
-
-        public Builder dependencies(List<String> dependencies) {
-            this.dependencies = Optional.ofNullable(dependencies);
-            return this;
-        }
-
-        /**
-         * <p>Whether to use dynamic lang2fhir generation for this step</p>
-         */
-        @JsonSetter(value = "dynamic_generation", nulls = Nulls.SKIP)
-        public Builder dynamicGeneration(Optional<Boolean> dynamicGeneration) {
-            this.dynamicGeneration = dynamicGeneration;
-            return this;
-        }
-
-        public Builder dynamicGeneration(Boolean dynamicGeneration) {
-            this.dynamicGeneration = Optional.ofNullable(dynamicGeneration);
-            return this;
-        }
-
-        public WorkflowStep build() {
-            return new WorkflowStep(
-                    id,
-                    name,
-                    description,
-                    type,
-                    operation,
-                    providerId,
-                    dependencies,
-                    dynamicGeneration,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

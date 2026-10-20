@@ -3,6 +3,11 @@ package com.phenoml.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.resources.agent.errors.BadRequestError;
+import com.phenoml.api.resources.agent.errors.ForbiddenError;
+import com.phenoml.api.resources.agent.errors.InternalServerError;
+import com.phenoml.api.resources.agent.errors.NotFoundError;
+import com.phenoml.api.resources.agent.errors.UnauthorizedError;
 import com.phenoml.api.resources.agent.requests.ListRequest;
 import com.phenoml.api.resources.agent.types.AgentCreateRequest;
 import com.phenoml.api.resources.agent.types.AgentCreateRequestProvider;
@@ -22,662 +27,2487 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class AgentWireTest {
-    private MockWebServer server;
-    private PhenomlClient client;
-    private ObjectMapper objectMapper = ObjectMappers.JSON_MAPPER;
 
-    @BeforeEach
-    public void setup() throws Exception {
-        server = new MockWebServer();
-        server.start();
-        client = PhenomlClient.withCredentials("test-client-id", "test-client-secret")
-                .url(server.url("/").toString())
-                .build();
+  private MockWebServer server;
+  private PhenomlClient client;
+  private ObjectMapper objectMapper = ObjectMappers.JSON_MAPPER;
+
+  @BeforeEach
+  public void setup() throws Exception {
+    server = new MockWebServer();
+    server.start();
+    client = PhenomlClient.withCredentials("test-client-id", "test-client-secret")
+      .url(server.url("/").toString())
+      .maxRetries(0)
+      .build();
+  }
+
+  @AfterEach
+  public void teardown() throws Exception {
+    server.shutdown();
+  }
+
+  @Test
+  public void testCreate() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(201)
+        .setBody(
+          "{\"success\":true,\"message\":\"Agent created successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"}}"
+        )
+    );
+    AgentResponse response = client
+      .agent()
+      .create(
+        AgentCreateRequest.builder()
+          .name("Medical Assistant")
+          .provider(AgentCreateRequestProvider.of("7002b0b4-8d09-445a-bf65-0fafdaf26c35"))
+          .description("An AI assistant for medical information processing")
+          .prompts(Arrays.asList("prompt_123"))
+          .tags(Optional.of(Arrays.asList("medical", "fhir")))
+          .build()
+      );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("POST", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "{\n" +
+      "  \"name\": \"Medical Assistant\",\n" +
+      "  \"description\": \"An AI assistant for medical information processing\",\n" +
+      "  \"prompts\": [\n" +
+      "    \"prompt_123\"\n" +
+      "  ],\n" +
+      "  \"tags\": [\n" +
+      "    \"medical\",\n" +
+      "    \"fhir\"\n" +
+      "  ],\n" +
+      "  \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n" +
+      "}";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
     }
 
-    @AfterEach
-    public void teardown() throws Exception {
-        server.shutdown();
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
     }
 
-    @Test
-    public void testCreate() throws Exception {
-        // OAuth: enqueue token response (client fetches token before API call)
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(
-                new MockResponse()
-                        .setResponseCode(200)
-                        .setBody(
-                                "{\"success\":true,\"message\":\"Agent created successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"}}"));
-        AgentResponse response = client.agent()
-                .create(AgentCreateRequest.builder()
-                        .name("Medical Assistant")
-                        .provider(AgentCreateRequestProvider.of("7002b0b4-8d09-445a-bf65-0fafdaf26c35"))
-                        .description("An AI assistant for medical information processing")
-                        .prompts(Arrays.asList("prompt_123"))
-                        .tags(Optional.of(Arrays.asList("medical", "fhir")))
-                        .build());
-        // OAuth: consume the token request
-        server.takeRequest();
-        RecordedRequest request = server.takeRequest();
-        Assertions.assertNotNull(request);
-        Assertions.assertEquals("POST", request.getMethod());
-
-        // Validate OAuth Authorization header
-        Assertions.assertEquals(
-                "Bearer test-token",
-                request.getHeader("Authorization"),
-                "OAuth Authorization header should contain Bearer token from OAuth flow");
-        // Validate request body
-        String actualRequestBody = request.getBody().readUtf8();
-        String expectedRequestBody = ""
-                + "{\n"
-                + "  \"name\": \"Medical Assistant\",\n"
-                + "  \"description\": \"An AI assistant for medical information processing\",\n"
-                + "  \"prompts\": [\n"
-                + "    \"prompt_123\"\n"
-                + "  ],\n"
-                + "  \"tags\": [\n"
-                + "    \"medical\",\n"
-                + "    \"fhir\"\n"
-                + "  ],\n"
-                + "  \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n"
-                + "}";
-        JsonNode actualJson = objectMapper.readTree(actualRequestBody);
-        JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
-        Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
-        if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
-            String discriminator = null;
-            if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
-            else if (actualJson.has("_type"))
-                discriminator = actualJson.get("_type").asText();
-            else if (actualJson.has("kind"))
-                discriminator = actualJson.get("kind").asText();
-            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
-            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
-        }
-
-        if (!actualJson.isNull()) {
-            Assertions.assertTrue(
-                    actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
-                    "request should be a valid JSON value");
-        }
-
-        if (actualJson.isArray()) {
-            Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
-        }
-        if (actualJson.isObject()) {
-            Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
-        }
-
-        // Validate response body
-        Assertions.assertNotNull(response, "Response should not be null");
-        String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = ""
-                + "{\n"
-                + "  \"success\": true,\n"
-                + "  \"message\": \"Agent created successfully\",\n"
-                + "  \"data\": {\n"
-                + "    \"id\": \"agent_123\",\n"
-                + "    \"name\": \"Medical Assistant\",\n"
-                + "    \"description\": \"An AI assistant for medical information processing\",\n"
-                + "    \"prompts\": [\n"
-                + "      \"prompt_123\",\n"
-                + "      \"prompt_456\"\n"
-                + "    ],\n"
-                + "    \"tools\": [\n"
-                + "      \"mcp_server_123\",\n"
-                + "      \"mcp_server_456\"\n"
-                + "    ],\n"
-                + "    \"workflows\": [\n"
-                + "      \"workflow_123\",\n"
-                + "      \"workflow_456\"\n"
-                + "    ],\n"
-                + "    \"tags\": [\n"
-                + "      \"medical\",\n"
-                + "      \"fhir\"\n"
-                + "    ],\n"
-                + "    \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n"
-                + "  }\n"
-                + "}";
-        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
-        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
-        Assertions.assertTrue(
-                jsonEquals(expectedResponseNode, actualResponseNode),
-                "Response body structure does not match expected");
-        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
-            String discriminator = null;
-            if (actualResponseNode.has("type"))
-                discriminator = actualResponseNode.get("type").asText();
-            else if (actualResponseNode.has("_type"))
-                discriminator = actualResponseNode.get("_type").asText();
-            else if (actualResponseNode.has("kind"))
-                discriminator = actualResponseNode.get("kind").asText();
-            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
-            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
-        }
-
-        if (!actualResponseNode.isNull()) {
-            Assertions.assertTrue(
-                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
-                    "response should be a valid JSON value");
-        }
-
-        if (actualResponseNode.isArray()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
-        }
-        if (actualResponseNode.isObject()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
-        }
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
     }
 
-    @Test
-    public void testList() throws Exception {
-        // OAuth: enqueue token response (client fetches token before API call)
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(TestResources.loadResource("/wire-tests/AgentWireTest_testList_response.json")));
-        ListResponse response =
-                client.agent().list(ListRequest.builder().tags("tags").build());
-        // OAuth: consume the token request
-        server.takeRequest();
-        RecordedRequest request = server.takeRequest();
-        Assertions.assertNotNull(request);
-        Assertions.assertEquals("GET", request.getMethod());
-
-        // Validate OAuth Authorization header
-        Assertions.assertEquals(
-                "Bearer test-token",
-                request.getHeader("Authorization"),
-                "OAuth Authorization header should contain Bearer token from OAuth flow");
-
-        // Validate response body
-        Assertions.assertNotNull(response, "Response should not be null");
-        String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = TestResources.loadResource("/wire-tests/AgentWireTest_testList_response.json");
-        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
-        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
-        Assertions.assertTrue(
-                jsonEquals(expectedResponseNode, actualResponseNode),
-                "Response body structure does not match expected");
-        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
-            String discriminator = null;
-            if (actualResponseNode.has("type"))
-                discriminator = actualResponseNode.get("type").asText();
-            else if (actualResponseNode.has("_type"))
-                discriminator = actualResponseNode.get("_type").asText();
-            else if (actualResponseNode.has("kind"))
-                discriminator = actualResponseNode.get("kind").asText();
-            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
-            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
-        }
-
-        if (!actualResponseNode.isNull()) {
-            Assertions.assertTrue(
-                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
-                    "response should be a valid JSON value");
-        }
-
-        if (actualResponseNode.isArray()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
-        }
-        if (actualResponseNode.isObject()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
-        }
+    // Validate response body
+    Assertions.assertNotNull(response, "Response should not be null");
+    String actualResponseJson = objectMapper.writeValueAsString(response);
+    String expectedResponseBody =
+      "" +
+      "{\n" +
+      "  \"success\": true,\n" +
+      "  \"message\": \"Agent created successfully\",\n" +
+      "  \"data\": {\n" +
+      "    \"id\": \"agent_123\",\n" +
+      "    \"name\": \"Medical Assistant\",\n" +
+      "    \"description\": \"An AI assistant for medical information processing\",\n" +
+      "    \"prompts\": [\n" +
+      "      \"prompt_123\",\n" +
+      "      \"prompt_456\"\n" +
+      "    ],\n" +
+      "    \"tools\": [\n" +
+      "      \"mcp_server_123\",\n" +
+      "      \"mcp_server_456\"\n" +
+      "    ],\n" +
+      "    \"workflows\": [\n" +
+      "      \"workflow_123\",\n" +
+      "      \"workflow_456\"\n" +
+      "    ],\n" +
+      "    \"tags\": [\n" +
+      "      \"medical\",\n" +
+      "      \"fhir\"\n" +
+      "    ],\n" +
+      "    \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n" +
+      "  }\n" +
+      "}";
+    JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+    JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedResponseNode, actualResponseNode),
+      "Response body structure does not match expected"
+    );
+    if (
+      actualResponseNode.has("type") ||
+      actualResponseNode.has("_type") ||
+      actualResponseNode.has("kind")
+    ) {
+      String discriminator = null;
+      if (actualResponseNode.has("type")) discriminator = actualResponseNode.get("type").asText();
+      else if (actualResponseNode.has("_type")) discriminator = actualResponseNode
+        .get("_type")
+        .asText();
+      else if (actualResponseNode.has("kind")) discriminator = actualResponseNode
+        .get("kind")
+        .asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
     }
 
-    @Test
-    public void testGet() throws Exception {
-        // OAuth: enqueue token response (client fetches token before API call)
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(
-                new MockResponse()
-                        .setResponseCode(200)
-                        .setBody(
-                                "{\"success\":true,\"message\":\"Agent retrieved successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"}}"));
-        AgentResponse response = client.agent().get("id");
-        // OAuth: consume the token request
-        server.takeRequest();
-        RecordedRequest request = server.takeRequest();
-        Assertions.assertNotNull(request);
-        Assertions.assertEquals("GET", request.getMethod());
-
-        // Validate OAuth Authorization header
-        Assertions.assertEquals(
-                "Bearer test-token",
-                request.getHeader("Authorization"),
-                "OAuth Authorization header should contain Bearer token from OAuth flow");
-
-        // Validate response body
-        Assertions.assertNotNull(response, "Response should not be null");
-        String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = ""
-                + "{\n"
-                + "  \"success\": true,\n"
-                + "  \"message\": \"Agent retrieved successfully\",\n"
-                + "  \"data\": {\n"
-                + "    \"id\": \"agent_123\",\n"
-                + "    \"name\": \"Medical Assistant\",\n"
-                + "    \"description\": \"An AI assistant for medical information processing\",\n"
-                + "    \"prompts\": [\n"
-                + "      \"prompt_123\",\n"
-                + "      \"prompt_456\"\n"
-                + "    ],\n"
-                + "    \"tools\": [\n"
-                + "      \"mcp_server_123\",\n"
-                + "      \"mcp_server_456\"\n"
-                + "    ],\n"
-                + "    \"workflows\": [\n"
-                + "      \"workflow_123\",\n"
-                + "      \"workflow_456\"\n"
-                + "    ],\n"
-                + "    \"tags\": [\n"
-                + "      \"medical\",\n"
-                + "      \"fhir\"\n"
-                + "    ],\n"
-                + "    \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n"
-                + "  }\n"
-                + "}";
-        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
-        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
-        Assertions.assertTrue(
-                jsonEquals(expectedResponseNode, actualResponseNode),
-                "Response body structure does not match expected");
-        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
-            String discriminator = null;
-            if (actualResponseNode.has("type"))
-                discriminator = actualResponseNode.get("type").asText();
-            else if (actualResponseNode.has("_type"))
-                discriminator = actualResponseNode.get("_type").asText();
-            else if (actualResponseNode.has("kind"))
-                discriminator = actualResponseNode.get("kind").asText();
-            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
-            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
-        }
-
-        if (!actualResponseNode.isNull()) {
-            Assertions.assertTrue(
-                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
-                    "response should be a valid JSON value");
-        }
-
-        if (actualResponseNode.isArray()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
-        }
-        if (actualResponseNode.isObject()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
-        }
+    if (!actualResponseNode.isNull()) {
+      Assertions.assertTrue(
+        actualResponseNode.isObject() ||
+        actualResponseNode.isArray() ||
+        actualResponseNode.isValueNode(),
+        "response should be a valid JSON value"
+      );
     }
 
-    @Test
-    public void testUpdate() throws Exception {
-        // OAuth: enqueue token response (client fetches token before API call)
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(
-                new MockResponse()
-                        .setResponseCode(200)
-                        .setBody(
-                                "{\"success\":true,\"message\":\"Agent updated successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"}}"));
-        AgentResponse response = client.agent()
-                .update(
-                        "id",
-                        AgentCreateRequest.builder()
-                                .name("Medical Assistant")
-                                .provider(AgentCreateRequestProvider.of("7002b0b4-8d09-445a-bf65-0fafdaf26c35"))
-                                .description("Updated description for the medical assistant")
-                                .prompts(Arrays.asList("prompt_123"))
-                                .tags(Optional.of(Arrays.asList("medical", "fhir", "updated")))
-                                .build());
-        // OAuth: consume the token request
-        server.takeRequest();
-        RecordedRequest request = server.takeRequest();
-        Assertions.assertNotNull(request);
-        Assertions.assertEquals("PUT", request.getMethod());
+    if (actualResponseNode.isArray()) {
+      Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+    }
+    if (actualResponseNode.isObject()) {
+      Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+    }
+  }
 
-        // Validate OAuth Authorization header
-        Assertions.assertEquals(
-                "Bearer test-token",
-                request.getHeader("Authorization"),
-                "OAuth Authorization header should contain Bearer token from OAuth flow");
-        // Validate request body
-        String actualRequestBody = request.getBody().readUtf8();
-        String expectedRequestBody = ""
-                + "{\n"
-                + "  \"name\": \"Medical Assistant\",\n"
-                + "  \"description\": \"Updated description for the medical assistant\",\n"
-                + "  \"prompts\": [\n"
-                + "    \"prompt_123\"\n"
-                + "  ],\n"
-                + "  \"tags\": [\n"
-                + "    \"medical\",\n"
-                + "    \"fhir\",\n"
-                + "    \"updated\"\n"
-                + "  ],\n"
-                + "  \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n"
-                + "}";
-        JsonNode actualJson = objectMapper.readTree(actualRequestBody);
-        JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
-        Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
-        if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
-            String discriminator = null;
-            if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
-            else if (actualJson.has("_type"))
-                discriminator = actualJson.get("_type").asText();
-            else if (actualJson.has("kind"))
-                discriminator = actualJson.get("kind").asText();
-            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
-            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
-        }
+  @Test
+  public void testCreateThrowsBadRequestError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(400).setBody("{\"key\":\"value\"}"));
+    BadRequestError exception = Assertions.assertThrows(BadRequestError.class, () ->
+      client
+        .agent()
+        .create(
+          AgentCreateRequest.builder()
+            .name("name")
+            .provider(AgentCreateRequestProvider.of("provider"))
+            .prompts(Arrays.asList("prompts", "prompts"))
+            .build()
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("POST", request.getMethod());
 
-        if (!actualJson.isNull()) {
-            Assertions.assertTrue(
-                    actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
-                    "request should be a valid JSON value");
-        }
-
-        if (actualJson.isArray()) {
-            Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
-        }
-        if (actualJson.isObject()) {
-            Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
-        }
-
-        // Validate response body
-        Assertions.assertNotNull(response, "Response should not be null");
-        String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = ""
-                + "{\n"
-                + "  \"success\": true,\n"
-                + "  \"message\": \"Agent updated successfully\",\n"
-                + "  \"data\": {\n"
-                + "    \"id\": \"agent_123\",\n"
-                + "    \"name\": \"Medical Assistant\",\n"
-                + "    \"description\": \"An AI assistant for medical information processing\",\n"
-                + "    \"prompts\": [\n"
-                + "      \"prompt_123\",\n"
-                + "      \"prompt_456\"\n"
-                + "    ],\n"
-                + "    \"tools\": [\n"
-                + "      \"mcp_server_123\",\n"
-                + "      \"mcp_server_456\"\n"
-                + "    ],\n"
-                + "    \"workflows\": [\n"
-                + "      \"workflow_123\",\n"
-                + "      \"workflow_456\"\n"
-                + "    ],\n"
-                + "    \"tags\": [\n"
-                + "      \"medical\",\n"
-                + "      \"fhir\"\n"
-                + "    ],\n"
-                + "    \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n"
-                + "  }\n"
-                + "}";
-        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
-        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
-        Assertions.assertTrue(
-                jsonEquals(expectedResponseNode, actualResponseNode),
-                "Response body structure does not match expected");
-        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
-            String discriminator = null;
-            if (actualResponseNode.has("type"))
-                discriminator = actualResponseNode.get("type").asText();
-            else if (actualResponseNode.has("_type"))
-                discriminator = actualResponseNode.get("_type").asText();
-            else if (actualResponseNode.has("kind"))
-                discriminator = actualResponseNode.get("kind").asText();
-            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
-            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
-        }
-
-        if (!actualResponseNode.isNull()) {
-            Assertions.assertTrue(
-                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
-                    "response should be a valid JSON value");
-        }
-
-        if (actualResponseNode.isArray()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
-        }
-        if (actualResponseNode.isObject()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
-        }
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "{\n" +
+      "  \"name\": \"name\",\n" +
+      "  \"prompts\": [\n" +
+      "    \"prompts\",\n" +
+      "    \"prompts\"\n" +
+      "  ],\n" +
+      "  \"provider\": \"provider\"\n" +
+      "}";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
     }
 
-    @Test
-    public void testDelete() throws Exception {
-        // OAuth: enqueue token response (client fetches token before API call)
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody("{\"success\":true,\"message\":\"Agent deleted successfully\"}"));
-        DeleteResponse response = client.agent().delete("id");
-        // OAuth: consume the token request
-        server.takeRequest();
-        RecordedRequest request = server.takeRequest();
-        Assertions.assertNotNull(request);
-        Assertions.assertEquals("DELETE", request.getMethod());
-
-        // Validate OAuth Authorization header
-        Assertions.assertEquals(
-                "Bearer test-token",
-                request.getHeader("Authorization"),
-                "OAuth Authorization header should contain Bearer token from OAuth flow");
-
-        // Validate response body
-        Assertions.assertNotNull(response, "Response should not be null");
-        String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody =
-                "" + "{\n" + "  \"success\": true,\n" + "  \"message\": \"Agent deleted successfully\"\n" + "}";
-        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
-        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
-        Assertions.assertTrue(
-                jsonEquals(expectedResponseNode, actualResponseNode),
-                "Response body structure does not match expected");
-        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
-            String discriminator = null;
-            if (actualResponseNode.has("type"))
-                discriminator = actualResponseNode.get("type").asText();
-            else if (actualResponseNode.has("_type"))
-                discriminator = actualResponseNode.get("_type").asText();
-            else if (actualResponseNode.has("kind"))
-                discriminator = actualResponseNode.get("kind").asText();
-            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
-            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
-        }
-
-        if (!actualResponseNode.isNull()) {
-            Assertions.assertTrue(
-                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
-                    "response should be a valid JSON value");
-        }
-
-        if (actualResponseNode.isArray()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
-        }
-        if (actualResponseNode.isObject()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
-        }
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
     }
 
-    @Test
-    public void testPatch() throws Exception {
-        // OAuth: enqueue token response (client fetches token before API call)
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
-        server.enqueue(
-                new MockResponse()
-                        .setResponseCode(200)
-                        .setBody(
-                                "{\"success\":true,\"message\":\"Agent patched successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"}}"));
-        AgentResponse response = client.agent()
-                .patch(
-                        "id",
-                        Arrays.asList(
-                                JsonPatchOperation.builder()
-                                        .op(JsonPatchOperationOp.REPLACE)
-                                        .path("/description")
-                                        .value("patched description")
-                                        .build(),
-                                JsonPatchOperation.builder()
-                                        .op(JsonPatchOperationOp.ADD)
-                                        .path("/tags/-")
-                                        .value("updated")
-                                        .build()));
-        // OAuth: consume the token request
-        server.takeRequest();
-        RecordedRequest request = server.takeRequest();
-        Assertions.assertNotNull(request);
-        Assertions.assertEquals("PATCH", request.getMethod());
-
-        // Validate OAuth Authorization header
-        Assertions.assertEquals(
-                "Bearer test-token",
-                request.getHeader("Authorization"),
-                "OAuth Authorization header should contain Bearer token from OAuth flow");
-        // Validate request body
-        String actualRequestBody = request.getBody().readUtf8();
-        String expectedRequestBody = ""
-                + "[\n"
-                + "  {\n"
-                + "    \"op\": \"replace\",\n"
-                + "    \"path\": \"/description\",\n"
-                + "    \"value\": \"patched description\"\n"
-                + "  },\n"
-                + "  {\n"
-                + "    \"op\": \"add\",\n"
-                + "    \"path\": \"/tags/-\",\n"
-                + "    \"value\": \"updated\"\n"
-                + "  }\n"
-                + "]";
-        JsonNode actualJson = objectMapper.readTree(actualRequestBody);
-        JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
-        Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
-        if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
-            String discriminator = null;
-            if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
-            else if (actualJson.has("_type"))
-                discriminator = actualJson.get("_type").asText();
-            else if (actualJson.has("kind"))
-                discriminator = actualJson.get("kind").asText();
-            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
-            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
-        }
-
-        if (!actualJson.isNull()) {
-            Assertions.assertTrue(
-                    actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
-                    "request should be a valid JSON value");
-        }
-
-        if (actualJson.isArray()) {
-            Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
-        }
-        if (actualJson.isObject()) {
-            Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
-        }
-
-        // Validate response body
-        Assertions.assertNotNull(response, "Response should not be null");
-        String actualResponseJson = objectMapper.writeValueAsString(response);
-        String expectedResponseBody = ""
-                + "{\n"
-                + "  \"success\": true,\n"
-                + "  \"message\": \"Agent patched successfully\",\n"
-                + "  \"data\": {\n"
-                + "    \"id\": \"agent_123\",\n"
-                + "    \"name\": \"Medical Assistant\",\n"
-                + "    \"description\": \"An AI assistant for medical information processing\",\n"
-                + "    \"prompts\": [\n"
-                + "      \"prompt_123\",\n"
-                + "      \"prompt_456\"\n"
-                + "    ],\n"
-                + "    \"tools\": [\n"
-                + "      \"mcp_server_123\",\n"
-                + "      \"mcp_server_456\"\n"
-                + "    ],\n"
-                + "    \"workflows\": [\n"
-                + "      \"workflow_123\",\n"
-                + "      \"workflow_456\"\n"
-                + "    ],\n"
-                + "    \"tags\": [\n"
-                + "      \"medical\",\n"
-                + "      \"fhir\"\n"
-                + "    ],\n"
-                + "    \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n"
-                + "  }\n"
-                + "}";
-        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
-        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
-        Assertions.assertTrue(
-                jsonEquals(expectedResponseNode, actualResponseNode),
-                "Response body structure does not match expected");
-        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
-            String discriminator = null;
-            if (actualResponseNode.has("type"))
-                discriminator = actualResponseNode.get("type").asText();
-            else if (actualResponseNode.has("_type"))
-                discriminator = actualResponseNode.get("_type").asText();
-            else if (actualResponseNode.has("kind"))
-                discriminator = actualResponseNode.get("kind").asText();
-            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
-            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
-        }
-
-        if (!actualResponseNode.isNull()) {
-            Assertions.assertTrue(
-                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
-                    "response should be a valid JSON value");
-        }
-
-        if (actualResponseNode.isArray()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
-        }
-        if (actualResponseNode.isObject()) {
-            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
-        }
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
     }
 
-    /**
-     * Compares two JsonNodes with numeric equivalence and null safety.
-     * For objects, checks that all fields in 'expected' exist in 'actual' with matching values.
-     * Allows 'actual' to have extra fields (e.g., default values added during serialization).
-     */
-    private boolean jsonEquals(JsonNode expected, JsonNode actual) {
-        if (expected == null && actual == null) return true;
-        if (expected == null || actual == null) return false;
-        if (expected.equals(actual)) return true;
-        if (expected.isNumber() && actual.isNumber())
-            return Math.abs(expected.doubleValue() - actual.doubleValue()) < 1e-10;
-        if (expected.isObject() && actual.isObject()) {
-            java.util.Iterator<java.util.Map.Entry<String, JsonNode>> iter = expected.fields();
-            while (iter.hasNext()) {
-                java.util.Map.Entry<String, JsonNode> entry = iter.next();
-                JsonNode actualValue = actual.get(entry.getKey());
-                if (actualValue == null) {
-                    if (!entry.getValue().isNull()) return false;
-                } else if (!jsonEquals(entry.getValue(), actualValue)) return false;
-            }
-            return true;
-        }
-        if (expected.isArray() && actual.isArray()) {
-            if (expected.size() != actual.size()) return false;
-            for (int i = 0; i < expected.size(); i++) {
-                if (!jsonEquals(expected.get(i), actual.get(i))) return false;
-            }
-            return true;
-        }
-        return false;
+    // Validate error response
+    Assertions.assertEquals(
+      400,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testCreateThrowsUnauthorizedError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(401).setBody("{\"key\":\"value\"}"));
+    UnauthorizedError exception = Assertions.assertThrows(UnauthorizedError.class, () ->
+      client
+        .agent()
+        .create(
+          AgentCreateRequest.builder()
+            .name("name")
+            .provider(AgentCreateRequestProvider.of("provider"))
+            .prompts(Arrays.asList("prompts", "prompts"))
+            .build()
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("POST", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "{\n" +
+      "  \"name\": \"name\",\n" +
+      "  \"prompts\": [\n" +
+      "    \"prompts\",\n" +
+      "    \"prompts\"\n" +
+      "  ],\n" +
+      "  \"provider\": \"provider\"\n" +
+      "}";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
     }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate error response
+    Assertions.assertEquals(
+      401,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testCreateThrowsForbiddenError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(403).setBody("{\"key\":\"value\"}"));
+    ForbiddenError exception = Assertions.assertThrows(ForbiddenError.class, () ->
+      client
+        .agent()
+        .create(
+          AgentCreateRequest.builder()
+            .name("name")
+            .provider(AgentCreateRequestProvider.of("provider"))
+            .prompts(Arrays.asList("prompts", "prompts"))
+            .build()
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("POST", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "{\n" +
+      "  \"name\": \"name\",\n" +
+      "  \"prompts\": [\n" +
+      "    \"prompts\",\n" +
+      "    \"prompts\"\n" +
+      "  ],\n" +
+      "  \"provider\": \"provider\"\n" +
+      "}";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate error response
+    Assertions.assertEquals(
+      403,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testCreateThrowsInternalServerError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(500).setBody("{\"key\":\"value\"}"));
+    InternalServerError exception = Assertions.assertThrows(InternalServerError.class, () ->
+      client
+        .agent()
+        .create(
+          AgentCreateRequest.builder()
+            .name("name")
+            .provider(AgentCreateRequestProvider.of("provider"))
+            .prompts(Arrays.asList("prompts", "prompts"))
+            .build()
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("POST", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "{\n" +
+      "  \"name\": \"name\",\n" +
+      "  \"prompts\": [\n" +
+      "    \"prompts\",\n" +
+      "    \"prompts\"\n" +
+      "  ],\n" +
+      "  \"provider\": \"provider\"\n" +
+      "}";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate error response
+    Assertions.assertEquals(
+      500,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testList() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody(TestResources.loadResource("/wire-tests/AgentWireTest_testList_response.json"))
+    );
+    ListResponse response = client.agent().list(ListRequest.builder().tags("tags").build());
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("GET", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate response body
+    Assertions.assertNotNull(response, "Response should not be null");
+    String actualResponseJson = objectMapper.writeValueAsString(response);
+    String expectedResponseBody = TestResources.loadResource(
+      "/wire-tests/AgentWireTest_testList_response.json"
+    );
+    JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+    JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedResponseNode, actualResponseNode),
+      "Response body structure does not match expected"
+    );
+    if (
+      actualResponseNode.has("type") ||
+      actualResponseNode.has("_type") ||
+      actualResponseNode.has("kind")
+    ) {
+      String discriminator = null;
+      if (actualResponseNode.has("type")) discriminator = actualResponseNode.get("type").asText();
+      else if (actualResponseNode.has("_type")) discriminator = actualResponseNode
+        .get("_type")
+        .asText();
+      else if (actualResponseNode.has("kind")) discriminator = actualResponseNode
+        .get("kind")
+        .asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualResponseNode.isNull()) {
+      Assertions.assertTrue(
+        actualResponseNode.isObject() ||
+        actualResponseNode.isArray() ||
+        actualResponseNode.isValueNode(),
+        "response should be a valid JSON value"
+      );
+    }
+
+    if (actualResponseNode.isArray()) {
+      Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+    }
+    if (actualResponseNode.isObject()) {
+      Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+    }
+  }
+
+  @Test
+  public void testListThrowsUnauthorizedError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(401).setBody("{\"key\":\"value\"}"));
+    UnauthorizedError exception = Assertions.assertThrows(UnauthorizedError.class, () ->
+      client.agent().list(ListRequest.builder().build())
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("GET", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate error response
+    Assertions.assertEquals(
+      401,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testListThrowsForbiddenError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(403).setBody("{\"key\":\"value\"}"));
+    ForbiddenError exception = Assertions.assertThrows(ForbiddenError.class, () ->
+      client.agent().list(ListRequest.builder().build())
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("GET", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate error response
+    Assertions.assertEquals(
+      403,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testListThrowsInternalServerError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(500).setBody("{\"key\":\"value\"}"));
+    InternalServerError exception = Assertions.assertThrows(InternalServerError.class, () ->
+      client.agent().list(ListRequest.builder().build())
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("GET", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate error response
+    Assertions.assertEquals(
+      500,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testGet() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody(
+          "{\"success\":true,\"message\":\"Agent retrieved successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"}}"
+        )
+    );
+    AgentResponse response = client.agent().get("id");
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("GET", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate response body
+    Assertions.assertNotNull(response, "Response should not be null");
+    String actualResponseJson = objectMapper.writeValueAsString(response);
+    String expectedResponseBody =
+      "" +
+      "{\n" +
+      "  \"success\": true,\n" +
+      "  \"message\": \"Agent retrieved successfully\",\n" +
+      "  \"data\": {\n" +
+      "    \"id\": \"agent_123\",\n" +
+      "    \"name\": \"Medical Assistant\",\n" +
+      "    \"description\": \"An AI assistant for medical information processing\",\n" +
+      "    \"prompts\": [\n" +
+      "      \"prompt_123\",\n" +
+      "      \"prompt_456\"\n" +
+      "    ],\n" +
+      "    \"tools\": [\n" +
+      "      \"mcp_server_123\",\n" +
+      "      \"mcp_server_456\"\n" +
+      "    ],\n" +
+      "    \"workflows\": [\n" +
+      "      \"workflow_123\",\n" +
+      "      \"workflow_456\"\n" +
+      "    ],\n" +
+      "    \"tags\": [\n" +
+      "      \"medical\",\n" +
+      "      \"fhir\"\n" +
+      "    ],\n" +
+      "    \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n" +
+      "  }\n" +
+      "}";
+    JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+    JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedResponseNode, actualResponseNode),
+      "Response body structure does not match expected"
+    );
+    if (
+      actualResponseNode.has("type") ||
+      actualResponseNode.has("_type") ||
+      actualResponseNode.has("kind")
+    ) {
+      String discriminator = null;
+      if (actualResponseNode.has("type")) discriminator = actualResponseNode.get("type").asText();
+      else if (actualResponseNode.has("_type")) discriminator = actualResponseNode
+        .get("_type")
+        .asText();
+      else if (actualResponseNode.has("kind")) discriminator = actualResponseNode
+        .get("kind")
+        .asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualResponseNode.isNull()) {
+      Assertions.assertTrue(
+        actualResponseNode.isObject() ||
+        actualResponseNode.isArray() ||
+        actualResponseNode.isValueNode(),
+        "response should be a valid JSON value"
+      );
+    }
+
+    if (actualResponseNode.isArray()) {
+      Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+    }
+    if (actualResponseNode.isObject()) {
+      Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+    }
+  }
+
+  @Test
+  public void testGetThrowsUnauthorizedError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(401).setBody("{\"key\":\"value\"}"));
+    UnauthorizedError exception = Assertions.assertThrows(UnauthorizedError.class, () ->
+      client.agent().get("id")
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("GET", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate error response
+    Assertions.assertEquals(
+      401,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testGetThrowsForbiddenError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(403).setBody("{\"key\":\"value\"}"));
+    ForbiddenError exception = Assertions.assertThrows(ForbiddenError.class, () ->
+      client.agent().get("id")
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("GET", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate error response
+    Assertions.assertEquals(
+      403,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testGetThrowsNotFoundError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(404).setBody("{\"key\":\"value\"}"));
+    NotFoundError exception = Assertions.assertThrows(NotFoundError.class, () ->
+      client.agent().get("id")
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("GET", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate error response
+    Assertions.assertEquals(
+      404,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testGetThrowsInternalServerError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(500).setBody("{\"key\":\"value\"}"));
+    InternalServerError exception = Assertions.assertThrows(InternalServerError.class, () ->
+      client.agent().get("id")
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("GET", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate error response
+    Assertions.assertEquals(
+      500,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testUpdate() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody(
+          "{\"success\":true,\"message\":\"Agent updated successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"}}"
+        )
+    );
+    AgentResponse response = client
+      .agent()
+      .update(
+        "id",
+        AgentCreateRequest.builder()
+          .name("Medical Assistant")
+          .provider(AgentCreateRequestProvider.of("7002b0b4-8d09-445a-bf65-0fafdaf26c35"))
+          .description("Updated description for the medical assistant")
+          .prompts(Arrays.asList("prompt_123"))
+          .tags(Optional.of(Arrays.asList("medical", "fhir", "updated")))
+          .build()
+      );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("PUT", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "{\n" +
+      "  \"name\": \"Medical Assistant\",\n" +
+      "  \"description\": \"Updated description for the medical assistant\",\n" +
+      "  \"prompts\": [\n" +
+      "    \"prompt_123\"\n" +
+      "  ],\n" +
+      "  \"tags\": [\n" +
+      "    \"medical\",\n" +
+      "    \"fhir\",\n" +
+      "    \"updated\"\n" +
+      "  ],\n" +
+      "  \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n" +
+      "}";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate response body
+    Assertions.assertNotNull(response, "Response should not be null");
+    String actualResponseJson = objectMapper.writeValueAsString(response);
+    String expectedResponseBody =
+      "" +
+      "{\n" +
+      "  \"success\": true,\n" +
+      "  \"message\": \"Agent updated successfully\",\n" +
+      "  \"data\": {\n" +
+      "    \"id\": \"agent_123\",\n" +
+      "    \"name\": \"Medical Assistant\",\n" +
+      "    \"description\": \"An AI assistant for medical information processing\",\n" +
+      "    \"prompts\": [\n" +
+      "      \"prompt_123\",\n" +
+      "      \"prompt_456\"\n" +
+      "    ],\n" +
+      "    \"tools\": [\n" +
+      "      \"mcp_server_123\",\n" +
+      "      \"mcp_server_456\"\n" +
+      "    ],\n" +
+      "    \"workflows\": [\n" +
+      "      \"workflow_123\",\n" +
+      "      \"workflow_456\"\n" +
+      "    ],\n" +
+      "    \"tags\": [\n" +
+      "      \"medical\",\n" +
+      "      \"fhir\"\n" +
+      "    ],\n" +
+      "    \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n" +
+      "  }\n" +
+      "}";
+    JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+    JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedResponseNode, actualResponseNode),
+      "Response body structure does not match expected"
+    );
+    if (
+      actualResponseNode.has("type") ||
+      actualResponseNode.has("_type") ||
+      actualResponseNode.has("kind")
+    ) {
+      String discriminator = null;
+      if (actualResponseNode.has("type")) discriminator = actualResponseNode.get("type").asText();
+      else if (actualResponseNode.has("_type")) discriminator = actualResponseNode
+        .get("_type")
+        .asText();
+      else if (actualResponseNode.has("kind")) discriminator = actualResponseNode
+        .get("kind")
+        .asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualResponseNode.isNull()) {
+      Assertions.assertTrue(
+        actualResponseNode.isObject() ||
+        actualResponseNode.isArray() ||
+        actualResponseNode.isValueNode(),
+        "response should be a valid JSON value"
+      );
+    }
+
+    if (actualResponseNode.isArray()) {
+      Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+    }
+    if (actualResponseNode.isObject()) {
+      Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+    }
+  }
+
+  @Test
+  public void testUpdateThrowsBadRequestError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(400).setBody("{\"key\":\"value\"}"));
+    BadRequestError exception = Assertions.assertThrows(BadRequestError.class, () ->
+      client
+        .agent()
+        .update(
+          "id",
+          AgentCreateRequest.builder()
+            .name("name")
+            .provider(AgentCreateRequestProvider.of("provider"))
+            .prompts(Arrays.asList("prompts", "prompts"))
+            .build()
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("PUT", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "{\n" +
+      "  \"name\": \"name\",\n" +
+      "  \"prompts\": [\n" +
+      "    \"prompts\",\n" +
+      "    \"prompts\"\n" +
+      "  ],\n" +
+      "  \"provider\": \"provider\"\n" +
+      "}";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate error response
+    Assertions.assertEquals(
+      400,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testUpdateThrowsUnauthorizedError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(401).setBody("{\"key\":\"value\"}"));
+    UnauthorizedError exception = Assertions.assertThrows(UnauthorizedError.class, () ->
+      client
+        .agent()
+        .update(
+          "id",
+          AgentCreateRequest.builder()
+            .name("name")
+            .provider(AgentCreateRequestProvider.of("provider"))
+            .prompts(Arrays.asList("prompts", "prompts"))
+            .build()
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("PUT", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "{\n" +
+      "  \"name\": \"name\",\n" +
+      "  \"prompts\": [\n" +
+      "    \"prompts\",\n" +
+      "    \"prompts\"\n" +
+      "  ],\n" +
+      "  \"provider\": \"provider\"\n" +
+      "}";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate error response
+    Assertions.assertEquals(
+      401,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testUpdateThrowsForbiddenError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(403).setBody("{\"key\":\"value\"}"));
+    ForbiddenError exception = Assertions.assertThrows(ForbiddenError.class, () ->
+      client
+        .agent()
+        .update(
+          "id",
+          AgentCreateRequest.builder()
+            .name("name")
+            .provider(AgentCreateRequestProvider.of("provider"))
+            .prompts(Arrays.asList("prompts", "prompts"))
+            .build()
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("PUT", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "{\n" +
+      "  \"name\": \"name\",\n" +
+      "  \"prompts\": [\n" +
+      "    \"prompts\",\n" +
+      "    \"prompts\"\n" +
+      "  ],\n" +
+      "  \"provider\": \"provider\"\n" +
+      "}";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate error response
+    Assertions.assertEquals(
+      403,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testUpdateThrowsNotFoundError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(404).setBody("{\"key\":\"value\"}"));
+    NotFoundError exception = Assertions.assertThrows(NotFoundError.class, () ->
+      client
+        .agent()
+        .update(
+          "id",
+          AgentCreateRequest.builder()
+            .name("name")
+            .provider(AgentCreateRequestProvider.of("provider"))
+            .prompts(Arrays.asList("prompts", "prompts"))
+            .build()
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("PUT", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "{\n" +
+      "  \"name\": \"name\",\n" +
+      "  \"prompts\": [\n" +
+      "    \"prompts\",\n" +
+      "    \"prompts\"\n" +
+      "  ],\n" +
+      "  \"provider\": \"provider\"\n" +
+      "}";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate error response
+    Assertions.assertEquals(
+      404,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testUpdateThrowsInternalServerError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(500).setBody("{\"key\":\"value\"}"));
+    InternalServerError exception = Assertions.assertThrows(InternalServerError.class, () ->
+      client
+        .agent()
+        .update(
+          "id",
+          AgentCreateRequest.builder()
+            .name("name")
+            .provider(AgentCreateRequestProvider.of("provider"))
+            .prompts(Arrays.asList("prompts", "prompts"))
+            .build()
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("PUT", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "{\n" +
+      "  \"name\": \"name\",\n" +
+      "  \"prompts\": [\n" +
+      "    \"prompts\",\n" +
+      "    \"prompts\"\n" +
+      "  ],\n" +
+      "  \"provider\": \"provider\"\n" +
+      "}";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate error response
+    Assertions.assertEquals(
+      500,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testDelete() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"success\":true,\"message\":\"Agent deleted successfully\"}")
+    );
+    DeleteResponse response = client.agent().delete("id");
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("DELETE", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate response body
+    Assertions.assertNotNull(response, "Response should not be null");
+    String actualResponseJson = objectMapper.writeValueAsString(response);
+    String expectedResponseBody =
+      "" +
+      "{\n" +
+      "  \"success\": true,\n" +
+      "  \"message\": \"Agent deleted successfully\"\n" +
+      "}";
+    JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+    JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedResponseNode, actualResponseNode),
+      "Response body structure does not match expected"
+    );
+    if (
+      actualResponseNode.has("type") ||
+      actualResponseNode.has("_type") ||
+      actualResponseNode.has("kind")
+    ) {
+      String discriminator = null;
+      if (actualResponseNode.has("type")) discriminator = actualResponseNode.get("type").asText();
+      else if (actualResponseNode.has("_type")) discriminator = actualResponseNode
+        .get("_type")
+        .asText();
+      else if (actualResponseNode.has("kind")) discriminator = actualResponseNode
+        .get("kind")
+        .asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualResponseNode.isNull()) {
+      Assertions.assertTrue(
+        actualResponseNode.isObject() ||
+        actualResponseNode.isArray() ||
+        actualResponseNode.isValueNode(),
+        "response should be a valid JSON value"
+      );
+    }
+
+    if (actualResponseNode.isArray()) {
+      Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+    }
+    if (actualResponseNode.isObject()) {
+      Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+    }
+  }
+
+  @Test
+  public void testDeleteThrowsUnauthorizedError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(401).setBody("{\"key\":\"value\"}"));
+    UnauthorizedError exception = Assertions.assertThrows(UnauthorizedError.class, () ->
+      client.agent().delete("id")
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("DELETE", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate error response
+    Assertions.assertEquals(
+      401,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testDeleteThrowsForbiddenError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(403).setBody("{\"key\":\"value\"}"));
+    ForbiddenError exception = Assertions.assertThrows(ForbiddenError.class, () ->
+      client.agent().delete("id")
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("DELETE", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate error response
+    Assertions.assertEquals(
+      403,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testDeleteThrowsNotFoundError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(404).setBody("{\"key\":\"value\"}"));
+    NotFoundError exception = Assertions.assertThrows(NotFoundError.class, () ->
+      client.agent().delete("id")
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("DELETE", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate error response
+    Assertions.assertEquals(
+      404,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testDeleteThrowsInternalServerError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(500).setBody("{\"key\":\"value\"}"));
+    InternalServerError exception = Assertions.assertThrows(InternalServerError.class, () ->
+      client.agent().delete("id")
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("DELETE", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+
+    // Validate error response
+    Assertions.assertEquals(
+      500,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testPatch() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody(
+          "{\"success\":true,\"message\":\"Agent patched successfully\",\"data\":{\"id\":\"agent_123\",\"name\":\"Medical Assistant\",\"description\":\"An AI assistant for medical information processing\",\"prompts\":[\"prompt_123\",\"prompt_456\"],\"tools\":[\"mcp_server_123\",\"mcp_server_456\"],\"workflows\":[\"workflow_123\",\"workflow_456\"],\"tags\":[\"medical\",\"fhir\"],\"provider\":\"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"}}"
+        )
+    );
+    AgentResponse response = client
+      .agent()
+      .patch(
+        "id",
+        Arrays.asList(
+          JsonPatchOperation.builder()
+            .op(JsonPatchOperationOp.REPLACE)
+            .path("/description")
+            .value("patched description")
+            .build(),
+          JsonPatchOperation.builder()
+            .op(JsonPatchOperationOp.ADD)
+            .path("/tags/-")
+            .value("updated")
+            .build()
+        )
+      );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("PATCH", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "[\n" +
+      "  {\n" +
+      "    \"op\": \"replace\",\n" +
+      "    \"path\": \"/description\",\n" +
+      "    \"value\": \"patched description\"\n" +
+      "  },\n" +
+      "  {\n" +
+      "    \"op\": \"add\",\n" +
+      "    \"path\": \"/tags/-\",\n" +
+      "    \"value\": \"updated\"\n" +
+      "  }\n" +
+      "]";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate response body
+    Assertions.assertNotNull(response, "Response should not be null");
+    String actualResponseJson = objectMapper.writeValueAsString(response);
+    String expectedResponseBody =
+      "" +
+      "{\n" +
+      "  \"success\": true,\n" +
+      "  \"message\": \"Agent patched successfully\",\n" +
+      "  \"data\": {\n" +
+      "    \"id\": \"agent_123\",\n" +
+      "    \"name\": \"Medical Assistant\",\n" +
+      "    \"description\": \"An AI assistant for medical information processing\",\n" +
+      "    \"prompts\": [\n" +
+      "      \"prompt_123\",\n" +
+      "      \"prompt_456\"\n" +
+      "    ],\n" +
+      "    \"tools\": [\n" +
+      "      \"mcp_server_123\",\n" +
+      "      \"mcp_server_456\"\n" +
+      "    ],\n" +
+      "    \"workflows\": [\n" +
+      "      \"workflow_123\",\n" +
+      "      \"workflow_456\"\n" +
+      "    ],\n" +
+      "    \"tags\": [\n" +
+      "      \"medical\",\n" +
+      "      \"fhir\"\n" +
+      "    ],\n" +
+      "    \"provider\": \"7002b0b4-8d09-445a-bf65-0fafdaf26c35\"\n" +
+      "  }\n" +
+      "}";
+    JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+    JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedResponseNode, actualResponseNode),
+      "Response body structure does not match expected"
+    );
+    if (
+      actualResponseNode.has("type") ||
+      actualResponseNode.has("_type") ||
+      actualResponseNode.has("kind")
+    ) {
+      String discriminator = null;
+      if (actualResponseNode.has("type")) discriminator = actualResponseNode.get("type").asText();
+      else if (actualResponseNode.has("_type")) discriminator = actualResponseNode
+        .get("_type")
+        .asText();
+      else if (actualResponseNode.has("kind")) discriminator = actualResponseNode
+        .get("kind")
+        .asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualResponseNode.isNull()) {
+      Assertions.assertTrue(
+        actualResponseNode.isObject() ||
+        actualResponseNode.isArray() ||
+        actualResponseNode.isValueNode(),
+        "response should be a valid JSON value"
+      );
+    }
+
+    if (actualResponseNode.isArray()) {
+      Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+    }
+    if (actualResponseNode.isObject()) {
+      Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+    }
+  }
+
+  @Test
+  public void testPatchThrowsBadRequestError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(400).setBody("{\"key\":\"value\"}"));
+    BadRequestError exception = Assertions.assertThrows(BadRequestError.class, () ->
+      client
+        .agent()
+        .patch(
+          "id",
+          Arrays.asList(
+            JsonPatchOperation.builder().op(JsonPatchOperationOp.ADD).path("path").build(),
+            JsonPatchOperation.builder().op(JsonPatchOperationOp.ADD).path("path").build()
+          )
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("PATCH", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "[\n" +
+      "  {\n" +
+      "    \"op\": \"add\",\n" +
+      "    \"path\": \"path\"\n" +
+      "  },\n" +
+      "  {\n" +
+      "    \"op\": \"add\",\n" +
+      "    \"path\": \"path\"\n" +
+      "  }\n" +
+      "]";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate error response
+    Assertions.assertEquals(
+      400,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testPatchThrowsUnauthorizedError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(401).setBody("{\"key\":\"value\"}"));
+    UnauthorizedError exception = Assertions.assertThrows(UnauthorizedError.class, () ->
+      client
+        .agent()
+        .patch(
+          "id",
+          Arrays.asList(
+            JsonPatchOperation.builder().op(JsonPatchOperationOp.ADD).path("path").build(),
+            JsonPatchOperation.builder().op(JsonPatchOperationOp.ADD).path("path").build()
+          )
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("PATCH", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "[\n" +
+      "  {\n" +
+      "    \"op\": \"add\",\n" +
+      "    \"path\": \"path\"\n" +
+      "  },\n" +
+      "  {\n" +
+      "    \"op\": \"add\",\n" +
+      "    \"path\": \"path\"\n" +
+      "  }\n" +
+      "]";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate error response
+    Assertions.assertEquals(
+      401,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testPatchThrowsForbiddenError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(403).setBody("{\"key\":\"value\"}"));
+    ForbiddenError exception = Assertions.assertThrows(ForbiddenError.class, () ->
+      client
+        .agent()
+        .patch(
+          "id",
+          Arrays.asList(
+            JsonPatchOperation.builder().op(JsonPatchOperationOp.ADD).path("path").build(),
+            JsonPatchOperation.builder().op(JsonPatchOperationOp.ADD).path("path").build()
+          )
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("PATCH", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "[\n" +
+      "  {\n" +
+      "    \"op\": \"add\",\n" +
+      "    \"path\": \"path\"\n" +
+      "  },\n" +
+      "  {\n" +
+      "    \"op\": \"add\",\n" +
+      "    \"path\": \"path\"\n" +
+      "  }\n" +
+      "]";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate error response
+    Assertions.assertEquals(
+      403,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testPatchThrowsNotFoundError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(404).setBody("{\"key\":\"value\"}"));
+    NotFoundError exception = Assertions.assertThrows(NotFoundError.class, () ->
+      client
+        .agent()
+        .patch(
+          "id",
+          Arrays.asList(
+            JsonPatchOperation.builder().op(JsonPatchOperationOp.ADD).path("path").build(),
+            JsonPatchOperation.builder().op(JsonPatchOperationOp.ADD).path("path").build()
+          )
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("PATCH", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "[\n" +
+      "  {\n" +
+      "    \"op\": \"add\",\n" +
+      "    \"path\": \"path\"\n" +
+      "  },\n" +
+      "  {\n" +
+      "    \"op\": \"add\",\n" +
+      "    \"path\": \"path\"\n" +
+      "  }\n" +
+      "]";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate error response
+    Assertions.assertEquals(
+      404,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  @Test
+  public void testPatchThrowsInternalServerError() throws Exception {
+    // OAuth: enqueue token response (client fetches token before API call)
+    server.enqueue(
+      new MockResponse()
+        .setResponseCode(200)
+        .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}")
+    );
+    server.enqueue(new MockResponse().setResponseCode(500).setBody("{\"key\":\"value\"}"));
+    InternalServerError exception = Assertions.assertThrows(InternalServerError.class, () ->
+      client
+        .agent()
+        .patch(
+          "id",
+          Arrays.asList(
+            JsonPatchOperation.builder().op(JsonPatchOperationOp.ADD).path("path").build(),
+            JsonPatchOperation.builder().op(JsonPatchOperationOp.ADD).path("path").build()
+          )
+        )
+    );
+    // OAuth: consume the token request
+    server.takeRequest();
+    RecordedRequest request = server.takeRequest();
+    Assertions.assertNotNull(request);
+    Assertions.assertEquals("PATCH", request.getMethod());
+
+    // Validate OAuth Authorization header
+    Assertions.assertEquals(
+      "Bearer test-token",
+      request.getHeader("Authorization"),
+      "OAuth Authorization header should contain Bearer token from OAuth flow"
+    );
+    // Validate request body
+    String actualRequestBody = request.getBody().readUtf8();
+    String expectedRequestBody =
+      "" +
+      "[\n" +
+      "  {\n" +
+      "    \"op\": \"add\",\n" +
+      "    \"path\": \"path\"\n" +
+      "  },\n" +
+      "  {\n" +
+      "    \"op\": \"add\",\n" +
+      "    \"path\": \"path\"\n" +
+      "  }\n" +
+      "]";
+    JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+    JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedJson, actualJson),
+      "Request body structure does not match expected"
+    );
+    if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+      String discriminator = null;
+      if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+      else if (actualJson.has("_type")) discriminator = actualJson.get("_type").asText();
+      else if (actualJson.has("kind")) discriminator = actualJson.get("kind").asText();
+      Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+      Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+    }
+
+    if (!actualJson.isNull()) {
+      Assertions.assertTrue(
+        actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+        "request should be a valid JSON value"
+      );
+    }
+
+    if (actualJson.isArray()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+    }
+    if (actualJson.isObject()) {
+      Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+    }
+
+    // Validate error response
+    Assertions.assertEquals(
+      500,
+      exception.statusCode(),
+      "Error status code does not match expected"
+    );
+    String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+    String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+    JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+    JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+    Assertions.assertTrue(
+      jsonEquals(expectedErrorNode, actualErrorNode),
+      "Error body does not match expected"
+    );
+  }
+
+  /**
+   * Compares two JsonNodes with numeric equivalence and null safety.
+   * For objects, checks that all fields in 'expected' exist in 'actual' with matching values.
+   * Allows 'actual' to have extra fields (e.g., default values added during serialization).
+   */
+  private boolean jsonEquals(JsonNode expected, JsonNode actual) {
+    if (expected == null && actual == null) return true;
+    if (expected == null || actual == null) return false;
+    if (expected.equals(actual)) return true;
+    if (expected.isNumber() && actual.isNumber()) return (
+      Math.abs(expected.doubleValue() - actual.doubleValue()) < 1e-10
+    );
+    if (expected.isObject() && actual.isObject()) {
+      java.util.Iterator<java.util.Map.Entry<String, JsonNode>> iter = expected.fields();
+      while (iter.hasNext()) {
+        java.util.Map.Entry<String, JsonNode> entry = iter.next();
+        JsonNode actualValue = actual.get(entry.getKey());
+        if (actualValue == null) {
+          if (!entry.getValue().isNull()) return false;
+        } else if (!jsonEquals(entry.getValue(), actualValue)) return false;
+      }
+      return true;
+    }
+    if (expected.isArray() && actual.isArray()) {
+      if (expected.size() != actual.size()) return false;
+      for (int i = 0; i < expected.size(); i++) {
+        if (!jsonEquals(expected.get(i), actual.get(i))) return false;
+      }
+      return true;
+    }
+    return false;
+  }
 }

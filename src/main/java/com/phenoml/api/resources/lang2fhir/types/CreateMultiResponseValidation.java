@@ -21,184 +21,210 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateMultiResponseValidation.Builder.class)
 public final class CreateMultiResponseValidation {
-    private final Optional<List<CreateMultiResponseValidationPassesItem>> passes;
 
-    private final Optional<Boolean> fixed;
+  private final Optional<List<CreateMultiResponseValidationPassesItem>> passes;
 
-    private final Optional<Integer> attempts;
+  private final Optional<Boolean> fixed;
 
-    private final Optional<String> summary;
+  private final Optional<Integer> attempts;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> summary;
 
-    private CreateMultiResponseValidation(
-            Optional<List<CreateMultiResponseValidationPassesItem>> passes,
-            Optional<Boolean> fixed,
-            Optional<Integer> attempts,
-            Optional<String> summary,
-            Map<String, Object> additionalProperties) {
-        this.passes = passes;
-        this.fixed = fixed;
-        this.attempts = attempts;
-        this.summary = summary;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CreateMultiResponseValidation(
+    Optional<List<CreateMultiResponseValidationPassesItem>> passes,
+    Optional<Boolean> fixed,
+    Optional<Integer> attempts,
+    Optional<String> summary,
+    Map<String, Object> additionalProperties
+  ) {
+    this.passes = passes;
+    this.fixed = fixed;
+    this.attempts = attempts;
+    this.summary = summary;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Results from each validation pass, in chronological order
+   */
+  @JsonProperty("passes")
+  public Optional<List<CreateMultiResponseValidationPassesItem>> getPasses() {
+    return passes;
+  }
+
+  /**
+   * @return Whether validation errors were successfully fixed by the LLM. Always false for 'check' mode. For 'fix' mode, true if errors were resolved and the returned bundle is the corrected version.
+   */
+  @JsonProperty("fixed")
+  public Optional<Boolean> getFixed() {
+    return fixed;
+  }
+
+  /**
+   * @return Total number of validation passes run (1 for check, 1-3 for fix)
+   */
+  @JsonProperty("attempts")
+  public Optional<Integer> getAttempts() {
+    return attempts;
+  }
+
+  /**
+   * @return Human-readable summary of the validation outcome
+   */
+  @JsonProperty("summary")
+  public Optional<String> getSummary() {
+    return summary;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof CreateMultiResponseValidation &&
+      equalTo((CreateMultiResponseValidation) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CreateMultiResponseValidation other) {
+    return (
+      passes.equals(other.passes) &&
+      fixed.equals(other.fixed) &&
+      attempts.equals(other.attempts) &&
+      summary.equals(other.summary)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.passes, this.fixed, this.attempts, this.summary);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<List<CreateMultiResponseValidationPassesItem>> passes = Optional.empty();
+
+    private Optional<Boolean> fixed = Optional.empty();
+
+    private Optional<Integer> attempts = Optional.empty();
+
+    private Optional<String> summary = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(CreateMultiResponseValidation other) {
+      passes(other.getPasses());
+      fixed(other.getFixed());
+      attempts(other.getAttempts());
+      summary(other.getSummary());
+      return this;
     }
 
     /**
-     * @return Results from each validation pass, in chronological order
+     * <p>Results from each validation pass, in chronological order</p>
      */
-    @JsonProperty("passes")
-    public Optional<List<CreateMultiResponseValidationPassesItem>> getPasses() {
-        return passes;
+    @JsonSetter(value = "passes", nulls = Nulls.SKIP)
+    public Builder passes(Optional<List<CreateMultiResponseValidationPassesItem>> passes) {
+      this.passes = passes;
+      return this;
+    }
+
+    public Builder passes(List<CreateMultiResponseValidationPassesItem> passes) {
+      this.passes = Optional.ofNullable(passes);
+      return this;
     }
 
     /**
-     * @return Whether validation errors were successfully fixed by the LLM. Always false for 'check' mode. For 'fix' mode, true if errors were resolved and the returned bundle is the corrected version.
+     * <p>Whether validation errors were successfully fixed by the LLM. Always false for 'check' mode. For 'fix' mode, true if errors were resolved and the returned bundle is the corrected version.</p>
      */
-    @JsonProperty("fixed")
-    public Optional<Boolean> getFixed() {
-        return fixed;
+    @JsonSetter(value = "fixed", nulls = Nulls.SKIP)
+    public Builder fixed(Optional<Boolean> fixed) {
+      this.fixed = fixed;
+      return this;
+    }
+
+    public Builder fixed(Boolean fixed) {
+      this.fixed = Optional.ofNullable(fixed);
+      return this;
     }
 
     /**
-     * @return Total number of validation passes run (1 for check, 1-3 for fix)
+     * <p>Total number of validation passes run (1 for check, 1-3 for fix)</p>
      */
-    @JsonProperty("attempts")
-    public Optional<Integer> getAttempts() {
-        return attempts;
+    @JsonSetter(value = "attempts", nulls = Nulls.SKIP)
+    public Builder attempts(Optional<Integer> attempts) {
+      this.attempts = attempts;
+      return this;
+    }
+
+    public Builder attempts(Integer attempts) {
+      this.attempts = Optional.ofNullable(attempts);
+      return this;
     }
 
     /**
-     * @return Human-readable summary of the validation outcome
+     * <p>Human-readable summary of the validation outcome</p>
      */
-    @JsonProperty("summary")
-    public Optional<String> getSummary() {
-        return summary;
+    @JsonSetter(value = "summary", nulls = Nulls.SKIP)
+    public Builder summary(Optional<String> summary) {
+      this.summary = summary;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CreateMultiResponseValidation && equalTo((CreateMultiResponseValidation) other);
+    public Builder summary(String summary) {
+      this.summary = Optional.ofNullable(summary);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public CreateMultiResponseValidation build() {
+      return new CreateMultiResponseValidation(
+        passes,
+        fixed,
+        attempts,
+        summary,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(CreateMultiResponseValidation other) {
-        return passes.equals(other.passes)
-                && fixed.equals(other.fixed)
-                && attempts.equals(other.attempts)
-                && summary.equals(other.summary);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("passes") ||
+        key.equalsIgnoreCase("fixed") ||
+        key.equalsIgnoreCase("attempts") ||
+        key.equalsIgnoreCase("summary")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.passes, this.fixed, this.attempts, this.summary);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<List<CreateMultiResponseValidationPassesItem>> passes = Optional.empty();
-
-        private Optional<Boolean> fixed = Optional.empty();
-
-        private Optional<Integer> attempts = Optional.empty();
-
-        private Optional<String> summary = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(CreateMultiResponseValidation other) {
-            passes(other.getPasses());
-            fixed(other.getFixed());
-            attempts(other.getAttempts());
-            summary(other.getSummary());
-            return this;
-        }
-
-        /**
-         * <p>Results from each validation pass, in chronological order</p>
-         */
-        @JsonSetter(value = "passes", nulls = Nulls.SKIP)
-        public Builder passes(Optional<List<CreateMultiResponseValidationPassesItem>> passes) {
-            this.passes = passes;
-            return this;
-        }
-
-        public Builder passes(List<CreateMultiResponseValidationPassesItem> passes) {
-            this.passes = Optional.ofNullable(passes);
-            return this;
-        }
-
-        /**
-         * <p>Whether validation errors were successfully fixed by the LLM. Always false for 'check' mode. For 'fix' mode, true if errors were resolved and the returned bundle is the corrected version.</p>
-         */
-        @JsonSetter(value = "fixed", nulls = Nulls.SKIP)
-        public Builder fixed(Optional<Boolean> fixed) {
-            this.fixed = fixed;
-            return this;
-        }
-
-        public Builder fixed(Boolean fixed) {
-            this.fixed = Optional.ofNullable(fixed);
-            return this;
-        }
-
-        /**
-         * <p>Total number of validation passes run (1 for check, 1-3 for fix)</p>
-         */
-        @JsonSetter(value = "attempts", nulls = Nulls.SKIP)
-        public Builder attempts(Optional<Integer> attempts) {
-            this.attempts = attempts;
-            return this;
-        }
-
-        public Builder attempts(Integer attempts) {
-            this.attempts = Optional.ofNullable(attempts);
-            return this;
-        }
-
-        /**
-         * <p>Human-readable summary of the validation outcome</p>
-         */
-        @JsonSetter(value = "summary", nulls = Nulls.SKIP)
-        public Builder summary(Optional<String> summary) {
-            this.summary = summary;
-            return this;
-        }
-
-        public Builder summary(String summary) {
-            this.summary = Optional.ofNullable(summary);
-            return this;
-        }
-
-        public CreateMultiResponseValidation build() {
-            return new CreateMultiResponseValidation(passes, fixed, attempts, summary, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -7,97 +7,107 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class PrimaryPatientGender {
-    public static final PrimaryPatientGender MALE = new PrimaryPatientGender(Value.MALE, "male");
 
-    public static final PrimaryPatientGender FEMALE = new PrimaryPatientGender(Value.FEMALE, "female");
+  public static final PrimaryPatientGender MALE = new PrimaryPatientGender(Value.MALE, "male");
 
-    public static final PrimaryPatientGender OTHER = new PrimaryPatientGender(Value.OTHER, "other");
+  public static final PrimaryPatientGender FEMALE = new PrimaryPatientGender(
+    Value.FEMALE,
+    "female"
+  );
 
-    public static final PrimaryPatientGender UNKNOWN = new PrimaryPatientGender(Value.UNKNOWN, "unknown");
+  public static final PrimaryPatientGender OTHER = new PrimaryPatientGender(Value.OTHER, "other");
 
-    private final Value value;
+  public static final PrimaryPatientGender UNKNOWN = new PrimaryPatientGender(
+    Value.UNKNOWN,
+    "unknown"
+  );
 
-    private final String string;
+  private final Value value;
 
-    PrimaryPatientGender(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  PrimaryPatientGender(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof PrimaryPatientGender &&
+        this.string.equals(((PrimaryPatientGender) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case MALE:
+        return visitor.visitMale();
+      case FEMALE:
+        return visitor.visitFemale();
+      case OTHER:
+        return visitor.visitOther();
+      case UNKNOWN:
+        return visitor.visitUnknown();
+      case _UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static PrimaryPatientGender valueOf(String value) {
+    switch (value) {
+      case "male":
+        return MALE;
+      case "female":
+        return FEMALE;
+      case "other":
+        return OTHER;
+      case "unknown":
+        return UNKNOWN;
+      default:
+        return new PrimaryPatientGender(Value._UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    MALE,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof PrimaryPatientGender && this.string.equals(((PrimaryPatientGender) other).string));
-    }
+    FEMALE,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    OTHER,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case MALE:
-                return visitor.visitMale();
-            case FEMALE:
-                return visitor.visitFemale();
-            case OTHER:
-                return visitor.visitOther();
-            case UNKNOWN:
-                return visitor.visitUnknown();
-            case _UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    UNKNOWN,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static PrimaryPatientGender valueOf(String value) {
-        switch (value) {
-            case "male":
-                return MALE;
-            case "female":
-                return FEMALE;
-            case "other":
-                return OTHER;
-            case "unknown":
-                return UNKNOWN;
-            default:
-                return new PrimaryPatientGender(Value._UNKNOWN, value);
-        }
-    }
+    _UNKNOWN,
+  }
 
-    public enum Value {
-        MALE,
+  public interface Visitor<T> {
+    T visitMale();
 
-        FEMALE,
+    T visitFemale();
 
-        OTHER,
+    T visitOther();
 
-        UNKNOWN,
+    T visitUnknown();
 
-        _UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitMale();
-
-        T visitFemale();
-
-        T visitOther();
-
-        T visitUnknown();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

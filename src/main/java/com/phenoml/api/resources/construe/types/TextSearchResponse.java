@@ -22,194 +22,208 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = TextSearchResponse.Builder.class)
 public final class TextSearchResponse {
-    private final CodeSystemInfo system;
 
-    private final List<TextSearchResult> results;
+  private final CodeSystemInfo system;
 
-    private final int found;
+  private final List<TextSearchResult> results;
 
-    private final Map<String, Object> additionalProperties;
+  private final int found;
 
-    private TextSearchResponse(
-            CodeSystemInfo system,
-            List<TextSearchResult> results,
-            int found,
-            Map<String, Object> additionalProperties) {
-        this.system = system;
-        this.results = results;
-        this.found = found;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private TextSearchResponse(
+    CodeSystemInfo system,
+    List<TextSearchResult> results,
+    int found,
+    Map<String, Object> additionalProperties
+  ) {
+    this.system = system;
+    this.results = results;
+    this.found = found;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("system")
+  public CodeSystemInfo getSystem() {
+    return system;
+  }
+
+  /**
+   * @return Codes matching the search query
+   */
+  @JsonProperty("results")
+  public List<TextSearchResult> getResults() {
+    return results;
+  }
+
+  /**
+   * @return Total number of matching results (may exceed results array due to pagination)
+   */
+  @JsonProperty("found")
+  public int getFound() {
+    return found;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof TextSearchResponse && equalTo((TextSearchResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(TextSearchResponse other) {
+    return system.equals(other.system) && results.equals(other.results) && found == other.found;
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.system, this.results, this.found);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static SystemStage builder() {
+    return new Builder();
+  }
+
+  public interface SystemStage {
+    FoundStage system(@NotNull CodeSystemInfo system);
+
+    Builder from(TextSearchResponse other);
+  }
+
+  public interface FoundStage {
+    /**
+     * <p>Total number of matching results (may exceed results array due to pagination)</p>
+     */
+    _FinalStage found(int found);
+  }
+
+  public interface _FinalStage {
+    TextSearchResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Codes matching the search query</p>
+     */
+    _FinalStage results(List<TextSearchResult> results);
+
+    _FinalStage addResults(TextSearchResult results);
+
+    _FinalStage addAllResults(List<TextSearchResult> results);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements SystemStage, FoundStage, _FinalStage {
+
+    private CodeSystemInfo system;
+
+    private int found;
+
+    private List<TextSearchResult> results = new ArrayList<>();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(TextSearchResponse other) {
+      system(other.getSystem());
+      results(other.getResults());
+      found(other.getFound());
+      return this;
     }
 
-    @JsonProperty("system")
-    public CodeSystemInfo getSystem() {
-        return system;
+    @java.lang.Override
+    @JsonSetter("system")
+    public FoundStage system(@NotNull CodeSystemInfo system) {
+      this.system = Objects.requireNonNull(system, "system must not be null");
+      return this;
     }
 
     /**
-     * @return Codes matching the search query
+     * <p>Total number of matching results (may exceed results array due to pagination)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("results")
-    public List<TextSearchResult> getResults() {
-        return results;
+    @java.lang.Override
+    @JsonSetter("found")
+    public _FinalStage found(int found) {
+      this.found = found;
+      return this;
     }
 
     /**
-     * @return Total number of matching results (may exceed results array due to pagination)
+     * <p>Codes matching the search query</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("found")
-    public int getFound() {
-        return found;
+    @java.lang.Override
+    public _FinalStage addAllResults(List<TextSearchResult> results) {
+      if (results != null) {
+        this.results.addAll(results);
+      }
+      return this;
+    }
+
+    /**
+     * <p>Codes matching the search query</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage addResults(TextSearchResult results) {
+      this.results.add(results);
+      return this;
+    }
+
+    /**
+     * <p>Codes matching the search query</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "results", nulls = Nulls.SKIP)
+    public _FinalStage results(List<TextSearchResult> results) {
+      this.results.clear();
+      if (results != null) {
+        this.results.addAll(results);
+      }
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof TextSearchResponse && equalTo((TextSearchResponse) other);
+    public TextSearchResponse build() {
+      return new TextSearchResponse(system, results, found, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(TextSearchResponse other) {
-        return system.equals(other.system) && results.equals(other.results) && found == other.found;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.system, this.results, this.found);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("system") ||
+        key.equalsIgnoreCase("results") ||
+        key.equalsIgnoreCase("found")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static SystemStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface SystemStage {
-        FoundStage system(@NotNull CodeSystemInfo system);
-
-        Builder from(TextSearchResponse other);
-    }
-
-    public interface FoundStage {
-        /**
-         * <p>Total number of matching results (may exceed results array due to pagination)</p>
-         */
-        _FinalStage found(int found);
-    }
-
-    public interface _FinalStage {
-        TextSearchResponse build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Codes matching the search query</p>
-         */
-        _FinalStage results(List<TextSearchResult> results);
-
-        _FinalStage addResults(TextSearchResult results);
-
-        _FinalStage addAllResults(List<TextSearchResult> results);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements SystemStage, FoundStage, _FinalStage {
-        private CodeSystemInfo system;
-
-        private int found;
-
-        private List<TextSearchResult> results = new ArrayList<>();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(TextSearchResponse other) {
-            system(other.getSystem());
-            results(other.getResults());
-            found(other.getFound());
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("system")
-        public FoundStage system(@NotNull CodeSystemInfo system) {
-            this.system = Objects.requireNonNull(system, "system must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Total number of matching results (may exceed results array due to pagination)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("found")
-        public _FinalStage found(int found) {
-            this.found = found;
-            return this;
-        }
-
-        /**
-         * <p>Codes matching the search query</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addAllResults(List<TextSearchResult> results) {
-            if (results != null) {
-                this.results.addAll(results);
-            }
-            return this;
-        }
-
-        /**
-         * <p>Codes matching the search query</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addResults(TextSearchResult results) {
-            this.results.add(results);
-            return this;
-        }
-
-        /**
-         * <p>Codes matching the search query</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "results", nulls = Nulls.SKIP)
-        public _FinalStage results(List<TextSearchResult> results) {
-            this.results.clear();
-            if (results != null) {
-                this.results.addAll(results);
-            }
-            return this;
-        }
-
-        @java.lang.Override
-        public TextSearchResponse build() {
-            return new TextSearchResponse(system, results, found, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -8,17 +8,19 @@ import com.phenoml.api.core.Suppliers;
 import java.util.function.Supplier;
 
 public class AsyncVoiceClient {
-    protected final ClientOptions clientOptions;
 
-    protected final Supplier<com.phenoml.api.resources.voice.voice.AsyncVoiceClient> voiceClient;
+  protected final ClientOptions clientOptions;
 
-    public AsyncVoiceClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.voiceClient =
-                Suppliers.memoize(() -> new com.phenoml.api.resources.voice.voice.AsyncVoiceClient(clientOptions));
-    }
+  protected final Supplier<com.phenoml.api.resources.voice.voice.AsyncVoiceClient> voiceClient;
 
-    public com.phenoml.api.resources.voice.voice.AsyncVoiceClient voice() {
-        return this.voiceClient.get();
-    }
+  public AsyncVoiceClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.voiceClient = Suppliers.memoize(() ->
+      new com.phenoml.api.resources.voice.voice.AsyncVoiceClient(clientOptions)
+    );
+  }
+
+  public com.phenoml.api.resources.voice.voice.AsyncVoiceClient voice() {
+    return this.voiceClient.get();
+  }
 }

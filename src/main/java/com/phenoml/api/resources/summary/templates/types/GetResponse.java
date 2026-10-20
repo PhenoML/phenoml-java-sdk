@@ -21,109 +21,121 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = GetResponse.Builder.class)
 public final class GetResponse {
-    private final Optional<Boolean> success;
 
-    private final Optional<SummaryTemplate> template;
+  private final Optional<Boolean> success;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<SummaryTemplate> template;
 
-    private GetResponse(
-            Optional<Boolean> success, Optional<SummaryTemplate> template, Map<String, Object> additionalProperties) {
-        this.success = success;
-        this.template = template;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private GetResponse(
+    Optional<Boolean> success,
+    Optional<SummaryTemplate> template,
+    Map<String, Object> additionalProperties
+  ) {
+    this.success = success;
+    this.template = template;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("success")
+  public Optional<Boolean> getSuccess() {
+    return success;
+  }
+
+  @JsonProperty("template")
+  public Optional<SummaryTemplate> getTemplate() {
+    return template;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof GetResponse && equalTo((GetResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(GetResponse other) {
+    return success.equals(other.success) && template.equals(other.template);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.success, this.template);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Boolean> success = Optional.empty();
+
+    private Optional<SummaryTemplate> template = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(GetResponse other) {
+      success(other.getSuccess());
+      template(other.getTemplate());
+      return this;
     }
 
-    @JsonProperty("success")
-    public Optional<Boolean> getSuccess() {
-        return success;
+    @JsonSetter(value = "success", nulls = Nulls.SKIP)
+    public Builder success(Optional<Boolean> success) {
+      this.success = success;
+      return this;
     }
 
-    @JsonProperty("template")
-    public Optional<SummaryTemplate> getTemplate() {
-        return template;
+    public Builder success(Boolean success) {
+      this.success = Optional.ofNullable(success);
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof GetResponse && equalTo((GetResponse) other);
+    @JsonSetter(value = "template", nulls = Nulls.SKIP)
+    public Builder template(Optional<SummaryTemplate> template) {
+      this.template = template;
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder template(SummaryTemplate template) {
+      this.template = Optional.ofNullable(template);
+      return this;
     }
 
-    private boolean equalTo(GetResponse other) {
-        return success.equals(other.success) && template.equals(other.template);
+    public GetResponse build() {
+      return new GetResponse(success, template, additionalProperties);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.success, this.template);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("success") || key.equalsIgnoreCase("template")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Boolean> success = Optional.empty();
-
-        private Optional<SummaryTemplate> template = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(GetResponse other) {
-            success(other.getSuccess());
-            template(other.getTemplate());
-            return this;
-        }
-
-        @JsonSetter(value = "success", nulls = Nulls.SKIP)
-        public Builder success(Optional<Boolean> success) {
-            this.success = success;
-            return this;
-        }
-
-        public Builder success(Boolean success) {
-            this.success = Optional.ofNullable(success);
-            return this;
-        }
-
-        @JsonSetter(value = "template", nulls = Nulls.SKIP)
-        public Builder template(Optional<SummaryTemplate> template) {
-            this.template = template;
-            return this;
-        }
-
-        public Builder template(SummaryTemplate template) {
-            this.template = Optional.ofNullable(template);
-            return this;
-        }
-
-        public GetResponse build() {
-            return new GetResponse(success, template, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

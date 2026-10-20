@@ -20,185 +20,212 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Summary.Builder.class)
 public final class Summary {
-    private final Optional<Integer> codesAlreadyStandard;
 
-    private final Optional<Integer> codesNormalized;
+  private final Optional<Integer> codesAlreadyStandard;
 
-    private final Optional<Integer> codesUnmapped;
+  private final Optional<Integer> codesNormalized;
 
-    private final Optional<Double> offVocabRate;
+  private final Optional<Integer> codesUnmapped;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Double> offVocabRate;
 
-    private Summary(
-            Optional<Integer> codesAlreadyStandard,
-            Optional<Integer> codesNormalized,
-            Optional<Integer> codesUnmapped,
-            Optional<Double> offVocabRate,
-            Map<String, Object> additionalProperties) {
-        this.codesAlreadyStandard = codesAlreadyStandard;
-        this.codesNormalized = codesNormalized;
-        this.codesUnmapped = codesUnmapped;
-        this.offVocabRate = offVocabRate;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private Summary(
+    Optional<Integer> codesAlreadyStandard,
+    Optional<Integer> codesNormalized,
+    Optional<Integer> codesUnmapped,
+    Optional<Double> offVocabRate,
+    Map<String, Object> additionalProperties
+  ) {
+    this.codesAlreadyStandard = codesAlreadyStandard;
+    this.codesNormalized = codesNormalized;
+    this.codesUnmapped = codesUnmapped;
+    this.offVocabRate = offVocabRate;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Resolution outcomes already a standard OMOP concept (ALREADY_STANDARD).
+   */
+  @JsonProperty("codes_already_standard")
+  public Optional<Integer> getCodesAlreadyStandard() {
+    return codesAlreadyStandard;
+  }
+
+  /**
+   * @return Resolution outcomes mapped or suggested to a standard concept (MAPPED or UNCHECKED).
+   */
+  @JsonProperty("codes_normalized")
+  public Optional<Integer> getCodesNormalized() {
+    return codesNormalized;
+  }
+
+  /**
+   * @return Resolution outcomes with no standard concept valid for the destination selected (UNMAPPED).
+   */
+  @JsonProperty("codes_unmapped")
+  public Optional<Integer> getCodesUnmapped() {
+    return codesUnmapped;
+  }
+
+  /**
+   * @return Share of resolution outcomes not already standard ((normalized + unmapped) / total).
+   */
+  @JsonProperty("off_vocab_rate")
+  public Optional<Double> getOffVocabRate() {
+    return offVocabRate;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof Summary && equalTo((Summary) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(Summary other) {
+    return (
+      codesAlreadyStandard.equals(other.codesAlreadyStandard) &&
+      codesNormalized.equals(other.codesNormalized) &&
+      codesUnmapped.equals(other.codesUnmapped) &&
+      offVocabRate.equals(other.offVocabRate)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.codesAlreadyStandard,
+      this.codesNormalized,
+      this.codesUnmapped,
+      this.offVocabRate
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<Integer> codesAlreadyStandard = Optional.empty();
+
+    private Optional<Integer> codesNormalized = Optional.empty();
+
+    private Optional<Integer> codesUnmapped = Optional.empty();
+
+    private Optional<Double> offVocabRate = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(Summary other) {
+      codesAlreadyStandard(other.getCodesAlreadyStandard());
+      codesNormalized(other.getCodesNormalized());
+      codesUnmapped(other.getCodesUnmapped());
+      offVocabRate(other.getOffVocabRate());
+      return this;
     }
 
     /**
-     * @return Resolution outcomes already a standard OMOP concept (ALREADY_STANDARD).
+     * <p>Resolution outcomes already a standard OMOP concept (ALREADY_STANDARD).</p>
      */
-    @JsonProperty("codes_already_standard")
-    public Optional<Integer> getCodesAlreadyStandard() {
-        return codesAlreadyStandard;
+    @JsonSetter(value = "codes_already_standard", nulls = Nulls.SKIP)
+    public Builder codesAlreadyStandard(Optional<Integer> codesAlreadyStandard) {
+      this.codesAlreadyStandard = codesAlreadyStandard;
+      return this;
+    }
+
+    public Builder codesAlreadyStandard(Integer codesAlreadyStandard) {
+      this.codesAlreadyStandard = Optional.ofNullable(codesAlreadyStandard);
+      return this;
     }
 
     /**
-     * @return Resolution outcomes mapped or suggested to a standard concept (MAPPED or UNCHECKED).
+     * <p>Resolution outcomes mapped or suggested to a standard concept (MAPPED or UNCHECKED).</p>
      */
-    @JsonProperty("codes_normalized")
-    public Optional<Integer> getCodesNormalized() {
-        return codesNormalized;
+    @JsonSetter(value = "codes_normalized", nulls = Nulls.SKIP)
+    public Builder codesNormalized(Optional<Integer> codesNormalized) {
+      this.codesNormalized = codesNormalized;
+      return this;
+    }
+
+    public Builder codesNormalized(Integer codesNormalized) {
+      this.codesNormalized = Optional.ofNullable(codesNormalized);
+      return this;
     }
 
     /**
-     * @return Resolution outcomes with no standard concept found (UNMAPPED).
+     * <p>Resolution outcomes with no standard concept valid for the destination selected (UNMAPPED).</p>
      */
-    @JsonProperty("codes_unmapped")
-    public Optional<Integer> getCodesUnmapped() {
-        return codesUnmapped;
+    @JsonSetter(value = "codes_unmapped", nulls = Nulls.SKIP)
+    public Builder codesUnmapped(Optional<Integer> codesUnmapped) {
+      this.codesUnmapped = codesUnmapped;
+      return this;
+    }
+
+    public Builder codesUnmapped(Integer codesUnmapped) {
+      this.codesUnmapped = Optional.ofNullable(codesUnmapped);
+      return this;
     }
 
     /**
-     * @return Share of resolution outcomes not already standard ((normalized + unmapped) / total).
+     * <p>Share of resolution outcomes not already standard ((normalized + unmapped) / total).</p>
      */
-    @JsonProperty("off_vocab_rate")
-    public Optional<Double> getOffVocabRate() {
-        return offVocabRate;
+    @JsonSetter(value = "off_vocab_rate", nulls = Nulls.SKIP)
+    public Builder offVocabRate(Optional<Double> offVocabRate) {
+      this.offVocabRate = offVocabRate;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof Summary && equalTo((Summary) other);
+    public Builder offVocabRate(Double offVocabRate) {
+      this.offVocabRate = Optional.ofNullable(offVocabRate);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Summary build() {
+      return new Summary(
+        codesAlreadyStandard,
+        codesNormalized,
+        codesUnmapped,
+        offVocabRate,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(Summary other) {
-        return codesAlreadyStandard.equals(other.codesAlreadyStandard)
-                && codesNormalized.equals(other.codesNormalized)
-                && codesUnmapped.equals(other.codesUnmapped)
-                && offVocabRate.equals(other.offVocabRate);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("codes_already_standard") ||
+        key.equalsIgnoreCase("codes_normalized") ||
+        key.equalsIgnoreCase("codes_unmapped") ||
+        key.equalsIgnoreCase("off_vocab_rate")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.codesAlreadyStandard, this.codesNormalized, this.codesUnmapped, this.offVocabRate);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<Integer> codesAlreadyStandard = Optional.empty();
-
-        private Optional<Integer> codesNormalized = Optional.empty();
-
-        private Optional<Integer> codesUnmapped = Optional.empty();
-
-        private Optional<Double> offVocabRate = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(Summary other) {
-            codesAlreadyStandard(other.getCodesAlreadyStandard());
-            codesNormalized(other.getCodesNormalized());
-            codesUnmapped(other.getCodesUnmapped());
-            offVocabRate(other.getOffVocabRate());
-            return this;
-        }
-
-        /**
-         * <p>Resolution outcomes already a standard OMOP concept (ALREADY_STANDARD).</p>
-         */
-        @JsonSetter(value = "codes_already_standard", nulls = Nulls.SKIP)
-        public Builder codesAlreadyStandard(Optional<Integer> codesAlreadyStandard) {
-            this.codesAlreadyStandard = codesAlreadyStandard;
-            return this;
-        }
-
-        public Builder codesAlreadyStandard(Integer codesAlreadyStandard) {
-            this.codesAlreadyStandard = Optional.ofNullable(codesAlreadyStandard);
-            return this;
-        }
-
-        /**
-         * <p>Resolution outcomes mapped or suggested to a standard concept (MAPPED or UNCHECKED).</p>
-         */
-        @JsonSetter(value = "codes_normalized", nulls = Nulls.SKIP)
-        public Builder codesNormalized(Optional<Integer> codesNormalized) {
-            this.codesNormalized = codesNormalized;
-            return this;
-        }
-
-        public Builder codesNormalized(Integer codesNormalized) {
-            this.codesNormalized = Optional.ofNullable(codesNormalized);
-            return this;
-        }
-
-        /**
-         * <p>Resolution outcomes with no standard concept found (UNMAPPED).</p>
-         */
-        @JsonSetter(value = "codes_unmapped", nulls = Nulls.SKIP)
-        public Builder codesUnmapped(Optional<Integer> codesUnmapped) {
-            this.codesUnmapped = codesUnmapped;
-            return this;
-        }
-
-        public Builder codesUnmapped(Integer codesUnmapped) {
-            this.codesUnmapped = Optional.ofNullable(codesUnmapped);
-            return this;
-        }
-
-        /**
-         * <p>Share of resolution outcomes not already standard ((normalized + unmapped) / total).</p>
-         */
-        @JsonSetter(value = "off_vocab_rate", nulls = Nulls.SKIP)
-        public Builder offVocabRate(Optional<Double> offVocabRate) {
-            this.offVocabRate = offVocabRate;
-            return this;
-        }
-
-        public Builder offVocabRate(Double offVocabRate) {
-            this.offVocabRate = Optional.ofNullable(offVocabRate);
-            return this;
-        }
-
-        public Summary build() {
-            return new Summary(
-                    codesAlreadyStandard, codesNormalized, codesUnmapped, offVocabRate, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

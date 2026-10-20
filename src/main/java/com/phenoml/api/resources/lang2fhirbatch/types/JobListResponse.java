@@ -22,196 +22,212 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = JobListResponse.Builder.class)
 public final class JobListResponse {
-    private final List<BatchJob> jobs;
 
-    private final Optional<String> nextCursor;
+  private final List<BatchJob> jobs;
 
-    private final boolean hasMore;
+  private final Optional<String> nextCursor;
 
-    private final Map<String, Object> additionalProperties;
+  private final boolean hasMore;
 
-    private JobListResponse(
-            List<BatchJob> jobs,
-            Optional<String> nextCursor,
-            boolean hasMore,
-            Map<String, Object> additionalProperties) {
-        this.jobs = jobs;
-        this.nextCursor = nextCursor;
-        this.hasMore = hasMore;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
-    @JsonProperty("jobs")
-    public List<BatchJob> getJobs() {
-        return jobs;
+  private JobListResponse(
+    List<BatchJob> jobs,
+    Optional<String> nextCursor,
+    boolean hasMore,
+    Map<String, Object> additionalProperties
+  ) {
+    this.jobs = jobs;
+    this.nextCursor = nextCursor;
+    this.hasMore = hasMore;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("jobs")
+  public List<BatchJob> getJobs() {
+    return jobs;
+  }
+
+  /**
+   * @return Cursor for the next page, when has_more is true.
+   */
+  @JsonProperty("next_cursor")
+  public Optional<String> getNextCursor() {
+    return nextCursor;
+  }
+
+  /**
+   * @return Whether more jobs remain beyond this page.
+   */
+  @JsonProperty("has_more")
+  public boolean getHasMore() {
+    return hasMore;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof JobListResponse && equalTo((JobListResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(JobListResponse other) {
+    return (
+      jobs.equals(other.jobs) && nextCursor.equals(other.nextCursor) && hasMore == other.hasMore
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.jobs, this.nextCursor, this.hasMore);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static HasMoreStage builder() {
+    return new Builder();
+  }
+
+  public interface HasMoreStage {
+    /**
+     * <p>Whether more jobs remain beyond this page.</p>
+     */
+    _FinalStage hasMore(boolean hasMore);
+
+    Builder from(JobListResponse other);
+  }
+
+  public interface _FinalStage {
+    JobListResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    _FinalStage jobs(List<BatchJob> jobs);
+
+    _FinalStage addJobs(BatchJob jobs);
+
+    _FinalStage addAllJobs(List<BatchJob> jobs);
+
+    /**
+     * <p>Cursor for the next page, when has_more is true.</p>
+     */
+    _FinalStage nextCursor(Optional<String> nextCursor);
+
+    _FinalStage nextCursor(String nextCursor);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements HasMoreStage, _FinalStage {
+
+    private boolean hasMore;
+
+    private Optional<String> nextCursor = Optional.empty();
+
+    private List<BatchJob> jobs = new ArrayList<>();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(JobListResponse other) {
+      jobs(other.getJobs());
+      nextCursor(other.getNextCursor());
+      hasMore(other.getHasMore());
+      return this;
     }
 
     /**
-     * @return Cursor for the next page, when has_more is true.
+     * <p>Whether more jobs remain beyond this page.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("next_cursor")
-    public Optional<String> getNextCursor() {
-        return nextCursor;
+    @java.lang.Override
+    @JsonSetter("has_more")
+    public _FinalStage hasMore(boolean hasMore) {
+      this.hasMore = hasMore;
+      return this;
     }
 
     /**
-     * @return Whether more jobs remain beyond this page.
+     * <p>Cursor for the next page, when has_more is true.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("has_more")
-    public boolean getHasMore() {
-        return hasMore;
+    @java.lang.Override
+    public _FinalStage nextCursor(String nextCursor) {
+      this.nextCursor = Optional.ofNullable(nextCursor);
+      return this;
+    }
+
+    /**
+     * <p>Cursor for the next page, when has_more is true.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "next_cursor", nulls = Nulls.SKIP)
+    public _FinalStage nextCursor(Optional<String> nextCursor) {
+      this.nextCursor = nextCursor;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof JobListResponse && equalTo((JobListResponse) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(JobListResponse other) {
-        return jobs.equals(other.jobs) && nextCursor.equals(other.nextCursor) && hasMore == other.hasMore;
+    public _FinalStage addAllJobs(List<BatchJob> jobs) {
+      if (jobs != null) {
+        this.jobs.addAll(jobs);
+      }
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.jobs, this.nextCursor, this.hasMore);
+    public _FinalStage addJobs(BatchJob jobs) {
+      this.jobs.add(jobs);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonSetter(value = "jobs", nulls = Nulls.SKIP)
+    public _FinalStage jobs(List<BatchJob> jobs) {
+      this.jobs.clear();
+      if (jobs != null) {
+        this.jobs.addAll(jobs);
+      }
+      return this;
     }
 
-    public static HasMoreStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public JobListResponse build() {
+      return new JobListResponse(jobs, nextCursor, hasMore, additionalProperties);
     }
 
-    public interface HasMoreStage {
-        /**
-         * <p>Whether more jobs remain beyond this page.</p>
-         */
-        _FinalStage hasMore(boolean hasMore);
-
-        Builder from(JobListResponse other);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("jobs") ||
+        key.equalsIgnoreCase("next_cursor") ||
+        key.equalsIgnoreCase("has_more")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public interface _FinalStage {
-        JobListResponse build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        _FinalStage jobs(List<BatchJob> jobs);
-
-        _FinalStage addJobs(BatchJob jobs);
-
-        _FinalStage addAllJobs(List<BatchJob> jobs);
-
-        /**
-         * <p>Cursor for the next page, when has_more is true.</p>
-         */
-        _FinalStage nextCursor(Optional<String> nextCursor);
-
-        _FinalStage nextCursor(String nextCursor);
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements HasMoreStage, _FinalStage {
-        private boolean hasMore;
-
-        private Optional<String> nextCursor = Optional.empty();
-
-        private List<BatchJob> jobs = new ArrayList<>();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(JobListResponse other) {
-            jobs(other.getJobs());
-            nextCursor(other.getNextCursor());
-            hasMore(other.getHasMore());
-            return this;
-        }
-
-        /**
-         * <p>Whether more jobs remain beyond this page.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("has_more")
-        public _FinalStage hasMore(boolean hasMore) {
-            this.hasMore = hasMore;
-            return this;
-        }
-
-        /**
-         * <p>Cursor for the next page, when has_more is true.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage nextCursor(String nextCursor) {
-            this.nextCursor = Optional.ofNullable(nextCursor);
-            return this;
-        }
-
-        /**
-         * <p>Cursor for the next page, when has_more is true.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "next_cursor", nulls = Nulls.SKIP)
-        public _FinalStage nextCursor(Optional<String> nextCursor) {
-            this.nextCursor = nextCursor;
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage addAllJobs(List<BatchJob> jobs) {
-            if (jobs != null) {
-                this.jobs.addAll(jobs);
-            }
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage addJobs(BatchJob jobs) {
-            this.jobs.add(jobs);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "jobs", nulls = Nulls.SKIP)
-        public _FinalStage jobs(List<BatchJob> jobs) {
-            this.jobs.clear();
-            if (jobs != null) {
-                this.jobs.addAll(jobs);
-            }
-            return this;
-        }
-
-        @java.lang.Override
-        public JobListResponse build() {
-            return new JobListResponse(jobs, nextCursor, hasMore, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

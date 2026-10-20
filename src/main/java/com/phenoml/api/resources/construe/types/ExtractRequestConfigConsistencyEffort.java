@@ -7,102 +7,105 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class ExtractRequestConfigConsistencyEffort {
-    public static final ExtractRequestConfigConsistencyEffort MEDIUM =
-            new ExtractRequestConfigConsistencyEffort(Value.MEDIUM, "medium");
 
-    public static final ExtractRequestConfigConsistencyEffort LOW =
-            new ExtractRequestConfigConsistencyEffort(Value.LOW, "low");
+  public static final ExtractRequestConfigConsistencyEffort MEDIUM =
+    new ExtractRequestConfigConsistencyEffort(Value.MEDIUM, "medium");
 
-    public static final ExtractRequestConfigConsistencyEffort HIGH =
-            new ExtractRequestConfigConsistencyEffort(Value.HIGH, "high");
+  public static final ExtractRequestConfigConsistencyEffort LOW =
+    new ExtractRequestConfigConsistencyEffort(Value.LOW, "low");
 
-    public static final ExtractRequestConfigConsistencyEffort NONE =
-            new ExtractRequestConfigConsistencyEffort(Value.NONE, "none");
+  public static final ExtractRequestConfigConsistencyEffort HIGH =
+    new ExtractRequestConfigConsistencyEffort(Value.HIGH, "high");
 
-    private final Value value;
+  public static final ExtractRequestConfigConsistencyEffort NONE =
+    new ExtractRequestConfigConsistencyEffort(Value.NONE, "none");
 
-    private final String string;
+  private final Value value;
 
-    ExtractRequestConfigConsistencyEffort(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  ExtractRequestConfigConsistencyEffort(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof ExtractRequestConfigConsistencyEffort &&
+        this.string.equals(((ExtractRequestConfigConsistencyEffort) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case MEDIUM:
+        return visitor.visitMedium();
+      case LOW:
+        return visitor.visitLow();
+      case HIGH:
+        return visitor.visitHigh();
+      case NONE:
+        return visitor.visitNone();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static ExtractRequestConfigConsistencyEffort valueOf(String value) {
+    switch (value) {
+      case "medium":
+        return MEDIUM;
+      case "low":
+        return LOW;
+      case "high":
+        return HIGH;
+      case "none":
+        return NONE;
+      default:
+        return new ExtractRequestConfigConsistencyEffort(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    NONE,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof ExtractRequestConfigConsistencyEffort
-                        && this.string.equals(((ExtractRequestConfigConsistencyEffort) other).string));
-    }
+    LOW,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    MEDIUM,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case MEDIUM:
-                return visitor.visitMedium();
-            case LOW:
-                return visitor.visitLow();
-            case HIGH:
-                return visitor.visitHigh();
-            case NONE:
-                return visitor.visitNone();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    HIGH,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static ExtractRequestConfigConsistencyEffort valueOf(String value) {
-        switch (value) {
-            case "medium":
-                return MEDIUM;
-            case "low":
-                return LOW;
-            case "high":
-                return HIGH;
-            case "none":
-                return NONE;
-            default:
-                return new ExtractRequestConfigConsistencyEffort(Value.UNKNOWN, value);
-        }
-    }
+    UNKNOWN,
+  }
 
-    public enum Value {
-        NONE,
+  public interface Visitor<T> {
+    T visitNone();
 
-        LOW,
+    T visitLow();
 
-        MEDIUM,
+    T visitMedium();
 
-        HIGH,
+    T visitHigh();
 
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitNone();
-
-        T visitLow();
-
-        T visitMedium();
-
-        T visitHigh();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

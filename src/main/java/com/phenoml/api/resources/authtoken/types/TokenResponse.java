@@ -19,177 +19,197 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = TokenResponse.Builder.class)
 public final class TokenResponse {
-    private final String accessToken;
 
-    private final String tokenType;
+  private final String accessToken;
 
-    private final int expiresIn;
+  private final String tokenType;
 
-    private final Map<String, Object> additionalProperties;
+  private final int expiresIn;
 
-    private TokenResponse(
-            String accessToken, String tokenType, int expiresIn, Map<String, Object> additionalProperties) {
-        this.accessToken = accessToken;
-        this.tokenType = tokenType;
-        this.expiresIn = expiresIn;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private TokenResponse(
+    String accessToken,
+    String tokenType,
+    int expiresIn,
+    Map<String, Object> additionalProperties
+  ) {
+    this.accessToken = accessToken;
+    this.tokenType = tokenType;
+    this.expiresIn = expiresIn;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return JWT access token for subsequent authenticated requests
+   */
+  @JsonProperty("access_token")
+  public String getAccessToken() {
+    return accessToken;
+  }
+
+  /**
+   * @return Token type (always &quot;Bearer&quot;)
+   */
+  @JsonProperty("token_type")
+  public String getTokenType() {
+    return tokenType;
+  }
+
+  /**
+   * @return Token lifetime in seconds
+   */
+  @JsonProperty("expires_in")
+  public int getExpiresIn() {
+    return expiresIn;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof TokenResponse && equalTo((TokenResponse) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(TokenResponse other) {
+    return (
+      accessToken.equals(other.accessToken) &&
+      tokenType.equals(other.tokenType) &&
+      expiresIn == other.expiresIn
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.accessToken, this.tokenType, this.expiresIn);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static AccessTokenStage builder() {
+    return new Builder();
+  }
+
+  public interface AccessTokenStage {
+    /**
+     * <p>JWT access token for subsequent authenticated requests</p>
+     */
+    TokenTypeStage accessToken(@NotNull String accessToken);
+
+    Builder from(TokenResponse other);
+  }
+
+  public interface TokenTypeStage {
+    /**
+     * <p>Token type (always &quot;Bearer&quot;)</p>
+     */
+    ExpiresInStage tokenType(@NotNull String tokenType);
+  }
+
+  public interface ExpiresInStage {
+    /**
+     * <p>Token lifetime in seconds</p>
+     */
+    _FinalStage expiresIn(int expiresIn);
+  }
+
+  public interface _FinalStage {
+    TokenResponse build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements AccessTokenStage, TokenTypeStage, ExpiresInStage, _FinalStage {
+
+    private String accessToken;
+
+    private String tokenType;
+
+    private int expiresIn;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(TokenResponse other) {
+      accessToken(other.getAccessToken());
+      tokenType(other.getTokenType());
+      expiresIn(other.getExpiresIn());
+      return this;
     }
 
     /**
-     * @return JWT access token for subsequent authenticated requests
+     * <p>JWT access token for subsequent authenticated requests</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("access_token")
-    public String getAccessToken() {
-        return accessToken;
+    @java.lang.Override
+    @JsonSetter("access_token")
+    public TokenTypeStage accessToken(@NotNull String accessToken) {
+      this.accessToken = Objects.requireNonNull(accessToken, "accessToken must not be null");
+      return this;
     }
 
     /**
-     * @return Token type (always &quot;Bearer&quot;)
+     * <p>Token type (always &quot;Bearer&quot;)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("token_type")
-    public String getTokenType() {
-        return tokenType;
+    @java.lang.Override
+    @JsonSetter("token_type")
+    public ExpiresInStage tokenType(@NotNull String tokenType) {
+      this.tokenType = Objects.requireNonNull(tokenType, "tokenType must not be null");
+      return this;
     }
 
     /**
-     * @return Token lifetime in seconds
+     * <p>Token lifetime in seconds</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("expires_in")
-    public int getExpiresIn() {
-        return expiresIn;
+    @java.lang.Override
+    @JsonSetter("expires_in")
+    public _FinalStage expiresIn(int expiresIn) {
+      this.expiresIn = expiresIn;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof TokenResponse && equalTo((TokenResponse) other);
+    public TokenResponse build() {
+      return new TokenResponse(accessToken, tokenType, expiresIn, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(TokenResponse other) {
-        return accessToken.equals(other.accessToken)
-                && tokenType.equals(other.tokenType)
-                && expiresIn == other.expiresIn;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.accessToken, this.tokenType, this.expiresIn);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("access_token") ||
+        key.equalsIgnoreCase("token_type") ||
+        key.equalsIgnoreCase("expires_in")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static AccessTokenStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface AccessTokenStage {
-        /**
-         * <p>JWT access token for subsequent authenticated requests</p>
-         */
-        TokenTypeStage accessToken(@NotNull String accessToken);
-
-        Builder from(TokenResponse other);
-    }
-
-    public interface TokenTypeStage {
-        /**
-         * <p>Token type (always &quot;Bearer&quot;)</p>
-         */
-        ExpiresInStage tokenType(@NotNull String tokenType);
-    }
-
-    public interface ExpiresInStage {
-        /**
-         * <p>Token lifetime in seconds</p>
-         */
-        _FinalStage expiresIn(int expiresIn);
-    }
-
-    public interface _FinalStage {
-        TokenResponse build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements AccessTokenStage, TokenTypeStage, ExpiresInStage, _FinalStage {
-        private String accessToken;
-
-        private String tokenType;
-
-        private int expiresIn;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(TokenResponse other) {
-            accessToken(other.getAccessToken());
-            tokenType(other.getTokenType());
-            expiresIn(other.getExpiresIn());
-            return this;
-        }
-
-        /**
-         * <p>JWT access token for subsequent authenticated requests</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("access_token")
-        public TokenTypeStage accessToken(@NotNull String accessToken) {
-            this.accessToken = Objects.requireNonNull(accessToken, "accessToken must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Token type (always &quot;Bearer&quot;)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("token_type")
-        public ExpiresInStage tokenType(@NotNull String tokenType) {
-            this.tokenType = Objects.requireNonNull(tokenType, "tokenType must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Token lifetime in seconds</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("expires_in")
-        public _FinalStage expiresIn(int expiresIn) {
-            this.expiresIn = expiresIn;
-            return this;
-        }
-
-        @java.lang.Override
-        public TokenResponse build() {
-            return new TokenResponse(accessToken, tokenType, expiresIn, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

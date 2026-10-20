@@ -7,270 +7,317 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class CreateRequestResource {
-    public static final CreateRequestResource MEDICATIONREQUEST =
-            new CreateRequestResource(Value.MEDICATIONREQUEST, "medicationrequest");
 
-    public static final CreateRequestResource VITAL_SIGNS = new CreateRequestResource(Value.VITAL_SIGNS, "vital-signs");
+  public static final CreateRequestResource MEDICATIONREQUEST = new CreateRequestResource(
+    Value.MEDICATIONREQUEST,
+    "medicationrequest"
+  );
 
-    public static final CreateRequestResource MEDICATIONSTATEMENT =
-            new CreateRequestResource(Value.MEDICATIONSTATEMENT, "medicationstatement");
+  public static final CreateRequestResource VITAL_SIGNS = new CreateRequestResource(
+    Value.VITAL_SIGNS,
+    "vital-signs"
+  );
 
-    public static final CreateRequestResource MEDICATIONADMINISTRATION =
-            new CreateRequestResource(Value.MEDICATIONADMINISTRATION, "medicationadministration");
+  public static final CreateRequestResource MEDICATIONSTATEMENT = new CreateRequestResource(
+    Value.MEDICATIONSTATEMENT,
+    "medicationstatement"
+  );
 
-    public static final CreateRequestResource SIMPLE_OBSERVATION =
-            new CreateRequestResource(Value.SIMPLE_OBSERVATION, "simple-observation");
+  public static final CreateRequestResource MEDICATIONADMINISTRATION = new CreateRequestResource(
+    Value.MEDICATIONADMINISTRATION,
+    "medicationadministration"
+  );
 
-    public static final CreateRequestResource QUESTIONNAIRE =
-            new CreateRequestResource(Value.QUESTIONNAIRE, "questionnaire");
+  public static final CreateRequestResource SIMPLE_OBSERVATION = new CreateRequestResource(
+    Value.SIMPLE_OBSERVATION,
+    "simple-observation"
+  );
 
-    public static final CreateRequestResource OBSERVATION_LAB =
-            new CreateRequestResource(Value.OBSERVATION_LAB, "observation-lab");
+  public static final CreateRequestResource QUESTIONNAIRE = new CreateRequestResource(
+    Value.QUESTIONNAIRE,
+    "questionnaire"
+  );
 
-    public static final CreateRequestResource QUESTIONNAIRERESPONSE =
-            new CreateRequestResource(Value.QUESTIONNAIRERESPONSE, "questionnaireresponse");
+  public static final CreateRequestResource OBSERVATION_LAB = new CreateRequestResource(
+    Value.OBSERVATION_LAB,
+    "observation-lab"
+  );
 
-    public static final CreateRequestResource ENCOUNTER = new CreateRequestResource(Value.ENCOUNTER, "encounter");
+  public static final CreateRequestResource QUESTIONNAIRERESPONSE = new CreateRequestResource(
+    Value.QUESTIONNAIRERESPONSE,
+    "questionnaireresponse"
+  );
 
-    public static final CreateRequestResource OBSERVATION_CLINICAL_RESULT =
-            new CreateRequestResource(Value.OBSERVATION_CLINICAL_RESULT, "observation-clinical-result");
+  public static final CreateRequestResource ENCOUNTER = new CreateRequestResource(
+    Value.ENCOUNTER,
+    "encounter"
+  );
 
-    public static final CreateRequestResource CAREPLAN = new CreateRequestResource(Value.CAREPLAN, "careplan");
+  public static final CreateRequestResource OBSERVATION_CLINICAL_RESULT = new CreateRequestResource(
+    Value.OBSERVATION_CLINICAL_RESULT,
+    "observation-clinical-result"
+  );
 
-    public static final CreateRequestResource FAMILYMEMBERHISTORY =
-            new CreateRequestResource(Value.FAMILYMEMBERHISTORY, "familymemberhistory");
+  public static final CreateRequestResource CAREPLAN = new CreateRequestResource(
+    Value.CAREPLAN,
+    "careplan"
+  );
 
-    public static final CreateRequestResource SERVICEREQUEST =
-            new CreateRequestResource(Value.SERVICEREQUEST, "servicerequest");
+  public static final CreateRequestResource FAMILYMEMBERHISTORY = new CreateRequestResource(
+    Value.FAMILYMEMBERHISTORY,
+    "familymemberhistory"
+  );
 
-    public static final CreateRequestResource COVERAGE = new CreateRequestResource(Value.COVERAGE, "coverage");
+  public static final CreateRequestResource SERVICEREQUEST = new CreateRequestResource(
+    Value.SERVICEREQUEST,
+    "servicerequest"
+  );
 
-    public static final CreateRequestResource AUTO = new CreateRequestResource(Value.AUTO, "auto");
+  public static final CreateRequestResource COVERAGE = new CreateRequestResource(
+    Value.COVERAGE,
+    "coverage"
+  );
 
-    public static final CreateRequestResource CONDITION_ENCOUNTER_DIAGNOSIS =
-            new CreateRequestResource(Value.CONDITION_ENCOUNTER_DIAGNOSIS, "condition-encounter-diagnosis");
+  public static final CreateRequestResource AUTO = new CreateRequestResource(Value.AUTO, "auto");
 
-    public static final CreateRequestResource CONDITION_PROBLEMS_HEALTH_CONCERNS =
-            new CreateRequestResource(Value.CONDITION_PROBLEMS_HEALTH_CONCERNS, "condition-problems-health-concerns");
+  public static final CreateRequestResource CONDITION_ENCOUNTER_DIAGNOSIS =
+    new CreateRequestResource(Value.CONDITION_ENCOUNTER_DIAGNOSIS, "condition-encounter-diagnosis");
 
-    public static final CreateRequestResource APPOINTMENT = new CreateRequestResource(Value.APPOINTMENT, "appointment");
+  public static final CreateRequestResource CONDITION_PROBLEMS_HEALTH_CONCERNS =
+    new CreateRequestResource(
+      Value.CONDITION_PROBLEMS_HEALTH_CONCERNS,
+      "condition-problems-health-concerns"
+    );
 
-    public static final CreateRequestResource PATIENT = new CreateRequestResource(Value.PATIENT, "patient");
+  public static final CreateRequestResource APPOINTMENT = new CreateRequestResource(
+    Value.APPOINTMENT,
+    "appointment"
+  );
 
-    public static final CreateRequestResource PROCEDURE = new CreateRequestResource(Value.PROCEDURE, "procedure");
+  public static final CreateRequestResource PATIENT = new CreateRequestResource(
+    Value.PATIENT,
+    "patient"
+  );
 
-    private final Value value;
+  public static final CreateRequestResource PROCEDURE = new CreateRequestResource(
+    Value.PROCEDURE,
+    "procedure"
+  );
 
-    private final String string;
+  private final Value value;
 
-    CreateRequestResource(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  CreateRequestResource(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof CreateRequestResource &&
+        this.string.equals(((CreateRequestResource) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case MEDICATIONREQUEST:
+        return visitor.visitMedicationrequest();
+      case VITAL_SIGNS:
+        return visitor.visitVitalSigns();
+      case MEDICATIONSTATEMENT:
+        return visitor.visitMedicationstatement();
+      case MEDICATIONADMINISTRATION:
+        return visitor.visitMedicationadministration();
+      case SIMPLE_OBSERVATION:
+        return visitor.visitSimpleObservation();
+      case QUESTIONNAIRE:
+        return visitor.visitQuestionnaire();
+      case OBSERVATION_LAB:
+        return visitor.visitObservationLab();
+      case QUESTIONNAIRERESPONSE:
+        return visitor.visitQuestionnaireresponse();
+      case ENCOUNTER:
+        return visitor.visitEncounter();
+      case OBSERVATION_CLINICAL_RESULT:
+        return visitor.visitObservationClinicalResult();
+      case CAREPLAN:
+        return visitor.visitCareplan();
+      case FAMILYMEMBERHISTORY:
+        return visitor.visitFamilymemberhistory();
+      case SERVICEREQUEST:
+        return visitor.visitServicerequest();
+      case COVERAGE:
+        return visitor.visitCoverage();
+      case AUTO:
+        return visitor.visitAuto();
+      case CONDITION_ENCOUNTER_DIAGNOSIS:
+        return visitor.visitConditionEncounterDiagnosis();
+      case CONDITION_PROBLEMS_HEALTH_CONCERNS:
+        return visitor.visitConditionProblemsHealthConcerns();
+      case APPOINTMENT:
+        return visitor.visitAppointment();
+      case PATIENT:
+        return visitor.visitPatient();
+      case PROCEDURE:
+        return visitor.visitProcedure();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static CreateRequestResource valueOf(String value) {
+    switch (value) {
+      case "medicationrequest":
+        return MEDICATIONREQUEST;
+      case "vital-signs":
+        return VITAL_SIGNS;
+      case "medicationstatement":
+        return MEDICATIONSTATEMENT;
+      case "medicationadministration":
+        return MEDICATIONADMINISTRATION;
+      case "simple-observation":
+        return SIMPLE_OBSERVATION;
+      case "questionnaire":
+        return QUESTIONNAIRE;
+      case "observation-lab":
+        return OBSERVATION_LAB;
+      case "questionnaireresponse":
+        return QUESTIONNAIRERESPONSE;
+      case "encounter":
+        return ENCOUNTER;
+      case "observation-clinical-result":
+        return OBSERVATION_CLINICAL_RESULT;
+      case "careplan":
+        return CAREPLAN;
+      case "familymemberhistory":
+        return FAMILYMEMBERHISTORY;
+      case "servicerequest":
+        return SERVICEREQUEST;
+      case "coverage":
+        return COVERAGE;
+      case "auto":
+        return AUTO;
+      case "condition-encounter-diagnosis":
+        return CONDITION_ENCOUNTER_DIAGNOSIS;
+      case "condition-problems-health-concerns":
+        return CONDITION_PROBLEMS_HEALTH_CONCERNS;
+      case "appointment":
+        return APPOINTMENT;
+      case "patient":
+        return PATIENT;
+      case "procedure":
+        return PROCEDURE;
+      default:
+        return new CreateRequestResource(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    AUTO,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof CreateRequestResource
-                        && this.string.equals(((CreateRequestResource) other).string));
-    }
+    APPOINTMENT,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    CONDITION_ENCOUNTER_DIAGNOSIS,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case MEDICATIONREQUEST:
-                return visitor.visitMedicationrequest();
-            case VITAL_SIGNS:
-                return visitor.visitVitalSigns();
-            case MEDICATIONSTATEMENT:
-                return visitor.visitMedicationstatement();
-            case MEDICATIONADMINISTRATION:
-                return visitor.visitMedicationadministration();
-            case SIMPLE_OBSERVATION:
-                return visitor.visitSimpleObservation();
-            case QUESTIONNAIRE:
-                return visitor.visitQuestionnaire();
-            case OBSERVATION_LAB:
-                return visitor.visitObservationLab();
-            case QUESTIONNAIRERESPONSE:
-                return visitor.visitQuestionnaireresponse();
-            case ENCOUNTER:
-                return visitor.visitEncounter();
-            case OBSERVATION_CLINICAL_RESULT:
-                return visitor.visitObservationClinicalResult();
-            case CAREPLAN:
-                return visitor.visitCareplan();
-            case FAMILYMEMBERHISTORY:
-                return visitor.visitFamilymemberhistory();
-            case SERVICEREQUEST:
-                return visitor.visitServicerequest();
-            case COVERAGE:
-                return visitor.visitCoverage();
-            case AUTO:
-                return visitor.visitAuto();
-            case CONDITION_ENCOUNTER_DIAGNOSIS:
-                return visitor.visitConditionEncounterDiagnosis();
-            case CONDITION_PROBLEMS_HEALTH_CONCERNS:
-                return visitor.visitConditionProblemsHealthConcerns();
-            case APPOINTMENT:
-                return visitor.visitAppointment();
-            case PATIENT:
-                return visitor.visitPatient();
-            case PROCEDURE:
-                return visitor.visitProcedure();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    FAMILYMEMBERHISTORY,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static CreateRequestResource valueOf(String value) {
-        switch (value) {
-            case "medicationrequest":
-                return MEDICATIONREQUEST;
-            case "vital-signs":
-                return VITAL_SIGNS;
-            case "medicationstatement":
-                return MEDICATIONSTATEMENT;
-            case "medicationadministration":
-                return MEDICATIONADMINISTRATION;
-            case "simple-observation":
-                return SIMPLE_OBSERVATION;
-            case "questionnaire":
-                return QUESTIONNAIRE;
-            case "observation-lab":
-                return OBSERVATION_LAB;
-            case "questionnaireresponse":
-                return QUESTIONNAIRERESPONSE;
-            case "encounter":
-                return ENCOUNTER;
-            case "observation-clinical-result":
-                return OBSERVATION_CLINICAL_RESULT;
-            case "careplan":
-                return CAREPLAN;
-            case "familymemberhistory":
-                return FAMILYMEMBERHISTORY;
-            case "servicerequest":
-                return SERVICEREQUEST;
-            case "coverage":
-                return COVERAGE;
-            case "auto":
-                return AUTO;
-            case "condition-encounter-diagnosis":
-                return CONDITION_ENCOUNTER_DIAGNOSIS;
-            case "condition-problems-health-concerns":
-                return CONDITION_PROBLEMS_HEALTH_CONCERNS;
-            case "appointment":
-                return APPOINTMENT;
-            case "patient":
-                return PATIENT;
-            case "procedure":
-                return PROCEDURE;
-            default:
-                return new CreateRequestResource(Value.UNKNOWN, value);
-        }
-    }
+    MEDICATIONADMINISTRATION,
 
-    public enum Value {
-        AUTO,
+    MEDICATIONREQUEST,
 
-        APPOINTMENT,
+    MEDICATIONSTATEMENT,
 
-        CONDITION_ENCOUNTER_DIAGNOSIS,
+    CAREPLAN,
 
-        FAMILYMEMBERHISTORY,
+    CONDITION_PROBLEMS_HEALTH_CONCERNS,
 
-        MEDICATIONADMINISTRATION,
+    COVERAGE,
 
-        MEDICATIONREQUEST,
+    ENCOUNTER,
 
-        MEDICATIONSTATEMENT,
+    OBSERVATION_CLINICAL_RESULT,
 
-        CAREPLAN,
+    OBSERVATION_LAB,
 
-        CONDITION_PROBLEMS_HEALTH_CONCERNS,
+    PATIENT,
 
-        COVERAGE,
+    PROCEDURE,
 
-        ENCOUNTER,
+    QUESTIONNAIRE,
 
-        OBSERVATION_CLINICAL_RESULT,
+    QUESTIONNAIRERESPONSE,
 
-        OBSERVATION_LAB,
+    SERVICEREQUEST,
 
-        PATIENT,
+    SIMPLE_OBSERVATION,
 
-        PROCEDURE,
+    VITAL_SIGNS,
 
-        QUESTIONNAIRE,
+    UNKNOWN,
+  }
 
-        QUESTIONNAIRERESPONSE,
+  public interface Visitor<T> {
+    T visitAuto();
 
-        SERVICEREQUEST,
+    T visitAppointment();
 
-        SIMPLE_OBSERVATION,
+    T visitConditionEncounterDiagnosis();
 
-        VITAL_SIGNS,
+    T visitFamilymemberhistory();
 
-        UNKNOWN
-    }
+    T visitMedicationadministration();
 
-    public interface Visitor<T> {
-        T visitAuto();
+    T visitMedicationrequest();
 
-        T visitAppointment();
+    T visitMedicationstatement();
 
-        T visitConditionEncounterDiagnosis();
+    T visitCareplan();
 
-        T visitFamilymemberhistory();
+    T visitConditionProblemsHealthConcerns();
 
-        T visitMedicationadministration();
+    T visitCoverage();
 
-        T visitMedicationrequest();
+    T visitEncounter();
 
-        T visitMedicationstatement();
+    T visitObservationClinicalResult();
 
-        T visitCareplan();
+    T visitObservationLab();
 
-        T visitConditionProblemsHealthConcerns();
+    T visitPatient();
 
-        T visitCoverage();
+    T visitProcedure();
 
-        T visitEncounter();
+    T visitQuestionnaire();
 
-        T visitObservationClinicalResult();
+    T visitQuestionnaireresponse();
 
-        T visitObservationLab();
+    T visitServicerequest();
 
-        T visitPatient();
+    T visitSimpleObservation();
 
-        T visitProcedure();
+    T visitVitalSigns();
 
-        T visitQuestionnaire();
-
-        T visitQuestionnaireresponse();
-
-        T visitServicerequest();
-
-        T visitSimpleObservation();
-
-        T visitVitalSigns();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

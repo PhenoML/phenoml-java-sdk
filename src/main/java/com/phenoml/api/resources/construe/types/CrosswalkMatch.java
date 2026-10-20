@@ -21,223 +21,240 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CrosswalkMatch.Builder.class)
 public final class CrosswalkMatch {
-    private final String code;
 
-    private final String display;
+  private final String code;
 
-    private final String cui;
+  private final String display;
 
-    private final Optional<String> suppress;
+  private final String cui;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> suppress;
 
-    private CrosswalkMatch(
-            String code,
-            String display,
-            String cui,
-            Optional<String> suppress,
-            Map<String, Object> additionalProperties) {
-        this.code = code;
-        this.display = display;
-        this.cui = cui;
-        this.suppress = suppress;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CrosswalkMatch(
+    String code,
+    String display,
+    String cui,
+    Optional<String> suppress,
+    Map<String, Object> additionalProperties
+  ) {
+    this.code = code;
+    this.display = display;
+    this.cui = cui;
+    this.suppress = suppress;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Matched code in the target system.
+   */
+  @JsonProperty("code")
+  public String getCode() {
+    return code;
+  }
+
+  /**
+   * @return Human-readable target code display.
+   */
+  @JsonProperty("display")
+  public String getDisplay() {
+    return display;
+  }
+
+  /**
+   * @return UMLS CUI that links the source and target code.
+   */
+  @JsonProperty("cui")
+  public String getCui() {
+    return cui;
+  }
+
+  /**
+   * @return UMLS suppressibility flag, when present.
+   */
+  @JsonProperty("suppress")
+  public Optional<String> getSuppress() {
+    return suppress;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof CrosswalkMatch && equalTo((CrosswalkMatch) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CrosswalkMatch other) {
+    return (
+      code.equals(other.code) &&
+      display.equals(other.display) &&
+      cui.equals(other.cui) &&
+      suppress.equals(other.suppress)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.code, this.display, this.cui, this.suppress);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static CodeStage builder() {
+    return new Builder();
+  }
+
+  public interface CodeStage {
+    /**
+     * <p>Matched code in the target system.</p>
+     */
+    DisplayStage code(@NotNull String code);
+
+    Builder from(CrosswalkMatch other);
+  }
+
+  public interface DisplayStage {
+    /**
+     * <p>Human-readable target code display.</p>
+     */
+    CuiStage display(@NotNull String display);
+  }
+
+  public interface CuiStage {
+    /**
+     * <p>UMLS CUI that links the source and target code.</p>
+     */
+    _FinalStage cui(@NotNull String cui);
+  }
+
+  public interface _FinalStage {
+    CrosswalkMatch build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>UMLS suppressibility flag, when present.</p>
+     */
+    _FinalStage suppress(Optional<String> suppress);
+
+    _FinalStage suppress(String suppress);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements CodeStage, DisplayStage, CuiStage, _FinalStage {
+
+    private String code;
+
+    private String display;
+
+    private String cui;
+
+    private Optional<String> suppress = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(CrosswalkMatch other) {
+      code(other.getCode());
+      display(other.getDisplay());
+      cui(other.getCui());
+      suppress(other.getSuppress());
+      return this;
     }
 
     /**
-     * @return Matched code in the target system.
+     * <p>Matched code in the target system.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("code")
-    public String getCode() {
-        return code;
+    @java.lang.Override
+    @JsonSetter("code")
+    public DisplayStage code(@NotNull String code) {
+      this.code = Objects.requireNonNull(code, "code must not be null");
+      return this;
     }
 
     /**
-     * @return Human-readable target code display.
+     * <p>Human-readable target code display.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("display")
-    public String getDisplay() {
-        return display;
+    @java.lang.Override
+    @JsonSetter("display")
+    public CuiStage display(@NotNull String display) {
+      this.display = Objects.requireNonNull(display, "display must not be null");
+      return this;
     }
 
     /**
-     * @return UMLS CUI that links the source and target code.
+     * <p>UMLS CUI that links the source and target code.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("cui")
-    public String getCui() {
-        return cui;
+    @java.lang.Override
+    @JsonSetter("cui")
+    public _FinalStage cui(@NotNull String cui) {
+      this.cui = Objects.requireNonNull(cui, "cui must not be null");
+      return this;
     }
 
     /**
-     * @return UMLS suppressibility flag, when present.
+     * <p>UMLS suppressibility flag, when present.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("suppress")
-    public Optional<String> getSuppress() {
-        return suppress;
+    @java.lang.Override
+    public _FinalStage suppress(String suppress) {
+      this.suppress = Optional.ofNullable(suppress);
+      return this;
+    }
+
+    /**
+     * <p>UMLS suppressibility flag, when present.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "suppress", nulls = Nulls.SKIP)
+    public _FinalStage suppress(Optional<String> suppress) {
+      this.suppress = suppress;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CrosswalkMatch && equalTo((CrosswalkMatch) other);
+    public CrosswalkMatch build() {
+      return new CrosswalkMatch(code, display, cui, suppress, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(CrosswalkMatch other) {
-        return code.equals(other.code)
-                && display.equals(other.display)
-                && cui.equals(other.cui)
-                && suppress.equals(other.suppress);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.code, this.display, this.cui, this.suppress);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("code") ||
+        key.equalsIgnoreCase("display") ||
+        key.equalsIgnoreCase("cui") ||
+        key.equalsIgnoreCase("suppress")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static CodeStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface CodeStage {
-        /**
-         * <p>Matched code in the target system.</p>
-         */
-        DisplayStage code(@NotNull String code);
-
-        Builder from(CrosswalkMatch other);
-    }
-
-    public interface DisplayStage {
-        /**
-         * <p>Human-readable target code display.</p>
-         */
-        CuiStage display(@NotNull String display);
-    }
-
-    public interface CuiStage {
-        /**
-         * <p>UMLS CUI that links the source and target code.</p>
-         */
-        _FinalStage cui(@NotNull String cui);
-    }
-
-    public interface _FinalStage {
-        CrosswalkMatch build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>UMLS suppressibility flag, when present.</p>
-         */
-        _FinalStage suppress(Optional<String> suppress);
-
-        _FinalStage suppress(String suppress);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements CodeStage, DisplayStage, CuiStage, _FinalStage {
-        private String code;
-
-        private String display;
-
-        private String cui;
-
-        private Optional<String> suppress = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(CrosswalkMatch other) {
-            code(other.getCode());
-            display(other.getDisplay());
-            cui(other.getCui());
-            suppress(other.getSuppress());
-            return this;
-        }
-
-        /**
-         * <p>Matched code in the target system.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("code")
-        public DisplayStage code(@NotNull String code) {
-            this.code = Objects.requireNonNull(code, "code must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Human-readable target code display.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("display")
-        public CuiStage display(@NotNull String display) {
-            this.display = Objects.requireNonNull(display, "display must not be null");
-            return this;
-        }
-
-        /**
-         * <p>UMLS CUI that links the source and target code.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("cui")
-        public _FinalStage cui(@NotNull String cui) {
-            this.cui = Objects.requireNonNull(cui, "cui must not be null");
-            return this;
-        }
-
-        /**
-         * <p>UMLS suppressibility flag, when present.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage suppress(String suppress) {
-            this.suppress = Optional.ofNullable(suppress);
-            return this;
-        }
-
-        /**
-         * <p>UMLS suppressibility flag, when present.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "suppress", nulls = Nulls.SKIP)
-        public _FinalStage suppress(Optional<String> suppress) {
-            this.suppress = suppress;
-            return this;
-        }
-
-        @java.lang.Override
-        public CrosswalkMatch build() {
-            return new CrosswalkMatch(code, display, cui, suppress, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

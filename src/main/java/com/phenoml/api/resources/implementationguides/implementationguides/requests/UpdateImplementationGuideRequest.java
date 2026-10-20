@@ -20,93 +20,107 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = UpdateImplementationGuideRequest.Builder.class)
 public final class UpdateImplementationGuideRequest {
-    private final Optional<String> profileContext;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> profileContext;
 
-    private UpdateImplementationGuideRequest(
-            Optional<String> profileContext, Map<String, Object> additionalProperties) {
-        this.profileContext = profileContext;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private UpdateImplementationGuideRequest(
+    Optional<String> profileContext,
+    Map<String, Object> additionalProperties
+  ) {
+    this.profileContext = profileContext;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Natural-language context that helps the LLM select the right profiles from this implementation guide during resource detection. An empty value clears the context. Max 2000 characters.
+   */
+  @JsonProperty("profile_context")
+  public Optional<String> getProfileContext() {
+    return profileContext;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof UpdateImplementationGuideRequest &&
+      equalTo((UpdateImplementationGuideRequest) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(UpdateImplementationGuideRequest other) {
+    return profileContext.equals(other.profileContext);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.profileContext);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> profileContext = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(UpdateImplementationGuideRequest other) {
+      profileContext(other.getProfileContext());
+      return this;
     }
 
     /**
-     * @return Natural-language context that helps the LLM select the right profiles from this implementation guide during resource detection. An empty value clears the context. Max 2000 characters.
+     * <p>Natural-language context that helps the LLM select the right profiles from this implementation guide during resource detection. An empty value clears the context. Max 2000 characters.</p>
      */
-    @JsonProperty("profile_context")
-    public Optional<String> getProfileContext() {
-        return profileContext;
+    @JsonSetter(value = "profile_context", nulls = Nulls.SKIP)
+    public Builder profileContext(Optional<String> profileContext) {
+      this.profileContext = profileContext;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof UpdateImplementationGuideRequest && equalTo((UpdateImplementationGuideRequest) other);
+    public Builder profileContext(String profileContext) {
+      this.profileContext = Optional.ofNullable(profileContext);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public UpdateImplementationGuideRequest build() {
+      return new UpdateImplementationGuideRequest(profileContext, additionalProperties);
     }
 
-    private boolean equalTo(UpdateImplementationGuideRequest other) {
-        return profileContext.equals(other.profileContext);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("profile_context")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.profileContext);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> profileContext = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(UpdateImplementationGuideRequest other) {
-            profileContext(other.getProfileContext());
-            return this;
-        }
-
-        /**
-         * <p>Natural-language context that helps the LLM select the right profiles from this implementation guide during resource detection. An empty value clears the context. Max 2000 characters.</p>
-         */
-        @JsonSetter(value = "profile_context", nulls = Nulls.SKIP)
-        public Builder profileContext(Optional<String> profileContext) {
-            this.profileContext = profileContext;
-            return this;
-        }
-
-        public Builder profileContext(String profileContext) {
-            this.profileContext = Optional.ofNullable(profileContext);
-            return this;
-        }
-
-        public UpdateImplementationGuideRequest build() {
-            return new UpdateImplementationGuideRequest(profileContext, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

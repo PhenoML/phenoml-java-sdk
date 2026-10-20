@@ -19,111 +19,125 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = FhirProviderSetActiveAuthConfigRequest.Builder.class)
 public final class FhirProviderSetActiveAuthConfigRequest {
-    private final String authConfigId;
 
-    private final Map<String, Object> additionalProperties;
+  private final String authConfigId;
 
-    private FhirProviderSetActiveAuthConfigRequest(String authConfigId, Map<String, Object> additionalProperties) {
-        this.authConfigId = authConfigId;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private FhirProviderSetActiveAuthConfigRequest(
+    String authConfigId,
+    Map<String, Object> additionalProperties
+  ) {
+    this.authConfigId = authConfigId;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return ID of the auth configuration to set as active
+   */
+  @JsonProperty("auth_config_id")
+  public String getAuthConfigId() {
+    return authConfigId;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof FhirProviderSetActiveAuthConfigRequest &&
+      equalTo((FhirProviderSetActiveAuthConfigRequest) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(FhirProviderSetActiveAuthConfigRequest other) {
+    return authConfigId.equals(other.authConfigId);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.authConfigId);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static AuthConfigIdStage builder() {
+    return new Builder();
+  }
+
+  public interface AuthConfigIdStage {
+    /**
+     * <p>ID of the auth configuration to set as active</p>
+     */
+    _FinalStage authConfigId(@NotNull String authConfigId);
+
+    Builder from(FhirProviderSetActiveAuthConfigRequest other);
+  }
+
+  public interface _FinalStage {
+    FhirProviderSetActiveAuthConfigRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements AuthConfigIdStage, _FinalStage {
+
+    private String authConfigId;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(FhirProviderSetActiveAuthConfigRequest other) {
+      authConfigId(other.getAuthConfigId());
+      return this;
     }
 
     /**
-     * @return ID of the auth configuration to set as active
+     * <p>ID of the auth configuration to set as active</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("auth_config_id")
-    public String getAuthConfigId() {
-        return authConfigId;
+    @java.lang.Override
+    @JsonSetter("auth_config_id")
+    public _FinalStage authConfigId(@NotNull String authConfigId) {
+      this.authConfigId = Objects.requireNonNull(authConfigId, "authConfigId must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof FhirProviderSetActiveAuthConfigRequest
-                && equalTo((FhirProviderSetActiveAuthConfigRequest) other);
+    public FhirProviderSetActiveAuthConfigRequest build() {
+      return new FhirProviderSetActiveAuthConfigRequest(authConfigId, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(FhirProviderSetActiveAuthConfigRequest other) {
-        return authConfigId.equals(other.authConfigId);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("auth_config_id")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.authConfigId);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static AuthConfigIdStage builder() {
-        return new Builder();
-    }
-
-    public interface AuthConfigIdStage {
-        /**
-         * <p>ID of the auth configuration to set as active</p>
-         */
-        _FinalStage authConfigId(@NotNull String authConfigId);
-
-        Builder from(FhirProviderSetActiveAuthConfigRequest other);
-    }
-
-    public interface _FinalStage {
-        FhirProviderSetActiveAuthConfigRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements AuthConfigIdStage, _FinalStage {
-        private String authConfigId;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(FhirProviderSetActiveAuthConfigRequest other) {
-            authConfigId(other.getAuthConfigId());
-            return this;
-        }
-
-        /**
-         * <p>ID of the auth configuration to set as active</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("auth_config_id")
-        public _FinalStage authConfigId(@NotNull String authConfigId) {
-            this.authConfigId = Objects.requireNonNull(authConfigId, "authConfigId must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public FhirProviderSetActiveAuthConfigRequest build() {
-            return new FhirProviderSetActiveAuthConfigRequest(authConfigId, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

@@ -19,142 +19,151 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PatientReference.Builder.class)
 public final class PatientReference {
-    private final String system;
 
-    private final String value;
+  private final String system;
 
-    private final Map<String, Object> additionalProperties;
+  private final String value;
 
-    private PatientReference(String system, String value, Map<String, Object> additionalProperties) {
-        this.system = system;
-        this.value = value;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private PatientReference(String system, String value, Map<String, Object> additionalProperties) {
+    this.system = system;
+    this.value = value;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Identifier system (namespace) for the patient identifier.
+   */
+  @JsonProperty("system")
+  public String getSystem() {
+    return system;
+  }
+
+  /**
+   * @return Identifier value for the patient within that system.
+   */
+  @JsonProperty("value")
+  public String getValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof PatientReference && equalTo((PatientReference) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(PatientReference other) {
+    return system.equals(other.system) && value.equals(other.value);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.system, this.value);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static SystemStage builder() {
+    return new Builder();
+  }
+
+  public interface SystemStage {
+    /**
+     * <p>Identifier system (namespace) for the patient identifier.</p>
+     */
+    ValueStage system(@NotNull String system);
+
+    Builder from(PatientReference other);
+  }
+
+  public interface ValueStage {
+    /**
+     * <p>Identifier value for the patient within that system.</p>
+     */
+    _FinalStage value(@NotNull String value);
+  }
+
+  public interface _FinalStage {
+    PatientReference build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements SystemStage, ValueStage, _FinalStage {
+
+    private String system;
+
+    private String value;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(PatientReference other) {
+      system(other.getSystem());
+      value(other.getValue());
+      return this;
     }
 
     /**
-     * @return Identifier system (namespace) for the patient identifier.
+     * <p>Identifier system (namespace) for the patient identifier.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("system")
-    public String getSystem() {
-        return system;
+    @java.lang.Override
+    @JsonSetter("system")
+    public ValueStage system(@NotNull String system) {
+      this.system = Objects.requireNonNull(system, "system must not be null");
+      return this;
     }
 
     /**
-     * @return Identifier value for the patient within that system.
+     * <p>Identifier value for the patient within that system.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("value")
-    public String getValue() {
-        return value;
+    @java.lang.Override
+    @JsonSetter("value")
+    public _FinalStage value(@NotNull String value) {
+      this.value = Objects.requireNonNull(value, "value must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof PatientReference && equalTo((PatientReference) other);
+    public PatientReference build() {
+      return new PatientReference(system, value, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(PatientReference other) {
-        return system.equals(other.system) && value.equals(other.value);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.system, this.value);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("system") || key.equalsIgnoreCase("value")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static SystemStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface SystemStage {
-        /**
-         * <p>Identifier system (namespace) for the patient identifier.</p>
-         */
-        ValueStage system(@NotNull String system);
-
-        Builder from(PatientReference other);
-    }
-
-    public interface ValueStage {
-        /**
-         * <p>Identifier value for the patient within that system.</p>
-         */
-        _FinalStage value(@NotNull String value);
-    }
-
-    public interface _FinalStage {
-        PatientReference build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements SystemStage, ValueStage, _FinalStage {
-        private String system;
-
-        private String value;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(PatientReference other) {
-            system(other.getSystem());
-            value(other.getValue());
-            return this;
-        }
-
-        /**
-         * <p>Identifier system (namespace) for the patient identifier.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("system")
-        public ValueStage system(@NotNull String system) {
-            this.system = Objects.requireNonNull(system, "system must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Identifier value for the patient within that system.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("value")
-        public _FinalStage value(@NotNull String value) {
-            this.value = Objects.requireNonNull(value, "value must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public PatientReference build() {
-            return new PatientReference(system, value, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

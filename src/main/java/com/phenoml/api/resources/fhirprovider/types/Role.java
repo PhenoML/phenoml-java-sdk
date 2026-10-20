@@ -7,86 +7,87 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class Role {
-    public static final Role ADMIN = new Role(Value.ADMIN, "admin");
 
-    public static final Role WRITE = new Role(Value.WRITE, "write");
+  public static final Role ADMIN = new Role(Value.ADMIN, "admin");
 
-    public static final Role READ = new Role(Value.READ, "read");
+  public static final Role WRITE = new Role(Value.WRITE, "write");
 
-    private final Value value;
+  public static final Role READ = new Role(Value.READ, "read");
 
-    private final String string;
+  private final Value value;
 
-    Role(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  Role(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (this == other) || (other instanceof Role && this.string.equals(((Role) other).string));
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case ADMIN:
+        return visitor.visitAdmin();
+      case WRITE:
+        return visitor.visitWrite();
+      case READ:
+        return visitor.visitRead();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static Role valueOf(String value) {
+    switch (value) {
+      case "admin":
+        return ADMIN;
+      case "write":
+        return WRITE;
+      case "read":
+        return READ;
+      default:
+        return new Role(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    ADMIN,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other) || (other instanceof Role && this.string.equals(((Role) other).string));
-    }
+    READ,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    WRITE,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case ADMIN:
-                return visitor.visitAdmin();
-            case WRITE:
-                return visitor.visitWrite();
-            case READ:
-                return visitor.visitRead();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    UNKNOWN,
+  }
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static Role valueOf(String value) {
-        switch (value) {
-            case "admin":
-                return ADMIN;
-            case "write":
-                return WRITE;
-            case "read":
-                return READ;
-            default:
-                return new Role(Value.UNKNOWN, value);
-        }
-    }
+  public interface Visitor<T> {
+    T visitAdmin();
 
-    public enum Value {
-        ADMIN,
+    T visitRead();
 
-        READ,
+    T visitWrite();
 
-        WRITE,
-
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitAdmin();
-
-        T visitRead();
-
-        T visitWrite();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

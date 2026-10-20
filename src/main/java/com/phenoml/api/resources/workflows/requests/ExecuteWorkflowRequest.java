@@ -21,131 +21,143 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ExecuteWorkflowRequest.Builder.class)
 public final class ExecuteWorkflowRequest {
-    private final Map<String, Object> inputData;
 
-    private final Optional<Boolean> preview;
+  private final Map<String, Object> inputData;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Boolean> preview;
 
-    private ExecuteWorkflowRequest(
-            Map<String, Object> inputData, Optional<Boolean> preview, Map<String, Object> additionalProperties) {
-        this.inputData = inputData;
-        this.preview = preview;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ExecuteWorkflowRequest(
+    Map<String, Object> inputData,
+    Optional<Boolean> preview,
+    Map<String, Object> additionalProperties
+  ) {
+    this.inputData = inputData;
+    this.preview = preview;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Input data for workflow execution
+   */
+  @JsonProperty("input_data")
+  public Map<String, Object> getInputData() {
+    return inputData;
+  }
+
+  /**
+   * @return If true, create operations return mock resources instead of persisting to the FHIR server
+   */
+  @JsonProperty("preview")
+  public Optional<Boolean> getPreview() {
+    return preview;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ExecuteWorkflowRequest && equalTo((ExecuteWorkflowRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ExecuteWorkflowRequest other) {
+    return inputData.equals(other.inputData) && preview.equals(other.preview);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.inputData, this.preview);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Map<String, Object> inputData = new LinkedHashMap<>();
+
+    private Optional<Boolean> preview = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ExecuteWorkflowRequest other) {
+      inputData(other.getInputData());
+      preview(other.getPreview());
+      return this;
     }
 
     /**
-     * @return Input data for workflow execution
+     * <p>Input data for workflow execution</p>
      */
-    @JsonProperty("input_data")
-    public Map<String, Object> getInputData() {
-        return inputData;
+    @JsonSetter(value = "input_data", nulls = Nulls.SKIP)
+    public Builder inputData(Map<String, Object> inputData) {
+      this.inputData.clear();
+      if (inputData != null) {
+        this.inputData.putAll(inputData);
+      }
+      return this;
+    }
+
+    public Builder putAllInputData(Map<String, Object> inputData) {
+      if (inputData != null) {
+        this.inputData.putAll(inputData);
+      }
+      return this;
+    }
+
+    public Builder inputData(String key, Object value) {
+      this.inputData.put(key, value);
+      return this;
     }
 
     /**
-     * @return If true, create operations return mock resources instead of persisting to the FHIR server
+     * <p>If true, create operations return mock resources instead of persisting to the FHIR server</p>
      */
-    @JsonProperty("preview")
-    public Optional<Boolean> getPreview() {
-        return preview;
+    @JsonSetter(value = "preview", nulls = Nulls.SKIP)
+    public Builder preview(Optional<Boolean> preview) {
+      this.preview = preview;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ExecuteWorkflowRequest && equalTo((ExecuteWorkflowRequest) other);
+    public Builder preview(Boolean preview) {
+      this.preview = Optional.ofNullable(preview);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ExecuteWorkflowRequest build() {
+      return new ExecuteWorkflowRequest(inputData, preview, additionalProperties);
     }
 
-    private boolean equalTo(ExecuteWorkflowRequest other) {
-        return inputData.equals(other.inputData) && preview.equals(other.preview);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("input_data") || key.equalsIgnoreCase("preview")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.inputData, this.preview);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Map<String, Object> inputData = new LinkedHashMap<>();
-
-        private Optional<Boolean> preview = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ExecuteWorkflowRequest other) {
-            inputData(other.getInputData());
-            preview(other.getPreview());
-            return this;
-        }
-
-        /**
-         * <p>Input data for workflow execution</p>
-         */
-        @JsonSetter(value = "input_data", nulls = Nulls.SKIP)
-        public Builder inputData(Map<String, Object> inputData) {
-            this.inputData.clear();
-            if (inputData != null) {
-                this.inputData.putAll(inputData);
-            }
-            return this;
-        }
-
-        public Builder putAllInputData(Map<String, Object> inputData) {
-            if (inputData != null) {
-                this.inputData.putAll(inputData);
-            }
-            return this;
-        }
-
-        public Builder inputData(String key, Object value) {
-            this.inputData.put(key, value);
-            return this;
-        }
-
-        /**
-         * <p>If true, create operations return mock resources instead of persisting to the FHIR server</p>
-         */
-        @JsonSetter(value = "preview", nulls = Nulls.SKIP)
-        public Builder preview(Optional<Boolean> preview) {
-            this.preview = preview;
-            return this;
-        }
-
-        public Builder preview(Boolean preview) {
-            this.preview = Optional.ofNullable(preview);
-            return this;
-        }
-
-        public ExecuteWorkflowRequest build() {
-            return new ExecuteWorkflowRequest(inputData, preview, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

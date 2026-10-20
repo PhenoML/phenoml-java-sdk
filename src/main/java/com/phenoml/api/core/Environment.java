@@ -4,19 +4,20 @@
 package com.phenoml.api.core;
 
 public final class Environment {
-    public static final Environment DEFAULT = new Environment("https://experiment.app.pheno.ml");
 
-    private final String url;
+  public static final Environment DEFAULT = new Environment("https://experiment.app.pheno.ml");
 
-    private Environment(String url) {
-        this.url = url;
-    }
+  private final String url;
 
-    public String getUrl() {
-        return this.url;
-    }
+  private Environment(String url) {
+    this.url = url;
+  }
 
-    public static Environment custom(String url) {
-        return new Environment(url);
-    }
+  public String getUrl() {
+    return this.url;
+  }
+
+  public static Environment custom(String url) {
+    return new Environment(url);
+  }
 }

@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.construe;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.construe.codes.AsyncCodesClient;
@@ -14,49 +15,69 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public class AsyncConstrueClient {
-    protected final ClientOptions clientOptions;
 
-    private final AsyncRawConstrueClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    protected final Supplier<AsyncCodeSystemsClient> codeSystemsClient;
+  private final AsyncRawConstrueClient rawClient;
 
-    protected final Supplier<AsyncCodesClient> codesClient;
+  protected final Supplier<AsyncCodeSystemsClient> codeSystemsClient;
 
-    public AsyncConstrueClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawConstrueClient(clientOptions);
-        this.codeSystemsClient = Suppliers.memoize(() -> new AsyncCodeSystemsClient(clientOptions));
-        this.codesClient = Suppliers.memoize(() -> new AsyncCodesClient(clientOptions));
-    }
+  protected final Supplier<AsyncCodesClient> codesClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawConstrueClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AsyncConstrueClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new AsyncRawConstrueClient(clientOptions);
+    this.codeSystemsClient = Suppliers.memoize(() -> new AsyncCodeSystemsClient(clientOptions));
+    this.codesClient = Suppliers.memoize(() -> new AsyncCodesClient(clientOptions));
+  }
 
-    /**
-     * Submits user feedback on results from the Construe extraction endpoint.
-     * Feedback includes the full extraction result received and the result the user expected.
-     */
-    public CompletableFuture<FeedbackResponse> submitFeedback(FeedbackRequest request) {
-        return this.rawClient.submitFeedback(request).thenApply(response -> response.body());
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public AsyncRawConstrueClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Submits user feedback on results from the Construe extraction endpoint.
-     * Feedback includes the full extraction result received and the result the user expected.
-     */
-    public CompletableFuture<FeedbackResponse> submitFeedback(FeedbackRequest request, RequestOptions requestOptions) {
-        return this.rawClient.submitFeedback(request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Submits user feedback on results from the Construe extraction endpoint.
+   * Feedback includes the full extraction result received and the result the user expected.
+   */
+  public CompletableFuture<FeedbackResponse> submitFeedback(FeedbackRequest request) {
+    CompletableFuture<PhenomlClientHttpResponse<FeedbackResponse>> rawFuture =
+      this.rawClient.submitFeedback(request);
+    CompletableFuture<FeedbackResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    public AsyncCodeSystemsClient codeSystems() {
-        return this.codeSystemsClient.get();
-    }
+  /**
+   * Submits user feedback on results from the Construe extraction endpoint.
+   * Feedback includes the full extraction result received and the result the user expected.
+   */
+  public CompletableFuture<FeedbackResponse> submitFeedback(
+    FeedbackRequest request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<FeedbackResponse>> rawFuture =
+      this.rawClient.submitFeedback(request, requestOptions);
+    CompletableFuture<FeedbackResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    public AsyncCodesClient codes() {
-        return this.codesClient.get();
-    }
+  public AsyncCodeSystemsClient codeSystems() {
+    return this.codeSystemsClient.get();
+  }
+
+  public AsyncCodesClient codes() {
+    return this.codesClient.get();
+  }
 }

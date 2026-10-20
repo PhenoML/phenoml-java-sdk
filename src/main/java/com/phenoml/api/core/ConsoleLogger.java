@@ -12,41 +12,43 @@ import java.util.logging.Level;
  */
 public final class ConsoleLogger implements ILogger {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger("fern");
+  private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger("fern");
 
-    static {
-        if (logger.getHandlers().length == 0) {
-            java.util.logging.ConsoleHandler handler = new java.util.logging.ConsoleHandler();
-            handler.setFormatter(new java.util.logging.SimpleFormatter() {
-                @Override
-                public String format(java.util.logging.LogRecord record) {
-                    return record.getLevel() + " - " + record.getMessage() + System.lineSeparator();
-                }
-            });
-            handler.setLevel(Level.ALL);
-            logger.addHandler(handler);
-            logger.setUseParentHandlers(false);
-            logger.setLevel(Level.ALL);
+  static {
+    if (logger.getHandlers().length == 0) {
+      java.util.logging.ConsoleHandler handler = new java.util.logging.ConsoleHandler();
+      handler.setFormatter(
+        new java.util.logging.SimpleFormatter() {
+          @Override
+          public String format(java.util.logging.LogRecord record) {
+            return record.getLevel() + " - " + record.getMessage() + System.lineSeparator();
+          }
         }
+      );
+      handler.setLevel(Level.ALL);
+      logger.addHandler(handler);
+      logger.setUseParentHandlers(false);
+      logger.setLevel(Level.ALL);
     }
+  }
 
-    @Override
-    public void debug(String message) {
-        logger.log(Level.FINE, message);
-    }
+  @Override
+  public void debug(String message) {
+    logger.log(Level.FINE, message);
+  }
 
-    @Override
-    public void info(String message) {
-        logger.log(Level.INFO, message);
-    }
+  @Override
+  public void info(String message) {
+    logger.log(Level.INFO, message);
+  }
 
-    @Override
-    public void warn(String message) {
-        logger.log(Level.WARNING, message);
-    }
+  @Override
+  public void warn(String message) {
+    logger.log(Level.WARNING, message);
+  }
 
-    @Override
-    public void error(String message) {
-        logger.log(Level.SEVERE, message);
-    }
+  @Override
+  public void error(String message) {
+    logger.log(Level.SEVERE, message);
+  }
 }

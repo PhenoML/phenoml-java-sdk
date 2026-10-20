@@ -21,193 +21,210 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = SearchSemanticRequest.Builder.class)
 public final class SearchSemanticRequest {
-    private final String text;
 
-    private final Optional<String> version;
+  private final String text;
 
-    private final Optional<Integer> limit;
+  private final Optional<String> version;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Integer> limit;
 
-    private SearchSemanticRequest(
-            String text, Optional<String> version, Optional<Integer> limit, Map<String, Object> additionalProperties) {
-        this.text = text;
-        this.version = version;
-        this.limit = limit;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private SearchSemanticRequest(
+    String text,
+    Optional<String> version,
+    Optional<Integer> limit,
+    Map<String, Object> additionalProperties
+  ) {
+    this.text = text;
+    this.version = version;
+    this.limit = limit;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Natural language text to find semantically similar codes for
+   */
+  @JsonProperty("text")
+  public String getText() {
+    return text;
+  }
+
+  /**
+   * @return Specific version of the code system, such as <code>umls-2026aa</code>.
+   */
+  @JsonProperty("version")
+  public Optional<String> getVersion() {
+    return version;
+  }
+
+  /**
+   * @return Maximum number of results (default 10, max 50)
+   */
+  @JsonProperty("limit")
+  public Optional<Integer> getLimit() {
+    return limit;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof SearchSemanticRequest && equalTo((SearchSemanticRequest) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(SearchSemanticRequest other) {
+    return text.equals(other.text) && version.equals(other.version) && limit.equals(other.limit);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.text, this.version, this.limit);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static TextStage builder() {
+    return new Builder();
+  }
+
+  public interface TextStage {
+    /**
+     * <p>Natural language text to find semantically similar codes for</p>
+     */
+    _FinalStage text(@NotNull String text);
+
+    Builder from(SearchSemanticRequest other);
+  }
+
+  public interface _FinalStage {
+    SearchSemanticRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
+     */
+    _FinalStage version(Optional<String> version);
+
+    _FinalStage version(String version);
+
+    /**
+     * <p>Maximum number of results (default 10, max 50)</p>
+     */
+    _FinalStage limit(Optional<Integer> limit);
+
+    _FinalStage limit(Integer limit);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements TextStage, _FinalStage {
+
+    private String text;
+
+    private Optional<Integer> limit = Optional.empty();
+
+    private Optional<String> version = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(SearchSemanticRequest other) {
+      text(other.getText());
+      version(other.getVersion());
+      limit(other.getLimit());
+      return this;
     }
 
     /**
-     * @return Natural language text to find semantically similar codes for
+     * <p>Natural language text to find semantically similar codes for</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("text")
-    public String getText() {
-        return text;
+    @java.lang.Override
+    @JsonSetter("text")
+    public _FinalStage text(@NotNull String text) {
+      this.text = Objects.requireNonNull(text, "text must not be null");
+      return this;
     }
 
     /**
-     * @return Specific version of the code system, such as <code>umls-2026aa</code>.
+     * <p>Maximum number of results (default 10, max 50)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("version")
-    public Optional<String> getVersion() {
-        return version;
+    @java.lang.Override
+    public _FinalStage limit(Integer limit) {
+      this.limit = Optional.ofNullable(limit);
+      return this;
     }
 
     /**
-     * @return Maximum number of results (default 10, max 50)
+     * <p>Maximum number of results (default 10, max 50)</p>
      */
-    @JsonProperty("limit")
-    public Optional<Integer> getLimit() {
-        return limit;
+    @java.lang.Override
+    @JsonSetter(value = "limit", nulls = Nulls.SKIP)
+    public _FinalStage limit(Optional<Integer> limit) {
+      this.limit = limit;
+      return this;
+    }
+
+    /**
+     * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage version(String version) {
+      this.version = Optional.ofNullable(version);
+      return this;
+    }
+
+    /**
+     * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "version", nulls = Nulls.SKIP)
+    public _FinalStage version(Optional<String> version) {
+      this.version = version;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof SearchSemanticRequest && equalTo((SearchSemanticRequest) other);
+    public SearchSemanticRequest build() {
+      return new SearchSemanticRequest(text, version, limit, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(SearchSemanticRequest other) {
-        return text.equals(other.text) && version.equals(other.version) && limit.equals(other.limit);
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.text, this.version, this.limit);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("text") ||
+        key.equalsIgnoreCase("version") ||
+        key.equalsIgnoreCase("limit")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static TextStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface TextStage {
-        /**
-         * <p>Natural language text to find semantically similar codes for</p>
-         */
-        _FinalStage text(@NotNull String text);
-
-        Builder from(SearchSemanticRequest other);
-    }
-
-    public interface _FinalStage {
-        SearchSemanticRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
-         */
-        _FinalStage version(Optional<String> version);
-
-        _FinalStage version(String version);
-
-        /**
-         * <p>Maximum number of results (default 10, max 50)</p>
-         */
-        _FinalStage limit(Optional<Integer> limit);
-
-        _FinalStage limit(Integer limit);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements TextStage, _FinalStage {
-        private String text;
-
-        private Optional<Integer> limit = Optional.empty();
-
-        private Optional<String> version = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(SearchSemanticRequest other) {
-            text(other.getText());
-            version(other.getVersion());
-            limit(other.getLimit());
-            return this;
-        }
-
-        /**
-         * <p>Natural language text to find semantically similar codes for</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("text")
-        public _FinalStage text(@NotNull String text) {
-            this.text = Objects.requireNonNull(text, "text must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Maximum number of results (default 10, max 50)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage limit(Integer limit) {
-            this.limit = Optional.ofNullable(limit);
-            return this;
-        }
-
-        /**
-         * <p>Maximum number of results (default 10, max 50)</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "limit", nulls = Nulls.SKIP)
-        public _FinalStage limit(Optional<Integer> limit) {
-            this.limit = limit;
-            return this;
-        }
-
-        /**
-         * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage version(String version) {
-            this.version = Optional.ofNullable(version);
-            return this;
-        }
-
-        /**
-         * <p>Specific version of the code system, such as <code>umls-2026aa</code>.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "version", nulls = Nulls.SKIP)
-        public _FinalStage version(Optional<String> version) {
-            this.version = version;
-            return this;
-        }
-
-        @java.lang.Override
-        public SearchSemanticRequest build() {
-            return new SearchSemanticRequest(text, version, limit, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

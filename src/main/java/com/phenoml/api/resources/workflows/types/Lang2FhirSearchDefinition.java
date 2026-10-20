@@ -21,225 +21,245 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Lang2FhirSearchDefinition.Builder.class)
 public final class Lang2FhirSearchDefinition {
-    private final Optional<String> originalQuery;
 
-    private final Optional<String> resourceType;
+  private final Optional<String> originalQuery;
 
-    private final Optional<Map<String, Object>> searchParameters;
+  private final Optional<String> resourceType;
 
-    private final Optional<List<String>> requiredFields;
+  private final Optional<Map<String, Object>> searchParameters;
 
-    private final Optional<Map<String, String>> runtimePlaceholders;
+  private final Optional<List<String>> requiredFields;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Map<String, String>> runtimePlaceholders;
 
-    private Lang2FhirSearchDefinition(
-            Optional<String> originalQuery,
-            Optional<String> resourceType,
-            Optional<Map<String, Object>> searchParameters,
-            Optional<List<String>> requiredFields,
-            Optional<Map<String, String>> runtimePlaceholders,
-            Map<String, Object> additionalProperties) {
-        this.originalQuery = originalQuery;
-        this.resourceType = resourceType;
-        this.searchParameters = searchParameters;
-        this.requiredFields = requiredFields;
-        this.runtimePlaceholders = runtimePlaceholders;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private Lang2FhirSearchDefinition(
+    Optional<String> originalQuery,
+    Optional<String> resourceType,
+    Optional<Map<String, Object>> searchParameters,
+    Optional<List<String>> requiredFields,
+    Optional<Map<String, String>> runtimePlaceholders,
+    Map<String, Object> additionalProperties
+  ) {
+    this.originalQuery = originalQuery;
+    this.resourceType = resourceType;
+    this.searchParameters = searchParameters;
+    this.requiredFields = requiredFields;
+    this.runtimePlaceholders = runtimePlaceholders;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Original natural language query
+   */
+  @JsonProperty("original_query")
+  public Optional<String> getOriginalQuery() {
+    return originalQuery;
+  }
+
+  /**
+   * @return FHIR resource type to search
+   */
+  @JsonProperty("resource_type")
+  public Optional<String> getResourceType() {
+    return resourceType;
+  }
+
+  /**
+   * @return Prepared FHIR search parameters
+   */
+  @JsonProperty("search_parameters")
+  public Optional<Map<String, Object>> getSearchParameters() {
+    return searchParameters;
+  }
+
+  /**
+   * @return Fields needed from search results
+   */
+  @JsonProperty("required_fields")
+  public Optional<List<String>> getRequiredFields() {
+    return requiredFields;
+  }
+
+  /**
+   * @return Maps placeholder tokens to their input data paths
+   */
+  @JsonProperty("runtime_placeholders")
+  public Optional<Map<String, String>> getRuntimePlaceholders() {
+    return runtimePlaceholders;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof Lang2FhirSearchDefinition && equalTo((Lang2FhirSearchDefinition) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(Lang2FhirSearchDefinition other) {
+    return (
+      originalQuery.equals(other.originalQuery) &&
+      resourceType.equals(other.resourceType) &&
+      searchParameters.equals(other.searchParameters) &&
+      requiredFields.equals(other.requiredFields) &&
+      runtimePlaceholders.equals(other.runtimePlaceholders)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.originalQuery,
+      this.resourceType,
+      this.searchParameters,
+      this.requiredFields,
+      this.runtimePlaceholders
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> originalQuery = Optional.empty();
+
+    private Optional<String> resourceType = Optional.empty();
+
+    private Optional<Map<String, Object>> searchParameters = Optional.empty();
+
+    private Optional<List<String>> requiredFields = Optional.empty();
+
+    private Optional<Map<String, String>> runtimePlaceholders = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(Lang2FhirSearchDefinition other) {
+      originalQuery(other.getOriginalQuery());
+      resourceType(other.getResourceType());
+      searchParameters(other.getSearchParameters());
+      requiredFields(other.getRequiredFields());
+      runtimePlaceholders(other.getRuntimePlaceholders());
+      return this;
     }
 
     /**
-     * @return Original natural language query
+     * <p>Original natural language query</p>
      */
-    @JsonProperty("original_query")
-    public Optional<String> getOriginalQuery() {
-        return originalQuery;
+    @JsonSetter(value = "original_query", nulls = Nulls.SKIP)
+    public Builder originalQuery(Optional<String> originalQuery) {
+      this.originalQuery = originalQuery;
+      return this;
+    }
+
+    public Builder originalQuery(String originalQuery) {
+      this.originalQuery = Optional.ofNullable(originalQuery);
+      return this;
     }
 
     /**
-     * @return FHIR resource type to search
+     * <p>FHIR resource type to search</p>
      */
-    @JsonProperty("resource_type")
-    public Optional<String> getResourceType() {
-        return resourceType;
+    @JsonSetter(value = "resource_type", nulls = Nulls.SKIP)
+    public Builder resourceType(Optional<String> resourceType) {
+      this.resourceType = resourceType;
+      return this;
+    }
+
+    public Builder resourceType(String resourceType) {
+      this.resourceType = Optional.ofNullable(resourceType);
+      return this;
     }
 
     /**
-     * @return Prepared FHIR search parameters
+     * <p>Prepared FHIR search parameters</p>
      */
-    @JsonProperty("search_parameters")
-    public Optional<Map<String, Object>> getSearchParameters() {
-        return searchParameters;
+    @JsonSetter(value = "search_parameters", nulls = Nulls.SKIP)
+    public Builder searchParameters(Optional<Map<String, Object>> searchParameters) {
+      this.searchParameters = searchParameters;
+      return this;
+    }
+
+    public Builder searchParameters(Map<String, Object> searchParameters) {
+      this.searchParameters = Optional.ofNullable(searchParameters);
+      return this;
     }
 
     /**
-     * @return Fields needed from search results
+     * <p>Fields needed from search results</p>
      */
-    @JsonProperty("required_fields")
-    public Optional<List<String>> getRequiredFields() {
-        return requiredFields;
+    @JsonSetter(value = "required_fields", nulls = Nulls.SKIP)
+    public Builder requiredFields(Optional<List<String>> requiredFields) {
+      this.requiredFields = requiredFields;
+      return this;
+    }
+
+    public Builder requiredFields(List<String> requiredFields) {
+      this.requiredFields = Optional.ofNullable(requiredFields);
+      return this;
     }
 
     /**
-     * @return Maps placeholder tokens to their input data paths
+     * <p>Maps placeholder tokens to their input data paths</p>
      */
-    @JsonProperty("runtime_placeholders")
-    public Optional<Map<String, String>> getRuntimePlaceholders() {
-        return runtimePlaceholders;
+    @JsonSetter(value = "runtime_placeholders", nulls = Nulls.SKIP)
+    public Builder runtimePlaceholders(Optional<Map<String, String>> runtimePlaceholders) {
+      this.runtimePlaceholders = runtimePlaceholders;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof Lang2FhirSearchDefinition && equalTo((Lang2FhirSearchDefinition) other);
+    public Builder runtimePlaceholders(Map<String, String> runtimePlaceholders) {
+      this.runtimePlaceholders = Optional.ofNullable(runtimePlaceholders);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Lang2FhirSearchDefinition build() {
+      return new Lang2FhirSearchDefinition(
+        originalQuery,
+        resourceType,
+        searchParameters,
+        requiredFields,
+        runtimePlaceholders,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(Lang2FhirSearchDefinition other) {
-        return originalQuery.equals(other.originalQuery)
-                && resourceType.equals(other.resourceType)
-                && searchParameters.equals(other.searchParameters)
-                && requiredFields.equals(other.requiredFields)
-                && runtimePlaceholders.equals(other.runtimePlaceholders);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("original_query") ||
+        key.equalsIgnoreCase("resource_type") ||
+        key.equalsIgnoreCase("search_parameters") ||
+        key.equalsIgnoreCase("required_fields") ||
+        key.equalsIgnoreCase("runtime_placeholders")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(
-                this.originalQuery,
-                this.resourceType,
-                this.searchParameters,
-                this.requiredFields,
-                this.runtimePlaceholders);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> originalQuery = Optional.empty();
-
-        private Optional<String> resourceType = Optional.empty();
-
-        private Optional<Map<String, Object>> searchParameters = Optional.empty();
-
-        private Optional<List<String>> requiredFields = Optional.empty();
-
-        private Optional<Map<String, String>> runtimePlaceholders = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(Lang2FhirSearchDefinition other) {
-            originalQuery(other.getOriginalQuery());
-            resourceType(other.getResourceType());
-            searchParameters(other.getSearchParameters());
-            requiredFields(other.getRequiredFields());
-            runtimePlaceholders(other.getRuntimePlaceholders());
-            return this;
-        }
-
-        /**
-         * <p>Original natural language query</p>
-         */
-        @JsonSetter(value = "original_query", nulls = Nulls.SKIP)
-        public Builder originalQuery(Optional<String> originalQuery) {
-            this.originalQuery = originalQuery;
-            return this;
-        }
-
-        public Builder originalQuery(String originalQuery) {
-            this.originalQuery = Optional.ofNullable(originalQuery);
-            return this;
-        }
-
-        /**
-         * <p>FHIR resource type to search</p>
-         */
-        @JsonSetter(value = "resource_type", nulls = Nulls.SKIP)
-        public Builder resourceType(Optional<String> resourceType) {
-            this.resourceType = resourceType;
-            return this;
-        }
-
-        public Builder resourceType(String resourceType) {
-            this.resourceType = Optional.ofNullable(resourceType);
-            return this;
-        }
-
-        /**
-         * <p>Prepared FHIR search parameters</p>
-         */
-        @JsonSetter(value = "search_parameters", nulls = Nulls.SKIP)
-        public Builder searchParameters(Optional<Map<String, Object>> searchParameters) {
-            this.searchParameters = searchParameters;
-            return this;
-        }
-
-        public Builder searchParameters(Map<String, Object> searchParameters) {
-            this.searchParameters = Optional.ofNullable(searchParameters);
-            return this;
-        }
-
-        /**
-         * <p>Fields needed from search results</p>
-         */
-        @JsonSetter(value = "required_fields", nulls = Nulls.SKIP)
-        public Builder requiredFields(Optional<List<String>> requiredFields) {
-            this.requiredFields = requiredFields;
-            return this;
-        }
-
-        public Builder requiredFields(List<String> requiredFields) {
-            this.requiredFields = Optional.ofNullable(requiredFields);
-            return this;
-        }
-
-        /**
-         * <p>Maps placeholder tokens to their input data paths</p>
-         */
-        @JsonSetter(value = "runtime_placeholders", nulls = Nulls.SKIP)
-        public Builder runtimePlaceholders(Optional<Map<String, String>> runtimePlaceholders) {
-            this.runtimePlaceholders = runtimePlaceholders;
-            return this;
-        }
-
-        public Builder runtimePlaceholders(Map<String, String> runtimePlaceholders) {
-            this.runtimePlaceholders = Optional.ofNullable(runtimePlaceholders);
-            return this;
-        }
-
-        public Lang2FhirSearchDefinition build() {
-            return new Lang2FhirSearchDefinition(
-                    originalQuery,
-                    resourceType,
-                    searchParameters,
-                    requiredFields,
-                    runtimePlaceholders,
-                    additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

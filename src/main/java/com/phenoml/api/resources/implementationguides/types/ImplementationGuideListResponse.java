@@ -21,87 +21,103 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ImplementationGuideListResponse.Builder.class)
 public final class ImplementationGuideListResponse {
-    private final Optional<List<ImplementationGuideSummary>> implementationGuides;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<ImplementationGuideSummary>> implementationGuides;
 
-    private ImplementationGuideListResponse(
-            Optional<List<ImplementationGuideSummary>> implementationGuides, Map<String, Object> additionalProperties) {
-        this.implementationGuides = implementationGuides;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ImplementationGuideListResponse(
+    Optional<List<ImplementationGuideSummary>> implementationGuides,
+    Map<String, Object> additionalProperties
+  ) {
+    this.implementationGuides = implementationGuides;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("implementation_guides")
+  public Optional<List<ImplementationGuideSummary>> getImplementationGuides() {
+    return implementationGuides;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof ImplementationGuideListResponse &&
+      equalTo((ImplementationGuideListResponse) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ImplementationGuideListResponse other) {
+    return implementationGuides.equals(other.implementationGuides);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.implementationGuides);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<List<ImplementationGuideSummary>> implementationGuides = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ImplementationGuideListResponse other) {
+      implementationGuides(other.getImplementationGuides());
+      return this;
     }
 
-    @JsonProperty("implementation_guides")
-    public Optional<List<ImplementationGuideSummary>> getImplementationGuides() {
-        return implementationGuides;
+    @JsonSetter(value = "implementation_guides", nulls = Nulls.SKIP)
+    public Builder implementationGuides(
+      Optional<List<ImplementationGuideSummary>> implementationGuides
+    ) {
+      this.implementationGuides = implementationGuides;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ImplementationGuideListResponse && equalTo((ImplementationGuideListResponse) other);
+    public Builder implementationGuides(List<ImplementationGuideSummary> implementationGuides) {
+      this.implementationGuides = Optional.ofNullable(implementationGuides);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ImplementationGuideListResponse build() {
+      return new ImplementationGuideListResponse(implementationGuides, additionalProperties);
     }
 
-    private boolean equalTo(ImplementationGuideListResponse other) {
-        return implementationGuides.equals(other.implementationGuides);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("implementation_guides")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.implementationGuides);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<List<ImplementationGuideSummary>> implementationGuides = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ImplementationGuideListResponse other) {
-            implementationGuides(other.getImplementationGuides());
-            return this;
-        }
-
-        @JsonSetter(value = "implementation_guides", nulls = Nulls.SKIP)
-        public Builder implementationGuides(Optional<List<ImplementationGuideSummary>> implementationGuides) {
-            this.implementationGuides = implementationGuides;
-            return this;
-        }
-
-        public Builder implementationGuides(List<ImplementationGuideSummary> implementationGuides) {
-            this.implementationGuides = Optional.ofNullable(implementationGuides);
-            return this;
-        }
-
-        public ImplementationGuideListResponse build() {
-            return new ImplementationGuideListResponse(implementationGuides, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

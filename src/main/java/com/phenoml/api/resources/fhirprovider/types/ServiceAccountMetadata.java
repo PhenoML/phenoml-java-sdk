@@ -20,184 +20,207 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ServiceAccountMetadata.Builder.class)
 public final class ServiceAccountMetadata {
-    private final Optional<String> type;
 
-    private final Optional<String> projectId;
+  private final Optional<String> type;
 
-    private final Optional<String> clientEmail;
+  private final Optional<String> projectId;
 
-    private final Optional<String> clientId;
+  private final Optional<String> clientEmail;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> clientId;
 
-    private ServiceAccountMetadata(
-            Optional<String> type,
-            Optional<String> projectId,
-            Optional<String> clientEmail,
-            Optional<String> clientId,
-            Map<String, Object> additionalProperties) {
-        this.type = type;
-        this.projectId = projectId;
-        this.clientEmail = clientEmail;
-        this.clientId = clientId;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ServiceAccountMetadata(
+    Optional<String> type,
+    Optional<String> projectId,
+    Optional<String> clientEmail,
+    Optional<String> clientId,
+    Map<String, Object> additionalProperties
+  ) {
+    this.type = type;
+    this.projectId = projectId;
+    this.clientEmail = clientEmail;
+    this.clientId = clientId;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Account type (always &quot;service_account&quot;)
+   */
+  @JsonProperty("type")
+  public Optional<String> getType() {
+    return type;
+  }
+
+  /**
+   * @return Google Cloud project ID
+   */
+  @JsonProperty("project_id")
+  public Optional<String> getProjectId() {
+    return projectId;
+  }
+
+  /**
+   * @return Service account email address
+   */
+  @JsonProperty("client_email")
+  public Optional<String> getClientEmail() {
+    return clientEmail;
+  }
+
+  /**
+   * @return Service account client ID
+   */
+  @JsonProperty("client_id")
+  public Optional<String> getClientId() {
+    return clientId;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ServiceAccountMetadata && equalTo((ServiceAccountMetadata) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ServiceAccountMetadata other) {
+    return (
+      type.equals(other.type) &&
+      projectId.equals(other.projectId) &&
+      clientEmail.equals(other.clientEmail) &&
+      clientId.equals(other.clientId)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.type, this.projectId, this.clientEmail, this.clientId);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> type = Optional.empty();
+
+    private Optional<String> projectId = Optional.empty();
+
+    private Optional<String> clientEmail = Optional.empty();
+
+    private Optional<String> clientId = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ServiceAccountMetadata other) {
+      type(other.getType());
+      projectId(other.getProjectId());
+      clientEmail(other.getClientEmail());
+      clientId(other.getClientId());
+      return this;
     }
 
     /**
-     * @return Account type (always &quot;service_account&quot;)
+     * <p>Account type (always &quot;service_account&quot;)</p>
      */
-    @JsonProperty("type")
-    public Optional<String> getType() {
-        return type;
+    @JsonSetter(value = "type", nulls = Nulls.SKIP)
+    public Builder type(Optional<String> type) {
+      this.type = type;
+      return this;
+    }
+
+    public Builder type(String type) {
+      this.type = Optional.ofNullable(type);
+      return this;
     }
 
     /**
-     * @return Google Cloud project ID
+     * <p>Google Cloud project ID</p>
      */
-    @JsonProperty("project_id")
-    public Optional<String> getProjectId() {
-        return projectId;
+    @JsonSetter(value = "project_id", nulls = Nulls.SKIP)
+    public Builder projectId(Optional<String> projectId) {
+      this.projectId = projectId;
+      return this;
+    }
+
+    public Builder projectId(String projectId) {
+      this.projectId = Optional.ofNullable(projectId);
+      return this;
     }
 
     /**
-     * @return Service account email address
+     * <p>Service account email address</p>
      */
-    @JsonProperty("client_email")
-    public Optional<String> getClientEmail() {
-        return clientEmail;
+    @JsonSetter(value = "client_email", nulls = Nulls.SKIP)
+    public Builder clientEmail(Optional<String> clientEmail) {
+      this.clientEmail = clientEmail;
+      return this;
+    }
+
+    public Builder clientEmail(String clientEmail) {
+      this.clientEmail = Optional.ofNullable(clientEmail);
+      return this;
     }
 
     /**
-     * @return Service account client ID
+     * <p>Service account client ID</p>
      */
-    @JsonProperty("client_id")
-    public Optional<String> getClientId() {
-        return clientId;
+    @JsonSetter(value = "client_id", nulls = Nulls.SKIP)
+    public Builder clientId(Optional<String> clientId) {
+      this.clientId = clientId;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ServiceAccountMetadata && equalTo((ServiceAccountMetadata) other);
+    public Builder clientId(String clientId) {
+      this.clientId = Optional.ofNullable(clientId);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ServiceAccountMetadata build() {
+      return new ServiceAccountMetadata(
+        type,
+        projectId,
+        clientEmail,
+        clientId,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(ServiceAccountMetadata other) {
-        return type.equals(other.type)
-                && projectId.equals(other.projectId)
-                && clientEmail.equals(other.clientEmail)
-                && clientId.equals(other.clientId);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("type") ||
+        key.equalsIgnoreCase("project_id") ||
+        key.equalsIgnoreCase("client_email") ||
+        key.equalsIgnoreCase("client_id")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.type, this.projectId, this.clientEmail, this.clientId);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> type = Optional.empty();
-
-        private Optional<String> projectId = Optional.empty();
-
-        private Optional<String> clientEmail = Optional.empty();
-
-        private Optional<String> clientId = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ServiceAccountMetadata other) {
-            type(other.getType());
-            projectId(other.getProjectId());
-            clientEmail(other.getClientEmail());
-            clientId(other.getClientId());
-            return this;
-        }
-
-        /**
-         * <p>Account type (always &quot;service_account&quot;)</p>
-         */
-        @JsonSetter(value = "type", nulls = Nulls.SKIP)
-        public Builder type(Optional<String> type) {
-            this.type = type;
-            return this;
-        }
-
-        public Builder type(String type) {
-            this.type = Optional.ofNullable(type);
-            return this;
-        }
-
-        /**
-         * <p>Google Cloud project ID</p>
-         */
-        @JsonSetter(value = "project_id", nulls = Nulls.SKIP)
-        public Builder projectId(Optional<String> projectId) {
-            this.projectId = projectId;
-            return this;
-        }
-
-        public Builder projectId(String projectId) {
-            this.projectId = Optional.ofNullable(projectId);
-            return this;
-        }
-
-        /**
-         * <p>Service account email address</p>
-         */
-        @JsonSetter(value = "client_email", nulls = Nulls.SKIP)
-        public Builder clientEmail(Optional<String> clientEmail) {
-            this.clientEmail = clientEmail;
-            return this;
-        }
-
-        public Builder clientEmail(String clientEmail) {
-            this.clientEmail = Optional.ofNullable(clientEmail);
-            return this;
-        }
-
-        /**
-         * <p>Service account client ID</p>
-         */
-        @JsonSetter(value = "client_id", nulls = Nulls.SKIP)
-        public Builder clientId(Optional<String> clientId) {
-            this.clientId = clientId;
-            return this;
-        }
-
-        public Builder clientId(String clientId) {
-            this.clientId = Optional.ofNullable(clientId);
-            return this;
-        }
-
-        public ServiceAccountMetadata build() {
-            return new ServiceAccountMetadata(type, projectId, clientEmail, clientId, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

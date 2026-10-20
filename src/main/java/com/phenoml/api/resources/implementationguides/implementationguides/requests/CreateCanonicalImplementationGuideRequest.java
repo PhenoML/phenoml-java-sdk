@@ -24,208 +24,232 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CreateCanonicalImplementationGuideRequest.Builder.class)
 public final class CreateCanonicalImplementationGuideRequest {
-    private final FhirImplementationGuide implementationGuide;
 
-    private final List<String> profileRefs;
+  private final FhirImplementationGuide implementationGuide;
 
-    private final Optional<String> profileContext;
+  private final List<String> profileRefs;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<String> profileContext;
 
-    private CreateCanonicalImplementationGuideRequest(
-            FhirImplementationGuide implementationGuide,
-            List<String> profileRefs,
-            Optional<String> profileContext,
-            Map<String, Object> additionalProperties) {
-        this.implementationGuide = implementationGuide;
-        this.profileRefs = profileRefs;
-        this.profileContext = profileContext;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private CreateCanonicalImplementationGuideRequest(
+    FhirImplementationGuide implementationGuide,
+    List<String> profileRefs,
+    Optional<String> profileContext,
+    Map<String, Object> additionalProperties
+  ) {
+    this.implementationGuide = implementationGuide;
+    this.profileRefs = profileRefs;
+    this.profileContext = profileContext;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("implementation_guide")
+  public FhirImplementationGuide getImplementationGuide() {
+    return implementationGuide;
+  }
+
+  /**
+   * @return Exact canonical <code>url|version</code> references to builtin or custom profiles. A package can contain at most 250 references.
+   */
+  @JsonProperty("profile_refs")
+  public List<String> getProfileRefs() {
+    return profileRefs;
+  }
+
+  /**
+   * @return Natural-language profile-selection context for this package.
+   */
+  @JsonProperty("profile_context")
+  public Optional<String> getProfileContext() {
+    return profileContext;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof CreateCanonicalImplementationGuideRequest &&
+      equalTo((CreateCanonicalImplementationGuideRequest) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(CreateCanonicalImplementationGuideRequest other) {
+    return (
+      implementationGuide.equals(other.implementationGuide) &&
+      profileRefs.equals(other.profileRefs) &&
+      profileContext.equals(other.profileContext)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.implementationGuide, this.profileRefs, this.profileContext);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static ImplementationGuideStage builder() {
+    return new Builder();
+  }
+
+  public interface ImplementationGuideStage {
+    _FinalStage implementationGuide(@NotNull FhirImplementationGuide implementationGuide);
+
+    Builder from(CreateCanonicalImplementationGuideRequest other);
+  }
+
+  public interface _FinalStage {
+    CreateCanonicalImplementationGuideRequest build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Exact canonical <code>url|version</code> references to builtin or custom profiles. A package can contain at most 250 references.</p>
+     */
+    _FinalStage profileRefs(List<String> profileRefs);
+
+    _FinalStage addProfileRefs(String profileRefs);
+
+    _FinalStage addAllProfileRefs(List<String> profileRefs);
+
+    /**
+     * <p>Natural-language profile-selection context for this package.</p>
+     */
+    _FinalStage profileContext(Optional<String> profileContext);
+
+    _FinalStage profileContext(String profileContext);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements ImplementationGuideStage, _FinalStage {
+
+    private FhirImplementationGuide implementationGuide;
+
+    private Optional<String> profileContext = Optional.empty();
+
+    private List<String> profileRefs = new ArrayList<>();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(CreateCanonicalImplementationGuideRequest other) {
+      implementationGuide(other.getImplementationGuide());
+      profileRefs(other.getProfileRefs());
+      profileContext(other.getProfileContext());
+      return this;
     }
 
-    @JsonProperty("implementation_guide")
-    public FhirImplementationGuide getImplementationGuide() {
-        return implementationGuide;
+    @java.lang.Override
+    @JsonSetter("implementation_guide")
+    public _FinalStage implementationGuide(@NotNull FhirImplementationGuide implementationGuide) {
+      this.implementationGuide = Objects.requireNonNull(
+        implementationGuide,
+        "implementationGuide must not be null"
+      );
+      return this;
     }
 
     /**
-     * @return Exact canonical <code>url|version</code> references to builtin or custom profiles. A package can contain at most 250 references.
+     * <p>Natural-language profile-selection context for this package.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("profile_refs")
-    public List<String> getProfileRefs() {
-        return profileRefs;
+    @java.lang.Override
+    public _FinalStage profileContext(String profileContext) {
+      this.profileContext = Optional.ofNullable(profileContext);
+      return this;
     }
 
     /**
-     * @return Natural-language profile-selection context for this package.
+     * <p>Natural-language profile-selection context for this package.</p>
      */
-    @JsonProperty("profile_context")
-    public Optional<String> getProfileContext() {
-        return profileContext;
+    @java.lang.Override
+    @JsonSetter(value = "profile_context", nulls = Nulls.SKIP)
+    public _FinalStage profileContext(Optional<String> profileContext) {
+      this.profileContext = profileContext;
+      return this;
+    }
+
+    /**
+     * <p>Exact canonical <code>url|version</code> references to builtin or custom profiles. A package can contain at most 250 references.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage addAllProfileRefs(List<String> profileRefs) {
+      if (profileRefs != null) {
+        this.profileRefs.addAll(profileRefs);
+      }
+      return this;
+    }
+
+    /**
+     * <p>Exact canonical <code>url|version</code> references to builtin or custom profiles. A package can contain at most 250 references.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage addProfileRefs(String profileRefs) {
+      this.profileRefs.add(profileRefs);
+      return this;
+    }
+
+    /**
+     * <p>Exact canonical <code>url|version</code> references to builtin or custom profiles. A package can contain at most 250 references.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(value = "profile_refs", nulls = Nulls.SKIP)
+    public _FinalStage profileRefs(List<String> profileRefs) {
+      this.profileRefs.clear();
+      if (profileRefs != null) {
+        this.profileRefs.addAll(profileRefs);
+      }
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof CreateCanonicalImplementationGuideRequest
-                && equalTo((CreateCanonicalImplementationGuideRequest) other);
+    public CreateCanonicalImplementationGuideRequest build() {
+      return new CreateCanonicalImplementationGuideRequest(
+        implementationGuide,
+        profileRefs,
+        profileContext,
+        additionalProperties
+      );
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(CreateCanonicalImplementationGuideRequest other) {
-        return implementationGuide.equals(other.implementationGuide)
-                && profileRefs.equals(other.profileRefs)
-                && profileContext.equals(other.profileContext);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("implementation_guide") ||
+        key.equalsIgnoreCase("profile_refs") ||
+        key.equalsIgnoreCase("profile_context")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.implementationGuide, this.profileRefs, this.profileContext);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static ImplementationGuideStage builder() {
-        return new Builder();
-    }
-
-    public interface ImplementationGuideStage {
-        _FinalStage implementationGuide(@NotNull FhirImplementationGuide implementationGuide);
-
-        Builder from(CreateCanonicalImplementationGuideRequest other);
-    }
-
-    public interface _FinalStage {
-        CreateCanonicalImplementationGuideRequest build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        /**
-         * <p>Exact canonical <code>url|version</code> references to builtin or custom profiles. A package can contain at most 250 references.</p>
-         */
-        _FinalStage profileRefs(List<String> profileRefs);
-
-        _FinalStage addProfileRefs(String profileRefs);
-
-        _FinalStage addAllProfileRefs(List<String> profileRefs);
-
-        /**
-         * <p>Natural-language profile-selection context for this package.</p>
-         */
-        _FinalStage profileContext(Optional<String> profileContext);
-
-        _FinalStage profileContext(String profileContext);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements ImplementationGuideStage, _FinalStage {
-        private FhirImplementationGuide implementationGuide;
-
-        private Optional<String> profileContext = Optional.empty();
-
-        private List<String> profileRefs = new ArrayList<>();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(CreateCanonicalImplementationGuideRequest other) {
-            implementationGuide(other.getImplementationGuide());
-            profileRefs(other.getProfileRefs());
-            profileContext(other.getProfileContext());
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("implementation_guide")
-        public _FinalStage implementationGuide(@NotNull FhirImplementationGuide implementationGuide) {
-            this.implementationGuide =
-                    Objects.requireNonNull(implementationGuide, "implementationGuide must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Natural-language profile-selection context for this package.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage profileContext(String profileContext) {
-            this.profileContext = Optional.ofNullable(profileContext);
-            return this;
-        }
-
-        /**
-         * <p>Natural-language profile-selection context for this package.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "profile_context", nulls = Nulls.SKIP)
-        public _FinalStage profileContext(Optional<String> profileContext) {
-            this.profileContext = profileContext;
-            return this;
-        }
-
-        /**
-         * <p>Exact canonical <code>url|version</code> references to builtin or custom profiles. A package can contain at most 250 references.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addAllProfileRefs(List<String> profileRefs) {
-            if (profileRefs != null) {
-                this.profileRefs.addAll(profileRefs);
-            }
-            return this;
-        }
-
-        /**
-         * <p>Exact canonical <code>url|version</code> references to builtin or custom profiles. A package can contain at most 250 references.</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        public _FinalStage addProfileRefs(String profileRefs) {
-            this.profileRefs.add(profileRefs);
-            return this;
-        }
-
-        /**
-         * <p>Exact canonical <code>url|version</code> references to builtin or custom profiles. A package can contain at most 250 references.</p>
-         */
-        @java.lang.Override
-        @JsonSetter(value = "profile_refs", nulls = Nulls.SKIP)
-        public _FinalStage profileRefs(List<String> profileRefs) {
-            this.profileRefs.clear();
-            if (profileRefs != null) {
-                this.profileRefs.addAll(profileRefs);
-            }
-            return this;
-        }
-
-        @java.lang.Override
-        public CreateCanonicalImplementationGuideRequest build() {
-            return new CreateCanonicalImplementationGuideRequest(
-                    implementationGuide, profileRefs, profileContext, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

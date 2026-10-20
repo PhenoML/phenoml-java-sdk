@@ -20,154 +20,175 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = SubWorkflowDefinition.Builder.class)
 public final class SubWorkflowDefinition {
-    private final Optional<String> workflowId;
 
-    private final Optional<Map<String, Object>> input;
+  private final Optional<String> workflowId;
 
-    private final Optional<Map<String, String>> runtimePlaceholders;
+  private final Optional<Map<String, Object>> input;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<Map<String, String>> runtimePlaceholders;
 
-    private SubWorkflowDefinition(
-            Optional<String> workflowId,
-            Optional<Map<String, Object>> input,
-            Optional<Map<String, String>> runtimePlaceholders,
-            Map<String, Object> additionalProperties) {
-        this.workflowId = workflowId;
-        this.input = input;
-        this.runtimePlaceholders = runtimePlaceholders;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private SubWorkflowDefinition(
+    Optional<String> workflowId,
+    Optional<Map<String, Object>> input,
+    Optional<Map<String, String>> runtimePlaceholders,
+    Map<String, Object> additionalProperties
+  ) {
+    this.workflowId = workflowId;
+    this.input = input;
+    this.runtimePlaceholders = runtimePlaceholders;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return ID of the workflow to execute as a sub-workflow
+   */
+  @JsonProperty("workflow_id")
+  public Optional<String> getWorkflowId() {
+    return workflowId;
+  }
+
+  /**
+   * @return Input data to pass to the sub-workflow
+   */
+  @JsonProperty("input")
+  public Optional<Map<String, Object>> getInput() {
+    return input;
+  }
+
+  /**
+   * @return Maps placeholder tokens to their input data paths for sub-workflow
+   */
+  @JsonProperty("runtime_placeholders")
+  public Optional<Map<String, String>> getRuntimePlaceholders() {
+    return runtimePlaceholders;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof SubWorkflowDefinition && equalTo((SubWorkflowDefinition) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(SubWorkflowDefinition other) {
+    return (
+      workflowId.equals(other.workflowId) &&
+      input.equals(other.input) &&
+      runtimePlaceholders.equals(other.runtimePlaceholders)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.workflowId, this.input, this.runtimePlaceholders);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> workflowId = Optional.empty();
+
+    private Optional<Map<String, Object>> input = Optional.empty();
+
+    private Optional<Map<String, String>> runtimePlaceholders = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(SubWorkflowDefinition other) {
+      workflowId(other.getWorkflowId());
+      input(other.getInput());
+      runtimePlaceholders(other.getRuntimePlaceholders());
+      return this;
     }
 
     /**
-     * @return ID of the workflow to execute as a sub-workflow
+     * <p>ID of the workflow to execute as a sub-workflow</p>
      */
-    @JsonProperty("workflow_id")
-    public Optional<String> getWorkflowId() {
-        return workflowId;
+    @JsonSetter(value = "workflow_id", nulls = Nulls.SKIP)
+    public Builder workflowId(Optional<String> workflowId) {
+      this.workflowId = workflowId;
+      return this;
+    }
+
+    public Builder workflowId(String workflowId) {
+      this.workflowId = Optional.ofNullable(workflowId);
+      return this;
     }
 
     /**
-     * @return Input data to pass to the sub-workflow
+     * <p>Input data to pass to the sub-workflow</p>
      */
-    @JsonProperty("input")
-    public Optional<Map<String, Object>> getInput() {
-        return input;
+    @JsonSetter(value = "input", nulls = Nulls.SKIP)
+    public Builder input(Optional<Map<String, Object>> input) {
+      this.input = input;
+      return this;
+    }
+
+    public Builder input(Map<String, Object> input) {
+      this.input = Optional.ofNullable(input);
+      return this;
     }
 
     /**
-     * @return Maps placeholder tokens to their input data paths for sub-workflow
+     * <p>Maps placeholder tokens to their input data paths for sub-workflow</p>
      */
-    @JsonProperty("runtime_placeholders")
-    public Optional<Map<String, String>> getRuntimePlaceholders() {
-        return runtimePlaceholders;
+    @JsonSetter(value = "runtime_placeholders", nulls = Nulls.SKIP)
+    public Builder runtimePlaceholders(Optional<Map<String, String>> runtimePlaceholders) {
+      this.runtimePlaceholders = runtimePlaceholders;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof SubWorkflowDefinition && equalTo((SubWorkflowDefinition) other);
+    public Builder runtimePlaceholders(Map<String, String> runtimePlaceholders) {
+      this.runtimePlaceholders = Optional.ofNullable(runtimePlaceholders);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public SubWorkflowDefinition build() {
+      return new SubWorkflowDefinition(
+        workflowId,
+        input,
+        runtimePlaceholders,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(SubWorkflowDefinition other) {
-        return workflowId.equals(other.workflowId)
-                && input.equals(other.input)
-                && runtimePlaceholders.equals(other.runtimePlaceholders);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("workflow_id") ||
+        key.equalsIgnoreCase("input") ||
+        key.equalsIgnoreCase("runtime_placeholders")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.workflowId, this.input, this.runtimePlaceholders);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> workflowId = Optional.empty();
-
-        private Optional<Map<String, Object>> input = Optional.empty();
-
-        private Optional<Map<String, String>> runtimePlaceholders = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(SubWorkflowDefinition other) {
-            workflowId(other.getWorkflowId());
-            input(other.getInput());
-            runtimePlaceholders(other.getRuntimePlaceholders());
-            return this;
-        }
-
-        /**
-         * <p>ID of the workflow to execute as a sub-workflow</p>
-         */
-        @JsonSetter(value = "workflow_id", nulls = Nulls.SKIP)
-        public Builder workflowId(Optional<String> workflowId) {
-            this.workflowId = workflowId;
-            return this;
-        }
-
-        public Builder workflowId(String workflowId) {
-            this.workflowId = Optional.ofNullable(workflowId);
-            return this;
-        }
-
-        /**
-         * <p>Input data to pass to the sub-workflow</p>
-         */
-        @JsonSetter(value = "input", nulls = Nulls.SKIP)
-        public Builder input(Optional<Map<String, Object>> input) {
-            this.input = input;
-            return this;
-        }
-
-        public Builder input(Map<String, Object> input) {
-            this.input = Optional.ofNullable(input);
-            return this;
-        }
-
-        /**
-         * <p>Maps placeholder tokens to their input data paths for sub-workflow</p>
-         */
-        @JsonSetter(value = "runtime_placeholders", nulls = Nulls.SKIP)
-        public Builder runtimePlaceholders(Optional<Map<String, String>> runtimePlaceholders) {
-            this.runtimePlaceholders = runtimePlaceholders;
-            return this;
-        }
-
-        public Builder runtimePlaceholders(Map<String, String> runtimePlaceholders) {
-            this.runtimePlaceholders = Optional.ofNullable(runtimePlaceholders);
-            return this;
-        }
-
-        public SubWorkflowDefinition build() {
-            return new SubWorkflowDefinition(workflowId, input, runtimePlaceholders, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

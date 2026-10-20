@@ -7,78 +7,87 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class SplitClassificationOperation {
-    public static final SplitClassificationOperation DROP = new SplitClassificationOperation(Value.DROP, "drop");
 
-    public static final SplitClassificationOperation GROUP = new SplitClassificationOperation(Value.GROUP, "group");
+  public static final SplitClassificationOperation DROP = new SplitClassificationOperation(
+    Value.DROP,
+    "drop"
+  );
 
-    private final Value value;
+  public static final SplitClassificationOperation GROUP = new SplitClassificationOperation(
+    Value.GROUP,
+    "group"
+  );
 
-    private final String string;
+  private final Value value;
 
-    SplitClassificationOperation(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  SplitClassificationOperation(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof SplitClassificationOperation &&
+        this.string.equals(((SplitClassificationOperation) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case DROP:
+        return visitor.visitDrop();
+      case GROUP:
+        return visitor.visitGroup();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static SplitClassificationOperation valueOf(String value) {
+    switch (value) {
+      case "drop":
+        return DROP;
+      case "group":
+        return GROUP;
+      default:
+        return new SplitClassificationOperation(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    GROUP,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof SplitClassificationOperation
-                        && this.string.equals(((SplitClassificationOperation) other).string));
-    }
+    DROP,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    UNKNOWN,
+  }
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case DROP:
-                return visitor.visitDrop();
-            case GROUP:
-                return visitor.visitGroup();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+  public interface Visitor<T> {
+    T visitGroup();
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static SplitClassificationOperation valueOf(String value) {
-        switch (value) {
-            case "drop":
-                return DROP;
-            case "group":
-                return GROUP;
-            default:
-                return new SplitClassificationOperation(Value.UNKNOWN, value);
-        }
-    }
+    T visitDrop();
 
-    public enum Value {
-        GROUP,
-
-        DROP,
-
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitGroup();
-
-        T visitDrop();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

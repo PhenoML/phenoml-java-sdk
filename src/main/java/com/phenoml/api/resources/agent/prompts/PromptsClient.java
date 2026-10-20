@@ -14,117 +14,129 @@ import com.phenoml.api.resources.agent.types.JsonPatchOperation;
 import java.util.List;
 
 public class PromptsClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawPromptsClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public PromptsClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawPromptsClient(clientOptions);
-    }
+  private final RawPromptsClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawPromptsClient withRawResponse() {
-        return this.rawClient;
-    }
+  public PromptsClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawPromptsClient(clientOptions);
+  }
 
-    /**
-     * Creates a new agent prompt
-     */
-    public AgentPromptsResponse create(AgentPromptsCreateRequest request) {
-        return this.rawClient.create(request).body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawPromptsClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Creates a new agent prompt
-     */
-    public AgentPromptsResponse create(AgentPromptsCreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).body();
-    }
+  /**
+   * Creates a new agent prompt
+   */
+  public AgentPromptsResponse create(AgentPromptsCreateRequest request) {
+    return this.rawClient.create(request).body();
+  }
 
-    /**
-     * Retrieves a list of agent prompts belonging to the authenticated user
-     */
-    public PromptsListResponse list() {
-        return this.rawClient.list().body();
-    }
+  /**
+   * Creates a new agent prompt
+   */
+  public AgentPromptsResponse create(
+    AgentPromptsCreateRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.create(request, requestOptions).body();
+  }
 
-    /**
-     * Retrieves a list of agent prompts belonging to the authenticated user
-     */
-    public PromptsListResponse list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).body();
-    }
+  /**
+   * Retrieves a list of agent prompts belonging to the authenticated user
+   */
+  public PromptsListResponse list() {
+    return this.rawClient.list().body();
+  }
 
-    /**
-     * Retrieves a specific prompt by its ID
-     */
-    public AgentPromptsResponse get(String id) {
-        return this.rawClient.get(id).body();
-    }
+  /**
+   * Retrieves a list of agent prompts belonging to the authenticated user
+   */
+  public PromptsListResponse list(RequestOptions requestOptions) {
+    return this.rawClient.list(requestOptions).body();
+  }
 
-    /**
-     * Retrieves a specific prompt by its ID
-     */
-    public AgentPromptsResponse get(String id, RequestOptions requestOptions) {
-        return this.rawClient.get(id, requestOptions).body();
-    }
+  /**
+   * Retrieves a specific prompt by its ID
+   */
+  public AgentPromptsResponse get(String id) {
+    return this.rawClient.get(id).body();
+  }
 
-    /**
-     * Updates an existing prompt
-     */
-    public AgentPromptsResponse update(String id) {
-        return this.rawClient.update(id).body();
-    }
+  /**
+   * Retrieves a specific prompt by its ID
+   */
+  public AgentPromptsResponse get(String id, RequestOptions requestOptions) {
+    return this.rawClient.get(id, requestOptions).body();
+  }
 
-    /**
-     * Updates an existing prompt
-     */
-    public AgentPromptsResponse update(String id, RequestOptions requestOptions) {
-        return this.rawClient.update(id, requestOptions).body();
-    }
+  /**
+   * Updates an existing prompt
+   */
+  public AgentPromptsResponse update(String id) {
+    return this.rawClient.update(id).body();
+  }
 
-    /**
-     * Updates an existing prompt
-     */
-    public AgentPromptsResponse update(String id, AgentPromptsUpdateRequest request) {
-        return this.rawClient.update(id, request).body();
-    }
+  /**
+   * Updates an existing prompt
+   */
+  public AgentPromptsResponse update(String id, RequestOptions requestOptions) {
+    return this.rawClient.update(id, requestOptions).body();
+  }
 
-    /**
-     * Updates an existing prompt
-     */
-    public AgentPromptsResponse update(String id, AgentPromptsUpdateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.update(id, request, requestOptions).body();
-    }
+  /**
+   * Updates an existing prompt
+   */
+  public AgentPromptsResponse update(String id, AgentPromptsUpdateRequest request) {
+    return this.rawClient.update(id, request).body();
+  }
 
-    /**
-     * Deletes a prompt
-     */
-    public PromptsDeleteResponse delete(String id) {
-        return this.rawClient.delete(id).body();
-    }
+  /**
+   * Updates an existing prompt
+   */
+  public AgentPromptsResponse update(
+    String id,
+    AgentPromptsUpdateRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.update(id, request, requestOptions).body();
+  }
 
-    /**
-     * Deletes a prompt
-     */
-    public PromptsDeleteResponse delete(String id, RequestOptions requestOptions) {
-        return this.rawClient.delete(id, requestOptions).body();
-    }
+  /**
+   * Deletes a prompt
+   */
+  public PromptsDeleteResponse delete(String id) {
+    return this.rawClient.delete(id).body();
+  }
 
-    /**
-     * Patches an existing prompt
-     */
-    public AgentPromptsResponse patch(String id, List<JsonPatchOperation> request) {
-        return this.rawClient.patch(id, request).body();
-    }
+  /**
+   * Deletes a prompt
+   */
+  public PromptsDeleteResponse delete(String id, RequestOptions requestOptions) {
+    return this.rawClient.delete(id, requestOptions).body();
+  }
 
-    /**
-     * Patches an existing prompt
-     */
-    public AgentPromptsResponse patch(String id, List<JsonPatchOperation> request, RequestOptions requestOptions) {
-        return this.rawClient.patch(id, request, requestOptions).body();
-    }
+  /**
+   * Patches an existing prompt
+   */
+  public AgentPromptsResponse patch(String id, List<JsonPatchOperation> request) {
+    return this.rawClient.patch(id, request).body();
+  }
+
+  /**
+   * Patches an existing prompt
+   */
+  public AgentPromptsResponse patch(
+    String id,
+    List<JsonPatchOperation> request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.patch(id, request, requestOptions).body();
+  }
 }

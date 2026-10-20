@@ -13,65 +13,72 @@ import com.phenoml.api.resources.agent.types.AgentChatResponse;
 import com.phenoml.api.resources.agent.types.AgentChatStreamEvent;
 
 public class ChatClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawChatClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public ChatClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawChatClient(clientOptions);
-    }
+  private final RawChatClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawChatClient withRawResponse() {
-        return this.rawClient;
-    }
+  public ChatClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawChatClient(clientOptions);
+  }
 
-    /**
-     * Send a message to an agent and receive a JSON response.
-     */
-    public AgentChatResponse send(AgentChatRequest request) {
-        return this.rawClient.send(request).body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawChatClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Send a message to an agent and receive a JSON response.
-     */
-    public AgentChatResponse send(AgentChatRequest request, RequestOptions requestOptions) {
-        return this.rawClient.send(request, requestOptions).body();
-    }
+  /**
+   * Send a message to an agent and receive a JSON response.
+   */
+  public AgentChatResponse send(AgentChatRequest request) {
+    return this.rawClient.send(request).body();
+  }
 
-    /**
-     * Send a message to an agent and receive the response as a Server-Sent Events
-     * (SSE) stream. Events include message_start, content_delta, tool_use,
-     * tool_result, message_end, and error.
-     */
-    public Iterable<AgentChatStreamEvent> stream(AgentStreamChatRequest request) {
-        return this.rawClient.stream(request).body();
-    }
+  /**
+   * Send a message to an agent and receive a JSON response.
+   */
+  public AgentChatResponse send(AgentChatRequest request, RequestOptions requestOptions) {
+    return this.rawClient.send(request, requestOptions).body();
+  }
 
-    /**
-     * Send a message to an agent and receive the response as a Server-Sent Events
-     * (SSE) stream. Events include message_start, content_delta, tool_use,
-     * tool_result, message_end, and error.
-     */
-    public Iterable<AgentChatStreamEvent> stream(AgentStreamChatRequest request, RequestOptions requestOptions) {
-        return this.rawClient.stream(request, requestOptions).body();
-    }
+  /**
+   * Send a message to an agent and receive the response as a Server-Sent Events
+   * (SSE) stream. Events include message_start, content_delta, tool_use,
+   * tool_result, message_end, and error.
+   */
+  public Iterable<AgentChatStreamEvent> stream(AgentStreamChatRequest request) {
+    return this.rawClient.stream(request).body();
+  }
 
-    /**
-     * Retrieves a list of chat messages for a given chat session
-     */
-    public ListMessagesResponse listMessages(ListMessagesRequest request) {
-        return this.rawClient.listMessages(request).body();
-    }
+  /**
+   * Send a message to an agent and receive the response as a Server-Sent Events
+   * (SSE) stream. Events include message_start, content_delta, tool_use,
+   * tool_result, message_end, and error.
+   */
+  public Iterable<AgentChatStreamEvent> stream(
+    AgentStreamChatRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.stream(request, requestOptions).body();
+  }
 
-    /**
-     * Retrieves a list of chat messages for a given chat session
-     */
-    public ListMessagesResponse listMessages(ListMessagesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listMessages(request, requestOptions).body();
-    }
+  /**
+   * Retrieves a list of chat messages for a given chat session
+   */
+  public ListMessagesResponse listMessages(ListMessagesRequest request) {
+    return this.rawClient.listMessages(request).body();
+  }
+
+  /**
+   * Retrieves a list of chat messages for a given chat session
+   */
+  public ListMessagesResponse listMessages(
+    ListMessagesRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.listMessages(request, requestOptions).body();
+  }
 }

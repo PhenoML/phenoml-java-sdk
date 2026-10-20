@@ -15,336 +15,360 @@ import com.phenoml.api.resources.fhir.types.PatchRequestBodyItem;
 import java.util.List;
 
 public class FhirClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawFhirClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public FhirClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawFhirClient(clientOptions);
-    }
+  private final RawFhirClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawFhirClient withRawResponse() {
-        return this.rawClient;
-    }
+  public FhirClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawFhirClient(clientOptions);
+  }
 
-    /**
-     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
-     * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
-     * <ul>
-     * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
-     * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
-     * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
-     * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
-     * </ul>
-     * <p>Examples:</p>
-     * <ul>
-     * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
-     * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
-     * </ul>
-     * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object search(String fhirProviderId, String fhirPath) {
-        return this.rawClient.search(fhirProviderId, fhirPath).body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawFhirClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
-     * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
-     * <ul>
-     * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
-     * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
-     * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
-     * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
-     * </ul>
-     * <p>Examples:</p>
-     * <ul>
-     * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
-     * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
-     * </ul>
-     * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object search(String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
-        return this.rawClient.search(fhirProviderId, fhirPath, requestOptions).body();
-    }
+  /**
+   * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
+   * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
+   * <ul>
+   * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
+   * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
+   * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
+   * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
+   * </ul>
+   * <p>Examples:</p>
+   * <ul>
+   * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
+   * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
+   * </ul>
+   * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object search(String fhirProviderId, String fhirPath) {
+    return this.rawClient.search(fhirProviderId, fhirPath).body();
+  }
 
-    /**
-     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
-     * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
-     * <ul>
-     * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
-     * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
-     * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
-     * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
-     * </ul>
-     * <p>Examples:</p>
-     * <ul>
-     * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
-     * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
-     * </ul>
-     * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object search(String fhirProviderId, String fhirPath, SearchRequest request) {
-        return this.rawClient.search(fhirProviderId, fhirPath, request).body();
-    }
+  /**
+   * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
+   * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
+   * <ul>
+   * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
+   * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
+   * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
+   * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
+   * </ul>
+   * <p>Examples:</p>
+   * <ul>
+   * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
+   * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
+   * </ul>
+   * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object search(String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
+    return this.rawClient.search(fhirProviderId, fhirPath, requestOptions).body();
+  }
 
-    /**
-     * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
-     * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
-     * <ul>
-     * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
-     * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
-     * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
-     * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
-     * </ul>
-     * <p>Examples:</p>
-     * <ul>
-     * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
-     * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
-     * </ul>
-     * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object search(String fhirProviderId, String fhirPath, SearchRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .search(fhirProviderId, fhirPath, request, requestOptions)
-                .body();
-    }
+  /**
+   * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
+   * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
+   * <ul>
+   * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
+   * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
+   * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
+   * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
+   * </ul>
+   * <p>Examples:</p>
+   * <ul>
+   * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
+   * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
+   * </ul>
+   * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object search(String fhirProviderId, String fhirPath, SearchRequest request) {
+    return this.rawClient.search(fhirProviderId, fhirPath, request).body();
+  }
 
-    /**
-     * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object create(String fhirProviderId, String fhirPath, Object body) {
-        return this.rawClient.create(fhirProviderId, fhirPath, body).body();
-    }
+  /**
+   * Retrieves FHIR resources from the specified provider. Supports both individual resource retrieval (e.g. <code>Patient/123</code> via the path) and search operations.
+   * <p>FHIR search parameters are passed through to the upstream server verbatim as native query-string parameters; this proxy does not model, validate, or transform them. Append standard FHIR search parameters directly to the request URL. Supported parameters include:</p>
+   * <ul>
+   * <li>Resource-specific search parameters (e.g. <code>name</code> for Patient, <code>status</code> for Observation)</li>
+   * <li>Common search parameters (<code>_id</code>, <code>_lastUpdated</code>, <code>_tag</code>, <code>_profile</code>, <code>_security</code>, <code>_text</code>, <code>_content</code>, <code>_filter</code>)</li>
+   * <li>Result parameters (<code>_count</code>, <code>_offset</code>, <code>_sort</code>, <code>_include</code>, <code>_revinclude</code>, <code>_summary</code>, <code>_elements</code>)</li>
+   * <li>Search prefixes for dates, numbers, and quantities (<code>eq</code>, <code>ne</code>, <code>gt</code>, <code>ge</code>, <code>lt</code>, <code>le</code>, <code>sa</code>, <code>eb</code>, <code>ap</code>)</li>
+   * </ul>
+   * <p>Examples:</p>
+   * <ul>
+   * <li><code>Patient?name=John%20Doe&amp;_count=10&amp;_sort=family</code></li>
+   * <li><code>Observation?patient=Patient/123&amp;date=ge2023-01-01&amp;category=vital-signs&amp;_sort=-date</code></li>
+   * </ul>
+   * <p>When using a generated SDK, supply these via the client's request-level query-parameter option (the SDK escape hatch) rather than a typed argument.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object search(
+    String fhirProviderId,
+    String fhirPath,
+    SearchRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.search(fhirProviderId, fhirPath, request, requestOptions).body();
+  }
 
-    /**
-     * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object create(String fhirProviderId, String fhirPath, Object body, RequestOptions requestOptions) {
-        return this.rawClient
-                .create(fhirProviderId, fhirPath, body, requestOptions)
-                .body();
-    }
+  /**
+   * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object create(String fhirProviderId, String fhirPath, Object body) {
+    return this.rawClient.create(fhirProviderId, fhirPath, body).body();
+  }
 
-    /**
-     * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object create(String fhirProviderId, String fhirPath, CreateRequest request) {
-        return this.rawClient.create(fhirProviderId, fhirPath, request).body();
-    }
+  /**
+   * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object create(
+    String fhirProviderId,
+    String fhirPath,
+    Object body,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.create(fhirProviderId, fhirPath, body, requestOptions).body();
+  }
 
-    /**
-     * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object create(String fhirProviderId, String fhirPath, CreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .create(fhirProviderId, fhirPath, request, requestOptions)
-                .body();
-    }
+  /**
+   * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object create(String fhirProviderId, String fhirPath, CreateRequest request) {
+    return this.rawClient.create(fhirProviderId, fhirPath, request).body();
+  }
 
-    /**
-     * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object upsert(String fhirProviderId, String fhirPath, Object body) {
-        return this.rawClient.upsert(fhirProviderId, fhirPath, body).body();
-    }
+  /**
+   * Creates a new FHIR resource on the specified provider. The request body should contain a valid FHIR resource in JSON format.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object create(
+    String fhirProviderId,
+    String fhirPath,
+    CreateRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.create(fhirProviderId, fhirPath, request, requestOptions).body();
+  }
 
-    /**
-     * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object upsert(String fhirProviderId, String fhirPath, Object body, RequestOptions requestOptions) {
-        return this.rawClient
-                .upsert(fhirProviderId, fhirPath, body, requestOptions)
-                .body();
-    }
+  /**
+   * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object upsert(String fhirProviderId, String fhirPath, Object body) {
+    return this.rawClient.upsert(fhirProviderId, fhirPath, body).body();
+  }
 
-    /**
-     * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object upsert(String fhirProviderId, String fhirPath, UpsertRequest request) {
-        return this.rawClient.upsert(fhirProviderId, fhirPath, request).body();
-    }
+  /**
+   * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object upsert(
+    String fhirProviderId,
+    String fhirPath,
+    Object body,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.upsert(fhirProviderId, fhirPath, body, requestOptions).body();
+  }
 
-    /**
-     * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object upsert(String fhirProviderId, String fhirPath, UpsertRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .upsert(fhirProviderId, fhirPath, request, requestOptions)
-                .body();
-    }
+  /**
+   * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object upsert(String fhirProviderId, String fhirPath, UpsertRequest request) {
+    return this.rawClient.upsert(fhirProviderId, fhirPath, request).body();
+  }
 
-    /**
-     * Deletes a FHIR resource from the specified provider.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object delete(String fhirProviderId, String fhirPath) {
-        return this.rawClient.delete(fhirProviderId, fhirPath).body();
-    }
+  /**
+   * Creates or updates a FHIR resource on the specified provider. If the resource exists, it will be updated; otherwise, it will be created.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object upsert(
+    String fhirProviderId,
+    String fhirPath,
+    UpsertRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.upsert(fhirProviderId, fhirPath, request, requestOptions).body();
+  }
 
-    /**
-     * Deletes a FHIR resource from the specified provider.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object delete(String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
-        return this.rawClient.delete(fhirProviderId, fhirPath, requestOptions).body();
-    }
+  /**
+   * Deletes a FHIR resource from the specified provider.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object delete(String fhirProviderId, String fhirPath) {
+    return this.rawClient.delete(fhirProviderId, fhirPath).body();
+  }
 
-    /**
-     * Deletes a FHIR resource from the specified provider.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object delete(String fhirProviderId, String fhirPath, DeleteRequest request) {
-        return this.rawClient.delete(fhirProviderId, fhirPath, request).body();
-    }
+  /**
+   * Deletes a FHIR resource from the specified provider.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object delete(String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
+    return this.rawClient.delete(fhirProviderId, fhirPath, requestOptions).body();
+  }
 
-    /**
-     * Deletes a FHIR resource from the specified provider.
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object delete(String fhirProviderId, String fhirPath, DeleteRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .delete(fhirProviderId, fhirPath, request, requestOptions)
-                .body();
-    }
+  /**
+   * Deletes a FHIR resource from the specified provider.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object delete(String fhirProviderId, String fhirPath, DeleteRequest request) {
+    return this.rawClient.delete(fhirProviderId, fhirPath, request).body();
+  }
 
-    /**
-     * Partially updates a FHIR resource on the specified provider.
-     * <p>Two body formats are supported, selected by request content type:</p>
-     * <ul>
-     * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
-     * <ul>
-     * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
-     * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
-     * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
-     * </ul>
-     * </li>
-     * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
-     * </ul>
-     * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object patch(String fhirProviderId, String fhirPath, List<PatchRequestBodyItem> body) {
-        return this.rawClient.patch(fhirProviderId, fhirPath, body).body();
-    }
+  /**
+   * Deletes a FHIR resource from the specified provider.
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object delete(
+    String fhirProviderId,
+    String fhirPath,
+    DeleteRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.delete(fhirProviderId, fhirPath, request, requestOptions).body();
+  }
 
-    /**
-     * Partially updates a FHIR resource on the specified provider.
-     * <p>Two body formats are supported, selected by request content type:</p>
-     * <ul>
-     * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
-     * <ul>
-     * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
-     * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
-     * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
-     * </ul>
-     * </li>
-     * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
-     * </ul>
-     * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object patch(
-            String fhirProviderId, String fhirPath, List<PatchRequestBodyItem> body, RequestOptions requestOptions) {
-        return this.rawClient
-                .patch(fhirProviderId, fhirPath, body, requestOptions)
-                .body();
-    }
+  /**
+   * Partially updates a FHIR resource on the specified provider.
+   * <p>Two body formats are supported, selected by request content type:</p>
+   * <ul>
+   * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
+   * <ul>
+   * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
+   * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
+   * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
+   * </ul>
+   * </li>
+   * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
+   * </ul>
+   * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object patch(String fhirProviderId, String fhirPath, List<PatchRequestBodyItem> body) {
+    return this.rawClient.patch(fhirProviderId, fhirPath, body).body();
+  }
 
-    /**
-     * Partially updates a FHIR resource on the specified provider.
-     * <p>Two body formats are supported, selected by request content type:</p>
-     * <ul>
-     * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
-     * <ul>
-     * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
-     * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
-     * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
-     * </ul>
-     * </li>
-     * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
-     * </ul>
-     * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object patch(String fhirProviderId, String fhirPath, PatchRequest request) {
-        return this.rawClient.patch(fhirProviderId, fhirPath, request).body();
-    }
+  /**
+   * Partially updates a FHIR resource on the specified provider.
+   * <p>Two body formats are supported, selected by request content type:</p>
+   * <ul>
+   * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
+   * <ul>
+   * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
+   * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
+   * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
+   * </ul>
+   * </li>
+   * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
+   * </ul>
+   * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object patch(
+    String fhirProviderId,
+    String fhirPath,
+    List<PatchRequestBodyItem> body,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.patch(fhirProviderId, fhirPath, body, requestOptions).body();
+  }
 
-    /**
-     * Partially updates a FHIR resource on the specified provider.
-     * <p>Two body formats are supported, selected by request content type:</p>
-     * <ul>
-     * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
-     * <ul>
-     * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
-     * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
-     * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
-     * </ul>
-     * </li>
-     * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
-     * </ul>
-     * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object patch(String fhirProviderId, String fhirPath, PatchRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .patch(fhirProviderId, fhirPath, request, requestOptions)
-                .body();
-    }
+  /**
+   * Partially updates a FHIR resource on the specified provider.
+   * <p>Two body formats are supported, selected by request content type:</p>
+   * <ul>
+   * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
+   * <ul>
+   * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
+   * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
+   * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
+   * </ul>
+   * </li>
+   * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
+   * </ul>
+   * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object patch(String fhirProviderId, String fhirPath, PatchRequest request) {
+    return this.rawClient.patch(fhirProviderId, fhirPath, request).body();
+  }
 
-    /**
-     * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
-     * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object executeBundle(String fhirProviderId, Object body) {
-        return this.rawClient.executeBundle(fhirProviderId, body).body();
-    }
+  /**
+   * Partially updates a FHIR resource on the specified provider.
+   * <p>Two body formats are supported, selected by request content type:</p>
+   * <ul>
+   * <li><code>application/json-patch+json</code> — an array of JSON Patch operations as defined in RFC 6902. Each operation specifies:
+   * <ul>
+   * <li><code>op</code>: The operation type (add, remove, replace, move, copy, test)</li>
+   * <li><code>path</code>: JSON Pointer to the target location in the resource</li>
+   * <li><code>value</code>: The value to use (required for add, replace, and test operations)</li>
+   * </ul>
+   * </li>
+   * <li><code>application/fhir+json</code> — a partial FHIR resource for merge-patch semantics.</li>
+   * </ul>
+   * <p><strong>Note:</strong> This proxy currently forwards the request body to the upstream FHIR server with <code>Content-Type: application/fhir+json</code> regardless of the declared request content type. JSON Patch (RFC 6902) therefore only succeeds against upstream servers that accept patch arrays under <code>application/fhir+json</code>; servers that strictly enforce patch media types may reject or misinterpret it. Support for either format ultimately depends on the upstream FHIR server.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object patch(
+    String fhirProviderId,
+    String fhirPath,
+    PatchRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.patch(fhirProviderId, fhirPath, request, requestOptions).body();
+  }
 
-    /**
-     * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
-     * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object executeBundle(String fhirProviderId, Object body, RequestOptions requestOptions) {
-        return this.rawClient
-                .executeBundle(fhirProviderId, body, requestOptions)
-                .body();
-    }
+  /**
+   * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
+   * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object executeBundle(String fhirProviderId, Object body) {
+    return this.rawClient.executeBundle(fhirProviderId, body).body();
+  }
 
-    /**
-     * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
-     * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object executeBundle(String fhirProviderId, ExecuteBundleRequest request) {
-        return this.rawClient.executeBundle(fhirProviderId, request).body();
-    }
+  /**
+   * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
+   * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object executeBundle(String fhirProviderId, Object body, RequestOptions requestOptions) {
+    return this.rawClient.executeBundle(fhirProviderId, body, requestOptions).body();
+  }
 
-    /**
-     * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
-     * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
-     * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
-     */
-    public Object executeBundle(String fhirProviderId, ExecuteBundleRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .executeBundle(fhirProviderId, request, requestOptions)
-                .body();
-    }
+  /**
+   * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
+   * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object executeBundle(String fhirProviderId, ExecuteBundleRequest request) {
+    return this.rawClient.executeBundle(fhirProviderId, request).body();
+  }
+
+  /**
+   * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
+   * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+   * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
+   */
+  public Object executeBundle(
+    String fhirProviderId,
+    ExecuteBundleRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.executeBundle(fhirProviderId, request, requestOptions).body();
+  }
 }

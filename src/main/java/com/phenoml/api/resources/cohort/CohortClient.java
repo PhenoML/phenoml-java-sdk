@@ -9,33 +9,34 @@ import com.phenoml.api.resources.cohort.requests.CohortRequest;
 import com.phenoml.api.resources.cohort.types.CohortResponse;
 
 public class CohortClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawCohortClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public CohortClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawCohortClient(clientOptions);
-    }
+  private final RawCohortClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawCohortClient withRawResponse() {
-        return this.rawClient;
-    }
+  public CohortClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawCohortClient(clientOptions);
+  }
 
-    /**
-     * Converts natural language text into structured FHIR search queries for patient cohort analysis
-     */
-    public CohortResponse analyze(CohortRequest request) {
-        return this.rawClient.analyze(request).body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawCohortClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Converts natural language text into structured FHIR search queries for patient cohort analysis
-     */
-    public CohortResponse analyze(CohortRequest request, RequestOptions requestOptions) {
-        return this.rawClient.analyze(request, requestOptions).body();
-    }
+  /**
+   * Converts natural language text into structured FHIR search queries for patient cohort analysis
+   */
+  public CohortResponse analyze(CohortRequest request) {
+    return this.rawClient.analyze(request).body();
+  }
+
+  /**
+   * Converts natural language text into structured FHIR search queries for patient cohort analysis
+   */
+  public CohortResponse analyze(CohortRequest request, RequestOptions requestOptions) {
+    return this.rawClient.analyze(request, requestOptions).body();
+  }
 }

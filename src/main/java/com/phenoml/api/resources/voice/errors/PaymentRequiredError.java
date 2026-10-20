@@ -7,26 +7,27 @@ import com.phenoml.api.core.PhenomlClientApiException;
 import okhttp3.Response;
 
 public final class PaymentRequiredError extends PhenomlClientApiException {
-    /**
-     * The body of the response that triggered the exception.
-     */
-    private final Object body;
 
-    public PaymentRequiredError(Object body) {
-        super("PaymentRequiredError", 402, body);
-        this.body = body;
-    }
+  /**
+   * The body of the response that triggered the exception.
+   */
+  private final Object body;
 
-    public PaymentRequiredError(Object body, Response rawResponse) {
-        super("PaymentRequiredError", 402, body, rawResponse);
-        this.body = body;
-    }
+  public PaymentRequiredError(Object body) {
+    super("PaymentRequiredError", 402, body);
+    this.body = body;
+  }
 
-    /**
-     * @return the body
-     */
-    @java.lang.Override
-    public Object body() {
-        return this.body;
-    }
+  public PaymentRequiredError(Object body, Response rawResponse) {
+    super("PaymentRequiredError", 402, body, rawResponse);
+    this.body = body;
+  }
+
+  /**
+   * @return the body
+   */
+  @java.lang.Override
+  public Object body() {
+    return this.body;
+  }
 }

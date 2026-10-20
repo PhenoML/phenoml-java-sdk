@@ -21,130 +21,144 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ProviderRolePractitionerIdentifier.Builder.class)
 public final class ProviderRolePractitionerIdentifier {
-    private final Optional<String> system;
 
-    private final String value;
+  private final Optional<String> system;
 
-    private final Map<String, Object> additionalProperties;
+  private final String value;
 
-    private ProviderRolePractitionerIdentifier(
-            Optional<String> system, String value, Map<String, Object> additionalProperties) {
-        this.system = system;
-        this.value = value;
-        this.additionalProperties = additionalProperties;
-    }
+  private final Map<String, Object> additionalProperties;
 
-    @JsonProperty("system")
-    public Optional<String> getSystem() {
-        return system;
-    }
+  private ProviderRolePractitionerIdentifier(
+    Optional<String> system,
+    String value,
+    Map<String, Object> additionalProperties
+  ) {
+    this.system = system;
+    this.value = value;
+    this.additionalProperties = additionalProperties;
+  }
 
-    @JsonProperty("value")
-    public String getValue() {
-        return value;
+  @JsonProperty("system")
+  public Optional<String> getSystem() {
+    return system;
+  }
+
+  @JsonProperty("value")
+  public String getValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof ProviderRolePractitionerIdentifier &&
+      equalTo((ProviderRolePractitionerIdentifier) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ProviderRolePractitionerIdentifier other) {
+    return system.equals(other.system) && value.equals(other.value);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.system, this.value);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static ValueStage builder() {
+    return new Builder();
+  }
+
+  public interface ValueStage {
+    _FinalStage value(@NotNull String value);
+
+    Builder from(ProviderRolePractitionerIdentifier other);
+  }
+
+  public interface _FinalStage {
+    ProviderRolePractitionerIdentifier build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    _FinalStage system(Optional<String> system);
+
+    _FinalStage system(String system);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder implements ValueStage, _FinalStage {
+
+    private String value;
+
+    private Optional<String> system = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(ProviderRolePractitionerIdentifier other) {
+      system(other.getSystem());
+      value(other.getValue());
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ProviderRolePractitionerIdentifier
-                && equalTo((ProviderRolePractitionerIdentifier) other);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(ProviderRolePractitionerIdentifier other) {
-        return system.equals(other.system) && value.equals(other.value);
+    @JsonSetter("value")
+    public _FinalStage value(@NotNull String value) {
+      this.value = Objects.requireNonNull(value, "value must not be null");
+      return this;
     }
 
     @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.system, this.value);
+    public _FinalStage system(String system) {
+      this.system = Optional.ofNullable(system);
+      return this;
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    @JsonSetter(value = "system", nulls = Nulls.SKIP)
+    public _FinalStage system(Optional<String> system) {
+      this.system = system;
+      return this;
     }
 
-    public static ValueStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public ProviderRolePractitionerIdentifier build() {
+      return new ProviderRolePractitionerIdentifier(system, value, additionalProperties);
     }
 
-    public interface ValueStage {
-        _FinalStage value(@NotNull String value);
-
-        Builder from(ProviderRolePractitionerIdentifier other);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("system") || key.equalsIgnoreCase("value")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    public interface _FinalStage {
-        ProviderRolePractitionerIdentifier build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-        _FinalStage system(Optional<String> system);
-
-        _FinalStage system(String system);
+    @java.lang.Override
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements ValueStage, _FinalStage {
-        private String value;
-
-        private Optional<String> system = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(ProviderRolePractitionerIdentifier other) {
-            system(other.getSystem());
-            value(other.getValue());
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter("value")
-        public _FinalStage value(@NotNull String value) {
-            this.value = Objects.requireNonNull(value, "value must not be null");
-            return this;
-        }
-
-        @java.lang.Override
-        public _FinalStage system(String system) {
-            this.system = Optional.ofNullable(system);
-            return this;
-        }
-
-        @java.lang.Override
-        @JsonSetter(value = "system", nulls = Nulls.SKIP)
-        public _FinalStage system(Optional<String> system) {
-            this.system = system;
-            return this;
-        }
-
-        @java.lang.Override
-        public ProviderRolePractitionerIdentifier build() {
-            return new ProviderRolePractitionerIdentifier(system, value, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
+  }
 }

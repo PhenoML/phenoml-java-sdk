@@ -7,26 +7,27 @@ import com.phenoml.api.core.PhenomlClientApiException;
 import okhttp3.Response;
 
 public final class BadGatewayError extends PhenomlClientApiException {
-    /**
-     * The body of the response that triggered the exception.
-     */
-    private final Object body;
 
-    public BadGatewayError(Object body) {
-        super("BadGatewayError", 502, body);
-        this.body = body;
-    }
+  /**
+   * The body of the response that triggered the exception.
+   */
+  private final Object body;
 
-    public BadGatewayError(Object body, Response rawResponse) {
-        super("BadGatewayError", 502, body, rawResponse);
-        this.body = body;
-    }
+  public BadGatewayError(Object body) {
+    super("BadGatewayError", 502, body);
+    this.body = body;
+  }
 
-    /**
-     * @return the body
-     */
-    @java.lang.Override
-    public Object body() {
-        return this.body;
-    }
+  public BadGatewayError(Object body, Response rawResponse) {
+    super("BadGatewayError", 502, body, rawResponse);
+    this.body = body;
+  }
+
+  /**
+   * @return the body
+   */
+  @java.lang.Override
+  public Object body() {
+    return this.body;
+  }
 }

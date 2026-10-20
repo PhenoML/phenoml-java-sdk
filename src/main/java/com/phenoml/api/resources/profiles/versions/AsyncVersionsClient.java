@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.profiles.versions;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.profiles.types.ProfileGetResponse;
 import com.phenoml.api.resources.profiles.types.ProfileSummary;
@@ -12,104 +13,183 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class AsyncVersionsClient {
-    protected final ClientOptions clientOptions;
 
-    private final AsyncRawVersionsClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public AsyncVersionsClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new AsyncRawVersionsClient(clientOptions);
-    }
+  private final AsyncRawVersionsClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public AsyncRawVersionsClient withRawResponse() {
-        return this.rawClient;
-    }
+  public AsyncVersionsClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new AsyncRawVersionsClient(clientOptions);
+  }
 
-    /**
-     * Returns retained versions for a custom profile.
-     */
-    public CompletableFuture<ProfileVersionListResponse> list(String id) {
-        return this.rawClient.list(id).thenApply(response -> response.body());
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public AsyncRawVersionsClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Returns retained versions for a custom profile.
-     */
-    public CompletableFuture<ProfileVersionListResponse> list(String id, RequestOptions requestOptions) {
-        return this.rawClient.list(id, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Returns retained versions for a custom profile.
+   */
+  public CompletableFuture<ProfileVersionListResponse> list(String id) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileVersionListResponse>> rawFuture =
+      this.rawClient.list(id);
+    CompletableFuture<ProfileVersionListResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Adds an immutable StructureDefinition version to a custom profile. If
-     * the profile does not exist, it is created from the submitted version.
-     * The StructureDefinition must include a non-empty <code>version</code>; its
-     * canonical URL and resource type must match the profile when one already
-     * exists. If it includes an <code>id</code>, that id must match the path parameter;
-     * if it omits <code>id</code>, the path parameter is used. Profiles created through
-     * this endpoint are grouped under <code>custom</code>. Posting the profile's current
-     * StructureDefinition unchanged retains it as a version.
-     * Version strings may contain letters, numbers, and the punctuation
-     * characters <code>.</code>, <code>_</code>, <code>~</code>, <code>+</code>, and <code>-</code>; they cannot be exactly <code>.</code> or
-     * <code>..</code>. Each profile can retain up to 250 versions; delete old
-     * versions before adding more.
-     */
-    public CompletableFuture<ProfileSummary> create(String id, Map<String, Object> request) {
-        return this.rawClient.create(id, request).thenApply(response -> response.body());
-    }
+  /**
+   * Returns retained versions for a custom profile.
+   */
+  public CompletableFuture<ProfileVersionListResponse> list(
+    String id,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileVersionListResponse>> rawFuture =
+      this.rawClient.list(id, requestOptions);
+    CompletableFuture<ProfileVersionListResponse> future = rawFuture.thenApply(response ->
+      response.body()
+    );
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Adds an immutable StructureDefinition version to a custom profile. If
-     * the profile does not exist, it is created from the submitted version.
-     * The StructureDefinition must include a non-empty <code>version</code>; its
-     * canonical URL and resource type must match the profile when one already
-     * exists. If it includes an <code>id</code>, that id must match the path parameter;
-     * if it omits <code>id</code>, the path parameter is used. Profiles created through
-     * this endpoint are grouped under <code>custom</code>. Posting the profile's current
-     * StructureDefinition unchanged retains it as a version.
-     * Version strings may contain letters, numbers, and the punctuation
-     * characters <code>.</code>, <code>_</code>, <code>~</code>, <code>+</code>, and <code>-</code>; they cannot be exactly <code>.</code> or
-     * <code>..</code>. Each profile can retain up to 250 versions; delete old
-     * versions before adding more.
-     */
-    public CompletableFuture<ProfileSummary> create(
-            String id, Map<String, Object> request, RequestOptions requestOptions) {
-        return this.rawClient.create(id, request, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Adds an immutable StructureDefinition version to a custom profile. If
+   * the profile does not exist, it is created from the submitted version.
+   * The StructureDefinition must include a non-empty <code>version</code>; its
+   * canonical URL and resource type must match the profile when one already
+   * exists. If it includes an <code>id</code>, that id must match the path parameter;
+   * if it omits <code>id</code>, the path parameter is used. Profiles created through
+   * this endpoint are grouped under <code>custom</code>. Posting the profile's current
+   * StructureDefinition unchanged retains it as a version.
+   * Version strings may contain letters, numbers, and the punctuation
+   * characters <code>.</code>, <code>_</code>, <code>~</code>, <code>+</code>, and <code>-</code>; they cannot be exactly <code>.</code> or
+   * <code>..</code>. Each profile can retain up to 250 versions; delete old
+   * versions before adding more.
+   */
+  public CompletableFuture<ProfileSummary> create(String id, Map<String, Object> request) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileSummary>> rawFuture =
+      this.rawClient.create(id, request);
+    CompletableFuture<ProfileSummary> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns metadata and the full StructureDefinition for one retained
-     * version. The returned StructureDefinition's id is the profile id. The
-     * path version is the authored <code>StructureDefinition.version</code> value.
-     */
-    public CompletableFuture<ProfileGetResponse> get(String id, String version) {
-        return this.rawClient.get(id, version).thenApply(response -> response.body());
-    }
+  /**
+   * Adds an immutable StructureDefinition version to a custom profile. If
+   * the profile does not exist, it is created from the submitted version.
+   * The StructureDefinition must include a non-empty <code>version</code>; its
+   * canonical URL and resource type must match the profile when one already
+   * exists. If it includes an <code>id</code>, that id must match the path parameter;
+   * if it omits <code>id</code>, the path parameter is used. Profiles created through
+   * this endpoint are grouped under <code>custom</code>. Posting the profile's current
+   * StructureDefinition unchanged retains it as a version.
+   * Version strings may contain letters, numbers, and the punctuation
+   * characters <code>.</code>, <code>_</code>, <code>~</code>, <code>+</code>, and <code>-</code>; they cannot be exactly <code>.</code> or
+   * <code>..</code>. Each profile can retain up to 250 versions; delete old
+   * versions before adding more.
+   */
+  public CompletableFuture<ProfileSummary> create(
+    String id,
+    Map<String, Object> request,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileSummary>> rawFuture =
+      this.rawClient.create(id, request, requestOptions);
+    CompletableFuture<ProfileSummary> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Returns metadata and the full StructureDefinition for one retained
-     * version. The returned StructureDefinition's id is the profile id. The
-     * path version is the authored <code>StructureDefinition.version</code> value.
-     */
-    public CompletableFuture<ProfileGetResponse> get(String id, String version, RequestOptions requestOptions) {
-        return this.rawClient.get(id, version, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Returns metadata and the full StructureDefinition for one retained
+   * version. The returned StructureDefinition's id is the profile id. The
+   * path version is the authored <code>StructureDefinition.version</code> value.
+   */
+  public CompletableFuture<ProfileGetResponse> get(String id, String version) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileGetResponse>> rawFuture =
+      this.rawClient.get(id, version);
+    CompletableFuture<ProfileGetResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Deletes one retained version from a custom profile. The path
-     * version is the authored <code>StructureDefinition.version</code> value.
-     */
-    public CompletableFuture<Void> delete(String id, String version) {
-        return this.rawClient.delete(id, version).thenApply(response -> response.body());
-    }
+  /**
+   * Returns metadata and the full StructureDefinition for one retained
+   * version. The returned StructureDefinition's id is the profile id. The
+   * path version is the authored <code>StructureDefinition.version</code> value.
+   */
+  public CompletableFuture<ProfileGetResponse> get(
+    String id,
+    String version,
+    RequestOptions requestOptions
+  ) {
+    CompletableFuture<PhenomlClientHttpResponse<ProfileGetResponse>> rawFuture =
+      this.rawClient.get(id, version, requestOptions);
+    CompletableFuture<ProfileGetResponse> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 
-    /**
-     * Deletes one retained version from a custom profile. The path
-     * version is the authored <code>StructureDefinition.version</code> value.
-     */
-    public CompletableFuture<Void> delete(String id, String version, RequestOptions requestOptions) {
-        return this.rawClient.delete(id, version, requestOptions).thenApply(response -> response.body());
-    }
+  /**
+   * Deletes one retained version from a custom profile. The path
+   * version is the authored <code>StructureDefinition.version</code> value.
+   */
+  public CompletableFuture<Void> delete(String id, String version) {
+    CompletableFuture<PhenomlClientHttpResponse<Void>> rawFuture =
+      this.rawClient.delete(id, version);
+    CompletableFuture<Void> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
+
+  /**
+   * Deletes one retained version from a custom profile. The path
+   * version is the authored <code>StructureDefinition.version</code> value.
+   */
+  public CompletableFuture<Void> delete(String id, String version, RequestOptions requestOptions) {
+    CompletableFuture<PhenomlClientHttpResponse<Void>> rawFuture =
+      this.rawClient.delete(id, version, requestOptions);
+    CompletableFuture<Void> future = rawFuture.thenApply(response -> response.body());
+    future.whenComplete((result_, throwable_) -> {
+      if (future.isCancelled()) {
+        rawFuture.cancel(true);
+      }
+    });
+    return future;
+  }
 }

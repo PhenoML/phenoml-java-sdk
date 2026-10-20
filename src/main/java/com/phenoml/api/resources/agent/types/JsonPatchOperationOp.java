@@ -7,117 +7,127 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class JsonPatchOperationOp {
-    public static final JsonPatchOperationOp ADD = new JsonPatchOperationOp(Value.ADD, "add");
 
-    public static final JsonPatchOperationOp REMOVE = new JsonPatchOperationOp(Value.REMOVE, "remove");
+  public static final JsonPatchOperationOp ADD = new JsonPatchOperationOp(Value.ADD, "add");
 
-    public static final JsonPatchOperationOp REPLACE = new JsonPatchOperationOp(Value.REPLACE, "replace");
+  public static final JsonPatchOperationOp REMOVE = new JsonPatchOperationOp(
+    Value.REMOVE,
+    "remove"
+  );
 
-    public static final JsonPatchOperationOp MOVE = new JsonPatchOperationOp(Value.MOVE, "move");
+  public static final JsonPatchOperationOp REPLACE = new JsonPatchOperationOp(
+    Value.REPLACE,
+    "replace"
+  );
 
-    public static final JsonPatchOperationOp TEST = new JsonPatchOperationOp(Value.TEST, "test");
+  public static final JsonPatchOperationOp MOVE = new JsonPatchOperationOp(Value.MOVE, "move");
 
-    public static final JsonPatchOperationOp COPY = new JsonPatchOperationOp(Value.COPY, "copy");
+  public static final JsonPatchOperationOp TEST = new JsonPatchOperationOp(Value.TEST, "test");
 
-    private final Value value;
+  public static final JsonPatchOperationOp COPY = new JsonPatchOperationOp(Value.COPY, "copy");
 
-    private final String string;
+  private final Value value;
 
-    JsonPatchOperationOp(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  JsonPatchOperationOp(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof JsonPatchOperationOp &&
+        this.string.equals(((JsonPatchOperationOp) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case ADD:
+        return visitor.visitAdd();
+      case REMOVE:
+        return visitor.visitRemove();
+      case REPLACE:
+        return visitor.visitReplace();
+      case MOVE:
+        return visitor.visitMove();
+      case TEST:
+        return visitor.visitTest();
+      case COPY:
+        return visitor.visitCopy();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static JsonPatchOperationOp valueOf(String value) {
+    switch (value) {
+      case "add":
+        return ADD;
+      case "remove":
+        return REMOVE;
+      case "replace":
+        return REPLACE;
+      case "move":
+        return MOVE;
+      case "test":
+        return TEST;
+      case "copy":
+        return COPY;
+      default:
+        return new JsonPatchOperationOp(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    ADD,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof JsonPatchOperationOp && this.string.equals(((JsonPatchOperationOp) other).string));
-    }
+    REMOVE,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    REPLACE,
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case ADD:
-                return visitor.visitAdd();
-            case REMOVE:
-                return visitor.visitRemove();
-            case REPLACE:
-                return visitor.visitReplace();
-            case MOVE:
-                return visitor.visitMove();
-            case TEST:
-                return visitor.visitTest();
-            case COPY:
-                return visitor.visitCopy();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+    MOVE,
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static JsonPatchOperationOp valueOf(String value) {
-        switch (value) {
-            case "add":
-                return ADD;
-            case "remove":
-                return REMOVE;
-            case "replace":
-                return REPLACE;
-            case "move":
-                return MOVE;
-            case "test":
-                return TEST;
-            case "copy":
-                return COPY;
-            default:
-                return new JsonPatchOperationOp(Value.UNKNOWN, value);
-        }
-    }
+    COPY,
 
-    public enum Value {
-        ADD,
+    TEST,
 
-        REMOVE,
+    UNKNOWN,
+  }
 
-        REPLACE,
+  public interface Visitor<T> {
+    T visitAdd();
 
-        MOVE,
+    T visitRemove();
 
-        COPY,
+    T visitReplace();
 
-        TEST,
+    T visitMove();
 
-        UNKNOWN
-    }
+    T visitCopy();
 
-    public interface Visitor<T> {
-        T visitAdd();
+    T visitTest();
 
-        T visitRemove();
-
-        T visitReplace();
-
-        T visitMove();
-
-        T visitCopy();
-
-        T visitTest();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

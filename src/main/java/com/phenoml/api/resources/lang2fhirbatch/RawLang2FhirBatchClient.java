@@ -5,6 +5,7 @@ package com.phenoml.api.resources.lang2fhirbatch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.FileStream;
 import com.phenoml.api.core.MediaTypes;
@@ -49,1333 +50,1647 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class RawLang2FhirBatchClient {
-    protected final ClientOptions clientOptions;
 
-    public RawLang2FhirBatchClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-    }
+  protected final ClientOptions clientOptions;
 
-    /**
-     * Returns a page of the instance's batch jobs, newest first, without
-     * per-job counts. Jobs are shared across the instance's credentials, so
-     * this lists every batch job on the instance, not just the calling
-     * credential's.
-     */
-    public PhenomlClientHttpResponse<JobListResponse> list() {
-        return list(ListRequest.builder().build());
-    }
+  public RawLang2FhirBatchClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+  }
 
-    /**
-     * Returns a page of the instance's batch jobs, newest first, without
-     * per-job counts. Jobs are shared across the instance's credentials, so
-     * this lists every batch job on the instance, not just the calling
-     * credential's.
-     */
-    public PhenomlClientHttpResponse<JobListResponse> list(RequestOptions requestOptions) {
-        return list(ListRequest.builder().build(), requestOptions);
-    }
+  /**
+   * Returns a page of the instance's batch jobs, newest first, without
+   * per-job counts. Jobs are shared across the instance's credentials, so
+   * this lists every batch job on the instance, not just the calling
+   * credential's.
+   */
+  public PhenomlClientHttpResponse<JobListResponse> list() {
+    return list(ListRequest.builder().build());
+  }
 
-    /**
-     * Returns a page of the instance's batch jobs, newest first, without
-     * per-job counts. Jobs are shared across the instance's credentials, so
-     * this lists every batch job on the instance, not just the calling
-     * credential's.
-     */
-    public PhenomlClientHttpResponse<JobListResponse> list(ListRequest request) {
-        return list(request, null);
-    }
+  /**
+   * Returns a page of the instance's batch jobs, newest first, without
+   * per-job counts. Jobs are shared across the instance's credentials, so
+   * this lists every batch job on the instance, not just the calling
+   * credential's.
+   */
+  public PhenomlClientHttpResponse<JobListResponse> list(RequestOptions requestOptions) {
+    return list(ListRequest.builder().build(), requestOptions);
+  }
 
-    /**
-     * Returns a page of the instance's batch jobs, newest first, without
-     * per-job counts. Jobs are shared across the instance's credentials, so
-     * this lists every batch job on the instance, not just the calling
-     * credential's.
-     */
-    public PhenomlClientHttpResponse<JobListResponse> list(ListRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/batch");
-        if (request.getCursor().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "cursor", request.getCursor().get(), false);
-        }
-        if (request.getLimit().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "limit", request.getLimit().get(), false);
-        }
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("GET", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, JobListResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Returns a page of the instance's batch jobs, newest first, without
+   * per-job counts. Jobs are shared across the instance's credentials, so
+   * this lists every batch job on the instance, not just the calling
+   * credential's.
+   */
+  public PhenomlClientHttpResponse<JobListResponse> list(ListRequest request) {
+    return list(request, null);
+  }
 
-    /**
-     * Opens an empty job; upload items, then finalize it to start processing.
-     * <p><code>request_id</code> makes creation idempotent: a retry returns the original
-     * job. A token is released when its job is canceled or fails before
-     * finalization; otherwise it continues to resolve to that job.</p>
-     */
-    public PhenomlClientHttpResponse<BatchJob> create() {
-        return create(CreateBatchRequest.builder().build());
+  /**
+   * Returns a page of the instance's batch jobs, newest first, without
+   * per-job counts. Jobs are shared across the instance's credentials, so
+   * this lists every batch job on the instance, not just the calling
+   * credential's.
+   */
+  public PhenomlClientHttpResponse<JobListResponse> list(
+    ListRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/batch");
+    if (request.getCursor().isPresent()) {
+      QueryStringMapper.addQueryParameter(httpUrl, "cursor", request.getCursor().get(), false);
     }
+    if (request.getLimit().isPresent()) {
+      QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get(), false);
+    }
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
+    }
+    Request.Builder _requestBuilder = new Request.Builder()
+      .url(httpUrl.build())
+      .method("GET", null)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json");
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, JobListResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Opens an empty job; upload items, then finalize it to start processing.
-     * <p><code>request_id</code> makes creation idempotent: a retry returns the original
-     * job. A token is released when its job is canceled or fails before
-     * finalization; otherwise it continues to resolve to that job.</p>
-     */
-    public PhenomlClientHttpResponse<BatchJob> create(RequestOptions requestOptions) {
-        return create(CreateBatchRequest.builder().build(), requestOptions);
-    }
+  /**
+   * Opens an empty job; upload items, then finalize it to start processing.
+   * <p><code>request_id</code> makes creation idempotent: a retry returns the original
+   * job. A token is released when its job is canceled or fails before
+   * finalization; otherwise it continues to resolve to that job.</p>
+   */
+  public PhenomlClientHttpResponse<BatchJob> create() {
+    return create(CreateBatchRequest.builder().build());
+  }
 
-    /**
-     * Opens an empty job; upload items, then finalize it to start processing.
-     * <p><code>request_id</code> makes creation idempotent: a retry returns the original
-     * job. A token is released when its job is canceled or fails before
-     * finalization; otherwise it continues to resolve to that job.</p>
-     */
-    public PhenomlClientHttpResponse<BatchJob> create(CreateBatchRequest request) {
-        return create(request, null);
-    }
+  /**
+   * Opens an empty job; upload items, then finalize it to start processing.
+   * <p><code>request_id</code> makes creation idempotent: a retry returns the original
+   * job. A token is released when its job is canceled or fails before
+   * finalization; otherwise it continues to resolve to that job.</p>
+   */
+  public PhenomlClientHttpResponse<BatchJob> create(RequestOptions requestOptions) {
+    return create(CreateBatchRequest.builder().build(), requestOptions);
+  }
 
-    /**
-     * Opens an empty job; upload items, then finalize it to start processing.
-     * <p><code>request_id</code> makes creation idempotent: a retry returns the original
-     * job. A token is released when its job is canceled or fails before
-     * finalization; otherwise it continues to resolve to that job.</p>
-     */
-    public PhenomlClientHttpResponse<BatchJob> create(CreateBatchRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/batch");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, BatchJob.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Opens an empty job; upload items, then finalize it to start processing.
+   * <p><code>request_id</code> makes creation idempotent: a retry returns the original
+   * job. A token is released when its job is canceled or fails before
+   * finalization; otherwise it continues to resolve to that job.</p>
+   */
+  public PhenomlClientHttpResponse<BatchJob> create(CreateBatchRequest request) {
+    return create(request, null);
+  }
 
-    /**
-     * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
-     * or JSON-only <code>create</code>.
-     * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
-     * forbids it. Violations return <code>400</code>.</p>
-     * <p>Upload validates only the envelope. Endpoint request validation happens
-     * during processing: decoding failures are <code>invalid_input</code>; other pipeline
-     * failures are <code>processing_failed</code>.</p>
-     * <p>Use <code>request_id</code> for every upload so retries replace the same item.
-     * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
-     * overwrites the item and returns false.</p>
-     * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
-     * when the item is too large.</p>
-     */
-    public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(String jobId, Optional<File> file) {
-        return uploadItem(jobId, file, UploadItemRequest.builder().build());
+  /**
+   * Opens an empty job; upload items, then finalize it to start processing.
+   * <p><code>request_id</code> makes creation idempotent: a retry returns the original
+   * job. A token is released when its job is canceled or fails before
+   * finalization; otherwise it continues to resolve to that job.</p>
+   */
+  public PhenomlClientHttpResponse<BatchJob> create(
+    CreateBatchRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/batch");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    RequestBody body;
+    try {
+      body = RequestBody.create(
+        ObjectMappers.JSON_MAPPER.writeValueAsBytes(
+          BodyProperties.merge(
+            request,
+            requestOptions != null ? requestOptions.getBodyProperties() : null
+          )
+        ),
+        MediaTypes.APPLICATION_JSON
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to serialize request", e);
+    }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("POST", body)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, BatchJob.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
-     * or JSON-only <code>create</code>.
-     * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
-     * forbids it. Violations return <code>400</code>.</p>
-     * <p>Upload validates only the envelope. Endpoint request validation happens
-     * during processing: decoding failures are <code>invalid_input</code>; other pipeline
-     * failures are <code>processing_failed</code>.</p>
-     * <p>Use <code>request_id</code> for every upload so retries replace the same item.
-     * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
-     * overwrites the item and returns false.</p>
-     * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
-     * when the item is too large.</p>
-     */
-    public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
-            String jobId, Optional<File> file, RequestOptions requestOptions) {
-        return uploadItem(jobId, file, UploadItemRequest.builder().build(), requestOptions);
-    }
+  /**
+   * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
+   * or JSON-only <code>create</code>.
+   * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
+   * forbids it. Violations return <code>400</code>.</p>
+   * <p>Upload validates only the envelope. Endpoint request validation happens
+   * during processing: decoding failures are <code>invalid_input</code>; other pipeline
+   * failures are <code>processing_failed</code>.</p>
+   * <p>Use <code>request_id</code> for every upload so retries replace the same item.
+   * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
+   * overwrites the item and returns false.</p>
+   * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
+   * when the item is too large.</p>
+   */
+  public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
+    String jobId,
+    Optional<File> file
+  ) {
+    return uploadItem(jobId, file, UploadItemRequest.builder().build());
+  }
 
-    /**
-     * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
-     * or JSON-only <code>create</code>.
-     * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
-     * forbids it. Violations return <code>400</code>.</p>
-     * <p>Upload validates only the envelope. Endpoint request validation happens
-     * during processing: decoding failures are <code>invalid_input</code>; other pipeline
-     * failures are <code>processing_failed</code>.</p>
-     * <p>Use <code>request_id</code> for every upload so retries replace the same item.
-     * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
-     * overwrites the item and returns false.</p>
-     * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
-     * when the item is too large.</p>
-     */
-    public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
-            String jobId, Optional<File> file, UploadItemRequest request) {
-        return uploadItem(jobId, file, request, null);
-    }
+  /**
+   * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
+   * or JSON-only <code>create</code>.
+   * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
+   * forbids it. Violations return <code>400</code>.</p>
+   * <p>Upload validates only the envelope. Endpoint request validation happens
+   * during processing: decoding failures are <code>invalid_input</code>; other pipeline
+   * failures are <code>processing_failed</code>.</p>
+   * <p>Use <code>request_id</code> for every upload so retries replace the same item.
+   * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
+   * overwrites the item and returns false.</p>
+   * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
+   * when the item is too large.</p>
+   */
+  public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
+    String jobId,
+    Optional<File> file,
+    RequestOptions requestOptions
+  ) {
+    return uploadItem(jobId, file, UploadItemRequest.builder().build(), requestOptions);
+  }
 
-    /**
-     * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
-     * or JSON-only <code>create</code>.
-     * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
-     * forbids it. Violations return <code>400</code>.</p>
-     * <p>Upload validates only the envelope. Endpoint request validation happens
-     * during processing: decoding failures are <code>invalid_input</code>; other pipeline
-     * failures are <code>processing_failed</code>.</p>
-     * <p>Use <code>request_id</code> for every upload so retries replace the same item.
-     * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
-     * overwrites the item and returns false.</p>
-     * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
-     * when the item is too large.</p>
-     */
-    public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
-            String jobId, Optional<File> file, UploadItemRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
-                .addPathSegments("items");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        try {
-            if (request.getDocument().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "document",
-                        ObjectMappers.JSON_MAPPER.writeValueAsString(
-                                request.getDocument().get()));
-            }
-            if (request.getCreate().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "create",
-                        ObjectMappers.JSON_MAPPER.writeValueAsString(
-                                request.getCreate().get()));
-            }
-            if (file.isPresent()) {
-                String fileMimeType = Files.probeContentType(file.get().toPath());
-                MediaType fileMimeTypeMediaType = fileMimeType != null ? MediaType.parse(fileMimeType) : null;
-                multipartBodyBuilder.addFormDataPart(
-                        "file", file.get().getName(), RequestBody.create(file.get(), fileMimeTypeMediaType));
-            }
-            if (request.getRequestId().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "request_id", request.getRequestId().get());
-            }
-            if (request.getId().isPresent()) {
-                multipartBodyBuilder.addFormDataPart("id", request.getId().get());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", multipartBodyBuilder.build())
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadItemResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 409:
-                        throw new ConflictError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
+   * or JSON-only <code>create</code>.
+   * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
+   * forbids it. Violations return <code>400</code>.</p>
+   * <p>Upload validates only the envelope. Endpoint request validation happens
+   * during processing: decoding failures are <code>invalid_input</code>; other pipeline
+   * failures are <code>processing_failed</code>.</p>
+   * <p>Use <code>request_id</code> for every upload so retries replace the same item.
+   * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
+   * overwrites the item and returns false.</p>
+   * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
+   * when the item is too large.</p>
+   */
+  public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
+    String jobId,
+    Optional<File> file,
+    UploadItemRequest request
+  ) {
+    return uploadItem(jobId, file, request, null);
+  }
 
-    public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
-            String jobId, UploadItemRequest request, InputStream stream, String filename) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
-                .addPathSegments("items");
-        FileStream fs = new FileStream(stream, filename, null);
-        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        try {
-            if (request.getDocument().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "document",
-                        ObjectMappers.JSON_MAPPER.writeValueAsString(
-                                request.getDocument().get()));
-            }
-            if (request.getCreate().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "create",
-                        ObjectMappers.JSON_MAPPER.writeValueAsString(
-                                request.getCreate().get()));
-            }
-            multipartBodyBuilder.addFormDataPart("file", filename, fs.toRequestBody());
-            if (request.getRequestId().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "request_id", request.getRequestId().get());
-            }
-            if (request.getId().isPresent()) {
-                multipartBodyBuilder.addFormDataPart("id", request.getId().get());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        RequestBody body = multipartBodyBuilder.build();
-        Request.Builder _requestBuilder = new Request.Builder();
-        _requestBuilder.url(httpUrl.build());
-        _requestBuilder.method("POST", body);
-        _requestBuilder.headers(Headers.of(this.clientOptions.headers((RequestOptions) null)));
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadItemResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 409:
-                        throw new ConflictError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
+  /**
+   * Stores one multipart item. Set <strong>either</strong> <code>document</code> with a raw <code>file</code>,
+   * or JSON-only <code>create</code>.
+   * <p>Set exactly one JSON object. <code>document</code> requires <code>file</code>; <code>create</code>
+   * forbids it. Violations return <code>400</code>.</p>
+   * <p>Upload validates only the envelope. Endpoint request validation happens
+   * during processing: decoding failures are <code>invalid_input</code>; other pipeline
+   * failures are <code>processing_failed</code>.</p>
+   * <p>Use <code>request_id</code> for every upload so retries replace the same item.
+   * <code>deduplicated</code> is true only for an unchanged payload; a changed payload
+   * overwrites the item and returns false.</p>
+   * <p>Uploads return <code>409</code> after finalization or at the item limit, and <code>413</code>
+   * when the item is too large.</p>
+   */
+  public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
+    String jobId,
+    Optional<File> file,
+    UploadItemRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/batch")
+      .addPathSegment(jobId)
+      .addPathSegments("items");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder()
+      .setType(MultipartBody.FORM);
+    try {
+      if (request.getDocument().isPresent()) {
+        multipartBodyBuilder.addFormDataPart(
+          "document",
+          ObjectMappers.JSON_MAPPER.writeValueAsString(request.getDocument().get())
+        );
+      }
+      if (request.getCreate().isPresent()) {
+        multipartBodyBuilder.addFormDataPart(
+          "create",
+          ObjectMappers.JSON_MAPPER.writeValueAsString(request.getCreate().get())
+        );
+      }
+      if (file.isPresent()) {
+        String fileMimeType = Files.probeContentType(file.get().toPath());
+        MediaType fileMimeTypeMediaType = fileMimeType != null
+          ? MediaType.parse(fileMimeType)
+          : null;
+        multipartBodyBuilder.addFormDataPart(
+          "file",
+          file.get().getName(),
+          RequestBody.create(file.get(), fileMimeTypeMediaType)
+        );
+      }
+      if (request.getRequestId().isPresent()) {
+        multipartBodyBuilder.addFormDataPart("request_id", request.getRequestId().get());
+      }
+      if (request.getId().isPresent()) {
+        multipartBodyBuilder.addFormDataPart("id", request.getId().get());
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    Request.Builder _requestBuilder = new Request.Builder()
+      .url(httpUrl.build())
+      .method("POST", multipartBodyBuilder.build())
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json");
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadItemResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 409:
+            throw new ConflictError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
-            String jobId, UploadItemRequest request, InputStream stream, String filename, MediaType mediaType) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
-                .addPathSegments("items");
-        FileStream fs = new FileStream(stream, filename, mediaType);
-        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        try {
-            if (request.getDocument().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "document",
-                        ObjectMappers.JSON_MAPPER.writeValueAsString(
-                                request.getDocument().get()));
-            }
-            if (request.getCreate().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "create",
-                        ObjectMappers.JSON_MAPPER.writeValueAsString(
-                                request.getCreate().get()));
-            }
-            multipartBodyBuilder.addFormDataPart("file", filename, fs.toRequestBody());
-            if (request.getRequestId().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "request_id", request.getRequestId().get());
-            }
-            if (request.getId().isPresent()) {
-                multipartBodyBuilder.addFormDataPart("id", request.getId().get());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        RequestBody body = multipartBodyBuilder.build();
-        Request.Builder _requestBuilder = new Request.Builder();
-        _requestBuilder.url(httpUrl.build());
-        _requestBuilder.method("POST", body);
-        _requestBuilder.headers(Headers.of(this.clientOptions.headers((RequestOptions) null)));
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadItemResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 409:
-                        throw new ConflictError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
+  public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
+    String jobId,
+    UploadItemRequest request,
+    InputStream stream,
+    String filename
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/batch")
+      .addPathSegment(jobId)
+      .addPathSegments("items");
+    FileStream fs = new FileStream(stream, filename, null);
+    MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder()
+      .setType(MultipartBody.FORM);
+    try {
+      if (request.getDocument().isPresent()) {
+        multipartBodyBuilder.addFormDataPart(
+          "document",
+          ObjectMappers.JSON_MAPPER.writeValueAsString(request.getDocument().get())
+        );
+      }
+      if (request.getCreate().isPresent()) {
+        multipartBodyBuilder.addFormDataPart(
+          "create",
+          ObjectMappers.JSON_MAPPER.writeValueAsString(request.getCreate().get())
+        );
+      }
+      multipartBodyBuilder.addFormDataPart("file", filename, fs.toRequestBody());
+      if (request.getRequestId().isPresent()) {
+        multipartBodyBuilder.addFormDataPart("request_id", request.getRequestId().get());
+      }
+      if (request.getId().isPresent()) {
+        multipartBodyBuilder.addFormDataPart("id", request.getId().get());
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
+    RequestBody body = multipartBodyBuilder.build();
+    Request.Builder _requestBuilder = new Request.Builder();
+    _requestBuilder.url(httpUrl.build());
+    _requestBuilder.method("POST", body);
+    _requestBuilder.headers(Headers.of(this.clientOptions.headers((RequestOptions) null)));
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadItemResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 409:
+            throw new ConflictError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
-            String jobId,
-            UploadItemRequest request,
-            InputStream stream,
-            String filename,
-            RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
-                .addPathSegments("items");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        FileStream fs = new FileStream(stream, filename, null);
-        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        try {
-            if (request.getDocument().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "document",
-                        ObjectMappers.JSON_MAPPER.writeValueAsString(
-                                request.getDocument().get()));
-            }
-            if (request.getCreate().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "create",
-                        ObjectMappers.JSON_MAPPER.writeValueAsString(
-                                request.getCreate().get()));
-            }
-            multipartBodyBuilder.addFormDataPart("file", filename, fs.toRequestBody());
-            if (request.getRequestId().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "request_id", request.getRequestId().get());
-            }
-            if (request.getId().isPresent()) {
-                multipartBodyBuilder.addFormDataPart("id", request.getId().get());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        RequestBody body = multipartBodyBuilder.build();
-        Request.Builder _requestBuilder = new Request.Builder();
-        _requestBuilder.url(httpUrl.build());
-        _requestBuilder.method("POST", body);
-        _requestBuilder.headers(Headers.of(this.clientOptions.headers(requestOptions)));
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadItemResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 409:
-                        throw new ConflictError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
+  public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
+    String jobId,
+    UploadItemRequest request,
+    InputStream stream,
+    String filename,
+    MediaType mediaType
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/batch")
+      .addPathSegment(jobId)
+      .addPathSegments("items");
+    FileStream fs = new FileStream(stream, filename, mediaType);
+    MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder()
+      .setType(MultipartBody.FORM);
+    try {
+      if (request.getDocument().isPresent()) {
+        multipartBodyBuilder.addFormDataPart(
+          "document",
+          ObjectMappers.JSON_MAPPER.writeValueAsString(request.getDocument().get())
+        );
+      }
+      if (request.getCreate().isPresent()) {
+        multipartBodyBuilder.addFormDataPart(
+          "create",
+          ObjectMappers.JSON_MAPPER.writeValueAsString(request.getCreate().get())
+        );
+      }
+      multipartBodyBuilder.addFormDataPart("file", filename, fs.toRequestBody());
+      if (request.getRequestId().isPresent()) {
+        multipartBodyBuilder.addFormDataPart("request_id", request.getRequestId().get());
+      }
+      if (request.getId().isPresent()) {
+        multipartBodyBuilder.addFormDataPart("id", request.getId().get());
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
+    RequestBody body = multipartBodyBuilder.build();
+    Request.Builder _requestBuilder = new Request.Builder();
+    _requestBuilder.url(httpUrl.build());
+    _requestBuilder.method("POST", body);
+    _requestBuilder.headers(Headers.of(this.clientOptions.headers((RequestOptions) null)));
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadItemResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 409:
+            throw new ConflictError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
-            String jobId,
-            UploadItemRequest request,
-            InputStream stream,
-            String filename,
-            MediaType mediaType,
-            RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
-                .addPathSegments("items");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        FileStream fs = new FileStream(stream, filename, mediaType);
-        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        try {
-            if (request.getDocument().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "document",
-                        ObjectMappers.JSON_MAPPER.writeValueAsString(
-                                request.getDocument().get()));
-            }
-            if (request.getCreate().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "create",
-                        ObjectMappers.JSON_MAPPER.writeValueAsString(
-                                request.getCreate().get()));
-            }
-            multipartBodyBuilder.addFormDataPart("file", filename, fs.toRequestBody());
-            if (request.getRequestId().isPresent()) {
-                multipartBodyBuilder.addFormDataPart(
-                        "request_id", request.getRequestId().get());
-            }
-            if (request.getId().isPresent()) {
-                multipartBodyBuilder.addFormDataPart("id", request.getId().get());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        RequestBody body = multipartBodyBuilder.build();
-        Request.Builder _requestBuilder = new Request.Builder();
-        _requestBuilder.url(httpUrl.build());
-        _requestBuilder.method("POST", body);
-        _requestBuilder.headers(Headers.of(this.clientOptions.headers(requestOptions)));
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadItemResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 409:
-                        throw new ConflictError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
+  public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
+    String jobId,
+    UploadItemRequest request,
+    InputStream stream,
+    String filename,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/batch")
+      .addPathSegment(jobId)
+      .addPathSegments("items");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    FileStream fs = new FileStream(stream, filename, null);
+    MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder()
+      .setType(MultipartBody.FORM);
+    try {
+      if (request.getDocument().isPresent()) {
+        multipartBodyBuilder.addFormDataPart(
+          "document",
+          ObjectMappers.JSON_MAPPER.writeValueAsString(request.getDocument().get())
+        );
+      }
+      if (request.getCreate().isPresent()) {
+        multipartBodyBuilder.addFormDataPart(
+          "create",
+          ObjectMappers.JSON_MAPPER.writeValueAsString(request.getCreate().get())
+        );
+      }
+      multipartBodyBuilder.addFormDataPart("file", filename, fs.toRequestBody());
+      if (request.getRequestId().isPresent()) {
+        multipartBodyBuilder.addFormDataPart("request_id", request.getRequestId().get());
+      }
+      if (request.getId().isPresent()) {
+        multipartBodyBuilder.addFormDataPart("id", request.getId().get());
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    RequestBody body = multipartBodyBuilder.build();
+    Request.Builder _requestBuilder = new Request.Builder();
+    _requestBuilder.url(httpUrl.build());
+    _requestBuilder.method("POST", body);
+    _requestBuilder.headers(Headers.of(this.clientOptions.headers(requestOptions)));
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadItemResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 409:
+            throw new ConflictError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Seals the job's item set and starts processing. Takes no request body.
-     * Finalize is idempotent: a retried finalize succeeds again.
-     * <p>If a previous upload did not complete, finalize returns a <code>409</code>; re-send
-     * the missing upload (with the same <code>request_id</code>), then finalize.
-     * Finalizing a job with no items is a <code>400</code>.</p>
-     */
-    public PhenomlClientHttpResponse<BatchJob> finalize(String jobId) {
-        return finalize(jobId, null);
+  public PhenomlClientHttpResponse<UploadItemResponse> uploadItem(
+    String jobId,
+    UploadItemRequest request,
+    InputStream stream,
+    String filename,
+    MediaType mediaType,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/batch")
+      .addPathSegment(jobId)
+      .addPathSegments("items");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    FileStream fs = new FileStream(stream, filename, mediaType);
+    MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder()
+      .setType(MultipartBody.FORM);
+    try {
+      if (request.getDocument().isPresent()) {
+        multipartBodyBuilder.addFormDataPart(
+          "document",
+          ObjectMappers.JSON_MAPPER.writeValueAsString(request.getDocument().get())
+        );
+      }
+      if (request.getCreate().isPresent()) {
+        multipartBodyBuilder.addFormDataPart(
+          "create",
+          ObjectMappers.JSON_MAPPER.writeValueAsString(request.getCreate().get())
+        );
+      }
+      multipartBodyBuilder.addFormDataPart("file", filename, fs.toRequestBody());
+      if (request.getRequestId().isPresent()) {
+        multipartBodyBuilder.addFormDataPart("request_id", request.getRequestId().get());
+      }
+      if (request.getId().isPresent()) {
+        multipartBodyBuilder.addFormDataPart("id", request.getId().get());
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    RequestBody body = multipartBodyBuilder.build();
+    Request.Builder _requestBuilder = new Request.Builder();
+    _requestBuilder.url(httpUrl.build());
+    _requestBuilder.method("POST", body);
+    _requestBuilder.headers(Headers.of(this.clientOptions.headers(requestOptions)));
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UploadItemResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 409:
+            throw new ConflictError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Seals the job's item set and starts processing. Takes no request body.
-     * Finalize is idempotent: a retried finalize succeeds again.
-     * <p>If a previous upload did not complete, finalize returns a <code>409</code>; re-send
-     * the missing upload (with the same <code>request_id</code>), then finalize.
-     * Finalizing a job with no items is a <code>400</code>.</p>
-     */
-    public PhenomlClientHttpResponse<BatchJob> finalize(String jobId, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
-                .addPathSegments("finalize");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", RequestBody.create("", null))
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, BatchJob.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 409:
-                        throw new ConflictError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Seals the job's item set and starts processing. Takes no request body.
+   * Finalize is idempotent: a retried finalize succeeds again.
+   * <p>If a previous upload did not complete, finalize returns a <code>409</code>; re-send
+   * the missing upload (with the same <code>request_id</code>), then finalize.
+   * Finalizing a job with no items is a <code>400</code>.</p>
+   */
+  public PhenomlClientHttpResponse<BatchJob> finalize(String jobId) {
+    return finalize(jobId, null);
+  }
 
-    /**
-     * Drives a job to the terminal <code>canceled</code> state on request. Takes no
-     * request body.
-     * <p>Cancel does not delete the job: the job record and any results already
-     * produced are preserved for the normal retention window, the same as a
-     * <code>completed</code> or <code>failed</code> job. Items stop being processed and keep the state
-     * they held at cancellation, so a canceled job's <code>counts</code> may show
-     * unfinished items that never resolve.</p>
-     * <p>Cancel is idempotent: canceling an already-<code>canceled</code> job returns <code>200</code>
-     * with the job. Canceling a job that has already <code>completed</code> or <code>failed</code> is
-     * a <code>409</code>.</p>
-     */
-    public PhenomlClientHttpResponse<BatchJob> cancel(String jobId) {
-        return cancel(jobId, null);
+  /**
+   * Seals the job's item set and starts processing. Takes no request body.
+   * Finalize is idempotent: a retried finalize succeeds again.
+   * <p>If a previous upload did not complete, finalize returns a <code>409</code>; re-send
+   * the missing upload (with the same <code>request_id</code>), then finalize.
+   * Finalizing a job with no items is a <code>400</code>.</p>
+   */
+  public PhenomlClientHttpResponse<BatchJob> finalize(String jobId, RequestOptions requestOptions) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/batch")
+      .addPathSegment(jobId)
+      .addPathSegments("finalize");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method(
+        "POST",
+        BodyProperties.toRequestBody(
+          requestOptions != null ? requestOptions.getBodyProperties() : null,
+          RequestBody.create("", null)
+        )
+      )
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, BatchJob.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 409:
+            throw new ConflictError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Drives a job to the terminal <code>canceled</code> state on request. Takes no
-     * request body.
-     * <p>Cancel does not delete the job: the job record and any results already
-     * produced are preserved for the normal retention window, the same as a
-     * <code>completed</code> or <code>failed</code> job. Items stop being processed and keep the state
-     * they held at cancellation, so a canceled job's <code>counts</code> may show
-     * unfinished items that never resolve.</p>
-     * <p>Cancel is idempotent: canceling an already-<code>canceled</code> job returns <code>200</code>
-     * with the job. Canceling a job that has already <code>completed</code> or <code>failed</code> is
-     * a <code>409</code>.</p>
-     */
-    public PhenomlClientHttpResponse<BatchJob> cancel(String jobId, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
-                .addPathSegments("cancel");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", RequestBody.create("", null))
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, BatchJob.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 409:
-                        throw new ConflictError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Drives a job to the terminal <code>canceled</code> state on request. Takes no
+   * request body.
+   * <p>Cancel does not delete the job: the job record and any results already
+   * produced are preserved for the normal retention window, the same as a
+   * <code>completed</code> or <code>failed</code> job. Items stop being processed and keep the state
+   * they held at cancellation, so a canceled job's <code>counts</code> may show
+   * unfinished items that never resolve.</p>
+   * <p>Cancel is idempotent: canceling an already-<code>canceled</code> job returns <code>200</code>
+   * with the job. Canceling a job that has already <code>completed</code> or <code>failed</code> is
+   * a <code>409</code>.</p>
+   */
+  public PhenomlClientHttpResponse<BatchJob> cancel(String jobId) {
+    return cancel(jobId, null);
+  }
 
-    /**
-     * Returns a job's record, its per-status item counts, and one page of
-     * per-item statuses.
-     * <p>Items are listed in a stable order that is not upload order and is the
-     * same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public PhenomlClientHttpResponse<JobDetailResponse> get(String jobId) {
-        return get(jobId, GetRequest.builder().build());
+  /**
+   * Drives a job to the terminal <code>canceled</code> state on request. Takes no
+   * request body.
+   * <p>Cancel does not delete the job: the job record and any results already
+   * produced are preserved for the normal retention window, the same as a
+   * <code>completed</code> or <code>failed</code> job. Items stop being processed and keep the state
+   * they held at cancellation, so a canceled job's <code>counts</code> may show
+   * unfinished items that never resolve.</p>
+   * <p>Cancel is idempotent: canceling an already-<code>canceled</code> job returns <code>200</code>
+   * with the job. Canceling a job that has already <code>completed</code> or <code>failed</code> is
+   * a <code>409</code>.</p>
+   */
+  public PhenomlClientHttpResponse<BatchJob> cancel(String jobId, RequestOptions requestOptions) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/batch")
+      .addPathSegment(jobId)
+      .addPathSegments("cancel");
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method(
+        "POST",
+        BodyProperties.toRequestBody(
+          requestOptions != null ? requestOptions.getBodyProperties() : null,
+          RequestBody.create("", null)
+        )
+      )
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, BatchJob.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 409:
+            throw new ConflictError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Returns a job's record, its per-status item counts, and one page of
-     * per-item statuses.
-     * <p>Items are listed in a stable order that is not upload order and is the
-     * same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public PhenomlClientHttpResponse<JobDetailResponse> get(String jobId, RequestOptions requestOptions) {
-        return get(jobId, GetRequest.builder().build(), requestOptions);
-    }
+  /**
+   * Returns a job's record, its per-status item counts, and one page of
+   * per-item statuses.
+   * <p>Items are listed in a stable order that is not upload order and is the
+   * same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public PhenomlClientHttpResponse<JobDetailResponse> get(String jobId) {
+    return get(jobId, GetRequest.builder().build());
+  }
 
-    /**
-     * Returns a job's record, its per-status item counts, and one page of
-     * per-item statuses.
-     * <p>Items are listed in a stable order that is not upload order and is the
-     * same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public PhenomlClientHttpResponse<JobDetailResponse> get(String jobId, GetRequest request) {
-        return get(jobId, request, null);
-    }
+  /**
+   * Returns a job's record, its per-status item counts, and one page of
+   * per-item statuses.
+   * <p>Items are listed in a stable order that is not upload order and is the
+   * same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public PhenomlClientHttpResponse<JobDetailResponse> get(
+    String jobId,
+    RequestOptions requestOptions
+  ) {
+    return get(jobId, GetRequest.builder().build(), requestOptions);
+  }
 
-    /**
-     * Returns a job's record, its per-status item counts, and one page of
-     * per-item statuses.
-     * <p>Items are listed in a stable order that is not upload order and is the
-     * same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public PhenomlClientHttpResponse<JobDetailResponse> get(
-            String jobId, GetRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId);
-        if (request.getCursor().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "cursor", request.getCursor().get(), false);
-        }
-        if (request.getLimit().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "limit", request.getLimit().get(), false);
-        }
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("GET", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, JobDetailResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * Returns a job's record, its per-status item counts, and one page of
+   * per-item statuses.
+   * <p>Items are listed in a stable order that is not upload order and is the
+   * same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public PhenomlClientHttpResponse<JobDetailResponse> get(String jobId, GetRequest request) {
+    return get(jobId, request, null);
+  }
 
-    /**
-     * A lighter status page. Returns the same per-item status entries as
-     * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
-     * and the entries carry <code>result_size</code> rather than any result content. Use
-     * each entry's <code>item_id</code> to fetch that item's result from
-     * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
-     * <p>Entries are listed in a stable order that is not upload order and is
-     * the same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public PhenomlClientHttpResponse<ResultsPageResponse> getResults(String jobId) {
-        return getResults(jobId, GetResultsRequest.builder().build());
+  /**
+   * Returns a job's record, its per-status item counts, and one page of
+   * per-item statuses.
+   * <p>Items are listed in a stable order that is not upload order and is the
+   * same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public PhenomlClientHttpResponse<JobDetailResponse> get(
+    String jobId,
+    GetRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/batch")
+      .addPathSegment(jobId);
+    if (request.getCursor().isPresent()) {
+      QueryStringMapper.addQueryParameter(httpUrl, "cursor", request.getCursor().get(), false);
     }
+    if (request.getLimit().isPresent()) {
+      QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get(), false);
+    }
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
+    }
+    Request.Builder _requestBuilder = new Request.Builder()
+      .url(httpUrl.build())
+      .method("GET", null)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json");
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, JobDetailResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * A lighter status page. Returns the same per-item status entries as
-     * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
-     * and the entries carry <code>result_size</code> rather than any result content. Use
-     * each entry's <code>item_id</code> to fetch that item's result from
-     * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
-     * <p>Entries are listed in a stable order that is not upload order and is
-     * the same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public PhenomlClientHttpResponse<ResultsPageResponse> getResults(String jobId, RequestOptions requestOptions) {
-        return getResults(jobId, GetResultsRequest.builder().build(), requestOptions);
-    }
+  /**
+   * A lighter status page. Returns the same per-item status entries as
+   * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
+   * and the entries carry <code>result_size</code> rather than any result content. Use
+   * each entry's <code>item_id</code> to fetch that item's result from
+   * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
+   * <p>Entries are listed in a stable order that is not upload order and is
+   * the same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public PhenomlClientHttpResponse<ResultsPageResponse> getResults(String jobId) {
+    return getResults(jobId, GetResultsRequest.builder().build());
+  }
 
-    /**
-     * A lighter status page. Returns the same per-item status entries as
-     * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
-     * and the entries carry <code>result_size</code> rather than any result content. Use
-     * each entry's <code>item_id</code> to fetch that item's result from
-     * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
-     * <p>Entries are listed in a stable order that is not upload order and is
-     * the same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public PhenomlClientHttpResponse<ResultsPageResponse> getResults(String jobId, GetResultsRequest request) {
-        return getResults(jobId, request, null);
-    }
+  /**
+   * A lighter status page. Returns the same per-item status entries as
+   * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
+   * and the entries carry <code>result_size</code> rather than any result content. Use
+   * each entry's <code>item_id</code> to fetch that item's result from
+   * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
+   * <p>Entries are listed in a stable order that is not upload order and is
+   * the same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public PhenomlClientHttpResponse<ResultsPageResponse> getResults(
+    String jobId,
+    RequestOptions requestOptions
+  ) {
+    return getResults(jobId, GetResultsRequest.builder().build(), requestOptions);
+  }
 
-    /**
-     * A lighter status page. Returns the same per-item status entries as
-     * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
-     * and the entries carry <code>result_size</code> rather than any result content. Use
-     * each entry's <code>item_id</code> to fetch that item's result from
-     * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
-     * <p>Entries are listed in a stable order that is not upload order and is
-     * the same across pages. Match each entry to your own records by its <code>id</code>
-     * (your correlation label) or <code>item_id</code> (from the upload response),
-     * never by position.</p>
-     */
-    public PhenomlClientHttpResponse<ResultsPageResponse> getResults(
-            String jobId, GetResultsRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
-                .addPathSegments("results");
-        if (request.getCursor().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "cursor", request.getCursor().get(), false);
-        }
-        if (request.getLimit().isPresent()) {
-            QueryStringMapper.addQueryParameter(
-                    httpUrl, "limit", request.getLimit().get(), false);
-        }
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request.Builder _requestBuilder = new Request.Builder()
-                .url(httpUrl.build())
-                .method("GET", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json");
-        Request okhttpRequest = _requestBuilder.build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ResultsPageResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
+  /**
+   * A lighter status page. Returns the same per-item status entries as
+   * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
+   * and the entries carry <code>result_size</code> rather than any result content. Use
+   * each entry's <code>item_id</code> to fetch that item's result from
+   * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
+   * <p>Entries are listed in a stable order that is not upload order and is
+   * the same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public PhenomlClientHttpResponse<ResultsPageResponse> getResults(
+    String jobId,
+    GetResultsRequest request
+  ) {
+    return getResults(jobId, request, null);
+  }
 
-    /**
-     * Streams one item's stored result bytes verbatim as <code>application/json</code>.
-     * The body is the response the item's synchronous multi endpoint would have
-     * returned — a <code>DocumentMultiResponse</code> for a document item or a
-     * <code>CreateMultiResponse</code> for a create item.
-     * <p>Only a succeeded item has a result: an item that has not succeeded
-     * (pending, processing, or failed) is a <code>409</code>, and a result that has
-     * expired is a <code>404</code>.</p>
-     */
-    public PhenomlClientHttpResponse<Map<String, Object>> getResult(String jobId, String itemId) {
-        return getResult(jobId, itemId, null);
+  /**
+   * A lighter status page. Returns the same per-item status entries as
+   * <code>GET /lang2fhir/batch/{job_id}</code>, but without the job record or counts,
+   * and the entries carry <code>result_size</code> rather than any result content. Use
+   * each entry's <code>item_id</code> to fetch that item's result from
+   * <code>GET /lang2fhir/batch/{job_id}/results/{item_id}</code>.
+   * <p>Entries are listed in a stable order that is not upload order and is
+   * the same across pages. Match each entry to your own records by its <code>id</code>
+   * (your correlation label) or <code>item_id</code> (from the upload response),
+   * never by position.</p>
+   */
+  public PhenomlClientHttpResponse<ResultsPageResponse> getResults(
+    String jobId,
+    GetResultsRequest request,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/batch")
+      .addPathSegment(jobId)
+      .addPathSegments("results");
+    if (request.getCursor().isPresent()) {
+      QueryStringMapper.addQueryParameter(httpUrl, "cursor", request.getCursor().get(), false);
     }
+    if (request.getLimit().isPresent()) {
+      QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get(), false);
+    }
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
+    }
+    Request.Builder _requestBuilder = new Request.Builder()
+      .url(httpUrl.build())
+      .method("GET", null)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json");
+    Request okhttpRequest = _requestBuilder.build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ResultsPageResponse.class),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 
-    /**
-     * Streams one item's stored result bytes verbatim as <code>application/json</code>.
-     * The body is the response the item's synchronous multi endpoint would have
-     * returned — a <code>DocumentMultiResponse</code> for a document item or a
-     * <code>CreateMultiResponse</code> for a create item.
-     * <p>Only a succeeded item has a result: an item that has not succeeded
-     * (pending, processing, or failed) is a <code>409</code>, and a result that has
-     * expired is a <code>404</code>.</p>
-     */
-    public PhenomlClientHttpResponse<Map<String, Object>> getResult(
-            String jobId, String itemId, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
-                .addPathSegments("results")
-                .addPathSegment(itemId);
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("GET", null)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(
-                                responseBodyString, new TypeReference<Map<String, Object>>() {}),
-                        response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 404:
-                        throw new NotFoundError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 409:
-                        throw new ConflictError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 499:
-                        throw new ClientClosedRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 504:
-                        throw new GatewayTimeoutError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
+  /**
+   * Streams one item's stored result bytes verbatim as <code>application/json</code>.
+   * The body is the response the item's synchronous multi endpoint would have
+   * returned — a <code>DocumentMultiResponse</code> for a document item or a
+   * <code>CreateMultiResponse</code> for a create item.
+   * <p>Only a succeeded item has a result: an item that has not succeeded
+   * (pending, processing, or failed) is a <code>409</code>, and a result that has
+   * expired is a <code>404</code>.</p>
+   */
+  public PhenomlClientHttpResponse<Map<String, Object>> getResult(String jobId, String itemId) {
+    return getResult(jobId, itemId, null);
+  }
+
+  /**
+   * Streams one item's stored result bytes verbatim as <code>application/json</code>.
+   * The body is the response the item's synchronous multi endpoint would have
+   * returned — a <code>DocumentMultiResponse</code> for a document item or a
+   * <code>CreateMultiResponse</code> for a create item.
+   * <p>Only a succeeded item has a result: an item that has not succeeded
+   * (pending, processing, or failed) is a <code>409</code>, and a result that has
+   * expired is a <code>404</code>.</p>
+   */
+  public PhenomlClientHttpResponse<Map<String, Object>> getResult(
+    String jobId,
+    String itemId,
+    RequestOptions requestOptions
+  ) {
+    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+      .newBuilder()
+      .addPathSegments("lang2fhir/batch")
+      .addPathSegment(jobId)
+      .addPathSegments("results")
+      .addPathSegment(itemId);
+    if (requestOptions != null) {
+      requestOptions
+        .getQueryParameters()
+        .forEach((_key, _value) -> {
+          httpUrl.addQueryParameter(_key, _value);
+        });
     }
+    Request okhttpRequest = new Request.Builder()
+      .url(httpUrl.build())
+      .method("GET", null)
+      .headers(Headers.of(clientOptions.headers(requestOptions)))
+      .addHeader("Accept", "application/json")
+      .build();
+    OkHttpClient client = clientOptions.httpClient();
+    if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+      client = clientOptions.httpClientWithTimeout(requestOptions);
+    }
+    if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+      okhttpRequest = okhttpRequest
+        .newBuilder()
+        .tag(
+          RetryInterceptor.MaxRetriesOverride.class,
+          new RetryInterceptor.MaxRetriesOverride(requestOptions.getMaxRetries().get())
+        )
+        .build();
+    }
+    try (Response response = client.newCall(okhttpRequest).execute()) {
+      ResponseBody responseBody = response.body();
+      String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+      if (response.isSuccessful()) {
+        return new PhenomlClientHttpResponse<>(
+          ObjectMappers.JSON_MAPPER.readValue(
+            responseBodyString,
+            new TypeReference<Map<String, Object>>() {}
+          ),
+          response
+        );
+      }
+      try {
+        switch (response.code()) {
+          case 400:
+            throw new BadRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 401:
+            throw new UnauthorizedError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 404:
+            throw new NotFoundError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 409:
+            throw new ConflictError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 499:
+            throw new ClientClosedRequestError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 500:
+            throw new InternalServerError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+          case 504:
+            throw new GatewayTimeoutError(
+              ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class),
+              response
+            );
+        }
+      } catch (JsonProcessingException ignored) {
+        // unable to map error response, throwing generic error
+      }
+      Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+      throw new PhenomlClientApiException(
+        "Error with status code " + response.code(),
+        response.code(),
+        errorBody,
+        response
+      );
+    } catch (JsonProcessingException e) {
+      throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new PhenomlClientException("Network error executing HTTP request", e);
+    }
+  }
 }

@@ -21,109 +21,123 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ProviderRoleCodeableConcept.Builder.class)
 public final class ProviderRoleCodeableConcept {
-    private final Optional<String> sourceValue;
 
-    private final Optional<List<Coding>> codings;
+  private final Optional<String> sourceValue;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<Coding>> codings;
 
-    private ProviderRoleCodeableConcept(
-            Optional<String> sourceValue, Optional<List<Coding>> codings, Map<String, Object> additionalProperties) {
-        this.sourceValue = sourceValue;
-        this.codings = codings;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ProviderRoleCodeableConcept(
+    Optional<String> sourceValue,
+    Optional<List<Coding>> codings,
+    Map<String, Object> additionalProperties
+  ) {
+    this.sourceValue = sourceValue;
+    this.codings = codings;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("source_value")
+  public Optional<String> getSourceValue() {
+    return sourceValue;
+  }
+
+  @JsonProperty("codings")
+  public Optional<List<Coding>> getCodings() {
+    return codings;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof ProviderRoleCodeableConcept && equalTo((ProviderRoleCodeableConcept) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ProviderRoleCodeableConcept other) {
+    return sourceValue.equals(other.sourceValue) && codings.equals(other.codings);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.sourceValue, this.codings);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> sourceValue = Optional.empty();
+
+    private Optional<List<Coding>> codings = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ProviderRoleCodeableConcept other) {
+      sourceValue(other.getSourceValue());
+      codings(other.getCodings());
+      return this;
     }
 
-    @JsonProperty("source_value")
-    public Optional<String> getSourceValue() {
-        return sourceValue;
+    @JsonSetter(value = "source_value", nulls = Nulls.SKIP)
+    public Builder sourceValue(Optional<String> sourceValue) {
+      this.sourceValue = sourceValue;
+      return this;
     }
 
-    @JsonProperty("codings")
-    public Optional<List<Coding>> getCodings() {
-        return codings;
+    public Builder sourceValue(String sourceValue) {
+      this.sourceValue = Optional.ofNullable(sourceValue);
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ProviderRoleCodeableConcept && equalTo((ProviderRoleCodeableConcept) other);
+    @JsonSetter(value = "codings", nulls = Nulls.SKIP)
+    public Builder codings(Optional<List<Coding>> codings) {
+      this.codings = codings;
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder codings(List<Coding> codings) {
+      this.codings = Optional.ofNullable(codings);
+      return this;
     }
 
-    private boolean equalTo(ProviderRoleCodeableConcept other) {
-        return sourceValue.equals(other.sourceValue) && codings.equals(other.codings);
+    public ProviderRoleCodeableConcept build() {
+      return new ProviderRoleCodeableConcept(sourceValue, codings, additionalProperties);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.sourceValue, this.codings);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("source_value") || key.equalsIgnoreCase("codings")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> sourceValue = Optional.empty();
-
-        private Optional<List<Coding>> codings = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ProviderRoleCodeableConcept other) {
-            sourceValue(other.getSourceValue());
-            codings(other.getCodings());
-            return this;
-        }
-
-        @JsonSetter(value = "source_value", nulls = Nulls.SKIP)
-        public Builder sourceValue(Optional<String> sourceValue) {
-            this.sourceValue = sourceValue;
-            return this;
-        }
-
-        public Builder sourceValue(String sourceValue) {
-            this.sourceValue = Optional.ofNullable(sourceValue);
-            return this;
-        }
-
-        @JsonSetter(value = "codings", nulls = Nulls.SKIP)
-        public Builder codings(Optional<List<Coding>> codings) {
-            this.codings = codings;
-            return this;
-        }
-
-        public Builder codings(List<Coding> codings) {
-            this.codings = Optional.ofNullable(codings);
-            return this;
-        }
-
-        public ProviderRoleCodeableConcept build() {
-            return new ProviderRoleCodeableConcept(sourceValue, codings, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

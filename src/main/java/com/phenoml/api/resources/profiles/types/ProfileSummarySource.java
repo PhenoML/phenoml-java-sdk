@@ -7,77 +7,87 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class ProfileSummarySource {
-    public static final ProfileSummarySource BUILTIN = new ProfileSummarySource(Value.BUILTIN, "builtin");
 
-    public static final ProfileSummarySource CUSTOM = new ProfileSummarySource(Value.CUSTOM, "custom");
+  public static final ProfileSummarySource BUILTIN = new ProfileSummarySource(
+    Value.BUILTIN,
+    "builtin"
+  );
 
-    private final Value value;
+  public static final ProfileSummarySource CUSTOM = new ProfileSummarySource(
+    Value.CUSTOM,
+    "custom"
+  );
 
-    private final String string;
+  private final Value value;
 
-    ProfileSummarySource(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  ProfileSummarySource(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof ProfileSummarySource &&
+        this.string.equals(((ProfileSummarySource) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case BUILTIN:
+        return visitor.visitBuiltin();
+      case CUSTOM:
+        return visitor.visitCustom();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static ProfileSummarySource valueOf(String value) {
+    switch (value) {
+      case "builtin":
+        return BUILTIN;
+      case "custom":
+        return CUSTOM;
+      default:
+        return new ProfileSummarySource(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
+  public enum Value {
+    CUSTOM,
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof ProfileSummarySource && this.string.equals(((ProfileSummarySource) other).string));
-    }
+    BUILTIN,
 
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
+    UNKNOWN,
+  }
 
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case BUILTIN:
-                return visitor.visitBuiltin();
-            case CUSTOM:
-                return visitor.visitCustom();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
+  public interface Visitor<T> {
+    T visitCustom();
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static ProfileSummarySource valueOf(String value) {
-        switch (value) {
-            case "builtin":
-                return BUILTIN;
-            case "custom":
-                return CUSTOM;
-            default:
-                return new ProfileSummarySource(Value.UNKNOWN, value);
-        }
-    }
+    T visitBuiltin();
 
-    public enum Value {
-        CUSTOM,
-
-        BUILTIN,
-
-        UNKNOWN
-    }
-
-    public interface Visitor<T> {
-        T visitCustom();
-
-        T visitBuiltin();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

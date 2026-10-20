@@ -7,384 +7,443 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class SearchResponseResourceType {
-    public static final SearchResponseResourceType DOCUMENT_REFERENCE =
-            new SearchResponseResourceType(Value.DOCUMENT_REFERENCE, "DocumentReference");
 
-    public static final SearchResponseResourceType PLAN_DEFINITION =
-            new SearchResponseResourceType(Value.PLAN_DEFINITION, "PlanDefinition");
+  public static final SearchResponseResourceType DOCUMENT_REFERENCE =
+    new SearchResponseResourceType(Value.DOCUMENT_REFERENCE, "DocumentReference");
 
-    public static final SearchResponseResourceType IMMUNIZATION =
-            new SearchResponseResourceType(Value.IMMUNIZATION, "Immunization");
+  public static final SearchResponseResourceType PLAN_DEFINITION = new SearchResponseResourceType(
+    Value.PLAN_DEFINITION,
+    "PlanDefinition"
+  );
 
-    public static final SearchResponseResourceType CARE_TEAM =
-            new SearchResponseResourceType(Value.CARE_TEAM, "CareTeam");
+  public static final SearchResponseResourceType IMMUNIZATION = new SearchResponseResourceType(
+    Value.IMMUNIZATION,
+    "Immunization"
+  );
 
-    public static final SearchResponseResourceType PROVENANCE =
-            new SearchResponseResourceType(Value.PROVENANCE, "Provenance");
+  public static final SearchResponseResourceType CARE_TEAM = new SearchResponseResourceType(
+    Value.CARE_TEAM,
+    "CareTeam"
+  );
 
-    public static final SearchResponseResourceType LOCATION =
-            new SearchResponseResourceType(Value.LOCATION, "Location");
+  public static final SearchResponseResourceType PROVENANCE = new SearchResponseResourceType(
+    Value.PROVENANCE,
+    "Provenance"
+  );
 
-    public static final SearchResponseResourceType PRACTITIONER =
-            new SearchResponseResourceType(Value.PRACTITIONER, "Practitioner");
+  public static final SearchResponseResourceType LOCATION = new SearchResponseResourceType(
+    Value.LOCATION,
+    "Location"
+  );
 
-    public static final SearchResponseResourceType CONDITION =
-            new SearchResponseResourceType(Value.CONDITION, "Condition");
+  public static final SearchResponseResourceType PRACTITIONER = new SearchResponseResourceType(
+    Value.PRACTITIONER,
+    "Practitioner"
+  );
 
-    public static final SearchResponseResourceType DIAGNOSTIC_REPORT =
-            new SearchResponseResourceType(Value.DIAGNOSTIC_REPORT, "DiagnosticReport");
+  public static final SearchResponseResourceType CONDITION = new SearchResponseResourceType(
+    Value.CONDITION,
+    "Condition"
+  );
 
-    public static final SearchResponseResourceType MEDICATION_REQUEST =
-            new SearchResponseResourceType(Value.MEDICATION_REQUEST, "MedicationRequest");
+  public static final SearchResponseResourceType DIAGNOSTIC_REPORT = new SearchResponseResourceType(
+    Value.DIAGNOSTIC_REPORT,
+    "DiagnosticReport"
+  );
 
-    public static final SearchResponseResourceType PRACTITIONER_ROLE =
-            new SearchResponseResourceType(Value.PRACTITIONER_ROLE, "PractitionerRole");
+  public static final SearchResponseResourceType MEDICATION_REQUEST =
+    new SearchResponseResourceType(Value.MEDICATION_REQUEST, "MedicationRequest");
 
-    public static final SearchResponseResourceType QUESTIONNAIRE_RESPONSE =
-            new SearchResponseResourceType(Value.QUESTIONNAIRE_RESPONSE, "QuestionnaireResponse");
+  public static final SearchResponseResourceType PRACTITIONER_ROLE = new SearchResponseResourceType(
+    Value.PRACTITIONER_ROLE,
+    "PractitionerRole"
+  );
 
-    public static final SearchResponseResourceType OBSERVATION =
-            new SearchResponseResourceType(Value.OBSERVATION, "Observation");
+  public static final SearchResponseResourceType QUESTIONNAIRE_RESPONSE =
+    new SearchResponseResourceType(Value.QUESTIONNAIRE_RESPONSE, "QuestionnaireResponse");
 
-    public static final SearchResponseResourceType SLOT = new SearchResponseResourceType(Value.SLOT, "Slot");
+  public static final SearchResponseResourceType OBSERVATION = new SearchResponseResourceType(
+    Value.OBSERVATION,
+    "Observation"
+  );
 
-    public static final SearchResponseResourceType ALLERGY_INTOLERANCE =
-            new SearchResponseResourceType(Value.ALLERGY_INTOLERANCE, "AllergyIntolerance");
+  public static final SearchResponseResourceType SLOT = new SearchResponseResourceType(
+    Value.SLOT,
+    "Slot"
+  );
 
-    public static final SearchResponseResourceType SPECIMEN =
-            new SearchResponseResourceType(Value.SPECIMEN, "Specimen");
+  public static final SearchResponseResourceType ALLERGY_INTOLERANCE =
+    new SearchResponseResourceType(Value.ALLERGY_INTOLERANCE, "AllergyIntolerance");
 
-    public static final SearchResponseResourceType PROCEDURE =
-            new SearchResponseResourceType(Value.PROCEDURE, "Procedure");
+  public static final SearchResponseResourceType SPECIMEN = new SearchResponseResourceType(
+    Value.SPECIMEN,
+    "Specimen"
+  );
 
-    public static final SearchResponseResourceType CARE_PLAN =
-            new SearchResponseResourceType(Value.CARE_PLAN, "CarePlan");
+  public static final SearchResponseResourceType PROCEDURE = new SearchResponseResourceType(
+    Value.PROCEDURE,
+    "Procedure"
+  );
 
-    public static final SearchResponseResourceType MEDICATION =
-            new SearchResponseResourceType(Value.MEDICATION, "Medication");
+  public static final SearchResponseResourceType CARE_PLAN = new SearchResponseResourceType(
+    Value.CARE_PLAN,
+    "CarePlan"
+  );
 
-    public static final SearchResponseResourceType COVERAGE =
-            new SearchResponseResourceType(Value.COVERAGE, "Coverage");
+  public static final SearchResponseResourceType MEDICATION = new SearchResponseResourceType(
+    Value.MEDICATION,
+    "Medication"
+  );
 
-    public static final SearchResponseResourceType DEVICE = new SearchResponseResourceType(Value.DEVICE, "Device");
+  public static final SearchResponseResourceType COVERAGE = new SearchResponseResourceType(
+    Value.COVERAGE,
+    "Coverage"
+  );
 
-    public static final SearchResponseResourceType PATIENT = new SearchResponseResourceType(Value.PATIENT, "Patient");
+  public static final SearchResponseResourceType DEVICE = new SearchResponseResourceType(
+    Value.DEVICE,
+    "Device"
+  );
 
-    public static final SearchResponseResourceType QUESTIONNAIRE =
-            new SearchResponseResourceType(Value.QUESTIONNAIRE, "Questionnaire");
+  public static final SearchResponseResourceType PATIENT = new SearchResponseResourceType(
+    Value.PATIENT,
+    "Patient"
+  );
 
-    public static final SearchResponseResourceType ORGANIZATION =
-            new SearchResponseResourceType(Value.ORGANIZATION, "Organization");
+  public static final SearchResponseResourceType QUESTIONNAIRE = new SearchResponseResourceType(
+    Value.QUESTIONNAIRE,
+    "Questionnaire"
+  );
 
-    public static final SearchResponseResourceType ENCOUNTER =
-            new SearchResponseResourceType(Value.ENCOUNTER, "Encounter");
+  public static final SearchResponseResourceType ORGANIZATION = new SearchResponseResourceType(
+    Value.ORGANIZATION,
+    "Organization"
+  );
 
-    public static final SearchResponseResourceType GOAL = new SearchResponseResourceType(Value.GOAL, "Goal");
+  public static final SearchResponseResourceType ENCOUNTER = new SearchResponseResourceType(
+    Value.ENCOUNTER,
+    "Encounter"
+  );
 
-    public static final SearchResponseResourceType SCHEDULE =
-            new SearchResponseResourceType(Value.SCHEDULE, "Schedule");
+  public static final SearchResponseResourceType GOAL = new SearchResponseResourceType(
+    Value.GOAL,
+    "Goal"
+  );
 
-    public static final SearchResponseResourceType RELATED_PERSON =
-            new SearchResponseResourceType(Value.RELATED_PERSON, "RelatedPerson");
+  public static final SearchResponseResourceType SCHEDULE = new SearchResponseResourceType(
+    Value.SCHEDULE,
+    "Schedule"
+  );
 
-    public static final SearchResponseResourceType SERVICE_REQUEST =
-            new SearchResponseResourceType(Value.SERVICE_REQUEST, "ServiceRequest");
+  public static final SearchResponseResourceType RELATED_PERSON = new SearchResponseResourceType(
+    Value.RELATED_PERSON,
+    "RelatedPerson"
+  );
 
-    public static final SearchResponseResourceType APPOINTMENT =
-            new SearchResponseResourceType(Value.APPOINTMENT, "Appointment");
+  public static final SearchResponseResourceType SERVICE_REQUEST = new SearchResponseResourceType(
+    Value.SERVICE_REQUEST,
+    "ServiceRequest"
+  );
 
-    private final Value value;
+  public static final SearchResponseResourceType APPOINTMENT = new SearchResponseResourceType(
+    Value.APPOINTMENT,
+    "Appointment"
+  );
 
-    private final String string;
+  private final Value value;
 
-    SearchResponseResourceType(Value value, String string) {
-        this.value = value;
-        this.string = string;
+  private final String string;
+
+  SearchResponseResourceType(Value value, String string) {
+    this.value = value;
+    this.string = string;
+  }
+
+  public Value getEnumValue() {
+    return value;
+  }
+
+  @java.lang.Override
+  @JsonValue
+  public String toString() {
+    return this.string;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    return (
+      (this == other) ||
+      (other instanceof SearchResponseResourceType &&
+        this.string.equals(((SearchResponseResourceType) other).string))
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return this.string.hashCode();
+  }
+
+  public <T> T visit(Visitor<T> visitor) {
+    switch (value) {
+      case DOCUMENT_REFERENCE:
+        return visitor.visitDocumentReference();
+      case PLAN_DEFINITION:
+        return visitor.visitPlanDefinition();
+      case IMMUNIZATION:
+        return visitor.visitImmunization();
+      case CARE_TEAM:
+        return visitor.visitCareTeam();
+      case PROVENANCE:
+        return visitor.visitProvenance();
+      case LOCATION:
+        return visitor.visitLocation();
+      case PRACTITIONER:
+        return visitor.visitPractitioner();
+      case CONDITION:
+        return visitor.visitCondition();
+      case DIAGNOSTIC_REPORT:
+        return visitor.visitDiagnosticReport();
+      case MEDICATION_REQUEST:
+        return visitor.visitMedicationRequest();
+      case PRACTITIONER_ROLE:
+        return visitor.visitPractitionerRole();
+      case QUESTIONNAIRE_RESPONSE:
+        return visitor.visitQuestionnaireResponse();
+      case OBSERVATION:
+        return visitor.visitObservation();
+      case SLOT:
+        return visitor.visitSlot();
+      case ALLERGY_INTOLERANCE:
+        return visitor.visitAllergyIntolerance();
+      case SPECIMEN:
+        return visitor.visitSpecimen();
+      case PROCEDURE:
+        return visitor.visitProcedure();
+      case CARE_PLAN:
+        return visitor.visitCarePlan();
+      case MEDICATION:
+        return visitor.visitMedication();
+      case COVERAGE:
+        return visitor.visitCoverage();
+      case DEVICE:
+        return visitor.visitDevice();
+      case PATIENT:
+        return visitor.visitPatient();
+      case QUESTIONNAIRE:
+        return visitor.visitQuestionnaire();
+      case ORGANIZATION:
+        return visitor.visitOrganization();
+      case ENCOUNTER:
+        return visitor.visitEncounter();
+      case GOAL:
+        return visitor.visitGoal();
+      case SCHEDULE:
+        return visitor.visitSchedule();
+      case RELATED_PERSON:
+        return visitor.visitRelatedPerson();
+      case SERVICE_REQUEST:
+        return visitor.visitServiceRequest();
+      case APPOINTMENT:
+        return visitor.visitAppointment();
+      case UNKNOWN:
+      default:
+        return visitor.visitUnknown(string);
     }
+  }
 
-    public Value getEnumValue() {
-        return value;
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+  public static SearchResponseResourceType valueOf(String value) {
+    switch (value) {
+      case "DocumentReference":
+        return DOCUMENT_REFERENCE;
+      case "PlanDefinition":
+        return PLAN_DEFINITION;
+      case "Immunization":
+        return IMMUNIZATION;
+      case "CareTeam":
+        return CARE_TEAM;
+      case "Provenance":
+        return PROVENANCE;
+      case "Location":
+        return LOCATION;
+      case "Practitioner":
+        return PRACTITIONER;
+      case "Condition":
+        return CONDITION;
+      case "DiagnosticReport":
+        return DIAGNOSTIC_REPORT;
+      case "MedicationRequest":
+        return MEDICATION_REQUEST;
+      case "PractitionerRole":
+        return PRACTITIONER_ROLE;
+      case "QuestionnaireResponse":
+        return QUESTIONNAIRE_RESPONSE;
+      case "Observation":
+        return OBSERVATION;
+      case "Slot":
+        return SLOT;
+      case "AllergyIntolerance":
+        return ALLERGY_INTOLERANCE;
+      case "Specimen":
+        return SPECIMEN;
+      case "Procedure":
+        return PROCEDURE;
+      case "CarePlan":
+        return CARE_PLAN;
+      case "Medication":
+        return MEDICATION;
+      case "Coverage":
+        return COVERAGE;
+      case "Device":
+        return DEVICE;
+      case "Patient":
+        return PATIENT;
+      case "Questionnaire":
+        return QUESTIONNAIRE;
+      case "Organization":
+        return ORGANIZATION;
+      case "Encounter":
+        return ENCOUNTER;
+      case "Goal":
+        return GOAL;
+      case "Schedule":
+        return SCHEDULE;
+      case "RelatedPerson":
+        return RELATED_PERSON;
+      case "ServiceRequest":
+        return SERVICE_REQUEST;
+      case "Appointment":
+        return APPOINTMENT;
+      default:
+        return new SearchResponseResourceType(Value.UNKNOWN, value);
     }
+  }
 
-    @java.lang.Override
-    @JsonValue
-    public String toString() {
-        return this.string;
-    }
-
-    @java.lang.Override
-    public boolean equals(Object other) {
-        return (this == other)
-                || (other instanceof SearchResponseResourceType
-                        && this.string.equals(((SearchResponseResourceType) other).string));
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return this.string.hashCode();
-    }
-
-    public <T> T visit(Visitor<T> visitor) {
-        switch (value) {
-            case DOCUMENT_REFERENCE:
-                return visitor.visitDocumentReference();
-            case PLAN_DEFINITION:
-                return visitor.visitPlanDefinition();
-            case IMMUNIZATION:
-                return visitor.visitImmunization();
-            case CARE_TEAM:
-                return visitor.visitCareTeam();
-            case PROVENANCE:
-                return visitor.visitProvenance();
-            case LOCATION:
-                return visitor.visitLocation();
-            case PRACTITIONER:
-                return visitor.visitPractitioner();
-            case CONDITION:
-                return visitor.visitCondition();
-            case DIAGNOSTIC_REPORT:
-                return visitor.visitDiagnosticReport();
-            case MEDICATION_REQUEST:
-                return visitor.visitMedicationRequest();
-            case PRACTITIONER_ROLE:
-                return visitor.visitPractitionerRole();
-            case QUESTIONNAIRE_RESPONSE:
-                return visitor.visitQuestionnaireResponse();
-            case OBSERVATION:
-                return visitor.visitObservation();
-            case SLOT:
-                return visitor.visitSlot();
-            case ALLERGY_INTOLERANCE:
-                return visitor.visitAllergyIntolerance();
-            case SPECIMEN:
-                return visitor.visitSpecimen();
-            case PROCEDURE:
-                return visitor.visitProcedure();
-            case CARE_PLAN:
-                return visitor.visitCarePlan();
-            case MEDICATION:
-                return visitor.visitMedication();
-            case COVERAGE:
-                return visitor.visitCoverage();
-            case DEVICE:
-                return visitor.visitDevice();
-            case PATIENT:
-                return visitor.visitPatient();
-            case QUESTIONNAIRE:
-                return visitor.visitQuestionnaire();
-            case ORGANIZATION:
-                return visitor.visitOrganization();
-            case ENCOUNTER:
-                return visitor.visitEncounter();
-            case GOAL:
-                return visitor.visitGoal();
-            case SCHEDULE:
-                return visitor.visitSchedule();
-            case RELATED_PERSON:
-                return visitor.visitRelatedPerson();
-            case SERVICE_REQUEST:
-                return visitor.visitServiceRequest();
-            case APPOINTMENT:
-                return visitor.visitAppointment();
-            case UNKNOWN:
-            default:
-                return visitor.visitUnknown(string);
-        }
-    }
-
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static SearchResponseResourceType valueOf(String value) {
-        switch (value) {
-            case "DocumentReference":
-                return DOCUMENT_REFERENCE;
-            case "PlanDefinition":
-                return PLAN_DEFINITION;
-            case "Immunization":
-                return IMMUNIZATION;
-            case "CareTeam":
-                return CARE_TEAM;
-            case "Provenance":
-                return PROVENANCE;
-            case "Location":
-                return LOCATION;
-            case "Practitioner":
-                return PRACTITIONER;
-            case "Condition":
-                return CONDITION;
-            case "DiagnosticReport":
-                return DIAGNOSTIC_REPORT;
-            case "MedicationRequest":
-                return MEDICATION_REQUEST;
-            case "PractitionerRole":
-                return PRACTITIONER_ROLE;
-            case "QuestionnaireResponse":
-                return QUESTIONNAIRE_RESPONSE;
-            case "Observation":
-                return OBSERVATION;
-            case "Slot":
-                return SLOT;
-            case "AllergyIntolerance":
-                return ALLERGY_INTOLERANCE;
-            case "Specimen":
-                return SPECIMEN;
-            case "Procedure":
-                return PROCEDURE;
-            case "CarePlan":
-                return CARE_PLAN;
-            case "Medication":
-                return MEDICATION;
-            case "Coverage":
-                return COVERAGE;
-            case "Device":
-                return DEVICE;
-            case "Patient":
-                return PATIENT;
-            case "Questionnaire":
-                return QUESTIONNAIRE;
-            case "Organization":
-                return ORGANIZATION;
-            case "Encounter":
-                return ENCOUNTER;
-            case "Goal":
-                return GOAL;
-            case "Schedule":
-                return SCHEDULE;
-            case "RelatedPerson":
-                return RELATED_PERSON;
-            case "ServiceRequest":
-                return SERVICE_REQUEST;
-            case "Appointment":
-                return APPOINTMENT;
-            default:
-                return new SearchResponseResourceType(Value.UNKNOWN, value);
-        }
-    }
+  public enum Value {
+    ALLERGY_INTOLERANCE,
 
-    public enum Value {
-        ALLERGY_INTOLERANCE,
+    APPOINTMENT,
 
-        APPOINTMENT,
+    CARE_PLAN,
 
-        CARE_PLAN,
+    CARE_TEAM,
 
-        CARE_TEAM,
+    CONDITION,
 
-        CONDITION,
+    COVERAGE,
 
-        COVERAGE,
+    DEVICE,
 
-        DEVICE,
+    DIAGNOSTIC_REPORT,
 
-        DIAGNOSTIC_REPORT,
+    DOCUMENT_REFERENCE,
 
-        DOCUMENT_REFERENCE,
+    ENCOUNTER,
 
-        ENCOUNTER,
+    GOAL,
 
-        GOAL,
+    IMMUNIZATION,
 
-        IMMUNIZATION,
+    LOCATION,
 
-        LOCATION,
+    MEDICATION,
 
-        MEDICATION,
+    MEDICATION_REQUEST,
 
-        MEDICATION_REQUEST,
+    OBSERVATION,
 
-        OBSERVATION,
+    ORGANIZATION,
 
-        ORGANIZATION,
+    PATIENT,
 
-        PATIENT,
+    PLAN_DEFINITION,
 
-        PLAN_DEFINITION,
+    PRACTITIONER,
 
-        PRACTITIONER,
+    PRACTITIONER_ROLE,
 
-        PRACTITIONER_ROLE,
+    PROCEDURE,
 
-        PROCEDURE,
+    PROVENANCE,
 
-        PROVENANCE,
+    QUESTIONNAIRE,
 
-        QUESTIONNAIRE,
+    QUESTIONNAIRE_RESPONSE,
 
-        QUESTIONNAIRE_RESPONSE,
+    RELATED_PERSON,
 
-        RELATED_PERSON,
+    SCHEDULE,
 
-        SCHEDULE,
+    SERVICE_REQUEST,
 
-        SERVICE_REQUEST,
+    SLOT,
 
-        SLOT,
+    SPECIMEN,
 
-        SPECIMEN,
+    UNKNOWN,
+  }
 
-        UNKNOWN
-    }
+  public interface Visitor<T> {
+    T visitAllergyIntolerance();
 
-    public interface Visitor<T> {
-        T visitAllergyIntolerance();
+    T visitAppointment();
 
-        T visitAppointment();
+    T visitCarePlan();
 
-        T visitCarePlan();
+    T visitCareTeam();
 
-        T visitCareTeam();
+    T visitCondition();
 
-        T visitCondition();
+    T visitCoverage();
 
-        T visitCoverage();
+    T visitDevice();
 
-        T visitDevice();
+    T visitDiagnosticReport();
 
-        T visitDiagnosticReport();
+    T visitDocumentReference();
 
-        T visitDocumentReference();
+    T visitEncounter();
 
-        T visitEncounter();
+    T visitGoal();
 
-        T visitGoal();
+    T visitImmunization();
 
-        T visitImmunization();
+    T visitLocation();
 
-        T visitLocation();
+    T visitMedication();
 
-        T visitMedication();
+    T visitMedicationRequest();
 
-        T visitMedicationRequest();
+    T visitObservation();
 
-        T visitObservation();
+    T visitOrganization();
 
-        T visitOrganization();
+    T visitPatient();
 
-        T visitPatient();
+    T visitPlanDefinition();
 
-        T visitPlanDefinition();
+    T visitPractitioner();
 
-        T visitPractitioner();
+    T visitPractitionerRole();
 
-        T visitPractitionerRole();
+    T visitProcedure();
 
-        T visitProcedure();
+    T visitProvenance();
 
-        T visitProvenance();
+    T visitQuestionnaire();
 
-        T visitQuestionnaire();
+    T visitQuestionnaireResponse();
 
-        T visitQuestionnaireResponse();
+    T visitRelatedPerson();
 
-        T visitRelatedPerson();
+    T visitSchedule();
 
-        T visitSchedule();
+    T visitServiceRequest();
 
-        T visitServiceRequest();
+    T visitSlot();
 
-        T visitSlot();
+    T visitSpecimen();
 
-        T visitSpecimen();
-
-        T visitUnknown(String unknownType);
-    }
+    T visitUnknown(String unknownType);
+  }
 }

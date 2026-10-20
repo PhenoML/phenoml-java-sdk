@@ -23,151 +23,158 @@ import com.phenoml.api.resources.workflows.AsyncWorkflowsClient;
 import java.util.function.Supplier;
 
 public class AsyncPhenomlClient implements AutoCloseable {
-    protected final ClientOptions clientOptions;
 
-    protected final Supplier<AsyncAgentClient> agentClient;
+  protected final ClientOptions clientOptions;
 
-    protected final Supplier<AsyncAuthtokenClient> authtokenClient;
+  protected final Supplier<AsyncAgentClient> agentClient;
 
-    protected final Supplier<AsyncCohortClient> cohortClient;
+  protected final Supplier<AsyncAuthtokenClient> authtokenClient;
 
-    protected final Supplier<AsyncConstrueClient> construeClient;
+  protected final Supplier<AsyncCohortClient> cohortClient;
 
-    protected final Supplier<AsyncFhirClient> fhirClient;
+  protected final Supplier<AsyncConstrueClient> construeClient;
 
-    protected final Supplier<AsyncFhir2OmopClient> fhir2OmopClient;
+  protected final Supplier<AsyncFhirClient> fhirClient;
 
-    protected final Supplier<AsyncFhirProviderClient> fhirProviderClient;
+  protected final Supplier<AsyncFhir2OmopClient> fhir2OmopClient;
 
-    protected final Supplier<AsyncImplementationGuidesClient> implementationGuidesClient;
+  protected final Supplier<AsyncFhirProviderClient> fhirProviderClient;
 
-    protected final Supplier<AsyncLang2FhirClient> lang2FhirClient;
+  protected final Supplier<AsyncImplementationGuidesClient> implementationGuidesClient;
 
-    protected final Supplier<AsyncLang2FhirBatchClient> lang2FhirBatchClient;
+  protected final Supplier<AsyncLang2FhirClient> lang2FhirClient;
 
-    protected final Supplier<AsyncProfilesClient> profilesClient;
+  protected final Supplier<AsyncLang2FhirBatchClient> lang2FhirBatchClient;
 
-    protected final Supplier<AsyncSummaryClient> summaryClient;
+  protected final Supplier<AsyncProfilesClient> profilesClient;
 
-    protected final Supplier<AsyncToolsClient> toolsClient;
+  protected final Supplier<AsyncSummaryClient> summaryClient;
 
-    protected final Supplier<AsyncVoiceClient> voiceClient;
+  protected final Supplier<AsyncToolsClient> toolsClient;
 
-    protected final Supplier<AsyncWorkflowsClient> workflowsClient;
+  protected final Supplier<AsyncVoiceClient> voiceClient;
 
-    public AsyncPhenomlClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.agentClient = Suppliers.memoize(() -> new AsyncAgentClient(clientOptions));
-        this.authtokenClient = Suppliers.memoize(() -> new AsyncAuthtokenClient(clientOptions));
-        this.cohortClient = Suppliers.memoize(() -> new AsyncCohortClient(clientOptions));
-        this.construeClient = Suppliers.memoize(() -> new AsyncConstrueClient(clientOptions));
-        this.fhirClient = Suppliers.memoize(() -> new AsyncFhirClient(clientOptions));
-        this.fhir2OmopClient = Suppliers.memoize(() -> new AsyncFhir2OmopClient(clientOptions));
-        this.fhirProviderClient = Suppliers.memoize(() -> new AsyncFhirProviderClient(clientOptions));
-        this.implementationGuidesClient = Suppliers.memoize(() -> new AsyncImplementationGuidesClient(clientOptions));
-        this.lang2FhirClient = Suppliers.memoize(() -> new AsyncLang2FhirClient(clientOptions));
-        this.lang2FhirBatchClient = Suppliers.memoize(() -> new AsyncLang2FhirBatchClient(clientOptions));
-        this.profilesClient = Suppliers.memoize(() -> new AsyncProfilesClient(clientOptions));
-        this.summaryClient = Suppliers.memoize(() -> new AsyncSummaryClient(clientOptions));
-        this.toolsClient = Suppliers.memoize(() -> new AsyncToolsClient(clientOptions));
-        this.voiceClient = Suppliers.memoize(() -> new AsyncVoiceClient(clientOptions));
-        this.workflowsClient = Suppliers.memoize(() -> new AsyncWorkflowsClient(clientOptions));
-    }
+  protected final Supplier<AsyncWorkflowsClient> workflowsClient;
 
-    public AsyncAgentClient agent() {
-        return this.agentClient.get();
-    }
+  public AsyncPhenomlClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.agentClient = Suppliers.memoize(() -> new AsyncAgentClient(clientOptions));
+    this.authtokenClient = Suppliers.memoize(() -> new AsyncAuthtokenClient(clientOptions));
+    this.cohortClient = Suppliers.memoize(() -> new AsyncCohortClient(clientOptions));
+    this.construeClient = Suppliers.memoize(() -> new AsyncConstrueClient(clientOptions));
+    this.fhirClient = Suppliers.memoize(() -> new AsyncFhirClient(clientOptions));
+    this.fhir2OmopClient = Suppliers.memoize(() -> new AsyncFhir2OmopClient(clientOptions));
+    this.fhirProviderClient = Suppliers.memoize(() -> new AsyncFhirProviderClient(clientOptions));
+    this.implementationGuidesClient = Suppliers.memoize(() ->
+      new AsyncImplementationGuidesClient(clientOptions)
+    );
+    this.lang2FhirClient = Suppliers.memoize(() -> new AsyncLang2FhirClient(clientOptions));
+    this.lang2FhirBatchClient = Suppliers.memoize(() -> new AsyncLang2FhirBatchClient(clientOptions)
+    );
+    this.profilesClient = Suppliers.memoize(() -> new AsyncProfilesClient(clientOptions));
+    this.summaryClient = Suppliers.memoize(() -> new AsyncSummaryClient(clientOptions));
+    this.toolsClient = Suppliers.memoize(() -> new AsyncToolsClient(clientOptions));
+    this.voiceClient = Suppliers.memoize(() -> new AsyncVoiceClient(clientOptions));
+    this.workflowsClient = Suppliers.memoize(() -> new AsyncWorkflowsClient(clientOptions));
+  }
 
-    public AsyncAuthtokenClient authtoken() {
-        return this.authtokenClient.get();
-    }
+  public AsyncAgentClient agent() {
+    return this.agentClient.get();
+  }
 
-    public AsyncCohortClient cohort() {
-        return this.cohortClient.get();
-    }
+  public AsyncAuthtokenClient authtoken() {
+    return this.authtokenClient.get();
+  }
 
-    public AsyncConstrueClient construe() {
-        return this.construeClient.get();
-    }
+  public AsyncCohortClient cohort() {
+    return this.cohortClient.get();
+  }
 
-    public AsyncFhirClient fhir() {
-        return this.fhirClient.get();
-    }
+  public AsyncConstrueClient construe() {
+    return this.construeClient.get();
+  }
 
-    public AsyncFhir2OmopClient fhir2Omop() {
-        return this.fhir2OmopClient.get();
-    }
+  public AsyncFhirClient fhir() {
+    return this.fhirClient.get();
+  }
 
-    public AsyncFhirProviderClient fhirProvider() {
-        return this.fhirProviderClient.get();
-    }
+  public AsyncFhir2OmopClient fhir2Omop() {
+    return this.fhir2OmopClient.get();
+  }
 
-    public AsyncImplementationGuidesClient implementationGuides() {
-        return this.implementationGuidesClient.get();
-    }
+  public AsyncFhirProviderClient fhirProvider() {
+    return this.fhirProviderClient.get();
+  }
 
-    public AsyncLang2FhirClient lang2Fhir() {
-        return this.lang2FhirClient.get();
-    }
+  public AsyncImplementationGuidesClient implementationGuides() {
+    return this.implementationGuidesClient.get();
+  }
 
-    public AsyncLang2FhirBatchClient lang2FhirBatch() {
-        return this.lang2FhirBatchClient.get();
-    }
+  public AsyncLang2FhirClient lang2Fhir() {
+    return this.lang2FhirClient.get();
+  }
 
-    public AsyncProfilesClient profiles() {
-        return this.profilesClient.get();
-    }
+  public AsyncLang2FhirBatchClient lang2FhirBatch() {
+    return this.lang2FhirBatchClient.get();
+  }
 
-    public AsyncSummaryClient summary() {
-        return this.summaryClient.get();
-    }
+  public AsyncProfilesClient profiles() {
+    return this.profilesClient.get();
+  }
 
-    public AsyncToolsClient tools() {
-        return this.toolsClient.get();
-    }
+  public AsyncSummaryClient summary() {
+    return this.summaryClient.get();
+  }
 
-    public AsyncVoiceClient voice() {
-        return this.voiceClient.get();
-    }
+  public AsyncToolsClient tools() {
+    return this.toolsClient.get();
+  }
 
-    public AsyncWorkflowsClient workflows() {
-        return this.workflowsClient.get();
-    }
+  public AsyncVoiceClient voice() {
+    return this.voiceClient.get();
+  }
 
-    /**
-     * Releases resources owned by this client: any WebSocket clients still connected through
-     * it are disconnected first, then the SDK-owned HTTP client is shut down. See
-     * {@code ClientOptions.close()} for what is and is not released.
-     */
-    @Override
-    public void close() {
-        this.clientOptions.close();
-    }
+  public AsyncWorkflowsClient workflows() {
+    return this.workflowsClient.get();
+  }
 
-    /**
-     * Creates a client builder using a pre-generated access token.
-     * @param token The access token to use for authentication
-     * @return A builder configured for token authentication
-     */
-    public static AsyncPhenomlClientBuilder._TokenAuth withToken(String token) {
-        return AsyncPhenomlClientBuilder.withToken(token);
-    }
+  /**
+   * Releases resources owned by this client: any WebSocket clients still connected through
+   * it are disconnected first, then the SDK-owned HTTP client is shut down. See
+   * {@code ClientOptions.close()} for what is and is not released.
+   */
+  @Override
+  public void close() {
+    this.clientOptions.close();
+  }
 
-    /**
-     * Creates a client builder using OAuth client credentials.
-     * @param clientId The OAuth client ID
-     * @param clientSecret The OAuth client secret
-     * @return A builder configured for OAuth authentication
-     */
-    public static AsyncPhenomlClientBuilder._CredentialsAuth withCredentials(String clientId, String clientSecret) {
-        return AsyncPhenomlClientBuilder.withCredentials(clientId, clientSecret);
-    }
+  /**
+   * Creates a client builder using a pre-generated access token.
+   * @param token The access token to use for authentication
+   * @return A builder configured for token authentication
+   */
+  public static AsyncPhenomlClientBuilder._TokenAuth withToken(String token) {
+    return AsyncPhenomlClientBuilder.withToken(token);
+  }
 
-    /**
-     * Creates a new client builder.
-     * @return A builder for configuring and creating the client
-     */
-    public static AsyncPhenomlClientBuilder._Builder builder() {
-        return AsyncPhenomlClientBuilder.builder();
-    }
+  /**
+   * Creates a client builder using OAuth client credentials.
+   * @param clientId The OAuth client ID
+   * @param clientSecret The OAuth client secret
+   * @return A builder configured for OAuth authentication
+   */
+  public static AsyncPhenomlClientBuilder._CredentialsAuth withCredentials(
+    String clientId,
+    String clientSecret
+  ) {
+    return AsyncPhenomlClientBuilder.withCredentials(clientId, clientSecret);
+  }
+
+  /**
+   * Creates a new client builder.
+   * @return A builder for configuring and creating the client
+   */
+  public static AsyncPhenomlClientBuilder._Builder builder() {
+    return AsyncPhenomlClientBuilder.builder();
+  }
 }

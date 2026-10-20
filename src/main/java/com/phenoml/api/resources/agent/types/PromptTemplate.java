@@ -21,244 +21,278 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PromptTemplate.Builder.class)
 public final class PromptTemplate {
-    private final Optional<String> id;
 
-    private final Optional<String> name;
+  private final Optional<String> id;
 
-    private final Optional<String> description;
+  private final Optional<String> name;
 
-    private final Optional<String> content;
+  private final Optional<String> description;
 
-    private final Optional<Boolean> isDefault;
+  private final Optional<String> content;
 
-    private final Optional<List<String>> tags;
+  private final Optional<Boolean> isDefault;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<String>> tags;
 
-    private PromptTemplate(
-            Optional<String> id,
-            Optional<String> name,
-            Optional<String> description,
-            Optional<String> content,
-            Optional<Boolean> isDefault,
-            Optional<List<String>> tags,
-            Map<String, Object> additionalProperties) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.content = content;
-        this.isDefault = isDefault;
-        this.tags = tags;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private PromptTemplate(
+    Optional<String> id,
+    Optional<String> name,
+    Optional<String> description,
+    Optional<String> content,
+    Optional<Boolean> isDefault,
+    Optional<List<String>> tags,
+    Map<String, Object> additionalProperties
+  ) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.content = content;
+    this.isDefault = isDefault;
+    this.tags = tags;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Prompt ID
+   */
+  @JsonProperty("id")
+  public Optional<String> getId() {
+    return id;
+  }
+
+  /**
+   * @return Prompt name
+   */
+  @JsonProperty("name")
+  public Optional<String> getName() {
+    return name;
+  }
+
+  /**
+   * @return Prompt description
+   */
+  @JsonProperty("description")
+  public Optional<String> getDescription() {
+    return description;
+  }
+
+  /**
+   * @return Prompt content
+   */
+  @JsonProperty("content")
+  public Optional<String> getContent() {
+    return content;
+  }
+
+  /**
+   * @return Whether this is a default prompt
+   */
+  @JsonProperty("is_default")
+  public Optional<Boolean> getIsDefault() {
+    return isDefault;
+  }
+
+  /**
+   * @return Tags for categorizing the prompt
+   */
+  @JsonProperty("tags")
+  public Optional<List<String>> getTags() {
+    return tags;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof PromptTemplate && equalTo((PromptTemplate) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(PromptTemplate other) {
+    return (
+      id.equals(other.id) &&
+      name.equals(other.name) &&
+      description.equals(other.description) &&
+      content.equals(other.content) &&
+      isDefault.equals(other.isDefault) &&
+      tags.equals(other.tags)
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(
+      this.id,
+      this.name,
+      this.description,
+      this.content,
+      this.isDefault,
+      this.tags
+    );
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<String> id = Optional.empty();
+
+    private Optional<String> name = Optional.empty();
+
+    private Optional<String> description = Optional.empty();
+
+    private Optional<String> content = Optional.empty();
+
+    private Optional<Boolean> isDefault = Optional.empty();
+
+    private Optional<List<String>> tags = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(PromptTemplate other) {
+      id(other.getId());
+      name(other.getName());
+      description(other.getDescription());
+      content(other.getContent());
+      isDefault(other.getIsDefault());
+      tags(other.getTags());
+      return this;
     }
 
     /**
-     * @return Prompt ID
+     * <p>Prompt ID</p>
      */
-    @JsonProperty("id")
-    public Optional<String> getId() {
-        return id;
+    @JsonSetter(value = "id", nulls = Nulls.SKIP)
+    public Builder id(Optional<String> id) {
+      this.id = id;
+      return this;
+    }
+
+    public Builder id(String id) {
+      this.id = Optional.ofNullable(id);
+      return this;
     }
 
     /**
-     * @return Prompt name
+     * <p>Prompt name</p>
      */
-    @JsonProperty("name")
-    public Optional<String> getName() {
-        return name;
+    @JsonSetter(value = "name", nulls = Nulls.SKIP)
+    public Builder name(Optional<String> name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.name = Optional.ofNullable(name);
+      return this;
     }
 
     /**
-     * @return Prompt description
+     * <p>Prompt description</p>
      */
-    @JsonProperty("description")
-    public Optional<String> getDescription() {
-        return description;
+    @JsonSetter(value = "description", nulls = Nulls.SKIP)
+    public Builder description(Optional<String> description) {
+      this.description = description;
+      return this;
+    }
+
+    public Builder description(String description) {
+      this.description = Optional.ofNullable(description);
+      return this;
     }
 
     /**
-     * @return Prompt content
+     * <p>Prompt content</p>
      */
-    @JsonProperty("content")
-    public Optional<String> getContent() {
-        return content;
+    @JsonSetter(value = "content", nulls = Nulls.SKIP)
+    public Builder content(Optional<String> content) {
+      this.content = content;
+      return this;
+    }
+
+    public Builder content(String content) {
+      this.content = Optional.ofNullable(content);
+      return this;
     }
 
     /**
-     * @return Whether this is a default prompt
+     * <p>Whether this is a default prompt</p>
      */
-    @JsonProperty("is_default")
-    public Optional<Boolean> getIsDefault() {
-        return isDefault;
+    @JsonSetter(value = "is_default", nulls = Nulls.SKIP)
+    public Builder isDefault(Optional<Boolean> isDefault) {
+      this.isDefault = isDefault;
+      return this;
+    }
+
+    public Builder isDefault(Boolean isDefault) {
+      this.isDefault = Optional.ofNullable(isDefault);
+      return this;
     }
 
     /**
-     * @return Tags for categorizing the prompt
+     * <p>Tags for categorizing the prompt</p>
      */
-    @JsonProperty("tags")
-    public Optional<List<String>> getTags() {
-        return tags;
+    @JsonSetter(value = "tags", nulls = Nulls.SKIP)
+    public Builder tags(Optional<List<String>> tags) {
+      this.tags = tags;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof PromptTemplate && equalTo((PromptTemplate) other);
+    public Builder tags(List<String> tags) {
+      this.tags = Optional.ofNullable(tags);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public PromptTemplate build() {
+      return new PromptTemplate(
+        id,
+        name,
+        description,
+        content,
+        isDefault,
+        tags,
+        additionalProperties
+      );
     }
 
-    private boolean equalTo(PromptTemplate other) {
-        return id.equals(other.id)
-                && name.equals(other.name)
-                && description.equals(other.description)
-                && content.equals(other.content)
-                && isDefault.equals(other.isDefault)
-                && tags.equals(other.tags);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("id") ||
+        key.equalsIgnoreCase("name") ||
+        key.equalsIgnoreCase("description") ||
+        key.equalsIgnoreCase("content") ||
+        key.equalsIgnoreCase("is_default") ||
+        key.equalsIgnoreCase("tags")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.id, this.name, this.description, this.content, this.isDefault, this.tags);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<String> id = Optional.empty();
-
-        private Optional<String> name = Optional.empty();
-
-        private Optional<String> description = Optional.empty();
-
-        private Optional<String> content = Optional.empty();
-
-        private Optional<Boolean> isDefault = Optional.empty();
-
-        private Optional<List<String>> tags = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(PromptTemplate other) {
-            id(other.getId());
-            name(other.getName());
-            description(other.getDescription());
-            content(other.getContent());
-            isDefault(other.getIsDefault());
-            tags(other.getTags());
-            return this;
-        }
-
-        /**
-         * <p>Prompt ID</p>
-         */
-        @JsonSetter(value = "id", nulls = Nulls.SKIP)
-        public Builder id(Optional<String> id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder id(String id) {
-            this.id = Optional.ofNullable(id);
-            return this;
-        }
-
-        /**
-         * <p>Prompt name</p>
-         */
-        @JsonSetter(value = "name", nulls = Nulls.SKIP)
-        public Builder name(Optional<String> name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = Optional.ofNullable(name);
-            return this;
-        }
-
-        /**
-         * <p>Prompt description</p>
-         */
-        @JsonSetter(value = "description", nulls = Nulls.SKIP)
-        public Builder description(Optional<String> description) {
-            this.description = description;
-            return this;
-        }
-
-        public Builder description(String description) {
-            this.description = Optional.ofNullable(description);
-            return this;
-        }
-
-        /**
-         * <p>Prompt content</p>
-         */
-        @JsonSetter(value = "content", nulls = Nulls.SKIP)
-        public Builder content(Optional<String> content) {
-            this.content = content;
-            return this;
-        }
-
-        public Builder content(String content) {
-            this.content = Optional.ofNullable(content);
-            return this;
-        }
-
-        /**
-         * <p>Whether this is a default prompt</p>
-         */
-        @JsonSetter(value = "is_default", nulls = Nulls.SKIP)
-        public Builder isDefault(Optional<Boolean> isDefault) {
-            this.isDefault = isDefault;
-            return this;
-        }
-
-        public Builder isDefault(Boolean isDefault) {
-            this.isDefault = Optional.ofNullable(isDefault);
-            return this;
-        }
-
-        /**
-         * <p>Tags for categorizing the prompt</p>
-         */
-        @JsonSetter(value = "tags", nulls = Nulls.SKIP)
-        public Builder tags(Optional<List<String>> tags) {
-            this.tags = tags;
-            return this;
-        }
-
-        public Builder tags(List<String> tags) {
-            this.tags = Optional.ofNullable(tags);
-            return this;
-        }
-
-        public PromptTemplate build() {
-            return new PromptTemplate(id, name, description, content, isDefault, tags, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

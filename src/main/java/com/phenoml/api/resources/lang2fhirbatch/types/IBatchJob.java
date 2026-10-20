@@ -7,23 +7,23 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 public interface IBatchJob {
-    String getJobId();
+  String getJobId();
 
-    Optional<String> getRequestId();
+  Optional<String> getRequestId();
 
-    BatchJobStatus getStatus();
+  BatchJobStatus getStatus();
 
-    boolean getFinalized();
+  boolean getFinalized();
 
-    int getTotalItems();
+  int getTotalItems();
 
-    Optional<BatchError> getError();
+  Optional<BatchError> getError();
 
-    OffsetDateTime getCreatedAt();
+  OffsetDateTime getCreatedAt();
 
-    OffsetDateTime getUpdatedAt();
+  OffsetDateTime getUpdatedAt();
 
-    Optional<OffsetDateTime> getCompletedAt();
+  Optional<OffsetDateTime> getCompletedAt();
 
-    OffsetDateTime getExpiresAt();
+  OffsetDateTime getExpiresAt();
 }

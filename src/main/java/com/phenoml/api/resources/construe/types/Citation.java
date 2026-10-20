@@ -19,174 +19,195 @@ import org.jetbrains.annotations.NotNull;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Citation.Builder.class)
 public final class Citation {
-    private final String text;
 
-    private final int beginOffset;
+  private final String text;
 
-    private final int endOffset;
+  private final int beginOffset;
 
-    private final Map<String, Object> additionalProperties;
+  private final int endOffset;
 
-    private Citation(String text, int beginOffset, int endOffset, Map<String, Object> additionalProperties) {
-        this.text = text;
-        this.beginOffset = beginOffset;
-        this.endOffset = endOffset;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private Citation(
+    String text,
+    int beginOffset,
+    int endOffset,
+    Map<String, Object> additionalProperties
+  ) {
+    this.text = text;
+    this.beginOffset = beginOffset;
+    this.endOffset = endOffset;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return The exact text span containing evidence for the code
+   */
+  @JsonProperty("text")
+  public String getText() {
+    return text;
+  }
+
+  /**
+   * @return Starting byte offset in the original input text (0-indexed)
+   */
+  @JsonProperty("begin_offset")
+  public int getBeginOffset() {
+    return beginOffset;
+  }
+
+  /**
+   * @return Ending byte offset (exclusive), such that input[begin_offset:end_offset] == text
+   */
+  @JsonProperty("end_offset")
+  public int getEndOffset() {
+    return endOffset;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof Citation && equalTo((Citation) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(Citation other) {
+    return (
+      text.equals(other.text) && beginOffset == other.beginOffset && endOffset == other.endOffset
+    );
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.text, this.beginOffset, this.endOffset);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static TextStage builder() {
+    return new Builder();
+  }
+
+  public interface TextStage {
+    /**
+     * <p>The exact text span containing evidence for the code</p>
+     */
+    BeginOffsetStage text(@NotNull String text);
+
+    Builder from(Citation other);
+  }
+
+  public interface BeginOffsetStage {
+    /**
+     * <p>Starting byte offset in the original input text (0-indexed)</p>
+     */
+    EndOffsetStage beginOffset(int beginOffset);
+  }
+
+  public interface EndOffsetStage {
+    /**
+     * <p>Ending byte offset (exclusive), such that input[begin_offset:end_offset] == text</p>
+     */
+    _FinalStage endOffset(int endOffset);
+  }
+
+  public interface _FinalStage {
+    Citation build();
+
+    _FinalStage additionalProperty(String key, Object value);
+
+    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder
+    implements TextStage, BeginOffsetStage, EndOffsetStage, _FinalStage {
+
+    private String text;
+
+    private int beginOffset;
+
+    private int endOffset;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    @java.lang.Override
+    public Builder from(Citation other) {
+      text(other.getText());
+      beginOffset(other.getBeginOffset());
+      endOffset(other.getEndOffset());
+      return this;
     }
 
     /**
-     * @return The exact text span containing evidence for the code
+     * <p>The exact text span containing evidence for the code</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("text")
-    public String getText() {
-        return text;
+    @java.lang.Override
+    @JsonSetter("text")
+    public BeginOffsetStage text(@NotNull String text) {
+      this.text = Objects.requireNonNull(text, "text must not be null");
+      return this;
     }
 
     /**
-     * @return Starting byte offset in the original input text (0-indexed)
+     * <p>Starting byte offset in the original input text (0-indexed)</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("begin_offset")
-    public int getBeginOffset() {
-        return beginOffset;
+    @java.lang.Override
+    @JsonSetter("begin_offset")
+    public EndOffsetStage beginOffset(int beginOffset) {
+      this.beginOffset = beginOffset;
+      return this;
     }
 
     /**
-     * @return Ending byte offset (exclusive), such that input[begin_offset:end_offset] == text
+     * <p>Ending byte offset (exclusive), such that input[begin_offset:end_offset] == text</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @JsonProperty("end_offset")
-    public int getEndOffset() {
-        return endOffset;
+    @java.lang.Override
+    @JsonSetter("end_offset")
+    public _FinalStage endOffset(int endOffset) {
+      this.endOffset = endOffset;
+      return this;
     }
 
     @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof Citation && equalTo((Citation) other);
+    public Citation build() {
+      return new Citation(text, beginOffset, endOffset, additionalProperties);
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    private boolean equalTo(Citation other) {
-        return text.equals(other.text) && beginOffset == other.beginOffset && endOffset == other.endOffset;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.text, this.beginOffset, this.endOffset);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (
+        key.equalsIgnoreCase("text") ||
+        key.equalsIgnoreCase("begin_offset") ||
+        key.equalsIgnoreCase("end_offset")
+      ) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
     @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static TextStage builder() {
-        return new Builder();
+    @java.lang.Override
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public interface TextStage {
-        /**
-         * <p>The exact text span containing evidence for the code</p>
-         */
-        BeginOffsetStage text(@NotNull String text);
-
-        Builder from(Citation other);
-    }
-
-    public interface BeginOffsetStage {
-        /**
-         * <p>Starting byte offset in the original input text (0-indexed)</p>
-         */
-        EndOffsetStage beginOffset(int beginOffset);
-    }
-
-    public interface EndOffsetStage {
-        /**
-         * <p>Ending byte offset (exclusive), such that input[begin_offset:end_offset] == text</p>
-         */
-        _FinalStage endOffset(int endOffset);
-    }
-
-    public interface _FinalStage {
-        Citation build();
-
-        _FinalStage additionalProperty(String key, Object value);
-
-        _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder implements TextStage, BeginOffsetStage, EndOffsetStage, _FinalStage {
-        private String text;
-
-        private int beginOffset;
-
-        private int endOffset;
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        @java.lang.Override
-        public Builder from(Citation other) {
-            text(other.getText());
-            beginOffset(other.getBeginOffset());
-            endOffset(other.getEndOffset());
-            return this;
-        }
-
-        /**
-         * <p>The exact text span containing evidence for the code</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("text")
-        public BeginOffsetStage text(@NotNull String text) {
-            this.text = Objects.requireNonNull(text, "text must not be null");
-            return this;
-        }
-
-        /**
-         * <p>Starting byte offset in the original input text (0-indexed)</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("begin_offset")
-        public EndOffsetStage beginOffset(int beginOffset) {
-            this.beginOffset = beginOffset;
-            return this;
-        }
-
-        /**
-         * <p>Ending byte offset (exclusive), such that input[begin_offset:end_offset] == text</p>
-         * @return Reference to {@code this} so that method calls can be chained together.
-         */
-        @java.lang.Override
-        @JsonSetter("end_offset")
-        public _FinalStage endOffset(int endOffset) {
-            this.endOffset = endOffset;
-            return this;
-        }
-
-        @java.lang.Override
-        public Citation build() {
-            return new Citation(text, beginOffset, endOffset, additionalProperties);
-        }
-
-        @java.lang.Override
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        @java.lang.Override
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

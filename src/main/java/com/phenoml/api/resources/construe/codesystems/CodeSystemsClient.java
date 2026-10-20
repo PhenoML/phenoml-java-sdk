@@ -16,149 +16,162 @@ import com.phenoml.api.resources.construe.types.GetCodeSystemDetailResponse;
 import com.phenoml.api.resources.construe.types.ListCodeSystemsResponse;
 
 public class CodeSystemsClient {
-    protected final ClientOptions clientOptions;
 
-    private final RawCodeSystemsClient rawClient;
+  protected final ClientOptions clientOptions;
 
-    public CodeSystemsClient(ClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
-        this.rawClient = new RawCodeSystemsClient(clientOptions);
-    }
+  private final RawCodeSystemsClient rawClient;
 
-    /**
-     * Get responses with HTTP metadata like headers
-     */
-    public RawCodeSystemsClient withRawResponse() {
-        return this.rawClient;
-    }
+  public CodeSystemsClient(ClientOptions clientOptions) {
+    this.clientOptions = clientOptions;
+    this.rawClient = new RawCodeSystemsClient(clientOptions);
+  }
 
-    /**
-     * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
-     * Returns 202 immediately; embedding generation runs asynchronously. Poll
-     * GET /construe/codes/systems/{codesystem}?version={version} to check when status
-     * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
-     */
-    public UploadResponse upload(UploadRequest request) {
-        return this.rawClient.upload(request).body();
-    }
+  /**
+   * Get responses with HTTP metadata like headers
+   */
+  public RawCodeSystemsClient withRawResponse() {
+    return this.rawClient;
+  }
 
-    /**
-     * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
-     * Returns 202 immediately; embedding generation runs asynchronously. Poll
-     * GET /construe/codes/systems/{codesystem}?version={version} to check when status
-     * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
-     */
-    public UploadResponse upload(UploadRequest request, RequestOptions requestOptions) {
-        return this.rawClient.upload(request, requestOptions).body();
-    }
+  /**
+   * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
+   * Returns 202 immediately; embedding generation runs asynchronously. Poll
+   * GET /construe/codes/systems/{codesystem}?version={version} to check when status
+   * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
+   */
+  public UploadResponse upload(UploadRequest request) {
+    return this.rawClient.upload(request).body();
+  }
 
-    /**
-     * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
-     */
-    public ListCodeSystemsResponse list() {
-        return this.rawClient.list().body();
-    }
+  /**
+   * Upload a custom medical code system with codes and descriptions for use in code extraction. Requires a paid plan.
+   * Returns 202 immediately; embedding generation runs asynchronously. Poll
+   * GET /construe/codes/systems/{codesystem}?version={version} to check when status
+   * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
+   */
+  public UploadResponse upload(UploadRequest request, RequestOptions requestOptions) {
+    return this.rawClient.upload(request, requestOptions).body();
+  }
 
-    /**
-     * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
-     */
-    public ListCodeSystemsResponse list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).body();
-    }
+  /**
+   * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
+   */
+  public ListCodeSystemsResponse list() {
+    return this.rawClient.list().body();
+  }
 
-    /**
-     * Returns full metadata for a single code system, including timestamps and builtin status.
-     */
-    public GetCodeSystemDetailResponse find(String codesystem) {
-        return this.rawClient.find(codesystem).body();
-    }
+  /**
+   * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
+   */
+  public ListCodeSystemsResponse list(RequestOptions requestOptions) {
+    return this.rawClient.list(requestOptions).body();
+  }
 
-    /**
-     * Returns full metadata for a single code system, including timestamps and builtin status.
-     */
-    public GetCodeSystemDetailResponse find(String codesystem, RequestOptions requestOptions) {
-        return this.rawClient.find(codesystem, requestOptions).body();
-    }
+  /**
+   * Returns full metadata for a single code system, including timestamps and builtin status.
+   */
+  public GetCodeSystemDetailResponse find(String codesystem) {
+    return this.rawClient.find(codesystem).body();
+  }
 
-    /**
-     * Returns full metadata for a single code system, including timestamps and builtin status.
-     */
-    public GetCodeSystemDetailResponse find(String codesystem, FindRequest request) {
-        return this.rawClient.find(codesystem, request).body();
-    }
+  /**
+   * Returns full metadata for a single code system, including timestamps and builtin status.
+   */
+  public GetCodeSystemDetailResponse find(String codesystem, RequestOptions requestOptions) {
+    return this.rawClient.find(codesystem, requestOptions).body();
+  }
 
-    /**
-     * Returns full metadata for a single code system, including timestamps and builtin status.
-     */
-    public GetCodeSystemDetailResponse find(String codesystem, FindRequest request, RequestOptions requestOptions) {
-        return this.rawClient.find(codesystem, request, requestOptions).body();
-    }
+  /**
+   * Returns full metadata for a single code system, including timestamps and builtin status.
+   */
+  public GetCodeSystemDetailResponse find(String codesystem, FindRequest request) {
+    return this.rawClient.find(codesystem, request).body();
+  }
 
-    /**
-     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
-     * Only available on dedicated instances. Large systems may take up to a minute to delete.
-     */
-    public DeleteCodeSystemResponse delete(String codesystem) {
-        return this.rawClient.delete(codesystem).body();
-    }
+  /**
+   * Returns full metadata for a single code system, including timestamps and builtin status.
+   */
+  public GetCodeSystemDetailResponse find(
+    String codesystem,
+    FindRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.find(codesystem, request, requestOptions).body();
+  }
 
-    /**
-     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
-     * Only available on dedicated instances. Large systems may take up to a minute to delete.
-     */
-    public DeleteCodeSystemResponse delete(String codesystem, RequestOptions requestOptions) {
-        return this.rawClient.delete(codesystem, requestOptions).body();
-    }
+  /**
+   * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+   * Only available on dedicated instances. Large systems may take up to a minute to delete.
+   */
+  public DeleteCodeSystemResponse delete(String codesystem) {
+    return this.rawClient.delete(codesystem).body();
+  }
 
-    /**
-     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
-     * Only available on dedicated instances. Large systems may take up to a minute to delete.
-     */
-    public DeleteCodeSystemResponse delete(String codesystem, DeleteRequest request) {
-        return this.rawClient.delete(codesystem, request).body();
-    }
+  /**
+   * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+   * Only available on dedicated instances. Large systems may take up to a minute to delete.
+   */
+  public DeleteCodeSystemResponse delete(String codesystem, RequestOptions requestOptions) {
+    return this.rawClient.delete(codesystem, requestOptions).body();
+  }
 
-    /**
-     * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
-     * Only available on dedicated instances. Large systems may take up to a minute to delete.
-     */
-    public DeleteCodeSystemResponse delete(String codesystem, DeleteRequest request, RequestOptions requestOptions) {
-        return this.rawClient.delete(codesystem, request, requestOptions).body();
-    }
+  /**
+   * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+   * Only available on dedicated instances. Large systems may take up to a minute to delete.
+   */
+  public DeleteCodeSystemResponse delete(String codesystem, DeleteRequest request) {
+    return this.rawClient.delete(codesystem, request).body();
+  }
 
-    /**
-     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
-     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
-     * Only available on dedicated instances. Builtin systems cannot be exported.
-     */
-    public ExportCodeSystemResponse export(String codesystem) {
-        return this.rawClient.export(codesystem).body();
-    }
+  /**
+   * Deletes a custom (non-builtin) code system and all its codes. Builtin systems cannot be deleted.
+   * Only available on dedicated instances. Large systems may take up to a minute to delete.
+   */
+  public DeleteCodeSystemResponse delete(
+    String codesystem,
+    DeleteRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.delete(codesystem, request, requestOptions).body();
+  }
 
-    /**
-     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
-     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
-     * Only available on dedicated instances. Builtin systems cannot be exported.
-     */
-    public ExportCodeSystemResponse export(String codesystem, RequestOptions requestOptions) {
-        return this.rawClient.export(codesystem, requestOptions).body();
-    }
+  /**
+   * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+   * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+   * Only available on dedicated instances. Builtin systems cannot be exported.
+   */
+  public ExportCodeSystemResponse export(String codesystem) {
+    return this.rawClient.export(codesystem).body();
+  }
 
-    /**
-     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
-     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
-     * Only available on dedicated instances. Builtin systems cannot be exported.
-     */
-    public ExportCodeSystemResponse export(String codesystem, ExportRequest request) {
-        return this.rawClient.export(codesystem, request).body();
-    }
+  /**
+   * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+   * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+   * Only available on dedicated instances. Builtin systems cannot be exported.
+   */
+  public ExportCodeSystemResponse export(String codesystem, RequestOptions requestOptions) {
+    return this.rawClient.export(codesystem, requestOptions).body();
+  }
 
-    /**
-     * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
-     * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
-     * Only available on dedicated instances. Builtin systems cannot be exported.
-     */
-    public ExportCodeSystemResponse export(String codesystem, ExportRequest request, RequestOptions requestOptions) {
-        return this.rawClient.export(codesystem, request, requestOptions).body();
-    }
+  /**
+   * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+   * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+   * Only available on dedicated instances. Builtin systems cannot be exported.
+   */
+  public ExportCodeSystemResponse export(String codesystem, ExportRequest request) {
+    return this.rawClient.export(codesystem, request).body();
+  }
+
+  /**
+   * Exports a custom (non-builtin) code system as a JSON file compatible with the upload format.
+   * The exported file can be re-uploaded directly via POST /construe/upload with format &quot;json&quot;.
+   * Only available on dedicated instances. Builtin systems cannot be exported.
+   */
+  public ExportCodeSystemResponse export(
+    String codesystem,
+    ExportRequest request,
+    RequestOptions requestOptions
+  ) {
+    return this.rawClient.export(codesystem, request, requestOptions).body();
+  }
 }

@@ -18,97 +18,110 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class SseEvent<T> {
-    private final String event;
-    private final T data;
-    private final String id;
-    private final Long retry;
 
-    private SseEvent(String event, T data, String id, Long retry) {
-        this.event = event;
-        this.data = data;
-        this.id = id;
-        this.retry = retry;
+  private final String event;
+  private final T data;
+  private final String id;
+  private final Long retry;
+
+  private SseEvent(String event, T data, String id, Long retry) {
+    this.event = event;
+    this.data = data;
+    this.id = id;
+    this.retry = retry;
+  }
+
+  @JsonProperty("event")
+  public Optional<String> getEvent() {
+    return Optional.ofNullable(event);
+  }
+
+  @JsonProperty("data")
+  public T getData() {
+    return data;
+  }
+
+  @JsonProperty("id")
+  public Optional<String> getId() {
+    return Optional.ofNullable(id);
+  }
+
+  @JsonProperty("retry")
+  public Optional<Long> getRetry() {
+    return Optional.ofNullable(retry);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    SseEvent<?> sseEvent = (SseEvent<?>) o;
+    return (
+      Objects.equals(event, sseEvent.event) &&
+      Objects.equals(data, sseEvent.data) &&
+      Objects.equals(id, sseEvent.id) &&
+      Objects.equals(retry, sseEvent.retry)
+    );
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(event, data, id, retry);
+  }
+
+  @Override
+  public String toString() {
+    return (
+      "SseEvent{" +
+      "event='" +
+      event +
+      '\'' +
+      ", data=" +
+      data +
+      ", id='" +
+      id +
+      '\'' +
+      ", retry=" +
+      retry +
+      '}'
+    );
+  }
+
+  public static <T> Builder<T> builder() {
+    return new Builder<>();
+  }
+
+  public static final class Builder<T> {
+
+    private String event;
+    private T data;
+    private String id;
+    private Long retry;
+
+    private Builder() {}
+
+    public Builder<T> event(String event) {
+      this.event = event;
+      return this;
     }
 
-    @JsonProperty("event")
-    public Optional<String> getEvent() {
-        return Optional.ofNullable(event);
+    public Builder<T> data(T data) {
+      this.data = data;
+      return this;
     }
 
-    @JsonProperty("data")
-    public T getData() {
-        return data;
+    public Builder<T> id(String id) {
+      this.id = id;
+      return this;
     }
 
-    @JsonProperty("id")
-    public Optional<String> getId() {
-        return Optional.ofNullable(id);
+    public Builder<T> retry(Long retry) {
+      this.retry = retry;
+      return this;
     }
 
-    @JsonProperty("retry")
-    public Optional<Long> getRetry() {
-        return Optional.ofNullable(retry);
+    public SseEvent<T> build() {
+      return new SseEvent<>(event, data, id, retry);
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SseEvent<?> sseEvent = (SseEvent<?>) o;
-        return Objects.equals(event, sseEvent.event)
-                && Objects.equals(data, sseEvent.data)
-                && Objects.equals(id, sseEvent.id)
-                && Objects.equals(retry, sseEvent.retry);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(event, data, id, retry);
-    }
-
-    @Override
-    public String toString() {
-        return "SseEvent{" + "event='"
-                + event + '\'' + ", data="
-                + data + ", id='"
-                + id + '\'' + ", retry="
-                + retry + '}';
-    }
-
-    public static <T> Builder<T> builder() {
-        return new Builder<>();
-    }
-
-    public static final class Builder<T> {
-        private String event;
-        private T data;
-        private String id;
-        private Long retry;
-
-        private Builder() {}
-
-        public Builder<T> event(String event) {
-            this.event = event;
-            return this;
-        }
-
-        public Builder<T> data(T data) {
-            this.data = data;
-            return this;
-        }
-
-        public Builder<T> id(String id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder<T> retry(Long retry) {
-            this.retry = retry;
-            return this;
-        }
-
-        public SseEvent<T> build() {
-            return new SseEvent<>(event, data, id, retry);
-        }
-    }
+  }
 }

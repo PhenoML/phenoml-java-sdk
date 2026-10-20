@@ -21,123 +21,133 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ResourceReviewResult.Builder.class)
 public final class ResourceReviewResult {
-    private final Optional<List<ResourceReviewFlagged>> flagged;
 
-    private final Optional<List<ResourceReviewRemediated>> remediated;
+  private final Optional<List<ResourceReviewFlagged>> flagged;
 
-    private final Map<String, Object> additionalProperties;
+  private final Optional<List<ResourceReviewRemediated>> remediated;
 
-    private ResourceReviewResult(
-            Optional<List<ResourceReviewFlagged>> flagged,
-            Optional<List<ResourceReviewRemediated>> remediated,
-            Map<String, Object> additionalProperties) {
-        this.flagged = flagged;
-        this.remediated = remediated;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ResourceReviewResult(
+    Optional<List<ResourceReviewFlagged>> flagged,
+    Optional<List<ResourceReviewRemediated>> remediated,
+    Map<String, Object> additionalProperties
+  ) {
+    this.flagged = flagged;
+    this.remediated = remediated;
+    this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Resources pulled from the bundle because an unsupported finding could not be safely repaired.
+   */
+  @JsonProperty("flagged")
+  public Optional<List<ResourceReviewFlagged>> getFlagged() {
+    return flagged;
+  }
+
+  /**
+   * @return Resources retained in the bundle after unsupported codings were safely removed.
+   */
+  @JsonProperty("remediated")
+  public Optional<List<ResourceReviewRemediated>> getRemediated() {
+    return remediated;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return other instanceof ResourceReviewResult && equalTo((ResourceReviewResult) other);
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ResourceReviewResult other) {
+    return flagged.equals(other.flagged) && remediated.equals(other.remediated);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.flagged, this.remediated);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private Optional<List<ResourceReviewFlagged>> flagged = Optional.empty();
+
+    private Optional<List<ResourceReviewRemediated>> remediated = Optional.empty();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ResourceReviewResult other) {
+      flagged(other.getFlagged());
+      remediated(other.getRemediated());
+      return this;
     }
 
     /**
-     * @return Resources pulled from the bundle because an unsupported finding could not be safely repaired.
+     * <p>Resources pulled from the bundle because an unsupported finding could not be safely repaired.</p>
      */
-    @JsonProperty("flagged")
-    public Optional<List<ResourceReviewFlagged>> getFlagged() {
-        return flagged;
+    @JsonSetter(value = "flagged", nulls = Nulls.SKIP)
+    public Builder flagged(Optional<List<ResourceReviewFlagged>> flagged) {
+      this.flagged = flagged;
+      return this;
+    }
+
+    public Builder flagged(List<ResourceReviewFlagged> flagged) {
+      this.flagged = Optional.ofNullable(flagged);
+      return this;
     }
 
     /**
-     * @return Resources retained in the bundle after unsupported codings were safely removed.
+     * <p>Resources retained in the bundle after unsupported codings were safely removed.</p>
      */
-    @JsonProperty("remediated")
-    public Optional<List<ResourceReviewRemediated>> getRemediated() {
-        return remediated;
+    @JsonSetter(value = "remediated", nulls = Nulls.SKIP)
+    public Builder remediated(Optional<List<ResourceReviewRemediated>> remediated) {
+      this.remediated = remediated;
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ResourceReviewResult && equalTo((ResourceReviewResult) other);
+    public Builder remediated(List<ResourceReviewRemediated> remediated) {
+      this.remediated = Optional.ofNullable(remediated);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public ResourceReviewResult build() {
+      return new ResourceReviewResult(flagged, remediated, additionalProperties);
     }
 
-    private boolean equalTo(ResourceReviewResult other) {
-        return flagged.equals(other.flagged) && remediated.equals(other.remediated);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("flagged") || key.equalsIgnoreCase("remediated")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.flagged, this.remediated);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private Optional<List<ResourceReviewFlagged>> flagged = Optional.empty();
-
-        private Optional<List<ResourceReviewRemediated>> remediated = Optional.empty();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ResourceReviewResult other) {
-            flagged(other.getFlagged());
-            remediated(other.getRemediated());
-            return this;
-        }
-
-        /**
-         * <p>Resources pulled from the bundle because an unsupported finding could not be safely repaired.</p>
-         */
-        @JsonSetter(value = "flagged", nulls = Nulls.SKIP)
-        public Builder flagged(Optional<List<ResourceReviewFlagged>> flagged) {
-            this.flagged = flagged;
-            return this;
-        }
-
-        public Builder flagged(List<ResourceReviewFlagged> flagged) {
-            this.flagged = Optional.ofNullable(flagged);
-            return this;
-        }
-
-        /**
-         * <p>Resources retained in the bundle after unsupported codings were safely removed.</p>
-         */
-        @JsonSetter(value = "remediated", nulls = Nulls.SKIP)
-        public Builder remediated(Optional<List<ResourceReviewRemediated>> remediated) {
-            this.remediated = remediated;
-            return this;
-        }
-
-        public Builder remediated(List<ResourceReviewRemediated> remediated) {
-            this.remediated = Optional.ofNullable(remediated);
-            return this;
-        }
-
-        public ResourceReviewResult build() {
-            return new ResourceReviewResult(flagged, remediated, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }

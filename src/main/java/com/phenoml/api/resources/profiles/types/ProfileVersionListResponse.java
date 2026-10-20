@@ -21,96 +21,110 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ProfileVersionListResponse.Builder.class)
 public final class ProfileVersionListResponse {
-    private final List<ProfileSummary> versions;
 
-    private final Map<String, Object> additionalProperties;
+  private final List<ProfileSummary> versions;
 
-    private ProfileVersionListResponse(List<ProfileSummary> versions, Map<String, Object> additionalProperties) {
-        this.versions = versions;
-        this.additionalProperties = additionalProperties;
+  private final Map<String, Object> additionalProperties;
+
+  private ProfileVersionListResponse(
+    List<ProfileSummary> versions,
+    Map<String, Object> additionalProperties
+  ) {
+    this.versions = versions;
+    this.additionalProperties = additionalProperties;
+  }
+
+  @JsonProperty("versions")
+  public List<ProfileSummary> getVersions() {
+    return versions;
+  }
+
+  @java.lang.Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    return (
+      other instanceof ProfileVersionListResponse && equalTo((ProfileVersionListResponse) other)
+    );
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  private boolean equalTo(ProfileVersionListResponse other) {
+    return versions.equals(other.versions);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.versions);
+  }
+
+  @java.lang.Override
+  public String toString() {
+    return ObjectMappers.stringify(this);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static final class Builder {
+
+    private List<ProfileSummary> versions = new ArrayList<>();
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    private Builder() {}
+
+    public Builder from(ProfileVersionListResponse other) {
+      versions(other.getVersions());
+      return this;
     }
 
-    @JsonProperty("versions")
-    public List<ProfileSummary> getVersions() {
-        return versions;
+    @JsonSetter(value = "versions", nulls = Nulls.SKIP)
+    public Builder versions(List<ProfileSummary> versions) {
+      this.versions.clear();
+      if (versions != null) {
+        this.versions.addAll(versions);
+      }
+      return this;
     }
 
-    @java.lang.Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        return other instanceof ProfileVersionListResponse && equalTo((ProfileVersionListResponse) other);
+    public Builder addVersions(ProfileSummary versions) {
+      this.versions.add(versions);
+      return this;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public Builder addAllVersions(List<ProfileSummary> versions) {
+      if (versions != null) {
+        this.versions.addAll(versions);
+      }
+      return this;
     }
 
-    private boolean equalTo(ProfileVersionListResponse other) {
-        return versions.equals(other.versions);
+    public ProfileVersionListResponse build() {
+      return new ProfileVersionListResponse(versions, additionalProperties);
     }
 
-    @java.lang.Override
-    public int hashCode() {
-        return Objects.hash(this.versions);
+    @JsonAnySetter
+    private void putAdditionalPropertyFromJson(String key, Object value) {
+      if (key.equalsIgnoreCase("versions")) {
+        return;
+      }
+      this.additionalProperties.put(key, value);
     }
 
-    @java.lang.Override
-    public String toString() {
-        return ObjectMappers.stringify(this);
+    public Builder additionalProperty(String key, Object value) {
+      this.additionalProperties.put(key, value);
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder additionalProperties(Map<String, Object> additionalProperties) {
+      this.additionalProperties.putAll(additionalProperties);
+      return this;
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class Builder {
-        private List<ProfileSummary> versions = new ArrayList<>();
-
-        @JsonAnySetter
-        private Map<String, Object> additionalProperties = new HashMap<>();
-
-        private Builder() {}
-
-        public Builder from(ProfileVersionListResponse other) {
-            versions(other.getVersions());
-            return this;
-        }
-
-        @JsonSetter(value = "versions", nulls = Nulls.SKIP)
-        public Builder versions(List<ProfileSummary> versions) {
-            this.versions.clear();
-            if (versions != null) {
-                this.versions.addAll(versions);
-            }
-            return this;
-        }
-
-        public Builder addVersions(ProfileSummary versions) {
-            this.versions.add(versions);
-            return this;
-        }
-
-        public Builder addAllVersions(List<ProfileSummary> versions) {
-            if (versions != null) {
-                this.versions.addAll(versions);
-            }
-            return this;
-        }
-
-        public ProfileVersionListResponse build() {
-            return new ProfileVersionListResponse(versions, additionalProperties);
-        }
-
-        public Builder additionalProperty(String key, Object value) {
-            this.additionalProperties.put(key, value);
-            return this;
-        }
-
-        public Builder additionalProperties(Map<String, Object> additionalProperties) {
-            this.additionalProperties.putAll(additionalProperties);
-            return this;
-        }
-    }
+  }
 }
