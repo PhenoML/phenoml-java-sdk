@@ -87,7 +87,6 @@ public final class FhirProviderSetActiveAuthConfigRequest {
     public static final class Builder implements AuthConfigIdStage, _FinalStage {
         private String authConfigId;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -112,6 +111,14 @@ public final class FhirProviderSetActiveAuthConfigRequest {
         @java.lang.Override
         public FhirProviderSetActiveAuthConfigRequest build() {
             return new FhirProviderSetActiveAuthConfigRequest(authConfigId, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("auth_config_id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

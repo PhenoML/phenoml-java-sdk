@@ -88,7 +88,6 @@ public final class ProfileUploadRequest {
 
         private Optional<String> implementationGuide = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -139,6 +138,14 @@ public final class ProfileUploadRequest {
 
         public ProfileUploadRequest build() {
             return new ProfileUploadRequest(structureDefinition, implementationGuide, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("structure_definition") || key.equalsIgnoreCase("implementation_guide")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
