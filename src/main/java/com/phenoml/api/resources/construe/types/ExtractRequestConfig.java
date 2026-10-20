@@ -288,7 +288,6 @@ public final class ExtractRequestConfig {
 
         private Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -533,6 +532,25 @@ public final class ExtractRequestConfig {
                     minContextRelevance,
                     consistencyEffort,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("chunking_method")
+                    || key.equalsIgnoreCase("max_codes_per_chunk")
+                    || key.equalsIgnoreCase("code_similarity_filter")
+                    || key.equalsIgnoreCase("validation_method")
+                    || key.equalsIgnoreCase("chunk_code_jaccard_similarity_filtering_threshold")
+                    || key.equalsIgnoreCase("include_rationale")
+                    || key.equalsIgnoreCase("include_ancestors")
+                    || key.equalsIgnoreCase("include_invalid")
+                    || key.equalsIgnoreCase("include_citations")
+                    || key.equalsIgnoreCase("extraction_context")
+                    || key.equalsIgnoreCase("min_context_relevance")
+                    || key.equalsIgnoreCase("consistency_effort")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

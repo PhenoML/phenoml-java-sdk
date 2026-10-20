@@ -317,7 +317,6 @@ public final class UploadRequest {
 
         private Optional<Double> revision = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -538,6 +537,23 @@ public final class UploadRequest {
                     codes,
                     replace,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("version")
+                    || key.equalsIgnoreCase("revision")
+                    || key.equalsIgnoreCase("format")
+                    || key.equalsIgnoreCase("file")
+                    || key.equalsIgnoreCase("code_col")
+                    || key.equalsIgnoreCase("desc_col")
+                    || key.equalsIgnoreCase("defn_col")
+                    || key.equalsIgnoreCase("codes")
+                    || key.equalsIgnoreCase("replace")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

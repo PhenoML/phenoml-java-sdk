@@ -170,7 +170,6 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
 
         private Optional<List<PageClassification>> pageClassifications = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -291,6 +290,20 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
                     resourceReview,
                     pageClassifications,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("success")
+                    || key.equalsIgnoreCase("message")
+                    || key.equalsIgnoreCase("bundle")
+                    || key.equalsIgnoreCase("resources")
+                    || key.equalsIgnoreCase("validation")
+                    || key.equalsIgnoreCase("resource_review")
+                    || key.equalsIgnoreCase("page_classifications")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

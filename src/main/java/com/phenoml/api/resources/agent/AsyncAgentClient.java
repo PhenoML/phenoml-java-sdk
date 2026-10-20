@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.agent;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.agent.chat.AsyncChatClient;
@@ -45,63 +46,128 @@ public class AsyncAgentClient {
      * Creates a new PhenoAgent with specified configuration
      */
     public CompletableFuture<AgentResponse> create(AgentCreateRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentResponse>> rawFuture = this.rawClient.create(request);
+        CompletableFuture<AgentResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Creates a new PhenoAgent with specified configuration
      */
     public CompletableFuture<AgentResponse> create(AgentCreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentResponse>> rawFuture =
+                this.rawClient.create(request, requestOptions);
+        CompletableFuture<AgentResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
     public CompletableFuture<ListResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ListResponse>> rawFuture = this.rawClient.list();
+        CompletableFuture<ListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
     public CompletableFuture<ListResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ListResponse>> rawFuture = this.rawClient.list(requestOptions);
+        CompletableFuture<ListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
     public CompletableFuture<ListResponse> list(ListRequest request) {
-        return this.rawClient.list(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ListResponse>> rawFuture = this.rawClient.list(request);
+        CompletableFuture<ListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Retrieves a list of PhenoAgents belonging to the authenticated user
      */
     public CompletableFuture<ListResponse> list(ListRequest request, RequestOptions requestOptions) {
-        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ListResponse>> rawFuture =
+                this.rawClient.list(request, requestOptions);
+        CompletableFuture<ListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Retrieves a specific agent by its ID
      */
     public CompletableFuture<AgentResponse> get(String id) {
-        return this.rawClient.get(id).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentResponse>> rawFuture = this.rawClient.get(id);
+        CompletableFuture<AgentResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Retrieves a specific agent by its ID
      */
     public CompletableFuture<AgentResponse> get(String id, RequestOptions requestOptions) {
-        return this.rawClient.get(id, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentResponse>> rawFuture = this.rawClient.get(id, requestOptions);
+        CompletableFuture<AgentResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Updates an existing agent's configuration
      */
     public CompletableFuture<AgentResponse> update(String id, AgentCreateRequest request) {
-        return this.rawClient.update(id, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentResponse>> rawFuture = this.rawClient.update(id, request);
+        CompletableFuture<AgentResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -109,28 +175,58 @@ public class AsyncAgentClient {
      */
     public CompletableFuture<AgentResponse> update(
             String id, AgentCreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentResponse>> rawFuture =
+                this.rawClient.update(id, request, requestOptions);
+        CompletableFuture<AgentResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Deletes an existing agent
      */
     public CompletableFuture<DeleteResponse> delete(String id) {
-        return this.rawClient.delete(id).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> rawFuture = this.rawClient.delete(id);
+        CompletableFuture<DeleteResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Deletes an existing agent
      */
     public CompletableFuture<DeleteResponse> delete(String id, RequestOptions requestOptions) {
-        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<DeleteResponse>> rawFuture =
+                this.rawClient.delete(id, requestOptions);
+        CompletableFuture<DeleteResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Patches an existing agent's configuration
      */
     public CompletableFuture<AgentResponse> patch(String id, List<JsonPatchOperation> request) {
-        return this.rawClient.patch(id, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentResponse>> rawFuture = this.rawClient.patch(id, request);
+        CompletableFuture<AgentResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -138,7 +234,15 @@ public class AsyncAgentClient {
      */
     public CompletableFuture<AgentResponse> patch(
             String id, List<JsonPatchOperation> request, RequestOptions requestOptions) {
-        return this.rawClient.patch(id, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentResponse>> rawFuture =
+                this.rawClient.patch(id, request, requestOptions);
+        CompletableFuture<AgentResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     public AsyncChatClient chat() {

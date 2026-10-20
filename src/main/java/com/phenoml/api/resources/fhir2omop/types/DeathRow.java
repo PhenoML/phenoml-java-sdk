@@ -151,7 +151,6 @@ public final class DeathRow {
 
         private Optional<Long> causeSourceConceptId = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -257,6 +256,20 @@ public final class DeathRow {
                     causeSourceValue,
                     causeSourceConceptId,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("person_id")
+                    || key.equalsIgnoreCase("death_date")
+                    || key.equalsIgnoreCase("death_datetime")
+                    || key.equalsIgnoreCase("death_type_concept_id")
+                    || key.equalsIgnoreCase("cause_concept_id")
+                    || key.equalsIgnoreCase("cause_source_value")
+                    || key.equalsIgnoreCase("cause_source_concept_id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

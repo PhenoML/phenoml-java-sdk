@@ -1,3 +1,23 @@
+## [18.2.0] - 2026-10-20
+### Added
+- **`CreateOmopResponse` Specimen & review fields** — new `getSpecimen()` on `OmopTables`, `getSpecimenSourceContexts()`, `getQuantityTransformations()`, and `getRowsForReview()` accessors surface OMOP Specimen rows, source provenance, drug-quantity audit trails, and rows requiring manual review.
+- **`DrugExposureRow.getQuantity()`** and **`MeasurementRow.getUnitSourceConceptId()`** — new optional numeric fields exposing formulation-specific dispense/dose quantity and UCUM unit source concept ID respectively.
+- **`MappingEntry.getResolution()`** and supporting types **`MappingResolution`**, **`MappingResolutionStatus`**, **`MappingResolutionReasonCode`**, **`MappingResolutionVia`**, **`MappingPath`**, and **`MappingPathMappingStatus`** — expose per-entry vocabulary resolution outcome, reason, strategy, and path detail.
+- **Quantity transformation types** — **`QuantityTransformation`**, **`QuantityTransformationOutcome`**, **`QuantityTransformationPolicy`**, **`QuantityTransformationReason`**, **`QuantityTransformationResourceType`**, **`QuantityTransformationSourcePath`**, **`QuantityEvidence`**, **`QuantityStrength`**, **`QuantityUnit`**, **`QuantityDenominatorBasis`**, and **`QuantityDenominatorBasisKind`** describe how FHIR medication quantities are mapped to OMOP drug-exposure fields.
+- **Specimen response types** — **`SpecimenRow`**, **`SpecimenSourceContext`**, **`SpecimenSourceContextStatus`**, **`SpecimenCollectionTiming`**, **`SpecimenCollectionPeriod`**, and **`SpecimenIdentifier`** surface OMOP CDM 5.4 Specimen table rows and their FHIR provenance.
+- **`RowForReview`** and **`RowForReviewReasonsItem`** — new types identifying OMOP rows requiring manual review, with `Summary.getRowsForReview()` reporting the aggregate count.
+- **`RequestOptions.Builder.addBodyProperty()` / `.bodyProperties()`** — inject arbitrary key/value pairs into JSON or form-urlencoded request bodies without subclassing a request type.
+- **`Stream.fromSseWithEventDiscrimination()`** and **`SseEventParser.parseEventLevelUnion()` envelope overload** — new SSE factory and parser overload supporting mixed envelope/payload SSE streams.
+- **`RetryInterceptor.newAsyncCall()`** and **`AsyncCall`** — non-blocking async retry that avoids consuming OkHttp dispatcher threads during backoff.
+
+### Changed
+- **`ObservationPeriodRow`, `ObservationRow`, `ProcedureOccurrenceRow`, and `ProviderRow` documentation** — clarified date-selection timing rules, UCUM unit-concept semantics, NPI deduplication, and `genderSourceConceptId` behaviour; no API signature changes.
+- **`MappingEntry.getMappingStatus()` and `getSelected()` documentation** — `UNMAPPED` now explicitly covers domain mismatches and ambiguity; `selected` is documented as `false` for entries without a row column.
+- **`VisitOccurrenceRow.getVisitSourceConceptId()`** — new optional field carrying the OMOP source concept ID for the selected `Encounter.class` or `Encounter.type` coding.
+
+### Fixed
+- **`@JsonAnySetter` guard on all builder types** — a private `putAdditionalPropertyFromJson` method now filters known field names before they reach `additionalProperties`, preventing double-writes during Jackson deserialization across all agent, OMOP, and FHIR-provider builder types.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.

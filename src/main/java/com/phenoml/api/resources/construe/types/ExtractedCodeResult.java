@@ -232,7 +232,6 @@ public final class ExtractedCodeResult {
 
         private Optional<String> reason = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -374,6 +373,20 @@ public final class ExtractedCodeResult {
         public ExtractedCodeResult build() {
             return new ExtractedCodeResult(
                     code, description, valid, reason, isAncestor, citations, categories, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("code")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("valid")
+                    || key.equalsIgnoreCase("reason")
+                    || key.equalsIgnoreCase("is_ancestor")
+                    || key.equalsIgnoreCase("citations")
+                    || key.equalsIgnoreCase("categories")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

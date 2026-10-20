@@ -140,7 +140,6 @@ public final class ExportCodeSystemResponse {
 
         private List<CodeResponse> codes = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -213,6 +212,17 @@ public final class ExportCodeSystemResponse {
         @java.lang.Override
         public ExportCodeSystemResponse build() {
             return new ExportCodeSystemResponse(name, version, codes, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("version")
+                    || key.equalsIgnoreCase("format")
+                    || key.equalsIgnoreCase("codes")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override
