@@ -1,3 +1,23 @@
+## [18.2.0] - 2026-10-21
+### Added
+- **`RequestOptions.Builder.addBodyProperty()` / `.bodyProperties()`** — inject arbitrary key/value pairs into JSON or form-urlencoded request bodies at call time; merged automatically into `create`, `update`, `execute`, and `delete` workflow requests.
+- **`RetryInterceptor.newAsyncCall()`** — new async-call factory that schedules retry backoff on a background thread, preventing retrying requests from consuming OkHttp dispatcher slots while waiting.
+- **`Stream.fromSseWithEventDiscrimination()`** — new SSE stream factory supporting full-envelope event discrimination for richer union-type SSE handling.
+- **OMOP Specimen support** — `SpecimenRow`, `SpecimenSourceContext`, `SpecimenSourceContextStatus`, and `SpecimenCollectionTiming` added; `CreateOmopRequest` now accepts `Specimen` resources and `OmopTables` exposes `getSpecimen()`.
+- **OMOP quantity and review types** — `QuantityTransformation`, `QuantityEvidence`, `QuantityStrength`, `QuantityUnit`, `RowForReview`, and related enum types added to surface drug quantity derivation and row-review audit data on `CreateOmopResponse`.
+- **`MappingResolution` and `MappingPath` types** — new vocabulary-resolution detail types added to `MappingEntry.getResolution()`, including status, reason code, resolution path, and semantic-mapping result.
+- **New enum values and extraction targets** — `ExtractRequestConfigValidationMethod.SEMANTIC_MAPPING`, `CreateRequestResource.PHENOML_HPO_PHENOTYPIC_OBSERVATION` / `PHENOML_HPO_CONDITION`, and supporting visitor methods added across several types.
+- See full changelog for all changes
+
+### Changed
+- **`@JsonAnySetter` guard on all request/response builders** — known JSON field names are now filtered out of `additionalProperties` during deserialization across all OMOP row, agent, and provider-role builder types, preventing duplicate field storage.
+- **DELETE workflow requests** — HTTP DELETE body is now constructed via `BodyProperties.toRequestBody()` instead of `null`, enabling `RequestOptions` body properties to be forwarded on delete calls.
+- **Javadoc on date fields** — descriptions for `getMeasurementDate()`, `getObservationDate()`, `getProcedureDate()`, and observation-period date fields updated to reflect multi-resource timing rules including Specimen and Death rows.
+
+### Fixed
+- **`AsyncWorkflowsClient` cancellation propagation** — cancelling a `CompletableFuture` returned by any async workflows method now cancels the underlying OkHttp call, preventing resource leaks.
+- **Path-segment validation for workflow IDs** — workflow `id` values are now validated via `PathSegments.validate()` before URL construction, catching malformed IDs early.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
