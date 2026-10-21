@@ -160,7 +160,6 @@ public final class CohortRequest {
 
         private Optional<String> phenomlOnBehalfOf = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -241,6 +240,14 @@ public final class CohortRequest {
         @java.lang.Override
         public CohortRequest build() {
             return new CohortRequest(phenomlOnBehalfOf, phenomlFhirProvider, text, provider, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("text") || key.equalsIgnoreCase("provider")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

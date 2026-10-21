@@ -210,7 +210,6 @@ public final class CreateSummaryTemplateRequest {
 
         private Optional<String> description = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -338,6 +337,19 @@ public final class CreateSummaryTemplateRequest {
         public CreateSummaryTemplateRequest build() {
             return new CreateSummaryTemplateRequest(
                     name, description, exampleSummary, targetResources, exampleFhirData, mode, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("example_summary")
+                    || key.equalsIgnoreCase("target_resources")
+                    || key.equalsIgnoreCase("example_fhir_data")
+                    || key.equalsIgnoreCase("mode")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

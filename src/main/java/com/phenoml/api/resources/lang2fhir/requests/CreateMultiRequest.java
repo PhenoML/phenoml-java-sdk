@@ -268,7 +268,6 @@ public final class CreateMultiRequest {
 
         private Optional<String> version = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -457,6 +456,22 @@ public final class CreateMultiRequest {
                     validationMethod,
                     resourceReview,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("text")
+                    || key.equalsIgnoreCase("version")
+                    || key.equalsIgnoreCase("provider")
+                    || key.equalsIgnoreCase("primary_patient")
+                    || key.equalsIgnoreCase("patient_reference")
+                    || key.equalsIgnoreCase("implementation_guide")
+                    || key.equalsIgnoreCase("detection_effort")
+                    || key.equalsIgnoreCase("validation_method")
+                    || key.equalsIgnoreCase("resource_review")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

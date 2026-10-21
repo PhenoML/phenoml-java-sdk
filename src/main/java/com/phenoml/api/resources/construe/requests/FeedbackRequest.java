@@ -145,7 +145,6 @@ public final class FeedbackRequest {
 
         private Optional<String> detail = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -207,6 +206,17 @@ public final class FeedbackRequest {
         @java.lang.Override
         public FeedbackRequest build() {
             return new FeedbackRequest(text, receivedResult, expectedResult, detail, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("text")
+                    || key.equalsIgnoreCase("received_result")
+                    || key.equalsIgnoreCase("expected_result")
+                    || key.equalsIgnoreCase("detail")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override
