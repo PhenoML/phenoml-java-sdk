@@ -1,3 +1,23 @@
+## [18.2.0] - 2026-10-23
+### Added
+- **`RequestOptions.Builder.addBodyProperty()` / `.bodyProperties()`** — inject extra key/value pairs into JSON or form-urlencoded request bodies, overriding existing fields with the same key.
+- **`RetryInterceptor` async retry via `newAsyncCall()`** — non-blocking retry that schedules backoff on a daemon thread so retrying calls no longer consume OkHttp dispatcher concurrency.
+- **`Stream.fromSseWithEventDiscrimination()`** — new SSE stream factory supporting event variants whose union model wraps the full SSE envelope rather than just the data payload.
+- **FHIR-to-OMOP Specimen support** — `SpecimenRow`, `SpecimenSourceContext`, `SpecimenCollectionTiming`, `SpecimenIdentifier`, and related types expose the new OMOP Specimen domain; `OmopTables.getSpecimen()` surfaces the table on every response.
+- **Drug quantity mapping** — `DrugExposureRow.getQuantity()`, `QuantityTransformation`, `QuantityEvidence`, `QuantityStrength`, `QuantityUnit`, and associated enum types (`QuantityTransformationOutcome`, `QuantityTransformationPolicy`, `QuantityTransformationReason`, etc.) describe how FHIR quantities are mapped to `drug_exposure.quantity`.
+- **Mapping resolution provenance** — `MappingResolution`, `MappingPath`, `MappingPathMappingStatus`, `MappingResolutionStatus`, `MappingResolutionReasonCode`, `MappingResolutionVia`, and `SemanticMappingResult` expose full vocabulary resolution provenance on `MappingEntry`.
+- **Rows-for-review index** — `CreateOmopResponse.getRowsForReview()`, `RowForReview`, `RowForReviewReasonsItem`, and `Summary.getRowsForReview()` flag uncertain OMOP rows that require human review before loading.
+- **New field and enum additions** — `MeasurementRow.getUnitSourceConceptId()`, `VisitOccurrenceRow.getVisitSourceConceptId()`, `CreateOmopResponse.getQuantityTransformations()`, `CreateMultiRequest.getSmallNote()`, `ExtractRequestConfigValidationMethod.SEMANTIC_MAPPING`, and `CreateRequestResource.PHENOML_HPO_PHENOTYPIC_OBSERVATION` / `PHENOML_HPO_CONDITION`.
+- See full changelog for all changes
+
+### Changed
+- **`additionalProperties` deserialization on all builder types** — a named guard method now filters known field names before insertion, preventing typed fields from being silently captured in the extras map.
+- **`MappingEntry.getMappingStatus()` documentation** — `MAPPED` now covers clinical source text; `UNMAPPED` explicitly includes domain mismatches, ambiguity, and unresolved source information.
+- **`ProviderRow` and `ReferenceDiagnostic` Javadoc** — NPI deduplication semantics and all outcome codes (`UNRESOLVED`, `AMBIGUOUS`, `CONFLICTING`, `UNSUPPORTED`) are now fully documented.
+
+### Fixed
+- **`@JsonAnySetter` guard on all agent and OMOP builder types** — known field names are no longer accidentally routed into `additionalProperties` during JSON deserialization across `AgentChatRequest`, `AgentStreamChatRequest`, `CreateOmopResponse`, and all related types.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
