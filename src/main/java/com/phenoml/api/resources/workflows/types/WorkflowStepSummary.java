@@ -132,7 +132,6 @@ public final class WorkflowStepSummary {
 
         private Optional<String> providerId = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -218,6 +217,18 @@ public final class WorkflowStepSummary {
 
         public WorkflowStepSummary build() {
             return new WorkflowStepSummary(id, name, description, type, providerId, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("id")
+                    || key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("type")
+                    || key.equalsIgnoreCase("provider_id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
