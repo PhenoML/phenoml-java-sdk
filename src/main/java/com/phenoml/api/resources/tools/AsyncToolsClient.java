@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.tools;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.tools.mcpservers.AsyncMcpServersClient;
@@ -46,7 +47,15 @@ public class AsyncToolsClient {
      * Converts natural language to FHIR resource and optionally stores it in a FHIR server
      */
     public CompletableFuture<Lang2FhirAndCreateResponse> createFhirResource(Lang2FhirAndCreateRequest request) {
-        return this.rawClient.createFhirResource(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Lang2FhirAndCreateResponse>> rawFuture =
+                this.rawClient.createFhirResource(request);
+        CompletableFuture<Lang2FhirAndCreateResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -54,7 +63,15 @@ public class AsyncToolsClient {
      */
     public CompletableFuture<Lang2FhirAndCreateResponse> createFhirResource(
             Lang2FhirAndCreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createFhirResource(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Lang2FhirAndCreateResponse>> rawFuture =
+                this.rawClient.createFhirResource(request, requestOptions);
+        CompletableFuture<Lang2FhirAndCreateResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -66,7 +83,15 @@ public class AsyncToolsClient {
      */
     public CompletableFuture<Lang2FhirAndCreateMultiResponse> createFhirResourcesMulti(
             Lang2FhirAndCreateMultiRequest request) {
-        return this.rawClient.createFhirResourcesMulti(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Lang2FhirAndCreateMultiResponse>> rawFuture =
+                this.rawClient.createFhirResourcesMulti(request);
+        CompletableFuture<Lang2FhirAndCreateMultiResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -78,14 +103,30 @@ public class AsyncToolsClient {
      */
     public CompletableFuture<Lang2FhirAndCreateMultiResponse> createFhirResourcesMulti(
             Lang2FhirAndCreateMultiRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createFhirResourcesMulti(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Lang2FhirAndCreateMultiResponse>> rawFuture =
+                this.rawClient.createFhirResourcesMulti(request, requestOptions);
+        CompletableFuture<Lang2FhirAndCreateMultiResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Converts natural language to FHIR search parameters and executes search in FHIR server
      */
     public CompletableFuture<Lang2FhirAndSearchResponse> searchFhirResources(Lang2FhirAndSearchRequest request) {
-        return this.rawClient.searchFhirResources(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Lang2FhirAndSearchResponse>> rawFuture =
+                this.rawClient.searchFhirResources(request);
+        CompletableFuture<Lang2FhirAndSearchResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -93,21 +134,44 @@ public class AsyncToolsClient {
      */
     public CompletableFuture<Lang2FhirAndSearchResponse> searchFhirResources(
             Lang2FhirAndSearchRequest request, RequestOptions requestOptions) {
-        return this.rawClient.searchFhirResources(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Lang2FhirAndSearchResponse>> rawFuture =
+                this.rawClient.searchFhirResources(request, requestOptions);
+        CompletableFuture<Lang2FhirAndSearchResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Uses LLM to extract search concepts from natural language and builds patient cohorts with inclusion/exclusion criteria
      */
     public CompletableFuture<CohortResponse> analyzeCohort(CohortRequest request) {
-        return this.rawClient.analyzeCohort(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<CohortResponse>> rawFuture = this.rawClient.analyzeCohort(request);
+        CompletableFuture<CohortResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Uses LLM to extract search concepts from natural language and builds patient cohorts with inclusion/exclusion criteria
      */
     public CompletableFuture<CohortResponse> analyzeCohort(CohortRequest request, RequestOptions requestOptions) {
-        return this.rawClient.analyzeCohort(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<CohortResponse>> rawFuture =
+                this.rawClient.analyzeCohort(request, requestOptions);
+        CompletableFuture<CohortResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     public AsyncMcpServersClient mcpServers() {
