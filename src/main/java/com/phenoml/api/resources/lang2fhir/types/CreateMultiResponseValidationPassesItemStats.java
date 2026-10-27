@@ -109,7 +109,6 @@ public final class CreateMultiResponseValidationPassesItemStats {
 
         private Optional<Double> durationMs = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -172,6 +171,17 @@ public final class CreateMultiResponseValidationPassesItemStats {
         public CreateMultiResponseValidationPassesItemStats build() {
             return new CreateMultiResponseValidationPassesItemStats(
                     resourceType, profileUrl, isCustomProfile, durationMs, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("resource_type")
+                    || key.equalsIgnoreCase("profile_url")
+                    || key.equalsIgnoreCase("is_custom_profile")
+                    || key.equalsIgnoreCase("duration_ms")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

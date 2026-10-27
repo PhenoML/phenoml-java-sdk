@@ -108,7 +108,6 @@ public final class FhirQueryResponse {
 
         private Optional<FhirQueryResponseData> data = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -170,6 +169,17 @@ public final class FhirQueryResponse {
 
         public FhirQueryResponse build() {
             return new FhirQueryResponse(success, status, message, data, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("success")
+                    || key.equalsIgnoreCase("status")
+                    || key.equalsIgnoreCase("message")
+                    || key.equalsIgnoreCase("data")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

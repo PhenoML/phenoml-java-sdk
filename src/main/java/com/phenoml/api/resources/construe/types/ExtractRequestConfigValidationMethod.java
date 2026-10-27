@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public final class ExtractRequestConfigValidationMethod {
+    public static final ExtractRequestConfigValidationMethod SEMANTIC_MAPPING =
+            new ExtractRequestConfigValidationMethod(Value.SEMANTIC_MAPPING, "semantic_mapping");
+
     public static final ExtractRequestConfigValidationMethod SIMPLE =
             new ExtractRequestConfigValidationMethod(Value.SIMPLE, "simple");
 
@@ -53,6 +56,8 @@ public final class ExtractRequestConfigValidationMethod {
 
     public <T> T visit(Visitor<T> visitor) {
         switch (value) {
+            case SEMANTIC_MAPPING:
+                return visitor.visitSemanticMapping();
             case SIMPLE:
                 return visitor.visitSimple();
             case MEDICATION_SEARCH:
@@ -70,6 +75,8 @@ public final class ExtractRequestConfigValidationMethod {
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static ExtractRequestConfigValidationMethod valueOf(String value) {
         switch (value) {
+            case "semantic_mapping":
+                return SEMANTIC_MAPPING;
             case "simple":
                 return SIMPLE;
             case "medication_search":
@@ -88,6 +95,8 @@ public final class ExtractRequestConfigValidationMethod {
 
         SIMPLE,
 
+        SEMANTIC_MAPPING,
+
         MEDICATION_SEARCH,
 
         CHUNK_CODE_JACCARD_SIMILARITY,
@@ -99,6 +108,8 @@ public final class ExtractRequestConfigValidationMethod {
         T visitNone();
 
         T visitSimple();
+
+        T visitSemanticMapping();
 
         T visitMedicationSearch();
 

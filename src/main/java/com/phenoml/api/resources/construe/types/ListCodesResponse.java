@@ -148,7 +148,6 @@ public final class ListCodesResponse {
 
         private List<CodeResponse> codes = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -227,6 +226,17 @@ public final class ListCodesResponse {
         @java.lang.Override
         public ListCodesResponse build() {
             return new ListCodesResponse(system, codes, nextCursor, hasMore, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("system")
+                    || key.equalsIgnoreCase("codes")
+                    || key.equalsIgnoreCase("next_cursor")
+                    || key.equalsIgnoreCase("has_more")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

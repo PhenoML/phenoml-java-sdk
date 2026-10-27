@@ -148,7 +148,6 @@ public final class PromptTemplate {
 
         private Optional<List<String>> tags = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -249,6 +248,19 @@ public final class PromptTemplate {
 
         public PromptTemplate build() {
             return new PromptTemplate(id, name, description, content, isDefault, tags, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("id")
+                    || key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("content")
+                    || key.equalsIgnoreCase("is_default")
+                    || key.equalsIgnoreCase("tags")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
