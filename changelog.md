@@ -1,3 +1,19 @@
+## [18.2.0] - 2026-10-27
+### Added
+- **`RequestOptions.Builder.addBodyProperty()` / `.bodyProperties()`** — inject extra key/value pairs into JSON or form-urlencoded request bodies without subclassing a request type.
+- **`RetryInterceptor` async retry and `Stream.fromSseWithEventDiscrimination()`** — non-blocking retry avoids consuming OkHttp dispatcher threads, and a new SSE factory supports event-variant unions wrapping the full SSE envelope.
+- **`CreateOmopResponse` new fields** — `getQuantityTransformations()`, `getRowsForReview()`, `getSpecimenSourceContexts()`, and `getMedicationDispenseSourceContexts()` expose quantity audit trails, review-flagged rows, specimen provenance, and dispensing context respectively.
+- **New FHIR-to-OMOP response types** — `SpecimenRow`, `MappingResolution` (with `MappingResolutionStatus`, `MappingResolutionReasonCode`, `MappingResolutionVia`), `QuantityTransformation` (with outcome/policy/reason enums), `MedicationDispenseSourceContext`, `RowForReview`, `SemanticMappingResult`, `SpecimenCollectionTiming`, `QuantityStrength`, `QuantityUnit`, `MappingPath`, and related supporting types.
+- **`OmopTables.getSpecimen()`, `MeasurementRow.getUnitSourceConceptId()`, `VisitOccurrenceRow.getVisitSourceConceptId()`, `DrugExposureRow.getQuantity()`, `MappingEntry.getResolution()`, `Summary.getRowsForReview()`, and `CreateMultiRequest.getSmallNote()`** — new optional fields across OMOP row, mapping, and request types.
+- **`ExtractRequestConfigValidationMethod.SEMANTIC_MAPPING`**, **`BodyProperties`**, and **`PathSegments.validate()`** — new validation method constant, body-property merge utility, and path-parameter safety guard.
+
+### Changed
+- **`@JsonAnySetter` deserialization guard** — all agent, OMOP row, FHIR-provider, and lang2fhir builder types now route known field names through a private guard method instead of directly into `additionalProperties`, preventing double-storage during Jackson deserialization.
+- **Javadoc expansions** — `DrugExposureRow`, `MappingEntry`, `MeasurementRow`, `ObservationRow`, `ObservationPeriodRow`, `ProcedureOccurrenceRow`, `ProviderRow`, `ReferenceDiagnostic`, and `CreateRequest` received updated documentation describing expanded timing rules, NPI extraction logic, outcome semantics, and built-in PhenoML HPO profiles.
+
+### Fixed
+- **`@JsonAnySetter` guard on agent builder types** — known fields such as `message`, `session_id`, and `type` are no longer accidentally routed into `additionalProperties` during deserialization of `AgentChatRequest`, `AgentStreamChatRequest`, `AgentChatResponse`, `AgentChatStreamEvent`, and related types.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
