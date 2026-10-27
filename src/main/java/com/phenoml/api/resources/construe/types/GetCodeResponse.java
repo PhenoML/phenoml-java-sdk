@@ -150,7 +150,6 @@ public final class GetCodeResponse {
 
         private Optional<String> definition = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -216,6 +215,17 @@ public final class GetCodeResponse {
         @java.lang.Override
         public GetCodeResponse build() {
             return new GetCodeResponse(system, code, description, definition, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("system")
+                    || key.equalsIgnoreCase("code")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("definition")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

@@ -43,6 +43,8 @@ public final class OmopTables {
 
     private final Optional<List<MeasurementRow>> measurement;
 
+    private final Optional<List<SpecimenRow>> specimen;
+
     private final Optional<List<ObservationRow>> observation;
 
     private final Map<String, Object> additionalProperties;
@@ -59,6 +61,7 @@ public final class OmopTables {
             Optional<List<DrugExposureRow>> drugExposure,
             Optional<List<ProcedureOccurrenceRow>> procedureOccurrence,
             Optional<List<MeasurementRow>> measurement,
+            Optional<List<SpecimenRow>> specimen,
             Optional<List<ObservationRow>> observation,
             Map<String, Object> additionalProperties) {
         this.location = location;
@@ -72,6 +75,7 @@ public final class OmopTables {
         this.drugExposure = drugExposure;
         this.procedureOccurrence = procedureOccurrence;
         this.measurement = measurement;
+        this.specimen = specimen;
         this.observation = observation;
         this.additionalProperties = additionalProperties;
     }
@@ -131,6 +135,11 @@ public final class OmopTables {
         return measurement;
     }
 
+    @JsonProperty("specimen")
+    public Optional<List<SpecimenRow>> getSpecimen() {
+        return specimen;
+    }
+
     @JsonProperty("observation")
     public Optional<List<ObservationRow>> getObservation() {
         return observation;
@@ -159,6 +168,7 @@ public final class OmopTables {
                 && drugExposure.equals(other.drugExposure)
                 && procedureOccurrence.equals(other.procedureOccurrence)
                 && measurement.equals(other.measurement)
+                && specimen.equals(other.specimen)
                 && observation.equals(other.observation);
     }
 
@@ -176,6 +186,7 @@ public final class OmopTables {
                 this.drugExposure,
                 this.procedureOccurrence,
                 this.measurement,
+                this.specimen,
                 this.observation);
     }
 
@@ -212,9 +223,10 @@ public final class OmopTables {
 
         private Optional<List<MeasurementRow>> measurement = Optional.empty();
 
+        private Optional<List<SpecimenRow>> specimen = Optional.empty();
+
         private Optional<List<ObservationRow>> observation = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -231,6 +243,7 @@ public final class OmopTables {
             drugExposure(other.getDrugExposure());
             procedureOccurrence(other.getProcedureOccurrence());
             measurement(other.getMeasurement());
+            specimen(other.getSpecimen());
             observation(other.getObservation());
             return this;
         }
@@ -356,6 +369,17 @@ public final class OmopTables {
             return this;
         }
 
+        @JsonSetter(value = "specimen", nulls = Nulls.SKIP)
+        public Builder specimen(Optional<List<SpecimenRow>> specimen) {
+            this.specimen = specimen;
+            return this;
+        }
+
+        public Builder specimen(List<SpecimenRow> specimen) {
+            this.specimen = Optional.ofNullable(specimen);
+            return this;
+        }
+
         @JsonSetter(value = "observation", nulls = Nulls.SKIP)
         public Builder observation(Optional<List<ObservationRow>> observation) {
             this.observation = observation;
@@ -380,8 +404,29 @@ public final class OmopTables {
                     drugExposure,
                     procedureOccurrence,
                     measurement,
+                    specimen,
                     observation,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("location")
+                    || key.equalsIgnoreCase("care_site")
+                    || key.equalsIgnoreCase("provider")
+                    || key.equalsIgnoreCase("person")
+                    || key.equalsIgnoreCase("death")
+                    || key.equalsIgnoreCase("observation_period")
+                    || key.equalsIgnoreCase("visit_occurrence")
+                    || key.equalsIgnoreCase("condition_occurrence")
+                    || key.equalsIgnoreCase("drug_exposure")
+                    || key.equalsIgnoreCase("procedure_occurrence")
+                    || key.equalsIgnoreCase("measurement")
+                    || key.equalsIgnoreCase("specimen")
+                    || key.equalsIgnoreCase("observation")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
