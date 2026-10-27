@@ -1,3 +1,20 @@
+## [18.2.0] - 2026-10-27
+### Added
+- **`RequestOptions.Builder.addBodyProperty()` / `.bodyProperties()`** — inject extra key/value pairs into JSON or form-urlencoded request bodies on any call without subclassing a request type.
+- **`RetryInterceptor` async retry and `Stream.fromSseWithEventDiscrimination()`** — non-blocking retry schedules backoff on a daemon thread instead of occupying a dispatcher slot; new SSE factory supports event-variant unions wrapping the full SSE envelope.
+- **FHIR-to-OMOP: `MedicationDispense` and `Specimen` conversion** — `MedicationDispense` resources now map to `drug_exposure` rows and `Specimen` resources map to `specimen` rows, with quantity-transformation auditing, source-context provenance, and partial-row retention.
+- **FHIR-to-OMOP: vocabulary-driven domain assignment and Encounter visit concept resolution** — clinical resources are placed in the OMOP table matching their mapped concept's domain; `Encounter.class`/`type` now populate `visit_concept_id` and `visit_source_concept_id`.
+- **New FHIR-to-OMOP response types** — `MappingResolution`, `MappingPath`, `QuantityTransformation`, `QuantityEvidence`, `QuantityStrength`, `QuantityUnit`, `RowForReview`, `SpecimenRow`, `MedicationDispenseSourceContext`, `SemanticMappingResult`, `SpecimenCollectionTiming`, and related enums and companion types added under `com.phenoml.api.resources.fhir2omop.types`.
+- See full changelog for all changes
+
+### Changed
+- **`CreateOmopResponse`** — new optional fields `quantityTransformations`, `rowsForReview`, `specimenSourceContexts`, and `medicationDispenseSourceContexts` added; `tables` now includes rows previously excluded, so consumers must filter by `rowsForReview` before loading.
+- **`MeasurementRow`, `ObservationRow`, `ObservationPeriodRow`, and `ProcedureOccurrenceRow` date field Javadoc** — updated to describe generalized timing-source selection rules across all supported FHIR resource types.
+- **`ExtractRequestConfigValidationMethod`** — new `SEMANTIC_MAPPING` constant and `visitSemanticMapping()` visitor method added for the `semantic_mapping` validation strategy.
+
+### Fixed
+- **`@JsonAnySetter` deserialization guard on all builder types** — a private `putAdditionalPropertyFromJson` method now skips known field names, preventing Jackson from double-storing already-deserialized fields or silently routing recognized keys into `additionalProperties`.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.

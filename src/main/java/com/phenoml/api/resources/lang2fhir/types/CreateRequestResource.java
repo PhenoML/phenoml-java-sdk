@@ -15,6 +15,9 @@ public final class CreateRequestResource {
     public static final CreateRequestResource MEDICATIONSTATEMENT =
             new CreateRequestResource(Value.MEDICATIONSTATEMENT, "medicationstatement");
 
+    public static final CreateRequestResource PHENOML_HPO_PHENOTYPIC_OBSERVATION =
+            new CreateRequestResource(Value.PHENOML_HPO_PHENOTYPIC_OBSERVATION, "phenoml-hpo-phenotypic-observation");
+
     public static final CreateRequestResource MEDICATIONADMINISTRATION =
             new CreateRequestResource(Value.MEDICATIONADMINISTRATION, "medicationadministration");
 
@@ -34,6 +37,9 @@ public final class CreateRequestResource {
 
     public static final CreateRequestResource OBSERVATION_CLINICAL_RESULT =
             new CreateRequestResource(Value.OBSERVATION_CLINICAL_RESULT, "observation-clinical-result");
+
+    public static final CreateRequestResource PHENOML_HPO_CONDITION =
+            new CreateRequestResource(Value.PHENOML_HPO_CONDITION, "phenoml-hpo-condition");
 
     public static final CreateRequestResource CAREPLAN = new CreateRequestResource(Value.CAREPLAN, "careplan");
 
@@ -98,6 +104,8 @@ public final class CreateRequestResource {
                 return visitor.visitVitalSigns();
             case MEDICATIONSTATEMENT:
                 return visitor.visitMedicationstatement();
+            case PHENOML_HPO_PHENOTYPIC_OBSERVATION:
+                return visitor.visitPhenomlHpoPhenotypicObservation();
             case MEDICATIONADMINISTRATION:
                 return visitor.visitMedicationadministration();
             case SIMPLE_OBSERVATION:
@@ -112,6 +120,8 @@ public final class CreateRequestResource {
                 return visitor.visitEncounter();
             case OBSERVATION_CLINICAL_RESULT:
                 return visitor.visitObservationClinicalResult();
+            case PHENOML_HPO_CONDITION:
+                return visitor.visitPhenomlHpoCondition();
             case CAREPLAN:
                 return visitor.visitCareplan();
             case FAMILYMEMBERHISTORY:
@@ -147,6 +157,8 @@ public final class CreateRequestResource {
                 return VITAL_SIGNS;
             case "medicationstatement":
                 return MEDICATIONSTATEMENT;
+            case "phenoml-hpo-phenotypic-observation":
+                return PHENOML_HPO_PHENOTYPIC_OBSERVATION;
             case "medicationadministration":
                 return MEDICATIONADMINISTRATION;
             case "simple-observation":
@@ -161,6 +173,8 @@ public final class CreateRequestResource {
                 return ENCOUNTER;
             case "observation-clinical-result":
                 return OBSERVATION_CLINICAL_RESULT;
+            case "phenoml-hpo-condition":
+                return PHENOML_HPO_CONDITION;
             case "careplan":
                 return CAREPLAN;
             case "familymemberhistory":
@@ -215,6 +229,10 @@ public final class CreateRequestResource {
 
         PATIENT,
 
+        PHENOML_HPO_CONDITION,
+
+        PHENOML_HPO_PHENOTYPIC_OBSERVATION,
+
         PROCEDURE,
 
         QUESTIONNAIRE,
@@ -258,6 +276,10 @@ public final class CreateRequestResource {
         T visitObservationLab();
 
         T visitPatient();
+
+        T visitPhenomlHpoCondition();
+
+        T visitPhenomlHpoPhenotypicObservation();
 
         T visitProcedure();
 
