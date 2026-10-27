@@ -100,7 +100,6 @@ public final class DocumentConfig {
 
         private Optional<ResourceReview> resourceReview = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -153,6 +152,16 @@ public final class DocumentConfig {
 
         public DocumentConfig build() {
             return new DocumentConfig(pageFilter, splitClassifications, resourceReview, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("page_filter")
+                    || key.equalsIgnoreCase("split_classifications")
+                    || key.equalsIgnoreCase("resource_review")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

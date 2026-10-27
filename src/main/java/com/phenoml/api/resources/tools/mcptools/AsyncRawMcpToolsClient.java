@@ -4,8 +4,10 @@
 package com.phenoml.api.resources.tools.mcptools;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.core.PathSegments;
 import com.phenoml.api.core.PhenomlClientApiException;
 import com.phenoml.api.core.PhenomlClientException;
 import com.phenoml.api.core.PhenomlClientHttpResponse;
@@ -50,7 +52,7 @@ public class AsyncRawMcpToolsClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tools/mcp-server")
-                .addPathSegment(mcpServerId)
+                .addPathSegment(PathSegments.validate(mcpServerId))
                 .addPathSegments("list");
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -77,7 +79,8 @@ public class AsyncRawMcpToolsClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -126,6 +129,11 @@ public class AsyncRawMcpToolsClient {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
+            }
+        });
         return future;
     }
 
@@ -144,7 +152,7 @@ public class AsyncRawMcpToolsClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tools/mcp-server/tool")
-                .addPathSegment(mcpServerToolId);
+                .addPathSegment(PathSegments.validate(mcpServerToolId));
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);
@@ -170,7 +178,8 @@ public class AsyncRawMcpToolsClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -224,6 +233,11 @@ public class AsyncRawMcpToolsClient {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
+            }
+        });
         return future;
     }
 
@@ -242,7 +256,7 @@ public class AsyncRawMcpToolsClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tools/mcp-server/tool")
-                .addPathSegment(mcpServerToolId);
+                .addPathSegment(PathSegments.validate(mcpServerToolId));
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);
@@ -250,7 +264,10 @@ public class AsyncRawMcpToolsClient {
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl.build())
-                .method("DELETE", null)
+                .method(
+                        "DELETE",
+                        BodyProperties.toRequestBody(
+                                requestOptions != null ? requestOptions.getBodyProperties() : null, null))
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Accept", "application/json")
                 .build();
@@ -268,7 +285,8 @@ public class AsyncRawMcpToolsClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<McpServerToolResponse>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -320,6 +338,11 @@ public class AsyncRawMcpToolsClient {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
+            }
+        });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
             }
         });
         return future;

@@ -108,7 +108,6 @@ public final class PatchRequest {
 
         private List<PatchRequestBodyItem> body = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -174,6 +173,14 @@ public final class PatchRequest {
 
         public PatchRequest build() {
             return new PatchRequest(phenomlOnBehalfOf, phenomlFhirProvider, body, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("body")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

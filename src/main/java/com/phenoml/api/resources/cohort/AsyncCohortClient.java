@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.cohort;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.cohort.requests.CohortRequest;
 import com.phenoml.api.resources.cohort.types.CohortResponse;
@@ -30,13 +31,28 @@ public class AsyncCohortClient {
      * Converts natural language text into structured FHIR search queries for patient cohort analysis
      */
     public CompletableFuture<CohortResponse> analyze(CohortRequest request) {
-        return this.rawClient.analyze(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<CohortResponse>> rawFuture = this.rawClient.analyze(request);
+        CompletableFuture<CohortResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Converts natural language text into structured FHIR search queries for patient cohort analysis
      */
     public CompletableFuture<CohortResponse> analyze(CohortRequest request, RequestOptions requestOptions) {
-        return this.rawClient.analyze(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<CohortResponse>> rawFuture =
+                this.rawClient.analyze(request, requestOptions);
+        CompletableFuture<CohortResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }

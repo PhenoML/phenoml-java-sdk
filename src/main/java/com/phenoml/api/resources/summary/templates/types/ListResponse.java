@@ -82,7 +82,6 @@ public final class ListResponse {
 
         private Optional<List<SummaryTemplate>> templates = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -117,6 +116,14 @@ public final class ListResponse {
 
         public ListResponse build() {
             return new ListResponse(success, templates, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("success") || key.equalsIgnoreCase("templates")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
