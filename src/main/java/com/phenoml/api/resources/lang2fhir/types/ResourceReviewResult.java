@@ -87,7 +87,6 @@ public final class ResourceReviewResult {
 
         private Optional<List<ResourceReviewRemediated>> remediated = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -128,6 +127,14 @@ public final class ResourceReviewResult {
 
         public ResourceReviewResult build() {
             return new ResourceReviewResult(flagged, remediated, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("flagged") || key.equalsIgnoreCase("remediated")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

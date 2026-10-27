@@ -109,7 +109,6 @@ public final class OAuthError {
 
         private Optional<String> errorDescription = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -155,6 +154,14 @@ public final class OAuthError {
         @java.lang.Override
         public OAuthError build() {
             return new OAuthError(error, errorDescription, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("error") || key.equalsIgnoreCase("error_description")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

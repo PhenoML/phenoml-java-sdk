@@ -134,7 +134,6 @@ public final class CreateCanonicalImplementationGuideRequest {
 
         private List<String> profileRefs = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -214,6 +213,16 @@ public final class CreateCanonicalImplementationGuideRequest {
         public CreateCanonicalImplementationGuideRequest build() {
             return new CreateCanonicalImplementationGuideRequest(
                     implementationGuide, profileRefs, profileContext, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("implementation_guide")
+                    || key.equalsIgnoreCase("profile_refs")
+                    || key.equalsIgnoreCase("profile_context")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override
