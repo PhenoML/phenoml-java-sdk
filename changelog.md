@@ -1,3 +1,25 @@
+## [18.2.0] - 2026-10-27
+### Added
+- **`RequestOptions.addBodyProperty()` / `bodyProperties()`** — inject arbitrary key/value pairs into the JSON or form-urlencoded request body at call time; `getBodyProperties()` exposes the merged map to the HTTP layer.
+- **`RetryInterceptor` async retry path** — new `newAsyncCall()` and `AsyncCall` schedule backoff delays on a background thread instead of sleeping inside an OkHttp dispatcher slot, preventing per-host connection exhaustion and enabling immediate cancellation.
+- **OMOP Specimen support** — new `SpecimenRow`, `SpecimenSourceContext`, `SpecimenCollectionTiming`, and related types surface FHIR Specimen resources as OMOP CDM rows; `OmopTables.getSpecimen()` and `CreateOmopResponse.getSpecimenSourceContexts()` expose the data.
+- **Drug quantity audit types** — new `QuantityTransformation`, `QuantityEvidence`, `QuantityStrength`, `QuantityUnit`, and companion enums describe how FHIR medication quantities are mapped to `drug_exposure.quantity`; `CreateOmopResponse.getQuantityTransformations()` and `DrugExposureRow.getQuantity()` expose the results.
+- **OMOP mapping provenance types** — new `MappingResolution`, `MappingPath`, `SemanticMappingResult`, and associated enums (`MappingResolutionStatus`, `MappingResolutionReasonCode`, `MappingResolutionVia`, `MappingPathMappingStatus`, `SemanticMappingResultStatus`, `SemanticMappingResultReasonCode`) surface vocabulary resolution details on `MappingEntry.getResolution()`.
+- **`RowForReview` and `RowForReviewReasonsItem`** — new types index OMOP rows with uncertain source status or unresolved primary concepts; `CreateOmopResponse.getRowsForReview()` and `Summary.getRowsForReview()` expose the counts and details.
+- **New field additions across OMOP row types** — `MeasurementRow.getUnitSourceConceptId()`, `VisitOccurrenceRow.getVisitSourceConceptId()`, and `CreateMultiRequest.getSmallNote()` add optional fields to existing response and request types.
+- **`CreateRequestResource.PHENOML_HPO_PHENOTYPIC_OBSERVATION` and `PHENOML_HPO_CONDITION`** — two new extraction target constants with corresponding visitor methods for HPO-based phenotypic resources.
+- **`PathSegments` and `BodyProperties`** — new core utilities validate path parameters against dot-segment injection and merge caller-supplied body properties into serialized requests.
+- See full changelog for all changes
+
+### Changed
+- **`@JsonAnySetter` guard on all builder types** — a private filtering method now prevents known field names from being double-stored in `additionalProperties` during Jackson deserialization, affecting all request, response, and row-type builders.
+- **Path-segment validation on workflow ID parameters** — `id` values are validated with `PathSegments.validate()` before URL construction in `get`, `update`, `delete`, and `execute` calls.
+- **`AsyncWorkflowsClient` cancellation propagation** — cancelling a returned `CompletableFuture` now cancels the underlying OkHttp call, preventing resource leaks on abandoned requests.
+- **Expanded Javadoc** — `ProviderRow.getNpi()`, `ReferenceDiagnostic.getOutcome()`, date fields on several OMOP row types, and `ExtractRequestConfigValidationMethod.SEMANTIC_MAPPING` received updated documentation describing generalized rules and new enum values.
+
+### Fixed
+- **`additionalProperties` deserialization across all builder types** — replaced field-level `@JsonAnySetter` annotations with guarded private methods that skip known field names, preventing declared fields from being silently duplicated into the additional-properties map.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
