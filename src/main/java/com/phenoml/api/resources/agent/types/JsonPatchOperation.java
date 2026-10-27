@@ -153,7 +153,6 @@ public final class JsonPatchOperation {
 
         private Optional<Object> value = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -232,6 +231,17 @@ public final class JsonPatchOperation {
         @java.lang.Override
         public JsonPatchOperation build() {
             return new JsonPatchOperation(op, path, value, from, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("op")
+                    || key.equalsIgnoreCase("path")
+                    || key.equalsIgnoreCase("value")
+                    || key.equalsIgnoreCase("from")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

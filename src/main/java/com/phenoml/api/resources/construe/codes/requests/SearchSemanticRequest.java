@@ -129,7 +129,6 @@ public final class SearchSemanticRequest {
 
         private Optional<String> version = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -196,6 +195,14 @@ public final class SearchSemanticRequest {
         @java.lang.Override
         public SearchSemanticRequest build() {
             return new SearchSemanticRequest(text, version, limit, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("text") || key.equalsIgnoreCase("version") || key.equalsIgnoreCase("limit")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

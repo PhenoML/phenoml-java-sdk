@@ -45,7 +45,7 @@ public final class CreateRequest {
     }
 
     /**
-     * @return Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources; you can also use any custom profile you've uploaded (if you're a develop or launch customer).
+     * @return Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources. The built-in PhenoML HPO profiles (<code>phenoml-hpo-condition</code>, <code>phenoml-hpo-phenotypic-observation</code>) code findings with the Human Phenotype Ontology and must be requested by id. You can also use any custom profile you've uploaded (if you're a develop or launch customer).
      */
     @JsonProperty("resource")
     public CreateRequestResource getResource() {
@@ -100,7 +100,7 @@ public final class CreateRequest {
 
     public interface ResourceStage {
         /**
-         * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources; you can also use any custom profile you've uploaded (if you're a develop or launch customer).</p>
+         * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources. The built-in PhenoML HPO profiles (<code>phenoml-hpo-condition</code>, <code>phenoml-hpo-phenotypic-observation</code>) code findings with the Human Phenotype Ontology and must be requested by id. You can also use any custom profile you've uploaded (if you're a develop or launch customer).</p>
          */
         TextStage resource(@NotNull CreateRequestResource resource);
     }
@@ -128,7 +128,6 @@ public final class CreateRequest {
 
         private String text;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -153,7 +152,7 @@ public final class CreateRequest {
         }
 
         /**
-         * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources; you can also use any custom profile you've uploaded (if you're a develop or launch customer).</p>
+         * <p>Type of FHIR resource to create. Use 'auto' for automatic resource type detection, or specify a supported profile. The default profile set includes US Core profiles and selected base R4 resources. The built-in PhenoML HPO profiles (<code>phenoml-hpo-condition</code>, <code>phenoml-hpo-phenotypic-observation</code>) code findings with the Human Phenotype Ontology and must be requested by id. You can also use any custom profile you've uploaded (if you're a develop or launch customer).</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -177,6 +176,14 @@ public final class CreateRequest {
         @java.lang.Override
         public CreateRequest build() {
             return new CreateRequest(version, resource, text, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("version") || key.equalsIgnoreCase("resource") || key.equalsIgnoreCase("text")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override
