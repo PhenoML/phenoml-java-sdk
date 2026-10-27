@@ -1,3 +1,60 @@
+## [18.2.0] - 2026-10-27
+### Added
+
+- **`RequestOptions.Builder.addBodyProperty(String key, Object value)` and `.bodyProperties(Map<String, Object>)`** — inject arbitrary key-value pairs into the JSON or form-urlencoded request body at call time; properties override any same-named field already present in the body, and are sent as the entire body for endpoints that have none (multipart bodies are not supported).
+- **`RequestOptions.getBodyProperties()`** — returns a snapshot `Map` of all body properties registered on the options object.
+- **`RetryInterceptor.newAsyncCall(OkHttpClient, Request)`** — creates a non-blocking `AsyncCall` that schedules retries via a background daemon scheduler instead of sleeping inside an OkHttp dispatcher thread, so waiting retries no longer consume dispatcher slots (5 per host by default) and are cancelled immediately when `cancel()` is called.
+- **`RetryInterceptor.AsyncCall`** — new public interface with `enqueue(Callback)` and `cancel()` returned by `newAsyncCall`.
+- **`Stream.fromSseWithEventDiscrimination(...)`** — new static factory for SSE streams where certain union-variant events model the full SSE envelope (`{"<discriminator>": event, "data": data}`) while all other events are deserialized from the `data` payload with the discriminator injected.
+- **`CreateOmopResponse.getQuantityTransformations()` and `.quantityTransformations(...)`** — new optional field that audits direct quantities on emitted `drug_exposure` rows, including derivations and omissions; entries use the response's vocabulary release.
+- **`CreateOmopResponse.getRowsForReview()` and `.rowsForReview(...)`** — new optional index of otherwise shapeable clinical rows with uncertain source status or primary concept ID 0; `tables` now includes these previously-excluded rows, and consumers must filter by this index to exclude uncertain or unresolved rows from their load.
+- **`CreateOmopResponse.getDeviceExposureContexts()` and `.deviceExposureContexts(...)`** — new optional field grouping timing, device evidence, and quantity explanation for each source record that produced device exposures.
+- **`CreateOmopResponse.getSpecimenSourceContexts()` and `.specimenSourceContexts(...)`** — new optional field exposing source identities, availability status, and collection timing for emitted specimens, linked by request-local `specimen_id`.
+- **`CreateOmopResponse.getMedicationDispenseSourceContexts()` and `.medicationDispenseSourceContexts(...)`** — new optional field linking dispensing status, timing, instructions, and references to each emitted dispensing row.
+- **`DrugExposureRow.getQuantity()` and `Builder.quantity(...)`** — new optional `Double` field carrying the formulation-specific drug quantity from MedicationRequest dispense quantity, MedicationDispense quantity, MedicationAdministration dose, or Immunization dose quantity.
+- **`MeasurementRow.getUnitSourceConceptId()` and `Builder.unitSourceConceptId(...)`** — new optional `Long` field with the OMOP source concept ID corresponding to `Quantity.system/code`; `0` for supplied but unmapped units, `null` for absent units.
+- **`MappingEntry.getResolution()` and `Builder.resolution(...)`** — new optional `MappingResolution` field exposing structured mapping resolution detail, available on both the getter and the staged builder's `_FinalStage`.
+- **`OmopTables.getDeviceExposure()` and `getSpecimen()`** — new optional table lists on `OmopTables` that surface `DeviceExposureRow` and `SpecimenRow` collections in FHIR-to-OMOP output, with matching builder setters.
+- **`Summary.getRowsForReview()`** — new optional integer field reporting the count of rows flagged for review; each row is counted once regardless of how many retention reasons apply.
+- **`VisitOccurrenceRow.getVisitSourceConceptId()`** — new optional OMOP source concept ID for the selected `Encounter.class` or `Encounter.type` coding, with matching builder setters.
+- **`CreateMultiRequest.getSmallNote()` / `.smallNote(...)`** — new optional boolean builder field that bills the request at the lower small-note rate; when `true`, `text` must be at most 15,360 bytes (15 KiB) UTF-8 encoded.
+- **`DeviceExposureContext`**, **`DeviceExposureLink`**, **`DeviceExposureEvidence`**, and **`DeviceExposureContextQuantityBasis`** — new FHIR-to-OMOP response types that expose device exposure row linkage, quantity basis, and original source evidence paths for each derived OMOP device exposure row.
+- **`ExtractRequestConfigValidationMethod.SEMANTIC_MAPPING`** — new validation method constant and corresponding `visitSemanticMapping()` visitor method on `ExtractRequestConfigValidationMethod`, enabling semantic-mapping-based extraction validation.
+- **`DeviceExposureRow`** — new OMOP CDM response type representing a `device_exposure` table row returned by the FHIR-to-OMOP conversion endpoint, with fields for concept IDs, start/end dates and datetimes, UDI (`uniqueDeviceId`), quantity, provider and visit linkage, device source value, and unit fields; includes a staged builder for type-safe construction.
+- **`MappingResolution`** — new response type that describes the full vocabulary resolution outcome for an OMOP mapping entry, including `getStatus()`, `getReasonCode()`, `getVia()`, `getPaths()`, `getTruncated()`, and `getSemanticMapping()`.
+- **`MappingPath`** — new type representing a single mapping path to the selected OMOP concept, with `getMappingStatus()`, `getSourceConceptId()`, `getSourceVocabulary()`, `getSourceCode()`, and `getCui()`.
+- **`MappingResolutionStatus`** — new enum-like type with values `RESOLVED`, `UNRESOLVED`, `DOMAIN_MISMATCH`, and `AMBIGUOUS` indicating the overall vocabulary resolution outcome.
+- **`MappingResolutionReasonCode`** — new enum-like type with machine-readable failure reasons (`NO_SOURCE_CODE`, `NO_OMOP_SOURCE_CONCEPT`, `NO_STANDARD_MAP`, `AMBIGUOUS`, `DOMAIN_MISMATCH`, `UNSUPPORTED_SYSTEM`, `UNSUPPORTED_CODE`) for unresolved mappings.
+- **`MappingPathMappingStatus`** — new enum-like type with values `ALREADY_STANDARD`, `MAPPED`, and `POLICY_MAPPED` describing the outcome of an individual mapping path.
+- **`MappingResolutionVia`** — new enum type (`DIRECT`, `UMLS_BRIDGE`) indicating how a concept mapping was resolved in FHIR-to-OMOP responses.
+- **`MedicationDispenseSourceContext`** and **`MedicationDispenseSourceContextOmopTable`** — new response types carrying per-row FHIR source provenance (resource ID, full URL, OMOP table, OMOP ID, and raw source fields) for MedicationDispense resources.
+- **`QuantityEvidence`**, **`QuantityDenominatorBasis`**, and **`QuantityDenominatorBasisKind`** — new types representing drug quantity transformation evidence, including drug concept class, dose form, strength, and denominator basis (`PER_UNIT`, `QUANTIFIED_TOTAL`, `NOT_APPLICABLE`).
+- **`QuantityStrength`** — new fhir2omop type representing a drug ingredient's strength with a required `ingredientConceptId` and optional amount, numerator, and denominator quantity fields (value, unit, and denominator basis), all accessible via a staged builder.
+- **`QuantityTransformation`** — new response model under `com.phenoml.api.resources.fhir2omop.types` that describes how a FHIR `Quantity` on a `MedicationRequest` was mapped to the OMOP `drug_exposure.quantity` field, including the source element path, original quantity object, linked `drug_exposure_id`, transformation outcome, applied policy, omission reason, supporting evidence, and numeric result with unit.
+- **`QuantityTransformationOutcome`** — enum identifying whether a quantity was copied directly (`DIRECT`), calculated (`DERIVED`), or left unset (`OMITTED`).
+- **`QuantityTransformationPolicy`** — enum identifying the formulation policy applied during derivation: `FIXED_DOSE_FORM_COUNT` or `CLINICAL_INJECTION_INGREDIENT_AMOUNT`.
+- **`QuantityTransformationReason`** — new enum-like type with 14 named values (e.g. `UNSUPPORTED_UNIT`, `DRUG_UNRESOLVED`, `AMBIGUOUS_DRUG_EVIDENCE`) and a `Visitor<T>` interface for pattern-matching quantity transformation failure reasons.
+- **`QuantityTransformationResourceType`** and **`QuantityTransformationSourcePath`** — new enum-like types identifying the FHIR resource kind (`MedicationRequest`, `MedicationDispense`, `MedicationAdministration`, `Immunization`) and the FHIR field path (`quantity`, `doseQuantity`, `dosage.dose`, `dispenseRequest.quantity`) involved in a quantity transformation.
+- **`QuantityUnit`** — new staged-builder model exposing the resolved OMOP unit concept via `getConceptId()`, `getCode()`, and `getVocabularyId()`.
+- **`RowForReview`** — new staged-builder model linking a FHIR resource to an OMOP row (`omopTable`, `omopId`) with a list of `RowForReviewReasonsItem` reasons, an optional `sourceFullUrl`, and optional verbatim FHIR `sourceStatuses`.
+- **`RowForReviewReasonsItem`** — new enum-like type with 7 named review reasons including `CONDITION_VERIFICATION_UNCONFIRMED`, `ENCOUNTER_STATUS_UNKNOWN`, and `PRIMARY_CONCEPT_UNRESOLVED`.
+- **`SemanticMappingResult`** — new response type exposing whether semantic mapping selected a validated standard OMOP concept (`status`) and which OMOP vocabulary release was used (`vocabVersion`), with an optional `reasonCode` explaining unmapped outcomes.
+- **`SemanticMappingResultStatus`** and **`SemanticMappingResultReasonCode`** — enums for the mapping outcome (`MAPPED`/`UNMAPPED`) and failure reason (`MISSING_DESCRIPTION`, `NO_VALID_SUGGESTION`, `AMBIGUOUS`, `INVALID_TARGET`), each with a `Visitor` for exhaustive handling.
+- **`SpecimenCollectionTiming`** — new response type preserving the original FHIR specimen collection date/period fields (`collectedDateTime`, `collectedPeriod`, `receivedTime`) alongside `selectedPath` indicating which field populated `specimen_date`.
+- **`SpecimenCollectionPeriod`** — companion type holding the raw `collectedPeriod.start` and `collectedPeriod.end` strings without precision completion.
+- **`SpecimenIdentifier`** — new type with a required `value` and optional `system` for identifying a FHIR specimen resource.
+- **`SpecimenRow`** — new OMOP CDM 5.4 Specimen domain type returned by the FHIR-to-OMOP pipeline, carrying specimen identity, material concept, collection date/time, quantity, unit, anatomic site, and source-value fields via a staged builder.
+
+### Changed
+
+- **`MappingEntry` Javadoc** — `mappingStatus`, `omopField`, `selected`, and `note` descriptions updated to reflect expanded UNMAPPED semantics (domain mismatches, ambiguity, source-only entries) and entries without a corresponding row column.
+- **`DrugExposureRow` and `MeasurementRow` Javadoc** — timing-source descriptions updated to include MedicationDispense and additional FHIR resources; `drugTypeConceptId` and `unitConceptId` gain inline documentation.
+
+### Fixed
+
+- **`AsyncAgentClient`** — cancelling a returned `CompletableFuture` now propagates cancellation back to the underlying raw HTTP future, preventing orphaned in-flight requests.
+- **`LogLevel.fromString()` and `LoggingInterceptor`** — use `Locale.ROOT` for case conversion, avoiding locale-sensitive mismatches on Turkish and other non-ASCII locales.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
