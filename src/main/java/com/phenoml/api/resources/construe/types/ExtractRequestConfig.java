@@ -120,6 +120,7 @@ public final class ExtractRequestConfig {
      * <ul>
      * <li>none - No validation, returns all candidate codes</li>
      * <li>simple - LLM-based validation</li>
+     * <li>semantic_mapping - LLM validation requiring equivalent meaning for an entire local clinical term, preserving negation and specificity. Disables code-to-code similarity filtering so distinct equivalent candidates remain visible</li>
      * <li>medication_search - LLM-based validation tailored for medication concepts</li>
      * <li>chunk_code_jaccard_similarity - Token-level Jaccard similarity between source text chunk and code description</li>
      * </ul>
@@ -288,7 +289,6 @@ public final class ExtractRequestConfig {
 
         private Optional<ExtractRequestConfigConsistencyEffort> consistencyEffort = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -372,6 +372,7 @@ public final class ExtractRequestConfig {
          * <ul>
          * <li>none - No validation, returns all candidate codes</li>
          * <li>simple - LLM-based validation</li>
+         * <li>semantic_mapping - LLM validation requiring equivalent meaning for an entire local clinical term, preserving negation and specificity. Disables code-to-code similarity filtering so distinct equivalent candidates remain visible</li>
          * <li>medication_search - LLM-based validation tailored for medication concepts</li>
          * <li>chunk_code_jaccard_similarity - Token-level Jaccard similarity between source text chunk and code description</li>
          * </ul>
@@ -533,6 +534,25 @@ public final class ExtractRequestConfig {
                     minContextRelevance,
                     consistencyEffort,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("chunking_method")
+                    || key.equalsIgnoreCase("max_codes_per_chunk")
+                    || key.equalsIgnoreCase("code_similarity_filter")
+                    || key.equalsIgnoreCase("validation_method")
+                    || key.equalsIgnoreCase("chunk_code_jaccard_similarity_filtering_threshold")
+                    || key.equalsIgnoreCase("include_rationale")
+                    || key.equalsIgnoreCase("include_ancestors")
+                    || key.equalsIgnoreCase("include_invalid")
+                    || key.equalsIgnoreCase("include_citations")
+                    || key.equalsIgnoreCase("extraction_context")
+                    || key.equalsIgnoreCase("min_context_relevance")
+                    || key.equalsIgnoreCase("consistency_effort")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

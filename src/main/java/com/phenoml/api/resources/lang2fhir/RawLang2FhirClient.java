@@ -5,6 +5,7 @@ package com.phenoml.api.resources.lang2fhir;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
@@ -74,7 +75,9 @@ public class RawLang2FhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -169,7 +172,9 @@ public class RawLang2FhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -265,7 +270,9 @@ public class RawLang2FhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -333,7 +340,7 @@ public class RawLang2FhirClient {
      * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
      * <p>Uploads will be rejected if:</p>
      * <ul>
-     * <li>A built-in US Core or R4 base profile already exists with the same id</li>
+     * <li>A built-in profile (US Core, PhenoML HPO, or R4 base) already exists with the same id, or the id starts with a reserved prefix (<code>us-core-</code>, <code>phenoml-hpo-</code>)</li>
      * <li>A custom profile with the same id has already been uploaded</li>
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
@@ -354,7 +361,7 @@ public class RawLang2FhirClient {
      * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
      * <p>Uploads will be rejected if:</p>
      * <ul>
-     * <li>A built-in US Core or R4 base profile already exists with the same id</li>
+     * <li>A built-in profile (US Core, PhenoML HPO, or R4 base) already exists with the same id, or the id starts with a reserved prefix (<code>us-core-</code>, <code>phenoml-hpo-</code>)</li>
      * <li>A custom profile with the same id has already been uploaded</li>
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
@@ -372,7 +379,9 @@ public class RawLang2FhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -458,7 +467,9 @@ public class RawLang2FhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -566,7 +577,9 @@ public class RawLang2FhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }

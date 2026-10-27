@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.profiles.versions;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.profiles.types.ProfileGetResponse;
 import com.phenoml.api.resources.profiles.types.ProfileSummary;
@@ -32,14 +33,29 @@ public class AsyncVersionsClient {
      * Returns retained versions for a custom profile.
      */
     public CompletableFuture<ProfileVersionListResponse> list(String id) {
-        return this.rawClient.list(id).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileVersionListResponse>> rawFuture = this.rawClient.list(id);
+        CompletableFuture<ProfileVersionListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Returns retained versions for a custom profile.
      */
     public CompletableFuture<ProfileVersionListResponse> list(String id, RequestOptions requestOptions) {
-        return this.rawClient.list(id, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileVersionListResponse>> rawFuture =
+                this.rawClient.list(id, requestOptions);
+        CompletableFuture<ProfileVersionListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -57,7 +73,14 @@ public class AsyncVersionsClient {
      * versions before adding more.
      */
     public CompletableFuture<ProfileSummary> create(String id, Map<String, Object> request) {
-        return this.rawClient.create(id, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileSummary>> rawFuture = this.rawClient.create(id, request);
+        CompletableFuture<ProfileSummary> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -76,7 +99,15 @@ public class AsyncVersionsClient {
      */
     public CompletableFuture<ProfileSummary> create(
             String id, Map<String, Object> request, RequestOptions requestOptions) {
-        return this.rawClient.create(id, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileSummary>> rawFuture =
+                this.rawClient.create(id, request, requestOptions);
+        CompletableFuture<ProfileSummary> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -85,7 +116,14 @@ public class AsyncVersionsClient {
      * path version is the authored <code>StructureDefinition.version</code> value.
      */
     public CompletableFuture<ProfileGetResponse> get(String id, String version) {
-        return this.rawClient.get(id, version).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileGetResponse>> rawFuture = this.rawClient.get(id, version);
+        CompletableFuture<ProfileGetResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -94,7 +132,15 @@ public class AsyncVersionsClient {
      * path version is the authored <code>StructureDefinition.version</code> value.
      */
     public CompletableFuture<ProfileGetResponse> get(String id, String version, RequestOptions requestOptions) {
-        return this.rawClient.get(id, version, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileGetResponse>> rawFuture =
+                this.rawClient.get(id, version, requestOptions);
+        CompletableFuture<ProfileGetResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -102,7 +148,14 @@ public class AsyncVersionsClient {
      * version is the authored <code>StructureDefinition.version</code> value.
      */
     public CompletableFuture<Void> delete(String id, String version) {
-        return this.rawClient.delete(id, version).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Void>> rawFuture = this.rawClient.delete(id, version);
+        CompletableFuture<Void> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -110,6 +163,14 @@ public class AsyncVersionsClient {
      * version is the authored <code>StructureDefinition.version</code> value.
      */
     public CompletableFuture<Void> delete(String id, String version, RequestOptions requestOptions) {
-        return this.rawClient.delete(id, version, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Void>> rawFuture =
+                this.rawClient.delete(id, version, requestOptions);
+        CompletableFuture<Void> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }

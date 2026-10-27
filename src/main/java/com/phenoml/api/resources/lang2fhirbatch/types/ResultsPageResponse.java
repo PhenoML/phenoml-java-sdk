@@ -129,7 +129,6 @@ public final class ResultsPageResponse {
 
         private List<BatchItemStatus> results = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -200,6 +199,16 @@ public final class ResultsPageResponse {
         @java.lang.Override
         public ResultsPageResponse build() {
             return new ResultsPageResponse(results, nextCursor, hasMore, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("results")
+                    || key.equalsIgnoreCase("next_cursor")
+                    || key.equalsIgnoreCase("has_more")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

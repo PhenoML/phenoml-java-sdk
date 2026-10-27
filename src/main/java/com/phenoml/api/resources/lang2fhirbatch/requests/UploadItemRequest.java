@@ -63,7 +63,7 @@ public final class UploadItemRequest {
      * @return The JSON body of <code>POST /lang2fhir/create/multi</code>. Accepts that
      * endpoint's fields (<code>text</code>, <code>version</code>, <code>provider</code>,
      * <code>primary_patient</code>, <code>patient_reference</code> (deprecated), <code>implementation_guide</code>, <code>detection_effort</code> (deprecated),
-     * <code>validation_method</code>, <code>resource_review</code>). This is the
+     * <code>validation_method</code>, <code>resource_review</code>, <code>small_note</code>). This is the
      * <strong>multi</strong>-resource body: it has no single-<code>resource</code> field, and
      * the item's result is a <code>CreateMultiResponse</code> (a Bundle of
      * resources). Mutually exclusive with <code>document</code>; must <strong>not</strong> be
@@ -139,7 +139,6 @@ public final class UploadItemRequest {
 
         private Optional<String> id = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -178,7 +177,7 @@ public final class UploadItemRequest {
          * <p>The JSON body of <code>POST /lang2fhir/create/multi</code>. Accepts that
          * endpoint's fields (<code>text</code>, <code>version</code>, <code>provider</code>,
          * <code>primary_patient</code>, <code>patient_reference</code> (deprecated), <code>implementation_guide</code>, <code>detection_effort</code> (deprecated),
-         * <code>validation_method</code>, <code>resource_review</code>). This is the
+         * <code>validation_method</code>, <code>resource_review</code>, <code>small_note</code>). This is the
          * <strong>multi</strong>-resource body: it has no single-<code>resource</code> field, and
          * the item's result is a <code>CreateMultiResponse</code> (a Bundle of
          * resources). Mutually exclusive with <code>document</code>; must <strong>not</strong> be
@@ -232,6 +231,17 @@ public final class UploadItemRequest {
 
         public UploadItemRequest build() {
             return new UploadItemRequest(document, create, requestId, id, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("document")
+                    || key.equalsIgnoreCase("create")
+                    || key.equalsIgnoreCase("request_id")
+                    || key.equalsIgnoreCase("id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
