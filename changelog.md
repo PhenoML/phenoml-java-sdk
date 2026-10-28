@@ -1,3 +1,22 @@
+## [18.2.0] - 2026-10-28
+### Added
+- **`RequestOptions.Builder.addBodyProperty()` / `.bodyProperties()`** — inject arbitrary key/value pairs into JSON or form-urlencoded request bodies at call time, backed by the new `BodyProperties` core utility.
+- **`RetryInterceptor` async retry support** — new `newAsyncCall()` factory schedules retry backoff on a daemon thread, preventing retrying requests from consuming OkHttp dispatcher slots and enabling immediate cancellation during backoff.
+- **FHIR-to-OMOP response model expansion** — new types `DeviceExposureRow`, `SpecimenRow`, `MappingResolution`, `MappingPath`, `AllergyMappingResolution`, `MedicationDispenseSourceContext`, `QuantityEvidence`, `QuantityStrength`, and related enums surface structured vocabulary resolution, allergy provenance, device exposure, and drug quantity detail on OMOP pipeline responses.
+- **`OmopTables.getDeviceExposure()` / `getSpecimen()`** — new optional table lists on FHIR-to-OMOP responses expose `DeviceExposureRow` and `SpecimenRow` output rows.
+- **New optional fields on existing OMOP row types** — `DrugExposureRow.getQuantity()`, `MeasurementRow.getUnitSourceConceptId()`, `VisitOccurrenceRow.getVisitSourceConceptId()`, `MappingEntry.getResolution()` / `getSourceCodingIndex()`, and `Summary.getRowsForReview()` added with corresponding builder setters.
+- **`CreateMultiRequest.getSmallNote()` / `.smallNote()`** — new optional boolean field bills the request at the small-note rate (text must be ≤ 15,360 bytes UTF-8).
+- **`ExtractRequestConfigValidationMethod.SEMANTIC_MAPPING`** — new enum constant and visitor arm for the semantic-mapping validation strategy.
+- **`PathSegments.validate()`** — new core utility rejects `.` and `..` path parameter values to prevent URL-resolution attacks.
+- **`Stream.fromSseWithEventDiscrimination()`** — new SSE stream factory supporting mixed streams where selected event types model the full SSE envelope rather than only the data payload.
+- See full changelog for all changes
+
+### Changed
+- **Javadoc across `MeasurementRow`, `ObservationRow`, `ObservationPeriodRow`, `ProcedureOccurrenceRow`, `ProviderRow`, `MappingEntry`, and `ReferenceDiagnostic`** — documentation updated to reflect generalised timing-source rules, expanded resource coverage, NPI deduplication semantics, and slash-separated joint path notation.
+
+### Fixed
+- **`@JsonAnySetter` / `additionalProperties` deserialization across all builder types** — known field names are now filtered in a private `putAdditionalPropertyFromJson` method before insertion, preventing recognised fields from being duplicated into `getAdditionalProperties()` across OMOP row, agent, FHIR-provider, implementation-guide, and lang2fhir types.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
