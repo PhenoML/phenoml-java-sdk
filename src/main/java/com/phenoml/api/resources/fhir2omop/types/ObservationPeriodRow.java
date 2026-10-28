@@ -58,7 +58,10 @@ public final class ObservationPeriodRow {
     }
 
     /**
-     * @return Earliest populated date among the person's visit, clinical, and death rows in this request; not enrollment evidence.
+     * @return Earliest date selected by the source timing rules from the person's
+     * visit and clinical rows not listed in rows_for_review, plus Specimen
+     * and Death rows in this request. No period row is returned without
+     * qualifying dates; not enrollment evidence.
      */
     @JsonProperty("observation_period_start_date")
     public Optional<String> getObservationPeriodStartDate() {
@@ -66,7 +69,11 @@ public final class ObservationPeriodRow {
     }
 
     /**
-     * @return Latest populated date, including end dates, among the person's visit, clinical, and death rows in this request; not enrollment evidence.
+     * @return Latest date selected by the source timing rules from the person's
+     * visit and clinical rows not listed in rows_for_review, plus Specimen
+     * and Death rows in this request. Includes source end dates from
+     * unindexed rows even when the output table has no end column.
+     * No period row is returned without qualifying dates; not enrollment evidence.
      */
     @JsonProperty("observation_period_end_date")
     public Optional<String> getObservationPeriodEndDate() {
@@ -128,7 +135,6 @@ public final class ObservationPeriodRow {
 
         private Optional<Long> periodTypeConceptId = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -165,7 +171,10 @@ public final class ObservationPeriodRow {
         }
 
         /**
-         * <p>Earliest populated date among the person's visit, clinical, and death rows in this request; not enrollment evidence.</p>
+         * <p>Earliest date selected by the source timing rules from the person's
+         * visit and clinical rows not listed in rows_for_review, plus Specimen
+         * and Death rows in this request. No period row is returned without
+         * qualifying dates; not enrollment evidence.</p>
          */
         @JsonSetter(value = "observation_period_start_date", nulls = Nulls.SKIP)
         public Builder observationPeriodStartDate(Optional<String> observationPeriodStartDate) {
@@ -179,7 +188,11 @@ public final class ObservationPeriodRow {
         }
 
         /**
-         * <p>Latest populated date, including end dates, among the person's visit, clinical, and death rows in this request; not enrollment evidence.</p>
+         * <p>Latest date selected by the source timing rules from the person's
+         * visit and clinical rows not listed in rows_for_review, plus Specimen
+         * and Death rows in this request. Includes source end dates from
+         * unindexed rows even when the output table has no end column.
+         * No period row is returned without qualifying dates; not enrollment evidence.</p>
          */
         @JsonSetter(value = "observation_period_end_date", nulls = Nulls.SKIP)
         public Builder observationPeriodEndDate(Optional<String> observationPeriodEndDate) {
@@ -211,6 +224,18 @@ public final class ObservationPeriodRow {
                     observationPeriodEndDate,
                     periodTypeConceptId,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("observation_period_id")
+                    || key.equalsIgnoreCase("person_id")
+                    || key.equalsIgnoreCase("observation_period_start_date")
+                    || key.equalsIgnoreCase("observation_period_end_date")
+                    || key.equalsIgnoreCase("period_type_concept_id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

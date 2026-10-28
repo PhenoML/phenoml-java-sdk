@@ -91,7 +91,7 @@ public final class ProcedureOccurrenceRow {
     }
 
     /**
-     * @return Date from Procedure.performedDateTime or performedPeriod.start.
+     * @return Start date selected by the source resource's timing rules. For a Procedure, performedDateTime or performedPeriod.start; see the endpoint's timing sources for other resources.
      */
     @JsonProperty("procedure_date")
     public Optional<String> getProcedureDate() {
@@ -104,7 +104,7 @@ public final class ProcedureOccurrenceRow {
     }
 
     /**
-     * @return Date from Procedure.performedPeriod.end.
+     * @return End date selected by the source resource's timing rules, when available. For a Procedure, performedPeriod.end; see the endpoint's timing sources for other resources.
      */
     @JsonProperty("procedure_end_date")
     public Optional<String> getProcedureEndDate() {
@@ -219,7 +219,6 @@ public final class ProcedureOccurrenceRow {
 
         private Optional<Long> procedureSourceConceptId = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -274,7 +273,7 @@ public final class ProcedureOccurrenceRow {
         }
 
         /**
-         * <p>Date from Procedure.performedDateTime or performedPeriod.start.</p>
+         * <p>Start date selected by the source resource's timing rules. For a Procedure, performedDateTime or performedPeriod.start; see the endpoint's timing sources for other resources.</p>
          */
         @JsonSetter(value = "procedure_date", nulls = Nulls.SKIP)
         public Builder procedureDate(Optional<String> procedureDate) {
@@ -299,7 +298,7 @@ public final class ProcedureOccurrenceRow {
         }
 
         /**
-         * <p>Date from Procedure.performedPeriod.end.</p>
+         * <p>End date selected by the source resource's timing rules, when available. For a Procedure, performedPeriod.end; see the endpoint's timing sources for other resources.</p>
          */
         @JsonSetter(value = "procedure_end_date", nulls = Nulls.SKIP)
         public Builder procedureEndDate(Optional<String> procedureEndDate) {
@@ -393,6 +392,25 @@ public final class ProcedureOccurrenceRow {
                     procedureSourceValue,
                     procedureSourceConceptId,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("procedure_occurrence_id")
+                    || key.equalsIgnoreCase("person_id")
+                    || key.equalsIgnoreCase("procedure_concept_id")
+                    || key.equalsIgnoreCase("procedure_date")
+                    || key.equalsIgnoreCase("procedure_datetime")
+                    || key.equalsIgnoreCase("procedure_end_date")
+                    || key.equalsIgnoreCase("procedure_end_datetime")
+                    || key.equalsIgnoreCase("procedure_type_concept_id")
+                    || key.equalsIgnoreCase("visit_occurrence_id")
+                    || key.equalsIgnoreCase("provider_id")
+                    || key.equalsIgnoreCase("procedure_source_value")
+                    || key.equalsIgnoreCase("procedure_source_concept_id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

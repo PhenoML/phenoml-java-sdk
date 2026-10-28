@@ -150,7 +150,6 @@ public final class CodeSystemDetails {
 
         private boolean builtin;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -211,6 +210,17 @@ public final class CodeSystemDetails {
         @java.lang.Override
         public CodeSystemDetails build() {
             return new CodeSystemDetails(name, version, codeCount, builtin, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("version")
+                    || key.equalsIgnoreCase("code_count")
+                    || key.equalsIgnoreCase("builtin")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override
