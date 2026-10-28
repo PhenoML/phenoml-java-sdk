@@ -250,7 +250,6 @@ public final class FhirProviderTemplate {
 
         private Optional<String> description = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -407,6 +406,21 @@ public final class FhirProviderTemplate {
         public FhirProviderTemplate build() {
             return new FhirProviderTemplate(
                     id, name, description, provider, baseUrl, clientId, authConfigs, lastUpdated, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("id")
+                    || key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("provider")
+                    || key.equalsIgnoreCase("base_url")
+                    || key.equalsIgnoreCase("client_id")
+                    || key.equalsIgnoreCase("auth_configs")
+                    || key.equalsIgnoreCase("last_updated")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

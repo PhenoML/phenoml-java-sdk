@@ -134,7 +134,6 @@ public final class SmartConfiguration {
 
         private Optional<List<String>> scopesSupported = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -221,6 +220,18 @@ public final class SmartConfiguration {
         public SmartConfiguration build() {
             return new SmartConfiguration(
                     authorizationEndpoint, tokenEndpoint, issuer, jwksUri, scopesSupported, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("authorization_endpoint")
+                    || key.equalsIgnoreCase("token_endpoint")
+                    || key.equalsIgnoreCase("issuer")
+                    || key.equalsIgnoreCase("jwks_uri")
+                    || key.equalsIgnoreCase("scopes_supported")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

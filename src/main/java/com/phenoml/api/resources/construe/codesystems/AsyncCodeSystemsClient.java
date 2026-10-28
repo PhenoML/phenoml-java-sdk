@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.construe.codesystems;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.construe.codesystems.requests.DeleteRequest;
 import com.phenoml.api.resources.construe.codesystems.requests.ExportRequest;
@@ -40,7 +41,14 @@ public class AsyncCodeSystemsClient {
      * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
     public CompletableFuture<UploadResponse> upload(UploadRequest request) {
-        return this.rawClient.upload(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<UploadResponse>> rawFuture = this.rawClient.upload(request);
+        CompletableFuture<UploadResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -50,42 +58,89 @@ public class AsyncCodeSystemsClient {
      * transitions from &quot;processing&quot; to &quot;ready&quot; or &quot;failed&quot;.
      */
     public CompletableFuture<UploadResponse> upload(UploadRequest request, RequestOptions requestOptions) {
-        return this.rawClient.upload(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<UploadResponse>> rawFuture =
+                this.rawClient.upload(request, requestOptions);
+        CompletableFuture<UploadResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
     public CompletableFuture<ListCodeSystemsResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ListCodeSystemsResponse>> rawFuture = this.rawClient.list();
+        CompletableFuture<ListCodeSystemsResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Returns the catalog of available code systems, including both built-in standard terminologies and custom uploaded systems.
      */
     public CompletableFuture<ListCodeSystemsResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ListCodeSystemsResponse>> rawFuture =
+                this.rawClient.list(requestOptions);
+        CompletableFuture<ListCodeSystemsResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Returns full metadata for a single code system, including timestamps and builtin status.
      */
     public CompletableFuture<GetCodeSystemDetailResponse> find(String codesystem) {
-        return this.rawClient.find(codesystem).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<GetCodeSystemDetailResponse>> rawFuture =
+                this.rawClient.find(codesystem);
+        CompletableFuture<GetCodeSystemDetailResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Returns full metadata for a single code system, including timestamps and builtin status.
      */
     public CompletableFuture<GetCodeSystemDetailResponse> find(String codesystem, RequestOptions requestOptions) {
-        return this.rawClient.find(codesystem, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<GetCodeSystemDetailResponse>> rawFuture =
+                this.rawClient.find(codesystem, requestOptions);
+        CompletableFuture<GetCodeSystemDetailResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Returns full metadata for a single code system, including timestamps and builtin status.
      */
     public CompletableFuture<GetCodeSystemDetailResponse> find(String codesystem, FindRequest request) {
-        return this.rawClient.find(codesystem, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<GetCodeSystemDetailResponse>> rawFuture =
+                this.rawClient.find(codesystem, request);
+        CompletableFuture<GetCodeSystemDetailResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -93,7 +148,15 @@ public class AsyncCodeSystemsClient {
      */
     public CompletableFuture<GetCodeSystemDetailResponse> find(
             String codesystem, FindRequest request, RequestOptions requestOptions) {
-        return this.rawClient.find(codesystem, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<GetCodeSystemDetailResponse>> rawFuture =
+                this.rawClient.find(codesystem, request, requestOptions);
+        CompletableFuture<GetCodeSystemDetailResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -101,7 +164,15 @@ public class AsyncCodeSystemsClient {
      * Only available on dedicated instances. Large systems may take up to a minute to delete.
      */
     public CompletableFuture<DeleteCodeSystemResponse> delete(String codesystem) {
-        return this.rawClient.delete(codesystem).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<DeleteCodeSystemResponse>> rawFuture =
+                this.rawClient.delete(codesystem);
+        CompletableFuture<DeleteCodeSystemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -109,7 +180,15 @@ public class AsyncCodeSystemsClient {
      * Only available on dedicated instances. Large systems may take up to a minute to delete.
      */
     public CompletableFuture<DeleteCodeSystemResponse> delete(String codesystem, RequestOptions requestOptions) {
-        return this.rawClient.delete(codesystem, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<DeleteCodeSystemResponse>> rawFuture =
+                this.rawClient.delete(codesystem, requestOptions);
+        CompletableFuture<DeleteCodeSystemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -117,7 +196,15 @@ public class AsyncCodeSystemsClient {
      * Only available on dedicated instances. Large systems may take up to a minute to delete.
      */
     public CompletableFuture<DeleteCodeSystemResponse> delete(String codesystem, DeleteRequest request) {
-        return this.rawClient.delete(codesystem, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<DeleteCodeSystemResponse>> rawFuture =
+                this.rawClient.delete(codesystem, request);
+        CompletableFuture<DeleteCodeSystemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -126,7 +213,15 @@ public class AsyncCodeSystemsClient {
      */
     public CompletableFuture<DeleteCodeSystemResponse> delete(
             String codesystem, DeleteRequest request, RequestOptions requestOptions) {
-        return this.rawClient.delete(codesystem, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<DeleteCodeSystemResponse>> rawFuture =
+                this.rawClient.delete(codesystem, request, requestOptions);
+        CompletableFuture<DeleteCodeSystemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -135,7 +230,15 @@ public class AsyncCodeSystemsClient {
      * Only available on dedicated instances. Builtin systems cannot be exported.
      */
     public CompletableFuture<ExportCodeSystemResponse> export(String codesystem) {
-        return this.rawClient.export(codesystem).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ExportCodeSystemResponse>> rawFuture =
+                this.rawClient.export(codesystem);
+        CompletableFuture<ExportCodeSystemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -144,7 +247,15 @@ public class AsyncCodeSystemsClient {
      * Only available on dedicated instances. Builtin systems cannot be exported.
      */
     public CompletableFuture<ExportCodeSystemResponse> export(String codesystem, RequestOptions requestOptions) {
-        return this.rawClient.export(codesystem, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ExportCodeSystemResponse>> rawFuture =
+                this.rawClient.export(codesystem, requestOptions);
+        CompletableFuture<ExportCodeSystemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -153,7 +264,15 @@ public class AsyncCodeSystemsClient {
      * Only available on dedicated instances. Builtin systems cannot be exported.
      */
     public CompletableFuture<ExportCodeSystemResponse> export(String codesystem, ExportRequest request) {
-        return this.rawClient.export(codesystem, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ExportCodeSystemResponse>> rawFuture =
+                this.rawClient.export(codesystem, request);
+        CompletableFuture<ExportCodeSystemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -163,6 +282,14 @@ public class AsyncCodeSystemsClient {
      */
     public CompletableFuture<ExportCodeSystemResponse> export(
             String codesystem, ExportRequest request, RequestOptions requestOptions) {
-        return this.rawClient.export(codesystem, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ExportCodeSystemResponse>> rawFuture =
+                this.rawClient.export(codesystem, request, requestOptions);
+        CompletableFuture<ExportCodeSystemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }
