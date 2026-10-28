@@ -86,7 +86,6 @@ public final class FeedbackResponse {
     public static final class Builder implements IdStage, _FinalStage {
         private String id;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -111,6 +110,14 @@ public final class FeedbackResponse {
         @java.lang.Override
         public FeedbackResponse build() {
             return new FeedbackResponse(id, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

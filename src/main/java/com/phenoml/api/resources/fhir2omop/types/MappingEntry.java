@@ -46,6 +46,8 @@ public final class MappingEntry {
 
     private final boolean selected;
 
+    private final Optional<MappingResolution> resolution;
+
     private final Optional<String> note;
 
     private final Map<String, Object> additionalProperties;
@@ -64,6 +66,7 @@ public final class MappingEntry {
             Optional<String> targetName,
             Optional<MappingEntryMappingStatus> mappingStatus,
             boolean selected,
+            Optional<MappingResolution> resolution,
             Optional<String> note,
             Map<String, Object> additionalProperties) {
         this.resourceType = resourceType;
@@ -79,6 +82,7 @@ public final class MappingEntry {
         this.targetName = targetName;
         this.mappingStatus = mappingStatus;
         this.selected = selected;
+        this.resolution = resolution;
         this.note = note;
         this.additionalProperties = additionalProperties;
     }
@@ -109,7 +113,7 @@ public final class MappingEntry {
     }
 
     /**
-     * @return The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>.
+     * @return The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>. Omitted when the entry preserves source information without populating a row column.
      */
     @JsonProperty("omop_field")
     public Optional<String> getOmopField() {
@@ -154,10 +158,12 @@ public final class MappingEntry {
 
     /**
      * @return ALREADY_STANDARD (source coding is already a standard OMOP concept),
-     * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
-     * standard code was suggested for a text-only resource but not verified
-     * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
-     * (no standard concept found).
+     * MAPPED (source coding or descriptive source text was mapped to a standard
+     * concept), UNCHECKED (a suggested code has not been validated against
+     * the OMOP vocabulary, so <code>concept_id</code> is <code>0</code>), or UNMAPPED
+     * (no target concept selected, including missing mappings,
+     * target-domain mismatches and ambiguity, or source information
+     * retained without concept resolution as explained in <code>note</code>).
      */
     @JsonProperty("mapping_status")
     public Optional<MappingEntryMappingStatus> getMappingStatus() {
@@ -165,15 +171,22 @@ public final class MappingEntry {
     }
 
     /**
-     * @return Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings and text-only rows. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.
+     * @return Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings, text-only rows, and entries without a corresponding row column. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.
      */
     @JsonProperty("selected")
     public boolean getSelected() {
         return selected;
     }
 
+    @JsonProperty("resolution")
+    public Optional<MappingResolution> getResolution() {
+        return resolution;
+    }
+
     /**
-     * @return Additional context for the entry. A coded route is noted as
+     * @return Additional context for the entry, including the output table,
+     * populated fields, source information without a corresponding row
+     * column, and <code>DOMAIN_MISMATCH</code> outcomes. A coded route is noted as
      * <code>FHIR route</code>. Patient demographic entries name their source and, when
      * not applied, why:
      * <ul>
@@ -221,6 +234,7 @@ public final class MappingEntry {
                 && targetName.equals(other.targetName)
                 && mappingStatus.equals(other.mappingStatus)
                 && selected == other.selected
+                && resolution.equals(other.resolution)
                 && note.equals(other.note);
     }
 
@@ -240,6 +254,7 @@ public final class MappingEntry {
                 this.targetName,
                 this.mappingStatus,
                 this.selected,
+                this.resolution,
                 this.note);
     }
 
@@ -254,7 +269,7 @@ public final class MappingEntry {
 
     public interface SelectedStage {
         /**
-         * <p>Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings and text-only rows. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.</p>
+         * <p>Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings, text-only rows, and entries without a corresponding row column. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.</p>
          */
         _FinalStage selected(boolean selected);
 
@@ -290,7 +305,7 @@ public final class MappingEntry {
         _FinalStage omopId(Long omopId);
 
         /**
-         * <p>The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>.</p>
+         * <p>The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>. Omitted when the entry preserves source information without populating a row column.</p>
          */
         _FinalStage omopField(Optional<String> omopField);
 
@@ -328,17 +343,25 @@ public final class MappingEntry {
 
         /**
          * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
-         * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
-         * standard code was suggested for a text-only resource but not verified
-         * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
-         * (no standard concept found).</p>
+         * MAPPED (source coding or descriptive source text was mapped to a standard
+         * concept), UNCHECKED (a suggested code has not been validated against
+         * the OMOP vocabulary, so <code>concept_id</code> is <code>0</code>), or UNMAPPED
+         * (no target concept selected, including missing mappings,
+         * target-domain mismatches and ambiguity, or source information
+         * retained without concept resolution as explained in <code>note</code>).</p>
          */
         _FinalStage mappingStatus(Optional<MappingEntryMappingStatus> mappingStatus);
 
         _FinalStage mappingStatus(MappingEntryMappingStatus mappingStatus);
 
+        _FinalStage resolution(Optional<MappingResolution> resolution);
+
+        _FinalStage resolution(MappingResolution resolution);
+
         /**
-         * <p>Additional context for the entry. A coded route is noted as
+         * <p>Additional context for the entry, including the output table,
+         * populated fields, source information without a corresponding row
+         * column, and <code>DOMAIN_MISMATCH</code> outcomes. A coded route is noted as
          * <code>FHIR route</code>. Patient demographic entries name their source and, when
          * not applied, why:</p>
          * <ul>
@@ -367,6 +390,8 @@ public final class MappingEntry {
 
         private Optional<String> note = Optional.empty();
 
+        private Optional<MappingResolution> resolution = Optional.empty();
+
         private Optional<MappingEntryMappingStatus> mappingStatus = Optional.empty();
 
         private Optional<String> targetName = Optional.empty();
@@ -391,7 +416,6 @@ public final class MappingEntry {
 
         private Optional<String> resourceType = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -411,12 +435,13 @@ public final class MappingEntry {
             targetName(other.getTargetName());
             mappingStatus(other.getMappingStatus());
             selected(other.getSelected());
+            resolution(other.getResolution());
             note(other.getNote());
             return this;
         }
 
         /**
-         * <p>Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings and text-only rows. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.</p>
+         * <p>Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings, text-only rows, and entries without a corresponding row column. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -427,7 +452,9 @@ public final class MappingEntry {
         }
 
         /**
-         * <p>Additional context for the entry. A coded route is noted as
+         * <p>Additional context for the entry, including the output table,
+         * populated fields, source information without a corresponding row
+         * column, and <code>DOMAIN_MISMATCH</code> outcomes. A coded route is noted as
          * <code>FHIR route</code>. Patient demographic entries name their source and, when
          * not applied, why:</p>
          * <ul>
@@ -453,7 +480,9 @@ public final class MappingEntry {
         }
 
         /**
-         * <p>Additional context for the entry. A coded route is noted as
+         * <p>Additional context for the entry, including the output table,
+         * populated fields, source information without a corresponding row
+         * column, and <code>DOMAIN_MISMATCH</code> outcomes. A coded route is noted as
          * <code>FHIR route</code>. Patient demographic entries name their source and, when
          * not applied, why:</p>
          * <ul>
@@ -478,12 +507,27 @@ public final class MappingEntry {
             return this;
         }
 
+        @java.lang.Override
+        public _FinalStage resolution(MappingResolution resolution) {
+            this.resolution = Optional.ofNullable(resolution);
+            return this;
+        }
+
+        @java.lang.Override
+        @JsonSetter(value = "resolution", nulls = Nulls.SKIP)
+        public _FinalStage resolution(Optional<MappingResolution> resolution) {
+            this.resolution = resolution;
+            return this;
+        }
+
         /**
          * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
-         * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
-         * standard code was suggested for a text-only resource but not verified
-         * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
-         * (no standard concept found).</p>
+         * MAPPED (source coding or descriptive source text was mapped to a standard
+         * concept), UNCHECKED (a suggested code has not been validated against
+         * the OMOP vocabulary, so <code>concept_id</code> is <code>0</code>), or UNMAPPED
+         * (no target concept selected, including missing mappings,
+         * target-domain mismatches and ambiguity, or source information
+         * retained without concept resolution as explained in <code>note</code>).</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -494,10 +538,12 @@ public final class MappingEntry {
 
         /**
          * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
-         * MAPPED (source coding was mapped to a standard concept), UNCHECKED (a
-         * standard code was suggested for a text-only resource but not verified
-         * against the OMOP vocabulary, so <code>concept_id</code> stays <code>0</code>), or UNMAPPED
-         * (no standard concept found).</p>
+         * MAPPED (source coding or descriptive source text was mapped to a standard
+         * concept), UNCHECKED (a suggested code has not been validated against
+         * the OMOP vocabulary, so <code>concept_id</code> is <code>0</code>), or UNMAPPED
+         * (no target concept selected, including missing mappings,
+         * target-domain mismatches and ambiguity, or source information
+         * retained without concept resolution as explained in <code>note</code>).</p>
          */
         @java.lang.Override
         @JsonSetter(value = "mapping_status", nulls = Nulls.SKIP)
@@ -598,7 +644,7 @@ public final class MappingEntry {
         }
 
         /**
-         * <p>The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>.</p>
+         * <p>The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>. Omitted when the entry preserves source information without populating a row column.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -608,7 +654,7 @@ public final class MappingEntry {
         }
 
         /**
-         * <p>The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>.</p>
+         * <p>The OMOP concept-ID field populated from this source coding, such as <code>condition_concept_id</code>, <code>route_concept_id</code>, or <code>race_concept_id</code>. Omitted when the entry preserves source information without populating a row column.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "omop_field", nulls = Nulls.SKIP)
@@ -696,8 +742,31 @@ public final class MappingEntry {
                     targetName,
                     mappingStatus,
                     selected,
+                    resolution,
                     note,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("resource_type")
+                    || key.equalsIgnoreCase("resource_id")
+                    || key.equalsIgnoreCase("omop_table")
+                    || key.equalsIgnoreCase("omop_id")
+                    || key.equalsIgnoreCase("omop_field")
+                    || key.equalsIgnoreCase("source_system")
+                    || key.equalsIgnoreCase("source_code")
+                    || key.equalsIgnoreCase("source_name")
+                    || key.equalsIgnoreCase("target_vocabulary")
+                    || key.equalsIgnoreCase("target_code")
+                    || key.equalsIgnoreCase("target_name")
+                    || key.equalsIgnoreCase("mapping_status")
+                    || key.equalsIgnoreCase("selected")
+                    || key.equalsIgnoreCase("resolution")
+                    || key.equalsIgnoreCase("note")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

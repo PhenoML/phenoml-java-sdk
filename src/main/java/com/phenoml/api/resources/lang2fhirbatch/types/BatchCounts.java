@@ -146,7 +146,6 @@ public final class BatchCounts {
 
         private int failed;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -199,6 +198,18 @@ public final class BatchCounts {
         @java.lang.Override
         public BatchCounts build() {
             return new BatchCounts(total, pending, processing, succeeded, failed, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("total")
+                    || key.equalsIgnoreCase("pending")
+                    || key.equalsIgnoreCase("processing")
+                    || key.equalsIgnoreCase("succeeded")
+                    || key.equalsIgnoreCase("failed")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

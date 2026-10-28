@@ -186,7 +186,6 @@ public final class AgentTemplate {
 
         private Optional<AgentTemplateProvider> provider = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -318,6 +317,21 @@ public final class AgentTemplate {
         public AgentTemplate build() {
             return new AgentTemplate(
                     id, name, description, prompts, tools, workflows, tags, provider, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("id")
+                    || key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("prompts")
+                    || key.equalsIgnoreCase("tools")
+                    || key.equalsIgnoreCase("workflows")
+                    || key.equalsIgnoreCase("tags")
+                    || key.equalsIgnoreCase("provider")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

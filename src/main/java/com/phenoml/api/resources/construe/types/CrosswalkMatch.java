@@ -156,7 +156,6 @@ public final class CrosswalkMatch {
 
         private Optional<String> suppress = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -226,6 +225,17 @@ public final class CrosswalkMatch {
         @java.lang.Override
         public CrosswalkMatch build() {
             return new CrosswalkMatch(code, display, cui, suppress, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("code")
+                    || key.equalsIgnoreCase("display")
+                    || key.equalsIgnoreCase("cui")
+                    || key.equalsIgnoreCase("suppress")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

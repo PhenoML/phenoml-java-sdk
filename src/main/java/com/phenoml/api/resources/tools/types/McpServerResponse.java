@@ -135,7 +135,6 @@ public final class McpServerResponse {
 
         private Optional<List<McpServerTool>> mcpServerTools = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -223,6 +222,18 @@ public final class McpServerResponse {
 
         public McpServerResponse build() {
             return new McpServerResponse(success, message, data, mcpServers, mcpServerTools, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("success")
+                    || key.equalsIgnoreCase("message")
+                    || key.equalsIgnoreCase("data")
+                    || key.equalsIgnoreCase("mcp_servers")
+                    || key.equalsIgnoreCase("mcp_server_tools")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

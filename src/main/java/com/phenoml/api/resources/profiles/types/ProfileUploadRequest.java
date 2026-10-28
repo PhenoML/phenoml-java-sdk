@@ -45,7 +45,7 @@ public final class ProfileUploadRequest {
     }
 
     /**
-     * @return Implementation Guide name to group this profile under. On create, defaults to &quot;custom&quot; if omitted; on update, omitting it preserves the profile's current guide. Cannot be &quot;us_core&quot; (reserved). Use this to organize custom profiles into named IGs that can be referenced when calling create/multi or document/multi endpoints.
+     * @return Implementation Guide name to group this profile under. On create, defaults to &quot;custom&quot; if omitted; on update, omitting it preserves the profile's current guide. Cannot be &quot;us_core&quot; or &quot;phenoml_hpo&quot; (reserved). Use this to organize custom profiles into named IGs that can be referenced when calling create/multi or document/multi endpoints.
      */
     @JsonProperty("implementation_guide")
     public Optional<String> getImplementationGuide() {
@@ -88,7 +88,6 @@ public final class ProfileUploadRequest {
 
         private Optional<String> implementationGuide = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -124,7 +123,7 @@ public final class ProfileUploadRequest {
         }
 
         /**
-         * <p>Implementation Guide name to group this profile under. On create, defaults to &quot;custom&quot; if omitted; on update, omitting it preserves the profile's current guide. Cannot be &quot;us_core&quot; (reserved). Use this to organize custom profiles into named IGs that can be referenced when calling create/multi or document/multi endpoints.</p>
+         * <p>Implementation Guide name to group this profile under. On create, defaults to &quot;custom&quot; if omitted; on update, omitting it preserves the profile's current guide. Cannot be &quot;us_core&quot; or &quot;phenoml_hpo&quot; (reserved). Use this to organize custom profiles into named IGs that can be referenced when calling create/multi or document/multi endpoints.</p>
          */
         @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
         public Builder implementationGuide(Optional<String> implementationGuide) {
@@ -139,6 +138,14 @@ public final class ProfileUploadRequest {
 
         public ProfileUploadRequest build() {
             return new ProfileUploadRequest(structureDefinition, implementationGuide, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("structure_definition") || key.equalsIgnoreCase("implementation_guide")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

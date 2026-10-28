@@ -278,7 +278,6 @@ public final class DocumentMultiRequest {
 
         private Optional<String> provider = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -463,6 +462,22 @@ public final class DocumentMultiRequest {
                     validationMethod,
                     config,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("version")
+                    || key.equalsIgnoreCase("content")
+                    || key.equalsIgnoreCase("provider")
+                    || key.equalsIgnoreCase("primary_patient")
+                    || key.equalsIgnoreCase("patient_reference")
+                    || key.equalsIgnoreCase("implementation_guide")
+                    || key.equalsIgnoreCase("detection_effort")
+                    || key.equalsIgnoreCase("validation_method")
+                    || key.equalsIgnoreCase("config")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override
