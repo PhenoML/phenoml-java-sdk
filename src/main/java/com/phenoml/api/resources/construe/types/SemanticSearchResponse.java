@@ -106,7 +106,6 @@ public final class SemanticSearchResponse {
 
         private List<SemanticSearchResult> results = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -163,6 +162,14 @@ public final class SemanticSearchResponse {
         @java.lang.Override
         public SemanticSearchResponse build() {
             return new SemanticSearchResponse(system, results, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("system") || key.equalsIgnoreCase("results")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

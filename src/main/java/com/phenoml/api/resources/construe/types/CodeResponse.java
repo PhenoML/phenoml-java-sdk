@@ -129,7 +129,6 @@ public final class CodeResponse {
 
         private Optional<String> definition = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -187,6 +186,16 @@ public final class CodeResponse {
         @java.lang.Override
         public CodeResponse build() {
             return new CodeResponse(code, description, definition, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("code")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("definition")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override
