@@ -111,7 +111,6 @@ public final class PrimaryPatient {
 
         private Optional<PrimaryPatientGender> gender = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -176,6 +175,17 @@ public final class PrimaryPatient {
 
         public PrimaryPatient build() {
             return new PrimaryPatient(identifier, name, birthDate, gender, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("identifier")
+                    || key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("birthDate")
+                    || key.equalsIgnoreCase("gender")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

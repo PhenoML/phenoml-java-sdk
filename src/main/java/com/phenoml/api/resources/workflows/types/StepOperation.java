@@ -106,7 +106,6 @@ public final class StepOperation {
 
         private Optional<DecisionNodeDefinition> decisionDefinition = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -166,6 +165,17 @@ public final class StepOperation {
         public StepOperation build() {
             return new StepOperation(
                     searchDefinition, createDefinition, workflowDefinition, decisionDefinition, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("search_definition")
+                    || key.equalsIgnoreCase("create_definition")
+                    || key.equalsIgnoreCase("workflow_definition")
+                    || key.equalsIgnoreCase("decision_definition")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

@@ -26,6 +26,8 @@ public final class Summary {
 
     private final Optional<Integer> codesUnmapped;
 
+    private final Optional<Integer> rowsForReview;
+
     private final Optional<Double> offVocabRate;
 
     private final Map<String, Object> additionalProperties;
@@ -34,11 +36,13 @@ public final class Summary {
             Optional<Integer> codesAlreadyStandard,
             Optional<Integer> codesNormalized,
             Optional<Integer> codesUnmapped,
+            Optional<Integer> rowsForReview,
             Optional<Double> offVocabRate,
             Map<String, Object> additionalProperties) {
         this.codesAlreadyStandard = codesAlreadyStandard;
         this.codesNormalized = codesNormalized;
         this.codesUnmapped = codesUnmapped;
+        this.rowsForReview = rowsForReview;
         this.offVocabRate = offVocabRate;
         this.additionalProperties = additionalProperties;
     }
@@ -60,11 +64,19 @@ public final class Summary {
     }
 
     /**
-     * @return Resolution outcomes with no standard concept found (UNMAPPED).
+     * @return Resolution outcomes with no standard concept valid for the destination selected (UNMAPPED).
      */
     @JsonProperty("codes_unmapped")
     public Optional<Integer> getCodesUnmapped() {
         return codesUnmapped;
+    }
+
+    /**
+     * @return Length of the rows_for_review index; each row counts once even with multiple retention reasons. codes_* and off_vocab_rate include all shaped rows; dropped resources do not count.
+     */
+    @JsonProperty("rows_for_review")
+    public Optional<Integer> getRowsForReview() {
+        return rowsForReview;
     }
 
     /**
@@ -90,12 +102,18 @@ public final class Summary {
         return codesAlreadyStandard.equals(other.codesAlreadyStandard)
                 && codesNormalized.equals(other.codesNormalized)
                 && codesUnmapped.equals(other.codesUnmapped)
+                && rowsForReview.equals(other.rowsForReview)
                 && offVocabRate.equals(other.offVocabRate);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.codesAlreadyStandard, this.codesNormalized, this.codesUnmapped, this.offVocabRate);
+        return Objects.hash(
+                this.codesAlreadyStandard,
+                this.codesNormalized,
+                this.codesUnmapped,
+                this.rowsForReview,
+                this.offVocabRate);
     }
 
     @java.lang.Override
@@ -115,9 +133,10 @@ public final class Summary {
 
         private Optional<Integer> codesUnmapped = Optional.empty();
 
+        private Optional<Integer> rowsForReview = Optional.empty();
+
         private Optional<Double> offVocabRate = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -126,6 +145,7 @@ public final class Summary {
             codesAlreadyStandard(other.getCodesAlreadyStandard());
             codesNormalized(other.getCodesNormalized());
             codesUnmapped(other.getCodesUnmapped());
+            rowsForReview(other.getRowsForReview());
             offVocabRate(other.getOffVocabRate());
             return this;
         }
@@ -159,7 +179,7 @@ public final class Summary {
         }
 
         /**
-         * <p>Resolution outcomes with no standard concept found (UNMAPPED).</p>
+         * <p>Resolution outcomes with no standard concept valid for the destination selected (UNMAPPED).</p>
          */
         @JsonSetter(value = "codes_unmapped", nulls = Nulls.SKIP)
         public Builder codesUnmapped(Optional<Integer> codesUnmapped) {
@@ -169,6 +189,20 @@ public final class Summary {
 
         public Builder codesUnmapped(Integer codesUnmapped) {
             this.codesUnmapped = Optional.ofNullable(codesUnmapped);
+            return this;
+        }
+
+        /**
+         * <p>Length of the rows_for_review index; each row counts once even with multiple retention reasons. codes_* and off_vocab_rate include all shaped rows; dropped resources do not count.</p>
+         */
+        @JsonSetter(value = "rows_for_review", nulls = Nulls.SKIP)
+        public Builder rowsForReview(Optional<Integer> rowsForReview) {
+            this.rowsForReview = rowsForReview;
+            return this;
+        }
+
+        public Builder rowsForReview(Integer rowsForReview) {
+            this.rowsForReview = Optional.ofNullable(rowsForReview);
             return this;
         }
 
@@ -188,7 +222,24 @@ public final class Summary {
 
         public Summary build() {
             return new Summary(
-                    codesAlreadyStandard, codesNormalized, codesUnmapped, offVocabRate, additionalProperties);
+                    codesAlreadyStandard,
+                    codesNormalized,
+                    codesUnmapped,
+                    rowsForReview,
+                    offVocabRate,
+                    additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("codes_already_standard")
+                    || key.equalsIgnoreCase("codes_normalized")
+                    || key.equalsIgnoreCase("codes_unmapped")
+                    || key.equalsIgnoreCase("rows_for_review")
+                    || key.equalsIgnoreCase("off_vocab_rate")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

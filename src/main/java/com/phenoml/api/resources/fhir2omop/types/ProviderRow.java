@@ -89,6 +89,9 @@ public final class ProviderRow {
         return providerName;
     }
 
+    /**
+     * @return Single distinct source NPI value, preserved without format or checksum validation, from an identifier with system <code>http://hl7.org/fhir/sid/us-npi</code>, <code>urn:oid:2.16.840.1.113883.4.6</code>, or <code>2.16.840.1.113883.4.6</code>. Blank values and <code>UNK</code>/<code>UNKNOWN</code> markers (case-insensitive, ignoring surrounding whitespace) are treated as missing. Omitted when no usable NPI value exists or multiple distinct values are supplied.
+     */
     @JsonProperty("npi")
     public Optional<String> getNpi() {
         return npi;
@@ -126,7 +129,27 @@ public final class ProviderRow {
     }
 
     /**
-     * @return The source practitioner identity. A Practitioner contained by a PractitionerRole is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code> so identical local contained IDs do not collide; an id-less parent uses an explicitly marked response-local role ordinal such as <code>@role-index:1</code>.
+     * @return The single distinct source NPI, when present. Compatible providers
+     * can use this value as a cross-request deduplication key; row IDs are
+     * per response, and the API does not merge across requests. Conflicting
+     * NPI groups retain separate rows sharing this value. Preserve rows
+     * flagged by identity diagnostics using <code>omop_table: provider</code> and
+     * <code>omop_id</code>, and check identity compatibility across responses before
+     * deduplicating.
+     * Without one unambiguous NPI, this is the source identity of the
+     * Practitioner or fallback role.
+     * Missing NPI values and unknown markers are excluded when selecting
+     * that source identity. When no source identity is available, an
+     * explicitly marked response-local provider ordinal such as
+     * <code>@provider-index:1</code> supplies a local scope.
+     * Multiple distinct NPIs leave <code>npi</code> unset and use the resource ID,
+     * full URL, or an explicitly marked response-local provider ordinal
+     * such as <code>@provider-index:1</code> when neither is supplied.
+     * A Practitioner contained by a PractitionerRole without one unambiguous
+     * NPI is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code>
+     * so identical local contained IDs do not collide; an id-less parent
+     * uses an explicitly marked response-local role ordinal such as
+     * <code>@role-index:1</code>.
      */
     @JsonProperty("provider_source_value")
     public Optional<String> getProviderSourceValue() {
@@ -152,7 +175,7 @@ public final class ProviderRow {
     }
 
     /**
-     * @return Remains <code>0</code> for FHIR administrative-gender enum-policy results.
+     * @return Remains <code>0</code> because FHIR administrative-gender codes do not themselves identify OMOP source concepts.
      */
     @JsonProperty("gender_source_concept_id")
     public Optional<Long> getGenderSourceConceptId() {
@@ -241,7 +264,6 @@ public final class ProviderRow {
 
         private Optional<Long> genderSourceConceptId = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -285,6 +307,9 @@ public final class ProviderRow {
             return this;
         }
 
+        /**
+         * <p>Single distinct source NPI value, preserved without format or checksum validation, from an identifier with system <code>http://hl7.org/fhir/sid/us-npi</code>, <code>urn:oid:2.16.840.1.113883.4.6</code>, or <code>2.16.840.1.113883.4.6</code>. Blank values and <code>UNK</code>/<code>UNKNOWN</code> markers (case-insensitive, ignoring surrounding whitespace) are treated as missing. Omitted when no usable NPI value exists or multiple distinct values are supplied.</p>
+         */
         @JsonSetter(value = "npi", nulls = Nulls.SKIP)
         public Builder npi(Optional<String> npi) {
             this.npi = npi;
@@ -358,7 +383,27 @@ public final class ProviderRow {
         }
 
         /**
-         * <p>The source practitioner identity. A Practitioner contained by a PractitionerRole is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code> so identical local contained IDs do not collide; an id-less parent uses an explicitly marked response-local role ordinal such as <code>@role-index:1</code>.</p>
+         * <p>The single distinct source NPI, when present. Compatible providers
+         * can use this value as a cross-request deduplication key; row IDs are
+         * per response, and the API does not merge across requests. Conflicting
+         * NPI groups retain separate rows sharing this value. Preserve rows
+         * flagged by identity diagnostics using <code>omop_table: provider</code> and
+         * <code>omop_id</code>, and check identity compatibility across responses before
+         * deduplicating.
+         * Without one unambiguous NPI, this is the source identity of the
+         * Practitioner or fallback role.
+         * Missing NPI values and unknown markers are excluded when selecting
+         * that source identity. When no source identity is available, an
+         * explicitly marked response-local provider ordinal such as
+         * <code>@provider-index:1</code> supplies a local scope.
+         * Multiple distinct NPIs leave <code>npi</code> unset and use the resource ID,
+         * full URL, or an explicitly marked response-local provider ordinal
+         * such as <code>@provider-index:1</code> when neither is supplied.
+         * A Practitioner contained by a PractitionerRole without one unambiguous
+         * NPI is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code>
+         * so identical local contained IDs do not collide; an id-less parent
+         * uses an explicitly marked response-local role ordinal such as
+         * <code>@role-index:1</code>.</p>
          */
         @JsonSetter(value = "provider_source_value", nulls = Nulls.SKIP)
         public Builder providerSourceValue(Optional<String> providerSourceValue) {
@@ -408,7 +453,7 @@ public final class ProviderRow {
         }
 
         /**
-         * <p>Remains <code>0</code> for FHIR administrative-gender enum-policy results.</p>
+         * <p>Remains <code>0</code> because FHIR administrative-gender codes do not themselves identify OMOP source concepts.</p>
          */
         @JsonSetter(value = "gender_source_concept_id", nulls = Nulls.SKIP)
         public Builder genderSourceConceptId(Optional<Long> genderSourceConceptId) {
@@ -437,6 +482,26 @@ public final class ProviderRow {
                     genderSourceValue,
                     genderSourceConceptId,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("provider_id")
+                    || key.equalsIgnoreCase("provider_name")
+                    || key.equalsIgnoreCase("npi")
+                    || key.equalsIgnoreCase("dea")
+                    || key.equalsIgnoreCase("specialty_concept_id")
+                    || key.equalsIgnoreCase("care_site_id")
+                    || key.equalsIgnoreCase("year_of_birth")
+                    || key.equalsIgnoreCase("gender_concept_id")
+                    || key.equalsIgnoreCase("provider_source_value")
+                    || key.equalsIgnoreCase("specialty_source_value")
+                    || key.equalsIgnoreCase("specialty_source_concept_id")
+                    || key.equalsIgnoreCase("gender_source_value")
+                    || key.equalsIgnoreCase("gender_source_concept_id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

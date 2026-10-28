@@ -112,7 +112,7 @@ public class Lang2FhirClient {
      * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
      * <p>Uploads will be rejected if:</p>
      * <ul>
-     * <li>A built-in US Core or R4 base profile already exists with the same id</li>
+     * <li>A built-in profile (US Core, PhenoML HPO, or R4 base) already exists with the same id, or the id starts with a reserved prefix (<code>us-core-</code>, <code>phenoml-hpo-</code>)</li>
      * <li>A custom profile with the same id has already been uploaded</li>
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
@@ -133,7 +133,7 @@ public class Lang2FhirClient {
      * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
      * <p>Uploads will be rejected if:</p>
      * <ul>
-     * <li>A built-in US Core or R4 base profile already exists with the same id</li>
+     * <li>A built-in profile (US Core, PhenoML HPO, or R4 base) already exists with the same id, or the id starts with a reserved prefix (<code>us-core-</code>, <code>phenoml-hpo-</code>)</li>
      * <li>A custom profile with the same id has already been uploaded</li>
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>

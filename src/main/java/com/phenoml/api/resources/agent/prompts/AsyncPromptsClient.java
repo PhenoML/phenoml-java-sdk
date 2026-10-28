@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.agent.prompts;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.agent.prompts.requests.AgentPromptsCreateRequest;
 import com.phenoml.api.resources.agent.prompts.requests.AgentPromptsUpdateRequest;
@@ -35,7 +36,14 @@ public class AsyncPromptsClient {
      * Creates a new agent prompt
      */
     public CompletableFuture<AgentPromptsResponse> create(AgentPromptsCreateRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> rawFuture = this.rawClient.create(request);
+        CompletableFuture<AgentPromptsResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -43,56 +51,117 @@ public class AsyncPromptsClient {
      */
     public CompletableFuture<AgentPromptsResponse> create(
             AgentPromptsCreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> rawFuture =
+                this.rawClient.create(request, requestOptions);
+        CompletableFuture<AgentPromptsResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Retrieves a list of agent prompts belonging to the authenticated user
      */
     public CompletableFuture<PromptsListResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<PromptsListResponse>> rawFuture = this.rawClient.list();
+        CompletableFuture<PromptsListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Retrieves a list of agent prompts belonging to the authenticated user
      */
     public CompletableFuture<PromptsListResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<PromptsListResponse>> rawFuture =
+                this.rawClient.list(requestOptions);
+        CompletableFuture<PromptsListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Retrieves a specific prompt by its ID
      */
     public CompletableFuture<AgentPromptsResponse> get(String id) {
-        return this.rawClient.get(id).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> rawFuture = this.rawClient.get(id);
+        CompletableFuture<AgentPromptsResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Retrieves a specific prompt by its ID
      */
     public CompletableFuture<AgentPromptsResponse> get(String id, RequestOptions requestOptions) {
-        return this.rawClient.get(id, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> rawFuture =
+                this.rawClient.get(id, requestOptions);
+        CompletableFuture<AgentPromptsResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Updates an existing prompt
      */
     public CompletableFuture<AgentPromptsResponse> update(String id) {
-        return this.rawClient.update(id).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> rawFuture = this.rawClient.update(id);
+        CompletableFuture<AgentPromptsResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Updates an existing prompt
      */
     public CompletableFuture<AgentPromptsResponse> update(String id, RequestOptions requestOptions) {
-        return this.rawClient.update(id, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> rawFuture =
+                this.rawClient.update(id, requestOptions);
+        CompletableFuture<AgentPromptsResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Updates an existing prompt
      */
     public CompletableFuture<AgentPromptsResponse> update(String id, AgentPromptsUpdateRequest request) {
-        return this.rawClient.update(id, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> rawFuture =
+                this.rawClient.update(id, request);
+        CompletableFuture<AgentPromptsResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -100,28 +169,59 @@ public class AsyncPromptsClient {
      */
     public CompletableFuture<AgentPromptsResponse> update(
             String id, AgentPromptsUpdateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> rawFuture =
+                this.rawClient.update(id, request, requestOptions);
+        CompletableFuture<AgentPromptsResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Deletes a prompt
      */
     public CompletableFuture<PromptsDeleteResponse> delete(String id) {
-        return this.rawClient.delete(id).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<PromptsDeleteResponse>> rawFuture = this.rawClient.delete(id);
+        CompletableFuture<PromptsDeleteResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Deletes a prompt
      */
     public CompletableFuture<PromptsDeleteResponse> delete(String id, RequestOptions requestOptions) {
-        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<PromptsDeleteResponse>> rawFuture =
+                this.rawClient.delete(id, requestOptions);
+        CompletableFuture<PromptsDeleteResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Patches an existing prompt
      */
     public CompletableFuture<AgentPromptsResponse> patch(String id, List<JsonPatchOperation> request) {
-        return this.rawClient.patch(id, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> rawFuture =
+                this.rawClient.patch(id, request);
+        CompletableFuture<AgentPromptsResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -129,6 +229,14 @@ public class AsyncPromptsClient {
      */
     public CompletableFuture<AgentPromptsResponse> patch(
             String id, List<JsonPatchOperation> request, RequestOptions requestOptions) {
-        return this.rawClient.patch(id, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentPromptsResponse>> rawFuture =
+                this.rawClient.patch(id, request, requestOptions);
+        CompletableFuture<AgentPromptsResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }

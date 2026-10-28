@@ -1,3 +1,22 @@
+## [18.2.0] - 2026-10-28
+### Added
+- **`RequestOptions.Builder.addBodyProperty` / `bodyProperties`** — inject arbitrary key/value pairs into JSON or form-urlencoded request bodies at call time, overriding matching fields already present.
+- **`RetryInterceptor` async retry support** — new `newAsyncCall` factory schedules retry backoff on a background daemon thread, preventing retrying requests from consuming OkHttp dispatcher slots.
+- **OMOP response fields** — `CreateOmopResponse` gains `getQuantityTransformations()`, `getRowsForReview()`, `getDeviceExposureContexts()`, `getSpecimenSourceContexts()`, and `getMedicationDispenseSourceContexts()`; `OmopTables` gains `getDeviceExposure()` and `getSpecimen()`; `DrugExposureRow` gains `getQuantity()`; `MeasurementRow` gains `getUnitSourceConceptId()`; `VisitOccurrenceRow` gains `getVisitSourceConceptId()`; `Summary` gains `getRowsForReview()`.
+- **New OMOP/mapping types** — adds `DeviceExposureRow`, `DeviceExposureContext`, `SpecimenRow`, `MappingResolution`, `MappingPath`, `AllergyMappingResolution`, `QuantityTransformation`, `QuantityEvidence`, `MedicationDispenseSourceContext`, and related enum types covering device exposure, allergy resolution, quantity derivation, and vocabulary mapping outcomes.
+- **`CreateMultiRequest.getSmallNote()`** — new optional boolean field that bills the request at the lower small-note rate when `true` (text must be ≤ 15,360 bytes UTF-8).
+- **`ExtractRequestConfigValidationMethod.SEMANTIC_MAPPING`** — new validation method constant with a corresponding `visitSemanticMapping()` visitor method.
+- **`Stream.fromSseWithEventDiscrimination`** — new SSE stream factory supporting mixed-discrimination streams where selected event types model the full SSE envelope.
+- See full changelog for all changes
+
+### Changed
+- **`MappingEntry`** — gains `getResolution()` returning structured `MappingResolution` metadata; Javadoc for `getMappingStatus()`, `getOmopField()`, `getSelected()`, and `getNote()` updated to describe expanded UNMAPPED semantics.
+- **Date field documentation** — Javadoc for timing fields on `MeasurementRow`, `ObservationRow`, `ObservationPeriodRow`, and `ProcedureOccurrenceRow` now describes multi-resource timing rules and Specimen/Death row inclusion.
+- **`ProviderRow.getNpi()` and `ReferenceDiagnostic` outcome fields** — Javadoc updated to document NPI extraction/deduplication rules and all four `ReferenceDiagnostic` outcome values.
+
+### Fixed
+- **`@JsonAnySetter` / `additionalProperties` across all builder types** — a private `putAdditionalPropertyFromJson` guard now prevents known JSON fields from being double-captured into `additionalProperties` during deserialization.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
