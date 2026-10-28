@@ -147,7 +147,6 @@ public final class JsonWebKey {
 
         private Optional<String> e = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -248,6 +247,19 @@ public final class JsonWebKey {
 
         public JsonWebKey build() {
             return new JsonWebKey(kty, use, kid, alg, n, e, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("kty")
+                    || key.equalsIgnoreCase("use")
+                    || key.equalsIgnoreCase("kid")
+                    || key.equalsIgnoreCase("alg")
+                    || key.equalsIgnoreCase("n")
+                    || key.equalsIgnoreCase("e")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

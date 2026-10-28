@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.construe.codes;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.construe.codes.requests.CodesListRequest;
 import com.phenoml.api.resources.construe.codes.requests.CrosswalkRequest;
@@ -44,7 +45,14 @@ public class AsyncCodesClient {
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ExtractCodesResult> extract(ExtractRequest request) {
-        return this.rawClient.extract(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ExtractCodesResult>> rawFuture = this.rawClient.extract(request);
+        CompletableFuture<ExtractCodesResult> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -54,7 +62,15 @@ public class AsyncCodesClient {
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ExtractCodesResult> extract(ExtractRequest request, RequestOptions requestOptions) {
-        return this.rawClient.extract(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ExtractCodesResult>> rawFuture =
+                this.rawClient.extract(request, requestOptions);
+        CompletableFuture<ExtractCodesResult> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -66,7 +82,14 @@ public class AsyncCodesClient {
      * code system name and version are both required.</p>
      */
     public CompletableFuture<ExtractCodesResult> phenocr(PhenoCrRequest request) {
-        return this.rawClient.phenocr(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ExtractCodesResult>> rawFuture = this.rawClient.phenocr(request);
+        CompletableFuture<ExtractCodesResult> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -78,7 +101,15 @@ public class AsyncCodesClient {
      * code system name and version are both required.</p>
      */
     public CompletableFuture<ExtractCodesResult> phenocr(PhenoCrRequest request, RequestOptions requestOptions) {
-        return this.rawClient.phenocr(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ExtractCodesResult>> rawFuture =
+                this.rawClient.phenocr(request, requestOptions);
+        CompletableFuture<ExtractCodesResult> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -89,7 +120,14 @@ public class AsyncCodesClient {
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<CrosswalkResponse> crosswalk(CrosswalkRequest request) {
-        return this.rawClient.crosswalk(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<CrosswalkResponse>> rawFuture = this.rawClient.crosswalk(request);
+        CompletableFuture<CrosswalkResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -100,7 +138,15 @@ public class AsyncCodesClient {
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<CrosswalkResponse> crosswalk(CrosswalkRequest request, RequestOptions requestOptions) {
-        return this.rawClient.crosswalk(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<CrosswalkResponse>> rawFuture =
+                this.rawClient.crosswalk(request, requestOptions);
+        CompletableFuture<CrosswalkResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -108,7 +154,14 @@ public class AsyncCodesClient {
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ListCodesResponse> list(String codesystem) {
-        return this.rawClient.list(codesystem).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ListCodesResponse>> rawFuture = this.rawClient.list(codesystem);
+        CompletableFuture<ListCodesResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -116,7 +169,15 @@ public class AsyncCodesClient {
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ListCodesResponse> list(String codesystem, RequestOptions requestOptions) {
-        return this.rawClient.list(codesystem, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ListCodesResponse>> rawFuture =
+                this.rawClient.list(codesystem, requestOptions);
+        CompletableFuture<ListCodesResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -124,7 +185,15 @@ public class AsyncCodesClient {
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<ListCodesResponse> list(String codesystem, CodesListRequest request) {
-        return this.rawClient.list(codesystem, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ListCodesResponse>> rawFuture =
+                this.rawClient.list(codesystem, request);
+        CompletableFuture<ListCodesResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -133,7 +202,15 @@ public class AsyncCodesClient {
      */
     public CompletableFuture<ListCodesResponse> list(
             String codesystem, CodesListRequest request, RequestOptions requestOptions) {
-        return this.rawClient.list(codesystem, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ListCodesResponse>> rawFuture =
+                this.rawClient.list(codesystem, request, requestOptions);
+        CompletableFuture<ListCodesResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -141,7 +218,15 @@ public class AsyncCodesClient {
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<GetCodeResponse> lookup(String codesystem, String codeId) {
-        return this.rawClient.lookup(codesystem, codeId).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<GetCodeResponse>> rawFuture =
+                this.rawClient.lookup(codesystem, codeId);
+        CompletableFuture<GetCodeResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -149,7 +234,15 @@ public class AsyncCodesClient {
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<GetCodeResponse> lookup(String codesystem, String codeId, RequestOptions requestOptions) {
-        return this.rawClient.lookup(codesystem, codeId, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<GetCodeResponse>> rawFuture =
+                this.rawClient.lookup(codesystem, codeId, requestOptions);
+        CompletableFuture<GetCodeResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -157,7 +250,15 @@ public class AsyncCodesClient {
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<GetCodeResponse> lookup(String codesystem, String codeId, LookupRequest request) {
-        return this.rawClient.lookup(codesystem, codeId, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<GetCodeResponse>> rawFuture =
+                this.rawClient.lookup(codesystem, codeId, request);
+        CompletableFuture<GetCodeResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -166,9 +267,15 @@ public class AsyncCodesClient {
      */
     public CompletableFuture<GetCodeResponse> lookup(
             String codesystem, String codeId, LookupRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .lookup(codesystem, codeId, request, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<GetCodeResponse>> rawFuture =
+                this.rawClient.lookup(codesystem, codeId, request, requestOptions);
+        CompletableFuture<GetCodeResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -189,7 +296,15 @@ public class AsyncCodesClient {
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<SemanticSearchResponse> searchSemantic(String codesystem, SearchSemanticRequest request) {
-        return this.rawClient.searchSemantic(codesystem, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<SemanticSearchResponse>> rawFuture =
+                this.rawClient.searchSemantic(codesystem, request);
+        CompletableFuture<SemanticSearchResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -211,9 +326,15 @@ public class AsyncCodesClient {
      */
     public CompletableFuture<SemanticSearchResponse> searchSemantic(
             String codesystem, SearchSemanticRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .searchSemantic(codesystem, request, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<SemanticSearchResponse>> rawFuture =
+                this.rawClient.searchSemantic(codesystem, request, requestOptions);
+        CompletableFuture<SemanticSearchResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -240,7 +361,15 @@ public class AsyncCodesClient {
      * <p>Usage of CPT is subject to AMA requirements: see PhenoML Terms of Service.</p>
      */
     public CompletableFuture<TextSearchResponse> searchText(String codesystem, SearchTextRequest request) {
-        return this.rawClient.searchText(codesystem, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<TextSearchResponse>> rawFuture =
+                this.rawClient.searchText(codesystem, request);
+        CompletableFuture<TextSearchResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -268,6 +397,14 @@ public class AsyncCodesClient {
      */
     public CompletableFuture<TextSearchResponse> searchText(
             String codesystem, SearchTextRequest request, RequestOptions requestOptions) {
-        return this.rawClient.searchText(codesystem, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<TextSearchResponse>> rawFuture =
+                this.rawClient.searchText(codesystem, request, requestOptions);
+        CompletableFuture<TextSearchResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }

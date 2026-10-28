@@ -1,3 +1,19 @@
+## [18.2.0] - 2026-10-28
+### Added
+- **`RequestOptions.Builder.addBodyProperty()` / `.bodyProperties()`** — inject arbitrary key/value pairs into the JSON or form-urlencoded request body at call time, overriding any matching field already present.
+- **`RetryInterceptor.newAsyncCall()`** — creates an async retry call that schedules backoff on a daemon thread, preventing retries from consuming OkHttp dispatcher slots and enabling immediate cancellation.
+- **`Stream.fromSseWithEventDiscrimination()` and `SseEventParser.parseEventLevelUnion()`** — new SSE factory and parser overload that selectively deserializes selected event types from the full SSE envelope rather than only the data payload.
+- **FHIR-to-OMOP pipeline types** — new response models for allergy mapping (`AllergyMappingResolution`, `AllergyCodingEvidence`, `AllergyMappingResolutionMethod`, and related enums), device exposure (`DeviceExposureRow`, `DeviceExposureContext`, `DeviceExposureLink`, `DeviceExposureEvidence`), medication quantity (`QuantityEvidence`, `QuantityStrength`, `QuantityTransformation`, `MedicationDispenseSourceContext`), and vocabulary resolution (`MappingResolution`, `MappingPath`, `MappingResolutionStatus`, `MappingResolutionReasonCode`, and related enums).
+- **`OmopTables.getDeviceExposure()` / `getSpecimen()`**, **`MeasurementRow.getUnitSourceConceptId()`**, **`Summary.getRowsForReview()`**, **`VisitOccurrenceRow.getVisitSourceConceptId()`**, and **`CreateMultiRequest.getSmallNote()`** — new optional fields on existing OMOP and request types.
+- See full changelog for all changes
+
+### Changed
+- **`MeasurementRow`, `ObservationRow`, `ObservationPeriodRow`, and `ProcedureOccurrenceRow` Javadoc** — field descriptions updated to reflect expanded timing-source rules across all supported FHIR resource types.
+- **`ProviderRow.getNpi()` / `getProviderSourceValue()` and `ReferenceDiagnostic` accessor Javadoc** — expanded with NPI extraction rules, deduplication semantics, and full descriptions of all outcome and path values.
+
+### Fixed
+- **`@JsonAnySetter` / `additionalProperties` deserialization on all builder types** — known JSON field names are now explicitly filtered before being stored in `additionalProperties`, preventing typed fields from leaking into the extra-properties bag across all request, response, and OMOP row builder types.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
