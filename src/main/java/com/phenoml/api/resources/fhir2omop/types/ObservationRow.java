@@ -107,7 +107,7 @@ public final class ObservationRow {
     }
 
     /**
-     * @return For an Observation, date from effectiveDateTime, effectivePeriod.start, or effectiveInstant. For an AllergyIntolerance, date from recordedDate, otherwise onsetDateTime or onsetPeriod.start.
+     * @return Start date selected by the source resource's timing rules. For an Observation, effectiveDateTime, effectivePeriod.start, or effectiveInstant. For an AllergyIntolerance, recordedDate, otherwise onsetDateTime or onsetPeriod.start; see the endpoint's timing sources for other resources.
      */
     @JsonProperty("observation_date")
     public Optional<String> getObservationDate() {
@@ -139,6 +139,9 @@ public final class ObservationRow {
         return valueAsConceptId;
     }
 
+    /**
+     * @return Valid standard Unit concept for coded UCUM; 0 for supplied but unmapped units, null for absent units. Always present in JSON.
+     */
     @JsonProperty("unit_concept_id")
     public Optional<Long> getUnitConceptId() {
         return unitConceptId;
@@ -159,11 +162,17 @@ public final class ObservationRow {
         return observationSourceValue;
     }
 
+    /**
+     * @return For coded AllergyIntolerance rows, the known OMOP identity of the original coding rendered in observation_source_value, even when the finding is unresolved. 0 when no original source identity is known; the configured contextual finding is not a source concept.
+     */
     @JsonProperty("observation_source_concept_id")
     public Optional<Long> getObservationSourceConceptId() {
         return observationSourceConceptId;
     }
 
+    /**
+     * @return Original Quantity.code if supplied, otherwise Quantity.unit; human-readable unit text is preserved in the unit mapping's source_name.
+     */
     @JsonProperty("unit_source_value")
     public Optional<String> getUnitSourceValue() {
         return unitSourceValue;
@@ -268,7 +277,6 @@ public final class ObservationRow {
 
         private Optional<String> valueSourceValue = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -327,7 +335,7 @@ public final class ObservationRow {
         }
 
         /**
-         * <p>For an Observation, date from effectiveDateTime, effectivePeriod.start, or effectiveInstant. For an AllergyIntolerance, date from recordedDate, otherwise onsetDateTime or onsetPeriod.start.</p>
+         * <p>Start date selected by the source resource's timing rules. For an Observation, effectiveDateTime, effectivePeriod.start, or effectiveInstant. For an AllergyIntolerance, recordedDate, otherwise onsetDateTime or onsetPeriod.start; see the endpoint's timing sources for other resources.</p>
          */
         @JsonSetter(value = "observation_date", nulls = Nulls.SKIP)
         public Builder observationDate(Optional<String> observationDate) {
@@ -395,6 +403,9 @@ public final class ObservationRow {
             return this;
         }
 
+        /**
+         * <p>Valid standard Unit concept for coded UCUM; 0 for supplied but unmapped units, null for absent units. Always present in JSON.</p>
+         */
         @JsonSetter(value = "unit_concept_id", nulls = Nulls.SKIP)
         public Builder unitConceptId(Optional<Long> unitConceptId) {
             this.unitConceptId = unitConceptId;
@@ -439,6 +450,9 @@ public final class ObservationRow {
             return this;
         }
 
+        /**
+         * <p>For coded AllergyIntolerance rows, the known OMOP identity of the original coding rendered in observation_source_value, even when the finding is unresolved. 0 when no original source identity is known; the configured contextual finding is not a source concept.</p>
+         */
         @JsonSetter(value = "observation_source_concept_id", nulls = Nulls.SKIP)
         public Builder observationSourceConceptId(Optional<Long> observationSourceConceptId) {
             this.observationSourceConceptId = observationSourceConceptId;
@@ -450,6 +464,9 @@ public final class ObservationRow {
             return this;
         }
 
+        /**
+         * <p>Original Quantity.code if supplied, otherwise Quantity.unit; human-readable unit text is preserved in the unit mapping's source_name.</p>
+         */
         @JsonSetter(value = "unit_source_value", nulls = Nulls.SKIP)
         public Builder unitSourceValue(Optional<String> unitSourceValue) {
             this.unitSourceValue = unitSourceValue;
@@ -491,6 +508,29 @@ public final class ObservationRow {
                     unitSourceValue,
                     valueSourceValue,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("observation_id")
+                    || key.equalsIgnoreCase("person_id")
+                    || key.equalsIgnoreCase("observation_concept_id")
+                    || key.equalsIgnoreCase("observation_date")
+                    || key.equalsIgnoreCase("observation_datetime")
+                    || key.equalsIgnoreCase("observation_type_concept_id")
+                    || key.equalsIgnoreCase("value_as_number")
+                    || key.equalsIgnoreCase("value_as_string")
+                    || key.equalsIgnoreCase("value_as_concept_id")
+                    || key.equalsIgnoreCase("unit_concept_id")
+                    || key.equalsIgnoreCase("visit_occurrence_id")
+                    || key.equalsIgnoreCase("provider_id")
+                    || key.equalsIgnoreCase("observation_source_value")
+                    || key.equalsIgnoreCase("observation_source_concept_id")
+                    || key.equalsIgnoreCase("unit_source_value")
+                    || key.equalsIgnoreCase("value_source_value")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

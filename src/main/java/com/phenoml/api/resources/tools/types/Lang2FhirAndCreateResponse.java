@@ -114,7 +114,6 @@ public final class Lang2FhirAndCreateResponse {
 
         private Optional<String> message = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -182,6 +181,17 @@ public final class Lang2FhirAndCreateResponse {
 
         public Lang2FhirAndCreateResponse build() {
             return new Lang2FhirAndCreateResponse(fhirResource, fhirId, success, message, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("fhir_resource")
+                    || key.equalsIgnoreCase("fhir_id")
+                    || key.equalsIgnoreCase("success")
+                    || key.equalsIgnoreCase("message")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
