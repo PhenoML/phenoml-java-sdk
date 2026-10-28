@@ -1,3 +1,21 @@
+## [18.2.0] - 2026-10-28
+### Added
+- **`RequestOptions.Builder.addBodyProperty()` / `bodyProperties()`** — inject arbitrary extra fields into JSON or form-urlencoded request bodies on any call without subclassing request types.
+- **`RetryInterceptor` async retry support** — new `newAsyncCall()` and `AsyncCall` enable non-blocking backoff that no longer consumes OkHttp dispatcher slots, with immediate cancellation support.
+- **`CreateOmopResponse` new fields** — `getQuantityTransformations()`, `getRowsForReview()`, `getDeviceExposureContexts()`, `getSpecimenSourceContexts()`, and `getMedicationDispenseSourceContexts()` expose richer OMOP output auditing; paired with corresponding builder setters.
+- **New OMOP CDM response types** — `DeviceExposureRow`, `DeviceExposureContext`, `MedicationDispenseSourceContext`, `QuantityTransformation`, `QuantityEvidence`, `QuantityStrength`, and related enums/helpers model device, dispensing, and quantity pipeline outputs.
+- **New vocabulary-mapping types** — `MappingResolution`, `MappingPath`, `MappingResolutionStatus`, `MappingResolutionReasonCode`, `MappingResolutionVia`, and `MappingPathMappingStatus` provide structured concept-resolution provenance on `MappingEntry`.
+- **New allergy-resolution types** — `AllergyMappingResolution`, `AllergyMappingResolutionMethod`, `AllergyMappingResolutionStatus`, `AllergyMappingResolutionType`, `AllergyCodingEvidence`, and `AllergyCodingEvidenceMeaning` describe how `AllergyIntolerance` resources are resolved to OMOP observations.
+- **`Stream.fromSseWithEventDiscrimination()` and `SseEventParser.parseEventLevelUnion()`** — new SSE factory and parser overload supporting event-type-discriminated union deserialization from the full SSE envelope.
+- See full changelog for all changes
+
+### Changed
+- **`DrugExposureRow` and `MappingEntry` documentation** — Javadoc expanded to cover additional timing sources (`MedicationDispense.whenHandedOver`, `daysSupply`), expanded `UNMAPPED` semantics, and domain-mismatch outcomes.
+- **`ProviderRow` and `ReferenceDiagnostic` documentation** — Javadoc expanded with NPI selection rules, cross-request deduplication semantics, and detailed outcome/path-format descriptions.
+
+### Fixed
+- **`@JsonAnySetter` guard on all builder types** — known JSON field names are now explicitly filtered before being forwarded to `additionalProperties`, preventing double-capture of recognized fields during deserialization across all request and response builders.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
