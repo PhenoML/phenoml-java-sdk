@@ -135,7 +135,6 @@ public final class CareSiteRow {
 
         private Optional<String> placeOfServiceSourceValue = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -225,6 +224,19 @@ public final class CareSiteRow {
                     careSiteSourceValue,
                     placeOfServiceSourceValue,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("care_site_id")
+                    || key.equalsIgnoreCase("care_site_name")
+                    || key.equalsIgnoreCase("place_of_service_concept_id")
+                    || key.equalsIgnoreCase("location_id")
+                    || key.equalsIgnoreCase("care_site_source_value")
+                    || key.equalsIgnoreCase("place_of_service_source_value")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

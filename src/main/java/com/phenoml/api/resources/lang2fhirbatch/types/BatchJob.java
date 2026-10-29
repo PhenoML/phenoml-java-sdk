@@ -324,7 +324,6 @@ public final class BatchJob implements IBatchJob {
 
         private Optional<String> requestId = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -497,6 +496,23 @@ public final class BatchJob implements IBatchJob {
                     completedAt,
                     expiresAt,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("job_id")
+                    || key.equalsIgnoreCase("request_id")
+                    || key.equalsIgnoreCase("status")
+                    || key.equalsIgnoreCase("finalized")
+                    || key.equalsIgnoreCase("total_items")
+                    || key.equalsIgnoreCase("error")
+                    || key.equalsIgnoreCase("created_at")
+                    || key.equalsIgnoreCase("updated_at")
+                    || key.equalsIgnoreCase("completed_at")
+                    || key.equalsIgnoreCase("expires_at")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

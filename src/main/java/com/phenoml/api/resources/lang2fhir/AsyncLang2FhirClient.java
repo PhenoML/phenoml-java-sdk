@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.lang2fhir;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.lang2fhir.requests.CreateMultiRequest;
 import com.phenoml.api.resources.lang2fhir.requests.CreateRequest;
@@ -41,7 +42,14 @@ public class AsyncLang2FhirClient {
      * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<Map<String, Object>> create(CreateRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> rawFuture = this.rawClient.create(request);
+        CompletableFuture<Map<String, Object>> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -50,7 +58,15 @@ public class AsyncLang2FhirClient {
      * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<Map<String, Object>> create(CreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> rawFuture =
+                this.rawClient.create(request, requestOptions);
+        CompletableFuture<Map<String, Object>> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -58,10 +74,19 @@ public class AsyncLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
-     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+     * <p><strong>Patient handling.</strong> Every bundle contains exactly one Patient, and every clinical resource references it. When the text names its patient, the Patient is built from the text. When it names several patients, the Patient is the one <code>primary_patient</code> names, otherwise the one most of the text is about; the others are not represented as Patients. Otherwise it is built from <code>primary_patient</code> when supplied, or is an unidentified Patient carrying only a synthetic identifier. When the text names its patient, the <code>primary_patient</code> identifier is added to that Patient unless its name, birth date, or gender contradicts the text's; the response <code>message</code> says whether it was added or did not match.</p>
+     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). Every Patient carries a synthetic identifier with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code>, so the bundle remains FHIR-valid and US Core conformant. A medical record number stated in the text is added with <code>system: &quot;urn:phenoml:lang2fhir-document-mrn&quot;</code>, and the <code>primary_patient</code> identifier is added as described above. Callers who need a tenant-specific namespace should rewrite these systems after extraction.</p>
      */
     public CompletableFuture<CreateMultiResponse> createMulti(CreateMultiRequest request) {
-        return this.rawClient.createMulti(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> rawFuture =
+                this.rawClient.createMulti(request);
+        CompletableFuture<CreateMultiResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -69,11 +94,20 @@ public class AsyncLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
-     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+     * <p><strong>Patient handling.</strong> Every bundle contains exactly one Patient, and every clinical resource references it. When the text names its patient, the Patient is built from the text. When it names several patients, the Patient is the one <code>primary_patient</code> names, otherwise the one most of the text is about; the others are not represented as Patients. Otherwise it is built from <code>primary_patient</code> when supplied, or is an unidentified Patient carrying only a synthetic identifier. When the text names its patient, the <code>primary_patient</code> identifier is added to that Patient unless its name, birth date, or gender contradicts the text's; the response <code>message</code> says whether it was added or did not match.</p>
+     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). Every Patient carries a synthetic identifier with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code>, so the bundle remains FHIR-valid and US Core conformant. A medical record number stated in the text is added with <code>system: &quot;urn:phenoml:lang2fhir-document-mrn&quot;</code>, and the <code>primary_patient</code> identifier is added as described above. Callers who need a tenant-specific namespace should rewrite these systems after extraction.</p>
      */
     public CompletableFuture<CreateMultiResponse> createMulti(
             CreateMultiRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createMulti(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> rawFuture =
+                this.rawClient.createMulti(request, requestOptions);
+        CompletableFuture<CreateMultiResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -86,7 +120,14 @@ public class AsyncLang2FhirClient {
      * Schedule, ServiceRequest, Slot, and Specimen.</p>
      */
     public CompletableFuture<SearchResponse> search(SearchRequest request) {
-        return this.rawClient.search(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<SearchResponse>> rawFuture = this.rawClient.search(request);
+        CompletableFuture<SearchResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -99,7 +140,15 @@ public class AsyncLang2FhirClient {
      * Schedule, ServiceRequest, Slot, and Specimen.</p>
      */
     public CompletableFuture<SearchResponse> search(SearchRequest request, RequestOptions requestOptions) {
-        return this.rawClient.search(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<SearchResponse>> rawFuture =
+                this.rawClient.search(request, requestOptions);
+        CompletableFuture<SearchResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -114,13 +163,21 @@ public class AsyncLang2FhirClient {
      * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
      * <p>Uploads will be rejected if:</p>
      * <ul>
-     * <li>A built-in US Core or R4 base profile already exists with the same id</li>
+     * <li>A built-in profile (US Core, PhenoML HPO, or R4 base) already exists with the same id, or the id starts with a reserved prefix (<code>us-core-</code>, <code>phenoml-hpo-</code>)</li>
      * <li>A custom profile with the same id has already been uploaded</li>
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
      */
     public CompletableFuture<UploadProfileResponse> uploadProfile(ProfileUploadRequest request) {
-        return this.rawClient.uploadProfile(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<UploadProfileResponse>> rawFuture =
+                this.rawClient.uploadProfile(request);
+        CompletableFuture<UploadProfileResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -135,14 +192,22 @@ public class AsyncLang2FhirClient {
      * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
      * <p>Uploads will be rejected if:</p>
      * <ul>
-     * <li>A built-in US Core or R4 base profile already exists with the same id</li>
+     * <li>A built-in profile (US Core, PhenoML HPO, or R4 base) already exists with the same id, or the id starts with a reserved prefix (<code>us-core-</code>, <code>phenoml-hpo-</code>)</li>
      * <li>A custom profile with the same id has already been uploaded</li>
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
      */
     public CompletableFuture<UploadProfileResponse> uploadProfile(
             ProfileUploadRequest request, RequestOptions requestOptions) {
-        return this.rawClient.uploadProfile(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<UploadProfileResponse>> rawFuture =
+                this.rawClient.uploadProfile(request, requestOptions);
+        CompletableFuture<UploadProfileResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -151,7 +216,14 @@ public class AsyncLang2FhirClient {
      * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<Map<String, Object>> document(DocumentRequest request) {
-        return this.rawClient.document(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> rawFuture = this.rawClient.document(request);
+        CompletableFuture<Map<String, Object>> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -160,7 +232,15 @@ public class AsyncLang2FhirClient {
      * <p><strong>Patient identifier handling.</strong> When generating a <code>patient</code> (or <code>patient-canvas</code>) resource, US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the resource remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
      */
     public CompletableFuture<Map<String, Object>> document(DocumentRequest request, RequestOptions requestOptions) {
-        return this.rawClient.document(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> rawFuture =
+                this.rawClient.document(request, requestOptions);
+        CompletableFuture<Map<String, Object>> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -169,11 +249,21 @@ public class AsyncLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
-     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+     * <p><strong>Patient handling.</strong> Every bundle contains exactly one Patient, and every clinical resource references it. When the document names its patient, the Patient is built from the document. When it names several patients, the Patient is the one <code>primary_patient</code> names, otherwise the one most of the document is about; the others are not represented as Patients. Otherwise it is built from <code>primary_patient</code> when supplied, or is an unidentified Patient carrying only a synthetic identifier. When the document names its patient, the <code>primary_patient</code> identifier is added to that Patient unless its name, birth date, or gender contradicts the document's; the response <code>message</code> says whether it was added or did not match.</p>
+     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). Every Patient carries a synthetic identifier with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code>, so the bundle remains FHIR-valid and US Core conformant. A medical record number stated in the document is added with <code>system: &quot;urn:phenoml:lang2fhir-document-mrn&quot;</code>, and the <code>primary_patient</code> identifier is added as described above. Callers who need a tenant-specific namespace should rewrite these systems after extraction.</p>
+     * <p><strong>Page classification.</strong> When <code>config</code> sets neither <code>split_classifications</code> nor <code>page_filter</code>, pages classified as test requisition forms (lab or diagnostic order forms) are dropped before extraction and reported in <code>page_classifications</code>. Supplying either setting replaces this default.</p>
      * <p><strong>Split classifications (optional).</strong> <code>config.split_classifications</code> is a caller-defined list, not a fixed taxonomy. Choose each classification <code>id</code> and write a natural-language <code>description</code> for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Classifications with <code>operation: &quot;group&quot;</code> keep matching pages and label resources extracted from those pages; classifications with <code>operation: &quot;drop&quot;</code> remove matching pages before extraction. The <code>clinical</code> and <code>admin</code> ids in the example are illustrative, not a fixed set.</p>
      */
     public CompletableFuture<DocumentMultiResponse> documentMulti(DocumentMultiRequest request) {
-        return this.rawClient.documentMulti(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<DocumentMultiResponse>> rawFuture =
+                this.rawClient.documentMulti(request);
+        CompletableFuture<DocumentMultiResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -182,11 +272,21 @@ public class AsyncLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
-     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+     * <p><strong>Patient handling.</strong> Every bundle contains exactly one Patient, and every clinical resource references it. When the document names its patient, the Patient is built from the document. When it names several patients, the Patient is the one <code>primary_patient</code> names, otherwise the one most of the document is about; the others are not represented as Patients. Otherwise it is built from <code>primary_patient</code> when supplied, or is an unidentified Patient carrying only a synthetic identifier. When the document names its patient, the <code>primary_patient</code> identifier is added to that Patient unless its name, birth date, or gender contradicts the document's; the response <code>message</code> says whether it was added or did not match.</p>
+     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). Every Patient carries a synthetic identifier with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code>, so the bundle remains FHIR-valid and US Core conformant. A medical record number stated in the document is added with <code>system: &quot;urn:phenoml:lang2fhir-document-mrn&quot;</code>, and the <code>primary_patient</code> identifier is added as described above. Callers who need a tenant-specific namespace should rewrite these systems after extraction.</p>
+     * <p><strong>Page classification.</strong> When <code>config</code> sets neither <code>split_classifications</code> nor <code>page_filter</code>, pages classified as test requisition forms (lab or diagnostic order forms) are dropped before extraction and reported in <code>page_classifications</code>. Supplying either setting replaces this default.</p>
      * <p><strong>Split classifications (optional).</strong> <code>config.split_classifications</code> is a caller-defined list, not a fixed taxonomy. Choose each classification <code>id</code> and write a natural-language <code>description</code> for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Classifications with <code>operation: &quot;group&quot;</code> keep matching pages and label resources extracted from those pages; classifications with <code>operation: &quot;drop&quot;</code> remove matching pages before extraction. The <code>clinical</code> and <code>admin</code> ids in the example are illustrative, not a fixed set.</p>
      */
     public CompletableFuture<DocumentMultiResponse> documentMulti(
             DocumentMultiRequest request, RequestOptions requestOptions) {
-        return this.rawClient.documentMulti(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<DocumentMultiResponse>> rawFuture =
+                this.rawClient.documentMulti(request, requestOptions);
+        CompletableFuture<DocumentMultiResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }

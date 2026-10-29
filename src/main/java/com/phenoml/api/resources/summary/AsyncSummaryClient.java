@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.summary;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.summary.requests.CreateSummaryRequest;
@@ -41,7 +42,14 @@ public class AsyncSummaryClient {
      * </ul>
      */
     public CompletableFuture<CreateSummaryResponse> create(CreateSummaryRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<CreateSummaryResponse>> rawFuture = this.rawClient.create(request);
+        CompletableFuture<CreateSummaryResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -54,7 +62,15 @@ public class AsyncSummaryClient {
      */
     public CompletableFuture<CreateSummaryResponse> create(
             CreateSummaryRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<CreateSummaryResponse>> rawFuture =
+                this.rawClient.create(request, requestOptions);
+        CompletableFuture<CreateSummaryResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     public AsyncTemplatesClient templates() {
