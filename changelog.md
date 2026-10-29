@@ -1,3 +1,25 @@
+## [19.0.0] - 2026-10-29
+### Breaking Changes
+- **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; update response-reading code to compare enum constants or call `.toString()` on the returned value.
+- **`ResourceReviewRemediated.Builder.action(...)`** — overloads now accept `ResourceReviewRemediatedAction` instead of `String`; replace string literals with the corresponding enum constant.
+
+### Added
+- **`RequestOptions.Builder.addBodyProperty()` / `.bodyProperties()`** — inject arbitrary key/value pairs into JSON or form-urlencoded request bodies on any call via the new `BodyProperties` core utility.
+- **`RetryInterceptor.newAsyncCall()`** and **`AsyncCall`** — non-blocking async retry mechanism that schedules backoff on a daemon thread, preventing retry waits from exhausting per-host connection limits.
+- **`Stream.fromSseWithEventDiscrimination()`** and **`SseEventParser.parseEventLevelUnion()`** — new SSE factory and parser overload supporting event-variant unions that wrap the full SSE envelope.
+- **New OMOP response types** — `DeviceExposureRow`, `DeviceExposureContext`, `MappingPath`, `AllergyMappingResolution`, and related enum/supporting types added to the `fhir2omop` module for device, allergy, and mapping-path provenance.
+- **New `CreateOmopResponse` fields** — `getQuantityTransformations()`, `getRowsForReview()`, `getDeviceExposureContexts()`, `getSpecimenSourceContexts()`, and `getMedicationDispenseSourceContexts()` expose additional audit and review data; `OmopTables` gains `getDeviceExposure()` and `getSpecimen()`.
+- See full changelog for all changes
+
+### Changed
+- **`@JsonAnySetter` deserialization on all builder types** — known field names are now silently skipped when populating `additionalProperties`, preventing duplicate data on deserialized responses across all request and response builders.
+- **`CreateMultiRequest` / `DocumentMultiRequest` documentation** — `implementationGuide` now documents `us_core` and `phenoml_hpo` as reserved selectors; `detectionEffort` is documented as fully ignored.
+- **`ReferenceDiagnostic` and `ProviderRow` documentation** — Javadoc expanded with detailed outcome semantics, NPI-based deduplication guidance, and corrected field descriptions.
+- **`PathSegments`** — new core utility rejects `"."` and `".."` dot-segment path parameter values that would silently reroute requests.
+
+### Fixed
+- **`@JsonAnySetter` on agent builder types** (`AgentChatRequest`, `AgentChatResponse`, and related types) — typed fields are no longer overwritten by raw `additionalProperties` values during Jackson deserialization.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
