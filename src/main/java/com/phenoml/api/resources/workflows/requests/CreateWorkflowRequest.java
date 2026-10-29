@@ -212,7 +212,6 @@ public final class CreateWorkflowRequest {
 
         private Optional<Boolean> verbose = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -347,6 +346,18 @@ public final class CreateWorkflowRequest {
                     fhirProviderId,
                     dynamicGeneration,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("workflow_instructions")
+                    || key.equalsIgnoreCase("sample_data")
+                    || key.equalsIgnoreCase("fhir_provider_id")
+                    || key.equalsIgnoreCase("dynamic_generation")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

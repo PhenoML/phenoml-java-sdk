@@ -201,7 +201,6 @@ public final class ChatSessionTemplate {
 
         private Optional<String> updated = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -357,6 +356,22 @@ public final class ChatSessionTemplate {
                     lastMessageAt,
                     updated,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("id")
+                    || key.equalsIgnoreCase("session_id")
+                    || key.equalsIgnoreCase("status")
+                    || key.equalsIgnoreCase("system_prompt")
+                    || key.equalsIgnoreCase("title")
+                    || key.equalsIgnoreCase("agent_id")
+                    || key.equalsIgnoreCase("created")
+                    || key.equalsIgnoreCase("last_message_at")
+                    || key.equalsIgnoreCase("updated")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

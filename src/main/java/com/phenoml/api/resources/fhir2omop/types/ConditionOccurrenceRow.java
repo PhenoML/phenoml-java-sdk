@@ -95,7 +95,7 @@ public final class ConditionOccurrenceRow {
     }
 
     /**
-     * @return Date from Condition.onsetDateTime or onsetPeriod.start, otherwise Condition.recordedDate.
+     * @return Start date selected by the source resource's timing rules. For a Condition, onsetDateTime or onsetPeriod.start, otherwise recordedDate; see the endpoint's timing sources for other resources.
      */
     @JsonProperty("condition_start_date")
     public Optional<String> getConditionStartDate() {
@@ -108,7 +108,7 @@ public final class ConditionOccurrenceRow {
     }
 
     /**
-     * @return Date from Condition.abatementDateTime or abatementPeriod.end.
+     * @return End date selected by the source resource's timing rules, when available. For a Condition, abatementDateTime or abatementPeriod.end; see the endpoint's timing sources for other resources.
      */
     @JsonProperty("condition_end_date")
     public Optional<String> getConditionEndDate() {
@@ -232,7 +232,6 @@ public final class ConditionOccurrenceRow {
 
         private Optional<String> conditionStatusSourceValue = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -288,7 +287,7 @@ public final class ConditionOccurrenceRow {
         }
 
         /**
-         * <p>Date from Condition.onsetDateTime or onsetPeriod.start, otherwise Condition.recordedDate.</p>
+         * <p>Start date selected by the source resource's timing rules. For a Condition, onsetDateTime or onsetPeriod.start, otherwise recordedDate; see the endpoint's timing sources for other resources.</p>
          */
         @JsonSetter(value = "condition_start_date", nulls = Nulls.SKIP)
         public Builder conditionStartDate(Optional<String> conditionStartDate) {
@@ -313,7 +312,7 @@ public final class ConditionOccurrenceRow {
         }
 
         /**
-         * <p>Date from Condition.abatementDateTime or abatementPeriod.end.</p>
+         * <p>End date selected by the source resource's timing rules, when available. For a Condition, abatementDateTime or abatementPeriod.end; see the endpoint's timing sources for other resources.</p>
          */
         @JsonSetter(value = "condition_end_date", nulls = Nulls.SKIP)
         public Builder conditionEndDate(Optional<String> conditionEndDate) {
@@ -419,6 +418,26 @@ public final class ConditionOccurrenceRow {
                     conditionSourceConceptId,
                     conditionStatusSourceValue,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("condition_occurrence_id")
+                    || key.equalsIgnoreCase("person_id")
+                    || key.equalsIgnoreCase("condition_concept_id")
+                    || key.equalsIgnoreCase("condition_start_date")
+                    || key.equalsIgnoreCase("condition_start_datetime")
+                    || key.equalsIgnoreCase("condition_end_date")
+                    || key.equalsIgnoreCase("condition_end_datetime")
+                    || key.equalsIgnoreCase("condition_type_concept_id")
+                    || key.equalsIgnoreCase("visit_occurrence_id")
+                    || key.equalsIgnoreCase("provider_id")
+                    || key.equalsIgnoreCase("condition_source_value")
+                    || key.equalsIgnoreCase("condition_source_concept_id")
+                    || key.equalsIgnoreCase("condition_status_source_value")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
