@@ -25,7 +25,7 @@ public final class ResourceReviewRemediated {
 
     private final Optional<String> resourceType;
 
-    private final Optional<String> action;
+    private final Optional<ResourceReviewRemediatedAction> action;
 
     private final Optional<List<ResourceReviewFinding>> findings;
 
@@ -34,7 +34,7 @@ public final class ResourceReviewRemediated {
     private ResourceReviewRemediated(
             Optional<String> tempId,
             Optional<String> resourceType,
-            Optional<String> action,
+            Optional<ResourceReviewRemediatedAction> action,
             Optional<List<ResourceReviewFinding>> findings,
             Map<String, Object> additionalProperties) {
         this.tempId = tempId;
@@ -58,10 +58,10 @@ public final class ResourceReviewRemediated {
     }
 
     /**
-     * @return The safe change applied to the resource in the returned bundle.
+     * @return What review did to the resource in the returned bundle: removed_codings removed unsupported codings while each affected concept kept one; removed_fields removed unsupported fields its profile does not require; flagged_required kept unsupported fields its profile requires, so the findings report values that remain in the bundle.
      */
     @JsonProperty("action")
-    public Optional<String> getAction() {
+    public Optional<ResourceReviewRemediatedAction> getAction() {
         return action;
     }
 
@@ -111,11 +111,10 @@ public final class ResourceReviewRemediated {
 
         private Optional<String> resourceType = Optional.empty();
 
-        private Optional<String> action = Optional.empty();
+        private Optional<ResourceReviewRemediatedAction> action = Optional.empty();
 
         private Optional<List<ResourceReviewFinding>> findings = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -154,15 +153,15 @@ public final class ResourceReviewRemediated {
         }
 
         /**
-         * <p>The safe change applied to the resource in the returned bundle.</p>
+         * <p>What review did to the resource in the returned bundle: removed_codings removed unsupported codings while each affected concept kept one; removed_fields removed unsupported fields its profile does not require; flagged_required kept unsupported fields its profile requires, so the findings report values that remain in the bundle.</p>
          */
         @JsonSetter(value = "action", nulls = Nulls.SKIP)
-        public Builder action(Optional<String> action) {
+        public Builder action(Optional<ResourceReviewRemediatedAction> action) {
             this.action = action;
             return this;
         }
 
-        public Builder action(String action) {
+        public Builder action(ResourceReviewRemediatedAction action) {
             this.action = Optional.ofNullable(action);
             return this;
         }
@@ -183,6 +182,17 @@ public final class ResourceReviewRemediated {
 
         public ResourceReviewRemediated build() {
             return new ResourceReviewRemediated(tempId, resourceType, action, findings, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("tempId")
+                    || key.equalsIgnoreCase("resourceType")
+                    || key.equalsIgnoreCase("action")
+                    || key.equalsIgnoreCase("findings")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

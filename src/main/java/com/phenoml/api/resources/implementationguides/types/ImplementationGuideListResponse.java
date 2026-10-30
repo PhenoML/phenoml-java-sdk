@@ -69,7 +69,6 @@ public final class ImplementationGuideListResponse {
     public static final class Builder {
         private Optional<List<ImplementationGuideSummary>> implementationGuides = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -92,6 +91,14 @@ public final class ImplementationGuideListResponse {
 
         public ImplementationGuideListResponse build() {
             return new ImplementationGuideListResponse(implementationGuides, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("implementation_guides")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

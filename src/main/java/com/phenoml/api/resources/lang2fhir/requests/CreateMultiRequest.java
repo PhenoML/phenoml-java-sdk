@@ -44,6 +44,8 @@ public final class CreateMultiRequest {
 
     private final Optional<ResourceReview> resourceReview;
 
+    private final Optional<Boolean> smallNote;
+
     private final Map<String, Object> additionalProperties;
 
     private CreateMultiRequest(
@@ -56,6 +58,7 @@ public final class CreateMultiRequest {
             Optional<CreateMultiRequestDetectionEffort> detectionEffort,
             Optional<CreateMultiRequestValidationMethod> validationMethod,
             Optional<ResourceReview> resourceReview,
+            Optional<Boolean> smallNote,
             Map<String, Object> additionalProperties) {
         this.text = text;
         this.version = version;
@@ -66,6 +69,7 @@ public final class CreateMultiRequest {
         this.detectionEffort = detectionEffort;
         this.validationMethod = validationMethod;
         this.resourceReview = resourceReview;
+        this.smallNote = smallNote;
         this.additionalProperties = additionalProperties;
     }
 
@@ -93,6 +97,9 @@ public final class CreateMultiRequest {
         return provider;
     }
 
+    /**
+     * @return Context for the patient the text is primarily about. When the text does not name its patient, the bundle's Patient is built from these fields. When it does, the identifier is added to that Patient unless its name, birth date, or gender contradicts these fields.
+     */
     @JsonProperty("primary_patient")
     public Optional<PrimaryPatient> getPrimaryPatient() {
         return primaryPatient;
@@ -107,7 +114,7 @@ public final class CreateMultiRequest {
     }
 
     /**
-     * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.
+     * @return Implementation Guide to generate resources under. <code>us_core</code> (the default) and <code>phenoml_hpo</code> select a built-in guide. Any other value is a custom Implementation Guide name: its profiles are included alongside the US Core profiles, which are always the base layer. A custom name that matches no uploaded Implementation Guide returns 404.
      */
     @JsonProperty("implementation_guide")
     public Optional<String> getImplementationGuide() {
@@ -115,7 +122,7 @@ public final class CreateMultiRequest {
     }
 
     /**
-     * @return Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.
+     * @return Deprecated and ignored: both values produce the same result. This field will be removed in a future release.
      */
     @JsonProperty("detection_effort")
     public Optional<CreateMultiRequestDetectionEffort> getDetectionEffort() {
@@ -133,6 +140,14 @@ public final class CreateMultiRequest {
     @JsonProperty("resource_review")
     public Optional<ResourceReview> getResourceReview() {
         return resourceReview;
+    }
+
+    /**
+     * @return Bills the request at the lower small-note rate. When true, <code>text</code> must be at most 15,360 bytes (15 KiB) when UTF-8 encoded; longer text is rejected with a 400 error. Extraction behavior is the same as a standard request.
+     */
+    @JsonProperty("small_note")
+    public Optional<Boolean> getSmallNote() {
+        return smallNote;
     }
 
     @java.lang.Override
@@ -155,7 +170,8 @@ public final class CreateMultiRequest {
                 && implementationGuide.equals(other.implementationGuide)
                 && detectionEffort.equals(other.detectionEffort)
                 && validationMethod.equals(other.validationMethod)
-                && resourceReview.equals(other.resourceReview);
+                && resourceReview.equals(other.resourceReview)
+                && smallNote.equals(other.smallNote);
     }
 
     @java.lang.Override
@@ -169,7 +185,8 @@ public final class CreateMultiRequest {
                 this.implementationGuide,
                 this.detectionEffort,
                 this.validationMethod,
-                this.resourceReview);
+                this.resourceReview,
+                this.smallNote);
     }
 
     @java.lang.Override
@@ -211,6 +228,9 @@ public final class CreateMultiRequest {
 
         _FinalStage provider(String provider);
 
+        /**
+         * <p>Context for the patient the text is primarily about. When the text does not name its patient, the bundle's Patient is built from these fields. When it does, the identifier is added to that Patient unless its name, birth date, or gender contradicts these fields.</p>
+         */
         _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient);
 
         _FinalStage primaryPatient(PrimaryPatient primaryPatient);
@@ -223,14 +243,14 @@ public final class CreateMultiRequest {
         _FinalStage patientReference(PatientReference patientReference);
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
+         * <p>Implementation Guide to generate resources under. <code>us_core</code> (the default) and <code>phenoml_hpo</code> select a built-in guide. Any other value is a custom Implementation Guide name: its profiles are included alongside the US Core profiles, which are always the base layer. A custom name that matches no uploaded Implementation Guide returns 404.</p>
          */
         _FinalStage implementationGuide(Optional<String> implementationGuide);
 
         _FinalStage implementationGuide(String implementationGuide);
 
         /**
-         * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
+         * <p>Deprecated and ignored: both values produce the same result. This field will be removed in a future release.</p>
          */
         _FinalStage detectionEffort(Optional<CreateMultiRequestDetectionEffort> detectionEffort);
 
@@ -246,11 +266,20 @@ public final class CreateMultiRequest {
         _FinalStage resourceReview(Optional<ResourceReview> resourceReview);
 
         _FinalStage resourceReview(ResourceReview resourceReview);
+
+        /**
+         * <p>Bills the request at the lower small-note rate. When true, <code>text</code> must be at most 15,360 bytes (15 KiB) when UTF-8 encoded; longer text is rejected with a 400 error. Extraction behavior is the same as a standard request.</p>
+         */
+        _FinalStage smallNote(Optional<Boolean> smallNote);
+
+        _FinalStage smallNote(Boolean smallNote);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder implements TextStage, _FinalStage {
         private String text;
+
+        private Optional<Boolean> smallNote = Optional.empty();
 
         private Optional<ResourceReview> resourceReview = Optional.empty();
 
@@ -268,7 +297,6 @@ public final class CreateMultiRequest {
 
         private Optional<String> version = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -284,6 +312,7 @@ public final class CreateMultiRequest {
             detectionEffort(other.getDetectionEffort());
             validationMethod(other.getValidationMethod());
             resourceReview(other.getResourceReview());
+            smallNote(other.getSmallNote());
             return this;
         }
 
@@ -295,6 +324,26 @@ public final class CreateMultiRequest {
         @JsonSetter("text")
         public _FinalStage text(@NotNull String text) {
             this.text = Objects.requireNonNull(text, "text must not be null");
+            return this;
+        }
+
+        /**
+         * <p>Bills the request at the lower small-note rate. When true, <code>text</code> must be at most 15,360 bytes (15 KiB) when UTF-8 encoded; longer text is rejected with a 400 error. Extraction behavior is the same as a standard request.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
+        @java.lang.Override
+        public _FinalStage smallNote(Boolean smallNote) {
+            this.smallNote = Optional.ofNullable(smallNote);
+            return this;
+        }
+
+        /**
+         * <p>Bills the request at the lower small-note rate. When true, <code>text</code> must be at most 15,360 bytes (15 KiB) when UTF-8 encoded; longer text is rejected with a 400 error. Extraction behavior is the same as a standard request.</p>
+         */
+        @java.lang.Override
+        @JsonSetter(value = "small_note", nulls = Nulls.SKIP)
+        public _FinalStage smallNote(Optional<Boolean> smallNote) {
+            this.smallNote = smallNote;
             return this;
         }
 
@@ -332,7 +381,7 @@ public final class CreateMultiRequest {
         }
 
         /**
-         * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
+         * <p>Deprecated and ignored: both values produce the same result. This field will be removed in a future release.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -342,7 +391,7 @@ public final class CreateMultiRequest {
         }
 
         /**
-         * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
+         * <p>Deprecated and ignored: both values produce the same result. This field will be removed in a future release.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "detection_effort", nulls = Nulls.SKIP)
@@ -352,7 +401,7 @@ public final class CreateMultiRequest {
         }
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
+         * <p>Implementation Guide to generate resources under. <code>us_core</code> (the default) and <code>phenoml_hpo</code> select a built-in guide. Any other value is a custom Implementation Guide name: its profiles are included alongside the US Core profiles, which are always the base layer. A custom name that matches no uploaded Implementation Guide returns 404.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -362,7 +411,7 @@ public final class CreateMultiRequest {
         }
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
+         * <p>Implementation Guide to generate resources under. <code>us_core</code> (the default) and <code>phenoml_hpo</code> select a built-in guide. Any other value is a custom Implementation Guide name: its profiles are included alongside the US Core profiles, which are always the base layer. A custom name that matches no uploaded Implementation Guide returns 404.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
@@ -391,12 +440,19 @@ public final class CreateMultiRequest {
             return this;
         }
 
+        /**
+         * <p>Context for the patient the text is primarily about. When the text does not name its patient, the bundle's Patient is built from these fields. When it does, the identifier is added to that Patient unless its name, birth date, or gender contradicts these fields.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
         @java.lang.Override
         public _FinalStage primaryPatient(PrimaryPatient primaryPatient) {
             this.primaryPatient = Optional.ofNullable(primaryPatient);
             return this;
         }
 
+        /**
+         * <p>Context for the patient the text is primarily about. When the text does not name its patient, the bundle's Patient is built from these fields. When it does, the identifier is added to that Patient unless its name, birth date, or gender contradicts these fields.</p>
+         */
         @java.lang.Override
         @JsonSetter(value = "primary_patient", nulls = Nulls.SKIP)
         public _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient) {
@@ -456,7 +512,25 @@ public final class CreateMultiRequest {
                     detectionEffort,
                     validationMethod,
                     resourceReview,
+                    smallNote,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("text")
+                    || key.equalsIgnoreCase("version")
+                    || key.equalsIgnoreCase("provider")
+                    || key.equalsIgnoreCase("primary_patient")
+                    || key.equalsIgnoreCase("patient_reference")
+                    || key.equalsIgnoreCase("implementation_guide")
+                    || key.equalsIgnoreCase("detection_effort")
+                    || key.equalsIgnoreCase("validation_method")
+                    || key.equalsIgnoreCase("resource_review")
+                    || key.equalsIgnoreCase("small_note")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override
