@@ -1,3 +1,25 @@
+## [19.0.0] - 2026-10-30
+### Breaking Changes
+- **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; replace string comparisons with `ResourceReviewRemediatedAction` enum constants, and update `Builder.action(...)` call sites to pass `ResourceReviewRemediatedAction` instead of `String`.
+
+### Added
+- **`RequestOptions.Builder.addBodyProperty()` / `.bodyProperties()`** — inject arbitrary key/value pairs into JSON or form-urlencoded request bodies, acting as the full body for endpoints with no defined body schema.
+- **`RetryInterceptor.newAsyncCall()`** — async retry factory that schedules backoff on a daemon thread, freeing OkHttp dispatcher slots and enabling immediate cancellation.
+- **`Stream.fromSseWithEventDiscrimination()`** and **`SseEventParser.parseEventLevelUnion()`** — new SSE stream factories supporting event-type-discriminated union deserialization from the full SSE envelope.
+- **New FHIR-to-OMOP response types** — `DeviceExposureRow`, `DeviceExposureContext`, `DeviceExposureLink`, `DeviceExposureEvidence`, `SpecimenRow`, `AllergyCodingEvidence`, `AllergyMappingResolution`, and related enum types added to the `fhir2omop` package; `OmopTables` now exposes `getDeviceExposure()` and `getSpecimen()`.
+- **New optional fields across OMOP row and summary types** — `DrugExposureRow.getQuantity()`, `MeasurementRow.getUnitSourceConceptId()`, `VisitOccurrenceRow.getVisitSourceConceptId()`, `ProviderRow.getNpi()`, `Summary.getRowsForReview()`, `MappingEntry.getSourceCodingIndex()`, and `MappingEntry.getResolution()` added.
+- See full changelog for all changes
+
+### Changed
+- **`additionalProperties` deserialization** — all request and response builder types now filter known JSON field names out of `additionalProperties`, preventing duplicate capture of recognized fields.
+- **`CreateMultiRequest.getSmallNote()`** — new optional boolean field that bills at the small-note rate; `text` must be ≤ 15,360 bytes UTF-8 when `true`.
+- **`CreateMultiRequest` / `DocumentMultiRequest` field documentation** — `getImplementationGuide()` and `getDetectionEffort()` docs updated; `deep` and `standard` detection effort now produce identical results and the field is deprecated.
+- **`DocumentMultiResponse.getPageClassifications()`** — now populated on every document request, not only when `page_filter` or `split_classifications` is explicitly set.
+- **`MappingPath` and `MappingPathMappingStatus`** — new response type and open enum describing a single OMOP concept-mapping chain step, with `ALREADY_STANDARD`, `MAPPED`, and `POLICY_MAPPED` constants.
+
+### Fixed
+- **`@JsonAnySetter` guard on agent builder types** — known field names are no longer accidentally routed into `additionalProperties` during JSON deserialization.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
