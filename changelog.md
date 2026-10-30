@@ -1,3 +1,25 @@
+## [19.0.0] - 2026-10-30
+### Breaking Changes
+- **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; update call sites to compare against `ResourceReviewRemediatedAction` enum constants instead of raw strings.
+- **`ResourceReviewRemediated.Builder.action(...)`** — `Optional<String>` and `String` overloads replaced by `Optional<ResourceReviewRemediatedAction>` and `ResourceReviewRemediatedAction` overloads; pass the new enum value instead of a string literal.
+
+### Added
+- **`RequestOptions.Builder.addBodyProperty()` / `.bodyProperties()`** — inject arbitrary key/value pairs into the JSON or form-urlencoded request body on any call, overriding same-named fields on the request type.
+- **`RetryInterceptor.newAsyncCall()`** — schedules retry backoff on a background daemon thread so retrying calls no longer hold an OkHttp dispatcher connection slot; cancellation during backoff is now immediate.
+- **`CreateOmopResponse`** — five new optional fields: `getQuantityTransformations()`, `getRowsForReview()`, `getDeviceExposureContexts()`, `getSpecimenSourceContexts()`, and `getMedicationDispenseSourceContexts()` with corresponding builder overloads.
+- **New OMOP types** — `DeviceExposureRow`, `DeviceExposureContext`, `AllergyMappingResolution`, `MappingPath`, and related enums/supporting types added to the FHIR-to-OMOP response model.
+- **New fields on existing OMOP rows** — `DrugExposureRow.getQuantity()`, `MeasurementRow.getUnitSourceConceptId()`, `VisitOccurrenceRow.getVisitSourceConceptId()`, `MappingEntry.getSourceCodingIndex()`, `MappingEntry.getResolution()`, `Summary.getRowsForReview()`, and `OmopTables.getDeviceExposure()` / `getSpecimen()`.
+- See full changelog for all changes
+
+### Changed
+- **`@JsonAnySetter` deserialization guards** — all request, response, and builder types now filter known field names before storing unknown properties, preventing typed fields from being double-captured in `additionalProperties`.
+- **`DocumentMultiResponse.getPageClassifications()`** — now returned on every request using the default filter when neither `page_filter` nor `split_classifications` is set.
+- **`detectionEffort(...)` on `CreateMultiRequest` / `DocumentMultiRequest`** — documented as fully ignored; both values produce the same result.
+- **`ProfileUploadRequest.getImplementationGuide()`** — `phenoml_hpo` is now a reserved name alongside `us_core`; custom IGs using this name will be rejected by the server.
+
+### Fixed
+- **`@JsonAnySetter` guards on agent builder types** — known field names are no longer accidentally routed into `additionalProperties` during JSON deserialization across all agent request and response builders.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
