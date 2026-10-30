@@ -183,7 +183,6 @@ public final class Lang2FhirAndCreateMultiRequest {
 
         private Optional<String> phenomlOnBehalfOf = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -286,6 +285,14 @@ public final class Lang2FhirAndCreateMultiRequest {
         public Lang2FhirAndCreateMultiRequest build() {
             return new Lang2FhirAndCreateMultiRequest(
                     phenomlOnBehalfOf, phenomlFhirProvider, text, version, provider, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("text") || key.equalsIgnoreCase("version") || key.equalsIgnoreCase("provider")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

@@ -234,7 +234,6 @@ public final class AgentChatRequest {
 
         private Optional<String> phenomlOnBehalfOf = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -386,6 +385,18 @@ public final class AgentChatRequest {
                     agentId,
                     enhancedReasoning,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("message")
+                    || key.equalsIgnoreCase("context")
+                    || key.equalsIgnoreCase("session_id")
+                    || key.equalsIgnoreCase("agent_id")
+                    || key.equalsIgnoreCase("enhanced_reasoning")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

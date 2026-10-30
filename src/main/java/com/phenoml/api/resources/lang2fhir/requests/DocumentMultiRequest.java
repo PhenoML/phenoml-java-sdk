@@ -98,6 +98,9 @@ public final class DocumentMultiRequest {
         return provider;
     }
 
+    /**
+     * @return Context for the patient the document is primarily about. When the document does not name its patient, the bundle's Patient is built from these fields. When it does, the identifier is added to that Patient unless its name, birth date, or gender contradicts these fields.
+     */
     @JsonProperty("primary_patient")
     public Optional<PrimaryPatient> getPrimaryPatient() {
         return primaryPatient;
@@ -112,7 +115,7 @@ public final class DocumentMultiRequest {
     }
 
     /**
-     * @return Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.
+     * @return Implementation Guide to generate resources under. <code>us_core</code> (the default) and <code>phenoml_hpo</code> select a built-in guide. Any other value is a custom Implementation Guide name: its profiles are included alongside the US Core profiles, which are always the base layer. A custom name that matches no uploaded Implementation Guide returns 404.
      */
     @JsonProperty("implementation_guide")
     public Optional<String> getImplementationGuide() {
@@ -120,7 +123,7 @@ public final class DocumentMultiRequest {
     }
 
     /**
-     * @return Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.
+     * @return Deprecated and ignored: both values produce the same result. This field will be removed in a future release.
      */
     @JsonProperty("detection_effort")
     public Optional<DocumentMultiRequestDetectionEffort> getDetectionEffort() {
@@ -221,6 +224,9 @@ public final class DocumentMultiRequest {
 
         _FinalStage provider(String provider);
 
+        /**
+         * <p>Context for the patient the document is primarily about. When the document does not name its patient, the bundle's Patient is built from these fields. When it does, the identifier is added to that Patient unless its name, birth date, or gender contradicts these fields.</p>
+         */
         _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient);
 
         _FinalStage primaryPatient(PrimaryPatient primaryPatient);
@@ -233,14 +239,14 @@ public final class DocumentMultiRequest {
         _FinalStage patientReference(PatientReference patientReference);
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
+         * <p>Implementation Guide to generate resources under. <code>us_core</code> (the default) and <code>phenoml_hpo</code> select a built-in guide. Any other value is a custom Implementation Guide name: its profiles are included alongside the US Core profiles, which are always the base layer. A custom name that matches no uploaded Implementation Guide returns 404.</p>
          */
         _FinalStage implementationGuide(Optional<String> implementationGuide);
 
         _FinalStage implementationGuide(String implementationGuide);
 
         /**
-         * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
+         * <p>Deprecated and ignored: both values produce the same result. This field will be removed in a future release.</p>
          */
         _FinalStage detectionEffort(Optional<DocumentMultiRequestDetectionEffort> detectionEffort);
 
@@ -278,7 +284,6 @@ public final class DocumentMultiRequest {
 
         private Optional<String> provider = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -358,7 +363,7 @@ public final class DocumentMultiRequest {
         }
 
         /**
-         * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
+         * <p>Deprecated and ignored: both values produce the same result. This field will be removed in a future release.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -368,7 +373,7 @@ public final class DocumentMultiRequest {
         }
 
         /**
-         * <p>Deprecated; use the default 'standard' value. This field will be removed in a future release. 'standard' runs detection once; 'deep' runs detection multiple times for higher recall.</p>
+         * <p>Deprecated and ignored: both values produce the same result. This field will be removed in a future release.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "detection_effort", nulls = Nulls.SKIP)
@@ -378,7 +383,7 @@ public final class DocumentMultiRequest {
         }
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
+         * <p>Implementation Guide to generate resources under. <code>us_core</code> (the default) and <code>phenoml_hpo</code> select a built-in guide. Any other value is a custom Implementation Guide name: its profiles are included alongside the US Core profiles, which are always the base layer. A custom name that matches no uploaded Implementation Guide returns 404.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -388,7 +393,7 @@ public final class DocumentMultiRequest {
         }
 
         /**
-         * <p>Custom Implementation Guide name. When specified, profiles from this IG are included alongside the default profiles during resource detection. Default profiles are always the base layer; custom IG profiles are additive.</p>
+         * <p>Implementation Guide to generate resources under. <code>us_core</code> (the default) and <code>phenoml_hpo</code> select a built-in guide. Any other value is a custom Implementation Guide name: its profiles are included alongside the US Core profiles, which are always the base layer. A custom name that matches no uploaded Implementation Guide returns 404.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "implementation_guide", nulls = Nulls.SKIP)
@@ -417,12 +422,19 @@ public final class DocumentMultiRequest {
             return this;
         }
 
+        /**
+         * <p>Context for the patient the document is primarily about. When the document does not name its patient, the bundle's Patient is built from these fields. When it does, the identifier is added to that Patient unless its name, birth date, or gender contradicts these fields.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
         @java.lang.Override
         public _FinalStage primaryPatient(PrimaryPatient primaryPatient) {
             this.primaryPatient = Optional.ofNullable(primaryPatient);
             return this;
         }
 
+        /**
+         * <p>Context for the patient the document is primarily about. When the document does not name its patient, the bundle's Patient is built from these fields. When it does, the identifier is added to that Patient unless its name, birth date, or gender contradicts these fields.</p>
+         */
         @java.lang.Override
         @JsonSetter(value = "primary_patient", nulls = Nulls.SKIP)
         public _FinalStage primaryPatient(Optional<PrimaryPatient> primaryPatient) {
@@ -463,6 +475,22 @@ public final class DocumentMultiRequest {
                     validationMethod,
                     config,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("version")
+                    || key.equalsIgnoreCase("content")
+                    || key.equalsIgnoreCase("provider")
+                    || key.equalsIgnoreCase("primary_patient")
+                    || key.equalsIgnoreCase("patient_reference")
+                    || key.equalsIgnoreCase("implementation_guide")
+                    || key.equalsIgnoreCase("detection_effort")
+                    || key.equalsIgnoreCase("validation_method")
+                    || key.equalsIgnoreCase("config")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

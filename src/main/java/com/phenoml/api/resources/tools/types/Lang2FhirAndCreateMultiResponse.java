@@ -118,7 +118,6 @@ public final class Lang2FhirAndCreateMultiResponse {
 
         private Optional<List<Lang2FhirAndCreateMultiResponseResourceInfoItem>> resourceInfo = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -190,6 +189,17 @@ public final class Lang2FhirAndCreateMultiResponse {
         public Lang2FhirAndCreateMultiResponse build() {
             return new Lang2FhirAndCreateMultiResponse(
                     success, message, responseBundle, resourceInfo, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("success")
+                    || key.equalsIgnoreCase("message")
+                    || key.equalsIgnoreCase("response_bundle")
+                    || key.equalsIgnoreCase("resource_info")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

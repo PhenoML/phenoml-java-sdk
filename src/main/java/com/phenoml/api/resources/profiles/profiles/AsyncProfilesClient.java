@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.profiles.profiles;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.profiles.profiles.requests.ListRequest;
 import com.phenoml.api.resources.profiles.types.ProfileGetResponse;
@@ -44,7 +45,14 @@ public class AsyncProfilesClient {
      * empty list, not a 404.</p>
      */
     public CompletableFuture<ProfileListResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileListResponse>> rawFuture = this.rawClient.list();
+        CompletableFuture<ProfileListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -62,7 +70,15 @@ public class AsyncProfilesClient {
      * empty list, not a 404.</p>
      */
     public CompletableFuture<ProfileListResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileListResponse>> rawFuture =
+                this.rawClient.list(requestOptions);
+        CompletableFuture<ProfileListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -80,7 +96,14 @@ public class AsyncProfilesClient {
      * empty list, not a 404.</p>
      */
     public CompletableFuture<ProfileListResponse> list(ListRequest request) {
-        return this.rawClient.list(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileListResponse>> rawFuture = this.rawClient.list(request);
+        CompletableFuture<ProfileListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -98,7 +121,15 @@ public class AsyncProfilesClient {
      * empty list, not a 404.</p>
      */
     public CompletableFuture<ProfileListResponse> list(ListRequest request, RequestOptions requestOptions) {
-        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileListResponse>> rawFuture =
+                this.rawClient.list(request, requestOptions);
+        CompletableFuture<ProfileListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -109,7 +140,14 @@ public class AsyncProfilesClient {
      * Optionally group the profile under a named implementation guide.
      */
     public CompletableFuture<ProfileSummary> create(ProfileUploadRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileSummary>> rawFuture = this.rawClient.create(request);
+        CompletableFuture<ProfileSummary> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -120,7 +158,15 @@ public class AsyncProfilesClient {
      * Optionally group the profile under a named implementation guide.
      */
     public CompletableFuture<ProfileSummary> create(ProfileUploadRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileSummary>> rawFuture =
+                this.rawClient.create(request, requestOptions);
+        CompletableFuture<ProfileSummary> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -128,7 +174,14 @@ public class AsyncProfilesClient {
      * JSON.
      */
     public CompletableFuture<ProfileGetResponse> get(String id) {
-        return this.rawClient.get(id).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileGetResponse>> rawFuture = this.rawClient.get(id);
+        CompletableFuture<ProfileGetResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -136,7 +189,15 @@ public class AsyncProfilesClient {
      * JSON.
      */
     public CompletableFuture<ProfileGetResponse> get(String id, RequestOptions requestOptions) {
-        return this.rawClient.get(id, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileGetResponse>> rawFuture =
+                this.rawClient.get(id, requestOptions);
+        CompletableFuture<ProfileGetResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -152,7 +213,14 @@ public class AsyncProfilesClient {
      * canonical URL cannot be changed.
      */
     public CompletableFuture<ProfileSummary> update(String id, ProfileUploadRequest request) {
-        return this.rawClient.update(id, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileSummary>> rawFuture = this.rawClient.update(id, request);
+        CompletableFuture<ProfileSummary> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -169,7 +237,15 @@ public class AsyncProfilesClient {
      */
     public CompletableFuture<ProfileSummary> update(
             String id, ProfileUploadRequest request, RequestOptions requestOptions) {
-        return this.rawClient.update(id, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ProfileSummary>> rawFuture =
+                this.rawClient.update(id, request, requestOptions);
+        CompletableFuture<ProfileSummary> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -178,7 +254,14 @@ public class AsyncProfilesClient {
      * upload.
      */
     public CompletableFuture<Void> delete(String id) {
-        return this.rawClient.delete(id).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Void>> rawFuture = this.rawClient.delete(id);
+        CompletableFuture<Void> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -187,6 +270,13 @@ public class AsyncProfilesClient {
      * upload.
      */
     public CompletableFuture<Void> delete(String id, RequestOptions requestOptions) {
-        return this.rawClient.delete(id, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Void>> rawFuture = this.rawClient.delete(id, requestOptions);
+        CompletableFuture<Void> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }

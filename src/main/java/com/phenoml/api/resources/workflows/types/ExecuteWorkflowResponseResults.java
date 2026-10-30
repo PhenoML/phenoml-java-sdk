@@ -71,7 +71,6 @@ public final class ExecuteWorkflowResponseResults {
     public static final class Builder {
         private Optional<Map<String, Object>> steps = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -97,6 +96,14 @@ public final class ExecuteWorkflowResponseResults {
 
         public ExecuteWorkflowResponseResults build() {
             return new ExecuteWorkflowResponseResults(steps, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("steps")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

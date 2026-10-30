@@ -4,9 +4,11 @@
 package com.phenoml.api.resources.fhirprovider.authconfig;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.core.PathSegments;
 import com.phenoml.api.core.PhenomlClientApiException;
 import com.phenoml.api.core.PhenomlClientException;
 import com.phenoml.api.core.PhenomlClientHttpResponse;
@@ -58,7 +60,7 @@ public class RawAuthConfigClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
+                .addPathSegment(PathSegments.validate(fhirProviderId))
                 .addPathSegments("add-auth-config");
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -68,7 +70,9 @@ public class RawAuthConfigClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -154,7 +158,7 @@ public class RawAuthConfigClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
+                .addPathSegment(PathSegments.validate(fhirProviderId))
                 .addPathSegments("set-active-auth-config");
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -164,7 +168,9 @@ public class RawAuthConfigClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -246,7 +252,7 @@ public class RawAuthConfigClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("fhir-provider")
-                .addPathSegment(fhirProviderId)
+                .addPathSegment(PathSegments.validate(fhirProviderId))
                 .addPathSegments("remove-auth-config");
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -256,7 +262,9 @@ public class RawAuthConfigClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
