@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.fhirprovider.authconfig;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.fhirprovider.authconfig.requests.FhirProviderRemoveAuthConfigRequest;
 import com.phenoml.api.resources.fhirprovider.authconfig.requests.FhirProviderSetActiveAuthConfigRequest;
@@ -36,7 +37,15 @@ public class AsyncAuthConfigClient {
      */
     public CompletableFuture<FhirProviderResponse> add(
             String fhirProviderId, FhirProviderAddAuthConfigRequest request) {
-        return this.rawClient.add(fhirProviderId, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<FhirProviderResponse>> rawFuture =
+                this.rawClient.add(fhirProviderId, request);
+        CompletableFuture<FhirProviderResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -46,7 +55,15 @@ public class AsyncAuthConfigClient {
      */
     public CompletableFuture<FhirProviderResponse> add(
             String fhirProviderId, FhirProviderAddAuthConfigRequest request, RequestOptions requestOptions) {
-        return this.rawClient.add(fhirProviderId, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<FhirProviderResponse>> rawFuture =
+                this.rawClient.add(fhirProviderId, request, requestOptions);
+        CompletableFuture<FhirProviderResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -58,7 +75,15 @@ public class AsyncAuthConfigClient {
      */
     public CompletableFuture<FhirProviderResponse> setActive(
             String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request) {
-        return this.rawClient.setActive(fhirProviderId, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<FhirProviderResponse>> rawFuture =
+                this.rawClient.setActive(fhirProviderId, request);
+        CompletableFuture<FhirProviderResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -70,7 +95,15 @@ public class AsyncAuthConfigClient {
      */
     public CompletableFuture<FhirProviderResponse> setActive(
             String fhirProviderId, FhirProviderSetActiveAuthConfigRequest request, RequestOptions requestOptions) {
-        return this.rawClient.setActive(fhirProviderId, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<FhirProviderResponse>> rawFuture =
+                this.rawClient.setActive(fhirProviderId, request, requestOptions);
+        CompletableFuture<FhirProviderResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -80,7 +113,15 @@ public class AsyncAuthConfigClient {
      */
     public CompletableFuture<RemoveResponse> remove(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request) {
-        return this.rawClient.remove(fhirProviderId, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<RemoveResponse>> rawFuture =
+                this.rawClient.remove(fhirProviderId, request);
+        CompletableFuture<RemoveResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -90,6 +131,14 @@ public class AsyncAuthConfigClient {
      */
     public CompletableFuture<RemoveResponse> remove(
             String fhirProviderId, FhirProviderRemoveAuthConfigRequest request, RequestOptions requestOptions) {
-        return this.rawClient.remove(fhirProviderId, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<RemoveResponse>> rawFuture =
+                this.rawClient.remove(fhirProviderId, request, requestOptions);
+        CompletableFuture<RemoveResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }

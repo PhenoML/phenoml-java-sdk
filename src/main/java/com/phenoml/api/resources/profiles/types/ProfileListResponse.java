@@ -68,7 +68,6 @@ public final class ProfileListResponse {
     public static final class Builder {
         private List<ProfileSummary> profiles = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -101,6 +100,14 @@ public final class ProfileListResponse {
 
         public ProfileListResponse build() {
             return new ProfileListResponse(profiles, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("profiles")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

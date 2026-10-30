@@ -106,7 +106,6 @@ public final class CodeCategory {
 
         private String label;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -143,6 +142,14 @@ public final class CodeCategory {
         @java.lang.Override
         public CodeCategory build() {
             return new CodeCategory(uri, label, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("uri") || key.equalsIgnoreCase("label")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

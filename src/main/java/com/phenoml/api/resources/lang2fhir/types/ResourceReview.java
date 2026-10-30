@@ -31,7 +31,7 @@ public final class ResourceReview {
     }
 
     /**
-     * @return The resource types to audit and which date or clinical code field kinds to check.
+     * @return The resource types to audit and which date or clinical code field kinds to check. An empty list turns the audit off.
      */
     @JsonProperty("targets")
     public List<ResourceReviewTarget> getTargets() {
@@ -71,7 +71,6 @@ public final class ResourceReview {
     public static final class Builder {
         private List<ResourceReviewTarget> targets = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -82,7 +81,7 @@ public final class ResourceReview {
         }
 
         /**
-         * <p>The resource types to audit and which date or clinical code field kinds to check.</p>
+         * <p>The resource types to audit and which date or clinical code field kinds to check. An empty list turns the audit off.</p>
          */
         @JsonSetter(value = "targets", nulls = Nulls.SKIP)
         public Builder targets(List<ResourceReviewTarget> targets) {
@@ -107,6 +106,14 @@ public final class ResourceReview {
 
         public ResourceReview build() {
             return new ResourceReview(targets, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("targets")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
