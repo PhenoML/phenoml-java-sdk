@@ -151,7 +151,6 @@ public final class JwtAuth {
 
         private Optional<OffsetDateTime> credentialExpiry = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -232,6 +231,17 @@ public final class JwtAuth {
         @java.lang.Override
         public JwtAuth build() {
             return new JwtAuth(clientId, credentialExpiry, role, scopes, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("client_id")
+                    || key.equalsIgnoreCase("credential_expiry")
+                    || key.equalsIgnoreCase("role")
+                    || key.equalsIgnoreCase("scopes")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

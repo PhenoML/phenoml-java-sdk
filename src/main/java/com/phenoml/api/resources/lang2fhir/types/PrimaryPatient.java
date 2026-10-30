@@ -62,7 +62,7 @@ public final class PrimaryPatient {
     }
 
     /**
-     * @return Administrative gender. This corroborates another match but does not identify a patient alone.
+     * @return Administrative gender.
      */
     @JsonProperty("gender")
     public Optional<PrimaryPatientGender> getGender() {
@@ -111,7 +111,6 @@ public final class PrimaryPatient {
 
         private Optional<PrimaryPatientGender> gender = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -161,7 +160,7 @@ public final class PrimaryPatient {
         }
 
         /**
-         * <p>Administrative gender. This corroborates another match but does not identify a patient alone.</p>
+         * <p>Administrative gender.</p>
          */
         @JsonSetter(value = "gender", nulls = Nulls.SKIP)
         public Builder gender(Optional<PrimaryPatientGender> gender) {
@@ -176,6 +175,17 @@ public final class PrimaryPatient {
 
         public PrimaryPatient build() {
             return new PrimaryPatient(identifier, name, birthDate, gender, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("identifier")
+                    || key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("birthDate")
+                    || key.equalsIgnoreCase("gender")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

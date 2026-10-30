@@ -105,7 +105,7 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
     }
 
     /**
-     * @return Per-page classifier decisions. Populated when page_filter or split_classifications was supplied in the request. Contains one entry per input page, including both kept and dropped pages.
+     * @return Per-page classifier decisions, one entry per input page, kept and dropped. Returned on every request: from page_filter or split_classifications when set, otherwise from the default test-requisition-form filter (see the endpoint description).
      */
     @JsonProperty("page_classifications")
     public Optional<List<PageClassification>> getPageClassifications() {
@@ -170,7 +170,6 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
 
         private Optional<List<PageClassification>> pageClassifications = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -268,7 +267,7 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
         }
 
         /**
-         * <p>Per-page classifier decisions. Populated when page_filter or split_classifications was supplied in the request. Contains one entry per input page, including both kept and dropped pages.</p>
+         * <p>Per-page classifier decisions, one entry per input page, kept and dropped. Returned on every request: from page_filter or split_classifications when set, otherwise from the default test-requisition-form filter (see the endpoint description).</p>
          */
         @JsonSetter(value = "page_classifications", nulls = Nulls.SKIP)
         public Builder pageClassifications(Optional<List<PageClassification>> pageClassifications) {
@@ -291,6 +290,20 @@ public final class DocumentMultiResponse implements ICreateMultiResponse {
                     resourceReview,
                     pageClassifications,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("success")
+                    || key.equalsIgnoreCase("message")
+                    || key.equalsIgnoreCase("bundle")
+                    || key.equalsIgnoreCase("resources")
+                    || key.equalsIgnoreCase("validation")
+                    || key.equalsIgnoreCase("resource_review")
+                    || key.equalsIgnoreCase("page_classifications")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
