@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.fhir;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.fhir.requests.CreateRequest;
 import com.phenoml.api.resources.fhir.requests.DeleteRequest;
@@ -50,7 +51,15 @@ public class AsyncFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> search(String fhirProviderId, String fhirPath) {
-        return this.rawClient.search(fhirProviderId, fhirPath).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.search(fhirProviderId, fhirPath);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -71,7 +80,15 @@ public class AsyncFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> search(String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
-        return this.rawClient.search(fhirProviderId, fhirPath, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.search(fhirProviderId, fhirPath, requestOptions);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -92,7 +109,15 @@ public class AsyncFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> search(String fhirProviderId, String fhirPath, SearchRequest request) {
-        return this.rawClient.search(fhirProviderId, fhirPath, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.search(fhirProviderId, fhirPath, request);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -114,9 +139,15 @@ public class AsyncFhirClient {
      */
     public CompletableFuture<Object> search(
             String fhirProviderId, String fhirPath, SearchRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .search(fhirProviderId, fhirPath, request, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.search(fhirProviderId, fhirPath, request, requestOptions);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -124,7 +155,15 @@ public class AsyncFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> create(String fhirProviderId, String fhirPath, Object body) {
-        return this.rawClient.create(fhirProviderId, fhirPath, body).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.create(fhirProviderId, fhirPath, body);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -133,9 +172,15 @@ public class AsyncFhirClient {
      */
     public CompletableFuture<Object> create(
             String fhirProviderId, String fhirPath, Object body, RequestOptions requestOptions) {
-        return this.rawClient
-                .create(fhirProviderId, fhirPath, body, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.create(fhirProviderId, fhirPath, body, requestOptions);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -143,7 +188,15 @@ public class AsyncFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> create(String fhirProviderId, String fhirPath, CreateRequest request) {
-        return this.rawClient.create(fhirProviderId, fhirPath, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.create(fhirProviderId, fhirPath, request);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -152,9 +205,15 @@ public class AsyncFhirClient {
      */
     public CompletableFuture<Object> create(
             String fhirProviderId, String fhirPath, CreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .create(fhirProviderId, fhirPath, request, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.create(fhirProviderId, fhirPath, request, requestOptions);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -162,7 +221,15 @@ public class AsyncFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> upsert(String fhirProviderId, String fhirPath, Object body) {
-        return this.rawClient.upsert(fhirProviderId, fhirPath, body).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.upsert(fhirProviderId, fhirPath, body);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -171,9 +238,15 @@ public class AsyncFhirClient {
      */
     public CompletableFuture<Object> upsert(
             String fhirProviderId, String fhirPath, Object body, RequestOptions requestOptions) {
-        return this.rawClient
-                .upsert(fhirProviderId, fhirPath, body, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.upsert(fhirProviderId, fhirPath, body, requestOptions);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -181,7 +254,15 @@ public class AsyncFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> upsert(String fhirProviderId, String fhirPath, UpsertRequest request) {
-        return this.rawClient.upsert(fhirProviderId, fhirPath, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.upsert(fhirProviderId, fhirPath, request);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -190,9 +271,15 @@ public class AsyncFhirClient {
      */
     public CompletableFuture<Object> upsert(
             String fhirProviderId, String fhirPath, UpsertRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .upsert(fhirProviderId, fhirPath, request, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.upsert(fhirProviderId, fhirPath, request, requestOptions);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -200,7 +287,15 @@ public class AsyncFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> delete(String fhirProviderId, String fhirPath) {
-        return this.rawClient.delete(fhirProviderId, fhirPath).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.delete(fhirProviderId, fhirPath);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -208,7 +303,15 @@ public class AsyncFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> delete(String fhirProviderId, String fhirPath, RequestOptions requestOptions) {
-        return this.rawClient.delete(fhirProviderId, fhirPath, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.delete(fhirProviderId, fhirPath, requestOptions);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -216,7 +319,15 @@ public class AsyncFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> delete(String fhirProviderId, String fhirPath, DeleteRequest request) {
-        return this.rawClient.delete(fhirProviderId, fhirPath, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.delete(fhirProviderId, fhirPath, request);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -225,9 +336,15 @@ public class AsyncFhirClient {
      */
     public CompletableFuture<Object> delete(
             String fhirProviderId, String fhirPath, DeleteRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .delete(fhirProviderId, fhirPath, request, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.delete(fhirProviderId, fhirPath, request, requestOptions);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -247,7 +364,15 @@ public class AsyncFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> patch(String fhirProviderId, String fhirPath, List<PatchRequestBodyItem> body) {
-        return this.rawClient.patch(fhirProviderId, fhirPath, body).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.patch(fhirProviderId, fhirPath, body);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -268,9 +393,15 @@ public class AsyncFhirClient {
      */
     public CompletableFuture<Object> patch(
             String fhirProviderId, String fhirPath, List<PatchRequestBodyItem> body, RequestOptions requestOptions) {
-        return this.rawClient
-                .patch(fhirProviderId, fhirPath, body, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.patch(fhirProviderId, fhirPath, body, requestOptions);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -290,7 +421,15 @@ public class AsyncFhirClient {
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> patch(String fhirProviderId, String fhirPath, PatchRequest request) {
-        return this.rawClient.patch(fhirProviderId, fhirPath, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.patch(fhirProviderId, fhirPath, request);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -311,49 +450,91 @@ public class AsyncFhirClient {
      */
     public CompletableFuture<Object> patch(
             String fhirProviderId, String fhirPath, PatchRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .patch(fhirProviderId, fhirPath, request, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.patch(fhirProviderId, fhirPath, request, requestOptions);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+     * <p>On shared instances, only the default sandbox provider is accessible. The Bundle must contain an <code>entry</code> array, and each entry must have a <code>request.method</code> of <code>POST</code> and a relative resource-type <code>request.url</code>, such as <code>Patient</code> or <code>Observation</code>. URLs must contain only a resource type starting with an uppercase letter followed by letters or digits; absolute URLs, query strings, resource IDs, custom operation paths, and nested bundle execution are not supported. Entry resources and references are forwarded unchanged.</p>
+     * <p>On shared instances, invalid JSON, an invalid Bundle envelope, missing request fields, or duplicate property names in the Bundle, entry, or request objects return <code>400</code>. Unsupported entry methods or URLs return <code>403</code>, and a non-default provider returns <code>404</code>. If any entry is rejected, the entire Bundle is rejected without executing any entries. Dedicated instances support the upstream server's transaction and batch operations without these create-only restrictions.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> executeBundle(String fhirProviderId, Object body) {
-        return this.rawClient.executeBundle(fhirProviderId, body).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.executeBundle(fhirProviderId, body);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+     * <p>On shared instances, only the default sandbox provider is accessible. The Bundle must contain an <code>entry</code> array, and each entry must have a <code>request.method</code> of <code>POST</code> and a relative resource-type <code>request.url</code>, such as <code>Patient</code> or <code>Observation</code>. URLs must contain only a resource type starting with an uppercase letter followed by letters or digits; absolute URLs, query strings, resource IDs, custom operation paths, and nested bundle execution are not supported. Entry resources and references are forwarded unchanged.</p>
+     * <p>On shared instances, invalid JSON, an invalid Bundle envelope, missing request fields, or duplicate property names in the Bundle, entry, or request objects return <code>400</code>. Unsupported entry methods or URLs return <code>403</code>, and a non-default provider returns <code>404</code>. If any entry is rejected, the entire Bundle is rejected without executing any entries. Dedicated instances support the upstream server's transaction and batch operations without these create-only restrictions.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> executeBundle(String fhirProviderId, Object body, RequestOptions requestOptions) {
-        return this.rawClient
-                .executeBundle(fhirProviderId, body, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.executeBundle(fhirProviderId, body, requestOptions);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+     * <p>On shared instances, only the default sandbox provider is accessible. The Bundle must contain an <code>entry</code> array, and each entry must have a <code>request.method</code> of <code>POST</code> and a relative resource-type <code>request.url</code>, such as <code>Patient</code> or <code>Observation</code>. URLs must contain only a resource type starting with an uppercase letter followed by letters or digits; absolute URLs, query strings, resource IDs, custom operation paths, and nested bundle execution are not supported. Entry resources and references are forwarded unchanged.</p>
+     * <p>On shared instances, invalid JSON, an invalid Bundle envelope, missing request fields, or duplicate property names in the Bundle, entry, or request objects return <code>400</code>. Unsupported entry methods or URLs return <code>403</code>, and a non-default provider returns <code>404</code>. If any entry is rejected, the entire Bundle is rejected without executing any entries. Dedicated instances support the upstream server's transaction and batch operations without these create-only restrictions.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> executeBundle(String fhirProviderId, ExecuteBundleRequest request) {
-        return this.rawClient.executeBundle(fhirProviderId, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.executeBundle(fhirProviderId, request);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+     * <p>On shared instances, only the default sandbox provider is accessible. The Bundle must contain an <code>entry</code> array, and each entry must have a <code>request.method</code> of <code>POST</code> and a relative resource-type <code>request.url</code>, such as <code>Patient</code> or <code>Observation</code>. URLs must contain only a resource type starting with an uppercase letter followed by letters or digits; absolute URLs, query strings, resource IDs, custom operation paths, and nested bundle execution are not supported. Entry resources and references are forwarded unchanged.</p>
+     * <p>On shared instances, invalid JSON, an invalid Bundle envelope, missing request fields, or duplicate property names in the Bundle, entry, or request objects return <code>400</code>. Unsupported entry methods or URLs return <code>403</code>, and a non-default provider returns <code>404</code>. If any entry is rejected, the entire Bundle is rejected without executing any entries. Dedicated instances support the upstream server's transaction and batch operations without these create-only restrictions.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public CompletableFuture<Object> executeBundle(
             String fhirProviderId, ExecuteBundleRequest request, RequestOptions requestOptions) {
-        return this.rawClient
-                .executeBundle(fhirProviderId, request, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Object>> rawFuture =
+                this.rawClient.executeBundle(fhirProviderId, request, requestOptions);
+        CompletableFuture<Object> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }

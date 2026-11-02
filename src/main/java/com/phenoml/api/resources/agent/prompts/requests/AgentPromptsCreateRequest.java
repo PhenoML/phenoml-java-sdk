@@ -179,7 +179,6 @@ public final class AgentPromptsCreateRequest {
 
         private Optional<String> description = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -279,6 +278,18 @@ public final class AgentPromptsCreateRequest {
         @java.lang.Override
         public AgentPromptsCreateRequest build() {
             return new AgentPromptsCreateRequest(name, description, content, isDefault, tags, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("content")
+                    || key.equalsIgnoreCase("is_default")
+                    || key.equalsIgnoreCase("tags")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

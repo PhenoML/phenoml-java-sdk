@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.agent.chat;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.agent.chat.requests.AgentChatRequest;
 import com.phenoml.api.resources.agent.chat.requests.AgentStreamChatRequest;
@@ -34,14 +35,29 @@ public class AsyncChatClient {
      * Send a message to an agent and receive a JSON response.
      */
     public CompletableFuture<AgentChatResponse> send(AgentChatRequest request) {
-        return this.rawClient.send(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentChatResponse>> rawFuture = this.rawClient.send(request);
+        CompletableFuture<AgentChatResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Send a message to an agent and receive a JSON response.
      */
     public CompletableFuture<AgentChatResponse> send(AgentChatRequest request, RequestOptions requestOptions) {
-        return this.rawClient.send(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<AgentChatResponse>> rawFuture =
+                this.rawClient.send(request, requestOptions);
+        CompletableFuture<AgentChatResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -50,7 +66,15 @@ public class AsyncChatClient {
      * tool_result, message_end, and error.
      */
     public CompletableFuture<Iterable<AgentChatStreamEvent>> stream(AgentStreamChatRequest request) {
-        return this.rawClient.stream(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Iterable<AgentChatStreamEvent>>> rawFuture =
+                this.rawClient.stream(request);
+        CompletableFuture<Iterable<AgentChatStreamEvent>> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -60,14 +84,30 @@ public class AsyncChatClient {
      */
     public CompletableFuture<Iterable<AgentChatStreamEvent>> stream(
             AgentStreamChatRequest request, RequestOptions requestOptions) {
-        return this.rawClient.stream(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Iterable<AgentChatStreamEvent>>> rawFuture =
+                this.rawClient.stream(request, requestOptions);
+        CompletableFuture<Iterable<AgentChatStreamEvent>> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Retrieves a list of chat messages for a given chat session
      */
     public CompletableFuture<ListMessagesResponse> listMessages(ListMessagesRequest request) {
-        return this.rawClient.listMessages(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ListMessagesResponse>> rawFuture =
+                this.rawClient.listMessages(request);
+        CompletableFuture<ListMessagesResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -75,6 +115,14 @@ public class AsyncChatClient {
      */
     public CompletableFuture<ListMessagesResponse> listMessages(
             ListMessagesRequest request, RequestOptions requestOptions) {
-        return this.rawClient.listMessages(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ListMessagesResponse>> rawFuture =
+                this.rawClient.listMessages(request, requestOptions);
+        CompletableFuture<ListMessagesResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }

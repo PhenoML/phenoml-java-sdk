@@ -129,7 +129,6 @@ public final class SearchTextRequest {
 
         private Optional<String> version = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -196,6 +195,14 @@ public final class SearchTextRequest {
         @java.lang.Override
         public SearchTextRequest build() {
             return new SearchTextRequest(q, version, limit, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("q") || key.equalsIgnoreCase("version") || key.equalsIgnoreCase("limit")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

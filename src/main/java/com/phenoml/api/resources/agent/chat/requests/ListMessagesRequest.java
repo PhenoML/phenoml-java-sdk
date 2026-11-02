@@ -174,7 +174,6 @@ public final class ListMessagesRequest {
 
         private Optional<Integer> numMessages = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -278,6 +277,17 @@ public final class ListMessagesRequest {
         @java.lang.Override
         public ListMessagesRequest build() {
             return new ListMessagesRequest(chatSessionId, numMessages, role, order, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("chat_session_id")
+                    || key.equalsIgnoreCase("num_messages")
+                    || key.equalsIgnoreCase("role")
+                    || key.equalsIgnoreCase("order")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

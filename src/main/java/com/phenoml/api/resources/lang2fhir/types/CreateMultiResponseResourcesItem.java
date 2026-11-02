@@ -149,7 +149,6 @@ public final class CreateMultiResponseResourcesItem {
 
         private Optional<List<Integer>> sourcePages = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -251,6 +250,19 @@ public final class CreateMultiResponseResourcesItem {
         public CreateMultiResponseResourcesItem build() {
             return new CreateMultiResponseResourcesItem(
                     tempId, resourceType, description, originalText, group, sourcePages, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("tempId")
+                    || key.equalsIgnoreCase("resourceType")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("originalText")
+                    || key.equalsIgnoreCase("group")
+                    || key.equalsIgnoreCase("sourcePages")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

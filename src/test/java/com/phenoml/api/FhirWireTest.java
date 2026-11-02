@@ -33,6 +33,7 @@ public class FhirWireTest {
         server.start();
         client = PhenomlClient.withCredentials("test-client-id", "test-client-secret")
                 .url(server.url("/").toString())
+                .maxRetries(0)
                 .build();
     }
 
@@ -104,6 +105,95 @@ public class FhirWireTest {
                 + "          }\n"
                 + "        ]\n"
                 + "      }\n"
+                + "    }\n"
+                + "  ]\n"
+                + "}";
+        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+        Assertions.assertTrue(
+                jsonEquals(expectedResponseNode, actualResponseNode),
+                "Response body structure does not match expected");
+        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
+            String discriminator = null;
+            if (actualResponseNode.has("type"))
+                discriminator = actualResponseNode.get("type").asText();
+            else if (actualResponseNode.has("_type"))
+                discriminator = actualResponseNode.get("_type").asText();
+            else if (actualResponseNode.has("kind"))
+                discriminator = actualResponseNode.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualResponseNode.isNull()) {
+            Assertions.assertTrue(
+                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
+                    "response should be a valid JSON value");
+        }
+
+        if (actualResponseNode.isArray()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+        }
+        if (actualResponseNode.isObject()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+        }
+    }
+
+    @Test
+    public void testSearchSingleResourceResponse() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"resourceType\":\"Patient\",\"id\":\"123\",\"name\":[{\"family\":\"Doe\",\"given\":[\"John\"]}]}"));
+        Object response = client.fhir()
+                .search(
+                        "550e8400-e29b-41d4-a716-446655440000",
+                        "Patient",
+                        SearchRequest.builder()
+                                .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
+                                .phenomlFhirProvider(
+                                        "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
+                                .build());
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("GET", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate headers
+        Assertions.assertEquals(
+                "Patient/550e8400-e29b-41d4-a716-446655440000",
+                request.getHeader("X-Phenoml-On-Behalf-Of"),
+                "Header 'X-Phenoml-On-Behalf-Of' should match expected value");
+        Assertions.assertEquals(
+                "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...",
+                request.getHeader("X-Phenoml-Fhir-Provider"),
+                "Header 'X-Phenoml-Fhir-Provider' should match expected value");
+
+        // Validate response body
+        Assertions.assertNotNull(response, "Response should not be null");
+        String actualResponseJson = objectMapper.writeValueAsString(response);
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"resourceType\": \"Patient\",\n"
+                + "  \"id\": \"123\",\n"
+                + "  \"name\": [\n"
+                + "    {\n"
+                + "      \"family\": \"Doe\",\n"
+                + "      \"given\": [\n"
+                + "        \"John\"\n"
+                + "      ]\n"
                 + "    }\n"
                 + "  ]\n"
                 + "}";
@@ -520,6 +610,432 @@ public class FhirWireTest {
                 + "    \"op\": \"replace\",\n"
                 + "    \"path\": \"/name/0/family\",\n"
                 + "    \"value\": \"NewFamilyName\"\n"
+                + "  }\n"
+                + "]";
+        JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+        JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+        Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
+        if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+            String discriminator = null;
+            if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+            else if (actualJson.has("_type"))
+                discriminator = actualJson.get("_type").asText();
+            else if (actualJson.has("kind"))
+                discriminator = actualJson.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualJson.isNull()) {
+            Assertions.assertTrue(
+                    actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+                    "request should be a valid JSON value");
+        }
+
+        if (actualJson.isArray()) {
+            Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+        }
+        if (actualJson.isObject()) {
+            Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+        }
+
+        // Validate response body
+        Assertions.assertNotNull(response, "Response should not be null");
+        String actualResponseJson = objectMapper.writeValueAsString(response);
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"resourceType\": \"Patient\",\n"
+                + "  \"id\": \"123\",\n"
+                + "  \"meta\": {\n"
+                + "    \"versionId\": \"3\",\n"
+                + "    \"lastUpdated\": \"2024-02-20T11:30:00Z\"\n"
+                + "  }\n"
+                + "}";
+        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+        Assertions.assertTrue(
+                jsonEquals(expectedResponseNode, actualResponseNode),
+                "Response body structure does not match expected");
+        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
+            String discriminator = null;
+            if (actualResponseNode.has("type"))
+                discriminator = actualResponseNode.get("type").asText();
+            else if (actualResponseNode.has("_type"))
+                discriminator = actualResponseNode.get("_type").asText();
+            else if (actualResponseNode.has("kind"))
+                discriminator = actualResponseNode.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualResponseNode.isNull()) {
+            Assertions.assertTrue(
+                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
+                    "response should be a valid JSON value");
+        }
+
+        if (actualResponseNode.isArray()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+        }
+        if (actualResponseNode.isObject()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+        }
+    }
+
+    @Test
+    public void testPatchAddPhoneNumberToPatient() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"resourceType\":\"Patient\",\"id\":\"123\",\"meta\":{\"versionId\":\"3\",\"lastUpdated\":\"2024-02-20T11:30:00Z\"}}"));
+        Object response = client.fhir()
+                .patch(
+                        "550e8400-e29b-41d4-a716-446655440000",
+                        "Patient",
+                        PatchRequest.builder()
+                                .body(Arrays.asList(PatchRequestBodyItem.builder()
+                                        .op(PatchRequestBodyItemOp.ADD)
+                                        .path("/telecom/-")
+                                        .value(new HashMap<String, Object>() {
+                                            {
+                                                put("system", "phone");
+                                                put("value", "+1-555-123-4567");
+                                                put("use", "home");
+                                            }
+                                        })
+                                        .build()))
+                                .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
+                                .phenomlFhirProvider(
+                                        "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
+                                .build());
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("PATCH", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate headers
+        Assertions.assertEquals(
+                "Patient/550e8400-e29b-41d4-a716-446655440000",
+                request.getHeader("X-Phenoml-On-Behalf-Of"),
+                "Header 'X-Phenoml-On-Behalf-Of' should match expected value");
+        Assertions.assertEquals(
+                "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...",
+                request.getHeader("X-Phenoml-Fhir-Provider"),
+                "Header 'X-Phenoml-Fhir-Provider' should match expected value");
+        // Validate request body
+        String actualRequestBody = request.getBody().readUtf8();
+        String expectedRequestBody = ""
+                + "[\n"
+                + "  {\n"
+                + "    \"op\": \"add\",\n"
+                + "    \"path\": \"/telecom/-\",\n"
+                + "    \"value\": {\n"
+                + "      \"system\": \"phone\",\n"
+                + "      \"value\": \"+1-555-123-4567\",\n"
+                + "      \"use\": \"home\"\n"
+                + "    }\n"
+                + "  }\n"
+                + "]";
+        JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+        JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+        Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
+        if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+            String discriminator = null;
+            if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+            else if (actualJson.has("_type"))
+                discriminator = actualJson.get("_type").asText();
+            else if (actualJson.has("kind"))
+                discriminator = actualJson.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualJson.isNull()) {
+            Assertions.assertTrue(
+                    actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+                    "request should be a valid JSON value");
+        }
+
+        if (actualJson.isArray()) {
+            Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+        }
+        if (actualJson.isObject()) {
+            Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+        }
+
+        // Validate response body
+        Assertions.assertNotNull(response, "Response should not be null");
+        String actualResponseJson = objectMapper.writeValueAsString(response);
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"resourceType\": \"Patient\",\n"
+                + "  \"id\": \"123\",\n"
+                + "  \"meta\": {\n"
+                + "    \"versionId\": \"3\",\n"
+                + "    \"lastUpdated\": \"2024-02-20T11:30:00Z\"\n"
+                + "  }\n"
+                + "}";
+        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+        Assertions.assertTrue(
+                jsonEquals(expectedResponseNode, actualResponseNode),
+                "Response body structure does not match expected");
+        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
+            String discriminator = null;
+            if (actualResponseNode.has("type"))
+                discriminator = actualResponseNode.get("type").asText();
+            else if (actualResponseNode.has("_type"))
+                discriminator = actualResponseNode.get("_type").asText();
+            else if (actualResponseNode.has("kind"))
+                discriminator = actualResponseNode.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualResponseNode.isNull()) {
+            Assertions.assertTrue(
+                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
+                    "response should be a valid JSON value");
+        }
+
+        if (actualResponseNode.isArray()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+        }
+        if (actualResponseNode.isObject()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+        }
+    }
+
+    @Test
+    public void testPatchMultiplePatchOperations() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"resourceType\":\"Patient\",\"id\":\"123\",\"meta\":{\"versionId\":\"3\",\"lastUpdated\":\"2024-02-20T11:30:00Z\"}}"));
+        Object response = client.fhir()
+                .patch(
+                        "550e8400-e29b-41d4-a716-446655440000",
+                        "Patient",
+                        PatchRequest.builder()
+                                .body(Arrays.asList(
+                                        PatchRequestBodyItem.builder()
+                                                .op(PatchRequestBodyItemOp.REPLACE)
+                                                .path("/name/0/family")
+                                                .value("Smith")
+                                                .build(),
+                                        PatchRequestBodyItem.builder()
+                                                .op(PatchRequestBodyItemOp.ADD)
+                                                .path("/telecom/-")
+                                                .value(new HashMap<String, Object>() {
+                                                    {
+                                                        put("system", "email");
+                                                        put("value", "john.smith@example.com");
+                                                    }
+                                                })
+                                                .build(),
+                                        PatchRequestBodyItem.builder()
+                                                .op(PatchRequestBodyItemOp.REMOVE)
+                                                .path("/address/0")
+                                                .build()))
+                                .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
+                                .phenomlFhirProvider(
+                                        "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
+                                .build());
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("PATCH", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate headers
+        Assertions.assertEquals(
+                "Patient/550e8400-e29b-41d4-a716-446655440000",
+                request.getHeader("X-Phenoml-On-Behalf-Of"),
+                "Header 'X-Phenoml-On-Behalf-Of' should match expected value");
+        Assertions.assertEquals(
+                "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...",
+                request.getHeader("X-Phenoml-Fhir-Provider"),
+                "Header 'X-Phenoml-Fhir-Provider' should match expected value");
+        // Validate request body
+        String actualRequestBody = request.getBody().readUtf8();
+        String expectedRequestBody = ""
+                + "[\n"
+                + "  {\n"
+                + "    \"op\": \"replace\",\n"
+                + "    \"path\": \"/name/0/family\",\n"
+                + "    \"value\": \"Smith\"\n"
+                + "  },\n"
+                + "  {\n"
+                + "    \"op\": \"add\",\n"
+                + "    \"path\": \"/telecom/-\",\n"
+                + "    \"value\": {\n"
+                + "      \"system\": \"email\",\n"
+                + "      \"value\": \"john.smith@example.com\"\n"
+                + "    }\n"
+                + "  },\n"
+                + "  {\n"
+                + "    \"op\": \"remove\",\n"
+                + "    \"path\": \"/address/0\"\n"
+                + "  }\n"
+                + "]";
+        JsonNode actualJson = objectMapper.readTree(actualRequestBody);
+        JsonNode expectedJson = objectMapper.readTree(expectedRequestBody);
+        Assertions.assertTrue(jsonEquals(expectedJson, actualJson), "Request body structure does not match expected");
+        if (actualJson.has("type") || actualJson.has("_type") || actualJson.has("kind")) {
+            String discriminator = null;
+            if (actualJson.has("type")) discriminator = actualJson.get("type").asText();
+            else if (actualJson.has("_type"))
+                discriminator = actualJson.get("_type").asText();
+            else if (actualJson.has("kind"))
+                discriminator = actualJson.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualJson.isNull()) {
+            Assertions.assertTrue(
+                    actualJson.isObject() || actualJson.isArray() || actualJson.isValueNode(),
+                    "request should be a valid JSON value");
+        }
+
+        if (actualJson.isArray()) {
+            Assertions.assertTrue(actualJson.size() >= 0, "Array should have valid size");
+        }
+        if (actualJson.isObject()) {
+            Assertions.assertTrue(actualJson.size() >= 0, "Object should have valid field count");
+        }
+
+        // Validate response body
+        Assertions.assertNotNull(response, "Response should not be null");
+        String actualResponseJson = objectMapper.writeValueAsString(response);
+        String expectedResponseBody = ""
+                + "{\n"
+                + "  \"resourceType\": \"Patient\",\n"
+                + "  \"id\": \"123\",\n"
+                + "  \"meta\": {\n"
+                + "    \"versionId\": \"3\",\n"
+                + "    \"lastUpdated\": \"2024-02-20T11:30:00Z\"\n"
+                + "  }\n"
+                + "}";
+        JsonNode actualResponseNode = objectMapper.readTree(actualResponseJson);
+        JsonNode expectedResponseNode = objectMapper.readTree(expectedResponseBody);
+        Assertions.assertTrue(
+                jsonEquals(expectedResponseNode, actualResponseNode),
+                "Response body structure does not match expected");
+        if (actualResponseNode.has("type") || actualResponseNode.has("_type") || actualResponseNode.has("kind")) {
+            String discriminator = null;
+            if (actualResponseNode.has("type"))
+                discriminator = actualResponseNode.get("type").asText();
+            else if (actualResponseNode.has("_type"))
+                discriminator = actualResponseNode.get("_type").asText();
+            else if (actualResponseNode.has("kind"))
+                discriminator = actualResponseNode.get("kind").asText();
+            Assertions.assertNotNull(discriminator, "Union type should have a discriminator field");
+            Assertions.assertFalse(discriminator.isEmpty(), "Union discriminator should not be empty");
+        }
+
+        if (!actualResponseNode.isNull()) {
+            Assertions.assertTrue(
+                    actualResponseNode.isObject() || actualResponseNode.isArray() || actualResponseNode.isValueNode(),
+                    "response should be a valid JSON value");
+        }
+
+        if (actualResponseNode.isArray()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Array should have valid size");
+        }
+        if (actualResponseNode.isObject()) {
+            Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
+        }
+    }
+
+    @Test
+    public void testPatchTestCurrentValueBeforeReplacing() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(
+                                "{\"resourceType\":\"Patient\",\"id\":\"123\",\"meta\":{\"versionId\":\"3\",\"lastUpdated\":\"2024-02-20T11:30:00Z\"}}"));
+        Object response = client.fhir()
+                .patch(
+                        "550e8400-e29b-41d4-a716-446655440000",
+                        "Patient",
+                        PatchRequest.builder()
+                                .body(Arrays.asList(
+                                        PatchRequestBodyItem.builder()
+                                                .op(PatchRequestBodyItemOp.TEST)
+                                                .path("/gender")
+                                                .value("male")
+                                                .build(),
+                                        PatchRequestBodyItem.builder()
+                                                .op(PatchRequestBodyItemOp.REPLACE)
+                                                .path("/gender")
+                                                .value("female")
+                                                .build()))
+                                .phenomlOnBehalfOf("Patient/550e8400-e29b-41d4-a716-446655440000")
+                                .phenomlFhirProvider(
+                                        "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...")
+                                .build());
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("PATCH", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate headers
+        Assertions.assertEquals(
+                "Patient/550e8400-e29b-41d4-a716-446655440000",
+                request.getHeader("X-Phenoml-On-Behalf-Of"),
+                "Header 'X-Phenoml-On-Behalf-Of' should match expected value");
+        Assertions.assertEquals(
+                "550e8400-e29b-41d4-a716-446655440000:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c...",
+                request.getHeader("X-Phenoml-Fhir-Provider"),
+                "Header 'X-Phenoml-Fhir-Provider' should match expected value");
+        // Validate request body
+        String actualRequestBody = request.getBody().readUtf8();
+        String expectedRequestBody = ""
+                + "[\n"
+                + "  {\n"
+                + "    \"op\": \"test\",\n"
+                + "    \"path\": \"/gender\",\n"
+                + "    \"value\": \"male\"\n"
+                + "  },\n"
+                + "  {\n"
+                + "    \"op\": \"replace\",\n"
+                + "    \"path\": \"/gender\",\n"
+                + "    \"value\": \"female\"\n"
                 + "  }\n"
                 + "]";
         JsonNode actualJson = objectMapper.readTree(actualRequestBody);

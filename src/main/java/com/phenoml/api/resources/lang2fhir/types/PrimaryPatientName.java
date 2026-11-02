@@ -43,7 +43,7 @@ public final class PrimaryPatientName {
     }
 
     /**
-     * @return Given names. Matching succeeds when a generated name has a supplied given name.
+     * @return Given names.
      */
     @JsonProperty("given")
     public Optional<List<String>> getGiven() {
@@ -85,7 +85,6 @@ public final class PrimaryPatientName {
 
         private Optional<List<String>> given = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -111,7 +110,7 @@ public final class PrimaryPatientName {
         }
 
         /**
-         * <p>Given names. Matching succeeds when a generated name has a supplied given name.</p>
+         * <p>Given names.</p>
          */
         @JsonSetter(value = "given", nulls = Nulls.SKIP)
         public Builder given(Optional<List<String>> given) {
@@ -126,6 +125,14 @@ public final class PrimaryPatientName {
 
         public PrimaryPatientName build() {
             return new PrimaryPatientName(family, given, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("family") || key.equalsIgnoreCase("given")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

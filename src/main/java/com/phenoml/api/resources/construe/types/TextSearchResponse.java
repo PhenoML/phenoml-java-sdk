@@ -129,7 +129,6 @@ public final class TextSearchResponse {
 
         private List<TextSearchResult> results = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -198,6 +197,14 @@ public final class TextSearchResponse {
         @java.lang.Override
         public TextSearchResponse build() {
             return new TextSearchResponse(system, results, found, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("system") || key.equalsIgnoreCase("results") || key.equalsIgnoreCase("found")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

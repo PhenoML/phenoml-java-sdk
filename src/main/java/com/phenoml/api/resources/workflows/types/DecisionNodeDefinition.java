@@ -102,7 +102,6 @@ public final class DecisionNodeDefinition {
 
         private Optional<Map<String, String>> runtimePlaceholders = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -158,6 +157,16 @@ public final class DecisionNodeDefinition {
 
         public DecisionNodeDefinition build() {
             return new DecisionNodeDefinition(expression, paths, runtimePlaceholders, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("expression")
+                    || key.equalsIgnoreCase("paths")
+                    || key.equalsIgnoreCase("runtime_placeholders")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

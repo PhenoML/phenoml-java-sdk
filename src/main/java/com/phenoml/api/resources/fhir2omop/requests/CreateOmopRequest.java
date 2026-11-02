@@ -38,8 +38,8 @@ public final class CreateOmopRequest {
 
     /**
      * @return OMOP vocabulary release to use for coded concept resolution. If
-     * omitted or empty, the API uses its default release. Specify a
-     * release explicitly when reproducibility matters. The response's
+     * omitted or empty, the API uses its default release (<code>v20260829</code>).
+     * Specify a release explicitly when reproducibility matters. The response's
      * <code>vocab_version</code>, when present, identifies the release used.
      */
     @JsonProperty("vocab_version")
@@ -51,11 +51,11 @@ public final class CreateOmopRequest {
      * @return FHIR resources (single resource or Bundle). Must contain at least one
      * Patient resource. Supported row-producing resources are Patient,
      * Location, Organization, HealthcareService, Practitioner,
-     * PractitionerRole, Encounter, Condition, Procedure, MedicationRequest,
-     * MedicationStatement, MedicationAdministration, Immunization,
-     * Observation, and AllergyIntolerance. Standalone Medication resources
-     * are consumed by medication references rather than mapped to their own
-     * table. Unsupported resource types are accepted in a Bundle but ignored.
+     * PractitionerRole, Encounter, Specimen, DeviceUseStatement, Condition, Procedure,
+     * MedicationRequest, MedicationStatement, MedicationAdministration, MedicationDispense,
+     * Immunization, Observation, and AllergyIntolerance. Medication and Device
+     * resources provide referenced details without independently producing rows.
+     * Unsupported resource types are accepted in a Bundle but ignored.
      */
     @JsonProperty("fhir_resources")
     public Map<String, Object> getFhirResources() {
@@ -97,7 +97,6 @@ public final class CreateOmopRequest {
 
         private Map<String, Object> fhirResources = new LinkedHashMap<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -110,8 +109,8 @@ public final class CreateOmopRequest {
 
         /**
          * <p>OMOP vocabulary release to use for coded concept resolution. If
-         * omitted or empty, the API uses its default release. Specify a
-         * release explicitly when reproducibility matters. The response's
+         * omitted or empty, the API uses its default release (<code>v20260829</code>).
+         * Specify a release explicitly when reproducibility matters. The response's
          * <code>vocab_version</code>, when present, identifies the release used.</p>
          */
         @JsonSetter(value = "vocab_version", nulls = Nulls.SKIP)
@@ -129,11 +128,11 @@ public final class CreateOmopRequest {
          * <p>FHIR resources (single resource or Bundle). Must contain at least one
          * Patient resource. Supported row-producing resources are Patient,
          * Location, Organization, HealthcareService, Practitioner,
-         * PractitionerRole, Encounter, Condition, Procedure, MedicationRequest,
-         * MedicationStatement, MedicationAdministration, Immunization,
-         * Observation, and AllergyIntolerance. Standalone Medication resources
-         * are consumed by medication references rather than mapped to their own
-         * table. Unsupported resource types are accepted in a Bundle but ignored.</p>
+         * PractitionerRole, Encounter, Specimen, DeviceUseStatement, Condition, Procedure,
+         * MedicationRequest, MedicationStatement, MedicationAdministration, MedicationDispense,
+         * Immunization, Observation, and AllergyIntolerance. Medication and Device
+         * resources provide referenced details without independently producing rows.
+         * Unsupported resource types are accepted in a Bundle but ignored.</p>
          */
         @JsonSetter(value = "fhir_resources", nulls = Nulls.SKIP)
         public Builder fhirResources(Map<String, Object> fhirResources) {
@@ -158,6 +157,14 @@ public final class CreateOmopRequest {
 
         public CreateOmopRequest build() {
             return new CreateOmopRequest(vocabVersion, fhirResources, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("vocab_version") || key.equalsIgnoreCase("fhir_resources")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

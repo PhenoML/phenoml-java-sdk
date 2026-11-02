@@ -98,7 +98,6 @@ public final class FhirProviderListResponse {
 
         private Optional<List<FhirProviderListResponseFhirProvidersItem>> fhirProviders = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -149,6 +148,16 @@ public final class FhirProviderListResponse {
 
         public FhirProviderListResponse build() {
             return new FhirProviderListResponse(success, message, fhirProviders, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("success")
+                    || key.equalsIgnoreCase("message")
+                    || key.equalsIgnoreCase("fhir_providers")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

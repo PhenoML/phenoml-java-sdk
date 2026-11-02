@@ -129,7 +129,6 @@ public final class JobListResponse {
 
         private List<BatchJob> jobs = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -200,6 +199,16 @@ public final class JobListResponse {
         @java.lang.Override
         public JobListResponse build() {
             return new JobListResponse(jobs, nextCursor, hasMore, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("jobs")
+                    || key.equalsIgnoreCase("next_cursor")
+                    || key.equalsIgnoreCase("has_more")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

@@ -44,6 +44,8 @@ public final class DrugExposureRow {
 
     private final Optional<Long> daysSupply;
 
+    private final Optional<Double> quantity;
+
     private final Optional<String> sig;
 
     private final Optional<Long> routeConceptId;
@@ -75,6 +77,7 @@ public final class DrugExposureRow {
             Optional<String> stopReason,
             Optional<Long> refills,
             Optional<Long> daysSupply,
+            Optional<Double> quantity,
             Optional<String> sig,
             Optional<Long> routeConceptId,
             Optional<String> lotNumber,
@@ -96,6 +99,7 @@ public final class DrugExposureRow {
         this.stopReason = stopReason;
         this.refills = refills;
         this.daysSupply = daysSupply;
+        this.quantity = quantity;
         this.sig = sig;
         this.routeConceptId = routeConceptId;
         this.lotNumber = lotNumber;
@@ -123,7 +127,7 @@ public final class DrugExposureRow {
     }
 
     /**
-     * @return Date from the resource's timing source, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn.
+     * @return Start date selected by the source resource's timing rules, such as effective[x], occurrenceDateTime, MedicationRequest.authoredOn, or MedicationDispense.whenHandedOver; see the endpoint's timing sources for all supported resources.
      */
     @JsonProperty("drug_exposure_start_date")
     public Optional<String> getDrugExposureStartDate() {
@@ -136,7 +140,7 @@ public final class DrugExposureRow {
     }
 
     /**
-     * @return Date from an explicit FHIR Period end, or the same day as the start for a single-event administration or immunization. Unset when the source supplies neither.
+     * @return End date selected by the source resource's timing rules, when available. For medication resources, an explicit effectivePeriod.end or the start date of a single-event administration or immunization; see the endpoint's timing sources for other resources.
      */
     @JsonProperty("drug_exposure_end_date")
     public Optional<String> getDrugExposureEndDate() {
@@ -156,6 +160,9 @@ public final class DrugExposureRow {
         return verbatimEndDate;
     }
 
+    /**
+     * @return MedicationDispense uses 32825 (EHR dispensing record); MedicationRequest uses 32838 (EHR prescription). Other current resources use 32817 (EHR). These identify record provenance, not proof of medication consumption.
+     */
     @JsonProperty("drug_type_concept_id")
     public Optional<Long> getDrugTypeConceptId() {
         return drugTypeConceptId;
@@ -175,11 +182,19 @@ public final class DrugExposureRow {
     }
 
     /**
-     * @return Direct positive whole-day MedicationRequest.dispenseRequest.expectedSupplyDuration; no dose or quantity conversion is applied.
+     * @return Direct positive whole-day MedicationRequest.dispenseRequest.expectedSupplyDuration or coded UCUM-day MedicationDispense.daysSupply; never derived from drug quantity, dosage, refills, or timing. Does not derive an exposure end date.
      */
     @JsonProperty("days_supply")
     public Optional<Long> getDaysSupply() {
         return daysSupply;
+    }
+
+    /**
+     * @return Formulation-specific quantity from a direct MedicationRequest dispense quantity, MedicationDispense quantity, MedicationAdministration dose, or Immunization dose quantity. Under fixed_dose_form_count this is a matched coded tablet/capsule count copied directly, or an ingredient amount divided by per-unit strength. Under clinical_injection_ingredient_amount this is the ingredient amount, converted to the ingredient unit or derived using explicit concentration evidence; exact-unit ingredient amounts are copied directly. See the endpoint's supported dose forms and prerequisites; quantity_transformations identifies the policy, source, calculation evidence, intermediate UCUM conversion, and output unit, or explains why a supplied quantity was omitted.
+     */
+    @JsonProperty("quantity")
+    public Optional<Double> getQuantity() {
+        return quantity;
     }
 
     /**
@@ -258,6 +273,7 @@ public final class DrugExposureRow {
                 && stopReason.equals(other.stopReason)
                 && refills.equals(other.refills)
                 && daysSupply.equals(other.daysSupply)
+                && quantity.equals(other.quantity)
                 && sig.equals(other.sig)
                 && routeConceptId.equals(other.routeConceptId)
                 && lotNumber.equals(other.lotNumber)
@@ -283,6 +299,7 @@ public final class DrugExposureRow {
                 this.stopReason,
                 this.refills,
                 this.daysSupply,
+                this.quantity,
                 this.sig,
                 this.routeConceptId,
                 this.lotNumber,
@@ -328,6 +345,8 @@ public final class DrugExposureRow {
 
         private Optional<Long> daysSupply = Optional.empty();
 
+        private Optional<Double> quantity = Optional.empty();
+
         private Optional<String> sig = Optional.empty();
 
         private Optional<Long> routeConceptId = Optional.empty();
@@ -344,7 +363,6 @@ public final class DrugExposureRow {
 
         private Optional<String> routeSourceValue = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -362,6 +380,7 @@ public final class DrugExposureRow {
             stopReason(other.getStopReason());
             refills(other.getRefills());
             daysSupply(other.getDaysSupply());
+            quantity(other.getQuantity());
             sig(other.getSig());
             routeConceptId(other.getRouteConceptId());
             lotNumber(other.getLotNumber());
@@ -407,7 +426,7 @@ public final class DrugExposureRow {
         }
 
         /**
-         * <p>Date from the resource's timing source, such as effective[x], occurrenceDateTime, or MedicationRequest.authoredOn.</p>
+         * <p>Start date selected by the source resource's timing rules, such as effective[x], occurrenceDateTime, MedicationRequest.authoredOn, or MedicationDispense.whenHandedOver; see the endpoint's timing sources for all supported resources.</p>
          */
         @JsonSetter(value = "drug_exposure_start_date", nulls = Nulls.SKIP)
         public Builder drugExposureStartDate(Optional<String> drugExposureStartDate) {
@@ -432,7 +451,7 @@ public final class DrugExposureRow {
         }
 
         /**
-         * <p>Date from an explicit FHIR Period end, or the same day as the start for a single-event administration or immunization. Unset when the source supplies neither.</p>
+         * <p>End date selected by the source resource's timing rules, when available. For medication resources, an explicit effectivePeriod.end or the start date of a single-event administration or immunization; see the endpoint's timing sources for other resources.</p>
          */
         @JsonSetter(value = "drug_exposure_end_date", nulls = Nulls.SKIP)
         public Builder drugExposureEndDate(Optional<String> drugExposureEndDate) {
@@ -470,6 +489,9 @@ public final class DrugExposureRow {
             return this;
         }
 
+        /**
+         * <p>MedicationDispense uses 32825 (EHR dispensing record); MedicationRequest uses 32838 (EHR prescription). Other current resources use 32817 (EHR). These identify record provenance, not proof of medication consumption.</p>
+         */
         @JsonSetter(value = "drug_type_concept_id", nulls = Nulls.SKIP)
         public Builder drugTypeConceptId(Optional<Long> drugTypeConceptId) {
             this.drugTypeConceptId = drugTypeConceptId;
@@ -507,7 +529,7 @@ public final class DrugExposureRow {
         }
 
         /**
-         * <p>Direct positive whole-day MedicationRequest.dispenseRequest.expectedSupplyDuration; no dose or quantity conversion is applied.</p>
+         * <p>Direct positive whole-day MedicationRequest.dispenseRequest.expectedSupplyDuration or coded UCUM-day MedicationDispense.daysSupply; never derived from drug quantity, dosage, refills, or timing. Does not derive an exposure end date.</p>
          */
         @JsonSetter(value = "days_supply", nulls = Nulls.SKIP)
         public Builder daysSupply(Optional<Long> daysSupply) {
@@ -517,6 +539,20 @@ public final class DrugExposureRow {
 
         public Builder daysSupply(Long daysSupply) {
             this.daysSupply = Optional.ofNullable(daysSupply);
+            return this;
+        }
+
+        /**
+         * <p>Formulation-specific quantity from a direct MedicationRequest dispense quantity, MedicationDispense quantity, MedicationAdministration dose, or Immunization dose quantity. Under fixed_dose_form_count this is a matched coded tablet/capsule count copied directly, or an ingredient amount divided by per-unit strength. Under clinical_injection_ingredient_amount this is the ingredient amount, converted to the ingredient unit or derived using explicit concentration evidence; exact-unit ingredient amounts are copied directly. See the endpoint's supported dose forms and prerequisites; quantity_transformations identifies the policy, source, calculation evidence, intermediate UCUM conversion, and output unit, or explains why a supplied quantity was omitted.</p>
+         */
+        @JsonSetter(value = "quantity", nulls = Nulls.SKIP)
+        public Builder quantity(Optional<Double> quantity) {
+            this.quantity = quantity;
+            return this;
+        }
+
+        public Builder quantity(Double quantity) {
+            this.quantity = Optional.ofNullable(quantity);
             return this;
         }
 
@@ -634,6 +670,7 @@ public final class DrugExposureRow {
                     stopReason,
                     refills,
                     daysSupply,
+                    quantity,
                     sig,
                     routeConceptId,
                     lotNumber,
@@ -643,6 +680,34 @@ public final class DrugExposureRow {
                     drugSourceConceptId,
                     routeSourceValue,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("drug_exposure_id")
+                    || key.equalsIgnoreCase("person_id")
+                    || key.equalsIgnoreCase("drug_concept_id")
+                    || key.equalsIgnoreCase("drug_exposure_start_date")
+                    || key.equalsIgnoreCase("drug_exposure_start_datetime")
+                    || key.equalsIgnoreCase("drug_exposure_end_date")
+                    || key.equalsIgnoreCase("drug_exposure_end_datetime")
+                    || key.equalsIgnoreCase("verbatim_end_date")
+                    || key.equalsIgnoreCase("drug_type_concept_id")
+                    || key.equalsIgnoreCase("stop_reason")
+                    || key.equalsIgnoreCase("refills")
+                    || key.equalsIgnoreCase("days_supply")
+                    || key.equalsIgnoreCase("quantity")
+                    || key.equalsIgnoreCase("sig")
+                    || key.equalsIgnoreCase("route_concept_id")
+                    || key.equalsIgnoreCase("lot_number")
+                    || key.equalsIgnoreCase("visit_occurrence_id")
+                    || key.equalsIgnoreCase("provider_id")
+                    || key.equalsIgnoreCase("drug_source_value")
+                    || key.equalsIgnoreCase("drug_source_concept_id")
+                    || key.equalsIgnoreCase("route_source_value")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

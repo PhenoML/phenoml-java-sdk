@@ -79,7 +79,6 @@ public final class ProviderRoleCodeableConcept {
 
         private Optional<List<Coding>> codings = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -114,6 +113,14 @@ public final class ProviderRoleCodeableConcept {
 
         public ProviderRoleCodeableConcept build() {
             return new ProviderRoleCodeableConcept(sourceValue, codings, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("source_value") || key.equalsIgnoreCase("codings")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.construe;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.core.Suppliers;
 import com.phenoml.api.resources.construe.codes.AsyncCodesClient;
@@ -41,7 +42,15 @@ public class AsyncConstrueClient {
      * Feedback includes the full extraction result received and the result the user expected.
      */
     public CompletableFuture<FeedbackResponse> submitFeedback(FeedbackRequest request) {
-        return this.rawClient.submitFeedback(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<FeedbackResponse>> rawFuture =
+                this.rawClient.submitFeedback(request);
+        CompletableFuture<FeedbackResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -49,7 +58,15 @@ public class AsyncConstrueClient {
      * Feedback includes the full extraction result received and the result the user expected.
      */
     public CompletableFuture<FeedbackResponse> submitFeedback(FeedbackRequest request, RequestOptions requestOptions) {
-        return this.rawClient.submitFeedback(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<FeedbackResponse>> rawFuture =
+                this.rawClient.submitFeedback(request, requestOptions);
+        CompletableFuture<FeedbackResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     public AsyncCodeSystemsClient codeSystems() {

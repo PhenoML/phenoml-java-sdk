@@ -253,7 +253,6 @@ public final class BatchItemStatus {
 
         private Optional<String> id = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -406,6 +405,21 @@ public final class BatchItemStatus {
         public BatchItemStatus build() {
             return new BatchItemStatus(
                     itemId, id, status, attempts, detectRetries, resultSize, error, completedAt, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("item_id")
+                    || key.equalsIgnoreCase("id")
+                    || key.equalsIgnoreCase("status")
+                    || key.equalsIgnoreCase("attempts")
+                    || key.equalsIgnoreCase("detect_retries")
+                    || key.equalsIgnoreCase("result_size")
+                    || key.equalsIgnoreCase("error")
+                    || key.equalsIgnoreCase("completed_at")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

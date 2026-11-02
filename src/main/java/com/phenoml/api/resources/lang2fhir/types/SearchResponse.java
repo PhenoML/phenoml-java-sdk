@@ -88,7 +88,6 @@ public final class SearchResponse {
 
         private Optional<String> searchParams = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -131,6 +130,14 @@ public final class SearchResponse {
 
         public SearchResponse build() {
             return new SearchResponse(resourceType, searchParams, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("resource_type") || key.equalsIgnoreCase("search_params")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
