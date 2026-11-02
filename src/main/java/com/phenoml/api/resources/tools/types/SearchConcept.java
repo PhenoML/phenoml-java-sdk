@@ -117,7 +117,6 @@ public final class SearchConcept {
 
         private Optional<Boolean> exclude = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -188,6 +187,17 @@ public final class SearchConcept {
 
         public SearchConcept build() {
             return new SearchConcept(resourceType, searchParams, concept, exclude, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("resource_type")
+                    || key.equalsIgnoreCase("search_params")
+                    || key.equalsIgnoreCase("concept")
+                    || key.equalsIgnoreCase("exclude")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

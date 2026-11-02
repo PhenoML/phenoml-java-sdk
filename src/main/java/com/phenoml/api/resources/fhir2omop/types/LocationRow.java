@@ -213,7 +213,6 @@ public final class LocationRow {
 
         private Optional<Double> longitude = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -381,6 +380,25 @@ public final class LocationRow {
                     latitude,
                     longitude,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("location_id")
+                    || key.equalsIgnoreCase("address_1")
+                    || key.equalsIgnoreCase("address_2")
+                    || key.equalsIgnoreCase("city")
+                    || key.equalsIgnoreCase("state")
+                    || key.equalsIgnoreCase("zip")
+                    || key.equalsIgnoreCase("county")
+                    || key.equalsIgnoreCase("location_source_value")
+                    || key.equalsIgnoreCase("country_concept_id")
+                    || key.equalsIgnoreCase("country_source_value")
+                    || key.equalsIgnoreCase("latitude")
+                    || key.equalsIgnoreCase("longitude")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

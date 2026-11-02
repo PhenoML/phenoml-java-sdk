@@ -182,7 +182,6 @@ public final class CrosswalkResponse {
 
         private Optional<String> reasonCode = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -289,6 +288,18 @@ public final class CrosswalkResponse {
         @java.lang.Override
         public CrosswalkResponse build() {
             return new CrosswalkResponse(resolvedUmlsRelease, system, code, reasonCode, targets, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("resolved_umls_release")
+                    || key.equalsIgnoreCase("system")
+                    || key.equalsIgnoreCase("code")
+                    || key.equalsIgnoreCase("reason_code")
+                    || key.equalsIgnoreCase("targets")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

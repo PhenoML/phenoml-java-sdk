@@ -120,7 +120,6 @@ public final class BatchError {
 
         private String message;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -164,6 +163,14 @@ public final class BatchError {
         @java.lang.Override
         public BatchError build() {
             return new BatchError(kind, message, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("kind") || key.equalsIgnoreCase("message")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

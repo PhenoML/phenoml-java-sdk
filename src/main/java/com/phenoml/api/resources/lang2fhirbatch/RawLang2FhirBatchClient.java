@@ -5,10 +5,12 @@ package com.phenoml.api.resources.lang2fhirbatch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.FileStream;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.core.PathSegments;
 import com.phenoml.api.core.PhenomlClientApiException;
 import com.phenoml.api.core.PhenomlClientException;
 import com.phenoml.api.core.PhenomlClientHttpResponse;
@@ -213,7 +215,9 @@ public class RawLang2FhirBatchClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -350,7 +354,7 @@ public class RawLang2FhirBatchClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
+                .addPathSegment(PathSegments.validate(jobId))
                 .addPathSegments("items");
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -455,7 +459,7 @@ public class RawLang2FhirBatchClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
+                .addPathSegment(PathSegments.validate(jobId))
                 .addPathSegments("items");
         FileStream fs = new FileStream(stream, filename, null);
         MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -539,7 +543,7 @@ public class RawLang2FhirBatchClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
+                .addPathSegment(PathSegments.validate(jobId))
                 .addPathSegments("items");
         FileStream fs = new FileStream(stream, filename, mediaType);
         MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -627,7 +631,7 @@ public class RawLang2FhirBatchClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
+                .addPathSegment(PathSegments.validate(jobId))
                 .addPathSegments("items");
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -733,7 +737,7 @@ public class RawLang2FhirBatchClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
+                .addPathSegment(PathSegments.validate(jobId))
                 .addPathSegments("items");
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -851,7 +855,7 @@ public class RawLang2FhirBatchClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
+                .addPathSegment(PathSegments.validate(jobId))
                 .addPathSegments("finalize");
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -860,7 +864,11 @@ public class RawLang2FhirBatchClient {
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl.build())
-                .method("POST", RequestBody.create("", null))
+                .method(
+                        "POST",
+                        BodyProperties.toRequestBody(
+                                requestOptions != null ? requestOptions.getBodyProperties() : null,
+                                RequestBody.create("", null)))
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Accept", "application/json")
                 .build();
@@ -953,7 +961,7 @@ public class RawLang2FhirBatchClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
+                .addPathSegment(PathSegments.validate(jobId))
                 .addPathSegments("cancel");
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -962,7 +970,11 @@ public class RawLang2FhirBatchClient {
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl.build())
-                .method("POST", RequestBody.create("", null))
+                .method(
+                        "POST",
+                        BodyProperties.toRequestBody(
+                                requestOptions != null ? requestOptions.getBodyProperties() : null,
+                                RequestBody.create("", null)))
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Accept", "application/json")
                 .build();
@@ -1069,7 +1081,7 @@ public class RawLang2FhirBatchClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId);
+                .addPathSegment(PathSegments.validate(jobId));
         if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "cursor", request.getCursor().get(), false);
@@ -1204,7 +1216,7 @@ public class RawLang2FhirBatchClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
+                .addPathSegment(PathSegments.validate(jobId))
                 .addPathSegments("results");
         if (request.getCursor().isPresent()) {
             QueryStringMapper.addQueryParameter(
@@ -1306,9 +1318,9 @@ public class RawLang2FhirBatchClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("lang2fhir/batch")
-                .addPathSegment(jobId)
+                .addPathSegment(PathSegments.validate(jobId))
                 .addPathSegments("results")
-                .addPathSegment(itemId);
+                .addPathSegment(PathSegments.validate(itemId));
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);

@@ -106,7 +106,6 @@ public final class TranscribeRequest {
 
         private Optional<List<String>> language = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -154,6 +153,14 @@ public final class TranscribeRequest {
         @java.lang.Override
         public TranscribeRequest build() {
             return new TranscribeRequest(language, body, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("language") || key.equalsIgnoreCase("body")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

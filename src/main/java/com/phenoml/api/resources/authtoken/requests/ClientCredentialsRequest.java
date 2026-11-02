@@ -102,7 +102,6 @@ public final class ClientCredentialsRequest {
 
         private Optional<String> clientSecret = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -158,6 +157,16 @@ public final class ClientCredentialsRequest {
 
         public ClientCredentialsRequest build() {
             return new ClientCredentialsRequest(grantType, clientId, clientSecret, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("grant_type")
+                    || key.equalsIgnoreCase("client_id")
+                    || key.equalsIgnoreCase("client_secret")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

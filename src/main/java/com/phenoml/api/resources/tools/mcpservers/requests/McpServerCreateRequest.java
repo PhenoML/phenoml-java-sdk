@@ -106,7 +106,6 @@ public final class McpServerCreateRequest {
 
         private String mcpServerUrl;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -143,6 +142,14 @@ public final class McpServerCreateRequest {
         @java.lang.Override
         public McpServerCreateRequest build() {
             return new McpServerCreateRequest(name, mcpServerUrl, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("name") || key.equalsIgnoreCase("mcp_server_url")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

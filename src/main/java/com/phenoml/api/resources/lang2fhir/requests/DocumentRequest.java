@@ -161,7 +161,6 @@ public final class DocumentRequest {
 
         private Optional<DocumentConfig> config = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -229,6 +228,17 @@ public final class DocumentRequest {
         @java.lang.Override
         public DocumentRequest build() {
             return new DocumentRequest(version, resource, content, config, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("version")
+                    || key.equalsIgnoreCase("resource")
+                    || key.equalsIgnoreCase("content")
+                    || key.equalsIgnoreCase("config")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

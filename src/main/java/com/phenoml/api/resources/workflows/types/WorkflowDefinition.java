@@ -180,7 +180,6 @@ public final class WorkflowDefinition {
 
         private Optional<OffsetDateTime> updatedAt = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -314,6 +313,21 @@ public final class WorkflowDefinition {
                     createdAt,
                     updatedAt,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("id")
+                    || key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("workflow_instructions")
+                    || key.equalsIgnoreCase("sample_data")
+                    || key.equalsIgnoreCase("config")
+                    || key.equalsIgnoreCase("graph")
+                    || key.equalsIgnoreCase("created_at")
+                    || key.equalsIgnoreCase("updated_at")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

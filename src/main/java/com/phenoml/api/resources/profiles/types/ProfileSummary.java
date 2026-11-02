@@ -361,7 +361,6 @@ public final class ProfileSummary implements IProfileSummary {
 
         private Optional<String> status = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -546,6 +545,25 @@ public final class ProfileSummary implements IProfileSummary {
                     createdAt,
                     updatedAt,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("id")
+                    || key.equalsIgnoreCase("source")
+                    || key.equalsIgnoreCase("resource_type")
+                    || key.equalsIgnoreCase("url")
+                    || key.equalsIgnoreCase("version")
+                    || key.equalsIgnoreCase("status")
+                    || key.equalsIgnoreCase("date")
+                    || key.equalsIgnoreCase("canonical")
+                    || key.equalsIgnoreCase("fhir_version")
+                    || key.equalsIgnoreCase("implementation_guide")
+                    || key.equalsIgnoreCase("created_at")
+                    || key.equalsIgnoreCase("updated_at")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

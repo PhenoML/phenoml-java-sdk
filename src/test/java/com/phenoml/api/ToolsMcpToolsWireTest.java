@@ -3,6 +3,10 @@ package com.phenoml.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.resources.tools.errors.ForbiddenError;
+import com.phenoml.api.resources.tools.errors.InternalServerError;
+import com.phenoml.api.resources.tools.errors.NotFoundError;
+import com.phenoml.api.resources.tools.errors.UnauthorizedError;
 import com.phenoml.api.resources.tools.types.McpServerToolResponse;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -23,6 +27,7 @@ public class ToolsMcpToolsWireTest {
         server.start();
         client = PhenomlClient.withCredentials("test-client-id", "test-client-secret")
                 .url(server.url("/").toString())
+                .maxRetries(0)
                 .build();
     }
 
@@ -128,6 +133,96 @@ public class ToolsMcpToolsWireTest {
     }
 
     @Test
+    public void testListThrowsUnauthorizedError() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(new MockResponse().setResponseCode(401).setBody("{\"key\":\"value\"}"));
+        UnauthorizedError exception = Assertions.assertThrows(
+                UnauthorizedError.class, () -> client.tools().mcpTools().list("mcp_server_id"));
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("GET", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate error response
+        Assertions.assertEquals(401, exception.statusCode(), "Error status code does not match expected");
+        String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+        String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+        JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+        Assertions.assertTrue(jsonEquals(expectedErrorNode, actualErrorNode), "Error body does not match expected");
+    }
+
+    @Test
+    public void testListThrowsForbiddenError() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(new MockResponse().setResponseCode(403).setBody("{\"key\":\"value\"}"));
+        ForbiddenError exception = Assertions.assertThrows(
+                ForbiddenError.class, () -> client.tools().mcpTools().list("mcp_server_id"));
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("GET", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate error response
+        Assertions.assertEquals(403, exception.statusCode(), "Error status code does not match expected");
+        String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+        String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+        JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+        Assertions.assertTrue(jsonEquals(expectedErrorNode, actualErrorNode), "Error body does not match expected");
+    }
+
+    @Test
+    public void testListThrowsInternalServerError() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(new MockResponse().setResponseCode(500).setBody("{\"key\":\"value\"}"));
+        InternalServerError exception = Assertions.assertThrows(
+                InternalServerError.class, () -> client.tools().mcpTools().list("mcp_server_id"));
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("GET", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate error response
+        Assertions.assertEquals(500, exception.statusCode(), "Error status code does not match expected");
+        String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+        String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+        JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+        Assertions.assertTrue(jsonEquals(expectedErrorNode, actualErrorNode), "Error body does not match expected");
+    }
+
+    @Test
     public void testGet() throws Exception {
         // OAuth: enqueue token response (client fetches token before API call)
         server.enqueue(new MockResponse()
@@ -215,6 +310,126 @@ public class ToolsMcpToolsWireTest {
     }
 
     @Test
+    public void testGetThrowsUnauthorizedError() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(new MockResponse().setResponseCode(401).setBody("{\"key\":\"value\"}"));
+        UnauthorizedError exception = Assertions.assertThrows(
+                UnauthorizedError.class, () -> client.tools().mcpTools().get("mcp_server_tool_id"));
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("GET", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate error response
+        Assertions.assertEquals(401, exception.statusCode(), "Error status code does not match expected");
+        String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+        String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+        JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+        Assertions.assertTrue(jsonEquals(expectedErrorNode, actualErrorNode), "Error body does not match expected");
+    }
+
+    @Test
+    public void testGetThrowsForbiddenError() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(new MockResponse().setResponseCode(403).setBody("{\"key\":\"value\"}"));
+        ForbiddenError exception = Assertions.assertThrows(
+                ForbiddenError.class, () -> client.tools().mcpTools().get("mcp_server_tool_id"));
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("GET", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate error response
+        Assertions.assertEquals(403, exception.statusCode(), "Error status code does not match expected");
+        String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+        String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+        JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+        Assertions.assertTrue(jsonEquals(expectedErrorNode, actualErrorNode), "Error body does not match expected");
+    }
+
+    @Test
+    public void testGetThrowsNotFoundError() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(new MockResponse().setResponseCode(404).setBody("{\"key\":\"value\"}"));
+        NotFoundError exception = Assertions.assertThrows(
+                NotFoundError.class, () -> client.tools().mcpTools().get("mcp_server_tool_id"));
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("GET", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate error response
+        Assertions.assertEquals(404, exception.statusCode(), "Error status code does not match expected");
+        String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+        String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+        JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+        Assertions.assertTrue(jsonEquals(expectedErrorNode, actualErrorNode), "Error body does not match expected");
+    }
+
+    @Test
+    public void testGetThrowsInternalServerError() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(new MockResponse().setResponseCode(500).setBody("{\"key\":\"value\"}"));
+        InternalServerError exception = Assertions.assertThrows(
+                InternalServerError.class, () -> client.tools().mcpTools().get("mcp_server_tool_id"));
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("GET", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate error response
+        Assertions.assertEquals(500, exception.statusCode(), "Error status code does not match expected");
+        String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+        String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+        JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+        Assertions.assertTrue(jsonEquals(expectedErrorNode, actualErrorNode), "Error body does not match expected");
+    }
+
+    @Test
     public void testDelete() throws Exception {
         // OAuth: enqueue token response (client fetches token before API call)
         server.enqueue(new MockResponse()
@@ -299,6 +514,126 @@ public class ToolsMcpToolsWireTest {
         if (actualResponseNode.isObject()) {
             Assertions.assertTrue(actualResponseNode.size() >= 0, "Object should have valid field count");
         }
+    }
+
+    @Test
+    public void testDeleteThrowsUnauthorizedError() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(new MockResponse().setResponseCode(401).setBody("{\"key\":\"value\"}"));
+        UnauthorizedError exception = Assertions.assertThrows(
+                UnauthorizedError.class, () -> client.tools().mcpTools().delete("mcp_server_tool_id"));
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("DELETE", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate error response
+        Assertions.assertEquals(401, exception.statusCode(), "Error status code does not match expected");
+        String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+        String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+        JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+        Assertions.assertTrue(jsonEquals(expectedErrorNode, actualErrorNode), "Error body does not match expected");
+    }
+
+    @Test
+    public void testDeleteThrowsForbiddenError() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(new MockResponse().setResponseCode(403).setBody("{\"key\":\"value\"}"));
+        ForbiddenError exception = Assertions.assertThrows(
+                ForbiddenError.class, () -> client.tools().mcpTools().delete("mcp_server_tool_id"));
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("DELETE", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate error response
+        Assertions.assertEquals(403, exception.statusCode(), "Error status code does not match expected");
+        String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+        String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+        JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+        Assertions.assertTrue(jsonEquals(expectedErrorNode, actualErrorNode), "Error body does not match expected");
+    }
+
+    @Test
+    public void testDeleteThrowsNotFoundError() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(new MockResponse().setResponseCode(404).setBody("{\"key\":\"value\"}"));
+        NotFoundError exception = Assertions.assertThrows(
+                NotFoundError.class, () -> client.tools().mcpTools().delete("mcp_server_tool_id"));
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("DELETE", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate error response
+        Assertions.assertEquals(404, exception.statusCode(), "Error status code does not match expected");
+        String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+        String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+        JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+        Assertions.assertTrue(jsonEquals(expectedErrorNode, actualErrorNode), "Error body does not match expected");
+    }
+
+    @Test
+    public void testDeleteThrowsInternalServerError() throws Exception {
+        // OAuth: enqueue token response (client fetches token before API call)
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+        server.enqueue(new MockResponse().setResponseCode(500).setBody("{\"key\":\"value\"}"));
+        InternalServerError exception = Assertions.assertThrows(
+                InternalServerError.class, () -> client.tools().mcpTools().delete("mcp_server_tool_id"));
+        // OAuth: consume the token request
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals("DELETE", request.getMethod());
+
+        // Validate OAuth Authorization header
+        Assertions.assertEquals(
+                "Bearer test-token",
+                request.getHeader("Authorization"),
+                "OAuth Authorization header should contain Bearer token from OAuth flow");
+
+        // Validate error response
+        Assertions.assertEquals(500, exception.statusCode(), "Error status code does not match expected");
+        String actualErrorJson = objectMapper.writeValueAsString(exception.body());
+        String expectedErrorBody = "" + "{\n" + "  \"key\": \"value\"\n" + "}";
+        JsonNode actualErrorNode = objectMapper.readTree(actualErrorJson);
+        JsonNode expectedErrorNode = objectMapper.readTree(expectedErrorBody);
+        Assertions.assertTrue(jsonEquals(expectedErrorNode, actualErrorNode), "Error body does not match expected");
     }
 
     /**

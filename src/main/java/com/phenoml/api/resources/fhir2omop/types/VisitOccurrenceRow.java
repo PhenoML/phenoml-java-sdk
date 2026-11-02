@@ -42,6 +42,8 @@ public final class VisitOccurrenceRow {
 
     private final Optional<String> visitSourceValue;
 
+    private final Optional<Long> visitSourceConceptId;
+
     private final Map<String, Object> additionalProperties;
 
     private VisitOccurrenceRow(
@@ -56,6 +58,7 @@ public final class VisitOccurrenceRow {
             Optional<Long> providerId,
             Optional<Long> careSiteId,
             Optional<String> visitSourceValue,
+            Optional<Long> visitSourceConceptId,
             Map<String, Object> additionalProperties) {
         this.visitOccurrenceId = visitOccurrenceId;
         this.personId = personId;
@@ -68,6 +71,7 @@ public final class VisitOccurrenceRow {
         this.providerId = providerId;
         this.careSiteId = careSiteId;
         this.visitSourceValue = visitSourceValue;
+        this.visitSourceConceptId = visitSourceConceptId;
         this.additionalProperties = additionalProperties;
     }
 
@@ -132,6 +136,14 @@ public final class VisitOccurrenceRow {
         return visitSourceValue;
     }
 
+    /**
+     * @return OMOP source concept for the selected Encounter.class or Encounter.type coding when available; <code>0</code> when the source coding has no OMOP source concept, including the HL7 encounter class codes listed above.
+     */
+    @JsonProperty("visit_source_concept_id")
+    public Optional<Long> getVisitSourceConceptId() {
+        return visitSourceConceptId;
+    }
+
     @java.lang.Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -154,7 +166,8 @@ public final class VisitOccurrenceRow {
                 && visitTypeConceptId.equals(other.visitTypeConceptId)
                 && providerId.equals(other.providerId)
                 && careSiteId.equals(other.careSiteId)
-                && visitSourceValue.equals(other.visitSourceValue);
+                && visitSourceValue.equals(other.visitSourceValue)
+                && visitSourceConceptId.equals(other.visitSourceConceptId);
     }
 
     @java.lang.Override
@@ -170,7 +183,8 @@ public final class VisitOccurrenceRow {
                 this.visitTypeConceptId,
                 this.providerId,
                 this.careSiteId,
-                this.visitSourceValue);
+                this.visitSourceValue,
+                this.visitSourceConceptId);
     }
 
     @java.lang.Override
@@ -206,7 +220,8 @@ public final class VisitOccurrenceRow {
 
         private Optional<String> visitSourceValue = Optional.empty();
 
-        @JsonAnySetter
+        private Optional<Long> visitSourceConceptId = Optional.empty();
+
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -223,6 +238,7 @@ public final class VisitOccurrenceRow {
             providerId(other.getProviderId());
             careSiteId(other.getCareSiteId());
             visitSourceValue(other.getVisitSourceValue());
+            visitSourceConceptId(other.getVisitSourceConceptId());
             return this;
         }
 
@@ -353,6 +369,20 @@ public final class VisitOccurrenceRow {
             return this;
         }
 
+        /**
+         * <p>OMOP source concept for the selected Encounter.class or Encounter.type coding when available; <code>0</code> when the source coding has no OMOP source concept, including the HL7 encounter class codes listed above.</p>
+         */
+        @JsonSetter(value = "visit_source_concept_id", nulls = Nulls.SKIP)
+        public Builder visitSourceConceptId(Optional<Long> visitSourceConceptId) {
+            this.visitSourceConceptId = visitSourceConceptId;
+            return this;
+        }
+
+        public Builder visitSourceConceptId(Long visitSourceConceptId) {
+            this.visitSourceConceptId = Optional.ofNullable(visitSourceConceptId);
+            return this;
+        }
+
         public VisitOccurrenceRow build() {
             return new VisitOccurrenceRow(
                     visitOccurrenceId,
@@ -366,7 +396,27 @@ public final class VisitOccurrenceRow {
                     providerId,
                     careSiteId,
                     visitSourceValue,
+                    visitSourceConceptId,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("visit_occurrence_id")
+                    || key.equalsIgnoreCase("person_id")
+                    || key.equalsIgnoreCase("visit_concept_id")
+                    || key.equalsIgnoreCase("visit_start_date")
+                    || key.equalsIgnoreCase("visit_start_datetime")
+                    || key.equalsIgnoreCase("visit_end_date")
+                    || key.equalsIgnoreCase("visit_end_datetime")
+                    || key.equalsIgnoreCase("visit_type_concept_id")
+                    || key.equalsIgnoreCase("provider_id")
+                    || key.equalsIgnoreCase("care_site_id")
+                    || key.equalsIgnoreCase("visit_source_value")
+                    || key.equalsIgnoreCase("visit_source_concept_id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

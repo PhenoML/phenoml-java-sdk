@@ -45,7 +45,7 @@ public final class ResourceReviewResult {
     }
 
     /**
-     * @return Resources retained in the bundle after unsupported codings were safely removed.
+     * @return Resources retained in the bundle after review: unsupported codings or fields were safely removed, or unsupported required fields were kept and are reported here (see action).
      */
     @JsonProperty("remediated")
     public Optional<List<ResourceReviewRemediated>> getRemediated() {
@@ -87,7 +87,6 @@ public final class ResourceReviewResult {
 
         private Optional<List<ResourceReviewRemediated>> remediated = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -113,7 +112,7 @@ public final class ResourceReviewResult {
         }
 
         /**
-         * <p>Resources retained in the bundle after unsupported codings were safely removed.</p>
+         * <p>Resources retained in the bundle after review: unsupported codings or fields were safely removed, or unsupported required fields were kept and are reported here (see action).</p>
          */
         @JsonSetter(value = "remediated", nulls = Nulls.SKIP)
         public Builder remediated(Optional<List<ResourceReviewRemediated>> remediated) {
@@ -128,6 +127,14 @@ public final class ResourceReviewResult {
 
         public ResourceReviewResult build() {
             return new ResourceReviewResult(flagged, remediated, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("flagged") || key.equalsIgnoreCase("remediated")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

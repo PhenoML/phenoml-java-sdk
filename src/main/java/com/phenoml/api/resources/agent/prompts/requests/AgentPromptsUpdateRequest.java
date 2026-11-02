@@ -133,7 +133,6 @@ public final class AgentPromptsUpdateRequest {
 
         private Optional<List<String>> tags = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -219,6 +218,18 @@ public final class AgentPromptsUpdateRequest {
 
         public AgentPromptsUpdateRequest build() {
             return new AgentPromptsUpdateRequest(name, description, content, isDefault, tags, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("content")
+                    || key.equalsIgnoreCase("is_default")
+                    || key.equalsIgnoreCase("tags")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

@@ -150,7 +150,6 @@ public final class OnBehalfOfAuth {
 
         private Optional<Role> role = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -222,6 +221,17 @@ public final class OnBehalfOfAuth {
         @java.lang.Override
         public OnBehalfOfAuth build() {
             return new OnBehalfOfAuth(clientId, clientSecret, role, scopes, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("client_id")
+                    || key.equalsIgnoreCase("client_secret")
+                    || key.equalsIgnoreCase("role")
+                    || key.equalsIgnoreCase("scopes")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

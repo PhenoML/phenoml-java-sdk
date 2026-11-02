@@ -258,7 +258,6 @@ public final class ProviderRoleContext {
 
         private Optional<String> roleSourceValue = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -439,6 +438,23 @@ public final class ProviderRoleContext {
                     periodStart,
                     periodEnd,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("provider_id")
+                    || key.equalsIgnoreCase("role_source_value")
+                    || key.equalsIgnoreCase("practitioner_reference")
+                    || key.equalsIgnoreCase("practitioner_identifier")
+                    || key.equalsIgnoreCase("role_codes")
+                    || key.equalsIgnoreCase("specialties")
+                    || key.equalsIgnoreCase("care_sites")
+                    || key.equalsIgnoreCase("active")
+                    || key.equalsIgnoreCase("period_start")
+                    || key.equalsIgnoreCase("period_end")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

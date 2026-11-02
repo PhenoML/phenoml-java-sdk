@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.tools.mcpservers;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.tools.mcpservers.requests.McpServerCreateRequest;
 import com.phenoml.api.resources.tools.types.McpServerResponse;
@@ -30,55 +31,114 @@ public class AsyncMcpServersClient {
      * Creates a new MCP server
      */
     public CompletableFuture<McpServerResponse> create(McpServerCreateRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<McpServerResponse>> rawFuture = this.rawClient.create(request);
+        CompletableFuture<McpServerResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Creates a new MCP server
      */
     public CompletableFuture<McpServerResponse> create(McpServerCreateRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<McpServerResponse>> rawFuture =
+                this.rawClient.create(request, requestOptions);
+        CompletableFuture<McpServerResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Lists all MCP servers for a specific user
      */
     public CompletableFuture<McpServerResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<McpServerResponse>> rawFuture = this.rawClient.list();
+        CompletableFuture<McpServerResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Lists all MCP servers for a specific user
      */
     public CompletableFuture<McpServerResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<McpServerResponse>> rawFuture = this.rawClient.list(requestOptions);
+        CompletableFuture<McpServerResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Gets a MCP server by ID
      */
     public CompletableFuture<McpServerResponse> get(String mcpServerId) {
-        return this.rawClient.get(mcpServerId).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<McpServerResponse>> rawFuture = this.rawClient.get(mcpServerId);
+        CompletableFuture<McpServerResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Gets a MCP server by ID
      */
     public CompletableFuture<McpServerResponse> get(String mcpServerId, RequestOptions requestOptions) {
-        return this.rawClient.get(mcpServerId, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<McpServerResponse>> rawFuture =
+                this.rawClient.get(mcpServerId, requestOptions);
+        CompletableFuture<McpServerResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Deletes a MCP server by ID
      */
     public CompletableFuture<McpServerResponse> delete(String mcpServerId) {
-        return this.rawClient.delete(mcpServerId).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<McpServerResponse>> rawFuture = this.rawClient.delete(mcpServerId);
+        CompletableFuture<McpServerResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
      * Deletes a MCP server by ID
      */
     public CompletableFuture<McpServerResponse> delete(String mcpServerId, RequestOptions requestOptions) {
-        return this.rawClient.delete(mcpServerId, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<McpServerResponse>> rawFuture =
+                this.rawClient.delete(mcpServerId, requestOptions);
+        CompletableFuture<McpServerResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }
