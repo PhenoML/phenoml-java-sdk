@@ -265,7 +265,6 @@ public final class ServiceAccountKey {
 
         private String universeDomain;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -379,6 +378,24 @@ public final class ServiceAccountKey {
                     clientX509CertUrl,
                     universeDomain,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("type")
+                    || key.equalsIgnoreCase("project_id")
+                    || key.equalsIgnoreCase("private_key_id")
+                    || key.equalsIgnoreCase("private_key")
+                    || key.equalsIgnoreCase("client_email")
+                    || key.equalsIgnoreCase("client_id")
+                    || key.equalsIgnoreCase("auth_uri")
+                    || key.equalsIgnoreCase("token_uri")
+                    || key.equalsIgnoreCase("auth_provider_x509_cert_url")
+                    || key.equalsIgnoreCase("client_x509_cert_url")
+                    || key.equalsIgnoreCase("universe_domain")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.implementationguides.implementationguides;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.implementationguides.implementationguides.requests.CreateCanonicalImplementationGuideRequest;
 import com.phenoml.api.resources.implementationguides.implementationguides.requests.UpdateImplementationGuideRequest;
@@ -36,7 +37,14 @@ public class AsyncImplementationGuidesClient {
      * least one custom profile — with the number of profiles in each.
      */
     public CompletableFuture<ImplementationGuideListResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideListResponse>> rawFuture = this.rawClient.list();
+        CompletableFuture<ImplementationGuideListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -45,7 +53,15 @@ public class AsyncImplementationGuidesClient {
      * least one custom profile — with the number of profiles in each.
      */
     public CompletableFuture<ImplementationGuideListResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideListResponse>> rawFuture =
+                this.rawClient.list(requestOptions);
+        CompletableFuture<ImplementationGuideListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -53,7 +69,14 @@ public class AsyncImplementationGuidesClient {
      * the ids of the profiles that belong to it.
      */
     public CompletableFuture<ImplementationGuideDetail> get(String name) {
-        return this.rawClient.get(name).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideDetail>> rawFuture = this.rawClient.get(name);
+        CompletableFuture<ImplementationGuideDetail> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -61,7 +84,15 @@ public class AsyncImplementationGuidesClient {
      * the ids of the profiles that belong to it.
      */
     public CompletableFuture<ImplementationGuideDetail> get(String name, RequestOptions requestOptions) {
-        return this.rawClient.get(name, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideDetail>> rawFuture =
+                this.rawClient.get(name, requestOptions);
+        CompletableFuture<ImplementationGuideDetail> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -71,7 +102,15 @@ public class AsyncImplementationGuidesClient {
      * It applies to every profile in the guide.
      */
     public CompletableFuture<ImplementationGuideSummary> update(String name) {
-        return this.rawClient.update(name).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> rawFuture =
+                this.rawClient.update(name);
+        CompletableFuture<ImplementationGuideSummary> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -81,7 +120,15 @@ public class AsyncImplementationGuidesClient {
      * It applies to every profile in the guide.
      */
     public CompletableFuture<ImplementationGuideSummary> update(String name, RequestOptions requestOptions) {
-        return this.rawClient.update(name, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> rawFuture =
+                this.rawClient.update(name, requestOptions);
+        CompletableFuture<ImplementationGuideSummary> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -91,7 +138,15 @@ public class AsyncImplementationGuidesClient {
      * It applies to every profile in the guide.
      */
     public CompletableFuture<ImplementationGuideSummary> update(String name, UpdateImplementationGuideRequest request) {
-        return this.rawClient.update(name, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> rawFuture =
+                this.rawClient.update(name, request);
+        CompletableFuture<ImplementationGuideSummary> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -102,7 +157,15 @@ public class AsyncImplementationGuidesClient {
      */
     public CompletableFuture<ImplementationGuideSummary> update(
             String name, UpdateImplementationGuideRequest request, RequestOptions requestOptions) {
-        return this.rawClient.update(name, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideSummary>> rawFuture =
+                this.rawClient.update(name, request, requestOptions);
+        CompletableFuture<ImplementationGuideSummary> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -110,7 +173,14 @@ public class AsyncImplementationGuidesClient {
      * Custom profiles and their implementation-guide assignments are preserved.
      */
     public CompletableFuture<Void> delete(String name) {
-        return this.rawClient.delete(name).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Void>> rawFuture = this.rawClient.delete(name);
+        CompletableFuture<Void> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -118,7 +188,14 @@ public class AsyncImplementationGuidesClient {
      * Custom profiles and their implementation-guide assignments are preserved.
      */
     public CompletableFuture<Void> delete(String name, RequestOptions requestOptions) {
-        return this.rawClient.delete(name, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Void>> rawFuture = this.rawClient.delete(name, requestOptions);
+        CompletableFuture<Void> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -128,7 +205,15 @@ public class AsyncImplementationGuidesClient {
      */
     public CompletableFuture<ImplementationGuideVersionDetail> createVersion(
             String name, CreateCanonicalImplementationGuideRequest request) {
-        return this.rawClient.createVersion(name, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> rawFuture =
+                this.rawClient.createVersion(name, request);
+        CompletableFuture<ImplementationGuideVersionDetail> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -138,15 +223,39 @@ public class AsyncImplementationGuidesClient {
      */
     public CompletableFuture<ImplementationGuideVersionDetail> createVersion(
             String name, CreateCanonicalImplementationGuideRequest request, RequestOptions requestOptions) {
-        return this.rawClient.createVersion(name, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> rawFuture =
+                this.rawClient.createVersion(name, request, requestOptions);
+        CompletableFuture<ImplementationGuideVersionDetail> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     public CompletableFuture<ImplementationGuideVersionDetail> getVersion(String name, String version) {
-        return this.rawClient.getVersion(name, version).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> rawFuture =
+                this.rawClient.getVersion(name, version);
+        CompletableFuture<ImplementationGuideVersionDetail> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     public CompletableFuture<ImplementationGuideVersionDetail> getVersion(
             String name, String version, RequestOptions requestOptions) {
-        return this.rawClient.getVersion(name, version, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ImplementationGuideVersionDetail>> rawFuture =
+                this.rawClient.getVersion(name, version, requestOptions);
+        CompletableFuture<ImplementationGuideVersionDetail> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }

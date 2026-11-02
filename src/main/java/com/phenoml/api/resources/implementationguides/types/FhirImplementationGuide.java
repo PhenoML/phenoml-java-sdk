@@ -186,7 +186,6 @@ public final class FhirImplementationGuide {
 
         private Optional<String> id = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -286,6 +285,21 @@ public final class FhirImplementationGuide {
         public FhirImplementationGuide build() {
             return new FhirImplementationGuide(
                     id, url, version, name, status, packageId, fhirVersion, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("resourceType")
+                    || key.equalsIgnoreCase("id")
+                    || key.equalsIgnoreCase("url")
+                    || key.equalsIgnoreCase("version")
+                    || key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("status")
+                    || key.equalsIgnoreCase("packageId")
+                    || key.equalsIgnoreCase("fhirVersion")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

@@ -113,7 +113,6 @@ public final class CreateSummaryRequest {
 
         private Map<String, Object> fhirResources = new LinkedHashMap<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -188,6 +187,16 @@ public final class CreateSummaryRequest {
 
         public CreateSummaryRequest build() {
             return new CreateSummaryRequest(mode, templateId, fhirResources, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("mode")
+                    || key.equalsIgnoreCase("template_id")
+                    || key.equalsIgnoreCase("fhir_resources")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

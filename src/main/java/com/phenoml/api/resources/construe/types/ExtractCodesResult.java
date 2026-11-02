@@ -100,7 +100,6 @@ public final class ExtractCodesResult {
 
         private List<ExtractedCodeResult> codes = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -146,6 +145,14 @@ public final class ExtractCodesResult {
         @java.lang.Override
         public ExtractCodesResult build() {
             return new ExtractCodesResult(system, codes, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("system") || key.equalsIgnoreCase("codes")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

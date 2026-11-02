@@ -80,7 +80,6 @@ public final class GoogleHealthcareAuth {
     public static final class Builder implements ServiceAccountKeyStage, _FinalStage {
         private ServiceAccountKey serviceAccountKey;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -101,6 +100,14 @@ public final class GoogleHealthcareAuth {
         @java.lang.Override
         public GoogleHealthcareAuth build() {
             return new GoogleHealthcareAuth(serviceAccountKey, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("service_account_key")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

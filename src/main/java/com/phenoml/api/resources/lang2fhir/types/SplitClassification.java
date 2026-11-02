@@ -130,7 +130,6 @@ public final class SplitClassification {
 
         private SplitClassificationOperation operation;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -179,6 +178,16 @@ public final class SplitClassification {
         @java.lang.Override
         public SplitClassification build() {
             return new SplitClassification(id, description, operation, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("id")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("operation")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

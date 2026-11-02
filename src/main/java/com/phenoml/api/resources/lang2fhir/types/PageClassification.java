@@ -117,7 +117,6 @@ public final class PageClassification {
 
         private Optional<String> reason = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -188,6 +187,17 @@ public final class PageClassification {
 
         public PageClassification build() {
             return new PageClassification(pageNumber, include, classificationId, reason, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("page_number")
+                    || key.equalsIgnoreCase("include")
+                    || key.equalsIgnoreCase("classification_id")
+                    || key.equalsIgnoreCase("reason")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

@@ -112,7 +112,6 @@ public final class CreateSummaryResponse {
 
         private Optional<List<String>> warnings = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -177,6 +176,17 @@ public final class CreateSummaryResponse {
 
         public CreateSummaryResponse build() {
             return new CreateSummaryResponse(success, message, summary, warnings, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("success")
+                    || key.equalsIgnoreCase("message")
+                    || key.equalsIgnoreCase("summary")
+                    || key.equalsIgnoreCase("warnings")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

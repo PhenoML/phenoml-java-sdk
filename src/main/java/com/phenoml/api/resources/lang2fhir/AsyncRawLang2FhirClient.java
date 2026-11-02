@@ -5,6 +5,7 @@ package com.phenoml.api.resources.lang2fhir;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
@@ -79,7 +80,9 @@ public class AsyncRawLang2FhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -104,7 +107,8 @@ public class AsyncRawLang2FhirClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -164,6 +168,11 @@ public class AsyncRawLang2FhirClient {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
+            }
+        });
         return future;
     }
 
@@ -172,7 +181,8 @@ public class AsyncRawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
-     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+     * <p><strong>Patient handling.</strong> Every bundle contains exactly one Patient, and every clinical resource references it. When the text names its patient, the Patient is built from the text. When it names several patients, the Patient is the one <code>primary_patient</code> names, otherwise the one most of the text is about; the others are not represented as Patients. Otherwise it is built from <code>primary_patient</code> when supplied, or is an unidentified Patient carrying only a synthetic identifier. When the text names its patient, the <code>primary_patient</code> identifier is added to that Patient unless its name, birth date, or gender contradicts the text's; the response <code>message</code> says whether it was added or did not match.</p>
+     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). Every Patient carries a synthetic identifier with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code>, so the bundle remains FHIR-valid and US Core conformant. A medical record number stated in the text is added with <code>system: &quot;urn:phenoml:lang2fhir-document-mrn&quot;</code>, and the <code>primary_patient</code> identifier is added as described above. Callers who need a tenant-specific namespace should rewrite these systems after extraction.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> createMulti(CreateMultiRequest request) {
         return createMulti(request, null);
@@ -183,7 +193,8 @@ public class AsyncRawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types from the text.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit.</p>
-     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+     * <p><strong>Patient handling.</strong> Every bundle contains exactly one Patient, and every clinical resource references it. When the text names its patient, the Patient is built from the text. When it names several patients, the Patient is the one <code>primary_patient</code> names, otherwise the one most of the text is about; the others are not represented as Patients. Otherwise it is built from <code>primary_patient</code> when supplied, or is an unidentified Patient carrying only a synthetic identifier. When the text names its patient, the <code>primary_patient</code> identifier is added to that Patient unless its name, birth date, or gender contradicts the text's; the response <code>message</code> says whether it was added or did not match.</p>
+     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). Every Patient carries a synthetic identifier with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code>, so the bundle remains FHIR-valid and US Core conformant. A medical record number stated in the text is added with <code>system: &quot;urn:phenoml:lang2fhir-document-mrn&quot;</code>, and the <code>primary_patient</code> identifier is added as described above. Callers who need a tenant-specific namespace should rewrite these systems after extraction.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> createMulti(
             CreateMultiRequest request, RequestOptions requestOptions) {
@@ -198,7 +209,9 @@ public class AsyncRawLang2FhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -223,7 +236,8 @@ public class AsyncRawLang2FhirClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<CreateMultiResponse>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -282,6 +296,11 @@ public class AsyncRawLang2FhirClient {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
+            }
+        });
         return future;
     }
 
@@ -320,7 +339,9 @@ public class AsyncRawLang2FhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -345,7 +366,8 @@ public class AsyncRawLang2FhirClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<SearchResponse>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -394,6 +416,11 @@ public class AsyncRawLang2FhirClient {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
+            }
+        });
         return future;
     }
 
@@ -409,7 +436,7 @@ public class AsyncRawLang2FhirClient {
      * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
      * <p>Uploads will be rejected if:</p>
      * <ul>
-     * <li>A built-in US Core or R4 base profile already exists with the same id</li>
+     * <li>A built-in profile (US Core, PhenoML HPO, or R4 base) already exists with the same id, or the id starts with a reserved prefix (<code>us-core-</code>, <code>phenoml-hpo-</code>)</li>
      * <li>A custom profile with the same id has already been uploaded</li>
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
@@ -431,7 +458,7 @@ public class AsyncRawLang2FhirClient {
      * To use the uploaded profile with <code>/lang2fhir/create</code>, pass this id as the <code>resource</code> parameter.</p>
      * <p>Uploads will be rejected if:</p>
      * <ul>
-     * <li>A built-in US Core or R4 base profile already exists with the same id</li>
+     * <li>A built-in profile (US Core, PhenoML HPO, or R4 base) already exists with the same id, or the id starts with a reserved prefix (<code>us-core-</code>, <code>phenoml-hpo-</code>)</li>
      * <li>A custom profile with the same id has already been uploaded</li>
      * <li>A custom profile with the same url has already been uploaded</li>
      * </ul>
@@ -449,7 +476,9 @@ public class AsyncRawLang2FhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -474,7 +503,8 @@ public class AsyncRawLang2FhirClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<UploadProfileResponse>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -528,6 +558,11 @@ public class AsyncRawLang2FhirClient {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
+            }
+        });
         return future;
     }
 
@@ -558,7 +593,9 @@ public class AsyncRawLang2FhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -583,7 +620,8 @@ public class AsyncRawLang2FhirClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -658,6 +696,11 @@ public class AsyncRawLang2FhirClient {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
             }
         });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
+            }
+        });
         return future;
     }
 
@@ -667,7 +710,9 @@ public class AsyncRawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
-     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+     * <p><strong>Patient handling.</strong> Every bundle contains exactly one Patient, and every clinical resource references it. When the document names its patient, the Patient is built from the document. When it names several patients, the Patient is the one <code>primary_patient</code> names, otherwise the one most of the document is about; the others are not represented as Patients. Otherwise it is built from <code>primary_patient</code> when supplied, or is an unidentified Patient carrying only a synthetic identifier. When the document names its patient, the <code>primary_patient</code> identifier is added to that Patient unless its name, birth date, or gender contradicts the document's; the response <code>message</code> says whether it was added or did not match.</p>
+     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). Every Patient carries a synthetic identifier with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code>, so the bundle remains FHIR-valid and US Core conformant. A medical record number stated in the document is added with <code>system: &quot;urn:phenoml:lang2fhir-document-mrn&quot;</code>, and the <code>primary_patient</code> identifier is added as described above. Callers who need a tenant-specific namespace should rewrite these systems after extraction.</p>
+     * <p><strong>Page classification.</strong> When <code>config</code> sets neither <code>split_classifications</code> nor <code>page_filter</code>, pages classified as test requisition forms (lab or diagnostic order forms) are dropped before extraction and reported in <code>page_classifications</code>. Supplying either setting replaces this default.</p>
      * <p><strong>Split classifications (optional).</strong> <code>config.split_classifications</code> is a caller-defined list, not a fixed taxonomy. Choose each classification <code>id</code> and write a natural-language <code>description</code> for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Classifications with <code>operation: &quot;group&quot;</code> keep matching pages and label resources extracted from those pages; classifications with <code>operation: &quot;drop&quot;</code> remove matching pages before extraction. The <code>clinical</code> and <code>admin</code> ids in the example are illustrative, not a fixed set.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<DocumentMultiResponse>> documentMulti(
@@ -681,7 +726,9 @@ public class AsyncRawLang2FhirClient {
      * Automatically detects Patient, Condition, MedicationRequest, Observation, and other resource types.
      * Resources are linked with proper references (e.g., Conditions reference the Patient).
      * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
-     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). When the source text contains an identifier, it is extracted with an appropriate URI system. When the source text does not contain a detectable identifier, a synthetic one is generated with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code> so the bundle remains FHIR-valid and US Core conformant. Callers who need a tenant-specific namespace should rewrite the synthetic system after extraction.</p>
+     * <p><strong>Patient handling.</strong> Every bundle contains exactly one Patient, and every clinical resource references it. When the document names its patient, the Patient is built from the document. When it names several patients, the Patient is the one <code>primary_patient</code> names, otherwise the one most of the document is about; the others are not represented as Patients. Otherwise it is built from <code>primary_patient</code> when supplied, or is an unidentified Patient carrying only a synthetic identifier. When the document names its patient, the <code>primary_patient</code> identifier is added to that Patient unless its name, birth date, or gender contradicts the document's; the response <code>message</code> says whether it was added or did not match.</p>
+     * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). Every Patient carries a synthetic identifier with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code>, so the bundle remains FHIR-valid and US Core conformant. A medical record number stated in the document is added with <code>system: &quot;urn:phenoml:lang2fhir-document-mrn&quot;</code>, and the <code>primary_patient</code> identifier is added as described above. Callers who need a tenant-specific namespace should rewrite these systems after extraction.</p>
+     * <p><strong>Page classification.</strong> When <code>config</code> sets neither <code>split_classifications</code> nor <code>page_filter</code>, pages classified as test requisition forms (lab or diagnostic order forms) are dropped before extraction and reported in <code>page_classifications</code>. Supplying either setting replaces this default.</p>
      * <p><strong>Split classifications (optional).</strong> <code>config.split_classifications</code> is a caller-defined list, not a fixed taxonomy. Choose each classification <code>id</code> and write a natural-language <code>description</code> for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Classifications with <code>operation: &quot;group&quot;</code> keep matching pages and label resources extracted from those pages; classifications with <code>operation: &quot;drop&quot;</code> remove matching pages before extraction. The <code>clinical</code> and <code>admin</code> ids in the example are illustrative, not a fixed set.</p>
      */
     public CompletableFuture<PhenomlClientHttpResponse<DocumentMultiResponse>> documentMulti(
@@ -697,7 +744,9 @@ public class AsyncRawLang2FhirClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -722,7 +771,8 @@ public class AsyncRawLang2FhirClient {
                     .build();
         }
         CompletableFuture<PhenomlClientHttpResponse<DocumentMultiResponse>> future = new CompletableFuture<>();
-        client.newCall(okhttpRequest).enqueue(new Callback() {
+        RetryInterceptor.AsyncCall okhttpCall = RetryInterceptor.newAsyncCall(client, okhttpRequest);
+        okhttpCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
@@ -794,6 +844,11 @@ public class AsyncRawLang2FhirClient {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 future.completeExceptionally(new PhenomlClientException("Network error executing HTTP request", e));
+            }
+        });
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                okhttpCall.cancel();
             }
         });
         return future;

@@ -238,7 +238,6 @@ public final class FhirProviderAuthConfig {
 
         private Optional<String> clientId = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -430,6 +429,25 @@ public final class FhirProviderAuthConfig {
                     scopes,
                     clientId,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("auth_config_id")
+                    || key.equalsIgnoreCase("auth_method")
+                    || key.equalsIgnoreCase("is_active_auth_config")
+                    || key.equalsIgnoreCase("created_at")
+                    || key.equalsIgnoreCase("updated_at")
+                    || key.equalsIgnoreCase("public_key_cert_pem")
+                    || key.equalsIgnoreCase("json_web_key")
+                    || key.equalsIgnoreCase("credential_expiry")
+                    || key.equalsIgnoreCase("smart_configuration")
+                    || key.equalsIgnoreCase("service_account_metadata")
+                    || key.equalsIgnoreCase("scopes")
+                    || key.equalsIgnoreCase("client_id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

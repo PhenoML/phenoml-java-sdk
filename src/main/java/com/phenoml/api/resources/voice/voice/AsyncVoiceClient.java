@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.voice.voice;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.voice.types.TranscribeResponse;
 import com.phenoml.api.resources.voice.voice.requests.TranscribeRequest;
@@ -38,7 +39,14 @@ public class AsyncVoiceClient {
      * FHIR resource.</p>
      */
     public CompletableFuture<TranscribeResponse> transcribe(byte[] body) {
-        return this.rawClient.transcribe(body).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> rawFuture = this.rawClient.transcribe(body);
+        CompletableFuture<TranscribeResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -53,7 +61,15 @@ public class AsyncVoiceClient {
      * FHIR resource.</p>
      */
     public CompletableFuture<TranscribeResponse> transcribe(byte[] body, RequestOptions requestOptions) {
-        return this.rawClient.transcribe(body, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> rawFuture =
+                this.rawClient.transcribe(body, requestOptions);
+        CompletableFuture<TranscribeResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -68,7 +84,14 @@ public class AsyncVoiceClient {
      * FHIR resource.</p>
      */
     public CompletableFuture<TranscribeResponse> transcribe(TranscribeRequest request) {
-        return this.rawClient.transcribe(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> rawFuture = this.rawClient.transcribe(request);
+        CompletableFuture<TranscribeResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -83,6 +106,14 @@ public class AsyncVoiceClient {
      * FHIR resource.</p>
      */
     public CompletableFuture<TranscribeResponse> transcribe(TranscribeRequest request, RequestOptions requestOptions) {
-        return this.rawClient.transcribe(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<TranscribeResponse>> rawFuture =
+                this.rawClient.transcribe(request, requestOptions);
+        CompletableFuture<TranscribeResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }

@@ -126,7 +126,6 @@ public final class Citation {
 
         private int endOffset;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -175,6 +174,16 @@ public final class Citation {
         @java.lang.Override
         public Citation build() {
             return new Citation(text, beginOffset, endOffset, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("text")
+                    || key.equalsIgnoreCase("begin_offset")
+                    || key.equalsIgnoreCase("end_offset")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

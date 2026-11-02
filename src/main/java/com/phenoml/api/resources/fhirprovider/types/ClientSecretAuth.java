@@ -150,7 +150,6 @@ public final class ClientSecretAuth {
 
         private Optional<Role> role = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -222,6 +221,17 @@ public final class ClientSecretAuth {
         @java.lang.Override
         public ClientSecretAuth build() {
             return new ClientSecretAuth(clientId, clientSecret, role, scopes, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("client_id")
+                    || key.equalsIgnoreCase("client_secret")
+                    || key.equalsIgnoreCase("role")
+                    || key.equalsIgnoreCase("scopes")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

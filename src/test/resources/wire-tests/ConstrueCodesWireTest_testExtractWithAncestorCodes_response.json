@@ -1,0 +1,108 @@
+{
+  "system": {
+    "name": "ICD-10-CM",
+    "version": "2025"
+  },
+  "codes": [
+    {
+      "code": "E11.22",
+      "description": "Type 2 diabetes mellitus with diabetic chronic kidney disease",
+      "valid": true,
+      "reason": "reason",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    },
+    {
+      "code": "E11.2",
+      "description": "Type 2 diabetes mellitus with kidney complications",
+      "valid": true,
+      "reason": "reason",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    },
+    {
+      "code": "E11",
+      "description": "Type 2 diabetes mellitus",
+      "valid": true,
+      "reason": "reason",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    },
+    {
+      "code": "N18.3",
+      "description": "Chronic kidney disease, stage 3 (moderate)",
+      "valid": true,
+      "reason": "reason",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    },
+    {
+      "code": "N18",
+      "description": "Chronic kidney disease (CKD)",
+      "valid": true,
+      "reason": "reason",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    }
+  ]
+}

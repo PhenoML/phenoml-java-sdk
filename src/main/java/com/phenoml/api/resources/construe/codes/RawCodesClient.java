@@ -4,9 +4,11 @@
 package com.phenoml.api.resources.construe.codes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.core.PathSegments;
 import com.phenoml.api.core.PhenomlClientApiException;
 import com.phenoml.api.core.PhenomlClientException;
 import com.phenoml.api.core.PhenomlClientHttpResponse;
@@ -78,7 +80,9 @@ public class RawCodesClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -176,7 +180,9 @@ public class RawCodesClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -272,7 +278,9 @@ public class RawCodesClient {
         RequestBody body;
         try {
             body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
+                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
+                    MediaTypes.APPLICATION_JSON);
         } catch (JsonProcessingException e) {
             throw new PhenomlClientException("Failed to serialize request", e);
         }
@@ -361,7 +369,7 @@ public class RawCodesClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/codes")
-                .addPathSegment(codesystem);
+                .addPathSegment(PathSegments.validate(codesystem));
         if (request.getVersion().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "version", request.getVersion().get(), false);
@@ -467,8 +475,8 @@ public class RawCodesClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/codes")
-                .addPathSegment(codesystem)
-                .addPathSegment(codeId);
+                .addPathSegment(PathSegments.validate(codesystem))
+                .addPathSegment(PathSegments.validate(codeId));
         if (request.getVersion().isPresent()) {
             QueryStringMapper.addQueryParameter(
                     httpUrl, "version", request.getVersion().get(), false);
@@ -576,7 +584,7 @@ public class RawCodesClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/codes")
-                .addPathSegment(codesystem)
+                .addPathSegment(PathSegments.validate(codesystem))
                 .addPathSegments("search")
                 .addPathSegments("semantic");
         QueryStringMapper.addQueryParameter(httpUrl, "text", request.getText(), false);
@@ -703,7 +711,7 @@ public class RawCodesClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("construe/codes")
-                .addPathSegment(codesystem)
+                .addPathSegment(PathSegments.validate(codesystem))
                 .addPathSegments("search")
                 .addPathSegments("text");
         QueryStringMapper.addQueryParameter(httpUrl, "q", request.getQ(), false);

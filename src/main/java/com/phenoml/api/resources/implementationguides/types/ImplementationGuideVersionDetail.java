@@ -235,7 +235,6 @@ public final class ImplementationGuideVersionDetail {
 
         private List<String> profiles = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -365,6 +364,22 @@ public final class ImplementationGuideVersionDetail {
                     createdAt,
                     updatedAt,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("url")
+                    || key.equalsIgnoreCase("version")
+                    || key.equalsIgnoreCase("profile_context")
+                    || key.equalsIgnoreCase("profiles")
+                    || key.equalsIgnoreCase("profile_refs")
+                    || key.equalsIgnoreCase("implementation_guide")
+                    || key.equalsIgnoreCase("created_at")
+                    || key.equalsIgnoreCase("updated_at")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

@@ -1,0 +1,68 @@
+{
+  "system": {
+    "name": "ICD-10-CM",
+    "version": "2025"
+  },
+  "codes": [
+    {
+      "code": "Q60.3",
+      "description": "Renal hypoplasia, unspecified",
+      "valid": true,
+      "reason": "reason",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    },
+    {
+      "code": "R93.42",
+      "description": "Abnormal findings on diagnostic imaging of kidney",
+      "valid": true,
+      "reason": "reason",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    },
+    {
+      "code": "N28.1",
+      "description": "Cyst of kidney, acquired",
+      "valid": true,
+      "reason": "reason",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    }
+  ]
+}

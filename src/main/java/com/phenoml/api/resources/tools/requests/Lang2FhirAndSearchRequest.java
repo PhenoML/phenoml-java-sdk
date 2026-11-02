@@ -206,7 +206,6 @@ public final class Lang2FhirAndSearchRequest {
 
         private Optional<String> phenomlOnBehalfOf = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -339,6 +338,17 @@ public final class Lang2FhirAndSearchRequest {
         public Lang2FhirAndSearchRequest build() {
             return new Lang2FhirAndSearchRequest(
                     phenomlOnBehalfOf, phenomlFhirProvider, text, patientId, count, provider, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("text")
+                    || key.equalsIgnoreCase("patient_id")
+                    || key.equalsIgnoreCase("count")
+                    || key.equalsIgnoreCase("provider")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

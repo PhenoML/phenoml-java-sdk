@@ -183,7 +183,6 @@ public final class WorkflowStep {
 
         private Optional<Boolean> dynamicGeneration = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -320,6 +319,21 @@ public final class WorkflowStep {
                     dependencies,
                     dynamicGeneration,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("id")
+                    || key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("description")
+                    || key.equalsIgnoreCase("type")
+                    || key.equalsIgnoreCase("operation")
+                    || key.equalsIgnoreCase("provider_id")
+                    || key.equalsIgnoreCase("dependencies")
+                    || key.equalsIgnoreCase("dynamic_generation")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

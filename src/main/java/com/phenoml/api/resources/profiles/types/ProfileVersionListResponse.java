@@ -68,7 +68,6 @@ public final class ProfileVersionListResponse {
     public static final class Builder {
         private List<ProfileSummary> versions = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -101,6 +100,14 @@ public final class ProfileVersionListResponse {
 
         public ProfileVersionListResponse build() {
             return new ProfileVersionListResponse(versions, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("versions")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

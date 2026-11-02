@@ -101,7 +101,6 @@ public final class PhenoCrRequest {
 
         private PhenocrExtractRequestSystem system;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -134,6 +133,14 @@ public final class PhenoCrRequest {
         @java.lang.Override
         public PhenoCrRequest build() {
             return new PhenoCrRequest(text, system, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("text") || key.equalsIgnoreCase("system")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

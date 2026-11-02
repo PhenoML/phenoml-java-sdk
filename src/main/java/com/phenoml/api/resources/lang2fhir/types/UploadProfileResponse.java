@@ -111,7 +111,6 @@ public final class UploadProfileResponse {
 
         private Optional<String> url = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -179,6 +178,17 @@ public final class UploadProfileResponse {
 
         public UploadProfileResponse build() {
             return new UploadProfileResponse(message, id, type, url, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("message")
+                    || key.equalsIgnoreCase("id")
+                    || key.equalsIgnoreCase("type")
+                    || key.equalsIgnoreCase("url")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
