@@ -1,3 +1,21 @@
+## [19.0.0] - 2026-11-02
+### Breaking Changes
+- **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; update call sites to compare enum constants (e.g. `ResourceReviewRemediatedAction.REMOVED_CODINGS`) and pass the enum to `Builder.action(...)` instead of a raw string.
+
+### Added
+- **`CreateOmopResponse`** — five new optional fields: `getQuantityTransformations()`, `getRowsForReview()`, `getDeviceExposureContexts()`, `getSpecimenSourceContexts()`, and `getMedicationDispenseSourceContexts()` expose audit and review data for the FHIR-to-OMOP pipeline.
+- **`DeviceExposureRow`, `SpecimenRow`, and supporting context types** — new OMOP table-row models and context types (`DeviceExposureContext`, `DeviceExposureLink`, `DeviceExposureEvidence`, `DeviceExposureContextQuantityBasis`) added to `OmopTables` and the response model.
+- **Allergy resolution types** — `AllergyCodingEvidence`, `AllergyCodingEvidenceMeaning`, `AllergyMappingResolution`, `AllergyMappingResolutionMethod`, `AllergyMappingResolutionStatus`, `AllergyMappingResolutionType`, `AllergyMappingResolutionCategoriesItem`, and `AllergyMappingResolutionDateSource` added to model FHIR `AllergyIntolerance` OMOP mapping outcomes.
+- **New fields across OMOP row and request types** — `DrugExposureRow.getQuantity()`, `MappingEntry.getSourceCodingIndex()` and `getResolution()`, `MeasurementRow.getUnitSourceConceptId()`, `VisitOccurrenceRow.getVisitSourceConceptId()`, `ProviderRow.getNpi()`, `Summary.getRowsForReview()`, and `CreateMultiRequest.getSmallNote()` added.
+- **Core SDK utilities** — `RequestOptions.Builder.addBodyProperty()` / `bodyProperties()`, `BodyProperties`, `PathSegments.validate()`, `Stream.fromSseWithEventDiscrimination()`, `RetryInterceptor.newAsyncCall()`, `ExtractRequestConfigValidationMethod.SEMANTIC_MAPPING`, and `SseEventParser.parseEventLevelUnion()` added.
+
+### Changed
+- **`@JsonAnySetter` deserialization guard** — all request, response, and builder types now use a guarded `putAdditionalPropertyFromJson` method that prevents known JSON field names from being duplicated into `additionalProperties`.
+- **Documentation updates** — `ReferenceDiagnostic` outcome fields, `ProviderRow` source-value fields, `CreateMultiRequest.getImplementationGuide()` / `getDetectionEffort()`, `DocumentMultiResponse.getPageClassifications()`, `FhirClient.executeBundle()`, and several OMOP row date fields have expanded or corrected Javadoc.
+
+### Fixed
+- **`@JsonAnySetter` guard on agent builder types** — known field names (`message`, `session_id`, `agent_id`, etc.) are no longer accidentally routed into `additionalProperties` during deserialization of `AgentChatRequest`, `AgentStreamChatRequest`, `AgentChatResponse`, and related types.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.
