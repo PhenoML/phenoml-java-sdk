@@ -102,7 +102,6 @@ public final class SubWorkflowDefinition {
 
         private Optional<Map<String, String>> runtimePlaceholders = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -158,6 +157,16 @@ public final class SubWorkflowDefinition {
 
         public SubWorkflowDefinition build() {
             return new SubWorkflowDefinition(workflowId, input, runtimePlaceholders, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("workflow_id")
+                    || key.equalsIgnoreCase("input")
+                    || key.equalsIgnoreCase("runtime_placeholders")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

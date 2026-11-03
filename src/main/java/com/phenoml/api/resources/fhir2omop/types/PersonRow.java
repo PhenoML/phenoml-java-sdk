@@ -330,7 +330,6 @@ public final class PersonRow {
 
         private Optional<Long> ethnicitySourceConceptId = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -615,6 +614,31 @@ public final class PersonRow {
                     ethnicitySourceValue,
                     ethnicitySourceConceptId,
                     additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("person_id")
+                    || key.equalsIgnoreCase("gender_concept_id")
+                    || key.equalsIgnoreCase("year_of_birth")
+                    || key.equalsIgnoreCase("month_of_birth")
+                    || key.equalsIgnoreCase("day_of_birth")
+                    || key.equalsIgnoreCase("birth_datetime")
+                    || key.equalsIgnoreCase("race_concept_id")
+                    || key.equalsIgnoreCase("ethnicity_concept_id")
+                    || key.equalsIgnoreCase("location_id")
+                    || key.equalsIgnoreCase("provider_id")
+                    || key.equalsIgnoreCase("care_site_id")
+                    || key.equalsIgnoreCase("person_source_value")
+                    || key.equalsIgnoreCase("gender_source_value")
+                    || key.equalsIgnoreCase("gender_source_concept_id")
+                    || key.equalsIgnoreCase("race_source_value")
+                    || key.equalsIgnoreCase("race_source_concept_id")
+                    || key.equalsIgnoreCase("ethnicity_source_value")
+                    || key.equalsIgnoreCase("ethnicity_source_concept_id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

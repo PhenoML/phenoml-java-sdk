@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.authtoken;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.authtoken.requests.ClientCredentialsRequest;
 import com.phenoml.api.resources.authtoken.types.TokenResponse;
@@ -33,7 +34,14 @@ public class AsyncAuthtokenClient {
      * returns an access token with token expiration information.
      */
     public CompletableFuture<TokenResponse> getToken() {
-        return this.rawClient.getToken().thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<TokenResponse>> rawFuture = this.rawClient.getToken();
+        CompletableFuture<TokenResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -43,7 +51,14 @@ public class AsyncAuthtokenClient {
      * returns an access token with token expiration information.
      */
     public CompletableFuture<TokenResponse> getToken(RequestOptions requestOptions) {
-        return this.rawClient.getToken(requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<TokenResponse>> rawFuture = this.rawClient.getToken(requestOptions);
+        CompletableFuture<TokenResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -53,7 +68,14 @@ public class AsyncAuthtokenClient {
      * returns an access token with token expiration information.
      */
     public CompletableFuture<TokenResponse> getToken(ClientCredentialsRequest request) {
-        return this.rawClient.getToken(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<TokenResponse>> rawFuture = this.rawClient.getToken(request);
+        CompletableFuture<TokenResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -63,6 +85,14 @@ public class AsyncAuthtokenClient {
      * returns an access token with token expiration information.
      */
     public CompletableFuture<TokenResponse> getToken(ClientCredentialsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getToken(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<TokenResponse>> rawFuture =
+                this.rawClient.getToken(request, requestOptions);
+        CompletableFuture<TokenResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }

@@ -141,7 +141,6 @@ public final class ResourceReviewFinding {
 
         private Optional<String> rationale = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -237,6 +236,19 @@ public final class ResourceReviewFinding {
         public ResourceReviewFinding build() {
             return new ResourceReviewFinding(
                     fieldKind, fieldPath, value, supported, unaudited, rationale, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("fieldKind")
+                    || key.equalsIgnoreCase("fieldPath")
+                    || key.equalsIgnoreCase("value")
+                    || key.equalsIgnoreCase("supported")
+                    || key.equalsIgnoreCase("unaudited")
+                    || key.equalsIgnoreCase("rationale")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

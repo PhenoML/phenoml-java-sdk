@@ -93,7 +93,6 @@ public final class PromptsListResponse {
 
         private Optional<List<PromptTemplate>> prompts = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -140,6 +139,14 @@ public final class PromptsListResponse {
 
         public PromptsListResponse build() {
             return new PromptsListResponse(success, message, prompts, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("success") || key.equalsIgnoreCase("message") || key.equalsIgnoreCase("prompts")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

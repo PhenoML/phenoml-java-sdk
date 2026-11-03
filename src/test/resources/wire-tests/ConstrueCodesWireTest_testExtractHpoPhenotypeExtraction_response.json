@@ -1,0 +1,96 @@
+{
+  "system": {
+    "name": "HPO",
+    "version": "2025"
+  },
+  "codes": [
+    {
+      "code": "HP:0001250",
+      "description": "Seizures",
+      "valid": true,
+      "reason": "reason",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0000707",
+          "label": "Abnormality of the nervous system"
+        }
+      ]
+    },
+    {
+      "code": "HP:0010864",
+      "description": "Intellectual disability, severe",
+      "valid": true,
+      "reason": "reason",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0000707",
+          "label": "Abnormality of the nervous system"
+        }
+      ]
+    },
+    {
+      "code": "HP:0000252",
+      "description": "Microcephaly",
+      "valid": true,
+      "reason": "reason",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0000152",
+          "label": "Abnormality of head or neck"
+        },
+        {
+          "uri": "HP:0033127",
+          "label": "Abnormality of the musculoskeletal system"
+        },
+        {
+          "uri": "HP:0000707",
+          "label": "Abnormality of the nervous system"
+        }
+      ]
+    },
+    {
+      "code": "HP:0001252",
+      "description": "Hypotonia",
+      "valid": true,
+      "reason": "reason",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0033127",
+          "label": "Abnormality of the musculoskeletal system"
+        }
+      ]
+    }
+  ]
+}

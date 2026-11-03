@@ -122,7 +122,6 @@ public final class ExtractRequest {
 
         private Optional<ExtractRequestSystem> system = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -175,6 +174,14 @@ public final class ExtractRequest {
         @java.lang.Override
         public ExtractRequest build() {
             return new ExtractRequest(text, system, config, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("text") || key.equalsIgnoreCase("system") || key.equalsIgnoreCase("config")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

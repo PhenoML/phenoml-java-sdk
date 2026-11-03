@@ -132,7 +132,6 @@ public final class CrosswalkRequest {
 
         private List<String> targets = new ArrayList<>();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -205,6 +204,14 @@ public final class CrosswalkRequest {
         @java.lang.Override
         public CrosswalkRequest build() {
             return new CrosswalkRequest(system, code, targets, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("system") || key.equalsIgnoreCase("code") || key.equalsIgnoreCase("targets")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

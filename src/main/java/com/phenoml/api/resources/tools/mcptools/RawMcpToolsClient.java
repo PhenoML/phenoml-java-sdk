@@ -4,8 +4,10 @@
 package com.phenoml.api.resources.tools.mcptools;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.ObjectMappers;
+import com.phenoml.api.core.PathSegments;
 import com.phenoml.api.core.PhenomlClientApiException;
 import com.phenoml.api.core.PhenomlClientException;
 import com.phenoml.api.core.PhenomlClientHttpResponse;
@@ -45,7 +47,7 @@ public class RawMcpToolsClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tools/mcp-server")
-                .addPathSegment(mcpServerId)
+                .addPathSegment(PathSegments.validate(mcpServerId))
                 .addPathSegments("list");
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -117,7 +119,7 @@ public class RawMcpToolsClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tools/mcp-server/tool")
-                .addPathSegment(mcpServerToolId);
+                .addPathSegment(PathSegments.validate(mcpServerToolId));
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);
@@ -192,7 +194,7 @@ public class RawMcpToolsClient {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
                 .newBuilder()
                 .addPathSegments("tools/mcp-server/tool")
-                .addPathSegment(mcpServerToolId);
+                .addPathSegment(PathSegments.validate(mcpServerToolId));
         if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);
@@ -200,7 +202,10 @@ public class RawMcpToolsClient {
         }
         Request okhttpRequest = new Request.Builder()
                 .url(httpUrl.build())
-                .method("DELETE", null)
+                .method(
+                        "DELETE",
+                        BodyProperties.toRequestBody(
+                                requestOptions != null ? requestOptions.getBodyProperties() : null, null))
                 .headers(Headers.of(clientOptions.headers(requestOptions)))
                 .addHeader("Accept", "application/json")
                 .build();

@@ -71,7 +71,6 @@ public final class WorkflowGraph {
     public static final class Builder {
         private Optional<List<WorkflowStep>> steps = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -97,6 +96,14 @@ public final class WorkflowGraph {
 
         public WorkflowGraph build() {
             return new WorkflowGraph(steps, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("steps")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

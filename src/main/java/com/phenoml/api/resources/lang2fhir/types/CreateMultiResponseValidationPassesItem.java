@@ -88,7 +88,6 @@ public final class CreateMultiResponseValidationPassesItem {
 
         private Optional<CreateMultiResponseValidationPassesItemStats> stats = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -129,6 +128,14 @@ public final class CreateMultiResponseValidationPassesItem {
 
         public CreateMultiResponseValidationPassesItem build() {
             return new CreateMultiResponseValidationPassesItem(issues, stats, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("issues") || key.equalsIgnoreCase("stats")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

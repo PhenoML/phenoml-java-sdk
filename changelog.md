@@ -1,3 +1,23 @@
+## [19.0.0] - 2026-11-02
+### Breaking Changes
+- **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; replace `Builder.action(String)` / `Builder.action(Optional<String>)` calls with the corresponding `ResourceReviewRemediatedAction` enum overloads.
+
+### Added
+- **`RequestOptions.Builder.addBodyProperty()` / `.bodyProperties()`** — inject extra key/value pairs into JSON or form-urlencoded request bodies on any call without subclassing a request type.
+- **`RetryInterceptor` async retry** — new non-blocking `newAsyncCall(OkHttpClient, Request)` schedules backoff on a daemon thread instead of blocking an OkHttp dispatcher slot, so retrying calls no longer consume per-host threads and cancellation is immediate.
+- **`Stream.fromSseWithEventDiscrimination()`** — new SSE stream factory supporting event variants whose union model wraps the full SSE envelope rather than just the data payload.
+- **New FHIR-to-OMOP response types** — `DeviceExposureRow`, `DeviceExposureContext`, `AllergyCodingEvidence`, `AllergyMappingResolution`, and related enums/links surface device exposure and allergy intolerance resolution details; `OmopTables` now exposes `getDeviceExposure()` and `getSpecimen()` table lists.
+- **New field additions across OMOP and request types** — `DrugExposureRow.getQuantity()`, `MappingEntry.getSourceCodingIndex()` / `getResolution()`, `MeasurementRow.getUnitSourceConceptId()`, `VisitOccurrenceRow.getVisitSourceConceptId()`, `Summary.getRowsForReview()`, and `CreateMultiRequest.getSmallNote()` added as optional fields.
+
+### Changed
+- **`@JsonAnySetter` deserialization on all builder types** — known field names are now explicitly filtered before storing unknown properties, preventing structured fields from being double-captured in `additionalProperties`.
+- **`CreateMultiRequest` / `DocumentMultiRequest` field documentation** — `implementationGuide` clarifies built-in guide names and 404 behavior for unknown names; `detectionEffort` is now documented as deprecated and ignored.
+- **`DocumentMultiResponse.getPageClassifications()`** — page classifications are now returned on every request, not only when `page_filter` or `split_classifications` is supplied.
+- See full changelog for all changes
+
+### Fixed
+- **`@JsonAnySetter` guard on all agent and OMOP builder types** — known field names are no longer accidentally routed into `additionalProperties` during JSON deserialization.
+
 ## [18.1.0] - 2026-10-09
 ### Added
 - **`ReferenceDiagnostic.getOmopTable()` and `getOmopId()`** — new optional fields on `ReferenceDiagnostic` that identify the OMOP table name and primary key of the affected row when a reference diagnostic is emitted alongside an OMOP response.

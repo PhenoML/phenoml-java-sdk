@@ -4,6 +4,7 @@
 package com.phenoml.api.resources.lang2fhirbatch;
 
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
 import com.phenoml.api.resources.lang2fhirbatch.requests.CreateBatchRequest;
 import com.phenoml.api.resources.lang2fhirbatch.requests.GetRequest;
@@ -46,7 +47,14 @@ public class AsyncLang2FhirBatchClient {
      * credential's.
      */
     public CompletableFuture<JobListResponse> list() {
-        return this.rawClient.list().thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<JobListResponse>> rawFuture = this.rawClient.list();
+        CompletableFuture<JobListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -56,7 +64,14 @@ public class AsyncLang2FhirBatchClient {
      * credential's.
      */
     public CompletableFuture<JobListResponse> list(RequestOptions requestOptions) {
-        return this.rawClient.list(requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<JobListResponse>> rawFuture = this.rawClient.list(requestOptions);
+        CompletableFuture<JobListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -66,7 +81,14 @@ public class AsyncLang2FhirBatchClient {
      * credential's.
      */
     public CompletableFuture<JobListResponse> list(ListRequest request) {
-        return this.rawClient.list(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<JobListResponse>> rawFuture = this.rawClient.list(request);
+        CompletableFuture<JobListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -76,7 +98,15 @@ public class AsyncLang2FhirBatchClient {
      * credential's.
      */
     public CompletableFuture<JobListResponse> list(ListRequest request, RequestOptions requestOptions) {
-        return this.rawClient.list(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<JobListResponse>> rawFuture =
+                this.rawClient.list(request, requestOptions);
+        CompletableFuture<JobListResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -86,7 +116,14 @@ public class AsyncLang2FhirBatchClient {
      * finalization; otherwise it continues to resolve to that job.</p>
      */
     public CompletableFuture<BatchJob> create() {
-        return this.rawClient.create().thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture = this.rawClient.create();
+        CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -96,7 +133,14 @@ public class AsyncLang2FhirBatchClient {
      * finalization; otherwise it continues to resolve to that job.</p>
      */
     public CompletableFuture<BatchJob> create(RequestOptions requestOptions) {
-        return this.rawClient.create(requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture = this.rawClient.create(requestOptions);
+        CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -106,7 +150,14 @@ public class AsyncLang2FhirBatchClient {
      * finalization; otherwise it continues to resolve to that job.</p>
      */
     public CompletableFuture<BatchJob> create(CreateBatchRequest request) {
-        return this.rawClient.create(request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture = this.rawClient.create(request);
+        CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -116,7 +167,15 @@ public class AsyncLang2FhirBatchClient {
      * finalization; otherwise it continues to resolve to that job.</p>
      */
     public CompletableFuture<BatchJob> create(CreateBatchRequest request, RequestOptions requestOptions) {
-        return this.rawClient.create(request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture =
+                this.rawClient.create(request, requestOptions);
+        CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -134,7 +193,15 @@ public class AsyncLang2FhirBatchClient {
      * when the item is too large.</p>
      */
     public CompletableFuture<UploadItemResponse> uploadItem(String jobId, Optional<File> file) {
-        return this.rawClient.uploadItem(jobId, file).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+                this.rawClient.uploadItem(jobId, file);
+        CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -153,7 +220,15 @@ public class AsyncLang2FhirBatchClient {
      */
     public CompletableFuture<UploadItemResponse> uploadItem(
             String jobId, Optional<File> file, RequestOptions requestOptions) {
-        return this.rawClient.uploadItem(jobId, file, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+                this.rawClient.uploadItem(jobId, file, requestOptions);
+        CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -172,7 +247,15 @@ public class AsyncLang2FhirBatchClient {
      */
     public CompletableFuture<UploadItemResponse> uploadItem(
             String jobId, Optional<File> file, UploadItemRequest request) {
-        return this.rawClient.uploadItem(jobId, file, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+                this.rawClient.uploadItem(jobId, file, request);
+        CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -191,19 +274,41 @@ public class AsyncLang2FhirBatchClient {
      */
     public CompletableFuture<UploadItemResponse> uploadItem(
             String jobId, Optional<File> file, UploadItemRequest request, RequestOptions requestOptions) {
-        return this.rawClient.uploadItem(jobId, file, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+                this.rawClient.uploadItem(jobId, file, request, requestOptions);
+        CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     public CompletableFuture<UploadItemResponse> uploadItem(
             String jobId, UploadItemRequest request, InputStream stream, String filename) {
-        return this.rawClient.uploadItem(jobId, request, stream, filename).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+                this.rawClient.uploadItem(jobId, request, stream, filename);
+        CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     public CompletableFuture<UploadItemResponse> uploadItem(
             String jobId, UploadItemRequest request, InputStream stream, String filename, MediaType mediaType) {
-        return this.rawClient
-                .uploadItem(jobId, request, stream, filename, mediaType)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+                this.rawClient.uploadItem(jobId, request, stream, filename, mediaType);
+        CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     public CompletableFuture<UploadItemResponse> uploadItem(
@@ -212,9 +317,15 @@ public class AsyncLang2FhirBatchClient {
             InputStream stream,
             String filename,
             RequestOptions requestOptions) {
-        return this.rawClient
-                .uploadItem(jobId, request, stream, filename, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+                this.rawClient.uploadItem(jobId, request, stream, filename, requestOptions);
+        CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     public CompletableFuture<UploadItemResponse> uploadItem(
@@ -224,9 +335,15 @@ public class AsyncLang2FhirBatchClient {
             String filename,
             MediaType mediaType,
             RequestOptions requestOptions) {
-        return this.rawClient
-                .uploadItem(jobId, request, stream, filename, mediaType, requestOptions)
-                .thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<UploadItemResponse>> rawFuture =
+                this.rawClient.uploadItem(jobId, request, stream, filename, mediaType, requestOptions);
+        CompletableFuture<UploadItemResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -237,7 +354,14 @@ public class AsyncLang2FhirBatchClient {
      * Finalizing a job with no items is a <code>400</code>.</p>
      */
     public CompletableFuture<BatchJob> finalize(String jobId) {
-        return this.rawClient.finalize(jobId).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture = this.rawClient.finalize(jobId);
+        CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -248,7 +372,15 @@ public class AsyncLang2FhirBatchClient {
      * Finalizing a job with no items is a <code>400</code>.</p>
      */
     public CompletableFuture<BatchJob> finalize(String jobId, RequestOptions requestOptions) {
-        return this.rawClient.finalize(jobId, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture =
+                this.rawClient.finalize(jobId, requestOptions);
+        CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -264,7 +396,14 @@ public class AsyncLang2FhirBatchClient {
      * a <code>409</code>.</p>
      */
     public CompletableFuture<BatchJob> cancel(String jobId) {
-        return this.rawClient.cancel(jobId).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture = this.rawClient.cancel(jobId);
+        CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -280,7 +419,14 @@ public class AsyncLang2FhirBatchClient {
      * a <code>409</code>.</p>
      */
     public CompletableFuture<BatchJob> cancel(String jobId, RequestOptions requestOptions) {
-        return this.rawClient.cancel(jobId, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<BatchJob>> rawFuture = this.rawClient.cancel(jobId, requestOptions);
+        CompletableFuture<BatchJob> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -292,7 +438,14 @@ public class AsyncLang2FhirBatchClient {
      * never by position.</p>
      */
     public CompletableFuture<JobDetailResponse> get(String jobId) {
-        return this.rawClient.get(jobId).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<JobDetailResponse>> rawFuture = this.rawClient.get(jobId);
+        CompletableFuture<JobDetailResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -304,7 +457,15 @@ public class AsyncLang2FhirBatchClient {
      * never by position.</p>
      */
     public CompletableFuture<JobDetailResponse> get(String jobId, RequestOptions requestOptions) {
-        return this.rawClient.get(jobId, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<JobDetailResponse>> rawFuture =
+                this.rawClient.get(jobId, requestOptions);
+        CompletableFuture<JobDetailResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -316,7 +477,14 @@ public class AsyncLang2FhirBatchClient {
      * never by position.</p>
      */
     public CompletableFuture<JobDetailResponse> get(String jobId, GetRequest request) {
-        return this.rawClient.get(jobId, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<JobDetailResponse>> rawFuture = this.rawClient.get(jobId, request);
+        CompletableFuture<JobDetailResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -328,7 +496,15 @@ public class AsyncLang2FhirBatchClient {
      * never by position.</p>
      */
     public CompletableFuture<JobDetailResponse> get(String jobId, GetRequest request, RequestOptions requestOptions) {
-        return this.rawClient.get(jobId, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<JobDetailResponse>> rawFuture =
+                this.rawClient.get(jobId, request, requestOptions);
+        CompletableFuture<JobDetailResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -343,7 +519,14 @@ public class AsyncLang2FhirBatchClient {
      * never by position.</p>
      */
     public CompletableFuture<ResultsPageResponse> getResults(String jobId) {
-        return this.rawClient.getResults(jobId).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ResultsPageResponse>> rawFuture = this.rawClient.getResults(jobId);
+        CompletableFuture<ResultsPageResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -358,7 +541,15 @@ public class AsyncLang2FhirBatchClient {
      * never by position.</p>
      */
     public CompletableFuture<ResultsPageResponse> getResults(String jobId, RequestOptions requestOptions) {
-        return this.rawClient.getResults(jobId, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ResultsPageResponse>> rawFuture =
+                this.rawClient.getResults(jobId, requestOptions);
+        CompletableFuture<ResultsPageResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -373,7 +564,15 @@ public class AsyncLang2FhirBatchClient {
      * never by position.</p>
      */
     public CompletableFuture<ResultsPageResponse> getResults(String jobId, GetResultsRequest request) {
-        return this.rawClient.getResults(jobId, request).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ResultsPageResponse>> rawFuture =
+                this.rawClient.getResults(jobId, request);
+        CompletableFuture<ResultsPageResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -389,7 +588,15 @@ public class AsyncLang2FhirBatchClient {
      */
     public CompletableFuture<ResultsPageResponse> getResults(
             String jobId, GetResultsRequest request, RequestOptions requestOptions) {
-        return this.rawClient.getResults(jobId, request, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<ResultsPageResponse>> rawFuture =
+                this.rawClient.getResults(jobId, request, requestOptions);
+        CompletableFuture<ResultsPageResponse> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -402,7 +609,15 @@ public class AsyncLang2FhirBatchClient {
      * expired is a <code>404</code>.</p>
      */
     public CompletableFuture<Map<String, Object>> getResult(String jobId, String itemId) {
-        return this.rawClient.getResult(jobId, itemId).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> rawFuture =
+                this.rawClient.getResult(jobId, itemId);
+        CompletableFuture<Map<String, Object>> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 
     /**
@@ -416,6 +631,14 @@ public class AsyncLang2FhirBatchClient {
      */
     public CompletableFuture<Map<String, Object>> getResult(
             String jobId, String itemId, RequestOptions requestOptions) {
-        return this.rawClient.getResult(jobId, itemId, requestOptions).thenApply(response -> response.body());
+        CompletableFuture<PhenomlClientHttpResponse<Map<String, Object>>> rawFuture =
+                this.rawClient.getResult(jobId, itemId, requestOptions);
+        CompletableFuture<Map<String, Object>> future = rawFuture.thenApply(response -> response.body());
+        future.whenComplete((result_, throwable_) -> {
+            if (future.isCancelled()) {
+                rawFuture.cancel(true);
+            }
+        });
+        return future;
     }
 }

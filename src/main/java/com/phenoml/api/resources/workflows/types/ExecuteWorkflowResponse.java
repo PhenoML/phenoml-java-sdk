@@ -114,7 +114,6 @@ public final class ExecuteWorkflowResponse {
 
         private Optional<Boolean> preview = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -182,6 +181,17 @@ public final class ExecuteWorkflowResponse {
 
         public ExecuteWorkflowResponse build() {
             return new ExecuteWorkflowResponse(success, message, results, preview, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("success")
+                    || key.equalsIgnoreCase("message")
+                    || key.equalsIgnoreCase("results")
+                    || key.equalsIgnoreCase("preview")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

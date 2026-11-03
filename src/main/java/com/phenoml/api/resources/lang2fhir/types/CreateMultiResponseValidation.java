@@ -118,7 +118,6 @@ public final class CreateMultiResponseValidation {
 
         private Optional<String> summary = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -189,6 +188,17 @@ public final class CreateMultiResponseValidation {
 
         public CreateMultiResponseValidation build() {
             return new CreateMultiResponseValidation(passes, fixed, attempts, summary, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("passes")
+                    || key.equalsIgnoreCase("fixed")
+                    || key.equalsIgnoreCase("attempts")
+                    || key.equalsIgnoreCase("summary")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

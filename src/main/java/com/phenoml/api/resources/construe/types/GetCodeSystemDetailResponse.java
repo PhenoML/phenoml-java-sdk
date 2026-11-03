@@ -240,7 +240,6 @@ public final class GetCodeSystemDetailResponse {
 
         private OffsetDateTime updatedAt;
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -343,6 +342,20 @@ public final class GetCodeSystemDetailResponse {
         public GetCodeSystemDetailResponse build() {
             return new GetCodeSystemDetailResponse(
                     name, version, codeCount, builtin, status, createdAt, updatedAt, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("name")
+                    || key.equalsIgnoreCase("version")
+                    || key.equalsIgnoreCase("code_count")
+                    || key.equalsIgnoreCase("builtin")
+                    || key.equalsIgnoreCase("status")
+                    || key.equalsIgnoreCase("created_at")
+                    || key.equalsIgnoreCase("updated_at")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

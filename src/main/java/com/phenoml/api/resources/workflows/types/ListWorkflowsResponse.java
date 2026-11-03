@@ -118,7 +118,6 @@ public final class ListWorkflowsResponse {
 
         private Optional<List<WorkflowDefinition>> workflowDetails = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -189,6 +188,17 @@ public final class ListWorkflowsResponse {
 
         public ListWorkflowsResponse build() {
             return new ListWorkflowsResponse(success, message, workflows, workflowDetails, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("success")
+                    || key.equalsIgnoreCase("message")
+                    || key.equalsIgnoreCase("workflows")
+                    || key.equalsIgnoreCase("workflow_details")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

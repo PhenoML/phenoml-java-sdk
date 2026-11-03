@@ -117,7 +117,6 @@ public final class ProviderRoleCareSite {
 
         private Optional<Long> careSiteId = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -164,6 +163,16 @@ public final class ProviderRoleCareSite {
         @java.lang.Override
         public ProviderRoleCareSite build() {
             return new ProviderRoleCareSite(path, reference, careSiteId, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("path")
+                    || key.equalsIgnoreCase("reference")
+                    || key.equalsIgnoreCase("care_site_id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

@@ -1,0 +1,68 @@
+{
+  "system": {
+    "name": "RXNORM",
+    "version": "11042024"
+  },
+  "codes": [
+    {
+      "code": "861004",
+      "description": "Metformin hydrochloride 500 MG Oral Tablet",
+      "valid": true,
+      "reason": "Metformin 500mg prescribed for type 2 diabetes",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    },
+    {
+      "code": "314076",
+      "description": "Lisinopril 10 MG Oral Tablet",
+      "valid": true,
+      "reason": "Lisinopril 10mg continued for hypertension",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    },
+    {
+      "code": "259255",
+      "description": "Atorvastatin 20 MG Oral Tablet",
+      "valid": true,
+      "reason": "Atorvastatin 20mg added at bedtime",
+      "is_ancestor": true,
+      "citations": [
+        {
+          "text": "Patient has type 2 diabetes",
+          "begin_offset": 0,
+          "end_offset": 27
+        }
+      ],
+      "categories": [
+        {
+          "uri": "HP:0025142",
+          "label": "Constitutional symptom"
+        }
+      ]
+    }
+  ]
+}

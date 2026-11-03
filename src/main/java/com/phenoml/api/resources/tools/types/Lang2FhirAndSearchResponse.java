@@ -130,7 +130,6 @@ public final class Lang2FhirAndSearchResponse {
 
         private Optional<String> message = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -214,6 +213,18 @@ public final class Lang2FhirAndSearchResponse {
         public Lang2FhirAndSearchResponse build() {
             return new Lang2FhirAndSearchResponse(
                     resourceType, searchParams, fhirResults, success, message, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("resource_type")
+                    || key.equalsIgnoreCase("search_params")
+                    || key.equalsIgnoreCase("fhir_results")
+                    || key.equalsIgnoreCase("success")
+                    || key.equalsIgnoreCase("message")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

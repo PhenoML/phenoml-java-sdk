@@ -136,7 +136,6 @@ public final class CrosswalkTarget {
 
         private Optional<String> reasonCode = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -218,6 +217,16 @@ public final class CrosswalkTarget {
         @java.lang.Override
         public CrosswalkTarget build() {
             return new CrosswalkTarget(system, reasonCode, matches, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("system")
+                    || key.equalsIgnoreCase("reason_code")
+                    || key.equalsIgnoreCase("matches")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

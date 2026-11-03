@@ -93,7 +93,6 @@ public final class ListMessagesResponse {
 
         private Optional<String> sessionId = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -140,6 +139,16 @@ public final class ListMessagesResponse {
 
         public ListMessagesResponse build() {
             return new ListMessagesResponse(messages, total, sessionId, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("messages")
+                    || key.equalsIgnoreCase("total")
+                    || key.equalsIgnoreCase("session_id")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

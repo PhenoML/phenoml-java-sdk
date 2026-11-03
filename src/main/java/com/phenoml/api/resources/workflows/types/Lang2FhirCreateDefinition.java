@@ -118,7 +118,6 @@ public final class Lang2FhirCreateDefinition {
 
         private Optional<Map<String, String>> runtimePlaceholders = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -190,6 +189,17 @@ public final class Lang2FhirCreateDefinition {
         public Lang2FhirCreateDefinition build() {
             return new Lang2FhirCreateDefinition(
                     originalDescription, resourceType, resourceTemplate, runtimePlaceholders, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("original_description")
+                    || key.equalsIgnoreCase("resource_type")
+                    || key.equalsIgnoreCase("resource_template")
+                    || key.equalsIgnoreCase("runtime_placeholders")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {

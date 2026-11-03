@@ -98,7 +98,6 @@ public final class ProviderRolePractitionerIdentifier {
 
         private Optional<String> system = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -133,6 +132,14 @@ public final class ProviderRolePractitionerIdentifier {
         @java.lang.Override
         public ProviderRolePractitionerIdentifier build() {
             return new ProviderRolePractitionerIdentifier(system, value, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("system") || key.equalsIgnoreCase("value")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         @java.lang.Override

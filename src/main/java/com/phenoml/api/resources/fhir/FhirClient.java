@@ -311,6 +311,8 @@ public class FhirClient {
     /**
      * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+     * <p>On shared instances, only the default sandbox provider is accessible. The Bundle must contain an <code>entry</code> array, and each entry must have a <code>request.method</code> of <code>POST</code> and a relative resource-type <code>request.url</code>, such as <code>Patient</code> or <code>Observation</code>. URLs must contain only a resource type starting with an uppercase letter followed by letters or digits; absolute URLs, query strings, resource IDs, custom operation paths, and nested bundle execution are not supported. Entry resources and references are forwarded unchanged.</p>
+     * <p>On shared instances, invalid JSON, an invalid Bundle envelope, missing request fields, or duplicate property names in the Bundle, entry, or request objects return <code>400</code>. Unsupported entry methods or URLs return <code>403</code>, and a non-default provider returns <code>404</code>. If any entry is rejected, the entire Bundle is rejected without executing any entries. Dedicated instances support the upstream server's transaction and batch operations without these create-only restrictions.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public Object executeBundle(String fhirProviderId, Object body) {
@@ -320,6 +322,8 @@ public class FhirClient {
     /**
      * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+     * <p>On shared instances, only the default sandbox provider is accessible. The Bundle must contain an <code>entry</code> array, and each entry must have a <code>request.method</code> of <code>POST</code> and a relative resource-type <code>request.url</code>, such as <code>Patient</code> or <code>Observation</code>. URLs must contain only a resource type starting with an uppercase letter followed by letters or digits; absolute URLs, query strings, resource IDs, custom operation paths, and nested bundle execution are not supported. Entry resources and references are forwarded unchanged.</p>
+     * <p>On shared instances, invalid JSON, an invalid Bundle envelope, missing request fields, or duplicate property names in the Bundle, entry, or request objects return <code>400</code>. Unsupported entry methods or URLs return <code>403</code>, and a non-default provider returns <code>404</code>. If any entry is rejected, the entire Bundle is rejected without executing any entries. Dedicated instances support the upstream server's transaction and batch operations without these create-only restrictions.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public Object executeBundle(String fhirProviderId, Object body, RequestOptions requestOptions) {
@@ -331,6 +335,8 @@ public class FhirClient {
     /**
      * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+     * <p>On shared instances, only the default sandbox provider is accessible. The Bundle must contain an <code>entry</code> array, and each entry must have a <code>request.method</code> of <code>POST</code> and a relative resource-type <code>request.url</code>, such as <code>Patient</code> or <code>Observation</code>. URLs must contain only a resource type starting with an uppercase letter followed by letters or digits; absolute URLs, query strings, resource IDs, custom operation paths, and nested bundle execution are not supported. Entry resources and references are forwarded unchanged.</p>
+     * <p>On shared instances, invalid JSON, an invalid Bundle envelope, missing request fields, or duplicate property names in the Bundle, entry, or request objects return <code>400</code>. Unsupported entry methods or URLs return <code>403</code>, and a non-default provider returns <code>404</code>. If any entry is rejected, the entire Bundle is rejected without executing any entries. Dedicated instances support the upstream server's transaction and batch operations without these create-only restrictions.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public Object executeBundle(String fhirProviderId, ExecuteBundleRequest request) {
@@ -340,6 +346,8 @@ public class FhirClient {
     /**
      * Executes a FHIR Bundle transaction or batch operation on the specified provider. This allows multiple FHIR resources to be processed in a single request.
      * <p>The request body should contain a valid FHIR Bundle resource with transaction or batch type.</p>
+     * <p>On shared instances, only the default sandbox provider is accessible. The Bundle must contain an <code>entry</code> array, and each entry must have a <code>request.method</code> of <code>POST</code> and a relative resource-type <code>request.url</code>, such as <code>Patient</code> or <code>Observation</code>. URLs must contain only a resource type starting with an uppercase letter followed by letters or digits; absolute URLs, query strings, resource IDs, custom operation paths, and nested bundle execution are not supported. Entry resources and references are forwarded unchanged.</p>
+     * <p>On shared instances, invalid JSON, an invalid Bundle envelope, missing request fields, or duplicate property names in the Bundle, entry, or request objects return <code>400</code>. Unsupported entry methods or URLs return <code>403</code>, and a non-default provider returns <code>404</code>. If any entry is rejected, the entire Bundle is rejected without executing any entries. Dedicated instances support the upstream server's transaction and batch operations without these create-only restrictions.</p>
      * <p>The request is proxied to the configured FHIR server with appropriate authentication headers.</p>
      */
     public Object executeBundle(String fhirProviderId, ExecuteBundleRequest request, RequestOptions requestOptions) {

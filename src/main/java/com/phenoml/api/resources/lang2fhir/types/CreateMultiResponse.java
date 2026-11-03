@@ -149,7 +149,6 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
 
         private Optional<ResourceReviewResult> resourceReview = Optional.empty();
 
-        @JsonAnySetter
         private Map<String, Object> additionalProperties = new HashMap<>();
 
         private Builder() {}
@@ -248,6 +247,19 @@ public final class CreateMultiResponse implements ICreateMultiResponse {
         public CreateMultiResponse build() {
             return new CreateMultiResponse(
                     success, message, bundle, resources, validation, resourceReview, additionalProperties);
+        }
+
+        @JsonAnySetter
+        private void putAdditionalPropertyFromJson(String key, Object value) {
+            if (key.equalsIgnoreCase("success")
+                    || key.equalsIgnoreCase("message")
+                    || key.equalsIgnoreCase("bundle")
+                    || key.equalsIgnoreCase("resources")
+                    || key.equalsIgnoreCase("validation")
+                    || key.equalsIgnoreCase("resource_review")) {
+                return;
+            }
+            this.additionalProperties.put(key, value);
         }
 
         public Builder additionalProperty(String key, Object value) {
