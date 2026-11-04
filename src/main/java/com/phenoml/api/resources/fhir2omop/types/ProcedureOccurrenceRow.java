@@ -38,6 +38,8 @@ public final class ProcedureOccurrenceRow {
 
     private final Optional<Long> visitOccurrenceId;
 
+    private final Optional<Long> visitDetailId;
+
     private final Optional<Long> providerId;
 
     private final Optional<String> procedureSourceValue;
@@ -56,6 +58,7 @@ public final class ProcedureOccurrenceRow {
             Optional<String> procedureEndDatetime,
             Optional<Long> procedureTypeConceptId,
             Optional<Long> visitOccurrenceId,
+            Optional<Long> visitDetailId,
             Optional<Long> providerId,
             Optional<String> procedureSourceValue,
             Optional<Long> procedureSourceConceptId,
@@ -69,6 +72,7 @@ public final class ProcedureOccurrenceRow {
         this.procedureEndDatetime = procedureEndDatetime;
         this.procedureTypeConceptId = procedureTypeConceptId;
         this.visitOccurrenceId = visitOccurrenceId;
+        this.visitDetailId = visitDetailId;
         this.providerId = providerId;
         this.procedureSourceValue = procedureSourceValue;
         this.procedureSourceConceptId = procedureSourceConceptId;
@@ -126,6 +130,14 @@ public final class ProcedureOccurrenceRow {
         return visitOccurrenceId;
     }
 
+    /**
+     * @return Explicit same-patient component link, supplied together with its overarching visit_occurrence_id.
+     */
+    @JsonProperty("visit_detail_id")
+    public Optional<Long> getVisitDetailId() {
+        return visitDetailId;
+    }
+
     @JsonProperty("provider_id")
     public Optional<Long> getProviderId() {
         return providerId;
@@ -162,6 +174,7 @@ public final class ProcedureOccurrenceRow {
                 && procedureEndDatetime.equals(other.procedureEndDatetime)
                 && procedureTypeConceptId.equals(other.procedureTypeConceptId)
                 && visitOccurrenceId.equals(other.visitOccurrenceId)
+                && visitDetailId.equals(other.visitDetailId)
                 && providerId.equals(other.providerId)
                 && procedureSourceValue.equals(other.procedureSourceValue)
                 && procedureSourceConceptId.equals(other.procedureSourceConceptId);
@@ -179,6 +192,7 @@ public final class ProcedureOccurrenceRow {
                 this.procedureEndDatetime,
                 this.procedureTypeConceptId,
                 this.visitOccurrenceId,
+                this.visitDetailId,
                 this.providerId,
                 this.procedureSourceValue,
                 this.procedureSourceConceptId);
@@ -213,6 +227,8 @@ public final class ProcedureOccurrenceRow {
 
         private Optional<Long> visitOccurrenceId = Optional.empty();
 
+        private Optional<Long> visitDetailId = Optional.empty();
+
         private Optional<Long> providerId = Optional.empty();
 
         private Optional<String> procedureSourceValue = Optional.empty();
@@ -233,6 +249,7 @@ public final class ProcedureOccurrenceRow {
             procedureEndDatetime(other.getProcedureEndDatetime());
             procedureTypeConceptId(other.getProcedureTypeConceptId());
             visitOccurrenceId(other.getVisitOccurrenceId());
+            visitDetailId(other.getVisitDetailId());
             providerId(other.getProviderId());
             procedureSourceValue(other.getProcedureSourceValue());
             procedureSourceConceptId(other.getProcedureSourceConceptId());
@@ -344,6 +361,20 @@ public final class ProcedureOccurrenceRow {
             return this;
         }
 
+        /**
+         * <p>Explicit same-patient component link, supplied together with its overarching visit_occurrence_id.</p>
+         */
+        @JsonSetter(value = "visit_detail_id", nulls = Nulls.SKIP)
+        public Builder visitDetailId(Optional<Long> visitDetailId) {
+            this.visitDetailId = visitDetailId;
+            return this;
+        }
+
+        public Builder visitDetailId(Long visitDetailId) {
+            this.visitDetailId = Optional.ofNullable(visitDetailId);
+            return this;
+        }
+
         @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
         public Builder providerId(Optional<Long> providerId) {
             this.providerId = providerId;
@@ -388,6 +419,7 @@ public final class ProcedureOccurrenceRow {
                     procedureEndDatetime,
                     procedureTypeConceptId,
                     visitOccurrenceId,
+                    visitDetailId,
                     providerId,
                     procedureSourceValue,
                     procedureSourceConceptId,
@@ -405,6 +437,7 @@ public final class ProcedureOccurrenceRow {
                     || key.equalsIgnoreCase("procedure_end_datetime")
                     || key.equalsIgnoreCase("procedure_type_concept_id")
                     || key.equalsIgnoreCase("visit_occurrence_id")
+                    || key.equalsIgnoreCase("visit_detail_id")
                     || key.equalsIgnoreCase("provider_id")
                     || key.equalsIgnoreCase("procedure_source_value")
                     || key.equalsIgnoreCase("procedure_source_concept_id")) {

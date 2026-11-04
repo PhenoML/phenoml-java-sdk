@@ -38,6 +38,8 @@ public final class ConditionOccurrenceRow {
 
     private final Optional<Long> visitOccurrenceId;
 
+    private final Optional<Long> visitDetailId;
+
     private final Optional<Long> providerId;
 
     private final Optional<String> conditionSourceValue;
@@ -58,6 +60,7 @@ public final class ConditionOccurrenceRow {
             Optional<String> conditionEndDatetime,
             Optional<Long> conditionTypeConceptId,
             Optional<Long> visitOccurrenceId,
+            Optional<Long> visitDetailId,
             Optional<Long> providerId,
             Optional<String> conditionSourceValue,
             Optional<Long> conditionSourceConceptId,
@@ -72,6 +75,7 @@ public final class ConditionOccurrenceRow {
         this.conditionEndDatetime = conditionEndDatetime;
         this.conditionTypeConceptId = conditionTypeConceptId;
         this.visitOccurrenceId = visitOccurrenceId;
+        this.visitDetailId = visitDetailId;
         this.providerId = providerId;
         this.conditionSourceValue = conditionSourceValue;
         this.conditionSourceConceptId = conditionSourceConceptId;
@@ -130,6 +134,14 @@ public final class ConditionOccurrenceRow {
         return visitOccurrenceId;
     }
 
+    /**
+     * @return Explicit same-patient component link, supplied together with its overarching visit_occurrence_id.
+     */
+    @JsonProperty("visit_detail_id")
+    public Optional<Long> getVisitDetailId() {
+        return visitDetailId;
+    }
+
     @JsonProperty("provider_id")
     public Optional<Long> getProviderId() {
         return providerId;
@@ -171,6 +183,7 @@ public final class ConditionOccurrenceRow {
                 && conditionEndDatetime.equals(other.conditionEndDatetime)
                 && conditionTypeConceptId.equals(other.conditionTypeConceptId)
                 && visitOccurrenceId.equals(other.visitOccurrenceId)
+                && visitDetailId.equals(other.visitDetailId)
                 && providerId.equals(other.providerId)
                 && conditionSourceValue.equals(other.conditionSourceValue)
                 && conditionSourceConceptId.equals(other.conditionSourceConceptId)
@@ -189,6 +202,7 @@ public final class ConditionOccurrenceRow {
                 this.conditionEndDatetime,
                 this.conditionTypeConceptId,
                 this.visitOccurrenceId,
+                this.visitDetailId,
                 this.providerId,
                 this.conditionSourceValue,
                 this.conditionSourceConceptId,
@@ -224,6 +238,8 @@ public final class ConditionOccurrenceRow {
 
         private Optional<Long> visitOccurrenceId = Optional.empty();
 
+        private Optional<Long> visitDetailId = Optional.empty();
+
         private Optional<Long> providerId = Optional.empty();
 
         private Optional<String> conditionSourceValue = Optional.empty();
@@ -246,6 +262,7 @@ public final class ConditionOccurrenceRow {
             conditionEndDatetime(other.getConditionEndDatetime());
             conditionTypeConceptId(other.getConditionTypeConceptId());
             visitOccurrenceId(other.getVisitOccurrenceId());
+            visitDetailId(other.getVisitDetailId());
             providerId(other.getProviderId());
             conditionSourceValue(other.getConditionSourceValue());
             conditionSourceConceptId(other.getConditionSourceConceptId());
@@ -358,6 +375,20 @@ public final class ConditionOccurrenceRow {
             return this;
         }
 
+        /**
+         * <p>Explicit same-patient component link, supplied together with its overarching visit_occurrence_id.</p>
+         */
+        @JsonSetter(value = "visit_detail_id", nulls = Nulls.SKIP)
+        public Builder visitDetailId(Optional<Long> visitDetailId) {
+            this.visitDetailId = visitDetailId;
+            return this;
+        }
+
+        public Builder visitDetailId(Long visitDetailId) {
+            this.visitDetailId = Optional.ofNullable(visitDetailId);
+            return this;
+        }
+
         @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
         public Builder providerId(Optional<Long> providerId) {
             this.providerId = providerId;
@@ -413,6 +444,7 @@ public final class ConditionOccurrenceRow {
                     conditionEndDatetime,
                     conditionTypeConceptId,
                     visitOccurrenceId,
+                    visitDetailId,
                     providerId,
                     conditionSourceValue,
                     conditionSourceConceptId,
@@ -431,6 +463,7 @@ public final class ConditionOccurrenceRow {
                     || key.equalsIgnoreCase("condition_end_datetime")
                     || key.equalsIgnoreCase("condition_type_concept_id")
                     || key.equalsIgnoreCase("visit_occurrence_id")
+                    || key.equalsIgnoreCase("visit_detail_id")
                     || key.equalsIgnoreCase("provider_id")
                     || key.equalsIgnoreCase("condition_source_value")
                     || key.equalsIgnoreCase("condition_source_concept_id")
