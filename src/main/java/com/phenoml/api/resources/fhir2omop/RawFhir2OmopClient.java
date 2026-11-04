@@ -103,7 +103,7 @@ public class RawFhir2OmopClient {
      * <li><code>Organization</code> -&gt; <code>care_site</code>; its first address can produce <code>location</code></li>
      * <li><code>HealthcareService</code> -&gt; <code>care_site</code></li>
      * <li><code>Practitioner</code> and <code>PractitionerRole</code> -&gt; <code>provider</code></li>
-     * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
+     * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code> or <code>visit_detail</code> for supported explicit components</li>
      * <li><code>Specimen</code> -&gt; <code>specimen</code>, with an explicit Patient subject; missing
      * collection date or material retains a partial row with diagnostics</li>
      * <li><code>DeviceUseStatement</code> -&gt; <code>device_exposure</code>, using referenced <code>Device.type</code></li>
@@ -856,9 +856,89 @@ public class RawFhir2OmopClient {
      * classification was selected. <code>visit_source_concept_id</code> identifies
      * the selected original source coding's OMOP concept when available,
      * and is <code>0</code> otherwise, including for the HL7 encounter class codes
-     * listed above. Each eligible Encounter produces one Visit;
-     * <code>classHistory</code>, <code>partOf</code>, and admission/discharge concepts are not
-     * mapped.</p>
+     * listed above.</p>
+     * </li>
+     * <li>
+     * <p>Explicit <code>Encounter.partOf</code> components produce <code>visit_detail</code> when the
+     * parent is a supplied top-level Encounter with no <code>partOf</code>, both
+     * Encounters explicitly reference the same unambiguous Patient, and both
+     * have status <code>arrived</code>, <code>triaged</code>, <code>in-progress</code>, <code>onleave</code>, or <code>finished</code>.
+     * The parent produces <code>visit_occurrence</code>; the child produces only
+     * <code>visit_detail</code>, linked to that visit and person. References must exactly
+     * match supplied <code>Encounter/id</code> or Bundle <code>fullUrl</code> values, including URNs.
+     * Contained, identifier-only, wrong-type, ambiguous, and unresolved
+     * references do not establish grouping. Supplied reference types must
+     * agree with Encounter and Patient targets.</p>
+     * </li>
+     * <li>
+     * <p>Details preserve the child's own period, classification, EHR type
+     * concept <code>32817</code>, and directly supported provider/care-site links.
+     * Parent fields are not inherited. The existing class/type selection
+     * policy applies independently to <code>visit_detail_concept_id</code>,
+     * <code>visit_detail_source_value</code>, and <code>visit_detail_source_concept_id</code>.
+     * Missing dates and unmapped concepts retain partial rows without date
+     * imputation. Primary concept <code>0</code> indexes the detail in <code>rows_for_review</code>
+     * and excludes its dates from observation-period derivation.</p>
+     * </li>
+     * <li>
+     * <p>Selected parent/detail concepts are assessed in the same vocabulary
+     * release used for classification. <code>COMPATIBLE</code> supports a detail,
+     * including same-concept and parent-ancestor/detail-descendant pairs.
+     * <code>UNKNOWN</code> retains the explicit component as a partial detail with an
+     * <code>UNSUPPORTED</code> diagnostic at <code>partOf</code> explaining the reason.
+     * <code>INCOMPATIBLE</code> retains the child as an independent <code>visit_occurrence</code>,
+     * with a <code>CONFLICTING</code> diagnostic. It means the selected classifications
+     * fail the CDM relationship convention; it does not say the supplied
+     * clinical events or FHIR <code>partOf</code> relationship are false. Concepts,
+     * source classifications and dates are never changed to make a pair fit.</p>
+     * </li>
+     * <li>
+     * <p><code>visit_component_contexts</code> links each assessment to the final emitted
+     * detail or standalone visit, preserving the parent reference, assessed
+     * concept IDs, vocabulary version, status, reason and available ancestry
+     * depth. An unknown assessment alone does not discard facts or index a
+     * mapped row for review; existing concept-0 review indexing still applies.
+     * Missing, malformed, inconsistent-version, or failed assessment responses
+     * are conversion errors rather than successful unknown outcomes.</p>
+     * </li>
+     * <li>
+     * <p>Comparable reversed or disjoint periods prevent grouping. Overlapping
+     * periods may extend outside the parent; grouping is retained without
+     * clipping the child or expanding the parent. Times with offsets are
+     * compared as instants; date-only boundaries by calendar date. Different
+     * precision or a timezone on only one timestamp is incomparable. Missing,
+     * partial, invalid, or incomparable boundaries cannot establish a
+     * contradiction. A <code>partOf</code> diagnostic explains non-contained periods
+     * (<code>CONFLICTING</code>) and incomplete timing (<code>UNSUPPORTED</code>), including when
+     * grouping is retained. These diagnostics
+     * alone do not index a mapped row for review.</p>
+     * </li>
+     * <li>
+     * <p>Unsupported grouping retains independently eligible standalone visits
+     * and compatible clinical references to those visits. <code>partOf</code> diagnostics
+     * explain missing, ambiguous, wrong-type, ineligible, uncertain-status,
+     * or cross-patient parents. Cycles and connected hierarchies deeper than
+     * parent/child retain standalone output throughout, without choosing a
+     * root or recovering a partial subtree. Unknown-status merge stubs do
+     * not qualify as components. Ancestors are never fetched or invented.</p>
+     * </li>
+     * <li>
+     * <p>A compatible explicit clinical reference to a detail supplies both
+     * <code>visit_detail_id</code> and its overarching <code>visit_occurrence_id</code>; a parent
+     * reference supplies only the visit ID. Links survive placement in all
+     * six supported clinical tables, including <code>device_exposure</code> and
+     * MedicationDispense's R4 <code>context</code> path. Failed optional references leave
+     * links absent while retaining otherwise supported facts.
+     * DeviceUseStatement has no R4 Encounter reference and receives neither
+     * link. Dates alone never establish links.</p>
+     * </li>
+     * <li>
+     * <p>Detail classification mappings identify the child, its <code>partOf</code>
+     * reference, the <code>visit_detail</code> table, and detail ID. IDs are request-local;
+     * use returned links rather than Encounter input positions or assuming
+     * every Encounter is a standalone visit. <code>classHistory</code>, <code>location.period</code>
+     * segmentation, admission/discharge concepts, and inferred sequencing
+     * are not mapped.</p>
      * </li>
      * <li>
      * <p>Direct <code>MedicationRequest.dispenseRequest.quantity</code>, <code>MedicationDispense.quantity</code>,
@@ -1068,7 +1148,7 @@ public class RawFhir2OmopClient {
      * <li><code>Organization</code> -&gt; <code>care_site</code>; its first address can produce <code>location</code></li>
      * <li><code>HealthcareService</code> -&gt; <code>care_site</code></li>
      * <li><code>Practitioner</code> and <code>PractitionerRole</code> -&gt; <code>provider</code></li>
-     * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
+     * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code> or <code>visit_detail</code> for supported explicit components</li>
      * <li><code>Specimen</code> -&gt; <code>specimen</code>, with an explicit Patient subject; missing
      * collection date or material retains a partial row with diagnostics</li>
      * <li><code>DeviceUseStatement</code> -&gt; <code>device_exposure</code>, using referenced <code>Device.type</code></li>
@@ -1821,9 +1901,89 @@ public class RawFhir2OmopClient {
      * classification was selected. <code>visit_source_concept_id</code> identifies
      * the selected original source coding's OMOP concept when available,
      * and is <code>0</code> otherwise, including for the HL7 encounter class codes
-     * listed above. Each eligible Encounter produces one Visit;
-     * <code>classHistory</code>, <code>partOf</code>, and admission/discharge concepts are not
-     * mapped.</p>
+     * listed above.</p>
+     * </li>
+     * <li>
+     * <p>Explicit <code>Encounter.partOf</code> components produce <code>visit_detail</code> when the
+     * parent is a supplied top-level Encounter with no <code>partOf</code>, both
+     * Encounters explicitly reference the same unambiguous Patient, and both
+     * have status <code>arrived</code>, <code>triaged</code>, <code>in-progress</code>, <code>onleave</code>, or <code>finished</code>.
+     * The parent produces <code>visit_occurrence</code>; the child produces only
+     * <code>visit_detail</code>, linked to that visit and person. References must exactly
+     * match supplied <code>Encounter/id</code> or Bundle <code>fullUrl</code> values, including URNs.
+     * Contained, identifier-only, wrong-type, ambiguous, and unresolved
+     * references do not establish grouping. Supplied reference types must
+     * agree with Encounter and Patient targets.</p>
+     * </li>
+     * <li>
+     * <p>Details preserve the child's own period, classification, EHR type
+     * concept <code>32817</code>, and directly supported provider/care-site links.
+     * Parent fields are not inherited. The existing class/type selection
+     * policy applies independently to <code>visit_detail_concept_id</code>,
+     * <code>visit_detail_source_value</code>, and <code>visit_detail_source_concept_id</code>.
+     * Missing dates and unmapped concepts retain partial rows without date
+     * imputation. Primary concept <code>0</code> indexes the detail in <code>rows_for_review</code>
+     * and excludes its dates from observation-period derivation.</p>
+     * </li>
+     * <li>
+     * <p>Selected parent/detail concepts are assessed in the same vocabulary
+     * release used for classification. <code>COMPATIBLE</code> supports a detail,
+     * including same-concept and parent-ancestor/detail-descendant pairs.
+     * <code>UNKNOWN</code> retains the explicit component as a partial detail with an
+     * <code>UNSUPPORTED</code> diagnostic at <code>partOf</code> explaining the reason.
+     * <code>INCOMPATIBLE</code> retains the child as an independent <code>visit_occurrence</code>,
+     * with a <code>CONFLICTING</code> diagnostic. It means the selected classifications
+     * fail the CDM relationship convention; it does not say the supplied
+     * clinical events or FHIR <code>partOf</code> relationship are false. Concepts,
+     * source classifications and dates are never changed to make a pair fit.</p>
+     * </li>
+     * <li>
+     * <p><code>visit_component_contexts</code> links each assessment to the final emitted
+     * detail or standalone visit, preserving the parent reference, assessed
+     * concept IDs, vocabulary version, status, reason and available ancestry
+     * depth. An unknown assessment alone does not discard facts or index a
+     * mapped row for review; existing concept-0 review indexing still applies.
+     * Missing, malformed, inconsistent-version, or failed assessment responses
+     * are conversion errors rather than successful unknown outcomes.</p>
+     * </li>
+     * <li>
+     * <p>Comparable reversed or disjoint periods prevent grouping. Overlapping
+     * periods may extend outside the parent; grouping is retained without
+     * clipping the child or expanding the parent. Times with offsets are
+     * compared as instants; date-only boundaries by calendar date. Different
+     * precision or a timezone on only one timestamp is incomparable. Missing,
+     * partial, invalid, or incomparable boundaries cannot establish a
+     * contradiction. A <code>partOf</code> diagnostic explains non-contained periods
+     * (<code>CONFLICTING</code>) and incomplete timing (<code>UNSUPPORTED</code>), including when
+     * grouping is retained. These diagnostics
+     * alone do not index a mapped row for review.</p>
+     * </li>
+     * <li>
+     * <p>Unsupported grouping retains independently eligible standalone visits
+     * and compatible clinical references to those visits. <code>partOf</code> diagnostics
+     * explain missing, ambiguous, wrong-type, ineligible, uncertain-status,
+     * or cross-patient parents. Cycles and connected hierarchies deeper than
+     * parent/child retain standalone output throughout, without choosing a
+     * root or recovering a partial subtree. Unknown-status merge stubs do
+     * not qualify as components. Ancestors are never fetched or invented.</p>
+     * </li>
+     * <li>
+     * <p>A compatible explicit clinical reference to a detail supplies both
+     * <code>visit_detail_id</code> and its overarching <code>visit_occurrence_id</code>; a parent
+     * reference supplies only the visit ID. Links survive placement in all
+     * six supported clinical tables, including <code>device_exposure</code> and
+     * MedicationDispense's R4 <code>context</code> path. Failed optional references leave
+     * links absent while retaining otherwise supported facts.
+     * DeviceUseStatement has no R4 Encounter reference and receives neither
+     * link. Dates alone never establish links.</p>
+     * </li>
+     * <li>
+     * <p>Detail classification mappings identify the child, its <code>partOf</code>
+     * reference, the <code>visit_detail</code> table, and detail ID. IDs are request-local;
+     * use returned links rather than Encounter input positions or assuming
+     * every Encounter is a standalone visit. <code>classHistory</code>, <code>location.period</code>
+     * segmentation, admission/discharge concepts, and inferred sequencing
+     * are not mapped.</p>
      * </li>
      * <li>
      * <p>Direct <code>MedicationRequest.dispenseRequest.quantity</code>, <code>MedicationDispense.quantity</code>,

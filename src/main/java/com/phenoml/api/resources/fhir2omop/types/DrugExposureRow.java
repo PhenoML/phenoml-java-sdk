@@ -54,6 +54,8 @@ public final class DrugExposureRow {
 
     private final Optional<Long> visitOccurrenceId;
 
+    private final Optional<Long> visitDetailId;
+
     private final Optional<Long> providerId;
 
     private final Optional<String> drugSourceValue;
@@ -82,6 +84,7 @@ public final class DrugExposureRow {
             Optional<Long> routeConceptId,
             Optional<String> lotNumber,
             Optional<Long> visitOccurrenceId,
+            Optional<Long> visitDetailId,
             Optional<Long> providerId,
             Optional<String> drugSourceValue,
             Optional<Long> drugSourceConceptId,
@@ -104,6 +107,7 @@ public final class DrugExposureRow {
         this.routeConceptId = routeConceptId;
         this.lotNumber = lotNumber;
         this.visitOccurrenceId = visitOccurrenceId;
+        this.visitDetailId = visitDetailId;
         this.providerId = providerId;
         this.drugSourceValue = drugSourceValue;
         this.drugSourceConceptId = drugSourceConceptId;
@@ -226,6 +230,14 @@ public final class DrugExposureRow {
         return visitOccurrenceId;
     }
 
+    /**
+     * @return Explicit same-patient component link, supplied together with its overarching visit_occurrence_id.
+     */
+    @JsonProperty("visit_detail_id")
+    public Optional<Long> getVisitDetailId() {
+        return visitDetailId;
+    }
+
     @JsonProperty("provider_id")
     public Optional<Long> getProviderId() {
         return providerId;
@@ -278,6 +290,7 @@ public final class DrugExposureRow {
                 && routeConceptId.equals(other.routeConceptId)
                 && lotNumber.equals(other.lotNumber)
                 && visitOccurrenceId.equals(other.visitOccurrenceId)
+                && visitDetailId.equals(other.visitDetailId)
                 && providerId.equals(other.providerId)
                 && drugSourceValue.equals(other.drugSourceValue)
                 && drugSourceConceptId.equals(other.drugSourceConceptId)
@@ -304,6 +317,7 @@ public final class DrugExposureRow {
                 this.routeConceptId,
                 this.lotNumber,
                 this.visitOccurrenceId,
+                this.visitDetailId,
                 this.providerId,
                 this.drugSourceValue,
                 this.drugSourceConceptId,
@@ -355,6 +369,8 @@ public final class DrugExposureRow {
 
         private Optional<Long> visitOccurrenceId = Optional.empty();
 
+        private Optional<Long> visitDetailId = Optional.empty();
+
         private Optional<Long> providerId = Optional.empty();
 
         private Optional<String> drugSourceValue = Optional.empty();
@@ -385,6 +401,7 @@ public final class DrugExposureRow {
             routeConceptId(other.getRouteConceptId());
             lotNumber(other.getLotNumber());
             visitOccurrenceId(other.getVisitOccurrenceId());
+            visitDetailId(other.getVisitDetailId());
             providerId(other.getProviderId());
             drugSourceValue(other.getDrugSourceValue());
             drugSourceConceptId(other.getDrugSourceConceptId());
@@ -609,6 +626,20 @@ public final class DrugExposureRow {
             return this;
         }
 
+        /**
+         * <p>Explicit same-patient component link, supplied together with its overarching visit_occurrence_id.</p>
+         */
+        @JsonSetter(value = "visit_detail_id", nulls = Nulls.SKIP)
+        public Builder visitDetailId(Optional<Long> visitDetailId) {
+            this.visitDetailId = visitDetailId;
+            return this;
+        }
+
+        public Builder visitDetailId(Long visitDetailId) {
+            this.visitDetailId = Optional.ofNullable(visitDetailId);
+            return this;
+        }
+
         @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
         public Builder providerId(Optional<Long> providerId) {
             this.providerId = providerId;
@@ -675,6 +706,7 @@ public final class DrugExposureRow {
                     routeConceptId,
                     lotNumber,
                     visitOccurrenceId,
+                    visitDetailId,
                     providerId,
                     drugSourceValue,
                     drugSourceConceptId,
@@ -701,6 +733,7 @@ public final class DrugExposureRow {
                     || key.equalsIgnoreCase("route_concept_id")
                     || key.equalsIgnoreCase("lot_number")
                     || key.equalsIgnoreCase("visit_occurrence_id")
+                    || key.equalsIgnoreCase("visit_detail_id")
                     || key.equalsIgnoreCase("provider_id")
                     || key.equalsIgnoreCase("drug_source_value")
                     || key.equalsIgnoreCase("drug_source_concept_id")

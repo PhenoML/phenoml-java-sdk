@@ -1,3 +1,12 @@
+## [19.1.0] - 2026-11-04
+### Added
+- **`VisitDetailRow`** — new OMOP response type representing a `visit_detail` table row, exposing visit detail ID, person ID, concept IDs, start/end dates, provider, care site, source value, and parent `visit_occurrence_id`.
+- **`OmopTables.getVisitDetail()`** — exposes the new `visit_detail` OMOP table as `Optional<List<VisitDetailRow>>`, with corresponding `Builder.visitDetail()` setter overloads.
+- **`getVisitDetailId()`** — new optional field added to `ConditionOccurrenceRow`, `DrugExposureRow`, `MeasurementRow`, `ObservationRow`, and `ProcedureOccurrenceRow`, linking each clinical event row to its OMOP `visit_detail` sub-encounter.
+- **`VisitComponentContext`** and **`VisitComponentContextOmopTable`** — new response type and enum linking a child Encounter to its emitted OMOP row (target table, emitted row ID, source resource ID, and associated `VisitPairAssessment`), with `UNKNOWN` fallback for forward compatibility.
+- **`VisitPairAssessment`**, **`VisitPairAssessmentStatus`**, **`VisitPairAssessmentReasonCode`**, and **`VisitPairAssessmentInvalidConceptRole`** — new types and enums reporting the ancestry assessment between a parent Visit concept and a candidate detail concept, including status, reason code, invalid concept role, and minimum levels of separation.
+- **`CreateOmopResponse.getVisitComponentContexts()`** — new optional field returning vocabulary compatibility evidence for supported Encounter component candidates, with corresponding `Builder.visitComponentContexts()` overloads accepting `List` or `Optional<List>`.
+
 ## [19.0.0] - 2026-11-02
 ### Breaking Changes
 - **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; replace `Builder.action(String)` / `Builder.action(Optional<String>)` calls with the corresponding `ResourceReviewRemediatedAction` enum overloads.

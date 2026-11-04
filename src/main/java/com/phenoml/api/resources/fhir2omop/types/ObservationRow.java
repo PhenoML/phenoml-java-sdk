@@ -42,6 +42,8 @@ public final class ObservationRow {
 
     private final Optional<Long> visitOccurrenceId;
 
+    private final Optional<Long> visitDetailId;
+
     private final Optional<Long> providerId;
 
     private final Optional<String> observationSourceValue;
@@ -66,6 +68,7 @@ public final class ObservationRow {
             Optional<Long> valueAsConceptId,
             Optional<Long> unitConceptId,
             Optional<Long> visitOccurrenceId,
+            Optional<Long> visitDetailId,
             Optional<Long> providerId,
             Optional<String> observationSourceValue,
             Optional<Long> observationSourceConceptId,
@@ -83,6 +86,7 @@ public final class ObservationRow {
         this.valueAsConceptId = valueAsConceptId;
         this.unitConceptId = unitConceptId;
         this.visitOccurrenceId = visitOccurrenceId;
+        this.visitDetailId = visitDetailId;
         this.providerId = providerId;
         this.observationSourceValue = observationSourceValue;
         this.observationSourceConceptId = observationSourceConceptId;
@@ -152,6 +156,14 @@ public final class ObservationRow {
         return visitOccurrenceId;
     }
 
+    /**
+     * @return Explicit same-patient component link, supplied together with its overarching visit_occurrence_id.
+     */
+    @JsonProperty("visit_detail_id")
+    public Optional<Long> getVisitDetailId() {
+        return visitDetailId;
+    }
+
     @JsonProperty("provider_id")
     public Optional<Long> getProviderId() {
         return providerId;
@@ -206,6 +218,7 @@ public final class ObservationRow {
                 && valueAsConceptId.equals(other.valueAsConceptId)
                 && unitConceptId.equals(other.unitConceptId)
                 && visitOccurrenceId.equals(other.visitOccurrenceId)
+                && visitDetailId.equals(other.visitDetailId)
                 && providerId.equals(other.providerId)
                 && observationSourceValue.equals(other.observationSourceValue)
                 && observationSourceConceptId.equals(other.observationSourceConceptId)
@@ -227,6 +240,7 @@ public final class ObservationRow {
                 this.valueAsConceptId,
                 this.unitConceptId,
                 this.visitOccurrenceId,
+                this.visitDetailId,
                 this.providerId,
                 this.observationSourceValue,
                 this.observationSourceConceptId,
@@ -267,6 +281,8 @@ public final class ObservationRow {
 
         private Optional<Long> visitOccurrenceId = Optional.empty();
 
+        private Optional<Long> visitDetailId = Optional.empty();
+
         private Optional<Long> providerId = Optional.empty();
 
         private Optional<String> observationSourceValue = Optional.empty();
@@ -293,6 +309,7 @@ public final class ObservationRow {
             valueAsConceptId(other.getValueAsConceptId());
             unitConceptId(other.getUnitConceptId());
             visitOccurrenceId(other.getVisitOccurrenceId());
+            visitDetailId(other.getVisitDetailId());
             providerId(other.getProviderId());
             observationSourceValue(other.getObservationSourceValue());
             observationSourceConceptId(other.getObservationSourceConceptId());
@@ -428,6 +445,20 @@ public final class ObservationRow {
             return this;
         }
 
+        /**
+         * <p>Explicit same-patient component link, supplied together with its overarching visit_occurrence_id.</p>
+         */
+        @JsonSetter(value = "visit_detail_id", nulls = Nulls.SKIP)
+        public Builder visitDetailId(Optional<Long> visitDetailId) {
+            this.visitDetailId = visitDetailId;
+            return this;
+        }
+
+        public Builder visitDetailId(Long visitDetailId) {
+            this.visitDetailId = Optional.ofNullable(visitDetailId);
+            return this;
+        }
+
         @JsonSetter(value = "provider_id", nulls = Nulls.SKIP)
         public Builder providerId(Optional<Long> providerId) {
             this.providerId = providerId;
@@ -502,6 +533,7 @@ public final class ObservationRow {
                     valueAsConceptId,
                     unitConceptId,
                     visitOccurrenceId,
+                    visitDetailId,
                     providerId,
                     observationSourceValue,
                     observationSourceConceptId,
@@ -523,6 +555,7 @@ public final class ObservationRow {
                     || key.equalsIgnoreCase("value_as_concept_id")
                     || key.equalsIgnoreCase("unit_concept_id")
                     || key.equalsIgnoreCase("visit_occurrence_id")
+                    || key.equalsIgnoreCase("visit_detail_id")
                     || key.equalsIgnoreCase("provider_id")
                     || key.equalsIgnoreCase("observation_source_value")
                     || key.equalsIgnoreCase("observation_source_concept_id")
