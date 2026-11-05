@@ -208,7 +208,7 @@ public final class DeviceExposureRow {
     }
 
     /**
-     * @return Unset; no visit-detail linkage is inferred.
+     * @return Explicit same-patient component for routed rows, with its overarching visit_occurrence_id; absent for DeviceUseStatement.
      */
     @JsonProperty("visit_detail_id")
     public Optional<Long> getVisitDetailId() {
@@ -429,7 +429,7 @@ public final class DeviceExposureRow {
         _FinalStage visitOccurrenceId(Long visitOccurrenceId);
 
         /**
-         * <p>Unset; no visit-detail linkage is inferred.</p>
+         * <p>Explicit same-patient component for routed rows, with its overarching visit_occurrence_id; absent for DeviceUseStatement.</p>
          */
         _FinalStage visitDetailId(Optional<Long> visitDetailId);
 
@@ -674,7 +674,7 @@ public final class DeviceExposureRow {
         }
 
         /**
-         * <p>Unset; no visit-detail linkage is inferred.</p>
+         * <p>Explicit same-patient component for routed rows, with its overarching visit_occurrence_id; absent for DeviceUseStatement.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -684,7 +684,7 @@ public final class DeviceExposureRow {
         }
 
         /**
-         * <p>Unset; no visit-detail linkage is inferred.</p>
+         * <p>Explicit same-patient component for routed rows, with its overarching visit_occurrence_id; absent for DeviceUseStatement.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "visit_detail_id", nulls = Nulls.SKIP)
