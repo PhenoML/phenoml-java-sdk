@@ -1,3 +1,15 @@
+## [19.1.0] - 2026-11-05
+### Added
+- **`VisitDetailRow`** — new OMOP response type representing a `visit_detail` table row, exposing visit concept ID, start/end dates, type concept ID, provider, care site, source value, and parent `visit_occurrence_id`.
+- **`OmopTables.getVisitDetail()`** — exposes the `visit_detail` OMOP table as `Optional<List<VisitDetailRow>>`, enabling access to sub-visit encounter records within a conversion response.
+- **`VisitComponentContext`** and **`VisitPairAssessment`** — new response types linking a child FHIR Encounter to its emitted OMOP row and reporting the ancestry compatibility assessment (status, reason code, concept role, separation depth, and vocabulary version) between parent and detail Visit concept pairs.
+- **`VisitPairAssessmentStatus`**, **`VisitPairAssessmentReasonCode`**, and **`VisitPairAssessmentInvalidConceptRole`** — new enums supporting the visit-pair compatibility assessment result.
+- **`getVisitDetailId()`** — new optional `Long` field added to `ConditionOccurrenceRow`, `DrugExposureRow`, `MeasurementRow`, `ObservationRow`, `ProcedureOccurrenceRow`, and `DeviceExposureRow`, linking each clinical event to its OMOP visit detail component alongside the existing `visit_occurrence_id`.
+
+### Changed
+- **`CreateOmopResponse`** — adds `getVisitComponentContexts()` and corresponding builder setters to surface vocabulary compatibility evidence for Encounter component candidates; field documentation for `rowsForReview`, `providerRoleContexts`, `eligibilityExclusions`, and `diagnostics` updated to reflect new `visit_detail` and NPI-validation behaviors.
+- **`ProviderRow.getNpi()` / NPI validation** — NPI values are now validated as individual (Type 1); organization NPIs are omitted from provider output and reported in `dropped` with `provider_npi_is_organization`; unconfirmed NPIs leave `npi` unset with an `UNRESOLVED` diagnostic; `PractitionerRole` resources without a resolvable Practitioner can now emit a provider row using a confirmed individual NPI from role identifiers.
+
 ## [19.0.0] - 2026-11-02
 ### Breaking Changes
 - **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; replace `Builder.action(String)` / `Builder.action(Optional<String>)` calls with the corresponding `ResourceReviewRemediatedAction` enum overloads.
