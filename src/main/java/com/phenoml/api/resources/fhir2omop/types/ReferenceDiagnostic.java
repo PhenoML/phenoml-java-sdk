@@ -111,13 +111,19 @@ public final class ReferenceDiagnostic {
      * are unambiguous when all matches map to one canonical provider.
      * Literal references matching multiple source resources remain
      * ambiguous even if those Practitioners merge into one provider.
-     * CONFLICTING: supplied values or relationships cannot be combined
-     * under the mapping policy, such as differing mapped provider identity
+     * CONFLICTING: supplied values or relationships conflict or require
+     * review under the mapping policy, such as differing mapped provider identity
      * attributes, multiple distinct NPIs on one Practitioner, conflicting
      * Patient demographic extensions, or an Encounter belonging to a
-     * different patient.
+     * different patient. For explicit Encounter components, overlapping but
+     * non-contained periods may retain grouping; reason explains the
+     * retained output and limitation. An <code>INCOMPATIBLE</code> parent/detail
+     * classification outcome retains the child as a standalone visit.
      * UNSUPPORTED: a supplied reference form, resource type, or value
-     * shape is outside the supported mapping policy.
+     * shape is outside the supported mapping policy, or an explicit Encounter
+     * component has an <code>UNKNOWN</code> vocabulary compatibility outcome. Such a
+     * component retains partial grouping; the reason states the limitation
+     * and retained output.
      */
     @JsonProperty("outcome")
     public Optional<ReferenceDiagnosticOutcome> getOutcome() {
@@ -298,13 +304,19 @@ public final class ReferenceDiagnostic {
          * are unambiguous when all matches map to one canonical provider.
          * Literal references matching multiple source resources remain
          * ambiguous even if those Practitioners merge into one provider.
-         * CONFLICTING: supplied values or relationships cannot be combined
-         * under the mapping policy, such as differing mapped provider identity
+         * CONFLICTING: supplied values or relationships conflict or require
+         * review under the mapping policy, such as differing mapped provider identity
          * attributes, multiple distinct NPIs on one Practitioner, conflicting
          * Patient demographic extensions, or an Encounter belonging to a
-         * different patient.
+         * different patient. For explicit Encounter components, overlapping but
+         * non-contained periods may retain grouping; reason explains the
+         * retained output and limitation. An <code>INCOMPATIBLE</code> parent/detail
+         * classification outcome retains the child as a standalone visit.
          * UNSUPPORTED: a supplied reference form, resource type, or value
-         * shape is outside the supported mapping policy.</p>
+         * shape is outside the supported mapping policy, or an explicit Encounter
+         * component has an <code>UNKNOWN</code> vocabulary compatibility outcome. Such a
+         * component retains partial grouping; the reason states the limitation
+         * and retained output.</p>
          */
         @JsonSetter(value = "outcome", nulls = Nulls.SKIP)
         public Builder outcome(Optional<ReferenceDiagnosticOutcome> outcome) {

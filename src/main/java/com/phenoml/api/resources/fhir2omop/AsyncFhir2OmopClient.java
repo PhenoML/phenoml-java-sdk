@@ -96,7 +96,7 @@ public class AsyncFhir2OmopClient {
      * <li><code>Organization</code> -&gt; <code>care_site</code>; its first address can produce <code>location</code></li>
      * <li><code>HealthcareService</code> -&gt; <code>care_site</code></li>
      * <li><code>Practitioner</code> and <code>PractitionerRole</code> -&gt; <code>provider</code></li>
-     * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
+     * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code> or <code>visit_detail</code> for supported explicit components</li>
      * <li><code>Specimen</code> -&gt; <code>specimen</code>, with an explicit Patient subject; missing
      * collection date or material retains a partial row with diagnostics</li>
      * <li><code>DeviceUseStatement</code> -&gt; <code>device_exposure</code>, using referenced <code>Device.type</code></li>
@@ -237,15 +237,24 @@ public class AsyncFhir2OmopClient {
      * gender remain unmapped. <code>Address.country</code> is resolved to <code>location.country_concept_id</code>,
      * and CMS Place of Service codings in <code>Location.type</code> are resolved to
      * <code>care_site.place_of_service_concept_id</code>.
-     * Within one request, Practitioners with the same single distinct supplied
-     * NPI value merge into one provider row only when all supplied mapped identity
-     * attributes in the entire NPI group agree. The NPI system may be
+     * Within one request, Practitioners and role-only providers with the same
+     * single distinct confirmed individual NPI merge into one provider row only when
+     * all supplied mapped identity attributes in the entire NPI group agree. The NPI system may be
      * <code>http://hl7.org/fhir/sid/us-npi</code> (preferred in FHIR R4),
      * <code>urn:oid:2.16.840.1.113883.4.6</code>, or bare <code>2.16.840.1.113883.4.6</code>;
      * these forms are equivalent for matching. OID forms are accepted for compatibility.
      * The same matching rule applies to Practitioners contained in valid role
-     * references. NPI values are compared exactly as supplied, without format
-     * or checksum validation. Blank values and unknown markers <code>UNK</code> and
+     * references. Only NPIs classified as individuals (Type 1) are used for provider
+     * identity. Classification trims whitespace and checks ten digits and the NPI
+     * check digit; source values and merge comparisons remain exact as supplied.
+     * Top-level Practitioners and role-only sources identified by an organization
+     * NPI (Type 2) are omitted from provider
+     * output and reported in <code>dropped</code> with <code>provider_npi_is_organization</code>.
+     * An unconfirmed or invalid NPI on a Practitioner leaves its source-scoped
+     * provider row without <code>npi</code>, with an <code>UNRESOLVED</code> diagnostic at <code>identifier</code>.
+     * No live public registry request is made. Classification failures return
+     * <code>500</code>; known individual NPIs remain usable for historical care even when
+     * deactivated. Blank values and unknown markers <code>UNK</code> and
      * <code>UNKNOWN</code> are treated as missing and do not populate <code>npi</code> or participate
      * in matching. Marker detection ignores case and surrounding whitespace;
      * all other values are preserved without trimming. Other identifier systems and names
@@ -262,14 +271,14 @@ public class AsyncFhir2OmopClient {
      * diagnostics at <code>name</code>, <code>gender</code>, <code>identifier</code>, or <code>birthDate</code>, linked by
      * <code>omop_table: provider</code> and <code>omop_id</code>. All source gender mappings link to
      * their retained or merged provider row.
-     * Repeated copies of one NPI on a resource are allowed. A resource with
+     * Repeated copies of one NPI on a resource are allowed. A Practitioner with
      * multiple distinct NPIs stays separate, leaves <code>npi</code> unset, preserves its
      * source-resource identity in <code>provider_source_value</code>, and reports a
      * <code>CONFLICTING</code> diagnostic at <code>identifier</code> linked by
      * <code>omop_table: provider</code> and <code>omop_id</code>.
      * Row IDs are per response. The API does not merge across requests. For a
-     * Practitioner with one NPI, <code>provider_source_value</code> is that NPI, even when
-     * its group conflicts. Consumers can use it to deduplicate compatible
+     * provider with one confirmed individual NPI, <code>provider_source_value</code> is that NPI,
+     * even when its group conflicts. Consumers can use it to deduplicate compatible
      * providers across requests, but must preserve rows flagged by identity
      * conflict diagnostics and check compatibility across responses. Without
      * one unambiguous NPI, source-resource identity is preserved without a
@@ -278,21 +287,36 @@ public class AsyncFhir2OmopClient {
      * that canonical provider: by a top-level structural reference, a
      * parent-contained <code>#id</code> reference, or an <code>identifier.system</code> and
      * <code>identifier.value</code> match against a top-level Practitioner. Identifier
-     * matching uses the equivalent NPI systems and missing-value rules above;
+     * matching uses the equivalent NPI systems and requires a confirmed individual NPI;
      * all other systems and all supplied identifiers match exactly. No remote
-     * identifier lookup is performed. When <code>Reference.type</code> is present it must
+     * Practitioner resource is fetched. When <code>Reference.type</code> is present it must
      * be <code>Practitioner</code>; duplicate contained IDs and identifier matches to
-     * different canonical providers are ambiguous. An explicit reference that
-     * is unresolved, ambiguous, or unsupported retains a role-fallback provider
-     * row and is returned in <code>diagnostics</code>. <code>provider_role_contexts</code> preserves role-specific
+     * different canonical providers are ambiguous. Unresolved literal references,
+     * unusable identifiers, and ambiguous or unsupported references are reported
+     * in <code>diagnostics</code>.
+     * <code>provider_role_contexts</code> preserves role-specific
      * specialty and care-site context that a canonical OMOP provider row cannot
      * represent together.</p>
-     * <p>A role whose practitioner reference has only a blank or unknown NPI
-     * identifier follows the missing-identifier behavior: its fallback row has
-     * an <code>UNSUPPORTED</code> diagnostic explaining that a usable identifier or literal
-     * reference is required. An unambiguous literal reference still links to
-     * its Practitioner when the NPI is missing or unknown. Original supplied
-     * unknown markers remain in the role's <code>practitioner_identifier</code> metadata.</p>
+     * <p>Without a resolvable supplied Practitioner, a role must have one confirmed
+     * individual NPI in <code>PractitionerRole.identifier</code> or
+     * <code>PractitionerRole.practitioner.identifier</code> to emit a provider. The latter
+     * is a logical reference and does not require a corresponding Practitioner
+     * resource or produce a missing-Practitioner diagnostic when its NPI is usable.
+     * NPIs supplied through both fields must agree exactly. The role uses
+     * the same NPI grouping rules as Practitioners and can merge with compatible
+     * Practitioners or other roles. Names, gender, and birth information are not
+     * invented; the role supplies its NPI, specialties, and care-site references.
+     * Existing <code>provider_role_contexts</code> preserve each emitted role's facts when
+     * multiple roles share one provider. A resolved Practitioner's identity remains
+     * authoritative.
+     * Roles without that individual identity are reported in <code>dropped</code> with
+     * <code>provider_role_requires_individual_npi</code>, or <code>provider_role_conflicting_npis</code>
+     * for multiple distinct NPIs across either field. A role-only organization
+     * NPI is reported with <code>provider_npi_is_organization</code>.
+     * Roles whose resolved Practitioner is an
+     * organization are omitted with <code>provider_practitioner_is_not_individual</code>.
+     * Clinical records are still returned; links to omitted providers remain unset,
+     * with <code>UNRESOLVED</code> diagnostics pointing to the provider omission in <code>dropped</code>.</p>
      * <p>Each <code>PractitionerRole.specialty</code> entry resolves independently using its
      * supplied codings and explicit text from that entry. NUCC codings resolve
      * directly; other supported codings may use the UMLS bridge. Text fallback
@@ -849,9 +873,89 @@ public class AsyncFhir2OmopClient {
      * classification was selected. <code>visit_source_concept_id</code> identifies
      * the selected original source coding's OMOP concept when available,
      * and is <code>0</code> otherwise, including for the HL7 encounter class codes
-     * listed above. Each eligible Encounter produces one Visit;
-     * <code>classHistory</code>, <code>partOf</code>, and admission/discharge concepts are not
-     * mapped.</p>
+     * listed above.</p>
+     * </li>
+     * <li>
+     * <p>Explicit <code>Encounter.partOf</code> components produce <code>visit_detail</code> when the
+     * parent is a supplied top-level Encounter with no <code>partOf</code>, both
+     * Encounters explicitly reference the same unambiguous Patient, and both
+     * have status <code>arrived</code>, <code>triaged</code>, <code>in-progress</code>, <code>onleave</code>, or <code>finished</code>.
+     * The parent produces <code>visit_occurrence</code>; the child produces only
+     * <code>visit_detail</code>, linked to that visit and person. References must exactly
+     * match supplied <code>Encounter/id</code> or Bundle <code>fullUrl</code> values, including URNs.
+     * Contained, identifier-only, wrong-type, ambiguous, and unresolved
+     * references do not establish grouping. Supplied reference types must
+     * agree with Encounter and Patient targets.</p>
+     * </li>
+     * <li>
+     * <p>Details preserve the child's own period, classification, EHR type
+     * concept <code>32817</code>, and directly supported provider/care-site links.
+     * Parent fields are not inherited. The existing class/type selection
+     * policy applies independently to <code>visit_detail_concept_id</code>,
+     * <code>visit_detail_source_value</code>, and <code>visit_detail_source_concept_id</code>.
+     * Missing dates and unmapped concepts retain partial rows without date
+     * imputation. Primary concept <code>0</code> indexes the detail in <code>rows_for_review</code>
+     * and excludes its dates from observation-period derivation.</p>
+     * </li>
+     * <li>
+     * <p>Selected parent/detail concepts are assessed in the same vocabulary
+     * release used for classification. <code>COMPATIBLE</code> supports a detail,
+     * including same-concept and parent-ancestor/detail-descendant pairs.
+     * <code>UNKNOWN</code> retains the explicit component as a partial detail with an
+     * <code>UNSUPPORTED</code> diagnostic at <code>partOf</code> explaining the reason.
+     * <code>INCOMPATIBLE</code> retains the child as an independent <code>visit_occurrence</code>,
+     * with a <code>CONFLICTING</code> diagnostic. It means the selected classifications
+     * fail the CDM relationship convention; it does not say the supplied
+     * clinical events or FHIR <code>partOf</code> relationship are false. Concepts,
+     * source classifications and dates are never changed to make a pair fit.</p>
+     * </li>
+     * <li>
+     * <p><code>visit_component_contexts</code> links each assessment to the final emitted
+     * detail or standalone visit, preserving the parent reference, assessed
+     * concept IDs, vocabulary version, status, reason and available ancestry
+     * depth. An unknown assessment alone does not discard facts or index a
+     * mapped row for review; existing concept-0 review indexing still applies.
+     * Missing, malformed, inconsistent-version, or failed assessment responses
+     * are conversion errors rather than successful unknown outcomes.</p>
+     * </li>
+     * <li>
+     * <p>Comparable reversed or disjoint periods prevent grouping. Overlapping
+     * periods may extend outside the parent; grouping is retained without
+     * clipping the child or expanding the parent. Times with offsets are
+     * compared as instants; date-only boundaries by calendar date. Different
+     * precision or a timezone on only one timestamp is incomparable. Missing,
+     * partial, invalid, or incomparable boundaries cannot establish a
+     * contradiction. A <code>partOf</code> diagnostic explains non-contained periods
+     * (<code>CONFLICTING</code>) and incomplete timing (<code>UNSUPPORTED</code>), including when
+     * grouping is retained. These diagnostics
+     * alone do not index a mapped row for review.</p>
+     * </li>
+     * <li>
+     * <p>Unsupported grouping retains independently eligible standalone visits
+     * and compatible clinical references to those visits. <code>partOf</code> diagnostics
+     * explain missing, ambiguous, wrong-type, ineligible, uncertain-status,
+     * or cross-patient parents. Cycles and connected hierarchies deeper than
+     * parent/child retain standalone output throughout, without choosing a
+     * root or recovering a partial subtree. Unknown-status merge stubs do
+     * not qualify as components. Ancestors are never fetched or invented.</p>
+     * </li>
+     * <li>
+     * <p>A compatible explicit clinical reference to a detail supplies both
+     * <code>visit_detail_id</code> and its overarching <code>visit_occurrence_id</code>; a parent
+     * reference supplies only the visit ID. Links survive placement in all
+     * six supported clinical tables, including <code>device_exposure</code> and
+     * MedicationDispense's R4 <code>context</code> path. Failed optional references leave
+     * links absent while retaining otherwise supported facts.
+     * DeviceUseStatement has no R4 Encounter reference and receives neither
+     * link. Dates alone never establish links.</p>
+     * </li>
+     * <li>
+     * <p>Detail classification mappings identify the child, its <code>partOf</code>
+     * reference, the <code>visit_detail</code> table, and detail ID. IDs are request-local;
+     * use returned links rather than Encounter input positions or assuming
+     * every Encounter is a standalone visit. <code>classHistory</code>, <code>location.period</code>
+     * segmentation, admission/discharge concepts, and inferred sequencing
+     * are not mapped.</p>
      * </li>
      * <li>
      * <p>Direct <code>MedicationRequest.dispenseRequest.quantity</code>, <code>MedicationDispense.quantity</code>,
@@ -1068,7 +1172,7 @@ public class AsyncFhir2OmopClient {
      * <li><code>Organization</code> -&gt; <code>care_site</code>; its first address can produce <code>location</code></li>
      * <li><code>HealthcareService</code> -&gt; <code>care_site</code></li>
      * <li><code>Practitioner</code> and <code>PractitionerRole</code> -&gt; <code>provider</code></li>
-     * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
+     * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code> or <code>visit_detail</code> for supported explicit components</li>
      * <li><code>Specimen</code> -&gt; <code>specimen</code>, with an explicit Patient subject; missing
      * collection date or material retains a partial row with diagnostics</li>
      * <li><code>DeviceUseStatement</code> -&gt; <code>device_exposure</code>, using referenced <code>Device.type</code></li>
@@ -1209,15 +1313,24 @@ public class AsyncFhir2OmopClient {
      * gender remain unmapped. <code>Address.country</code> is resolved to <code>location.country_concept_id</code>,
      * and CMS Place of Service codings in <code>Location.type</code> are resolved to
      * <code>care_site.place_of_service_concept_id</code>.
-     * Within one request, Practitioners with the same single distinct supplied
-     * NPI value merge into one provider row only when all supplied mapped identity
-     * attributes in the entire NPI group agree. The NPI system may be
+     * Within one request, Practitioners and role-only providers with the same
+     * single distinct confirmed individual NPI merge into one provider row only when
+     * all supplied mapped identity attributes in the entire NPI group agree. The NPI system may be
      * <code>http://hl7.org/fhir/sid/us-npi</code> (preferred in FHIR R4),
      * <code>urn:oid:2.16.840.1.113883.4.6</code>, or bare <code>2.16.840.1.113883.4.6</code>;
      * these forms are equivalent for matching. OID forms are accepted for compatibility.
      * The same matching rule applies to Practitioners contained in valid role
-     * references. NPI values are compared exactly as supplied, without format
-     * or checksum validation. Blank values and unknown markers <code>UNK</code> and
+     * references. Only NPIs classified as individuals (Type 1) are used for provider
+     * identity. Classification trims whitespace and checks ten digits and the NPI
+     * check digit; source values and merge comparisons remain exact as supplied.
+     * Top-level Practitioners and role-only sources identified by an organization
+     * NPI (Type 2) are omitted from provider
+     * output and reported in <code>dropped</code> with <code>provider_npi_is_organization</code>.
+     * An unconfirmed or invalid NPI on a Practitioner leaves its source-scoped
+     * provider row without <code>npi</code>, with an <code>UNRESOLVED</code> diagnostic at <code>identifier</code>.
+     * No live public registry request is made. Classification failures return
+     * <code>500</code>; known individual NPIs remain usable for historical care even when
+     * deactivated. Blank values and unknown markers <code>UNK</code> and
      * <code>UNKNOWN</code> are treated as missing and do not populate <code>npi</code> or participate
      * in matching. Marker detection ignores case and surrounding whitespace;
      * all other values are preserved without trimming. Other identifier systems and names
@@ -1234,14 +1347,14 @@ public class AsyncFhir2OmopClient {
      * diagnostics at <code>name</code>, <code>gender</code>, <code>identifier</code>, or <code>birthDate</code>, linked by
      * <code>omop_table: provider</code> and <code>omop_id</code>. All source gender mappings link to
      * their retained or merged provider row.
-     * Repeated copies of one NPI on a resource are allowed. A resource with
+     * Repeated copies of one NPI on a resource are allowed. A Practitioner with
      * multiple distinct NPIs stays separate, leaves <code>npi</code> unset, preserves its
      * source-resource identity in <code>provider_source_value</code>, and reports a
      * <code>CONFLICTING</code> diagnostic at <code>identifier</code> linked by
      * <code>omop_table: provider</code> and <code>omop_id</code>.
      * Row IDs are per response. The API does not merge across requests. For a
-     * Practitioner with one NPI, <code>provider_source_value</code> is that NPI, even when
-     * its group conflicts. Consumers can use it to deduplicate compatible
+     * provider with one confirmed individual NPI, <code>provider_source_value</code> is that NPI,
+     * even when its group conflicts. Consumers can use it to deduplicate compatible
      * providers across requests, but must preserve rows flagged by identity
      * conflict diagnostics and check compatibility across responses. Without
      * one unambiguous NPI, source-resource identity is preserved without a
@@ -1250,21 +1363,36 @@ public class AsyncFhir2OmopClient {
      * that canonical provider: by a top-level structural reference, a
      * parent-contained <code>#id</code> reference, or an <code>identifier.system</code> and
      * <code>identifier.value</code> match against a top-level Practitioner. Identifier
-     * matching uses the equivalent NPI systems and missing-value rules above;
+     * matching uses the equivalent NPI systems and requires a confirmed individual NPI;
      * all other systems and all supplied identifiers match exactly. No remote
-     * identifier lookup is performed. When <code>Reference.type</code> is present it must
+     * Practitioner resource is fetched. When <code>Reference.type</code> is present it must
      * be <code>Practitioner</code>; duplicate contained IDs and identifier matches to
-     * different canonical providers are ambiguous. An explicit reference that
-     * is unresolved, ambiguous, or unsupported retains a role-fallback provider
-     * row and is returned in <code>diagnostics</code>. <code>provider_role_contexts</code> preserves role-specific
+     * different canonical providers are ambiguous. Unresolved literal references,
+     * unusable identifiers, and ambiguous or unsupported references are reported
+     * in <code>diagnostics</code>.
+     * <code>provider_role_contexts</code> preserves role-specific
      * specialty and care-site context that a canonical OMOP provider row cannot
      * represent together.</p>
-     * <p>A role whose practitioner reference has only a blank or unknown NPI
-     * identifier follows the missing-identifier behavior: its fallback row has
-     * an <code>UNSUPPORTED</code> diagnostic explaining that a usable identifier or literal
-     * reference is required. An unambiguous literal reference still links to
-     * its Practitioner when the NPI is missing or unknown. Original supplied
-     * unknown markers remain in the role's <code>practitioner_identifier</code> metadata.</p>
+     * <p>Without a resolvable supplied Practitioner, a role must have one confirmed
+     * individual NPI in <code>PractitionerRole.identifier</code> or
+     * <code>PractitionerRole.practitioner.identifier</code> to emit a provider. The latter
+     * is a logical reference and does not require a corresponding Practitioner
+     * resource or produce a missing-Practitioner diagnostic when its NPI is usable.
+     * NPIs supplied through both fields must agree exactly. The role uses
+     * the same NPI grouping rules as Practitioners and can merge with compatible
+     * Practitioners or other roles. Names, gender, and birth information are not
+     * invented; the role supplies its NPI, specialties, and care-site references.
+     * Existing <code>provider_role_contexts</code> preserve each emitted role's facts when
+     * multiple roles share one provider. A resolved Practitioner's identity remains
+     * authoritative.
+     * Roles without that individual identity are reported in <code>dropped</code> with
+     * <code>provider_role_requires_individual_npi</code>, or <code>provider_role_conflicting_npis</code>
+     * for multiple distinct NPIs across either field. A role-only organization
+     * NPI is reported with <code>provider_npi_is_organization</code>.
+     * Roles whose resolved Practitioner is an
+     * organization are omitted with <code>provider_practitioner_is_not_individual</code>.
+     * Clinical records are still returned; links to omitted providers remain unset,
+     * with <code>UNRESOLVED</code> diagnostics pointing to the provider omission in <code>dropped</code>.</p>
      * <p>Each <code>PractitionerRole.specialty</code> entry resolves independently using its
      * supplied codings and explicit text from that entry. NUCC codings resolve
      * directly; other supported codings may use the UMLS bridge. Text fallback
@@ -1821,9 +1949,89 @@ public class AsyncFhir2OmopClient {
      * classification was selected. <code>visit_source_concept_id</code> identifies
      * the selected original source coding's OMOP concept when available,
      * and is <code>0</code> otherwise, including for the HL7 encounter class codes
-     * listed above. Each eligible Encounter produces one Visit;
-     * <code>classHistory</code>, <code>partOf</code>, and admission/discharge concepts are not
-     * mapped.</p>
+     * listed above.</p>
+     * </li>
+     * <li>
+     * <p>Explicit <code>Encounter.partOf</code> components produce <code>visit_detail</code> when the
+     * parent is a supplied top-level Encounter with no <code>partOf</code>, both
+     * Encounters explicitly reference the same unambiguous Patient, and both
+     * have status <code>arrived</code>, <code>triaged</code>, <code>in-progress</code>, <code>onleave</code>, or <code>finished</code>.
+     * The parent produces <code>visit_occurrence</code>; the child produces only
+     * <code>visit_detail</code>, linked to that visit and person. References must exactly
+     * match supplied <code>Encounter/id</code> or Bundle <code>fullUrl</code> values, including URNs.
+     * Contained, identifier-only, wrong-type, ambiguous, and unresolved
+     * references do not establish grouping. Supplied reference types must
+     * agree with Encounter and Patient targets.</p>
+     * </li>
+     * <li>
+     * <p>Details preserve the child's own period, classification, EHR type
+     * concept <code>32817</code>, and directly supported provider/care-site links.
+     * Parent fields are not inherited. The existing class/type selection
+     * policy applies independently to <code>visit_detail_concept_id</code>,
+     * <code>visit_detail_source_value</code>, and <code>visit_detail_source_concept_id</code>.
+     * Missing dates and unmapped concepts retain partial rows without date
+     * imputation. Primary concept <code>0</code> indexes the detail in <code>rows_for_review</code>
+     * and excludes its dates from observation-period derivation.</p>
+     * </li>
+     * <li>
+     * <p>Selected parent/detail concepts are assessed in the same vocabulary
+     * release used for classification. <code>COMPATIBLE</code> supports a detail,
+     * including same-concept and parent-ancestor/detail-descendant pairs.
+     * <code>UNKNOWN</code> retains the explicit component as a partial detail with an
+     * <code>UNSUPPORTED</code> diagnostic at <code>partOf</code> explaining the reason.
+     * <code>INCOMPATIBLE</code> retains the child as an independent <code>visit_occurrence</code>,
+     * with a <code>CONFLICTING</code> diagnostic. It means the selected classifications
+     * fail the CDM relationship convention; it does not say the supplied
+     * clinical events or FHIR <code>partOf</code> relationship are false. Concepts,
+     * source classifications and dates are never changed to make a pair fit.</p>
+     * </li>
+     * <li>
+     * <p><code>visit_component_contexts</code> links each assessment to the final emitted
+     * detail or standalone visit, preserving the parent reference, assessed
+     * concept IDs, vocabulary version, status, reason and available ancestry
+     * depth. An unknown assessment alone does not discard facts or index a
+     * mapped row for review; existing concept-0 review indexing still applies.
+     * Missing, malformed, inconsistent-version, or failed assessment responses
+     * are conversion errors rather than successful unknown outcomes.</p>
+     * </li>
+     * <li>
+     * <p>Comparable reversed or disjoint periods prevent grouping. Overlapping
+     * periods may extend outside the parent; grouping is retained without
+     * clipping the child or expanding the parent. Times with offsets are
+     * compared as instants; date-only boundaries by calendar date. Different
+     * precision or a timezone on only one timestamp is incomparable. Missing,
+     * partial, invalid, or incomparable boundaries cannot establish a
+     * contradiction. A <code>partOf</code> diagnostic explains non-contained periods
+     * (<code>CONFLICTING</code>) and incomplete timing (<code>UNSUPPORTED</code>), including when
+     * grouping is retained. These diagnostics
+     * alone do not index a mapped row for review.</p>
+     * </li>
+     * <li>
+     * <p>Unsupported grouping retains independently eligible standalone visits
+     * and compatible clinical references to those visits. <code>partOf</code> diagnostics
+     * explain missing, ambiguous, wrong-type, ineligible, uncertain-status,
+     * or cross-patient parents. Cycles and connected hierarchies deeper than
+     * parent/child retain standalone output throughout, without choosing a
+     * root or recovering a partial subtree. Unknown-status merge stubs do
+     * not qualify as components. Ancestors are never fetched or invented.</p>
+     * </li>
+     * <li>
+     * <p>A compatible explicit clinical reference to a detail supplies both
+     * <code>visit_detail_id</code> and its overarching <code>visit_occurrence_id</code>; a parent
+     * reference supplies only the visit ID. Links survive placement in all
+     * six supported clinical tables, including <code>device_exposure</code> and
+     * MedicationDispense's R4 <code>context</code> path. Failed optional references leave
+     * links absent while retaining otherwise supported facts.
+     * DeviceUseStatement has no R4 Encounter reference and receives neither
+     * link. Dates alone never establish links.</p>
+     * </li>
+     * <li>
+     * <p>Detail classification mappings identify the child, its <code>partOf</code>
+     * reference, the <code>visit_detail</code> table, and detail ID. IDs are request-local;
+     * use returned links rather than Encounter input positions or assuming
+     * every Encounter is a standalone visit. <code>classHistory</code>, <code>location.period</code>
+     * segmentation, admission/discharge concepts, and inferred sequencing
+     * are not mapped.</p>
      * </li>
      * <li>
      * <p>Direct <code>MedicationRequest.dispenseRequest.quantity</code>, <code>MedicationDispense.quantity</code>,

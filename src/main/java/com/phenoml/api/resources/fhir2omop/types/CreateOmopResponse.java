@@ -27,6 +27,8 @@ public final class CreateOmopResponse {
 
     private final Optional<OmopTables> tables;
 
+    private final Optional<List<VisitComponentContext>> visitComponentContexts;
+
     private final Optional<List<QuantityTransformation>> quantityTransformations;
 
     private final Optional<List<RowForReview>> rowsForReview;
@@ -55,6 +57,7 @@ public final class CreateOmopResponse {
             Optional<Boolean> success,
             Optional<String> message,
             Optional<OmopTables> tables,
+            Optional<List<VisitComponentContext>> visitComponentContexts,
             Optional<List<QuantityTransformation>> quantityTransformations,
             Optional<List<RowForReview>> rowsForReview,
             Optional<List<MappingEntry>> mappings,
@@ -70,6 +73,7 @@ public final class CreateOmopResponse {
         this.success = success;
         this.message = message;
         this.tables = tables;
+        this.visitComponentContexts = visitComponentContexts;
         this.quantityTransformations = quantityTransformations;
         this.rowsForReview = rowsForReview;
         this.mappings = mappings;
@@ -97,6 +101,14 @@ public final class CreateOmopResponse {
     @JsonProperty("tables")
     public Optional<OmopTables> getTables() {
         return tables;
+    }
+
+    /**
+     * @return Vocabulary compatibility evidence for supported explicit Encounter component candidates, linked to their final detail or standalone visit. Assessments do not add to the concept resolution counts in summary. Omitted when no structurally supported component is assessed.
+     */
+    @JsonProperty("visit_component_contexts")
+    public Optional<List<VisitComponentContext>> getVisitComponentContexts() {
+        return visitComponentContexts;
     }
 
     /**
@@ -130,7 +142,10 @@ public final class CreateOmopResponse {
      * were previously excluded. Existing concept-0 rows keep their placement.
      * Validated visit references remain on the rows. After filtering, include
      * referenced visits or clear optional visit_occurrence_id values pointing
-     * to excluded visits in the load copy. For example, to include indexed
+     * to excluded visits in the load copy. Apply the same rule to optional
+     * visit_detail_id links. Each selected detail requires its parent visit;
+     * retain that parent or exclude the detail rather than clearing its
+     * required visit_occurrence_id. For example, to include indexed
      * condition 3 and visit 2, keep their existing rows and IDs in tables;
      * if only condition 3 is selected, clear its reference to excluded visit 2.
      * Returned observation periods use unindexed clinical rows plus Specimen and Death;
@@ -189,8 +204,8 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return Additive FHIR provenance for every supplied PractitionerRole. Each
-     * context identifies the canonical or role-fallback provider row and
+     * @return FHIR provenance for every PractitionerRole linked to an emitted provider. Each
+     * context identifies the canonical provider row and
      * preserves source role facts that OMOP's singular provider columns
      * cannot represent together.
      */
@@ -211,6 +226,8 @@ public final class CreateOmopResponse {
      * DeviceUseStatement also requires an explicit resolvable Patient subject;
      * missing Device details or timing retain partial exposure rows.
      * Unsupported resource types are ignored and do not appear here.
+     * Provider sources identified as organizations and roles without a
+     * confirmed individual NPI or a usable Practitioner are also reported.
      * Eligibility exclusions use stable, resource-specific <code>reason</code> codes;
      * other shaping failures retain an explanatory reason string.
      */
@@ -248,6 +265,8 @@ public final class CreateOmopResponse {
      * member individually supplied a conflicting value.
      * Multiple distinct NPIs on one Practitioner are also diagnosed at
      * <code>identifier</code> with <code>omop_table: provider</code> and the retained row's <code>omop_id</code>.
+     * An unconfirmed NPI omitted from a retained Practitioner row is
+     * explained by an <code>UNRESOLVED</code> diagnostic at <code>identifier</code>.
      * Conflicting Encounter classifications are also reported with outcome
      * <code>CONFLICTING</code> and no <code>reference</code>: path <code>class/type</code> means a mapped
      * type disagrees with the selected class, which still determines the
@@ -289,6 +308,7 @@ public final class CreateOmopResponse {
         return success.equals(other.success)
                 && message.equals(other.message)
                 && tables.equals(other.tables)
+                && visitComponentContexts.equals(other.visitComponentContexts)
                 && quantityTransformations.equals(other.quantityTransformations)
                 && rowsForReview.equals(other.rowsForReview)
                 && mappings.equals(other.mappings)
@@ -308,6 +328,7 @@ public final class CreateOmopResponse {
                 this.success,
                 this.message,
                 this.tables,
+                this.visitComponentContexts,
                 this.quantityTransformations,
                 this.rowsForReview,
                 this.mappings,
@@ -337,6 +358,8 @@ public final class CreateOmopResponse {
         private Optional<String> message = Optional.empty();
 
         private Optional<OmopTables> tables = Optional.empty();
+
+        private Optional<List<VisitComponentContext>> visitComponentContexts = Optional.empty();
 
         private Optional<List<QuantityTransformation>> quantityTransformations = Optional.empty();
 
@@ -368,6 +391,7 @@ public final class CreateOmopResponse {
             success(other.getSuccess());
             message(other.getMessage());
             tables(other.getTables());
+            visitComponentContexts(other.getVisitComponentContexts());
             quantityTransformations(other.getQuantityTransformations());
             rowsForReview(other.getRowsForReview());
             mappings(other.getMappings());
@@ -416,6 +440,20 @@ public final class CreateOmopResponse {
         }
 
         /**
+         * <p>Vocabulary compatibility evidence for supported explicit Encounter component candidates, linked to their final detail or standalone visit. Assessments do not add to the concept resolution counts in summary. Omitted when no structurally supported component is assessed.</p>
+         */
+        @JsonSetter(value = "visit_component_contexts", nulls = Nulls.SKIP)
+        public Builder visitComponentContexts(Optional<List<VisitComponentContext>> visitComponentContexts) {
+            this.visitComponentContexts = visitComponentContexts;
+            return this;
+        }
+
+        public Builder visitComponentContexts(List<VisitComponentContext> visitComponentContexts) {
+            this.visitComponentContexts = Optional.ofNullable(visitComponentContexts);
+            return this;
+        }
+
+        /**
          * <p>Audits supplied direct quantities on emitted drug_exposure rows, including derivations and omissions. Resources returned in other clinical tables have no quantity entry. Omitted when no applicable quantity was supplied on a drug_exposure row. Entries use the response's vocabulary release and do not affect terminology mapping counts in summary. The examples use illustrative concept IDs; actual IDs and evidence belong to vocab_version.</p>
          */
         @JsonSetter(value = "quantity_transformations", nulls = Nulls.SKIP)
@@ -452,7 +490,10 @@ public final class CreateOmopResponse {
          * were previously excluded. Existing concept-0 rows keep their placement.
          * Validated visit references remain on the rows. After filtering, include
          * referenced visits or clear optional visit_occurrence_id values pointing
-         * to excluded visits in the load copy. For example, to include indexed
+         * to excluded visits in the load copy. Apply the same rule to optional
+         * visit_detail_id links. Each selected detail requires its parent visit;
+         * retain that parent or exclude the detail rather than clearing its
+         * required visit_occurrence_id. For example, to include indexed
          * condition 3 and visit 2, keep their existing rows and IDs in tables;
          * if only condition 3 is selected, clear its reference to excluded visit 2.
          * Returned observation periods use unindexed clinical rows plus Specimen and Death;
@@ -543,8 +584,8 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>Additive FHIR provenance for every supplied PractitionerRole. Each
-         * context identifies the canonical or role-fallback provider row and
+         * <p>FHIR provenance for every PractitionerRole linked to an emitted provider. Each
+         * context identifies the canonical provider row and
          * preserves source role facts that OMOP's singular provider columns
          * cannot represent together.</p>
          */
@@ -571,6 +612,8 @@ public final class CreateOmopResponse {
          * DeviceUseStatement also requires an explicit resolvable Patient subject;
          * missing Device details or timing retain partial exposure rows.
          * Unsupported resource types are ignored and do not appear here.
+         * Provider sources identified as organizations and roles without a
+         * confirmed individual NPI or a usable Practitioner are also reported.
          * Eligibility exclusions use stable, resource-specific <code>reason</code> codes;
          * other shaping failures retain an explanatory reason string.</p>
          */
@@ -614,6 +657,8 @@ public final class CreateOmopResponse {
          * member individually supplied a conflicting value.
          * Multiple distinct NPIs on one Practitioner are also diagnosed at
          * <code>identifier</code> with <code>omop_table: provider</code> and the retained row's <code>omop_id</code>.
+         * An unconfirmed NPI omitted from a retained Practitioner row is
+         * explained by an <code>UNRESOLVED</code> diagnostic at <code>identifier</code>.
          * Conflicting Encounter classifications are also reported with outcome
          * <code>CONFLICTING</code> and no <code>reference</code>: path <code>class/type</code> means a mapped
          * type disagrees with the selected class, which still determines the
@@ -663,6 +708,7 @@ public final class CreateOmopResponse {
                     success,
                     message,
                     tables,
+                    visitComponentContexts,
                     quantityTransformations,
                     rowsForReview,
                     mappings,
@@ -682,6 +728,7 @@ public final class CreateOmopResponse {
             if (key.equalsIgnoreCase("success")
                     || key.equalsIgnoreCase("message")
                     || key.equalsIgnoreCase("tables")
+                    || key.equalsIgnoreCase("visit_component_contexts")
                     || key.equalsIgnoreCase("quantity_transformations")
                     || key.equalsIgnoreCase("rows_for_review")
                     || key.equalsIgnoreCase("mappings")
