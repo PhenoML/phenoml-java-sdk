@@ -1,3 +1,11 @@
+## [19.1.0] - 2026-11-06
+### Added
+- **`VisitDetailRow`** — new OMOP response type representing a `visit_detail` table row emitted from a child FHIR Encounter, exposed via `OmopTables.getVisitDetail()`.
+- **`VisitComponentContext`** and **`VisitComponentContextOmopTable`** — new response type and enum describing how each child Encounter was placed into OMOP, including its target table, emitted row ID, and pair assessment; surfaced via `CreateOmopResponse.getVisitComponentContexts()`.
+- **`VisitPairAssessment`** and supporting enums — new response type reporting the ancestry assessment between a parent and detail visit concept, with status (`COMPATIBLE`, `INCOMPATIBLE`, `UNKNOWN`), reason code (nine values), and invalid concept role (`PARENT`, `DETAIL`).
+- **`visit_detail_id`** — new optional field added to `ConditionOccurrenceRow`, `DrugExposureRow`, `MeasurementRow`, `ObservationRow`, and `ProcedureOccurrenceRow` linking each clinical event to its OMOP `visit_detail` component.
+- **`CreateOmopResponse.Builder.visitComponentContexts(...)`** — builder setters added for the new `visitComponentContexts` field, supporting both `Optional<List<VisitComponentContext>>` and direct-list overloads.
+
 ## [19.0.0] - 2026-11-02
 ### Breaking Changes
 - **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; replace `Builder.action(String)` / `Builder.action(Optional<String>)` calls with the corresponding `ResourceReviewRemediatedAction` enum overloads.
