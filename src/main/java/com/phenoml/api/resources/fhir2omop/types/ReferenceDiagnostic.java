@@ -86,7 +86,12 @@ public final class ReferenceDiagnostic {
     }
 
     /**
-     * @return FHIR element path on the source resource, or slash-separated related paths for a joint rule such as whenHandedOver/daysSupply.
+     * @return Source field or diagnostic label. Demographic labels include
+     * <code>extension:birthsex</code> and <code>extension:ethnicity</code>; provider identity labels
+     * are <code>name</code>, <code>gender</code>, <code>birthDate</code>, and <code>identifier</code>. For Encounters,
+     * <code>class/type</code> identifies class/type disagreement and <code>type</code> identifies
+     * conflicting type classifications. Joint rules can use slash-separated
+     * paths such as <code>whenHandedOver/daysSupply</code>.
      */
     @JsonProperty("path")
     public Optional<String> getPath() {
@@ -102,22 +107,17 @@ public final class ReferenceDiagnostic {
     }
 
     /**
-     * @return UNRESOLVED: a source value needed to populate a field is missing,
-     * such as specimen material or collection start, or a supported
-     * reference cannot resolve to a resource or emitted target supplied
-     * in this request.
-     * AMBIGUOUS: a reference or identifier matches multiple possible
-     * targets. Identifier-only <code>PractitionerRole.practitioner</code> references
-     * are unambiguous when all matches map to one canonical provider.
-     * Literal references matching multiple source resources remain
-     * ambiguous even if those Practitioners merge into one provider.
-     * CONFLICTING: supplied values or relationships cannot be combined
-     * under the mapping policy, such as differing mapped provider identity
-     * attributes, multiple distinct NPIs on one Practitioner, conflicting
-     * Patient demographic extensions, or an Encounter belonging to a
-     * different patient.
-     * UNSUPPORTED: a supplied reference form, resource type, or value
-     * shape is outside the supported mapping policy.
+     * @return <ul>
+     * <li>UNRESOLVED: required source data is missing, or a supported reference cannot
+     * resolve to a supplied resource or emitted target.</li>
+     * <li>AMBIGUOUS: a reference or identifier does not identify a unique target.</li>
+     * <li>CONFLICTING: source values or relationships disagree or require review
+     * under the mapping policy.</li>
+     * <li>UNSUPPORTED: a source form/type or relationship cannot be fully represented
+     * or assessed under the supported policy.</li>
+     * </ul>
+     * <p>reason explains the effect on the row or link. An outcome alone does not
+     * imply that the resource was dropped; partial rows or grouping can be retained.</p>
      */
     @JsonProperty("outcome")
     public Optional<ReferenceDiagnosticOutcome> getOutcome() {
@@ -125,7 +125,16 @@ public final class ReferenceDiagnostic {
     }
 
     /**
-     * @return Explanation of the condition and, when applicable, its effect on mapping.
+     * @return Explanation of the condition and its effect on mapping. Resource-specific
+     * reason codes can be followed by <code>;</code> and explanatory text; match these
+     * codes as prefixes rather than whole strings. Collection timing uses
+     * specimen_collection_date_missing, specimen_collection_date_partial,
+     * specimen_collection_date_unusable, or specimen_collection_multiple_forms.
+     * Dispensing timing uses medication_dispense_handover_missing,
+     * medication_dispense_handover_partial, or medication_dispense_handover_unusable.
+     * medication_dispense_handover_before_preparation identifies conflicting
+     * handover/preparation timing;
+     * medication_dispense_end_date_absent identifies an unset exposure end.
      */
     @JsonProperty("reason")
     public Optional<String> getReason() {
@@ -261,7 +270,12 @@ public final class ReferenceDiagnostic {
         }
 
         /**
-         * <p>FHIR element path on the source resource, or slash-separated related paths for a joint rule such as whenHandedOver/daysSupply.</p>
+         * <p>Source field or diagnostic label. Demographic labels include
+         * <code>extension:birthsex</code> and <code>extension:ethnicity</code>; provider identity labels
+         * are <code>name</code>, <code>gender</code>, <code>birthDate</code>, and <code>identifier</code>. For Encounters,
+         * <code>class/type</code> identifies class/type disagreement and <code>type</code> identifies
+         * conflicting type classifications. Joint rules can use slash-separated
+         * paths such as <code>whenHandedOver/daysSupply</code>.</p>
          */
         @JsonSetter(value = "path", nulls = Nulls.SKIP)
         public Builder path(Optional<String> path) {
@@ -289,22 +303,17 @@ public final class ReferenceDiagnostic {
         }
 
         /**
-         * <p>UNRESOLVED: a source value needed to populate a field is missing,
-         * such as specimen material or collection start, or a supported
-         * reference cannot resolve to a resource or emitted target supplied
-         * in this request.
-         * AMBIGUOUS: a reference or identifier matches multiple possible
-         * targets. Identifier-only <code>PractitionerRole.practitioner</code> references
-         * are unambiguous when all matches map to one canonical provider.
-         * Literal references matching multiple source resources remain
-         * ambiguous even if those Practitioners merge into one provider.
-         * CONFLICTING: supplied values or relationships cannot be combined
-         * under the mapping policy, such as differing mapped provider identity
-         * attributes, multiple distinct NPIs on one Practitioner, conflicting
-         * Patient demographic extensions, or an Encounter belonging to a
-         * different patient.
-         * UNSUPPORTED: a supplied reference form, resource type, or value
-         * shape is outside the supported mapping policy.</p>
+         * <ul>
+         * <li>UNRESOLVED: required source data is missing, or a supported reference cannot
+         * resolve to a supplied resource or emitted target.</li>
+         * <li>AMBIGUOUS: a reference or identifier does not identify a unique target.</li>
+         * <li>CONFLICTING: source values or relationships disagree or require review
+         * under the mapping policy.</li>
+         * <li>UNSUPPORTED: a source form/type or relationship cannot be fully represented
+         * or assessed under the supported policy.</li>
+         * </ul>
+         * <p>reason explains the effect on the row or link. An outcome alone does not
+         * imply that the resource was dropped; partial rows or grouping can be retained.</p>
          */
         @JsonSetter(value = "outcome", nulls = Nulls.SKIP)
         public Builder outcome(Optional<ReferenceDiagnosticOutcome> outcome) {
@@ -318,7 +327,16 @@ public final class ReferenceDiagnostic {
         }
 
         /**
-         * <p>Explanation of the condition and, when applicable, its effect on mapping.</p>
+         * <p>Explanation of the condition and its effect on mapping. Resource-specific
+         * reason codes can be followed by <code>;</code> and explanatory text; match these
+         * codes as prefixes rather than whole strings. Collection timing uses
+         * specimen_collection_date_missing, specimen_collection_date_partial,
+         * specimen_collection_date_unusable, or specimen_collection_multiple_forms.
+         * Dispensing timing uses medication_dispense_handover_missing,
+         * medication_dispense_handover_partial, or medication_dispense_handover_unusable.
+         * medication_dispense_handover_before_preparation identifies conflicting
+         * handover/preparation timing;
+         * medication_dispense_end_date_absent identifies an unset exposure end.</p>
          */
         @JsonSetter(value = "reason", nulls = Nulls.SKIP)
         public Builder reason(Optional<String> reason) {

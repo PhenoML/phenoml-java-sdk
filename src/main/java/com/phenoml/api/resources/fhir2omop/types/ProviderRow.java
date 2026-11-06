@@ -90,7 +90,14 @@ public final class ProviderRow {
     }
 
     /**
-     * @return Single distinct source NPI value, preserved without format or checksum validation, from an identifier with system <code>http://hl7.org/fhir/sid/us-npi</code>, <code>urn:oid:2.16.840.1.113883.4.6</code>, or <code>2.16.840.1.113883.4.6</code>. Blank values and <code>UNK</code>/<code>UNKNOWN</code> markers (case-insensitive, ignoring surrounding whitespace) are treated as missing. Omitted when no usable NPI value exists or multiple distinct values are supplied.
+     * @return Single distinct confirmed individual NPI from Practitioner.identifier or,
+     * for a role-only provider, PractitionerRole.identifier or practitioner.identifier.
+     * Recognized systems are http://hl7.org/fhir/sid/us-npi,
+     * urn:oid:2.16.840.1.113883.4.6, and 2.16.840.1.113883.4.6.
+     * Classification trims whitespace and validates ten digits and the NPI check
+     * digit; this field preserves the original value. Blank and UNK/UNKNOWN markers
+     * are missing, ignoring case and surrounding whitespace. Organization, invalid,
+     * unconfirmed, and conflicting NPIs do not populate this field.
      */
     @JsonProperty("npi")
     public Optional<String> getNpi() {
@@ -132,27 +139,16 @@ public final class ProviderRow {
     }
 
     /**
-     * @return The single distinct source NPI, when present. Compatible providers
-     * can use this value as a cross-request deduplication key; row IDs are
-     * per response, and the API does not merge across requests. Conflicting
-     * NPI groups retain separate rows sharing this value. Preserve rows
-     * flagged by identity diagnostics using <code>omop_table: provider</code> and
-     * <code>omop_id</code>, and check identity compatibility across responses before
-     * deduplicating.
-     * Without one unambiguous NPI, this is the source identity of the
-     * Practitioner or fallback role.
-     * Missing NPI values and unknown markers are excluded when selecting
-     * that source identity. When no source identity is available, an
-     * explicitly marked response-local provider ordinal such as
-     * <code>@provider-index:1</code> supplies a local scope.
-     * Multiple distinct NPIs leave <code>npi</code> unset and use the resource ID,
-     * full URL, or an explicitly marked response-local provider ordinal
-     * such as <code>@provider-index:1</code> when neither is supplied.
-     * A Practitioner contained by a PractitionerRole without one unambiguous
-     * NPI is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code>
-     * so identical local contained IDs do not collide; an id-less parent
-     * uses an explicitly marked response-local role ordinal such as
-     * <code>@role-index:1</code>.
+     * @return The single confirmed individual NPI, including for role-only providers and
+     * when conflicting identity attributes keep an NPI group in separate rows.
+     * Check identity diagnostics and compatibility before deduplicating across responses.
+     * <p>Without an unambiguous individual NPI, the Practitioner's source identity is
+     * used, excluding missing markers and unconfirmed NPIs. Role-only providers
+     * require a confirmed NPI. Without a source identity, <code>@provider-index:N</code>
+     * marks a response-local provider ordinal. Contained Practitioners use
+     * <code>PractitionerRole/&lt;role-scope&gt;#&lt;contained-id&gt;</code>; a role without a source
+     * identity uses <code>@role-index:N</code> as its response-local scope. These fallbacks
+     * are not global identity guarantees; row IDs and merging are request-local.</p>
      */
     @JsonProperty("provider_source_value")
     public Optional<String> getProviderSourceValue() {
@@ -317,7 +313,14 @@ public final class ProviderRow {
         }
 
         /**
-         * <p>Single distinct source NPI value, preserved without format or checksum validation, from an identifier with system <code>http://hl7.org/fhir/sid/us-npi</code>, <code>urn:oid:2.16.840.1.113883.4.6</code>, or <code>2.16.840.1.113883.4.6</code>. Blank values and <code>UNK</code>/<code>UNKNOWN</code> markers (case-insensitive, ignoring surrounding whitespace) are treated as missing. Omitted when no usable NPI value exists or multiple distinct values are supplied.</p>
+         * <p>Single distinct confirmed individual NPI from Practitioner.identifier or,
+         * for a role-only provider, PractitionerRole.identifier or practitioner.identifier.
+         * Recognized systems are http://hl7.org/fhir/sid/us-npi,
+         * urn:oid:2.16.840.1.113883.4.6, and 2.16.840.1.113883.4.6.
+         * Classification trims whitespace and validates ten digits and the NPI check
+         * digit; this field preserves the original value. Blank and UNK/UNKNOWN markers
+         * are missing, ignoring case and surrounding whitespace. Organization, invalid,
+         * unconfirmed, and conflicting NPIs do not populate this field.</p>
          */
         @JsonSetter(value = "npi", nulls = Nulls.SKIP)
         public Builder npi(Optional<String> npi) {
@@ -395,27 +398,16 @@ public final class ProviderRow {
         }
 
         /**
-         * <p>The single distinct source NPI, when present. Compatible providers
-         * can use this value as a cross-request deduplication key; row IDs are
-         * per response, and the API does not merge across requests. Conflicting
-         * NPI groups retain separate rows sharing this value. Preserve rows
-         * flagged by identity diagnostics using <code>omop_table: provider</code> and
-         * <code>omop_id</code>, and check identity compatibility across responses before
-         * deduplicating.
-         * Without one unambiguous NPI, this is the source identity of the
-         * Practitioner or fallback role.
-         * Missing NPI values and unknown markers are excluded when selecting
-         * that source identity. When no source identity is available, an
-         * explicitly marked response-local provider ordinal such as
-         * <code>@provider-index:1</code> supplies a local scope.
-         * Multiple distinct NPIs leave <code>npi</code> unset and use the resource ID,
-         * full URL, or an explicitly marked response-local provider ordinal
-         * such as <code>@provider-index:1</code> when neither is supplied.
-         * A Practitioner contained by a PractitionerRole without one unambiguous
-         * NPI is scoped as <code>PractitionerRole/&lt;role-source-value&gt;#&lt;contained-id&gt;</code>
-         * so identical local contained IDs do not collide; an id-less parent
-         * uses an explicitly marked response-local role ordinal such as
-         * <code>@role-index:1</code>.</p>
+         * <p>The single confirmed individual NPI, including for role-only providers and
+         * when conflicting identity attributes keep an NPI group in separate rows.
+         * Check identity diagnostics and compatibility before deduplicating across responses.</p>
+         * <p>Without an unambiguous individual NPI, the Practitioner's source identity is
+         * used, excluding missing markers and unconfirmed NPIs. Role-only providers
+         * require a confirmed NPI. Without a source identity, <code>@provider-index:N</code>
+         * marks a response-local provider ordinal. Contained Practitioners use
+         * <code>PractitionerRole/&lt;role-scope&gt;#&lt;contained-id&gt;</code>; a role without a source
+         * identity uses <code>@role-index:N</code> as its response-local scope. These fallbacks
+         * are not global identity guarantees; row IDs and merging are request-local.</p>
          */
         @JsonSetter(value = "provider_source_value", nulls = Nulls.SKIP)
         public Builder providerSourceValue(Optional<String> providerSourceValue) {

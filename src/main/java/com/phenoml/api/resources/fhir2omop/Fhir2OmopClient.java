@@ -26,1930 +26,940 @@ public class Fhir2OmopClient {
     }
 
     /**
-     * Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows,
-     * grouped by destination table in <code>tables</code>. Uncertain-status and unresolved-
-     * primary-concept clinical rows stay in those tables and are identified by
-     * the optional <code>rows_for_review</code> index for consumer review and filtering.
-     * Status-based retention covers uncertain supplied Condition verification,
-     * unknown/missing/unreadable Encounter status, and explicit <code>unknown</code> status
-     * on MedicationStatement, Observation, and Procedure. Other status exclusions
-     * follow the resource-specific eligibility policy below.
-     * <p>Set <code>vocab_version</code> to select the OMOP vocabulary release used for coded
-     * and inferred concept resolution. If omitted or empty, the API uses its
-     * default release. The response's <code>vocab_version</code>, when present, identifies
-     * the release used. Specify a release explicitly when reproducibility matters.</p>
-     * <p>Supported concept fields use semantic mapping for text-only inputs and
-     * unresolved source codings, with whole-term equivalence validation.
-     * CodeableConcept text takes precedence over coding display. A single
-     * equivalent suggestion must be validated before a real OMOP concept ID is
-     * returned. The suggested vocabulary/code must
-     * itself be an active standard concept valid for the destination; broader
-     * crosswalk targets are not accepted for inferred suggestions.
-     * Deterministic mappings take precedence; ambiguous or domain-mismatched
-     * deterministic results are not reinterpreted. Units, routes, visits,
-     * demographics, and collection sites use their field-specific resolution
-     * policies. Semantic mapping returns MAPPED with a real concept ID on
-     * success, or UNMAPPED with concept ID 0 when no standard concept is
-     * selected. A bare code is not treated as a description. No source coding
-     * is invented.</p>
-     * <p>Contextual allergy finding decisions follow their dedicated policy and
-     * are not replaced by description-based mapping.</p>
-     * <p>Every inferred mapping has
-     * <code>mappings.resolution.semantic_mapping.status: MAPPED</code>, with the OMOP
-     * vocabulary release. Filter linked rows using the mapping's table/row ID
-     * to exclude inferred results.
-     * Original source coding and clinical-status eligibility are preserved.
-     * For clinical rows covered by <code>rows_for_review</code>, successful inference
-     * does not remove uncertain-status rows from the index; unresolved primary
-     * concepts also remain indexed.
-     * All shaped rows appear once in <code>tables</code>.</p>
-     * <p>Standards basis: <a href="https://hl7.org/fhir/R4/">FHIR R4 (v4.0.1)</a> defines
-     * the accepted source elements and <a href="https://ohdsi.github.io/CommonDataModel/cdm54.html">OMOP CDM
-     * v5.4</a> defines the
-     * output columns. The published <a href="https://hl7.org/fhir/uv/omop/">Vulcan FHIR-to-OMOP IG
-     * v1.0.0</a> is an informative FHIR R5
-     * baseline; this endpoint documents and implements the equivalent R4
-     * source elements, rather than accepting R5-only fields.</p>
-     * <p>This response is a mapping result, not a complete CDM load pipeline.
-     * When a source cannot supply a field that CDM v5.4 requires, the row is
-     * still returned with that field unset; the value is not inferred. Common
-     * cases are <code>year_of_birth</code> without a usable <code>birthDate</code>,
-     * <code>drug_exposure_end_date</code> without an explicit end or single-event timing,
-     * and a required event date (such as <code>condition_start_date</code>,
-     * <code>procedure_date</code>, or <code>death_date</code>) whose source has no timing with at
-     * least day precision. Apply your own policy to such rows before loading
-     * them into a strictly conformant CDM instance.</p>
-     * <p>Current resource coverage:</p>
+     * Maps a FHIR R4 resource or Bundle to OMOP CDM v5.4 rows, grouped by
+     * destination table in <code>tables</code>. The request must include at least one
+     * top-level Patient. Unsupported resource types are ignored; supported
+     * resources that cannot produce a row are reported in <code>dropped</code>.
+     * <p>All shaped rows remain in <code>tables</code>, including partial rows and clinical
+     * rows with uncertain status or unresolved primary concepts. Use
+     * <code>rows_for_review</code> to identify the latter, <code>mappings</code> to inspect concept
+     * resolution, and <code>diagnostics</code> to understand unusable data or links.
+     * Resource-specific context arrays preserve source information linked to
+     * the emitted rows; see the response schemas for their fields and outcomes.</p>
+     * <p>Rows may lack CDM-required fields when the source cannot supply them.
+     * Before loading a CDM dataset, callers must handle incomplete rows, assign
+     * durable IDs, and remap primary and foreign keys together. Returned IDs
+     * start at 1 within each table and are local to one response.</p>
+     * <p>The source format is <a href="https://hl7.org/fhir/R4/">FHIR R4 v4.0.1</a> and the
+     * output follows <a href="https://ohdsi.github.io/CommonDataModel/cdm54.html">OMOP CDM v5.4</a>.
+     * The informative <a href="https://hl7.org/fhir/uv/omop/">Vulcan FHIR-to-OMOP IG</a>
+     * provides an R5 baseline adapted here to R4 source fields. Full FHIR or
+     * US Core profile conformance is not validated.</p>
+     * <p><strong>Resource coverage</strong></p>
+     * <p>| FHIR source | OMOP output |
+     * | --- | --- |
+     * | Patient | <code>person</code>; deceased status can produce <code>death</code>, the first address can produce <code>location</code>, and multiple resolved races produce race <code>observation</code> rows |
+     * | Location | <code>location</code> and <code>care_site</code> |
+     * | Organization | <code>care_site</code>; its first address can produce <code>location</code> |
+     * | HealthcareService | <code>care_site</code> |
+     * | Practitioner, PractitionerRole | <code>provider</code>, with role context retained separately |
+     * | Encounter | <code>visit_occurrence</code>, or <code>visit_detail</code> for supported explicit components |
+     * | Specimen | <code>specimen</code>, requiring an explicit Patient subject |
+     * | DeviceUseStatement | <code>device_exposure</code>, using referenced Device details |
+     * | Condition | Domain-selected clinical table; default <code>condition_occurrence</code> |
+     * | Procedure | Domain-selected clinical table; default <code>procedure_occurrence</code> |
+     * | MedicationRequest, MedicationStatement, MedicationAdministration, MedicationDispense, Immunization | Domain-selected clinical table; default <code>drug_exposure</code> |
+     * | Observation | Domain-selected clinical table; numeric values default to <code>measurement</code>, other values to <code>observation</code> |
+     * | AllergyIntolerance | Contextual allergy <code>observation</code> or another supported clinical table, excluding drug/device exposure; default <code>observation</code> |
+     * | Medication, Device | Reference data; no independent row |</p>
+     * <p>One request-local <code>observation_period</code> is derived per person with qualifying
+     * dates. It spans visit/clinical rows not indexed for review, plus Specimen and Death rows,
+     * including selected source end dates even when the destination has no end
+     * column. Dates from <code>rows_for_review</code> do not expand it. This period is not
+     * evidence of enrollment or complete data capture.</p>
+     * <p><strong>Concept resolution and placement</strong></p>
+     * <p>Use <code>vocab_version</code> to select the vocabulary release; omitted or empty
+     * values use the default release. The response reports the release used
+     * when vocabulary resolution occurred. Select a release explicitly for
+     * reproducibility.</p>
+     * <p>Resolved primary clinical concepts determine placement in
+     * <code>condition_occurrence</code>, <code>procedure_occurrence</code>, <code>drug_exposure</code>,
+     * <code>device_exposure</code>, <code>measurement</code>, or <code>observation</code>. For Observation,
+     * numeric versus nonnumeric values break a tie between Measurement and
+     * Observation placement. An unresolved or destination-invalid concept keeps
+     * the resource's default table, concept ID 0, and <code>UNMAPPED</code> status.
+     * Clinical records produce one row each, except the explicit DeviceUseStatement
+     * Timing events described below; multiple vocabulary targets do not expand
+     * a record into multiple rows. Note destinations and vocabulary <code>Maps to value</code>
+     * decomposition are unsupported.</p>
+     * <p>Source timing and eligibility apply regardless of the selected table.
+     * Source-specific values populate only compatible columns: Condition status
+     * in <code>condition_occurrence</code>, medication supply/dosage and Immunization lot
+     * details in <code>drug_exposure</code>, and Observation values in <code>measurement</code> or
+     * <code>observation</code>. Coded routes on other tables are resolved as mapping context;
+     * Observation values on other tables are preserved without concept resolution.
+     * Those entries omit <code>omop_field</code> and have <code>selected: false</code>.</p>
+     * <p>Supported primary clinical concepts, specimen material, and unresolved
+     * coded Observation results can use semantic mapping from descriptive text.
+     * CodeableConcept text takes precedence over coding display; bare codes do
+     * not supply descriptions. Deterministic mappings take precedence, and
+     * ambiguous or domain-mismatched results are not reinterpreted. Inference
+     * requires one validated, equivalent active standard concept valid for the
+     * destination; a broader crosswalk target does not validate a suggestion.
+     * Units, routes, visits, demographics, specialties, collection sites, and
+     * contextual allergy findings follow their separate policies.</p>
+     * <p>Inferred results have <code>resolution.semantic_mapping.status: MAPPED</code> in
+     * their linked mappings; unsuccessful attempts report <code>UNMAPPED</code> with
+     * concept ID 0. Original coding is preserved and no source coding is invented.
+     * Successful inference does not remove uncertain-status review reasons.
+     * Use mapping row links to filter inferred results if needed.</p>
+     * <p>Clinical <code>*_source_value</code> fields contain the selected bare code, or text
+     * for text-only inputs. The selected mapping preserves its coding provenance.
+     * Unresolved source concept IDs are 0, except allergy rows can retain a known
+     * original source identity even when the finding is unresolved. Known coding
+     * system OIDs, bare or <code>urn:oid:</code>, resolve like their canonical URLs and are
+     * reported canonically in coding mappings. Quantity unit mappings preserve
+     * the supplied system spelling. Unknown OIDs remain unchanged.</p>
+     * <p><strong>References and eligibility</strong></p>
+     * <p>Top-level references resolve only within the request, by exact <code>Type/id</code>
+     * or Bundle <code>fullUrl</code>, including URNs and absolute URLs. Contained references
+     * are supported for medication lookup, DeviceUseStatement.device, and
+     * PractitionerRole.practitioner. The latter also supports request-local
+     * identifier matching. Resources are not fetched remotely.</p>
+     * <p>Clinical subject/patient references must resolve unambiguously to a supplied
+     * Patient. If the reference is absent, a sole Patient can supply attribution,
+     * except for Specimen, DeviceUseStatement, and MedicationDispense, which
+     * require explicit subjects. Unusable explicit patient references drop the
+     * resource. Unusable optional links leave the link unset with a diagnostic
+     * while retaining otherwise eligible rows. Every nonzero structural foreign
+     * key targets a row in the same response, and clinical visit links must belong
+     * to the same patient.</p>
+     * <p>Eligibility follows the source resource's status policy. Other than the
+     * absent/uncertain statuses explicitly supported below, missing or unrecognized
+     * required statuses drop the resource. Entered-in-error and explicitly
+     * non-performed events do not produce positive clinical-event rows.</p>
+     * <p>| Resource | Eligible status or evidence | Retained for review |
+     * | --- | --- | --- |
+     * | Condition | Absent or confirmed canonical-HL7 verificationStatus; refuted and entered-in-error are dropped | Unconfirmed, provisional, differential, or unreadable supplied verificationStatus |
+     * | Encounter | arrived, triaged, in-progress, onleave, finished; planned, cancelled, and entered-in-error are dropped | Unknown, missing, or unreadable status |
+     * | Procedure | completed, stopped | Explicit unknown status |
+     * | MedicationRequest | active, on-hold, completed, stopped, with authorizing intent: order, original-order, reflex-order, filler-order, or instance-order; doNotPerform excludes the request | None |
+     * | MedicationStatement | active, completed, stopped, on-hold | Explicit unknown status |
+     * | MedicationAdministration | completed, in-progress, stopped, or on-hold; on-hold also requires a usable effective start, including partial dates | None |
+     * | MedicationDispense | completed, including partial fills; stopped also requires a valid whenHandedOver, including partial dates | None |
+     * | Immunization | completed | None |
+     * | Observation | final, amended, corrected | Explicit unknown status |
+     * | AllergyIntolerance | Absent, unconfirmed, or confirmed canonical-HL7 verificationStatus; invalid supplied type/category drops the resource | None |
+     * | Specimen | Absent, available, unavailable, unsatisfactory | None |
+     * | DeviceUseStatement | active, completed, stopped, on-hold | None |</p>
+     * <p>Condition clinical course is not a diagnosis-role mapping. Retained uncertain
+     * rows preserve their supplied statuses without asserting that an event occurred
+     * or medication was taken. Eligible clinical rows with primary concept 0 are
+     * also indexed for review; unresolved secondary units, routes, or result concepts
+     * alone do not index a mapped row. Administrative/demographic, Specimen, and
+     * Death rows are excluded from the review index. See <code>rows_for_review</code> for
+     * filtering and linked-visit requirements.</p>
+     * <p>Device placement additionally requires eligible use evidence. MedicationRequest,
+     * AllergyIntolerance, uncertain-status records, and explicit negative Observation
+     * results cannot produce device exposure. Negative evidence includes false,
+     * SNOMED Negative/Known absent/No, and <code>NEG</code> from
+     * <code>http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation</code>.
+     * Reporting actors such as recorder, asserter, or informationSource do not
+     * supply a device event's treating provider.</p>
+     * <p><strong>Timing</strong></p>
+     * <p>Dates require at least day precision and use the source calendar date.
+     * Datetimes are present only when time of day was supplied, as local wall-clock
+     * time without a UTC offset, retaining fractional seconds to microseconds.
+     * For example, <code>2024-01-15T23:30:00-05:00</code> becomes <code>2024-01-15T23:30:00</code>.
+     * A timestamp without a timezone is read as local time.</p>
+     * <p>A valid year/month-only date leaves date and datetime unset and stops a
+     * fallback chain. Malformed dates and unsupported timing forms are ignored
+     * so a later source can be used. Dates are not imputed from other resources.
+     * Specimen, DeviceUseStatement, and MedicationDispense report unusable timing
+     * through diagnostics; otherwise missing dates usually retain partial rows.
+     * The effective-start and handover eligibility requirements above still apply.</p>
+     * <p>| Source | Start/date source, in priority order | End or additional timing |
+     * | --- | --- | --- |
+     * | Patient | birthDate supplies year/month/day components; deceasedDateTime supplies death timing | birth_datetime is not set; boolean-only deceased status supplies no death date |
+     * | Practitioner | birthDate supplies year_of_birth | — |
+     * | Encounter | period.start | period.end |
+     * | Condition | onsetDateTime, onsetPeriod.start, recordedDate | abatementDateTime or abatementPeriod.end |
+     * | Procedure | performedDateTime or performedPeriod.start | performedPeriod.end |
+     * | Observation | effectiveDateTime, effectivePeriod.start, effectiveInstant | — |
+     * | AllergyIntolerance | recordedDate, onsetDateTime, onsetPeriod.start | — |
+     * | MedicationRequest | authoredOn, as prescription timing | No exposure end; validity period is not exposure duration |
+     * | MedicationStatement | effectiveDateTime or effectivePeriod.start | effectivePeriod.end; dateAsserted is not exposure timing |
+     * | MedicationAdministration | effectiveDateTime or effectivePeriod.start | A single dateTime also sets the end; otherwise effectivePeriod.end |
+     * | MedicationDispense | whenHandedOver | No exposure end, including from daysSupply; whenPrepared is not a fallback |
+     * | Immunization | occurrenceDateTime | The same dateTime also sets the end; expirationDate is not used |
+     * | Specimen | collection.collectedDateTime or collection.collectedPeriod.start | Period end and receivedTime are not collection-start fallbacks |
+     * | DeviceUseStatement | timingDateTime, independent timingPeriod boundaries, or one start per timingTiming.event | No end is inferred for dateTime/Timing events; repeat-only schedules retain an undated row |</p>
+     * <p>End columns are populated only where supported by the destination table.
+     * For medication rows, <code>verbatim_end_date</code> comes only from an explicit
+     * Period.end, not a single-event end.</p>
+     * <p><strong>Providers and patient demographics</strong></p>
+     * <p>Administrative links are best-effort. Patient.managingOrganization is a
+     * record custodian and does not supply a care site. Address.country resolves
+     * to <code>location.country_concept_id</code>; CMS Place of Service codings in Location.type
+     * resolve to <code>care_site.place_of_service_concept_id</code>. Practitioner recorded
+     * gender is separate from Person demographics: male/female can resolve to
+     * Provider Gender concepts; other, unknown, or absent values stay 0.</p>
+     * <p>Within a request, Practitioners and role-only providers sharing one confirmed
+     * individual NPI (Type 1) merge only when their supplied rendered name, recorded
+     * gender, DEA identifier, and parsed birth year are compatible. The first name
+     * entry and first non-empty DEA identifier are used; supplied identity values
+     * compare exactly. Missing attributes can enrich a compatible row. A conflict
+     * keeps the entire NPI group separate with linked diagnostics. Multiple distinct
+     * NPIs on a Practitioner also prevent merging and leave npi unset. No merge
+     * occurs across requests.</p>
+     * <p>NPI classification trims whitespace and validates ten digits and the NPI check
+     * digit; returned source values and merge comparisons preserve the supplied
+     * spelling. Known individual NPIs remain usable for historical care when deactivated.
+     * An invalid or unconfirmed NPI retains a source-scoped Practitioner without npi,
+     * with an UNRESOLVED diagnostic at identifier. No live public registry lookup is
+     * performed; classification failures return HTTP 500. Accepted NPI system forms,
+     * missing-value markers, and source-identity semantics are defined in ProviderRow.</p>
+     * <p>A PractitionerRole can alias a supplied Practitioner by structural reference,
+     * unambiguous parent-contained reference, or identifier match to a top-level
+     * Practitioner. Supplied Reference.type must be Practitioner. NPI identifier
+     * matching requires a confirmed individual NPI and accepts the NPI system aliases;
+     * other identifiers match exactly. Unusable or ambiguous references have diagnostics.
+     * A resolved Practitioner's identity takes precedence over the role's identifiers.</p>
+     * <p>Without a resolvable supplied Practitioner, a role requires one confirmed
+     * individual NPI in PractitionerRole.identifier or practitioner.identifier to emit
+     * a provider. NPIs from both fields must agree exactly. A usable logical NPI
+     * reference needs no supplied Practitioner and produces no missing-Practitioner
+     * diagnostic. Role-only providers share the NPI grouping rules; names, gender, and
+     * birth information are not invented. provider_role_contexts preserves every
+     * emitted role's specialty and care-site context, including when roles share a provider.</p>
+     * <p>Provider exclusions are reported in dropped:</p>
      * <ul>
-     * <li><code>Patient</code> -&gt; <code>person</code>; <code>deceased[x]</code> can also produce <code>death</code>, the
-     * first address can produce <code>location</code>, and more than one supplied race
-     * produces <code>observation</code> race rows (see Patient demographics below)</li>
-     * <li><code>observation_period</code> -&gt; one request-local derived row per person,
-     * spanning dates from that person's visit and clinical rows not listed
-     * in <code>rows_for_review</code>, plus Specimen and Death rows. Source end dates
-     * contribute even when the output table has no end column. No period
-     * row is returned for a person without qualifying dates; this is not
-     * enrollment or capture-completeness evidence</li>
-     * <li><code>Location</code> -&gt; <code>location</code> and <code>care_site</code></li>
-     * <li><code>Organization</code> -&gt; <code>care_site</code>; its first address can produce <code>location</code></li>
-     * <li><code>HealthcareService</code> -&gt; <code>care_site</code></li>
-     * <li><code>Practitioner</code> and <code>PractitionerRole</code> -&gt; <code>provider</code></li>
-     * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
-     * <li><code>Specimen</code> -&gt; <code>specimen</code>, with an explicit Patient subject; missing
-     * collection date or material retains a partial row with diagnostics</li>
-     * <li><code>DeviceUseStatement</code> -&gt; <code>device_exposure</code>, using referenced <code>Device.type</code></li>
-     * <li><code>Condition</code> -&gt; domain-selected clinical table; default <code>condition_occurrence</code></li>
-     * <li><code>Procedure</code> -&gt; domain-selected clinical table; default <code>procedure_occurrence</code></li>
-     * <li><code>MedicationRequest</code>, <code>MedicationStatement</code>, <code>MedicationAdministration</code>, and
-     * <code>MedicationDispense</code> -&gt; domain-selected clinical table; default <code>drug_exposure</code></li>
-     * <li><code>Immunization</code> -&gt; domain-selected clinical table; default <code>drug_exposure</code></li>
-     * <li><code>Observation</code> -&gt; domain-selected clinical table. Numeric values prefer
-     * <code>measurement</code> and other values prefer <code>observation</code> when the code is
-     * valid for both tables.
-     * If no supported standard concept is selected, numeric values retain the
-     * <code>measurement</code> default and nonnumeric values retain <code>observation</code>.</li>
-     * <li><code>AllergyIntolerance</code> -&gt; <code>observation</code> for supported contextual
-     * allergy/intolerance mappings; other coded statements use domain-based
-     * placement excluding <code>drug_exposure</code> and <code>device_exposure</code>; default <code>observation</code></li>
+     * <li>provider_npi_is_organization: a top-level Practitioner or role-only provider
+     * is identified by an organization NPI (Type 2).</li>
+     * <li>provider_role_requires_individual_npi: a role has neither a usable Practitioner
+     * nor a confirmed individual NPI.</li>
+     * <li>provider_role_conflicting_npis: a role without a usable Practitioner supplies
+     * multiple distinct NPIs across its identifier fields.</li>
+     * <li>provider_practitioner_is_not_individual: a role resolves to an organization
+     * Practitioner.</li>
      * </ul>
-     * <p>Clinical placement follows the informative Vulcan IG's vocabulary-driven
-     * domain assignment. Supported destinations are <code>condition_occurrence</code>,
-     * <code>procedure_occurrence</code>, <code>drug_exposure</code>, <code>device_exposure</code>, <code>measurement</code>, and <code>observation</code>.
-     * Resolved clinical records are returned in the table corresponding to the
-     * domain of their mapped OMOP standard concept. The source resource
-     * determines eligibility, field values, and the default table when no
-     * supported mapping is available.
-     * <code>AllergyIntolerance</code> records do not produce <code>drug_exposure</code> or
-     * <code>device_exposure</code> rows. Device placement requires eligible use evidence:
-     * prescriptions, uncertain diagnoses, and explicit negative Observation
-     * results (false, SNOMED Negative, Known absent, or No, or interpretation
-     * code <code>NEG</code> from
-     * <code>http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation</code>)
-     * do not accept Device placement, even when other supplied values are positive.
-     * A recorder, asserter, or information source is retained as context rather
-     * than treated as the device event's provider.</p>
-     * <p>Coded <code>AllergyIntolerance.code</code> statements are interpreted using their
-     * original codings, optional <code>type</code>, and <code>category</code>. Supported substances
-     * produce an Observation finding separately from the causative substance
-     * in <code>value_as_concept_id</code>. Drug-domain substances are valid values and do
-     * not imply drug exposure or medication allergy. The finding is selected
-     * by an explicit mapping policy, not a published substance-to-finding
-     * crosswalk. Contextual findings report <code>MAPPED</code>,
-     * <code>resolution.via: CONTEXTUAL</code>. <code>observation_source_concept_id</code> retains
-     * the known OMOP identity of the original coding written to
-     * <code>observation_source_value</code>, including when the finding is unresolved;
-     * it is <code>0</code> when no source identity is known. The configured finding is
-     * never substituted for the original source concept.</p>
-     * <p>This adapts the informative R5 <a href="https://hl7.org/fhir/uv/omop/INFORMATIVE1/en/ValueAsConceptPattern.html">Vulcan Value-as-Concept
-     * pattern</a>
-     * to R4's substance/product codes, optional <code>type</code>, and repeating <code>category</code>.
-     * It selects a contextual finding and resolves the substance separately;
-     * published <code>Maps to value</code> decomposition of a composite finding is not performed.</p>
-     * <p>For <code>type: allergy</code>, medication (optionally with biologic) maps to
-     * Allergy to drug (<code>439224</code>); other category sets use Allergic disposition
-     * (<code>43530807</code>). For <code>type: intolerance</code>, medication (optionally biologic)
-     * uses Intolerance to drug (<code>4240582</code>), food alone uses Intolerance to food
-     * (<code>4340252</code>), and other sets use Intolerance to substance (<code>36684107</code>).
-     * All selected concepts must be active and standard in the requested
-     * vocabulary release. Limited reviewed substance mappings can derive an
-     * absent category: for example, peanut and egg extracts supply food context, and
-     * Penicillin G supplies medication context. No category is inferred solely
-     * from Drug-domain membership.</p>
-     * <p>With absent <code>type</code>, a supported substance maps to a mechanism-neutral
-     * propensity finding: medication (optionally with biologic) uses Propensity
-     * to adverse reactions to drug (<code>4305025</code>), food alone uses Propensity to
-     * adverse reactions to food (<code>4303802</code>), and other category sets or an
-     * unknown category use Propensity to adverse reaction (<code>4172024</code>). The
-     * original type remains absent; no allergy or intolerance mechanism is
-     * inferred. The substance value is resolved independently. Existing
-     * supported findings can supply their own mechanism and negative
-     * statements retain their meaning. Conflicting evidence leaves the
-     * affected concept unmapped.
-     * A single identified substance can still populate the value when only
-     * its category context conflicts. Distinct conflicting substances,
-     * positive/negative mixtures, finding/substance mixtures, and multiple
-     * standard substance targets do not select a substance value by input
-     * order. Equivalent supported translations may share one value;
-     * unresolved translations are disclosed and are not used as substances.
-     * Finding-only, value-only, and neither-resolved partial rows are retained.</p>
-     * <p><code>mappings.resolution.allergy</code> retains supplied type/categories, coded
-     * clinical/verification statuses, the date-source element, per-coding
-     * interpretation, derived categories, and reported information loss. The
-     * finding and substance have separate mappings linked to the same row and
-     * fields. Broader findings retain source specificity in this metadata.
-     * Codes outside contextual policy coverage retain existing domain-based
-     * mapping, with the contextual coverage outcome reported separately.
-     * Text-only inputs retain their text-only behavior. Reaction-substance
-     * fallback and published <code>Maps to value</code> relationships are not applied.
-     * Null placeholders in repeating FHIR category primitives carry no category
-     * value and are omitted from category interpretation and audit values.
-     * An invalid supplied type/category drops only the affected AllergyIntolerance
-     * before concept resolution. Other resources are still processed. The
-     * <code>dropped</code> entry identifies the resource and reports
-     * <code>allergy_type_unrecognized</code> or <code>allergy_category_unrecognized</code>.</p>
-     * <p>For example, a Condition coded with ICD10CM <code>Z79.4</code> can produce a mapped
-     * <code>observation</code> row. <code>Z86.73</code> and ICD-O-3 <code>8140/3</code> also map to concepts in
-     * the Observation domain. Use <code>mappings.omop_table</code> and <code>mappings.omop_id</code>
-     * to locate each result; the FHIR resource type alone does not determine
-     * the output table.</p>
-     * <p>Clinical rows include available person/visit/provider links, concept and
-     * source concept IDs, source value, source type provenance, and start
-     * timing. Dates follow the source resource's timing rules below, regardless
-     * of the output table. For example, a Condition follows its
-     * <code>onset[x]</code> / <code>recordedDate</code> timing rule even when returned as an
-     * <code>observation</code>. End dates are populated only in tables with end columns;
-     * for rows not listed in <code>rows_for_review</code>, they also contribute to the
-     * request-local observation period when the output table has no end column.</p>
-     * <p>Source-specific fields are populated only for the corresponding source
-     * and destination: Condition status in <code>condition_occurrence</code>, medication
-     * dosage/supply and Immunization lot details in <code>drug_exposure</code>, and
-     * Observation values/units/ranges in <code>measurement</code> or <code>observation</code> where
-     * those columns exist. Mapping notes explain the output table and which
-     * fields are populated. Coded medication/immunization routes on rows outside
-     * <code>drug_exposure</code>, and Observation values on rows outside <code>measurement</code> /
-     * <code>observation</code>, are retained in <code>mappings</code> linked to the output row, with
-     * <code>omop_field</code> omitted and <code>selected: false</code>. Coded routes are checked
-     * against the OMOP Route domain; those Observation values are preserved
-     * without concept resolution.</p>
-     * <p>Note destinations are unsupported. If no standard concept
-     * valid for a supported destination is found, the resource produces a row
-     * in its default table with concept ID <code>0</code> and <code>UNMAPPED</code> status. Its
-     * source concept ID is also <code>0</code>, except that allergy rows retain a known
-     * original source identity from their coding evidence. A <code>DOMAIN_MISMATCH</code>
-     * outcome is identified in the mapping
-     * note. Text-only clinical inputs can also produce rows in another supported
-     * table when semantic mapping selects a standard concept valid for that destination;
-     * without a validated match, they use their default tables. Domain-routed
-     * clinical records produce one row each even when their code has multiple
-     * vocabulary mapping targets; DeviceUseStatement event granularity is
-     * described below. Vocabulary <code>Maps to value</code> mappings are not applied.</p>
-     * <p><code>Medication</code> is reference data for medication resources; it does not
-     * create its own row because OMOP CDM has no Medication table. Administrative
-     * linkages (provider, care site, and location) are best-effort and limited to
-     * references supplied in the request. <code>Patient.managingOrganization</code> is a
-     * record custodian, not a care-delivery site. Provider specialties resolve
-     * independently to standard Provider concepts. Recorded <code>Practitioner.gender</code>
-     * is distinct from Person
-     * demographics: <code>male</code> and <code>female</code> resolve to validated OMOP Gender
-     * concepts in <code>provider.gender_concept_id</code>; <code>other</code>, <code>unknown</code>, and absent
-     * gender remain unmapped. <code>Address.country</code> is resolved to <code>location.country_concept_id</code>,
-     * and CMS Place of Service codings in <code>Location.type</code> are resolved to
-     * <code>care_site.place_of_service_concept_id</code>.
-     * Within one request, Practitioners with the same single distinct supplied
-     * NPI value merge into one provider row only when all supplied mapped identity
-     * attributes in the entire NPI group agree. The NPI system may be
-     * <code>http://hl7.org/fhir/sid/us-npi</code> (preferred in FHIR R4),
-     * <code>urn:oid:2.16.840.1.113883.4.6</code>, or bare <code>2.16.840.1.113883.4.6</code>;
-     * these forms are equivalent for matching. OID forms are accepted for compatibility.
-     * The same matching rule applies to Practitioners contained in valid role
-     * references. NPI values are compared exactly as supplied, without format
-     * or checksum validation. Blank values and unknown markers <code>UNK</code> and
-     * <code>UNKNOWN</code> are treated as missing and do not populate <code>npi</code> or participate
-     * in matching. Marker detection ignores case and surrounding whitespace;
-     * all other values are preserved without trimming. Other identifier systems and names
-     * do not trigger a merge. Missing attributes can enrich a compatible merged row.
-     * Compatibility compares the name rendered from each Practitioner's first
-     * <code>name</code> entry, its gender, its first non-empty DEA identifier, and its parsed
-     * birth year. Differences in birth month/day within one year do not conflict.
-     * Rendered names are compared exactly: <code>Jane Smith</code> and <code>Dr. Jane Smith</code>
-     * conflict even when they share an NPI.
-     * If any of these attributes conflict, every resource in that NPI group stays
-     * separate, including resources missing the conflicting attribute. Source
-     * attributes and unambiguous structural reference links are preserved; no
-     * conflicting value is selected. Each affected row has <code>CONFLICTING</code>
-     * diagnostics at <code>name</code>, <code>gender</code>, <code>identifier</code>, or <code>birthDate</code>, linked by
-     * <code>omop_table: provider</code> and <code>omop_id</code>. All source gender mappings link to
-     * their retained or merged provider row.
-     * Repeated copies of one NPI on a resource are allowed. A resource with
-     * multiple distinct NPIs stays separate, leaves <code>npi</code> unset, preserves its
-     * source-resource identity in <code>provider_source_value</code>, and reports a
-     * <code>CONFLICTING</code> diagnostic at <code>identifier</code> linked by
-     * <code>omop_table: provider</code> and <code>omop_id</code>.
-     * Row IDs are per response. The API does not merge across requests. For a
-     * Practitioner with one NPI, <code>provider_source_value</code> is that NPI, even when
-     * its group conflicts. Consumers can use it to deduplicate compatible
-     * providers across requests, but must preserve rows flagged by identity
-     * conflict diagnostics and check compatibility across responses. Without
-     * one unambiguous NPI, source-resource identity is preserved without a
-     * person-level deduplication guarantee.
-     * A <code>PractitionerRole</code> that identifies one supplied <code>Practitioner</code> aliases
-     * that canonical provider: by a top-level structural reference, a
-     * parent-contained <code>#id</code> reference, or an <code>identifier.system</code> and
-     * <code>identifier.value</code> match against a top-level Practitioner. Identifier
-     * matching uses the equivalent NPI systems and missing-value rules above;
-     * all other systems and all supplied identifiers match exactly. No remote
-     * identifier lookup is performed. When <code>Reference.type</code> is present it must
-     * be <code>Practitioner</code>; duplicate contained IDs and identifier matches to
-     * different canonical providers are ambiguous. An explicit reference that
-     * is unresolved, ambiguous, or unsupported retains a role-fallback provider
-     * row and is returned in <code>diagnostics</code>. <code>provider_role_contexts</code> preserves role-specific
-     * specialty and care-site context that a canonical OMOP provider row cannot
-     * represent together.</p>
-     * <p>A role whose practitioner reference has only a blank or unknown NPI
-     * identifier follows the missing-identifier behavior: its fallback row has
-     * an <code>UNSUPPORTED</code> diagnostic explaining that a usable identifier or literal
-     * reference is required. An unambiguous literal reference still links to
-     * its Practitioner when the NPI is missing or unknown. Original supplied
-     * unknown markers remain in the role's <code>practitioner_identifier</code> metadata.</p>
-     * <p>Each <code>PractitionerRole.specialty</code> entry resolves independently using its
-     * supplied codings and explicit text from that entry. NUCC codings resolve
-     * directly; other supported codings may use the UMLS bridge. Text fallback
-     * is permitted when every coding has a nonblank code and a well-formed,
-     * unsupported system identifier. Supported systems, mixed supported and
-     * unsupported systems, and incomplete or malformed codings block fallback.
-     * A supported coding remains authoritative even when the text differs.
-     * Within one specialty entry, complete codings from well-formed unsupported
-     * systems do not block supported codings that independently resolve to the
-     * same standard Provider concept. Unsupported companions remain unsupported
-     * in the coding audit and acquire no crosswalk. Missing or malformed
-     * companions, failures of recognized codings, and disagreements between
-     * supported codings still block selection. For example, NUCC <code>208000000X</code> alongside a complete local
-     * <code>PEDS</code> coding can resolve to Pediatric Medicine, with or without text
-     * and in either coding order. This uses the supported coding's mapping
-     * and source concept, rather than text fallback.
-     * Coding displays do not supply text fallback evidence.
-     * Unsupported system identifiers must be absolute URIs without embedded
-     * whitespace, user information, or fragments. HTTP(S) identifiers require
-     * a host; URNs require a namespace and a nonempty namespace-specific value.
-     * Bare labels such as <code>Epic</code> do not qualify.
-     * Text uses deterministic vocabulary assertions in order: standard Provider
-     * concept name, English OMOP synonym, then an English UMLS string on a
-     * CUI with a NUCC atom, then a NUCC preferred-term label with its grouping
-     * prefix removed. The last layer retains the entire classification and
-     * specialization label, including qualifications. An ambiguous layer stops
-     * resolution. No semantic search or ML matching is used.
-     * Each role's input remains visible in <code>mappings</code>, including repeated
-     * identical inputs across one provider's roles.
-     * <code>specialty_concept_id</code> is populated only when every distinct supplied
-     * input resolves to the same standard Provider concept. With no inputs,
-     * or an unresolved, ambiguous, or conflicting input, it stays <code>0</code>.
-     * A role without a specialty contributes no input. The endpoint applies
-     * no frequency or hierarchy selection. Each input's outcome and matching
-     * route (layer, matched string, and UMLS CUI/SAB when applicable) appear
-     * in <code>mappings</code> with <code>omop_field: specialty_concept_id</code>. An individually
-     * resolved input can coexist with a provider concept of <code>0</code> when another
-     * input fails or disagrees. Specialty mappings have <code>selected: false</code>:
-     * the source text remains in <code>specialty_source_value</code> when supplied source
-     * values agree, and every original value remains in role contexts and mappings.
-     * Specialty mapping evidence includes <code>specialty_resolution</code> with the text
-     * fallback decision and each coding's independent outcome. A successful
-     * text fallback reports <code>MAPPED</code> and source concept ID <code>0</code>; its local
-     * codings remain unsupported in that audit. For example, complete local
-     * codings with explicit <code>Pediatrics</code> text can resolve to Pediatric Medicine
-     * through <code>NUCC_LABEL</code>. Adding a different or unresolved specialty still
-     * keeps the provider's singular concept at <code>0</code>.
-     * Compound phrasings without a vocabulary assertion remain unresolved.
-     * For example, <code>Pulmonology</code> stays unresolved while <code>Pulmonologist</code>
-     * resolves to Pulmonary Disease. Results depend on <code>vocab_version</code>.</p>
-     * <p>Patient demographics:</p>
+     * <p>Clinical rows remain eligible when a provider is omitted; their provider links
+     * stay unset, with UNRESOLVED diagnostics pointing to the provider's dropped entry.</p>
+     * <p>Each role specialty resolves independently from supported codings, with
+     * deterministic explicit-text fallback for text-only entries or complete codings
+     * from unsupported systems. Incomplete/malformed codings or recognized systems
+     * block text fallback; coding displays do not supply fallback text. Complete
+     * unsupported companions do not block agreeing supported codings. Unsupported
+     * systems must be well-formed absolute URIs without whitespace, credentials,
+     * or fragments. <code>specialty_concept_id</code> is populated only when at least one
+     * specialty is supplied and every distinct input resolves to the same standard
+     * Provider concept; otherwise it stays 0. Each role's source and outcome remain
+     * in mappings, including repeated inputs. Specialty mappings have <code>selected: false</code>;
+     * see SpecialtyResolution for per-coding evidence and MappingResolution.via for
+     * the reported matching route.</p>
+     * <p>Patient sex at birth, race, and ethnicity use these US Core 6.1.0 extension
+     * structures/value sets on any Patient; a US Core profile declaration is not
+     * required. Other demographic extensions are ignored.</p>
+     * <p>| Demographic | Extension URL | Supported value source |
+     * | --- | --- | --- |
+     * | Birth sex | http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex | valueCode, using http://hl7.org/fhir/us/core/ValueSet/birthsex |
+     * | Race | http://hl7.org/fhir/us/core/StructureDefinition/us-core-race | ombCategory, using http://hl7.org/fhir/us/core/ValueSet/omb-race-category |
+     * | Ethnicity | http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity | ombCategory, using http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity-category |</p>
      * <ul>
-     * <li>Sex at birth, race, and ethnicity are read from these US Core
-     * extensions, with their US Core 6.1.0 structures and value sets, on
-     * any Patient (US Core profile conformance is not required). Sex at
-     * birth falls back to Patient <code>gender</code>. Other extensions, including US
-     * Core sex and gender identity, are ignored.
-     * <ul>
-     * <li>Birth sex:
-     * <code>http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex</code>
-     * (<code>valueCode</code> from <code>http://hl7.org/fhir/us/core/ValueSet/birthsex</code>)</li>
-     * <li>Race:
-     * <code>http://hl7.org/fhir/us/core/StructureDefinition/us-core-race</code>
-     * (<code>ombCategory</code> from
-     * <code>http://hl7.org/fhir/us/core/ValueSet/omb-race-category</code>)</li>
-     * <li>Ethnicity:
-     * <code>http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity</code>
-     * (<code>ombCategory</code> from
-     * <code>http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity-category</code>)</li>
+     * <li>A supplied birth-sex extension takes precedence: M/F resolve, while unknown,
+     * unsupported, or conflicting values, or an extension without valueCode, leave
+     * concept 0 without falling back to Patient.gender. Without a birth-sex
+     * extension, male/female administrative gender is used under the OMOP
+     * sex-at-birth convention; other/unknown remain 0.</li>
+     * <li>One distinct resolved race sets the Person race concept. Multiple races use
+     * <code>1546847</code> (More than one race) and one observation per race: concept <code>4013886</code>
+     * (Race), type <code>32817</code>, and the race in <code>value_as_concept_id</code>. The category code
+     * is <code>value_source_value</code>; observation_source_value and observation_date are
+     * absent. Loaders must supply their own required-date policy.</li>
+     * <li>One non-null ethnicity category can resolve; conflicting categories leave
+     * concept 0. Multiple-ethnicity observations are not produced. Race/ethnicity
+     * null flavors are ignored, and detailed codes/text are preserved without
+     * resolution. Source codes are joined with <code>|</code> in source order, falling back
+     * to extension text when no code exists.</li>
+     * <li>Mappings preserve supplied demographic codes and indicate which were selected;
+     * overridden administrative gender is unselected. Conflicting birth sex/ethnicity
+     * and birth sex without valueCode also have diagnostics. Summary counts follow
+     * the field-level rules in Summary. Demographics are not inferred from other data.</li>
      * </ul>
-     * </li>
-     * <li><code>gender_concept_id</code> is sex at birth. A supplied birth sex always
-     * decides it: <code>M</code> and <code>F</code> are resolved; <code>UNK</code>, <code>ASKU</code>, <code>OTH</code>, a code
-     * outside the value set, conflicting values, and a birth sex without
-     * <code>valueCode</code> leave it <code>0</code>, and Patient <code>gender</code> is not used.</li>
-     * <li>Without a birth sex, Patient <code>gender</code> <code>male</code> or <code>female</code> is resolved
-     * under the OMOP convention that the supplied gender represents sex at
-     * birth; <code>other</code> and <code>unknown</code> keep concept <code>0</code>.</li>
-     * <li><code>gender_source_value</code> is the chosen source code (<code>F</code> for birth sex,
-     * <code>female</code> for Patient <code>gender</code>).</li>
-     * <li>Each race category is resolved separately, and null flavors (<code>UNK</code>,
-     * <code>ASKU</code>) are ignored. One distinct standard race sets
-     * <code>race_concept_id</code>. More than one sets it to <code>1546847</code> (More than one
-     * race) and adds one <code>observation</code> row per race, with
-     * <code>observation_concept_id</code> <code>4013886</code> (Race), the race in
-     * <code>value_as_concept_id</code>, <code>observation_type_concept_id</code> <code>32817</code>, the
-     * category code in <code>value_source_value</code>, and no
-     * <code>observation_source_value</code> or <code>observation_date</code>. A loading pipeline
-     * that requires <code>observation_date</code> must apply its own date policy.</li>
-     * <li>The single non-null ethnicity category is resolved, and null flavors
-     * are ignored; more than one distinct category leaves
-     * <code>ethnicity_concept_id</code> <code>0</code>. Ethnicity is not derived from race, and
-     * no demographic is inferred from names, addresses, or other
-     * extensions.</li>
-     * <li><code>race_source_value</code> and <code>ethnicity_source_value</code> list every supplied
-     * category and detailed code in source order, joined with <code>|</code>, or the
-     * extension text when no code is supplied. Detailed codes and text are
-     * not resolved.</li>
-     * <li>Every supplied birth sex, gender, and OMB category code has a
-     * <code>mappings</code> entry whose <code>note</code> names its source and outcome. When a
-     * birth sex is supplied, Patient <code>gender</code> is reported unselected with
-     * the note <code>FHIR administrative gender; not used, birth sex supplied</code>.
-     * Conflicting values and a birth sex without <code>valueCode</code> are also
-     * returned in <code>diagnostics</code> with path <code>extension:birthsex</code> or
-     * <code>extension:ethnicity</code>. <code>summary</code> counts each demographic field once,
-     * as described under <code>Summary</code>.</li>
-     * <li>Differences from the reference conventions: Vulcan's example gender
-     * ConceptMap maps <code>other</code> and <code>unknown</code> to concepts, which stay <code>0</code>
-     * here; more than one race follows the OHDSI THEMIS convention, also
-     * used by Vulcan, rather than the CDM 5.4 note that mixed races use
-     * <code>0</code>; and Vulcan's suggested <code>observation</code> rows for multiple
-     * ethnicities are not produced.</li>
-     * </ul>
-     * <p><code>Specimen</code> produces a <code>specimen</code> row only with an explicitly resolvable
-     * top-level Patient subject. Missing collection dates or material retain
-     * useful partial rows with linked diagnostics; those rows may require
-     * downstream completion before loading into a strict CDM instance.
-     * References support <code>Patient/id</code> and exact Bundle
-     * fullUrl matches (including URNs and absolute URLs); contained, logical,
-     * display-only, missing, non-Patient, and unresolved subjects never use the
-     * sole Patient fallback. Reference.type, when supplied, must identify Patient.
-     * Unsafe patient attribution and ineligible status drop only that Specimen
-     * with <code>dropped</code> and <code>diagnostics</code>; a missing Patient in the entire request
-     * remains a 400. Missing material is concept ID 0 with a <code>type</code> diagnostic
-     * and no terminology mapping/summary count. Supplied unmapped material is
-     * also 0, with its separate vocabulary mapping outcome and retained source code.
-     * Material (<code>type</code>) resolves against the Specimen domain, coded UCUM
-     * collection quantity units against Unit, and <code>collection.bodySite</code> against
-     * Spec Anatomic Site. Supplied unmapped optional concepts are 0; absent
-     * unit and site IDs are explicit null. Text-only body sites preserve their
-     * source text with site concept ID 0 and an <code>UNMAPPED</code> mapping; they do not
-     * produce a text-based concept suggestion. Material descriptions follow
-     * the semantic-mapping policy above. Original source codes and text-only
-     * descriptions are preserved.
-     * Numeric quantity is copied without
-     * unit conversion; invalid or comparator-bearing quantities are omitted
-     * with diagnostics without dropping the row. Missing optional data is allowed.
-     * Collection time uses <code>collection.collectedDateTime</code> or
-     * <code>collection.collectedPeriod.start</code>; end-only, partial, invalid, and absent
-     * dates leave specimen_date/specimen_datetime omitted with linked diagnostics.
-     * Both collected forms together are conflicting: retain the row without
-     * selecting a date. Period end and receivedTime never substitute for collection
-     * start. <code>specimen_source_contexts.collection_timing</code> preserves raw dateTime,
-     * Period boundaries, receivedTime, and the selected source path when a date
-     * is populated, including partial precision and original timezone offsets.
-     * <code>specimen_collection_date_missing</code>, <code>specimen_collection_date_partial</code>, and
-     * <code>specimen_collection_date_unusable</code> distinguish absent, partial, and invalid
-     * source dates; <code>specimen_collection_multiple_forms</code> reports conflicting choices.
-     * <code>specimen_type_concept_id: 32817</code> is EHR provenance, independent of material
-     * and availability. Status absent/available/unavailable/unsatisfactory is
-     * supported; entered-in-error and unrecognized statuses drop the specimen.
-     * <code>specimen_source_contexts.status</code> preserves the supplied availability
-     * status for emitted rows; it is omitted when no status was supplied.
-     * Disease status is not inferred. Source identity precedence is resource id,
-     * then first identifier with a nonempty value in source array order, then
-     * accessionIdentifier.value, then Bundle fullUrl. No identity is fabricated;
-     * <code>specimen_source_contexts</code> preserves all valued identifier system/value
-     * pairs, accession identity, resource id/fullUrl, and the selected source path.
-     * Parent/derived specimens emit independently when each has its own Patient;
-     * missing date/material remains partial rather than being inherited. Parent
-     * and Measurement-to-Specimen links are not represented. Consuming CDM
-     * loaders own required-date completion, durable IDs, and dataset completeness.
-     * Source baseline is FHIR R4 4.0.1, with supported common fields reviewed against
-     * US Core Specimen 7.0.0; full profile conformance is not validated here.</p>
-     * <p><strong>Device use and exposure</strong></p>
-     * <p>DeviceUseStatement accepts active, completed, stopped, and on-hold use;
-     * intended, entered-in-error, missing, and unrecognized statuses are omitted
-     * with source-specific diagnostics. Its subject must explicitly resolve to
-     * an emitted Patient. Group, contained-Patient, identifier-only, external
-     * fetching, and sole-Patient attribution are unsupported for this path.
-     * Device references support exact Type/id and Bundle fullUrl/URN matches,
-     * plus unambiguous contained Devices scoped to the referring statement.
-     * Missing, wrong-type, unresolved, or ambiguous Device details retain a
-     * known-patient use row with device concept 0 and diagnostics. Missing type
-     * evidence has no vocabulary mapping entry; supplied unmapped type evidence
-     * has a mapping outcome. Inventory-only Device records emit no exposure.</p>
-     * <p>timingDateTime supplies the start only; timingPeriod preserves supplied
-     * boundaries independently. Each timingTiming.event produces a separate
-     * row, including a partial row for an unusable event, with its zero-based
-     * event_index in device_exposure_contexts.exposures. Repeat rules without events
-     * retain one partial row; events plus rules produce only the event rows.
-     * No recurrence, continuous min/max interval, status-derived end date, or
-     * recordedOn fallback is inferred. Year/month precision and malformed
-     * individual dates leave affected columns absent. Competing timing choices
-     * or a provably reversed Period leave both bounds absent. Supplied precision,
-     * offsets, schedules, and omission/conflict reasons remain in source context
-     * and diagnostics. Other clinical paths retain their own timing semantics.</p>
-     * <p>device_exposure_contexts contains one entry per source record that produced
-     * device exposures. Its exposures array links all rows derived from that
-     * record by device_exposure_id and, for Timing events, event_index. Shared
-     * timing, device evidence, and quantity_basis appear once per source record.
-     * Contexts are not combined by resource id or device identity; distinct
-     * records remain separate even when their identifiers match or are absent.</p>
-     * <p>device_source_value uses original type/clinical coding, never inventory
-     * or resource identity. An unambiguous Device.udiCarrier.deviceIdentifier
-     * supplies unique_device_id. Competing identifiers leave it absent and are
-     * preserved with issuer/jurisdiction/carrier context. production_id remains
-     * absent; carriers, lot, serial, manufacture, and expiry evidence remain in
-     * device_exposure_contexts.</p>
-     * <p>DeviceUseStatement rows use device_type_concept_id 32817 (EHR), with
-     * provider_id, visit_occurrence_id, and visit_detail_id unset.
-     * Routed rows retain their source classification, explicit visit links to
-     * emitted same-patient visits, and compatible performer links;
-     * Condition/Procedure recorder/asserter and
-     * MedicationStatement informationSource do not supply device provider_id.
-     * Supplied source, encounter, context, recorder, asserter, performer, and
-     * informationSource values on DeviceUseStatement are retained only in
-     * device_exposure_contexts.</p>
-     * <p>Device exposure quantity is reported as follows:</p>
+     * <p><strong>Allergies and observations</strong></p>
+     * <p>Coded AllergyIntolerance statements use original codings, optional type, and
+     * category to resolve an Observation finding and the causative substance
+     * independently. A Drug-domain substance can be a value without implying drug
+     * exposure or medication allergy. Contextual findings report <code>MAPPED</code> and
+     * <code>resolution.via: CONTEXTUAL</code>; original source concept identity is retained.</p>
+     * <p>The contextual finding policy is:</p>
+     * <p>| Supplied type | Medication, optionally with biologic | Food alone | Other or unknown categories |
+     * | --- | --- | --- | --- |
+     * | allergy | Allergy to drug (439224) | Allergic disposition (43530807) | Allergic disposition (43530807) |
+     * | intolerance | Intolerance to drug (4240582) | Intolerance to food (4340252) | Intolerance to substance (36684107) |
+     * | Absent | Propensity to adverse reactions to drug (4305025) | Propensity to adverse reactions to food (4303802) | Propensity to adverse reaction (4172024) |</p>
+     * <p>Selected findings must be active standard concepts in the requested release.
+     * Limited reviewed substance mappings can supply an absent category; Drug-domain
+     * membership alone does not. An absent type remains absent. Supported existing
+     * findings and negative statements retain their meaning. Conflicting or ambiguous
+     * evidence leaves the affected concept unresolved; the finding and substance can
+     * resolve independently, so partial rows are retained. In particular, category
+     * conflict need not prevent resolution of a single identified substance.
+     * Unsupported contextual sources retain domain-based placement, excluding
+     * drug/device exposure, with contextual coverage reported separately.</p>
+     * <p><code>resolution.allergy</code> preserves supplied context and interpretation evidence;
+     * finding and substance mappings link to the same row and separate fields.
+     * Text-only statements follow primary semantic mapping. Reaction-substance
+     * fallback and <code>Maps to value</code> decomposition are not applied. Invalid supplied
+     * type/category drops that AllergyIntolerance with <code>allergy_type_unrecognized</code>
+     * or <code>allergy_category_unrecognized</code>, while other resources continue.</p>
+     * <p>For Observation rows placed in Measurement or Observation, numeric Quantity,
+     * Integer, and numeric-looking String values populate <code>value_as_number</code>.
+     * Comparators are represented only by Measurement.operator_concept_id.
+     * valueQuantity.value and valueInteger accept JSON numbers. Finite numeric
+     * valueString results are interpreted equivalently, including optional
+     * comparators, while preserving the original text in value_source_value.
+     * Other non-coded values populate Observation.value_as_string or
+     * Measurement.value_source_value. Coded valueCodeableConcept results resolve
+     * to <code>value_as_concept_id</code> using active standard concepts from any domain;
+     * the selected code becomes value_source_value. Unmapped coded results use 0,
+     * and an Observation's value_as_string remains empty for coded results.
+     * Text-only result concepts remain text without concept resolution.
+     * Other unsupported value[x] forms and components do not produce separate values.</p>
+     * <p>Quantity units on Measurement, Observation, and Specimen use exact,
+     * case-sensitive coded UCUM, including accepted OID spellings. Matching may be
+     * direct or through an active OMOP Maps to relationship; there is no UMLS bridge,
+     * text guessing, alias correction, or numeric conversion. An absent unit is null;
+     * a supplied unit without a valid standard Unit match is 0. Explicit UCUM <code>1</code>
+     * is supplied unit evidence. Quantity.code supplies unit_source_value when present,
+     * otherwise Quantity.unit. Unit mappings preserve Quantity.system/code/unit in
+     * source_system/source_code/source_name. See unit field schemas for source-concept
+     * and resolution metadata.
+     * Observation units on other clinical destinations are not resolved separately.</p>
+     * <p><strong>Specimens and devices</strong></p>
+     * <p>Specimen requires an explicit top-level Patient subject using the shared
+     * reference rules; supplied Reference.type must identify Patient. Missing
+     * collection timing or material retains a partial row with diagnostics.
+     * Material resolves against Specimen, collection quantity units against Unit,
+     * and collection.bodySite against Spec Anatomic Site. Missing material produces
+     * concept 0 without a terminology outcome; supplied unmapped material has its
+     * own outcome. Text-only sites retain text and concept 0 without a suggestion.
+     * Absent unit/site concepts are null; supplied unmapped values are 0.</p>
+     * <p>Specimen quantity is copied without conversion when nonnegative and free of
+     * a comparator; unusable quantities are omitted with diagnostics. Missing,
+     * partial, invalid, or conflicting collection choices leave timing unset.
+     * Parent/derived specimens require their own Patient and do not inherit missing
+     * material/dates. Parent and Measurement-to-Specimen links are not represented.
+     * <code>specimen_source_contexts</code> retains availability, identities, and original timing;
+     * SpecimenRow describes source-ID precedence and required-date limitations.
+     * For US Core Specimen 7.0.0 inputs, only the fields described here are mapped;
+     * full profile conformance is not validated.</p>
+     * <p>DeviceUseStatement requires an explicit emitted Patient and supports
+     * request-local Device references, including unambiguous contained Devices.
+     * Missing or unusable Device details retain a known-patient exposure with
+     * concept 0 and diagnostics. Missing type evidence has no terminology outcome;
+     * supplied unmapped type evidence has one. Inventory-only Devices produce no
+     * exposure.</p>
+     * <p>Each timingTiming.event produces a separate start-only exposure, even if the
+     * event date is unusable; events plus repeat rules produce only those event rows.
+     * A repeat-only schedule retains one undated row without expanding recurrence.
+     * Competing timing choices or a provably reversed Period leave both bounds
+     * unset. Partial or malformed individual dates leave their columns absent.
+     * RecordedOn and status do not supply missing use dates.</p>
+     * <p>Device exposure contexts group row links and source evidence per source record,
+     * with event_index for Timing events. Distinct records remain separate, including
+     * overlapping use and matching device/source identifiers; row counts do not count
+     * distinct physical devices. An unambiguous UDI-DI supplies unique_device_id;
+     * competing identifiers and production details remain in context, and production_id
+     * is unset. Device source values identify clinical/type coding, not inventory IDs.</p>
+     * <p>Device quantity defaults to 1 when quantity evidence is absent. Clinical
+     * quantities, doses, rates, and numeric Observation results, including numeric
+     * valueString, do not establish device counts and leave quantity omitted.
+     * device_exposure_contexts retains the original evidence; quantity_basis and
+     * diagnostics explain the result. Timing repeat count does not establish
+     * quantity. Device unit IDs are always null.
+     * DeviceUseStatement uses EHR type 32817 and has no provider or visit links;
+     * routed clinical rows retain eligible performer and same-patient visit links.</p>
+     * <p><strong>Medication and drug quantities</strong></p>
+     * <p>MedicationRequest, MedicationStatement, and MedicationAdministration accept
+     * inline medicationCodeableConcept, a request-local Medication reference, or
+     * display-text fallback when a reference cannot resolve. A reference resolving
+     * to a non-Medication is not rescued by display. MedicationDispense requires
+     * usable inline code/text or a reference resolving to a Medication with usable
+     * code/text; both choice forms together drop the dispense. Display-only or
+     * unresolved references do not establish dispensing medication identity.</p>
+     * <p>For MedicationDispense, context links to a supplied same-patient Encounter,
+     * and the first resolvable Practitioner/PractitionerRole performer supplies the
+     * provider. Authorizing prescriptions provide validated request-local linkage
+     * only; dispensing values come from the dispense. Orders, dispenses, and
+     * administrations emit independently without deduplication by drug.
+     * Comparable handover/preparation dates proving handover before preparation
+     * leave start timing unset with a conflict diagnostic. A completed dispense
+     * can remain partial without usable handover, and no exposure end is derived.
+     * For US Core MedicationDispense 7.0.0 inputs, only the fields described here
+     * are mapped; full profile conformance is not validated.</p>
+     * <p>For drug_exposure output:</p>
      * <ul>
-     * <li>When the source has no quantity, dose, rate, or numeric Observation
-     * result field, quantity is 1 and device_exposure_contexts.quantity_basis
-     * is default_absent_count.</li>
-     * <li>When such a field is supplied, including a null or malformed value,
-     * quantity is omitted and quantity_basis is unsupported_supplied_evidence.
-     * The original values remain in device_exposure_contexts.evidence, and
-     * an UNSUPPORTED diagnostic identifies each supplied field.</li>
+     * <li>MedicationRequest.dispenseRequest.numberOfRepeatsAllowed supplies refills;
+     * its positive whole-day expectedSupplyDuration supplies days_supply.</li>
+     * <li>MedicationDispense.daysSupply requires positive whole coded UCUM <code>d</code> days,
+     * without a supplied comparator. Missing supply is allowed; unsupported values
+     * are omitted with diagnostics. It does not derive exposure end or refills.</li>
+     * <li>Non-empty dosage text supplies newline-joined sig. Coded dosage/Immunization
+     * routes resolve against Route; conflicting routes remain unset, while codings
+     * shared by all dosage instructions can select a route. Immunization.lotNumber
+     * supplies lot_number.</li>
+     * <li>MedicationRequest uses type 32838 (EHR prescription), MedicationDispense uses
+     * 32825 (EHR dispensing record), and other current sources use 32817 (EHR).
+     * These are provenance classifications, not proof of medication consumption.</li>
      * </ul>
-     * <p>For example, an Observation with valueQuantity.value of 2 returned as a
-     * device exposure has no quantity; the value 2 remains in its source context.
-     * timingTiming.repeat.count remains in source context and does not set
-     * quantity. unit_concept_id and unit_source_concept_id are always null.</p>
-     * <p>Distinct eligible statements and routed clinical records remain separate,
-     * including overlapping use and equal Timing events. derivedFrom is retained
-     * as supporting context, not duplicate identity. Row counts therefore need
-     * not count distinct uses or physical devices. IDs are request-local exposure
-     * identities. Before loading a CDM dataset, callers must assign durable IDs
-     * and populate any required fields omitted from partial rows.</p>
-     * <p>Unsupported resource types are accepted in a Bundle but ignored: they
-     * create no row and no <code>dropped</code> entry. <code>dropped</code> is reserved for supported
-     * row-producing resources that cannot safely produce a positive OMOP row:
-     * required subject/patient, clinical code/text, or medication data may be
-     * unusable, or the resource may explicitly negate or fail the documented
-     * clinical-event eligibility policy. A single-Patient Bundle uses the sole
-     * Patient only when <code>subject</code>/<code>patient</code> is absent, except DeviceUseStatement
-     * and Specimen, which require explicit Patient subjects. An explicit subject/patient
-     * reference that is unresolved, ambiguous, or unsupported drops the clinical
-     * resource in every request scope.</p>
-     * <p>Eligibility distinguishes clinical validity, performed/taken evidence, and
-     * administrative workflow state. Entered-in-error and explicitly
-     * non-performed events never produce a positive clinical-event row, and
-     * unrecognized required statuses are dropped except the retained Condition and
-     * Encounter cases below. Condition accepts absent or confirmed canonical-HL7
-     * <code>verificationStatus</code> without a status retention reason; uncertain or unreadable
-     * supplied verification is retained and indexed. Clinical course is not a
-     * diagnosis-role mapping. Procedures accept completed or stopped events.
-     * Medication requests are prescription evidence only: <code>doNotPerform</code>, drafts,
-     * cancellations, and non-authorizing intents are dropped. Medication statements
-     * accept active, completed, stopped, or on-hold reported use; administrations
-     * accept completed, in-progress, on-hold, or stopped events. An on-hold
-     * administration also needs an <code>effectiveDateTime</code> or <code>effectivePeriod.start</code>
-     * that supplies start evidence; a valid partial date remains an undated row.
-     * An on-hold administration is started evidence that is temporarily paused and
-     * expected to continue. MedicationDispense accepts completed records,
-     * including completed partial fills. Stopped records require a valid
-     * <code>whenHandedOver</code>, including partial dates, as evidence of actual handover.
-     * Preparation, in-progress (ready for pickup), on-hold, cancelled, declined,
-     * entered-in-error, unknown, missing, and unrecognized statuses are dropped.
-     * A completed dispense with missing or unusable handover timing remains a
-     * partial row; preparation time never substitutes for handover.
-     * Immunizations require completed
-     * status. Observations accept final,
-     * amended, or corrected status; registered,
-     * preliminary, cancelled, entered-in-error, and missing statuses are
-     * dropped. AllergyIntolerance accepts absent, unconfirmed, or confirmed canonical-HL7
-     * <code>verificationStatus</code> as a reported allergy, but drops refuted,
-     * entered-in-error, and unreadable supplied verification statuses. Invalid
-     * supplied allergy type/category also drops that resource, for both coded
-     * and text-only statements. Encounter
-     * accepts arrived, triaged, in-progress, onleave, or finished status, but drops
-     * planned, cancelled, and entered-in-error statuses. Unknown, missing, and unreadable
-     * Encounter statuses are retained and indexed without imputation. An eligible
-     * encounter without <code>Period.end</code> remains a partial visit; no end date is invented.
-     * MedicationStatement, Observation, and Procedure with explicit <code>unknown</code>
-     * status are also retained and indexed in <code>rows_for_review</code> when otherwise
-     * shapeable. Missing or unreadable statuses on these three resource types
-     * remain dropped. Retention preserves source status and does not establish
-     * that an event occurred or medication was taken. Device placement still
-     * requires eligible use evidence; unknown-status records cannot produce
-     * <code>device_exposure</code> rows.</p>
-     * <p>The mapped OMOP concept's domain determines the clinical output table.
-     * For Observations, numeric and nonnumeric <code>value[x]</code> forms determine the
-     * preferred table only when the code is valid for both <code>measurement</code> and
-     * <code>observation</code>. Unresolved Observations retain <code>measurement</code> rows for
-     * numeric values and <code>observation</code> rows for other values. In these two
-     * tables, numeric values populate <code>value_as_number</code>; other non-coded values
-     * populate <code>value_as_string</code> for an <code>observation</code> or <code>value_source_value</code>
-     * for a <code>measurement</code>. Coded <code>valueCodeableConcept</code> values are resolved
-     * against <code>value_as_concept_id</code> in these tables and use the selected
-     * bare code in <code>value_source_value</code>, leaving an <code>observation</code>'s
-     * <code>value_as_string</code> empty; unmapped or target-invalid coded values remain
-     * <code>0</code>. Active standard concepts from any OMOP domain are valid for
-     * <code>value_as_concept_id</code> per CDM 5.4. For example, a blood-culture Measurement
-     * can record <em>Staphylococcus aureus</em> as its coded result, even though the
-     * organism concept belongs to OMOP's Observation domain.
-     * For other clinical output tables, Observation values are retained only
-     * in <code>mappings</code>, without concept resolution or an <code>omop_field</code>, and with
-     * <code>selected: false</code>.
-     * Other unsupported <code>value[x]</code> forms and Observation components do not
-     * populate separate converted values. A
-     * numeric comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) is represented only by a
-     * measurement's <code>operator_concept_id</code>.</p>
-     * <p>For Observations returned as <code>measurement</code> or <code>observation</code> rows,
-     * Quantity units resolve independently against the table's
-     * <code>unit_concept_id</code>.
-     * Only coded UCUM (<code>http://unitsofmeasure.org</code> or its
-     * OID <code>2.16.840.1.113883.6.8</code>, bare or <code>urn:oid:</code>) is supported. Codes are
-     * case-sensitive: no spelling aliases, text-only guesses, or numeric
-     * conversion are applied. Coded UCUM units map to valid standard OMOP
-     * Unit concepts using the release selected by <code>vocab_version</code>.
-     * Mappings are direct or follow an active OMOP <code>Maps to</code> relationship;
-     * UCUM units do not use a UMLS bridge.
-     * Unknown codes,
-     * vocabulary gaps, text-only units, missing coding, and unsupported
-     * systems keep the row and use <code>0</code>; absent units use JSON <code>null</code> (the
-     * field is present). Explicit dimensionless code <code>1</code> is a supplied unit
-     * and resolves or remains <code>0</code>; it is never treated as absent.
-     * <code>unit_source_value</code> contains Quantity.code when supplied, otherwise
-     * Quantity.unit. A separate unit <code>mappings</code> entry preserves the original
-     * Quantity.system/code in <code>source_system</code>/<code>source_code</code> and the exact
-     * human-readable Quantity.unit in <code>source_name</code>, with its own outcome.
-     * Quantity.unit provides display text and does not affect unit matching.
-     * Measurement also returns nullable <code>unit_source_concept_id</code>, identifying
-     * the OMOP source concept for Quantity.system/code when available,
-     * otherwise <code>0</code> for a supplied unit.
-     * Observation has no such column. Resolving a unit does not change
-     * numeric values, comparators, or reference ranges.
-     * Supported coded UCUM units include <code>resolution</code> in their mappings,
-     * whether the unit resolves or remains unmapped:
-     * its outcome and reason code distinguish vocabulary gaps, target-domain
-     * mismatches, and ambiguity. Unresolved or ambiguous units retain the row
-     * with concept ID <code>0</code>. Resolved mappings retain the selected concept's
-     * direct or crosswalk provenance. Text-only units, units with missing
-     * coding, and unsupported unit systems omit <code>resolution</code>; their <code>note</code>
-     * explains the unmapped outcome.</p>
-     * <p>For Observations returned in other clinical tables, units are not resolved
-     * or included as separate mapping outcomes. Device exposure unit IDs remain
-     * null, with supplied quantity and unit evidence retained in
-     * <code>device_exposure_contexts</code>.</p>
-     * <p>Compatibility: absent <code>unit_concept_id</code> values previously returned <code>0</code>
-     * and now return <code>null</code>. Coded units use their code in <code>unit_source_value</code>
-     * rather than their human-readable text; the text remains in <code>mappings</code>.
-     * The Measurement <code>unit_source_concept_id</code> field is new.</p>
-     * <p>A standard OMOP <code>concept_id</code> is selected for each eligible primary clinical coding
-     * after considering all of the resource's supplied codings. An unambiguous
-     * coded medication or immunization route is checked independently against
-     * the OMOP Route domain. For <code>drug_exposure</code> rows, <code>route_concept_id</code>
-     * contains the resolved concept ID, or <code>0</code> if unmapped; for other output
-     * tables the route is reported only in
-     * <code>mappings</code>, without <code>omop_field</code> and with <code>selected: false</code>.
-     * Alongside the OMOP rows grouped by
-     * table (<code>tables</code>), the response carries <code>mappings</code> (an entry for every
-     * supported source coding from a resource that shaped a row, linked back to
-     * that row; some, such
-     * as demographic null flavors, are reported without being resolved),
-     * <code>rows_for_review</code> (an index of uncertain-status or primary-concept-0 clinical
-     * rows in tables, with original statuses, reasons, and source/row identity),
-     * <code>provider_role_contexts</code> (source role details linked to provider rows),
-     * <code>dropped</code> (resources that could not be shaped into a row),
-     * <code>diagnostics</code> (explicit references that could not safely create a link,
-     * conflicting Practitioner identity attributes, conflicting or unsupported
-     * Patient demographic extensions, and conflicting Encounter classifications),
-     * <code>vocab_version</code> (the OMOP vocabulary release codes were resolved
-     * against), and a small <code>summary</code> of the resolution outcomes.</p>
-     * <p>A <code>concept_id</code> of <code>0</code> is reported, not omitted (OMOP &quot;no matching
-     * concept&quot; semantics): it covers a supplied concept without a validated
-     * standard match (<code>UNMAPPED</code>).
-     * Supported <code>Encounter.class</code> or <code>Encounter.type</code> values
-     * may populate <code>visit_concept_id</code>. Person demographics and Provider
-     * recorded gender follow the policies above.
-     * Coded Observation values and supported allergy substances may populate
-     * <code>value_as_concept_id</code>.
-     * Measurement <code>operator_concept_id</code> represents a value comparator (<code>&lt;</code>,
-     * <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>); multiple-race concepts follow the conventions described
-     * above. Clinical <code>*_source_value</code> fields contain the selected FHIR code
-     * (or source text for text-only resources).
-     * The corresponding selected <code>mappings</code> entry preserves the coding system
-     * and full source-coding provenance.
-     * Known OID-form coding systems are accepted as either FHIR OID URNs (for
-     * example, <code>urn:oid:2.16.840.1.113883.6.1</code> for LOINC) or bare OIDs, and
-     * produce the same mappings as their canonical system URLs. Coding
-     * mappings report that canonical URL in <code>source_system</code>; Quantity unit
-     * mappings preserve the original Quantity.system, including OID spelling.
-     * An unknown OID remains unchanged in <code>source_system</code> and may be
-     * <code>UNMAPPED</code>.
-     * Other <code>*_source_value</code> fields preserve row-specific raw source values,
-     * such as resource identifiers, names, units, or status codes.
-     * <code>MedicationRequest</code> uses <code>32838</code> (EHR prescription) and
-     * <code>MedicationDispense</code> uses <code>32825</code> (EHR dispensing record) for
-     * <code>drug_type_concept_id</code>; other current resources use <code>32817</code> (EHR). This
-     * is a coarse provenance policy: it does not infer patient-reported,
-     * medication-history, or other more-specific type concepts from FHIR
-     * status fields.</p>
-     * <p>Dates and datetimes:</p>
-     * <ul>
-     * <li>A <code>*_date</code> is the calendar date (<code>YYYY-MM-DD</code>) of a source value with
-     * at least day precision. A <code>*_datetime</code> is set only when that value
-     * has a time of day, as local time without a UTC offset
-     * (<code>YYYY-MM-DDTHH:MM:SS</code>, with fractional seconds to microseconds when
-     * supplied): <code>2024-01-15T23:30:00-05:00</code> becomes <code>2024-01-15T23:30:00</code>.
-     * A datetime without a timezone is read as local time.</li>
-     * <li>A partial date (<code>2024</code> or <code>2024-03</code>) leaves both columns unset.
-     * It still counts as that source's value, so later sources in the list
-     * below are not used.</li>
-     * <li>Free-text timing (such as <code>onsetString</code>), <code>Age</code> and <code>Range</code> forms, and
-     * values that are not dates are ignored, so a later source in the list
-     * is used if there is one.</li>
-     * <li>Other than the sources below and the same-day ends of single-event
-     * medication records, no date is imputed: partial dates are not
-     * completed, and a row is not dated from another resource such as its
-     * Encounter.</li>
-     * <li>Valid date values never cause a request to be rejected, and the response
-     * reports missing, partial, malformed, or conflicting timing for Specimen,
-     * DeviceUseStatement, and MedicationDispense in <code>diagnostics</code> while retaining
-     * partial rows for downstream load completion. Other resources do not report which
-     * date elements were unusable. An on-hold
-     * MedicationAdministration is an eligibility exception: it needs a supplied
-     * effective start as evidence that administration began.
-     * A stopped MedicationDispense similarly requires supplied handover evidence.</li>
-     * </ul>
-     * <p>Timing sources, in priority order where several are listed. These rules
-     * apply regardless of the clinical output table; end dates are populated
-     * only where the table has an end column, and <code>verbatim_end_date</code> is set
-     * only for medication resources returned as <code>drug_exposure</code> rows:</p>
-     * <ul>
-     * <li><code>Patient</code>: <code>birthDate</code> sets <code>year_of_birth</code>, <code>month_of_birth</code>, and
-     * <code>day_of_birth</code> from the parts it supplies; <code>birth_datetime</code> is not
-     * set. <code>deceasedDateTime</code> sets the <code>death</code> dates.</li>
-     * <li><code>Practitioner</code>: <code>birthDate</code> sets the provider's <code>year_of_birth</code>.</li>
-     * <li><code>Encounter</code>: <code>period.start</code> and <code>period.end</code>.</li>
-     * <li><code>Condition</code>: start from <code>onsetDateTime</code> or <code>onsetPeriod.start</code>, then
-     * <code>recordedDate</code> (when the condition was recorded, not when it began);
-     * end from <code>abatementDateTime</code> or <code>abatementPeriod.end</code>.</li>
-     * <li><code>Procedure</code>: start from <code>performedDateTime</code> or
-     * <code>performedPeriod.start</code>; end from <code>performedPeriod.end</code> only.</li>
-     * <li><code>DeviceUseStatement</code>: <code>timingDateTime</code> sets the start only;
-     * <code>timingPeriod.start</code> and <code>timingPeriod.end</code> supply independent bounds;
-     * each <code>timingTiming.event</code> produces one start-only row. A schedule
-     * without explicit events produces one row without dates.</li>
-     * <li><code>Specimen</code>: <code>collection.collectedDateTime</code> or <code>collection.collectedPeriod.start</code>;
-     * missing day precision retains an undated specimen with diagnostics.</li>
-     * <li><code>Observation</code>: <code>effectiveDateTime</code>, <code>effectivePeriod.start</code>, or
-     * <code>effectiveInstant</code>.</li>
-     * <li><code>AllergyIntolerance</code>: <code>recordedDate</code>, then <code>onsetDateTime</code> or
-     * <code>onsetPeriod.start</code>.</li>
-     * <li><code>MedicationStatement</code>: start from <code>effectiveDateTime</code> or
-     * <code>effectivePeriod.start</code>; end and <code>verbatim_end_date</code> from
-     * <code>effectivePeriod.end</code>. <code>dateAsserted</code> records when the statement was
-     * made and is not used.</li>
-     * <li><code>MedicationAdministration</code>: an <code>effectiveDateTime</code> is a single event
-     * that sets both start and end; an <code>effectivePeriod</code> sets the start
-     * and, when present, the end and <code>verbatim_end_date</code>.</li>
-     * <li><code>Immunization</code>: <code>occurrenceDateTime</code> is a single event that sets both
-     * start and end; <code>expirationDate</code> is not used.</li>
-     * <li><code>MedicationRequest</code>: <code>authoredOn</code>, the order date, sets the start; it
-     * is not evidence of administration. No end is set, and the validity
-     * period is not used as an exposure duration.</li>
-     * <li><code>MedicationDispense</code>: <code>whenHandedOver</code> sets the start. Missing, partial,
-     * or invalid handover leaves the start unset with a diagnostic. Comparable
-     * handover/preparation values proving handover before preparation also
-     * leave the start unset with a <code>CONFLICTING</code> diagnostic. <code>whenPrepared</code>,
-     * authorizing orders, and related administrations never supply timing.
-     * No exposure end or <code>verbatim_end_date</code> is inferred, including from
-     * <code>daysSupply</code>. Raw handover/preparation values retain precision and offsets
-     * in <code>medication_dispense_source_contexts.source</code>.</li>
-     * <li>Differences from the Vulcan maps: <code>birth_datetime</code> is not set from
-     * <code>birthDate</code>, Condition also reads <code>onsetPeriod.start</code>, and
-     * AllergyIntolerance falls back to its onset when <code>recordedDate</code> is
-     * missing.</li>
-     * </ul>
-     * <p>Medication details for resources returned as <code>drug_exposure</code> rows:</p>
-     * <ul>
-     * <li>For <code>MedicationRequest</code>, <code>dispenseRequest.numberOfRepeatsAllowed</code> sets
-     * <code>refills</code> and a whole-day <code>expectedSupplyDuration</code> sets <code>days_supply</code>.</li>
-     * <li>For <code>MedicationDispense</code>, <code>daysSupply</code> sets <code>days_supply</code> only for a
-     * positive whole number of coded UCUM <code>d</code> days without a supplied comparator.
-     * The canonical UCUM URL, bare OID, and OID URN are accepted. Other units,
-     * fractions, text-only units, and malformed values leave it absent with a
-     * diagnostic; absent daysSupply is allowed. Refills are not inherited.</li>
-     * <li>All non-empty dosage text is preserved in <code>sig</code>.</li>
-     * <li>Coded dosage routes and <code>Immunization.route</code> are target-validated in
-     * the OMOP Route domain. Conflicting routes are left unset; route
-     * codings shared by every dosage instruction identify the same route.</li>
-     * <li><code>Immunization.lotNumber</code> is preserved in <code>lot_number</code>.</li>
-     * </ul>
-     * <p>MedicationDispense requires an explicit subject resolving to a Patient
-     * supplied in the request; Groups and missing subjects are unsupported.
-     * Source fields are based on FHIR R4 4.0.1 and reviewed against
-     * <a href="https://hl7.org/fhir/us/core/STU7/StructureDefinition-us-core-medicationdispense.html">US Core MedicationDispense 7.0.0</a>.
-     * Full profile conformance is not validated. Although US Core requires
-     * handover on completed records, this API retains such incomplete records
-     * with missing-handover diagnostics as partial conversion output.
-     * Supply either a usable <code>medicationCodeableConcept</code> (coded or text-only),
-     * or a <code>medicationReference</code> resolving to a Medication with usable code/text.
-     * Both choice forms together are conflicting and drop the dispense.
-     * Exact relative, Bundle fullUrl, and unambiguous contained Medication
-     * references are supported. Unresolved references are not rescued by display
-     * text; missing or ambiguous medication identity drops the dispense with a
-     * diagnostic. A usable but unmapped drug retains concept ID 0 and its
-     * mapping outcome in a row indexed for review.
-     * <code>context</code> links only to a supplied Encounter for the same patient.
-     * The first resolvable Practitioner/PractitionerRole in <code>performer.actor</code>
-     * supplies <code>provider_id</code>; other actor types do not supply a provider.
-     * Failed explicit links have diagnostics. Authorizing prescriptions are
-     * checked for request-local MedicationRequest identity and patient agreement;
-     * failures do not discard the dispense. They never supply medication,
-     * instructions, refills, timing, or prescription provenance to a dispense.
-     * Dispense instructions alone supply <code>sig</code> and route; conflicting routes
-     * remain unset with a diagnostic and original instructions in source context.
-     * Orders, dispenses, and administrations emit independently, with separate
-     * source identity and no deduplication merely because they concern the same drug.
-     * Every emitted dispensing drug row has a <code>whenHandedOver/daysSupply</code>
-     * diagnostic beginning <code>medication_dispense_end_date_absent</code> because the
-     * CDM-required exposure end remains absent. Missing/partial/unusable handover
-     * diagnostics begin <code>medication_dispense_handover_missing</code>,
-     * <code>medication_dispense_handover_partial</code>, or <code>medication_dispense_handover_unusable</code>.</p>
-     * <p>Encounter details:</p>
-     * <ul>
-     * <li>
-     * <p>Encounter classifications must supply both <code>Coding.system</code> and
-     * <code>Coding.code</code> to map to a standard OMOP Visit concept. For HL7
-     * encounter class codes with system
-     * <code>http://terminology.hl7.org/CodeSystem/v3-ActCode</code> or
-     * <code>http://hl7.org/fhir/v3/ActCode</code>, the supported mappings are:</p>
-     * <ul>
-     * <li><code>IMP</code> (inpatient encounter) -&gt; 9201 (Inpatient Visit)</li>
-     * <li><code>AMB</code> (ambulatory encounter) -&gt; 9202 (Outpatient Visit)</li>
-     * <li><code>EMER</code> (emergency encounter) -&gt; 9203 (Emergency Room Visit)</li>
-     * <li><code>VR</code> (virtual encounter) -&gt; 722455 (Telehealth)</li>
-     * <li><code>HH</code> (home health encounter) -&gt; 581476 (Home Visit)</li>
-     * </ul>
-     * <p><code>OBSENC</code> (observation encounter) has no direct class mapping. Other
-     * class or type codes can be used when they have a valid standard OMOP
-     * Visit mapping in the selected vocabulary release. Unsupported
-     * classifications retain <code>visit_concept_id</code> of <code>0</code> unless a supported
-     * type supplies the Visit as described below; they never default to
-     * outpatient.</p>
-     * </li>
-     * <li>
-     * <p>A mapped <code>Encounter.class</code> determines <code>visit_concept_id</code>. A mapped
-     * type that disagrees with it produces a <code>CONFLICTING</code> diagnostic with
-     * path <code>class/type</code>, while the class mapping remains selected.
-     * If class is missing or unmapped, type supplies the Visit only when
-     * all mapped type classifications agree on the same standard Visit
-     * concept. Codings within one type CodeableConcept are alternative
-     * encodings of that classification. When separate type classifications
-     * map to different Visit concepts, no type is selected,
-     * <code>visit_concept_id</code> remains <code>0</code>, and a <code>CONFLICTING</code> diagnostic has
-     * path <code>type</code>.</p>
-     * </li>
-     * <li>
-     * <p><code>visit_source_value</code> contains the selected class or type code;
-     * <code>mappings</code> preserves its coding system and identifies which
-     * classification was selected. <code>visit_source_concept_id</code> identifies
-     * the selected original source coding's OMOP concept when available,
-     * and is <code>0</code> otherwise, including for the HL7 encounter class codes
-     * listed above. Each eligible Encounter produces one Visit;
-     * <code>classHistory</code>, <code>partOf</code>, and admission/discharge concepts are not
-     * mapped.</p>
-     * </li>
-     * <li>
-     * <p>Direct <code>MedicationRequest.dispenseRequest.quantity</code>, <code>MedicationDispense.quantity</code>,
-     * <code>MedicationAdministration.dosage.dose</code>, and <code>Immunization.doseQuantity</code>
-     * can set <code>quantity</code> under the formulation policies below. Quantities
-     * must be positive finite numbers with a supported <code>system</code>/<code>code</code> pair
-     * and no supplied <code>comparator</code>. Ingredient amounts and injection volumes
-     * use <code>http://unitsofmeasure.org</code> (or its bare OID or
-     * <code>urn:oid:2.16.840.1.113883.6.8</code>) with case-sensitive codes matching or
-     * convertible to vocabulary-backed strength units. Exact unit matches,
-     * including <code>[U]</code> for insulin and heparin strengths, are accepted without
-     * a unit conversion.
-     * When codes differ, both source and strength units must belong to the
-     * same supported group: mass (<code>ug</code>, <code>mg</code>, <code>g</code>), volume (<code>uL</code>, <code>mL</code>, <code>L</code>),
-     * or milliequivalent representations (<code>meq</code>, <code>10*-3.eq</code>). Other conversions,
-     * including <code>kg</code>, <code>ML</code>, <code>Mg</code>, <code>[drp]</code>, <code>mol</code>, <code>mmol</code>, <code>%</code>, <code>1</code>, and generic
-     * annotations such as <code>{vial}</code> or <code>{syringe}</code>, leave <code>quantity</code> unset with
-     * <code>unit_mismatch</code>. Codes are not case-corrected or inferred from display text.
-     * The original source system is preserved in the quantity audit.
-     * Fixed-form counts also accept the explicit codings below. Free-text,
-     * local, invalid, and cross-dimensional units are not interpreted.</p>
-     * </li>
-     * </ul>
-     * <p>Drug quantity policies follow <a href="https://ohdsi.github.io/CommonDataModel/cdm54.html#drug_exposure">CDM v5.4 DRUG_EXPOSURE conventions</a>.
-     * The selected drug must be a <code>Clinical Drug</code> or <code>Branded Drug</code>, with one
-     * active dose form and valid vocabulary evidence for the chosen policy.
-     * Strength-based conversions also require one ingredient strength. Supported RxNorm dose forms:</p>
-     * <ul>
-     * <li><code>fixed_dose_form_count</code>: Oral Tablet (<code>317541</code>), Oral Capsule
-     * (<code>316965</code>), Extended Release Oral Tablet (<code>316945</code>), Extended
-     * Release Oral Capsule (<code>316943</code>), Delayed Release Oral Tablet (<code>10312</code>),
-     * or Delayed Release Oral Capsule (<code>316995</code>). A source ingredient amount is divided
-     * by the single positive per-unit ingredient amount after conversion to that
-     * strength unit when necessary.
-     * Concentration-based strengths cannot derive counts from ingredient amounts. The
-     * result is a count of the selected dose form, limited to whole units or
-     * multiples of one-half or one-third. Derived counts within a relative
-     * tolerance of 1e-12 of an allowed fraction are normalized to that count
-     * to remove arithmetic roundoff; other fractions remain unsupported.
-     * For example, 1,000 mg for a drug
-     * with 500 mg per tablet produces <code>quantity: 2</code> tablets (<code>DERIVED</code>). A source
-     * of 1 g is converted to 1,000 mg and produces the same count.
-     * Explicit counts are copied (<code>DIRECT</code>) when their coding matches the
-     * selected tablet or capsule form, including the corresponding extended-
-     * and delayed-release forms: <code>TAB</code> / <code>CAP</code> under
+     * <p>Direct quantities are supported at MedicationRequest.dispenseRequest.quantity,
+     * MedicationDispense.quantity, MedicationAdministration.dosage.dose, and
+     * Immunization.doseQuantity. Values must be positive finite numbers without a
+     * supplied comparator and with a supported system/code. Rates and
+     * MedicationStatement dosages do not establish a supported total quantity.</p>
+     * <p>The selected drug must be Clinical Drug or Branded Drug with one active,
+     * supported dose form and sufficient unambiguous vocabulary evidence.</p>
+     * <p>| Quantity policy | Supported RxNorm dose forms | Output meaning |
+     * | --- | --- | --- |
+     * | fixed_dose_form_count | Oral Tablet (317541), Oral Capsule (316965), Extended Release Oral Tablet (316945), Extended Release Oral Capsule (316943), Delayed Release Oral Tablet (10312), Delayed Release Oral Capsule (316995) | Count of the selected form, copied from a matching coded count or derived from ingredient amount and per-unit strength; only whole, half, or third units are supported |
+     * | clinical_injection_ingredient_amount | Injectable Solution (316949), Injectable Suspension (316950), Injection (1649574) | Ingredient amount in result_unit, copied/converted from ingredient amount or derived from volume and validated per-unit concentration |</p>
+     * <p>Fixed-form counts accept <code>TAB</code>/<code>CAP</code> under
      * <code>http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm</code>, or
-     * <code>{tbl}</code> / <code>{Capsule}</code> under <code>http://unitsofmeasure.org</code>. These exact
-     * case-sensitive count codings identify the supplied form; they are not
-     * dimensionally converted as UCUM units. Direct counts do not require
-     * ingredient strength: combination products and missing/invalid strengths
-     * do not change the supplied count. Ingredient-strength gaps, including
-     * missing ingredient or strength-unit references, do not prevent copying
-     * an explicit count. Drug or dose-form evidence gaps, unclassified or
-     * ambiguous forms, and gaps whose relevance cannot be established still
-     * prevent conversion. The whole/half/third rules still apply.
-     * For example, 20 <code>TAB</code> for amoxicillin/clavulanate is 20 tablets, and 30 <code>TAB</code> for
-     * a supported tablet produces <code>quantity: 30</code>; <code>CAP</code> for that tablet is
-     * omitted with <code>unit_mismatch</code>. Generic counts (<code>1</code>, <code>{Each}</code>), other
-     * annotations, packs, and free-text counts are not interpreted.
-     * See the <a href="https://hl7.org/fhir/R4/medicationrequest0301.html">FHIR R4 count example</a>.</li>
-     * <li><code>clinical_injection_ingredient_amount</code>: Injectable Solution (<code>316949</code>),
-     * Injectable Suspension (<code>316950</code>), or Injection (<code>1649574</code>). A source
-     * ingredient amount is converted to the vocabulary ingredient unit when
-     * necessary; an exact-unit amount is copied directly. Otherwise, a source
-     * amount convertible to the concentration's denominator unit is converted
-     * and multiplied by numerator value / the effective denominator reported in
-     * the audit evidence. Volume conversion requires a positive finite numerator,
-     * dimensionally distinct validated UCUM units, a null raw denominator value, and
-     * <code>evidence.strength.denominator_basis</code> with <code>kind: PER_UNIT</code> and
-     * <code>value: 1</code>. A null denominator alone is not interpreted as 1. Missing, unknown,
-     * non-applicable, quantified, or conflicting denominator evidence does
-     * not support volume conversion. For example, 80 mL with 2 mg/mL
-     * strength and a <code>PER_UNIT</code> basis produces <code>quantity: 160</code> mg. A supplied
-     * 160 mg amount for the same drug produces <code>quantity: 160</code> directly. A source
-     * of 0.08 L converts to 80 mL before producing the same 160 mg result.
-     * This output is already
-     * the ingredient amount: do not apply the drug-dose guide's
-     * <code>dose = quantity × numerator</code> formula to these injection rows, which
-     * would multiply by the concentration a second time. Use
-     * <code>quantity_transformations.result_unit</code> to identify the output unit.</li>
-     * </ul>
-     * <p>Quantified products, packs, prefilled syringes, other liquids and dose
-     * forms, strength-based conversions of combination products, conflicting or incomplete required evidence, and
-     * unsupported source quantities leave <code>quantity</code> unset. Other supported
-     * fields and the clinical row are still returned. For example, a quantity
-     * supplied only as <code>value: 2, unit: tablet</code> is omitted with
-     * <code>unsupported_unit</code>, because a free-text unit cannot establish this policy.
-     * Rate-only administrations and MedicationStatement dosages do not establish
-     * a supported total quantity and are not used for quantity conversion.</p>
-     * <p><code>quantity_transformations</code> audits each supplied quantity at one of the
-     * three direct paths above on a resource returned as a <code>drug_exposure</code> row,
-     * including an explicit null or malformed quantity. Each entry preserves
-     * the source, identifies the destination row, and reports <code>DIRECT</code>, <code>DERIVED</code>, or
-     * <code>OMITTED</code>. Successful entries identify their policy, evidence, result,
-     * and result unit; omitted entries give a stable reason. When a source code
-     * differs from the strength unit, <code>unit_conversion</code> records the intermediate
-     * converted amount and target unit. Converted results are <code>DERIVED</code>, even
-     * when no further concentration arithmetic is needed. A successful conversion
-     * can also be reported when a later policy check omits the final quantity.
-     * Dose-form and unit
-     * concept IDs refer to the response's <code>vocab_version</code>. Missing quantities
-     * produce no entry. Resources returned in other clinical tables have no
-     * quantity entry. Unsupported rates and statement dosages produce no entry,
-     * and resources in <code>dropped</code> have no quantity entry or destination row.</p>
-     * <p>Medication codes are resolved whether they appear inline
-     * (<code>medicationCodeableConcept</code>) or via a <code>medicationReference</code> to a contained,
-     * relative (<code>Type/id</code>), or bundle-entry (<code>urn:uuid</code>) <code>Medication</code> resource.
-     * A reference that resolves to another resource type is dropped even when it
-     * supplies display text; an unresolved or display-only reference may use
-     * its display as text-only medication input.
-     * Resources that cannot be shaped into a row — a medication with no usable
-     * code, resolvable reference, or display; any clinical resource whose
-     * subject/patient reference cannot be tied to a person; or an event excluded
-     * by eligibility — are reported under <code>dropped</code> rather than emitted as blank
-     * rows. The Bundle must contain at least one Patient resource.</p>
-     * <p>References to top-level resources supplied in the request resolve by
-     * <code>Type/id</code> or an exactly matching Bundle <code>fullUrl</code> (including <code>urn:uuid</code>).
-     * Parent-scoped contained references are supported for medication code lookup,
-     * <code>DeviceUseStatement.device</code> details, and <code>PractitionerRole.practitioner</code>
-     * enrichment; the latter also supports
-     * request-local identifier matching with the NPI rules above, without a remote lookup. Every
-     * nonzero structural foreign key targets a row in the same response. Missing
-     * optional links remain unset without a diagnostic; an explicit optional
-     * reference that is unresolved, ambiguous, conflicting with the row's
-     * person, or unsupported remains unset and is returned in <code>diagnostics</code>
-     * with its source path and outcome.</p>
-     * <p>All row IDs start at <code>1</code> for each request and are not stable or global.
-     * For clinical conversion rows whose resource supplies an <code>id</code>, <code>mappings</code>
-     * associates each row with that source FHIR resource ID. A <code>person</code> row
-     * retains the Patient ID or its first identifier value in
-     * <code>person_source_value</code>, when present; other reference and derived rows do
-     * not uniformly carry a FHIR resource ID. Input resources without those
-     * source identifiers cannot be correlated across responses from the
-     * returned rows alone. Consumers combining responses need to establish
-     * their own stable keys and remap every primary and foreign key together.</p>
+     * <code>{tbl}</code>/<code>{Capsule}</code> under <code>http://unitsofmeasure.org</code>, matching the selected
+     * tablet/capsule family. Explicit counts do not require ingredient strength,
+     * including for combination products. Strength-based conversions require one
+     * ingredient strength; concentration-based strength cannot derive fixed-form
+     * counts. Minor arithmetic roundoff is normalized to a supported fraction.</p>
+     * <p>Ingredient amounts and injection volumes require coded UCUM, including its
+     * bare/OID-URN forms. Exact vocabulary-backed strength units, including <code>[U]</code>,
+     * are accepted. Differing-unit conversion is limited to compatible mass
+     * (<code>ug</code>, <code>mg</code>, <code>g</code>), volume (<code>uL</code>, <code>mL</code>, <code>L</code>), and milliequivalent
+     * (<code>meq</code>, <code>10*-3.eq</code>) groups. Codes are case-sensitive; free text, generic count
+     * annotations, unsupported units, and cross-dimensional conversions are not
+     * interpreted. Injection volume conversion requires explicit, consistent per-unit
+     * concentration evidence; a missing denominator alone does not establish it.
+     * Use <code>quantity_transformations.result_unit</code>: injection output is already the
+     * ingredient amount and must not be multiplied by concentration again.</p>
+     * <p>Unsupported formulations, quantified products, packs/prefilled syringes,
+     * unsupported fractions, or insufficient/ambiguous evidence leave quantity unset
+     * while retaining the row. QuantityTransformation.reason distinguishes omissions.
+     * The audit records each supplied direct quantity, including null/malformed input,
+     * on an emitted drug_exposure row as DIRECT, DERIVED, or OMITTED. Missing quantities,
+     * dropped resources, other destination tables, and unsupported dosage/rate paths
+     * have no audit entry. Result units, evidence, and intermediate unit conversion
+     * use the response vocabulary release; quantity audits do not affect terminology
+     * counts in Summary.</p>
+     * <p><strong>Encounter classification and components</strong></p>
+     * <p>Encounter classifications require both Coding.system and Coding.code.
+     * The following class codes are supported under
+     * <code>http://terminology.hl7.org/CodeSystem/v3-ActCode</code> or
+     * <code>http://hl7.org/fhir/v3/ActCode</code>:</p>
+     * <p>| Class | Visit concept |
+     * | --- | --- |
+     * | IMP | Inpatient Visit (9201) |
+     * | AMB | Outpatient Visit (9202) |
+     * | EMER | Emergency Room Visit (9203) |
+     * | VR | Telehealth (722455) |
+     * | HH | Home Visit (581476) |</p>
+     * <p>OBSENC has no direct class mapping. Other class/type codes require a valid
+     * standard Visit mapping in the selected release. Mapped class takes precedence;
+     * a disagreeing mapped type produces a conflict diagnostic. If class is missing
+     * or unmapped, type supplies the Visit only when all mapped type classifications
+     * agree. Codings within one type are alternative encodings. Unresolved or
+     * conflicting selection leaves concept 0 without defaulting to outpatient.
+     * Source values/concepts identify the selected original classification.</p>
+     * <p>An explicit Encounter.partOf can produce a child visit_detail linked to a
+     * parent visit_occurrence when both are supplied top-level Encounters, explicitly
+     * reference the same unambiguous Patient, have eligible known statuses, and form
+     * a supported two-level parent/child structure. Supplied reference types must
+     * agree. Details use their own timing, classification, and supported
+     * provider/care-site links without inheriting parent values.</p>
+     * <p>| Compatibility assessment | Output for the child |
+     * | --- | --- |
+     * | COMPATIBLE | visit_detail, including identical or parent-ancestor/detail-descendant Visit concepts |
+     * | UNKNOWN | Partial visit_detail with an unsupported diagnostic explaining the limitation |
+     * | INCOMPATIBLE | Independent visit_occurrence with a conflict diagnostic |</p>
+     * <p><code>visit_component_contexts</code> links each assessment to the final child row and
+     * reports its concepts and vocabulary release. Assessment unavailability or
+     * malformed results fail the request with HTTP 500. An UNKNOWN assessment alone
+     * does not index a mapped row for review; primary concept 0 still does.
+     * Classifications and source dates are preserved in all outcomes.</p>
+     * <p>Period comparisons require matching precision and timezone presence; offset
+     * timestamps compare as instants. Timing that proves reversed or disjoint periods
+     * prevents grouping. Incomplete or incomparable timing can retain grouping
+     * with diagnostics. Overlapping
+     * periods may extend outside the parent, with a conflict diagnostic and no
+     * clipping or expansion. Unsupported references, patient/status relationships,
+     * cycles, and deeper hierarchies retain independently eligible standalone visits.
+     * Encounters with unknown, missing, or unreadable status do not qualify as
+     * components. ClassHistory, location-period segmentation, admission/discharge
+     * concepts, and inferred sequencing are not mapped.</p>
+     * <p>A clinical reference to a detail supplies both visit_detail_id and its parent
+     * visit_occurrence_id; a parent reference supplies only the visit ID. These links
+     * apply across all supported clinical destinations. Failed optional references
+     * retain the clinical row without the link. DeviceUseStatement has no R4 Encounter
+     * reference and receives neither link; dates alone never establish links.</p>
      */
     public CreateOmopResponse create(CreateOmopRequest request) {
         return this.rawClient.create(request).body();
     }
 
     /**
-     * Maps a FHIR R4 resource or Bundle into OMOP Common Data Model v5.4 rows,
-     * grouped by destination table in <code>tables</code>. Uncertain-status and unresolved-
-     * primary-concept clinical rows stay in those tables and are identified by
-     * the optional <code>rows_for_review</code> index for consumer review and filtering.
-     * Status-based retention covers uncertain supplied Condition verification,
-     * unknown/missing/unreadable Encounter status, and explicit <code>unknown</code> status
-     * on MedicationStatement, Observation, and Procedure. Other status exclusions
-     * follow the resource-specific eligibility policy below.
-     * <p>Set <code>vocab_version</code> to select the OMOP vocabulary release used for coded
-     * and inferred concept resolution. If omitted or empty, the API uses its
-     * default release. The response's <code>vocab_version</code>, when present, identifies
-     * the release used. Specify a release explicitly when reproducibility matters.</p>
-     * <p>Supported concept fields use semantic mapping for text-only inputs and
-     * unresolved source codings, with whole-term equivalence validation.
-     * CodeableConcept text takes precedence over coding display. A single
-     * equivalent suggestion must be validated before a real OMOP concept ID is
-     * returned. The suggested vocabulary/code must
-     * itself be an active standard concept valid for the destination; broader
-     * crosswalk targets are not accepted for inferred suggestions.
-     * Deterministic mappings take precedence; ambiguous or domain-mismatched
-     * deterministic results are not reinterpreted. Units, routes, visits,
-     * demographics, and collection sites use their field-specific resolution
-     * policies. Semantic mapping returns MAPPED with a real concept ID on
-     * success, or UNMAPPED with concept ID 0 when no standard concept is
-     * selected. A bare code is not treated as a description. No source coding
-     * is invented.</p>
-     * <p>Contextual allergy finding decisions follow their dedicated policy and
-     * are not replaced by description-based mapping.</p>
-     * <p>Every inferred mapping has
-     * <code>mappings.resolution.semantic_mapping.status: MAPPED</code>, with the OMOP
-     * vocabulary release. Filter linked rows using the mapping's table/row ID
-     * to exclude inferred results.
-     * Original source coding and clinical-status eligibility are preserved.
-     * For clinical rows covered by <code>rows_for_review</code>, successful inference
-     * does not remove uncertain-status rows from the index; unresolved primary
-     * concepts also remain indexed.
-     * All shaped rows appear once in <code>tables</code>.</p>
-     * <p>Standards basis: <a href="https://hl7.org/fhir/R4/">FHIR R4 (v4.0.1)</a> defines
-     * the accepted source elements and <a href="https://ohdsi.github.io/CommonDataModel/cdm54.html">OMOP CDM
-     * v5.4</a> defines the
-     * output columns. The published <a href="https://hl7.org/fhir/uv/omop/">Vulcan FHIR-to-OMOP IG
-     * v1.0.0</a> is an informative FHIR R5
-     * baseline; this endpoint documents and implements the equivalent R4
-     * source elements, rather than accepting R5-only fields.</p>
-     * <p>This response is a mapping result, not a complete CDM load pipeline.
-     * When a source cannot supply a field that CDM v5.4 requires, the row is
-     * still returned with that field unset; the value is not inferred. Common
-     * cases are <code>year_of_birth</code> without a usable <code>birthDate</code>,
-     * <code>drug_exposure_end_date</code> without an explicit end or single-event timing,
-     * and a required event date (such as <code>condition_start_date</code>,
-     * <code>procedure_date</code>, or <code>death_date</code>) whose source has no timing with at
-     * least day precision. Apply your own policy to such rows before loading
-     * them into a strictly conformant CDM instance.</p>
-     * <p>Current resource coverage:</p>
+     * Maps a FHIR R4 resource or Bundle to OMOP CDM v5.4 rows, grouped by
+     * destination table in <code>tables</code>. The request must include at least one
+     * top-level Patient. Unsupported resource types are ignored; supported
+     * resources that cannot produce a row are reported in <code>dropped</code>.
+     * <p>All shaped rows remain in <code>tables</code>, including partial rows and clinical
+     * rows with uncertain status or unresolved primary concepts. Use
+     * <code>rows_for_review</code> to identify the latter, <code>mappings</code> to inspect concept
+     * resolution, and <code>diagnostics</code> to understand unusable data or links.
+     * Resource-specific context arrays preserve source information linked to
+     * the emitted rows; see the response schemas for their fields and outcomes.</p>
+     * <p>Rows may lack CDM-required fields when the source cannot supply them.
+     * Before loading a CDM dataset, callers must handle incomplete rows, assign
+     * durable IDs, and remap primary and foreign keys together. Returned IDs
+     * start at 1 within each table and are local to one response.</p>
+     * <p>The source format is <a href="https://hl7.org/fhir/R4/">FHIR R4 v4.0.1</a> and the
+     * output follows <a href="https://ohdsi.github.io/CommonDataModel/cdm54.html">OMOP CDM v5.4</a>.
+     * The informative <a href="https://hl7.org/fhir/uv/omop/">Vulcan FHIR-to-OMOP IG</a>
+     * provides an R5 baseline adapted here to R4 source fields. Full FHIR or
+     * US Core profile conformance is not validated.</p>
+     * <p><strong>Resource coverage</strong></p>
+     * <p>| FHIR source | OMOP output |
+     * | --- | --- |
+     * | Patient | <code>person</code>; deceased status can produce <code>death</code>, the first address can produce <code>location</code>, and multiple resolved races produce race <code>observation</code> rows |
+     * | Location | <code>location</code> and <code>care_site</code> |
+     * | Organization | <code>care_site</code>; its first address can produce <code>location</code> |
+     * | HealthcareService | <code>care_site</code> |
+     * | Practitioner, PractitionerRole | <code>provider</code>, with role context retained separately |
+     * | Encounter | <code>visit_occurrence</code>, or <code>visit_detail</code> for supported explicit components |
+     * | Specimen | <code>specimen</code>, requiring an explicit Patient subject |
+     * | DeviceUseStatement | <code>device_exposure</code>, using referenced Device details |
+     * | Condition | Domain-selected clinical table; default <code>condition_occurrence</code> |
+     * | Procedure | Domain-selected clinical table; default <code>procedure_occurrence</code> |
+     * | MedicationRequest, MedicationStatement, MedicationAdministration, MedicationDispense, Immunization | Domain-selected clinical table; default <code>drug_exposure</code> |
+     * | Observation | Domain-selected clinical table; numeric values default to <code>measurement</code>, other values to <code>observation</code> |
+     * | AllergyIntolerance | Contextual allergy <code>observation</code> or another supported clinical table, excluding drug/device exposure; default <code>observation</code> |
+     * | Medication, Device | Reference data; no independent row |</p>
+     * <p>One request-local <code>observation_period</code> is derived per person with qualifying
+     * dates. It spans visit/clinical rows not indexed for review, plus Specimen and Death rows,
+     * including selected source end dates even when the destination has no end
+     * column. Dates from <code>rows_for_review</code> do not expand it. This period is not
+     * evidence of enrollment or complete data capture.</p>
+     * <p><strong>Concept resolution and placement</strong></p>
+     * <p>Use <code>vocab_version</code> to select the vocabulary release; omitted or empty
+     * values use the default release. The response reports the release used
+     * when vocabulary resolution occurred. Select a release explicitly for
+     * reproducibility.</p>
+     * <p>Resolved primary clinical concepts determine placement in
+     * <code>condition_occurrence</code>, <code>procedure_occurrence</code>, <code>drug_exposure</code>,
+     * <code>device_exposure</code>, <code>measurement</code>, or <code>observation</code>. For Observation,
+     * numeric versus nonnumeric values break a tie between Measurement and
+     * Observation placement. An unresolved or destination-invalid concept keeps
+     * the resource's default table, concept ID 0, and <code>UNMAPPED</code> status.
+     * Clinical records produce one row each, except the explicit DeviceUseStatement
+     * Timing events described below; multiple vocabulary targets do not expand
+     * a record into multiple rows. Note destinations and vocabulary <code>Maps to value</code>
+     * decomposition are unsupported.</p>
+     * <p>Source timing and eligibility apply regardless of the selected table.
+     * Source-specific values populate only compatible columns: Condition status
+     * in <code>condition_occurrence</code>, medication supply/dosage and Immunization lot
+     * details in <code>drug_exposure</code>, and Observation values in <code>measurement</code> or
+     * <code>observation</code>. Coded routes on other tables are resolved as mapping context;
+     * Observation values on other tables are preserved without concept resolution.
+     * Those entries omit <code>omop_field</code> and have <code>selected: false</code>.</p>
+     * <p>Supported primary clinical concepts, specimen material, and unresolved
+     * coded Observation results can use semantic mapping from descriptive text.
+     * CodeableConcept text takes precedence over coding display; bare codes do
+     * not supply descriptions. Deterministic mappings take precedence, and
+     * ambiguous or domain-mismatched results are not reinterpreted. Inference
+     * requires one validated, equivalent active standard concept valid for the
+     * destination; a broader crosswalk target does not validate a suggestion.
+     * Units, routes, visits, demographics, specialties, collection sites, and
+     * contextual allergy findings follow their separate policies.</p>
+     * <p>Inferred results have <code>resolution.semantic_mapping.status: MAPPED</code> in
+     * their linked mappings; unsuccessful attempts report <code>UNMAPPED</code> with
+     * concept ID 0. Original coding is preserved and no source coding is invented.
+     * Successful inference does not remove uncertain-status review reasons.
+     * Use mapping row links to filter inferred results if needed.</p>
+     * <p>Clinical <code>*_source_value</code> fields contain the selected bare code, or text
+     * for text-only inputs. The selected mapping preserves its coding provenance.
+     * Unresolved source concept IDs are 0, except allergy rows can retain a known
+     * original source identity even when the finding is unresolved. Known coding
+     * system OIDs, bare or <code>urn:oid:</code>, resolve like their canonical URLs and are
+     * reported canonically in coding mappings. Quantity unit mappings preserve
+     * the supplied system spelling. Unknown OIDs remain unchanged.</p>
+     * <p><strong>References and eligibility</strong></p>
+     * <p>Top-level references resolve only within the request, by exact <code>Type/id</code>
+     * or Bundle <code>fullUrl</code>, including URNs and absolute URLs. Contained references
+     * are supported for medication lookup, DeviceUseStatement.device, and
+     * PractitionerRole.practitioner. The latter also supports request-local
+     * identifier matching. Resources are not fetched remotely.</p>
+     * <p>Clinical subject/patient references must resolve unambiguously to a supplied
+     * Patient. If the reference is absent, a sole Patient can supply attribution,
+     * except for Specimen, DeviceUseStatement, and MedicationDispense, which
+     * require explicit subjects. Unusable explicit patient references drop the
+     * resource. Unusable optional links leave the link unset with a diagnostic
+     * while retaining otherwise eligible rows. Every nonzero structural foreign
+     * key targets a row in the same response, and clinical visit links must belong
+     * to the same patient.</p>
+     * <p>Eligibility follows the source resource's status policy. Other than the
+     * absent/uncertain statuses explicitly supported below, missing or unrecognized
+     * required statuses drop the resource. Entered-in-error and explicitly
+     * non-performed events do not produce positive clinical-event rows.</p>
+     * <p>| Resource | Eligible status or evidence | Retained for review |
+     * | --- | --- | --- |
+     * | Condition | Absent or confirmed canonical-HL7 verificationStatus; refuted and entered-in-error are dropped | Unconfirmed, provisional, differential, or unreadable supplied verificationStatus |
+     * | Encounter | arrived, triaged, in-progress, onleave, finished; planned, cancelled, and entered-in-error are dropped | Unknown, missing, or unreadable status |
+     * | Procedure | completed, stopped | Explicit unknown status |
+     * | MedicationRequest | active, on-hold, completed, stopped, with authorizing intent: order, original-order, reflex-order, filler-order, or instance-order; doNotPerform excludes the request | None |
+     * | MedicationStatement | active, completed, stopped, on-hold | Explicit unknown status |
+     * | MedicationAdministration | completed, in-progress, stopped, or on-hold; on-hold also requires a usable effective start, including partial dates | None |
+     * | MedicationDispense | completed, including partial fills; stopped also requires a valid whenHandedOver, including partial dates | None |
+     * | Immunization | completed | None |
+     * | Observation | final, amended, corrected | Explicit unknown status |
+     * | AllergyIntolerance | Absent, unconfirmed, or confirmed canonical-HL7 verificationStatus; invalid supplied type/category drops the resource | None |
+     * | Specimen | Absent, available, unavailable, unsatisfactory | None |
+     * | DeviceUseStatement | active, completed, stopped, on-hold | None |</p>
+     * <p>Condition clinical course is not a diagnosis-role mapping. Retained uncertain
+     * rows preserve their supplied statuses without asserting that an event occurred
+     * or medication was taken. Eligible clinical rows with primary concept 0 are
+     * also indexed for review; unresolved secondary units, routes, or result concepts
+     * alone do not index a mapped row. Administrative/demographic, Specimen, and
+     * Death rows are excluded from the review index. See <code>rows_for_review</code> for
+     * filtering and linked-visit requirements.</p>
+     * <p>Device placement additionally requires eligible use evidence. MedicationRequest,
+     * AllergyIntolerance, uncertain-status records, and explicit negative Observation
+     * results cannot produce device exposure. Negative evidence includes false,
+     * SNOMED Negative/Known absent/No, and <code>NEG</code> from
+     * <code>http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation</code>.
+     * Reporting actors such as recorder, asserter, or informationSource do not
+     * supply a device event's treating provider.</p>
+     * <p><strong>Timing</strong></p>
+     * <p>Dates require at least day precision and use the source calendar date.
+     * Datetimes are present only when time of day was supplied, as local wall-clock
+     * time without a UTC offset, retaining fractional seconds to microseconds.
+     * For example, <code>2024-01-15T23:30:00-05:00</code> becomes <code>2024-01-15T23:30:00</code>.
+     * A timestamp without a timezone is read as local time.</p>
+     * <p>A valid year/month-only date leaves date and datetime unset and stops a
+     * fallback chain. Malformed dates and unsupported timing forms are ignored
+     * so a later source can be used. Dates are not imputed from other resources.
+     * Specimen, DeviceUseStatement, and MedicationDispense report unusable timing
+     * through diagnostics; otherwise missing dates usually retain partial rows.
+     * The effective-start and handover eligibility requirements above still apply.</p>
+     * <p>| Source | Start/date source, in priority order | End or additional timing |
+     * | --- | --- | --- |
+     * | Patient | birthDate supplies year/month/day components; deceasedDateTime supplies death timing | birth_datetime is not set; boolean-only deceased status supplies no death date |
+     * | Practitioner | birthDate supplies year_of_birth | — |
+     * | Encounter | period.start | period.end |
+     * | Condition | onsetDateTime, onsetPeriod.start, recordedDate | abatementDateTime or abatementPeriod.end |
+     * | Procedure | performedDateTime or performedPeriod.start | performedPeriod.end |
+     * | Observation | effectiveDateTime, effectivePeriod.start, effectiveInstant | — |
+     * | AllergyIntolerance | recordedDate, onsetDateTime, onsetPeriod.start | — |
+     * | MedicationRequest | authoredOn, as prescription timing | No exposure end; validity period is not exposure duration |
+     * | MedicationStatement | effectiveDateTime or effectivePeriod.start | effectivePeriod.end; dateAsserted is not exposure timing |
+     * | MedicationAdministration | effectiveDateTime or effectivePeriod.start | A single dateTime also sets the end; otherwise effectivePeriod.end |
+     * | MedicationDispense | whenHandedOver | No exposure end, including from daysSupply; whenPrepared is not a fallback |
+     * | Immunization | occurrenceDateTime | The same dateTime also sets the end; expirationDate is not used |
+     * | Specimen | collection.collectedDateTime or collection.collectedPeriod.start | Period end and receivedTime are not collection-start fallbacks |
+     * | DeviceUseStatement | timingDateTime, independent timingPeriod boundaries, or one start per timingTiming.event | No end is inferred for dateTime/Timing events; repeat-only schedules retain an undated row |</p>
+     * <p>End columns are populated only where supported by the destination table.
+     * For medication rows, <code>verbatim_end_date</code> comes only from an explicit
+     * Period.end, not a single-event end.</p>
+     * <p><strong>Providers and patient demographics</strong></p>
+     * <p>Administrative links are best-effort. Patient.managingOrganization is a
+     * record custodian and does not supply a care site. Address.country resolves
+     * to <code>location.country_concept_id</code>; CMS Place of Service codings in Location.type
+     * resolve to <code>care_site.place_of_service_concept_id</code>. Practitioner recorded
+     * gender is separate from Person demographics: male/female can resolve to
+     * Provider Gender concepts; other, unknown, or absent values stay 0.</p>
+     * <p>Within a request, Practitioners and role-only providers sharing one confirmed
+     * individual NPI (Type 1) merge only when their supplied rendered name, recorded
+     * gender, DEA identifier, and parsed birth year are compatible. The first name
+     * entry and first non-empty DEA identifier are used; supplied identity values
+     * compare exactly. Missing attributes can enrich a compatible row. A conflict
+     * keeps the entire NPI group separate with linked diagnostics. Multiple distinct
+     * NPIs on a Practitioner also prevent merging and leave npi unset. No merge
+     * occurs across requests.</p>
+     * <p>NPI classification trims whitespace and validates ten digits and the NPI check
+     * digit; returned source values and merge comparisons preserve the supplied
+     * spelling. Known individual NPIs remain usable for historical care when deactivated.
+     * An invalid or unconfirmed NPI retains a source-scoped Practitioner without npi,
+     * with an UNRESOLVED diagnostic at identifier. No live public registry lookup is
+     * performed; classification failures return HTTP 500. Accepted NPI system forms,
+     * missing-value markers, and source-identity semantics are defined in ProviderRow.</p>
+     * <p>A PractitionerRole can alias a supplied Practitioner by structural reference,
+     * unambiguous parent-contained reference, or identifier match to a top-level
+     * Practitioner. Supplied Reference.type must be Practitioner. NPI identifier
+     * matching requires a confirmed individual NPI and accepts the NPI system aliases;
+     * other identifiers match exactly. Unusable or ambiguous references have diagnostics.
+     * A resolved Practitioner's identity takes precedence over the role's identifiers.</p>
+     * <p>Without a resolvable supplied Practitioner, a role requires one confirmed
+     * individual NPI in PractitionerRole.identifier or practitioner.identifier to emit
+     * a provider. NPIs from both fields must agree exactly. A usable logical NPI
+     * reference needs no supplied Practitioner and produces no missing-Practitioner
+     * diagnostic. Role-only providers share the NPI grouping rules; names, gender, and
+     * birth information are not invented. provider_role_contexts preserves every
+     * emitted role's specialty and care-site context, including when roles share a provider.</p>
+     * <p>Provider exclusions are reported in dropped:</p>
      * <ul>
-     * <li><code>Patient</code> -&gt; <code>person</code>; <code>deceased[x]</code> can also produce <code>death</code>, the
-     * first address can produce <code>location</code>, and more than one supplied race
-     * produces <code>observation</code> race rows (see Patient demographics below)</li>
-     * <li><code>observation_period</code> -&gt; one request-local derived row per person,
-     * spanning dates from that person's visit and clinical rows not listed
-     * in <code>rows_for_review</code>, plus Specimen and Death rows. Source end dates
-     * contribute even when the output table has no end column. No period
-     * row is returned for a person without qualifying dates; this is not
-     * enrollment or capture-completeness evidence</li>
-     * <li><code>Location</code> -&gt; <code>location</code> and <code>care_site</code></li>
-     * <li><code>Organization</code> -&gt; <code>care_site</code>; its first address can produce <code>location</code></li>
-     * <li><code>HealthcareService</code> -&gt; <code>care_site</code></li>
-     * <li><code>Practitioner</code> and <code>PractitionerRole</code> -&gt; <code>provider</code></li>
-     * <li><code>Encounter</code> -&gt; <code>visit_occurrence</code></li>
-     * <li><code>Specimen</code> -&gt; <code>specimen</code>, with an explicit Patient subject; missing
-     * collection date or material retains a partial row with diagnostics</li>
-     * <li><code>DeviceUseStatement</code> -&gt; <code>device_exposure</code>, using referenced <code>Device.type</code></li>
-     * <li><code>Condition</code> -&gt; domain-selected clinical table; default <code>condition_occurrence</code></li>
-     * <li><code>Procedure</code> -&gt; domain-selected clinical table; default <code>procedure_occurrence</code></li>
-     * <li><code>MedicationRequest</code>, <code>MedicationStatement</code>, <code>MedicationAdministration</code>, and
-     * <code>MedicationDispense</code> -&gt; domain-selected clinical table; default <code>drug_exposure</code></li>
-     * <li><code>Immunization</code> -&gt; domain-selected clinical table; default <code>drug_exposure</code></li>
-     * <li><code>Observation</code> -&gt; domain-selected clinical table. Numeric values prefer
-     * <code>measurement</code> and other values prefer <code>observation</code> when the code is
-     * valid for both tables.
-     * If no supported standard concept is selected, numeric values retain the
-     * <code>measurement</code> default and nonnumeric values retain <code>observation</code>.</li>
-     * <li><code>AllergyIntolerance</code> -&gt; <code>observation</code> for supported contextual
-     * allergy/intolerance mappings; other coded statements use domain-based
-     * placement excluding <code>drug_exposure</code> and <code>device_exposure</code>; default <code>observation</code></li>
+     * <li>provider_npi_is_organization: a top-level Practitioner or role-only provider
+     * is identified by an organization NPI (Type 2).</li>
+     * <li>provider_role_requires_individual_npi: a role has neither a usable Practitioner
+     * nor a confirmed individual NPI.</li>
+     * <li>provider_role_conflicting_npis: a role without a usable Practitioner supplies
+     * multiple distinct NPIs across its identifier fields.</li>
+     * <li>provider_practitioner_is_not_individual: a role resolves to an organization
+     * Practitioner.</li>
      * </ul>
-     * <p>Clinical placement follows the informative Vulcan IG's vocabulary-driven
-     * domain assignment. Supported destinations are <code>condition_occurrence</code>,
-     * <code>procedure_occurrence</code>, <code>drug_exposure</code>, <code>device_exposure</code>, <code>measurement</code>, and <code>observation</code>.
-     * Resolved clinical records are returned in the table corresponding to the
-     * domain of their mapped OMOP standard concept. The source resource
-     * determines eligibility, field values, and the default table when no
-     * supported mapping is available.
-     * <code>AllergyIntolerance</code> records do not produce <code>drug_exposure</code> or
-     * <code>device_exposure</code> rows. Device placement requires eligible use evidence:
-     * prescriptions, uncertain diagnoses, and explicit negative Observation
-     * results (false, SNOMED Negative, Known absent, or No, or interpretation
-     * code <code>NEG</code> from
-     * <code>http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation</code>)
-     * do not accept Device placement, even when other supplied values are positive.
-     * A recorder, asserter, or information source is retained as context rather
-     * than treated as the device event's provider.</p>
-     * <p>Coded <code>AllergyIntolerance.code</code> statements are interpreted using their
-     * original codings, optional <code>type</code>, and <code>category</code>. Supported substances
-     * produce an Observation finding separately from the causative substance
-     * in <code>value_as_concept_id</code>. Drug-domain substances are valid values and do
-     * not imply drug exposure or medication allergy. The finding is selected
-     * by an explicit mapping policy, not a published substance-to-finding
-     * crosswalk. Contextual findings report <code>MAPPED</code>,
-     * <code>resolution.via: CONTEXTUAL</code>. <code>observation_source_concept_id</code> retains
-     * the known OMOP identity of the original coding written to
-     * <code>observation_source_value</code>, including when the finding is unresolved;
-     * it is <code>0</code> when no source identity is known. The configured finding is
-     * never substituted for the original source concept.</p>
-     * <p>This adapts the informative R5 <a href="https://hl7.org/fhir/uv/omop/INFORMATIVE1/en/ValueAsConceptPattern.html">Vulcan Value-as-Concept
-     * pattern</a>
-     * to R4's substance/product codes, optional <code>type</code>, and repeating <code>category</code>.
-     * It selects a contextual finding and resolves the substance separately;
-     * published <code>Maps to value</code> decomposition of a composite finding is not performed.</p>
-     * <p>For <code>type: allergy</code>, medication (optionally with biologic) maps to
-     * Allergy to drug (<code>439224</code>); other category sets use Allergic disposition
-     * (<code>43530807</code>). For <code>type: intolerance</code>, medication (optionally biologic)
-     * uses Intolerance to drug (<code>4240582</code>), food alone uses Intolerance to food
-     * (<code>4340252</code>), and other sets use Intolerance to substance (<code>36684107</code>).
-     * All selected concepts must be active and standard in the requested
-     * vocabulary release. Limited reviewed substance mappings can derive an
-     * absent category: for example, peanut and egg extracts supply food context, and
-     * Penicillin G supplies medication context. No category is inferred solely
-     * from Drug-domain membership.</p>
-     * <p>With absent <code>type</code>, a supported substance maps to a mechanism-neutral
-     * propensity finding: medication (optionally with biologic) uses Propensity
-     * to adverse reactions to drug (<code>4305025</code>), food alone uses Propensity to
-     * adverse reactions to food (<code>4303802</code>), and other category sets or an
-     * unknown category use Propensity to adverse reaction (<code>4172024</code>). The
-     * original type remains absent; no allergy or intolerance mechanism is
-     * inferred. The substance value is resolved independently. Existing
-     * supported findings can supply their own mechanism and negative
-     * statements retain their meaning. Conflicting evidence leaves the
-     * affected concept unmapped.
-     * A single identified substance can still populate the value when only
-     * its category context conflicts. Distinct conflicting substances,
-     * positive/negative mixtures, finding/substance mixtures, and multiple
-     * standard substance targets do not select a substance value by input
-     * order. Equivalent supported translations may share one value;
-     * unresolved translations are disclosed and are not used as substances.
-     * Finding-only, value-only, and neither-resolved partial rows are retained.</p>
-     * <p><code>mappings.resolution.allergy</code> retains supplied type/categories, coded
-     * clinical/verification statuses, the date-source element, per-coding
-     * interpretation, derived categories, and reported information loss. The
-     * finding and substance have separate mappings linked to the same row and
-     * fields. Broader findings retain source specificity in this metadata.
-     * Codes outside contextual policy coverage retain existing domain-based
-     * mapping, with the contextual coverage outcome reported separately.
-     * Text-only inputs retain their text-only behavior. Reaction-substance
-     * fallback and published <code>Maps to value</code> relationships are not applied.
-     * Null placeholders in repeating FHIR category primitives carry no category
-     * value and are omitted from category interpretation and audit values.
-     * An invalid supplied type/category drops only the affected AllergyIntolerance
-     * before concept resolution. Other resources are still processed. The
-     * <code>dropped</code> entry identifies the resource and reports
-     * <code>allergy_type_unrecognized</code> or <code>allergy_category_unrecognized</code>.</p>
-     * <p>For example, a Condition coded with ICD10CM <code>Z79.4</code> can produce a mapped
-     * <code>observation</code> row. <code>Z86.73</code> and ICD-O-3 <code>8140/3</code> also map to concepts in
-     * the Observation domain. Use <code>mappings.omop_table</code> and <code>mappings.omop_id</code>
-     * to locate each result; the FHIR resource type alone does not determine
-     * the output table.</p>
-     * <p>Clinical rows include available person/visit/provider links, concept and
-     * source concept IDs, source value, source type provenance, and start
-     * timing. Dates follow the source resource's timing rules below, regardless
-     * of the output table. For example, a Condition follows its
-     * <code>onset[x]</code> / <code>recordedDate</code> timing rule even when returned as an
-     * <code>observation</code>. End dates are populated only in tables with end columns;
-     * for rows not listed in <code>rows_for_review</code>, they also contribute to the
-     * request-local observation period when the output table has no end column.</p>
-     * <p>Source-specific fields are populated only for the corresponding source
-     * and destination: Condition status in <code>condition_occurrence</code>, medication
-     * dosage/supply and Immunization lot details in <code>drug_exposure</code>, and
-     * Observation values/units/ranges in <code>measurement</code> or <code>observation</code> where
-     * those columns exist. Mapping notes explain the output table and which
-     * fields are populated. Coded medication/immunization routes on rows outside
-     * <code>drug_exposure</code>, and Observation values on rows outside <code>measurement</code> /
-     * <code>observation</code>, are retained in <code>mappings</code> linked to the output row, with
-     * <code>omop_field</code> omitted and <code>selected: false</code>. Coded routes are checked
-     * against the OMOP Route domain; those Observation values are preserved
-     * without concept resolution.</p>
-     * <p>Note destinations are unsupported. If no standard concept
-     * valid for a supported destination is found, the resource produces a row
-     * in its default table with concept ID <code>0</code> and <code>UNMAPPED</code> status. Its
-     * source concept ID is also <code>0</code>, except that allergy rows retain a known
-     * original source identity from their coding evidence. A <code>DOMAIN_MISMATCH</code>
-     * outcome is identified in the mapping
-     * note. Text-only clinical inputs can also produce rows in another supported
-     * table when semantic mapping selects a standard concept valid for that destination;
-     * without a validated match, they use their default tables. Domain-routed
-     * clinical records produce one row each even when their code has multiple
-     * vocabulary mapping targets; DeviceUseStatement event granularity is
-     * described below. Vocabulary <code>Maps to value</code> mappings are not applied.</p>
-     * <p><code>Medication</code> is reference data for medication resources; it does not
-     * create its own row because OMOP CDM has no Medication table. Administrative
-     * linkages (provider, care site, and location) are best-effort and limited to
-     * references supplied in the request. <code>Patient.managingOrganization</code> is a
-     * record custodian, not a care-delivery site. Provider specialties resolve
-     * independently to standard Provider concepts. Recorded <code>Practitioner.gender</code>
-     * is distinct from Person
-     * demographics: <code>male</code> and <code>female</code> resolve to validated OMOP Gender
-     * concepts in <code>provider.gender_concept_id</code>; <code>other</code>, <code>unknown</code>, and absent
-     * gender remain unmapped. <code>Address.country</code> is resolved to <code>location.country_concept_id</code>,
-     * and CMS Place of Service codings in <code>Location.type</code> are resolved to
-     * <code>care_site.place_of_service_concept_id</code>.
-     * Within one request, Practitioners with the same single distinct supplied
-     * NPI value merge into one provider row only when all supplied mapped identity
-     * attributes in the entire NPI group agree. The NPI system may be
-     * <code>http://hl7.org/fhir/sid/us-npi</code> (preferred in FHIR R4),
-     * <code>urn:oid:2.16.840.1.113883.4.6</code>, or bare <code>2.16.840.1.113883.4.6</code>;
-     * these forms are equivalent for matching. OID forms are accepted for compatibility.
-     * The same matching rule applies to Practitioners contained in valid role
-     * references. NPI values are compared exactly as supplied, without format
-     * or checksum validation. Blank values and unknown markers <code>UNK</code> and
-     * <code>UNKNOWN</code> are treated as missing and do not populate <code>npi</code> or participate
-     * in matching. Marker detection ignores case and surrounding whitespace;
-     * all other values are preserved without trimming. Other identifier systems and names
-     * do not trigger a merge. Missing attributes can enrich a compatible merged row.
-     * Compatibility compares the name rendered from each Practitioner's first
-     * <code>name</code> entry, its gender, its first non-empty DEA identifier, and its parsed
-     * birth year. Differences in birth month/day within one year do not conflict.
-     * Rendered names are compared exactly: <code>Jane Smith</code> and <code>Dr. Jane Smith</code>
-     * conflict even when they share an NPI.
-     * If any of these attributes conflict, every resource in that NPI group stays
-     * separate, including resources missing the conflicting attribute. Source
-     * attributes and unambiguous structural reference links are preserved; no
-     * conflicting value is selected. Each affected row has <code>CONFLICTING</code>
-     * diagnostics at <code>name</code>, <code>gender</code>, <code>identifier</code>, or <code>birthDate</code>, linked by
-     * <code>omop_table: provider</code> and <code>omop_id</code>. All source gender mappings link to
-     * their retained or merged provider row.
-     * Repeated copies of one NPI on a resource are allowed. A resource with
-     * multiple distinct NPIs stays separate, leaves <code>npi</code> unset, preserves its
-     * source-resource identity in <code>provider_source_value</code>, and reports a
-     * <code>CONFLICTING</code> diagnostic at <code>identifier</code> linked by
-     * <code>omop_table: provider</code> and <code>omop_id</code>.
-     * Row IDs are per response. The API does not merge across requests. For a
-     * Practitioner with one NPI, <code>provider_source_value</code> is that NPI, even when
-     * its group conflicts. Consumers can use it to deduplicate compatible
-     * providers across requests, but must preserve rows flagged by identity
-     * conflict diagnostics and check compatibility across responses. Without
-     * one unambiguous NPI, source-resource identity is preserved without a
-     * person-level deduplication guarantee.
-     * A <code>PractitionerRole</code> that identifies one supplied <code>Practitioner</code> aliases
-     * that canonical provider: by a top-level structural reference, a
-     * parent-contained <code>#id</code> reference, or an <code>identifier.system</code> and
-     * <code>identifier.value</code> match against a top-level Practitioner. Identifier
-     * matching uses the equivalent NPI systems and missing-value rules above;
-     * all other systems and all supplied identifiers match exactly. No remote
-     * identifier lookup is performed. When <code>Reference.type</code> is present it must
-     * be <code>Practitioner</code>; duplicate contained IDs and identifier matches to
-     * different canonical providers are ambiguous. An explicit reference that
-     * is unresolved, ambiguous, or unsupported retains a role-fallback provider
-     * row and is returned in <code>diagnostics</code>. <code>provider_role_contexts</code> preserves role-specific
-     * specialty and care-site context that a canonical OMOP provider row cannot
-     * represent together.</p>
-     * <p>A role whose practitioner reference has only a blank or unknown NPI
-     * identifier follows the missing-identifier behavior: its fallback row has
-     * an <code>UNSUPPORTED</code> diagnostic explaining that a usable identifier or literal
-     * reference is required. An unambiguous literal reference still links to
-     * its Practitioner when the NPI is missing or unknown. Original supplied
-     * unknown markers remain in the role's <code>practitioner_identifier</code> metadata.</p>
-     * <p>Each <code>PractitionerRole.specialty</code> entry resolves independently using its
-     * supplied codings and explicit text from that entry. NUCC codings resolve
-     * directly; other supported codings may use the UMLS bridge. Text fallback
-     * is permitted when every coding has a nonblank code and a well-formed,
-     * unsupported system identifier. Supported systems, mixed supported and
-     * unsupported systems, and incomplete or malformed codings block fallback.
-     * A supported coding remains authoritative even when the text differs.
-     * Within one specialty entry, complete codings from well-formed unsupported
-     * systems do not block supported codings that independently resolve to the
-     * same standard Provider concept. Unsupported companions remain unsupported
-     * in the coding audit and acquire no crosswalk. Missing or malformed
-     * companions, failures of recognized codings, and disagreements between
-     * supported codings still block selection. For example, NUCC <code>208000000X</code> alongside a complete local
-     * <code>PEDS</code> coding can resolve to Pediatric Medicine, with or without text
-     * and in either coding order. This uses the supported coding's mapping
-     * and source concept, rather than text fallback.
-     * Coding displays do not supply text fallback evidence.
-     * Unsupported system identifiers must be absolute URIs without embedded
-     * whitespace, user information, or fragments. HTTP(S) identifiers require
-     * a host; URNs require a namespace and a nonempty namespace-specific value.
-     * Bare labels such as <code>Epic</code> do not qualify.
-     * Text uses deterministic vocabulary assertions in order: standard Provider
-     * concept name, English OMOP synonym, then an English UMLS string on a
-     * CUI with a NUCC atom, then a NUCC preferred-term label with its grouping
-     * prefix removed. The last layer retains the entire classification and
-     * specialization label, including qualifications. An ambiguous layer stops
-     * resolution. No semantic search or ML matching is used.
-     * Each role's input remains visible in <code>mappings</code>, including repeated
-     * identical inputs across one provider's roles.
-     * <code>specialty_concept_id</code> is populated only when every distinct supplied
-     * input resolves to the same standard Provider concept. With no inputs,
-     * or an unresolved, ambiguous, or conflicting input, it stays <code>0</code>.
-     * A role without a specialty contributes no input. The endpoint applies
-     * no frequency or hierarchy selection. Each input's outcome and matching
-     * route (layer, matched string, and UMLS CUI/SAB when applicable) appear
-     * in <code>mappings</code> with <code>omop_field: specialty_concept_id</code>. An individually
-     * resolved input can coexist with a provider concept of <code>0</code> when another
-     * input fails or disagrees. Specialty mappings have <code>selected: false</code>:
-     * the source text remains in <code>specialty_source_value</code> when supplied source
-     * values agree, and every original value remains in role contexts and mappings.
-     * Specialty mapping evidence includes <code>specialty_resolution</code> with the text
-     * fallback decision and each coding's independent outcome. A successful
-     * text fallback reports <code>MAPPED</code> and source concept ID <code>0</code>; its local
-     * codings remain unsupported in that audit. For example, complete local
-     * codings with explicit <code>Pediatrics</code> text can resolve to Pediatric Medicine
-     * through <code>NUCC_LABEL</code>. Adding a different or unresolved specialty still
-     * keeps the provider's singular concept at <code>0</code>.
-     * Compound phrasings without a vocabulary assertion remain unresolved.
-     * For example, <code>Pulmonology</code> stays unresolved while <code>Pulmonologist</code>
-     * resolves to Pulmonary Disease. Results depend on <code>vocab_version</code>.</p>
-     * <p>Patient demographics:</p>
+     * <p>Clinical rows remain eligible when a provider is omitted; their provider links
+     * stay unset, with UNRESOLVED diagnostics pointing to the provider's dropped entry.</p>
+     * <p>Each role specialty resolves independently from supported codings, with
+     * deterministic explicit-text fallback for text-only entries or complete codings
+     * from unsupported systems. Incomplete/malformed codings or recognized systems
+     * block text fallback; coding displays do not supply fallback text. Complete
+     * unsupported companions do not block agreeing supported codings. Unsupported
+     * systems must be well-formed absolute URIs without whitespace, credentials,
+     * or fragments. <code>specialty_concept_id</code> is populated only when at least one
+     * specialty is supplied and every distinct input resolves to the same standard
+     * Provider concept; otherwise it stays 0. Each role's source and outcome remain
+     * in mappings, including repeated inputs. Specialty mappings have <code>selected: false</code>;
+     * see SpecialtyResolution for per-coding evidence and MappingResolution.via for
+     * the reported matching route.</p>
+     * <p>Patient sex at birth, race, and ethnicity use these US Core 6.1.0 extension
+     * structures/value sets on any Patient; a US Core profile declaration is not
+     * required. Other demographic extensions are ignored.</p>
+     * <p>| Demographic | Extension URL | Supported value source |
+     * | --- | --- | --- |
+     * | Birth sex | http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex | valueCode, using http://hl7.org/fhir/us/core/ValueSet/birthsex |
+     * | Race | http://hl7.org/fhir/us/core/StructureDefinition/us-core-race | ombCategory, using http://hl7.org/fhir/us/core/ValueSet/omb-race-category |
+     * | Ethnicity | http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity | ombCategory, using http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity-category |</p>
      * <ul>
-     * <li>Sex at birth, race, and ethnicity are read from these US Core
-     * extensions, with their US Core 6.1.0 structures and value sets, on
-     * any Patient (US Core profile conformance is not required). Sex at
-     * birth falls back to Patient <code>gender</code>. Other extensions, including US
-     * Core sex and gender identity, are ignored.
-     * <ul>
-     * <li>Birth sex:
-     * <code>http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex</code>
-     * (<code>valueCode</code> from <code>http://hl7.org/fhir/us/core/ValueSet/birthsex</code>)</li>
-     * <li>Race:
-     * <code>http://hl7.org/fhir/us/core/StructureDefinition/us-core-race</code>
-     * (<code>ombCategory</code> from
-     * <code>http://hl7.org/fhir/us/core/ValueSet/omb-race-category</code>)</li>
-     * <li>Ethnicity:
-     * <code>http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity</code>
-     * (<code>ombCategory</code> from
-     * <code>http://hl7.org/fhir/us/core/ValueSet/omb-ethnicity-category</code>)</li>
+     * <li>A supplied birth-sex extension takes precedence: M/F resolve, while unknown,
+     * unsupported, or conflicting values, or an extension without valueCode, leave
+     * concept 0 without falling back to Patient.gender. Without a birth-sex
+     * extension, male/female administrative gender is used under the OMOP
+     * sex-at-birth convention; other/unknown remain 0.</li>
+     * <li>One distinct resolved race sets the Person race concept. Multiple races use
+     * <code>1546847</code> (More than one race) and one observation per race: concept <code>4013886</code>
+     * (Race), type <code>32817</code>, and the race in <code>value_as_concept_id</code>. The category code
+     * is <code>value_source_value</code>; observation_source_value and observation_date are
+     * absent. Loaders must supply their own required-date policy.</li>
+     * <li>One non-null ethnicity category can resolve; conflicting categories leave
+     * concept 0. Multiple-ethnicity observations are not produced. Race/ethnicity
+     * null flavors are ignored, and detailed codes/text are preserved without
+     * resolution. Source codes are joined with <code>|</code> in source order, falling back
+     * to extension text when no code exists.</li>
+     * <li>Mappings preserve supplied demographic codes and indicate which were selected;
+     * overridden administrative gender is unselected. Conflicting birth sex/ethnicity
+     * and birth sex without valueCode also have diagnostics. Summary counts follow
+     * the field-level rules in Summary. Demographics are not inferred from other data.</li>
      * </ul>
-     * </li>
-     * <li><code>gender_concept_id</code> is sex at birth. A supplied birth sex always
-     * decides it: <code>M</code> and <code>F</code> are resolved; <code>UNK</code>, <code>ASKU</code>, <code>OTH</code>, a code
-     * outside the value set, conflicting values, and a birth sex without
-     * <code>valueCode</code> leave it <code>0</code>, and Patient <code>gender</code> is not used.</li>
-     * <li>Without a birth sex, Patient <code>gender</code> <code>male</code> or <code>female</code> is resolved
-     * under the OMOP convention that the supplied gender represents sex at
-     * birth; <code>other</code> and <code>unknown</code> keep concept <code>0</code>.</li>
-     * <li><code>gender_source_value</code> is the chosen source code (<code>F</code> for birth sex,
-     * <code>female</code> for Patient <code>gender</code>).</li>
-     * <li>Each race category is resolved separately, and null flavors (<code>UNK</code>,
-     * <code>ASKU</code>) are ignored. One distinct standard race sets
-     * <code>race_concept_id</code>. More than one sets it to <code>1546847</code> (More than one
-     * race) and adds one <code>observation</code> row per race, with
-     * <code>observation_concept_id</code> <code>4013886</code> (Race), the race in
-     * <code>value_as_concept_id</code>, <code>observation_type_concept_id</code> <code>32817</code>, the
-     * category code in <code>value_source_value</code>, and no
-     * <code>observation_source_value</code> or <code>observation_date</code>. A loading pipeline
-     * that requires <code>observation_date</code> must apply its own date policy.</li>
-     * <li>The single non-null ethnicity category is resolved, and null flavors
-     * are ignored; more than one distinct category leaves
-     * <code>ethnicity_concept_id</code> <code>0</code>. Ethnicity is not derived from race, and
-     * no demographic is inferred from names, addresses, or other
-     * extensions.</li>
-     * <li><code>race_source_value</code> and <code>ethnicity_source_value</code> list every supplied
-     * category and detailed code in source order, joined with <code>|</code>, or the
-     * extension text when no code is supplied. Detailed codes and text are
-     * not resolved.</li>
-     * <li>Every supplied birth sex, gender, and OMB category code has a
-     * <code>mappings</code> entry whose <code>note</code> names its source and outcome. When a
-     * birth sex is supplied, Patient <code>gender</code> is reported unselected with
-     * the note <code>FHIR administrative gender; not used, birth sex supplied</code>.
-     * Conflicting values and a birth sex without <code>valueCode</code> are also
-     * returned in <code>diagnostics</code> with path <code>extension:birthsex</code> or
-     * <code>extension:ethnicity</code>. <code>summary</code> counts each demographic field once,
-     * as described under <code>Summary</code>.</li>
-     * <li>Differences from the reference conventions: Vulcan's example gender
-     * ConceptMap maps <code>other</code> and <code>unknown</code> to concepts, which stay <code>0</code>
-     * here; more than one race follows the OHDSI THEMIS convention, also
-     * used by Vulcan, rather than the CDM 5.4 note that mixed races use
-     * <code>0</code>; and Vulcan's suggested <code>observation</code> rows for multiple
-     * ethnicities are not produced.</li>
-     * </ul>
-     * <p><code>Specimen</code> produces a <code>specimen</code> row only with an explicitly resolvable
-     * top-level Patient subject. Missing collection dates or material retain
-     * useful partial rows with linked diagnostics; those rows may require
-     * downstream completion before loading into a strict CDM instance.
-     * References support <code>Patient/id</code> and exact Bundle
-     * fullUrl matches (including URNs and absolute URLs); contained, logical,
-     * display-only, missing, non-Patient, and unresolved subjects never use the
-     * sole Patient fallback. Reference.type, when supplied, must identify Patient.
-     * Unsafe patient attribution and ineligible status drop only that Specimen
-     * with <code>dropped</code> and <code>diagnostics</code>; a missing Patient in the entire request
-     * remains a 400. Missing material is concept ID 0 with a <code>type</code> diagnostic
-     * and no terminology mapping/summary count. Supplied unmapped material is
-     * also 0, with its separate vocabulary mapping outcome and retained source code.
-     * Material (<code>type</code>) resolves against the Specimen domain, coded UCUM
-     * collection quantity units against Unit, and <code>collection.bodySite</code> against
-     * Spec Anatomic Site. Supplied unmapped optional concepts are 0; absent
-     * unit and site IDs are explicit null. Text-only body sites preserve their
-     * source text with site concept ID 0 and an <code>UNMAPPED</code> mapping; they do not
-     * produce a text-based concept suggestion. Material descriptions follow
-     * the semantic-mapping policy above. Original source codes and text-only
-     * descriptions are preserved.
-     * Numeric quantity is copied without
-     * unit conversion; invalid or comparator-bearing quantities are omitted
-     * with diagnostics without dropping the row. Missing optional data is allowed.
-     * Collection time uses <code>collection.collectedDateTime</code> or
-     * <code>collection.collectedPeriod.start</code>; end-only, partial, invalid, and absent
-     * dates leave specimen_date/specimen_datetime omitted with linked diagnostics.
-     * Both collected forms together are conflicting: retain the row without
-     * selecting a date. Period end and receivedTime never substitute for collection
-     * start. <code>specimen_source_contexts.collection_timing</code> preserves raw dateTime,
-     * Period boundaries, receivedTime, and the selected source path when a date
-     * is populated, including partial precision and original timezone offsets.
-     * <code>specimen_collection_date_missing</code>, <code>specimen_collection_date_partial</code>, and
-     * <code>specimen_collection_date_unusable</code> distinguish absent, partial, and invalid
-     * source dates; <code>specimen_collection_multiple_forms</code> reports conflicting choices.
-     * <code>specimen_type_concept_id: 32817</code> is EHR provenance, independent of material
-     * and availability. Status absent/available/unavailable/unsatisfactory is
-     * supported; entered-in-error and unrecognized statuses drop the specimen.
-     * <code>specimen_source_contexts.status</code> preserves the supplied availability
-     * status for emitted rows; it is omitted when no status was supplied.
-     * Disease status is not inferred. Source identity precedence is resource id,
-     * then first identifier with a nonempty value in source array order, then
-     * accessionIdentifier.value, then Bundle fullUrl. No identity is fabricated;
-     * <code>specimen_source_contexts</code> preserves all valued identifier system/value
-     * pairs, accession identity, resource id/fullUrl, and the selected source path.
-     * Parent/derived specimens emit independently when each has its own Patient;
-     * missing date/material remains partial rather than being inherited. Parent
-     * and Measurement-to-Specimen links are not represented. Consuming CDM
-     * loaders own required-date completion, durable IDs, and dataset completeness.
-     * Source baseline is FHIR R4 4.0.1, with supported common fields reviewed against
-     * US Core Specimen 7.0.0; full profile conformance is not validated here.</p>
-     * <p><strong>Device use and exposure</strong></p>
-     * <p>DeviceUseStatement accepts active, completed, stopped, and on-hold use;
-     * intended, entered-in-error, missing, and unrecognized statuses are omitted
-     * with source-specific diagnostics. Its subject must explicitly resolve to
-     * an emitted Patient. Group, contained-Patient, identifier-only, external
-     * fetching, and sole-Patient attribution are unsupported for this path.
-     * Device references support exact Type/id and Bundle fullUrl/URN matches,
-     * plus unambiguous contained Devices scoped to the referring statement.
-     * Missing, wrong-type, unresolved, or ambiguous Device details retain a
-     * known-patient use row with device concept 0 and diagnostics. Missing type
-     * evidence has no vocabulary mapping entry; supplied unmapped type evidence
-     * has a mapping outcome. Inventory-only Device records emit no exposure.</p>
-     * <p>timingDateTime supplies the start only; timingPeriod preserves supplied
-     * boundaries independently. Each timingTiming.event produces a separate
-     * row, including a partial row for an unusable event, with its zero-based
-     * event_index in device_exposure_contexts.exposures. Repeat rules without events
-     * retain one partial row; events plus rules produce only the event rows.
-     * No recurrence, continuous min/max interval, status-derived end date, or
-     * recordedOn fallback is inferred. Year/month precision and malformed
-     * individual dates leave affected columns absent. Competing timing choices
-     * or a provably reversed Period leave both bounds absent. Supplied precision,
-     * offsets, schedules, and omission/conflict reasons remain in source context
-     * and diagnostics. Other clinical paths retain their own timing semantics.</p>
-     * <p>device_exposure_contexts contains one entry per source record that produced
-     * device exposures. Its exposures array links all rows derived from that
-     * record by device_exposure_id and, for Timing events, event_index. Shared
-     * timing, device evidence, and quantity_basis appear once per source record.
-     * Contexts are not combined by resource id or device identity; distinct
-     * records remain separate even when their identifiers match or are absent.</p>
-     * <p>device_source_value uses original type/clinical coding, never inventory
-     * or resource identity. An unambiguous Device.udiCarrier.deviceIdentifier
-     * supplies unique_device_id. Competing identifiers leave it absent and are
-     * preserved with issuer/jurisdiction/carrier context. production_id remains
-     * absent; carriers, lot, serial, manufacture, and expiry evidence remain in
-     * device_exposure_contexts.</p>
-     * <p>DeviceUseStatement rows use device_type_concept_id 32817 (EHR), with
-     * provider_id, visit_occurrence_id, and visit_detail_id unset.
-     * Routed rows retain their source classification, explicit visit links to
-     * emitted same-patient visits, and compatible performer links;
-     * Condition/Procedure recorder/asserter and
-     * MedicationStatement informationSource do not supply device provider_id.
-     * Supplied source, encounter, context, recorder, asserter, performer, and
-     * informationSource values on DeviceUseStatement are retained only in
-     * device_exposure_contexts.</p>
-     * <p>Device exposure quantity is reported as follows:</p>
+     * <p><strong>Allergies and observations</strong></p>
+     * <p>Coded AllergyIntolerance statements use original codings, optional type, and
+     * category to resolve an Observation finding and the causative substance
+     * independently. A Drug-domain substance can be a value without implying drug
+     * exposure or medication allergy. Contextual findings report <code>MAPPED</code> and
+     * <code>resolution.via: CONTEXTUAL</code>; original source concept identity is retained.</p>
+     * <p>The contextual finding policy is:</p>
+     * <p>| Supplied type | Medication, optionally with biologic | Food alone | Other or unknown categories |
+     * | --- | --- | --- | --- |
+     * | allergy | Allergy to drug (439224) | Allergic disposition (43530807) | Allergic disposition (43530807) |
+     * | intolerance | Intolerance to drug (4240582) | Intolerance to food (4340252) | Intolerance to substance (36684107) |
+     * | Absent | Propensity to adverse reactions to drug (4305025) | Propensity to adverse reactions to food (4303802) | Propensity to adverse reaction (4172024) |</p>
+     * <p>Selected findings must be active standard concepts in the requested release.
+     * Limited reviewed substance mappings can supply an absent category; Drug-domain
+     * membership alone does not. An absent type remains absent. Supported existing
+     * findings and negative statements retain their meaning. Conflicting or ambiguous
+     * evidence leaves the affected concept unresolved; the finding and substance can
+     * resolve independently, so partial rows are retained. In particular, category
+     * conflict need not prevent resolution of a single identified substance.
+     * Unsupported contextual sources retain domain-based placement, excluding
+     * drug/device exposure, with contextual coverage reported separately.</p>
+     * <p><code>resolution.allergy</code> preserves supplied context and interpretation evidence;
+     * finding and substance mappings link to the same row and separate fields.
+     * Text-only statements follow primary semantic mapping. Reaction-substance
+     * fallback and <code>Maps to value</code> decomposition are not applied. Invalid supplied
+     * type/category drops that AllergyIntolerance with <code>allergy_type_unrecognized</code>
+     * or <code>allergy_category_unrecognized</code>, while other resources continue.</p>
+     * <p>For Observation rows placed in Measurement or Observation, numeric Quantity,
+     * Integer, and numeric-looking String values populate <code>value_as_number</code>.
+     * Comparators are represented only by Measurement.operator_concept_id.
+     * valueQuantity.value and valueInteger accept JSON numbers. Finite numeric
+     * valueString results are interpreted equivalently, including optional
+     * comparators, while preserving the original text in value_source_value.
+     * Other non-coded values populate Observation.value_as_string or
+     * Measurement.value_source_value. Coded valueCodeableConcept results resolve
+     * to <code>value_as_concept_id</code> using active standard concepts from any domain;
+     * the selected code becomes value_source_value. Unmapped coded results use 0,
+     * and an Observation's value_as_string remains empty for coded results.
+     * Text-only result concepts remain text without concept resolution.
+     * Other unsupported value[x] forms and components do not produce separate values.</p>
+     * <p>Quantity units on Measurement, Observation, and Specimen use exact,
+     * case-sensitive coded UCUM, including accepted OID spellings. Matching may be
+     * direct or through an active OMOP Maps to relationship; there is no UMLS bridge,
+     * text guessing, alias correction, or numeric conversion. An absent unit is null;
+     * a supplied unit without a valid standard Unit match is 0. Explicit UCUM <code>1</code>
+     * is supplied unit evidence. Quantity.code supplies unit_source_value when present,
+     * otherwise Quantity.unit. Unit mappings preserve Quantity.system/code/unit in
+     * source_system/source_code/source_name. See unit field schemas for source-concept
+     * and resolution metadata.
+     * Observation units on other clinical destinations are not resolved separately.</p>
+     * <p><strong>Specimens and devices</strong></p>
+     * <p>Specimen requires an explicit top-level Patient subject using the shared
+     * reference rules; supplied Reference.type must identify Patient. Missing
+     * collection timing or material retains a partial row with diagnostics.
+     * Material resolves against Specimen, collection quantity units against Unit,
+     * and collection.bodySite against Spec Anatomic Site. Missing material produces
+     * concept 0 without a terminology outcome; supplied unmapped material has its
+     * own outcome. Text-only sites retain text and concept 0 without a suggestion.
+     * Absent unit/site concepts are null; supplied unmapped values are 0.</p>
+     * <p>Specimen quantity is copied without conversion when nonnegative and free of
+     * a comparator; unusable quantities are omitted with diagnostics. Missing,
+     * partial, invalid, or conflicting collection choices leave timing unset.
+     * Parent/derived specimens require their own Patient and do not inherit missing
+     * material/dates. Parent and Measurement-to-Specimen links are not represented.
+     * <code>specimen_source_contexts</code> retains availability, identities, and original timing;
+     * SpecimenRow describes source-ID precedence and required-date limitations.
+     * For US Core Specimen 7.0.0 inputs, only the fields described here are mapped;
+     * full profile conformance is not validated.</p>
+     * <p>DeviceUseStatement requires an explicit emitted Patient and supports
+     * request-local Device references, including unambiguous contained Devices.
+     * Missing or unusable Device details retain a known-patient exposure with
+     * concept 0 and diagnostics. Missing type evidence has no terminology outcome;
+     * supplied unmapped type evidence has one. Inventory-only Devices produce no
+     * exposure.</p>
+     * <p>Each timingTiming.event produces a separate start-only exposure, even if the
+     * event date is unusable; events plus repeat rules produce only those event rows.
+     * A repeat-only schedule retains one undated row without expanding recurrence.
+     * Competing timing choices or a provably reversed Period leave both bounds
+     * unset. Partial or malformed individual dates leave their columns absent.
+     * RecordedOn and status do not supply missing use dates.</p>
+     * <p>Device exposure contexts group row links and source evidence per source record,
+     * with event_index for Timing events. Distinct records remain separate, including
+     * overlapping use and matching device/source identifiers; row counts do not count
+     * distinct physical devices. An unambiguous UDI-DI supplies unique_device_id;
+     * competing identifiers and production details remain in context, and production_id
+     * is unset. Device source values identify clinical/type coding, not inventory IDs.</p>
+     * <p>Device quantity defaults to 1 when quantity evidence is absent. Clinical
+     * quantities, doses, rates, and numeric Observation results, including numeric
+     * valueString, do not establish device counts and leave quantity omitted.
+     * device_exposure_contexts retains the original evidence; quantity_basis and
+     * diagnostics explain the result. Timing repeat count does not establish
+     * quantity. Device unit IDs are always null.
+     * DeviceUseStatement uses EHR type 32817 and has no provider or visit links;
+     * routed clinical rows retain eligible performer and same-patient visit links.</p>
+     * <p><strong>Medication and drug quantities</strong></p>
+     * <p>MedicationRequest, MedicationStatement, and MedicationAdministration accept
+     * inline medicationCodeableConcept, a request-local Medication reference, or
+     * display-text fallback when a reference cannot resolve. A reference resolving
+     * to a non-Medication is not rescued by display. MedicationDispense requires
+     * usable inline code/text or a reference resolving to a Medication with usable
+     * code/text; both choice forms together drop the dispense. Display-only or
+     * unresolved references do not establish dispensing medication identity.</p>
+     * <p>For MedicationDispense, context links to a supplied same-patient Encounter,
+     * and the first resolvable Practitioner/PractitionerRole performer supplies the
+     * provider. Authorizing prescriptions provide validated request-local linkage
+     * only; dispensing values come from the dispense. Orders, dispenses, and
+     * administrations emit independently without deduplication by drug.
+     * Comparable handover/preparation dates proving handover before preparation
+     * leave start timing unset with a conflict diagnostic. A completed dispense
+     * can remain partial without usable handover, and no exposure end is derived.
+     * For US Core MedicationDispense 7.0.0 inputs, only the fields described here
+     * are mapped; full profile conformance is not validated.</p>
+     * <p>For drug_exposure output:</p>
      * <ul>
-     * <li>When the source has no quantity, dose, rate, or numeric Observation
-     * result field, quantity is 1 and device_exposure_contexts.quantity_basis
-     * is default_absent_count.</li>
-     * <li>When such a field is supplied, including a null or malformed value,
-     * quantity is omitted and quantity_basis is unsupported_supplied_evidence.
-     * The original values remain in device_exposure_contexts.evidence, and
-     * an UNSUPPORTED diagnostic identifies each supplied field.</li>
+     * <li>MedicationRequest.dispenseRequest.numberOfRepeatsAllowed supplies refills;
+     * its positive whole-day expectedSupplyDuration supplies days_supply.</li>
+     * <li>MedicationDispense.daysSupply requires positive whole coded UCUM <code>d</code> days,
+     * without a supplied comparator. Missing supply is allowed; unsupported values
+     * are omitted with diagnostics. It does not derive exposure end or refills.</li>
+     * <li>Non-empty dosage text supplies newline-joined sig. Coded dosage/Immunization
+     * routes resolve against Route; conflicting routes remain unset, while codings
+     * shared by all dosage instructions can select a route. Immunization.lotNumber
+     * supplies lot_number.</li>
+     * <li>MedicationRequest uses type 32838 (EHR prescription), MedicationDispense uses
+     * 32825 (EHR dispensing record), and other current sources use 32817 (EHR).
+     * These are provenance classifications, not proof of medication consumption.</li>
      * </ul>
-     * <p>For example, an Observation with valueQuantity.value of 2 returned as a
-     * device exposure has no quantity; the value 2 remains in its source context.
-     * timingTiming.repeat.count remains in source context and does not set
-     * quantity. unit_concept_id and unit_source_concept_id are always null.</p>
-     * <p>Distinct eligible statements and routed clinical records remain separate,
-     * including overlapping use and equal Timing events. derivedFrom is retained
-     * as supporting context, not duplicate identity. Row counts therefore need
-     * not count distinct uses or physical devices. IDs are request-local exposure
-     * identities. Before loading a CDM dataset, callers must assign durable IDs
-     * and populate any required fields omitted from partial rows.</p>
-     * <p>Unsupported resource types are accepted in a Bundle but ignored: they
-     * create no row and no <code>dropped</code> entry. <code>dropped</code> is reserved for supported
-     * row-producing resources that cannot safely produce a positive OMOP row:
-     * required subject/patient, clinical code/text, or medication data may be
-     * unusable, or the resource may explicitly negate or fail the documented
-     * clinical-event eligibility policy. A single-Patient Bundle uses the sole
-     * Patient only when <code>subject</code>/<code>patient</code> is absent, except DeviceUseStatement
-     * and Specimen, which require explicit Patient subjects. An explicit subject/patient
-     * reference that is unresolved, ambiguous, or unsupported drops the clinical
-     * resource in every request scope.</p>
-     * <p>Eligibility distinguishes clinical validity, performed/taken evidence, and
-     * administrative workflow state. Entered-in-error and explicitly
-     * non-performed events never produce a positive clinical-event row, and
-     * unrecognized required statuses are dropped except the retained Condition and
-     * Encounter cases below. Condition accepts absent or confirmed canonical-HL7
-     * <code>verificationStatus</code> without a status retention reason; uncertain or unreadable
-     * supplied verification is retained and indexed. Clinical course is not a
-     * diagnosis-role mapping. Procedures accept completed or stopped events.
-     * Medication requests are prescription evidence only: <code>doNotPerform</code>, drafts,
-     * cancellations, and non-authorizing intents are dropped. Medication statements
-     * accept active, completed, stopped, or on-hold reported use; administrations
-     * accept completed, in-progress, on-hold, or stopped events. An on-hold
-     * administration also needs an <code>effectiveDateTime</code> or <code>effectivePeriod.start</code>
-     * that supplies start evidence; a valid partial date remains an undated row.
-     * An on-hold administration is started evidence that is temporarily paused and
-     * expected to continue. MedicationDispense accepts completed records,
-     * including completed partial fills. Stopped records require a valid
-     * <code>whenHandedOver</code>, including partial dates, as evidence of actual handover.
-     * Preparation, in-progress (ready for pickup), on-hold, cancelled, declined,
-     * entered-in-error, unknown, missing, and unrecognized statuses are dropped.
-     * A completed dispense with missing or unusable handover timing remains a
-     * partial row; preparation time never substitutes for handover.
-     * Immunizations require completed
-     * status. Observations accept final,
-     * amended, or corrected status; registered,
-     * preliminary, cancelled, entered-in-error, and missing statuses are
-     * dropped. AllergyIntolerance accepts absent, unconfirmed, or confirmed canonical-HL7
-     * <code>verificationStatus</code> as a reported allergy, but drops refuted,
-     * entered-in-error, and unreadable supplied verification statuses. Invalid
-     * supplied allergy type/category also drops that resource, for both coded
-     * and text-only statements. Encounter
-     * accepts arrived, triaged, in-progress, onleave, or finished status, but drops
-     * planned, cancelled, and entered-in-error statuses. Unknown, missing, and unreadable
-     * Encounter statuses are retained and indexed without imputation. An eligible
-     * encounter without <code>Period.end</code> remains a partial visit; no end date is invented.
-     * MedicationStatement, Observation, and Procedure with explicit <code>unknown</code>
-     * status are also retained and indexed in <code>rows_for_review</code> when otherwise
-     * shapeable. Missing or unreadable statuses on these three resource types
-     * remain dropped. Retention preserves source status and does not establish
-     * that an event occurred or medication was taken. Device placement still
-     * requires eligible use evidence; unknown-status records cannot produce
-     * <code>device_exposure</code> rows.</p>
-     * <p>The mapped OMOP concept's domain determines the clinical output table.
-     * For Observations, numeric and nonnumeric <code>value[x]</code> forms determine the
-     * preferred table only when the code is valid for both <code>measurement</code> and
-     * <code>observation</code>. Unresolved Observations retain <code>measurement</code> rows for
-     * numeric values and <code>observation</code> rows for other values. In these two
-     * tables, numeric values populate <code>value_as_number</code>; other non-coded values
-     * populate <code>value_as_string</code> for an <code>observation</code> or <code>value_source_value</code>
-     * for a <code>measurement</code>. Coded <code>valueCodeableConcept</code> values are resolved
-     * against <code>value_as_concept_id</code> in these tables and use the selected
-     * bare code in <code>value_source_value</code>, leaving an <code>observation</code>'s
-     * <code>value_as_string</code> empty; unmapped or target-invalid coded values remain
-     * <code>0</code>. Active standard concepts from any OMOP domain are valid for
-     * <code>value_as_concept_id</code> per CDM 5.4. For example, a blood-culture Measurement
-     * can record <em>Staphylococcus aureus</em> as its coded result, even though the
-     * organism concept belongs to OMOP's Observation domain.
-     * For other clinical output tables, Observation values are retained only
-     * in <code>mappings</code>, without concept resolution or an <code>omop_field</code>, and with
-     * <code>selected: false</code>.
-     * Other unsupported <code>value[x]</code> forms and Observation components do not
-     * populate separate converted values. A
-     * numeric comparator (<code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) is represented only by a
-     * measurement's <code>operator_concept_id</code>.</p>
-     * <p>For Observations returned as <code>measurement</code> or <code>observation</code> rows,
-     * Quantity units resolve independently against the table's
-     * <code>unit_concept_id</code>.
-     * Only coded UCUM (<code>http://unitsofmeasure.org</code> or its
-     * OID <code>2.16.840.1.113883.6.8</code>, bare or <code>urn:oid:</code>) is supported. Codes are
-     * case-sensitive: no spelling aliases, text-only guesses, or numeric
-     * conversion are applied. Coded UCUM units map to valid standard OMOP
-     * Unit concepts using the release selected by <code>vocab_version</code>.
-     * Mappings are direct or follow an active OMOP <code>Maps to</code> relationship;
-     * UCUM units do not use a UMLS bridge.
-     * Unknown codes,
-     * vocabulary gaps, text-only units, missing coding, and unsupported
-     * systems keep the row and use <code>0</code>; absent units use JSON <code>null</code> (the
-     * field is present). Explicit dimensionless code <code>1</code> is a supplied unit
-     * and resolves or remains <code>0</code>; it is never treated as absent.
-     * <code>unit_source_value</code> contains Quantity.code when supplied, otherwise
-     * Quantity.unit. A separate unit <code>mappings</code> entry preserves the original
-     * Quantity.system/code in <code>source_system</code>/<code>source_code</code> and the exact
-     * human-readable Quantity.unit in <code>source_name</code>, with its own outcome.
-     * Quantity.unit provides display text and does not affect unit matching.
-     * Measurement also returns nullable <code>unit_source_concept_id</code>, identifying
-     * the OMOP source concept for Quantity.system/code when available,
-     * otherwise <code>0</code> for a supplied unit.
-     * Observation has no such column. Resolving a unit does not change
-     * numeric values, comparators, or reference ranges.
-     * Supported coded UCUM units include <code>resolution</code> in their mappings,
-     * whether the unit resolves or remains unmapped:
-     * its outcome and reason code distinguish vocabulary gaps, target-domain
-     * mismatches, and ambiguity. Unresolved or ambiguous units retain the row
-     * with concept ID <code>0</code>. Resolved mappings retain the selected concept's
-     * direct or crosswalk provenance. Text-only units, units with missing
-     * coding, and unsupported unit systems omit <code>resolution</code>; their <code>note</code>
-     * explains the unmapped outcome.</p>
-     * <p>For Observations returned in other clinical tables, units are not resolved
-     * or included as separate mapping outcomes. Device exposure unit IDs remain
-     * null, with supplied quantity and unit evidence retained in
-     * <code>device_exposure_contexts</code>.</p>
-     * <p>Compatibility: absent <code>unit_concept_id</code> values previously returned <code>0</code>
-     * and now return <code>null</code>. Coded units use their code in <code>unit_source_value</code>
-     * rather than their human-readable text; the text remains in <code>mappings</code>.
-     * The Measurement <code>unit_source_concept_id</code> field is new.</p>
-     * <p>A standard OMOP <code>concept_id</code> is selected for each eligible primary clinical coding
-     * after considering all of the resource's supplied codings. An unambiguous
-     * coded medication or immunization route is checked independently against
-     * the OMOP Route domain. For <code>drug_exposure</code> rows, <code>route_concept_id</code>
-     * contains the resolved concept ID, or <code>0</code> if unmapped; for other output
-     * tables the route is reported only in
-     * <code>mappings</code>, without <code>omop_field</code> and with <code>selected: false</code>.
-     * Alongside the OMOP rows grouped by
-     * table (<code>tables</code>), the response carries <code>mappings</code> (an entry for every
-     * supported source coding from a resource that shaped a row, linked back to
-     * that row; some, such
-     * as demographic null flavors, are reported without being resolved),
-     * <code>rows_for_review</code> (an index of uncertain-status or primary-concept-0 clinical
-     * rows in tables, with original statuses, reasons, and source/row identity),
-     * <code>provider_role_contexts</code> (source role details linked to provider rows),
-     * <code>dropped</code> (resources that could not be shaped into a row),
-     * <code>diagnostics</code> (explicit references that could not safely create a link,
-     * conflicting Practitioner identity attributes, conflicting or unsupported
-     * Patient demographic extensions, and conflicting Encounter classifications),
-     * <code>vocab_version</code> (the OMOP vocabulary release codes were resolved
-     * against), and a small <code>summary</code> of the resolution outcomes.</p>
-     * <p>A <code>concept_id</code> of <code>0</code> is reported, not omitted (OMOP &quot;no matching
-     * concept&quot; semantics): it covers a supplied concept without a validated
-     * standard match (<code>UNMAPPED</code>).
-     * Supported <code>Encounter.class</code> or <code>Encounter.type</code> values
-     * may populate <code>visit_concept_id</code>. Person demographics and Provider
-     * recorded gender follow the policies above.
-     * Coded Observation values and supported allergy substances may populate
-     * <code>value_as_concept_id</code>.
-     * Measurement <code>operator_concept_id</code> represents a value comparator (<code>&lt;</code>,
-     * <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>); multiple-race concepts follow the conventions described
-     * above. Clinical <code>*_source_value</code> fields contain the selected FHIR code
-     * (or source text for text-only resources).
-     * The corresponding selected <code>mappings</code> entry preserves the coding system
-     * and full source-coding provenance.
-     * Known OID-form coding systems are accepted as either FHIR OID URNs (for
-     * example, <code>urn:oid:2.16.840.1.113883.6.1</code> for LOINC) or bare OIDs, and
-     * produce the same mappings as their canonical system URLs. Coding
-     * mappings report that canonical URL in <code>source_system</code>; Quantity unit
-     * mappings preserve the original Quantity.system, including OID spelling.
-     * An unknown OID remains unchanged in <code>source_system</code> and may be
-     * <code>UNMAPPED</code>.
-     * Other <code>*_source_value</code> fields preserve row-specific raw source values,
-     * such as resource identifiers, names, units, or status codes.
-     * <code>MedicationRequest</code> uses <code>32838</code> (EHR prescription) and
-     * <code>MedicationDispense</code> uses <code>32825</code> (EHR dispensing record) for
-     * <code>drug_type_concept_id</code>; other current resources use <code>32817</code> (EHR). This
-     * is a coarse provenance policy: it does not infer patient-reported,
-     * medication-history, or other more-specific type concepts from FHIR
-     * status fields.</p>
-     * <p>Dates and datetimes:</p>
-     * <ul>
-     * <li>A <code>*_date</code> is the calendar date (<code>YYYY-MM-DD</code>) of a source value with
-     * at least day precision. A <code>*_datetime</code> is set only when that value
-     * has a time of day, as local time without a UTC offset
-     * (<code>YYYY-MM-DDTHH:MM:SS</code>, with fractional seconds to microseconds when
-     * supplied): <code>2024-01-15T23:30:00-05:00</code> becomes <code>2024-01-15T23:30:00</code>.
-     * A datetime without a timezone is read as local time.</li>
-     * <li>A partial date (<code>2024</code> or <code>2024-03</code>) leaves both columns unset.
-     * It still counts as that source's value, so later sources in the list
-     * below are not used.</li>
-     * <li>Free-text timing (such as <code>onsetString</code>), <code>Age</code> and <code>Range</code> forms, and
-     * values that are not dates are ignored, so a later source in the list
-     * is used if there is one.</li>
-     * <li>Other than the sources below and the same-day ends of single-event
-     * medication records, no date is imputed: partial dates are not
-     * completed, and a row is not dated from another resource such as its
-     * Encounter.</li>
-     * <li>Valid date values never cause a request to be rejected, and the response
-     * reports missing, partial, malformed, or conflicting timing for Specimen,
-     * DeviceUseStatement, and MedicationDispense in <code>diagnostics</code> while retaining
-     * partial rows for downstream load completion. Other resources do not report which
-     * date elements were unusable. An on-hold
-     * MedicationAdministration is an eligibility exception: it needs a supplied
-     * effective start as evidence that administration began.
-     * A stopped MedicationDispense similarly requires supplied handover evidence.</li>
-     * </ul>
-     * <p>Timing sources, in priority order where several are listed. These rules
-     * apply regardless of the clinical output table; end dates are populated
-     * only where the table has an end column, and <code>verbatim_end_date</code> is set
-     * only for medication resources returned as <code>drug_exposure</code> rows:</p>
-     * <ul>
-     * <li><code>Patient</code>: <code>birthDate</code> sets <code>year_of_birth</code>, <code>month_of_birth</code>, and
-     * <code>day_of_birth</code> from the parts it supplies; <code>birth_datetime</code> is not
-     * set. <code>deceasedDateTime</code> sets the <code>death</code> dates.</li>
-     * <li><code>Practitioner</code>: <code>birthDate</code> sets the provider's <code>year_of_birth</code>.</li>
-     * <li><code>Encounter</code>: <code>period.start</code> and <code>period.end</code>.</li>
-     * <li><code>Condition</code>: start from <code>onsetDateTime</code> or <code>onsetPeriod.start</code>, then
-     * <code>recordedDate</code> (when the condition was recorded, not when it began);
-     * end from <code>abatementDateTime</code> or <code>abatementPeriod.end</code>.</li>
-     * <li><code>Procedure</code>: start from <code>performedDateTime</code> or
-     * <code>performedPeriod.start</code>; end from <code>performedPeriod.end</code> only.</li>
-     * <li><code>DeviceUseStatement</code>: <code>timingDateTime</code> sets the start only;
-     * <code>timingPeriod.start</code> and <code>timingPeriod.end</code> supply independent bounds;
-     * each <code>timingTiming.event</code> produces one start-only row. A schedule
-     * without explicit events produces one row without dates.</li>
-     * <li><code>Specimen</code>: <code>collection.collectedDateTime</code> or <code>collection.collectedPeriod.start</code>;
-     * missing day precision retains an undated specimen with diagnostics.</li>
-     * <li><code>Observation</code>: <code>effectiveDateTime</code>, <code>effectivePeriod.start</code>, or
-     * <code>effectiveInstant</code>.</li>
-     * <li><code>AllergyIntolerance</code>: <code>recordedDate</code>, then <code>onsetDateTime</code> or
-     * <code>onsetPeriod.start</code>.</li>
-     * <li><code>MedicationStatement</code>: start from <code>effectiveDateTime</code> or
-     * <code>effectivePeriod.start</code>; end and <code>verbatim_end_date</code> from
-     * <code>effectivePeriod.end</code>. <code>dateAsserted</code> records when the statement was
-     * made and is not used.</li>
-     * <li><code>MedicationAdministration</code>: an <code>effectiveDateTime</code> is a single event
-     * that sets both start and end; an <code>effectivePeriod</code> sets the start
-     * and, when present, the end and <code>verbatim_end_date</code>.</li>
-     * <li><code>Immunization</code>: <code>occurrenceDateTime</code> is a single event that sets both
-     * start and end; <code>expirationDate</code> is not used.</li>
-     * <li><code>MedicationRequest</code>: <code>authoredOn</code>, the order date, sets the start; it
-     * is not evidence of administration. No end is set, and the validity
-     * period is not used as an exposure duration.</li>
-     * <li><code>MedicationDispense</code>: <code>whenHandedOver</code> sets the start. Missing, partial,
-     * or invalid handover leaves the start unset with a diagnostic. Comparable
-     * handover/preparation values proving handover before preparation also
-     * leave the start unset with a <code>CONFLICTING</code> diagnostic. <code>whenPrepared</code>,
-     * authorizing orders, and related administrations never supply timing.
-     * No exposure end or <code>verbatim_end_date</code> is inferred, including from
-     * <code>daysSupply</code>. Raw handover/preparation values retain precision and offsets
-     * in <code>medication_dispense_source_contexts.source</code>.</li>
-     * <li>Differences from the Vulcan maps: <code>birth_datetime</code> is not set from
-     * <code>birthDate</code>, Condition also reads <code>onsetPeriod.start</code>, and
-     * AllergyIntolerance falls back to its onset when <code>recordedDate</code> is
-     * missing.</li>
-     * </ul>
-     * <p>Medication details for resources returned as <code>drug_exposure</code> rows:</p>
-     * <ul>
-     * <li>For <code>MedicationRequest</code>, <code>dispenseRequest.numberOfRepeatsAllowed</code> sets
-     * <code>refills</code> and a whole-day <code>expectedSupplyDuration</code> sets <code>days_supply</code>.</li>
-     * <li>For <code>MedicationDispense</code>, <code>daysSupply</code> sets <code>days_supply</code> only for a
-     * positive whole number of coded UCUM <code>d</code> days without a supplied comparator.
-     * The canonical UCUM URL, bare OID, and OID URN are accepted. Other units,
-     * fractions, text-only units, and malformed values leave it absent with a
-     * diagnostic; absent daysSupply is allowed. Refills are not inherited.</li>
-     * <li>All non-empty dosage text is preserved in <code>sig</code>.</li>
-     * <li>Coded dosage routes and <code>Immunization.route</code> are target-validated in
-     * the OMOP Route domain. Conflicting routes are left unset; route
-     * codings shared by every dosage instruction identify the same route.</li>
-     * <li><code>Immunization.lotNumber</code> is preserved in <code>lot_number</code>.</li>
-     * </ul>
-     * <p>MedicationDispense requires an explicit subject resolving to a Patient
-     * supplied in the request; Groups and missing subjects are unsupported.
-     * Source fields are based on FHIR R4 4.0.1 and reviewed against
-     * <a href="https://hl7.org/fhir/us/core/STU7/StructureDefinition-us-core-medicationdispense.html">US Core MedicationDispense 7.0.0</a>.
-     * Full profile conformance is not validated. Although US Core requires
-     * handover on completed records, this API retains such incomplete records
-     * with missing-handover diagnostics as partial conversion output.
-     * Supply either a usable <code>medicationCodeableConcept</code> (coded or text-only),
-     * or a <code>medicationReference</code> resolving to a Medication with usable code/text.
-     * Both choice forms together are conflicting and drop the dispense.
-     * Exact relative, Bundle fullUrl, and unambiguous contained Medication
-     * references are supported. Unresolved references are not rescued by display
-     * text; missing or ambiguous medication identity drops the dispense with a
-     * diagnostic. A usable but unmapped drug retains concept ID 0 and its
-     * mapping outcome in a row indexed for review.
-     * <code>context</code> links only to a supplied Encounter for the same patient.
-     * The first resolvable Practitioner/PractitionerRole in <code>performer.actor</code>
-     * supplies <code>provider_id</code>; other actor types do not supply a provider.
-     * Failed explicit links have diagnostics. Authorizing prescriptions are
-     * checked for request-local MedicationRequest identity and patient agreement;
-     * failures do not discard the dispense. They never supply medication,
-     * instructions, refills, timing, or prescription provenance to a dispense.
-     * Dispense instructions alone supply <code>sig</code> and route; conflicting routes
-     * remain unset with a diagnostic and original instructions in source context.
-     * Orders, dispenses, and administrations emit independently, with separate
-     * source identity and no deduplication merely because they concern the same drug.
-     * Every emitted dispensing drug row has a <code>whenHandedOver/daysSupply</code>
-     * diagnostic beginning <code>medication_dispense_end_date_absent</code> because the
-     * CDM-required exposure end remains absent. Missing/partial/unusable handover
-     * diagnostics begin <code>medication_dispense_handover_missing</code>,
-     * <code>medication_dispense_handover_partial</code>, or <code>medication_dispense_handover_unusable</code>.</p>
-     * <p>Encounter details:</p>
-     * <ul>
-     * <li>
-     * <p>Encounter classifications must supply both <code>Coding.system</code> and
-     * <code>Coding.code</code> to map to a standard OMOP Visit concept. For HL7
-     * encounter class codes with system
-     * <code>http://terminology.hl7.org/CodeSystem/v3-ActCode</code> or
-     * <code>http://hl7.org/fhir/v3/ActCode</code>, the supported mappings are:</p>
-     * <ul>
-     * <li><code>IMP</code> (inpatient encounter) -&gt; 9201 (Inpatient Visit)</li>
-     * <li><code>AMB</code> (ambulatory encounter) -&gt; 9202 (Outpatient Visit)</li>
-     * <li><code>EMER</code> (emergency encounter) -&gt; 9203 (Emergency Room Visit)</li>
-     * <li><code>VR</code> (virtual encounter) -&gt; 722455 (Telehealth)</li>
-     * <li><code>HH</code> (home health encounter) -&gt; 581476 (Home Visit)</li>
-     * </ul>
-     * <p><code>OBSENC</code> (observation encounter) has no direct class mapping. Other
-     * class or type codes can be used when they have a valid standard OMOP
-     * Visit mapping in the selected vocabulary release. Unsupported
-     * classifications retain <code>visit_concept_id</code> of <code>0</code> unless a supported
-     * type supplies the Visit as described below; they never default to
-     * outpatient.</p>
-     * </li>
-     * <li>
-     * <p>A mapped <code>Encounter.class</code> determines <code>visit_concept_id</code>. A mapped
-     * type that disagrees with it produces a <code>CONFLICTING</code> diagnostic with
-     * path <code>class/type</code>, while the class mapping remains selected.
-     * If class is missing or unmapped, type supplies the Visit only when
-     * all mapped type classifications agree on the same standard Visit
-     * concept. Codings within one type CodeableConcept are alternative
-     * encodings of that classification. When separate type classifications
-     * map to different Visit concepts, no type is selected,
-     * <code>visit_concept_id</code> remains <code>0</code>, and a <code>CONFLICTING</code> diagnostic has
-     * path <code>type</code>.</p>
-     * </li>
-     * <li>
-     * <p><code>visit_source_value</code> contains the selected class or type code;
-     * <code>mappings</code> preserves its coding system and identifies which
-     * classification was selected. <code>visit_source_concept_id</code> identifies
-     * the selected original source coding's OMOP concept when available,
-     * and is <code>0</code> otherwise, including for the HL7 encounter class codes
-     * listed above. Each eligible Encounter produces one Visit;
-     * <code>classHistory</code>, <code>partOf</code>, and admission/discharge concepts are not
-     * mapped.</p>
-     * </li>
-     * <li>
-     * <p>Direct <code>MedicationRequest.dispenseRequest.quantity</code>, <code>MedicationDispense.quantity</code>,
-     * <code>MedicationAdministration.dosage.dose</code>, and <code>Immunization.doseQuantity</code>
-     * can set <code>quantity</code> under the formulation policies below. Quantities
-     * must be positive finite numbers with a supported <code>system</code>/<code>code</code> pair
-     * and no supplied <code>comparator</code>. Ingredient amounts and injection volumes
-     * use <code>http://unitsofmeasure.org</code> (or its bare OID or
-     * <code>urn:oid:2.16.840.1.113883.6.8</code>) with case-sensitive codes matching or
-     * convertible to vocabulary-backed strength units. Exact unit matches,
-     * including <code>[U]</code> for insulin and heparin strengths, are accepted without
-     * a unit conversion.
-     * When codes differ, both source and strength units must belong to the
-     * same supported group: mass (<code>ug</code>, <code>mg</code>, <code>g</code>), volume (<code>uL</code>, <code>mL</code>, <code>L</code>),
-     * or milliequivalent representations (<code>meq</code>, <code>10*-3.eq</code>). Other conversions,
-     * including <code>kg</code>, <code>ML</code>, <code>Mg</code>, <code>[drp]</code>, <code>mol</code>, <code>mmol</code>, <code>%</code>, <code>1</code>, and generic
-     * annotations such as <code>{vial}</code> or <code>{syringe}</code>, leave <code>quantity</code> unset with
-     * <code>unit_mismatch</code>. Codes are not case-corrected or inferred from display text.
-     * The original source system is preserved in the quantity audit.
-     * Fixed-form counts also accept the explicit codings below. Free-text,
-     * local, invalid, and cross-dimensional units are not interpreted.</p>
-     * </li>
-     * </ul>
-     * <p>Drug quantity policies follow <a href="https://ohdsi.github.io/CommonDataModel/cdm54.html#drug_exposure">CDM v5.4 DRUG_EXPOSURE conventions</a>.
-     * The selected drug must be a <code>Clinical Drug</code> or <code>Branded Drug</code>, with one
-     * active dose form and valid vocabulary evidence for the chosen policy.
-     * Strength-based conversions also require one ingredient strength. Supported RxNorm dose forms:</p>
-     * <ul>
-     * <li><code>fixed_dose_form_count</code>: Oral Tablet (<code>317541</code>), Oral Capsule
-     * (<code>316965</code>), Extended Release Oral Tablet (<code>316945</code>), Extended
-     * Release Oral Capsule (<code>316943</code>), Delayed Release Oral Tablet (<code>10312</code>),
-     * or Delayed Release Oral Capsule (<code>316995</code>). A source ingredient amount is divided
-     * by the single positive per-unit ingredient amount after conversion to that
-     * strength unit when necessary.
-     * Concentration-based strengths cannot derive counts from ingredient amounts. The
-     * result is a count of the selected dose form, limited to whole units or
-     * multiples of one-half or one-third. Derived counts within a relative
-     * tolerance of 1e-12 of an allowed fraction are normalized to that count
-     * to remove arithmetic roundoff; other fractions remain unsupported.
-     * For example, 1,000 mg for a drug
-     * with 500 mg per tablet produces <code>quantity: 2</code> tablets (<code>DERIVED</code>). A source
-     * of 1 g is converted to 1,000 mg and produces the same count.
-     * Explicit counts are copied (<code>DIRECT</code>) when their coding matches the
-     * selected tablet or capsule form, including the corresponding extended-
-     * and delayed-release forms: <code>TAB</code> / <code>CAP</code> under
+     * <p>Direct quantities are supported at MedicationRequest.dispenseRequest.quantity,
+     * MedicationDispense.quantity, MedicationAdministration.dosage.dose, and
+     * Immunization.doseQuantity. Values must be positive finite numbers without a
+     * supplied comparator and with a supported system/code. Rates and
+     * MedicationStatement dosages do not establish a supported total quantity.</p>
+     * <p>The selected drug must be Clinical Drug or Branded Drug with one active,
+     * supported dose form and sufficient unambiguous vocabulary evidence.</p>
+     * <p>| Quantity policy | Supported RxNorm dose forms | Output meaning |
+     * | --- | --- | --- |
+     * | fixed_dose_form_count | Oral Tablet (317541), Oral Capsule (316965), Extended Release Oral Tablet (316945), Extended Release Oral Capsule (316943), Delayed Release Oral Tablet (10312), Delayed Release Oral Capsule (316995) | Count of the selected form, copied from a matching coded count or derived from ingredient amount and per-unit strength; only whole, half, or third units are supported |
+     * | clinical_injection_ingredient_amount | Injectable Solution (316949), Injectable Suspension (316950), Injection (1649574) | Ingredient amount in result_unit, copied/converted from ingredient amount or derived from volume and validated per-unit concentration |</p>
+     * <p>Fixed-form counts accept <code>TAB</code>/<code>CAP</code> under
      * <code>http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm</code>, or
-     * <code>{tbl}</code> / <code>{Capsule}</code> under <code>http://unitsofmeasure.org</code>. These exact
-     * case-sensitive count codings identify the supplied form; they are not
-     * dimensionally converted as UCUM units. Direct counts do not require
-     * ingredient strength: combination products and missing/invalid strengths
-     * do not change the supplied count. Ingredient-strength gaps, including
-     * missing ingredient or strength-unit references, do not prevent copying
-     * an explicit count. Drug or dose-form evidence gaps, unclassified or
-     * ambiguous forms, and gaps whose relevance cannot be established still
-     * prevent conversion. The whole/half/third rules still apply.
-     * For example, 20 <code>TAB</code> for amoxicillin/clavulanate is 20 tablets, and 30 <code>TAB</code> for
-     * a supported tablet produces <code>quantity: 30</code>; <code>CAP</code> for that tablet is
-     * omitted with <code>unit_mismatch</code>. Generic counts (<code>1</code>, <code>{Each}</code>), other
-     * annotations, packs, and free-text counts are not interpreted.
-     * See the <a href="https://hl7.org/fhir/R4/medicationrequest0301.html">FHIR R4 count example</a>.</li>
-     * <li><code>clinical_injection_ingredient_amount</code>: Injectable Solution (<code>316949</code>),
-     * Injectable Suspension (<code>316950</code>), or Injection (<code>1649574</code>). A source
-     * ingredient amount is converted to the vocabulary ingredient unit when
-     * necessary; an exact-unit amount is copied directly. Otherwise, a source
-     * amount convertible to the concentration's denominator unit is converted
-     * and multiplied by numerator value / the effective denominator reported in
-     * the audit evidence. Volume conversion requires a positive finite numerator,
-     * dimensionally distinct validated UCUM units, a null raw denominator value, and
-     * <code>evidence.strength.denominator_basis</code> with <code>kind: PER_UNIT</code> and
-     * <code>value: 1</code>. A null denominator alone is not interpreted as 1. Missing, unknown,
-     * non-applicable, quantified, or conflicting denominator evidence does
-     * not support volume conversion. For example, 80 mL with 2 mg/mL
-     * strength and a <code>PER_UNIT</code> basis produces <code>quantity: 160</code> mg. A supplied
-     * 160 mg amount for the same drug produces <code>quantity: 160</code> directly. A source
-     * of 0.08 L converts to 80 mL before producing the same 160 mg result.
-     * This output is already
-     * the ingredient amount: do not apply the drug-dose guide's
-     * <code>dose = quantity × numerator</code> formula to these injection rows, which
-     * would multiply by the concentration a second time. Use
-     * <code>quantity_transformations.result_unit</code> to identify the output unit.</li>
-     * </ul>
-     * <p>Quantified products, packs, prefilled syringes, other liquids and dose
-     * forms, strength-based conversions of combination products, conflicting or incomplete required evidence, and
-     * unsupported source quantities leave <code>quantity</code> unset. Other supported
-     * fields and the clinical row are still returned. For example, a quantity
-     * supplied only as <code>value: 2, unit: tablet</code> is omitted with
-     * <code>unsupported_unit</code>, because a free-text unit cannot establish this policy.
-     * Rate-only administrations and MedicationStatement dosages do not establish
-     * a supported total quantity and are not used for quantity conversion.</p>
-     * <p><code>quantity_transformations</code> audits each supplied quantity at one of the
-     * three direct paths above on a resource returned as a <code>drug_exposure</code> row,
-     * including an explicit null or malformed quantity. Each entry preserves
-     * the source, identifies the destination row, and reports <code>DIRECT</code>, <code>DERIVED</code>, or
-     * <code>OMITTED</code>. Successful entries identify their policy, evidence, result,
-     * and result unit; omitted entries give a stable reason. When a source code
-     * differs from the strength unit, <code>unit_conversion</code> records the intermediate
-     * converted amount and target unit. Converted results are <code>DERIVED</code>, even
-     * when no further concentration arithmetic is needed. A successful conversion
-     * can also be reported when a later policy check omits the final quantity.
-     * Dose-form and unit
-     * concept IDs refer to the response's <code>vocab_version</code>. Missing quantities
-     * produce no entry. Resources returned in other clinical tables have no
-     * quantity entry. Unsupported rates and statement dosages produce no entry,
-     * and resources in <code>dropped</code> have no quantity entry or destination row.</p>
-     * <p>Medication codes are resolved whether they appear inline
-     * (<code>medicationCodeableConcept</code>) or via a <code>medicationReference</code> to a contained,
-     * relative (<code>Type/id</code>), or bundle-entry (<code>urn:uuid</code>) <code>Medication</code> resource.
-     * A reference that resolves to another resource type is dropped even when it
-     * supplies display text; an unresolved or display-only reference may use
-     * its display as text-only medication input.
-     * Resources that cannot be shaped into a row — a medication with no usable
-     * code, resolvable reference, or display; any clinical resource whose
-     * subject/patient reference cannot be tied to a person; or an event excluded
-     * by eligibility — are reported under <code>dropped</code> rather than emitted as blank
-     * rows. The Bundle must contain at least one Patient resource.</p>
-     * <p>References to top-level resources supplied in the request resolve by
-     * <code>Type/id</code> or an exactly matching Bundle <code>fullUrl</code> (including <code>urn:uuid</code>).
-     * Parent-scoped contained references are supported for medication code lookup,
-     * <code>DeviceUseStatement.device</code> details, and <code>PractitionerRole.practitioner</code>
-     * enrichment; the latter also supports
-     * request-local identifier matching with the NPI rules above, without a remote lookup. Every
-     * nonzero structural foreign key targets a row in the same response. Missing
-     * optional links remain unset without a diagnostic; an explicit optional
-     * reference that is unresolved, ambiguous, conflicting with the row's
-     * person, or unsupported remains unset and is returned in <code>diagnostics</code>
-     * with its source path and outcome.</p>
-     * <p>All row IDs start at <code>1</code> for each request and are not stable or global.
-     * For clinical conversion rows whose resource supplies an <code>id</code>, <code>mappings</code>
-     * associates each row with that source FHIR resource ID. A <code>person</code> row
-     * retains the Patient ID or its first identifier value in
-     * <code>person_source_value</code>, when present; other reference and derived rows do
-     * not uniformly carry a FHIR resource ID. Input resources without those
-     * source identifiers cannot be correlated across responses from the
-     * returned rows alone. Consumers combining responses need to establish
-     * their own stable keys and remap every primary and foreign key together.</p>
+     * <code>{tbl}</code>/<code>{Capsule}</code> under <code>http://unitsofmeasure.org</code>, matching the selected
+     * tablet/capsule family. Explicit counts do not require ingredient strength,
+     * including for combination products. Strength-based conversions require one
+     * ingredient strength; concentration-based strength cannot derive fixed-form
+     * counts. Minor arithmetic roundoff is normalized to a supported fraction.</p>
+     * <p>Ingredient amounts and injection volumes require coded UCUM, including its
+     * bare/OID-URN forms. Exact vocabulary-backed strength units, including <code>[U]</code>,
+     * are accepted. Differing-unit conversion is limited to compatible mass
+     * (<code>ug</code>, <code>mg</code>, <code>g</code>), volume (<code>uL</code>, <code>mL</code>, <code>L</code>), and milliequivalent
+     * (<code>meq</code>, <code>10*-3.eq</code>) groups. Codes are case-sensitive; free text, generic count
+     * annotations, unsupported units, and cross-dimensional conversions are not
+     * interpreted. Injection volume conversion requires explicit, consistent per-unit
+     * concentration evidence; a missing denominator alone does not establish it.
+     * Use <code>quantity_transformations.result_unit</code>: injection output is already the
+     * ingredient amount and must not be multiplied by concentration again.</p>
+     * <p>Unsupported formulations, quantified products, packs/prefilled syringes,
+     * unsupported fractions, or insufficient/ambiguous evidence leave quantity unset
+     * while retaining the row. QuantityTransformation.reason distinguishes omissions.
+     * The audit records each supplied direct quantity, including null/malformed input,
+     * on an emitted drug_exposure row as DIRECT, DERIVED, or OMITTED. Missing quantities,
+     * dropped resources, other destination tables, and unsupported dosage/rate paths
+     * have no audit entry. Result units, evidence, and intermediate unit conversion
+     * use the response vocabulary release; quantity audits do not affect terminology
+     * counts in Summary.</p>
+     * <p><strong>Encounter classification and components</strong></p>
+     * <p>Encounter classifications require both Coding.system and Coding.code.
+     * The following class codes are supported under
+     * <code>http://terminology.hl7.org/CodeSystem/v3-ActCode</code> or
+     * <code>http://hl7.org/fhir/v3/ActCode</code>:</p>
+     * <p>| Class | Visit concept |
+     * | --- | --- |
+     * | IMP | Inpatient Visit (9201) |
+     * | AMB | Outpatient Visit (9202) |
+     * | EMER | Emergency Room Visit (9203) |
+     * | VR | Telehealth (722455) |
+     * | HH | Home Visit (581476) |</p>
+     * <p>OBSENC has no direct class mapping. Other class/type codes require a valid
+     * standard Visit mapping in the selected release. Mapped class takes precedence;
+     * a disagreeing mapped type produces a conflict diagnostic. If class is missing
+     * or unmapped, type supplies the Visit only when all mapped type classifications
+     * agree. Codings within one type are alternative encodings. Unresolved or
+     * conflicting selection leaves concept 0 without defaulting to outpatient.
+     * Source values/concepts identify the selected original classification.</p>
+     * <p>An explicit Encounter.partOf can produce a child visit_detail linked to a
+     * parent visit_occurrence when both are supplied top-level Encounters, explicitly
+     * reference the same unambiguous Patient, have eligible known statuses, and form
+     * a supported two-level parent/child structure. Supplied reference types must
+     * agree. Details use their own timing, classification, and supported
+     * provider/care-site links without inheriting parent values.</p>
+     * <p>| Compatibility assessment | Output for the child |
+     * | --- | --- |
+     * | COMPATIBLE | visit_detail, including identical or parent-ancestor/detail-descendant Visit concepts |
+     * | UNKNOWN | Partial visit_detail with an unsupported diagnostic explaining the limitation |
+     * | INCOMPATIBLE | Independent visit_occurrence with a conflict diagnostic |</p>
+     * <p><code>visit_component_contexts</code> links each assessment to the final child row and
+     * reports its concepts and vocabulary release. Assessment unavailability or
+     * malformed results fail the request with HTTP 500. An UNKNOWN assessment alone
+     * does not index a mapped row for review; primary concept 0 still does.
+     * Classifications and source dates are preserved in all outcomes.</p>
+     * <p>Period comparisons require matching precision and timezone presence; offset
+     * timestamps compare as instants. Timing that proves reversed or disjoint periods
+     * prevents grouping. Incomplete or incomparable timing can retain grouping
+     * with diagnostics. Overlapping
+     * periods may extend outside the parent, with a conflict diagnostic and no
+     * clipping or expansion. Unsupported references, patient/status relationships,
+     * cycles, and deeper hierarchies retain independently eligible standalone visits.
+     * Encounters with unknown, missing, or unreadable status do not qualify as
+     * components. ClassHistory, location-period segmentation, admission/discharge
+     * concepts, and inferred sequencing are not mapped.</p>
+     * <p>A clinical reference to a detail supplies both visit_detail_id and its parent
+     * visit_occurrence_id; a parent reference supplies only the visit ID. These links
+     * apply across all supported clinical destinations. Failed optional references
+     * retain the clinical row without the link. DeviceUseStatement has no R4 Encounter
+     * reference and receives neither link; dates alone never establish links.</p>
      */
     public CreateOmopResponse create(CreateOmopRequest request, RequestOptions requestOptions) {
         return this.rawClient.create(request, requestOptions).body();
