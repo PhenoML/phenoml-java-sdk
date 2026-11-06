@@ -2,8 +2,8 @@
   "metadata": {
     "language": "java",
     "packageName": "com.phenoml.maven:phenoml-java-sdk",
-    "sdkVersion": "19.0.0",
-    "specCommit": "a0adcae40323cfba41fce975d30fc2a650999ced",
+    "sdkVersion": "20.0.0",
+    "specCommit": "187394f8f7f804395fd206aa1db872080ebb3f51",
     "generatorName": "fernapi/fern-java-sdk"
   },
   "renderRules": {
@@ -2368,12 +2368,6 @@
                 "fieldSeparator": "",
                 "fields": [
                   {
-                    "jsonKey": "page_filter",
-                    "fieldTemplate": ".pageFilter({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
                     "jsonKey": "split_classifications",
                     "fieldTemplate": ".splitClassifications({{value}})",
                     "kind": "list",
@@ -2726,12 +2720,6 @@
               "nested": {
                 "fieldSeparator": "",
                 "fields": [
-                  {
-                    "jsonKey": "page_filter",
-                    "fieldTemplate": ".pageFilter({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
                   {
                     "jsonKey": "split_classifications",
                     "fieldTemplate": ".splitClassifications({{value}})",

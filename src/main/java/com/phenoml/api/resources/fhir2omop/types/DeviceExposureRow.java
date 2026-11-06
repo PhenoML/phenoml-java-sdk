@@ -184,7 +184,7 @@ public final class DeviceExposureRow {
     }
 
     /**
-     * @return 1 when the source has no quantity, dose, rate, or numeric Observation result field; omitted when such a field is supplied, including null or malformed values. See device_exposure_contexts.quantity_basis.
+     * @return Default 1 when quantity evidence is absent; otherwise omitted. See device_exposure_contexts.quantity_basis.
      */
     @JsonProperty("quantity")
     public Optional<Long> getQuantity() {
@@ -208,7 +208,7 @@ public final class DeviceExposureRow {
     }
 
     /**
-     * @return Unset; no visit-detail linkage is inferred.
+     * @return Explicit same-patient component for routed rows, with its overarching visit_occurrence_id; absent for DeviceUseStatement.
      */
     @JsonProperty("visit_detail_id")
     public Optional<Long> getVisitDetailId() {
@@ -408,7 +408,7 @@ public final class DeviceExposureRow {
         _FinalStage productionId(String productionId);
 
         /**
-         * <p>1 when the source has no quantity, dose, rate, or numeric Observation result field; omitted when such a field is supplied, including null or malformed values. See device_exposure_contexts.quantity_basis.</p>
+         * <p>Default 1 when quantity evidence is absent; otherwise omitted. See device_exposure_contexts.quantity_basis.</p>
          */
         _FinalStage quantity(Optional<Long> quantity);
 
@@ -429,7 +429,7 @@ public final class DeviceExposureRow {
         _FinalStage visitOccurrenceId(Long visitOccurrenceId);
 
         /**
-         * <p>Unset; no visit-detail linkage is inferred.</p>
+         * <p>Explicit same-patient component for routed rows, with its overarching visit_occurrence_id; absent for DeviceUseStatement.</p>
          */
         _FinalStage visitDetailId(Optional<Long> visitDetailId);
 
@@ -674,7 +674,7 @@ public final class DeviceExposureRow {
         }
 
         /**
-         * <p>Unset; no visit-detail linkage is inferred.</p>
+         * <p>Explicit same-patient component for routed rows, with its overarching visit_occurrence_id; absent for DeviceUseStatement.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -684,7 +684,7 @@ public final class DeviceExposureRow {
         }
 
         /**
-         * <p>Unset; no visit-detail linkage is inferred.</p>
+         * <p>Explicit same-patient component for routed rows, with its overarching visit_occurrence_id; absent for DeviceUseStatement.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "visit_detail_id", nulls = Nulls.SKIP)
@@ -734,7 +734,7 @@ public final class DeviceExposureRow {
         }
 
         /**
-         * <p>1 when the source has no quantity, dose, rate, or numeric Observation result field; omitted when such a field is supplied, including null or malformed values. See device_exposure_contexts.quantity_basis.</p>
+         * <p>Default 1 when quantity evidence is absent; otherwise omitted. See device_exposure_contexts.quantity_basis.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -744,7 +744,7 @@ public final class DeviceExposureRow {
         }
 
         /**
-         * <p>1 when the source has no quantity, dose, rate, or numeric Observation result field; omitted when such a field is supplied, including null or malformed values. See device_exposure_contexts.quantity_basis.</p>
+         * <p>Default 1 when quantity evidence is absent; otherwise omitted. See device_exposure_contexts.quantity_basis.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "quantity", nulls = Nulls.SKIP)
