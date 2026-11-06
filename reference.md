@@ -3278,7 +3278,7 @@ Current resource coverage:
 - `Organization` -> `care_site`; its first address can produce `location`
 - `HealthcareService` -> `care_site`
 - `Practitioner` and `PractitionerRole` -> `provider`
-- `Encounter` -> `visit_occurrence`
+- `Encounter` -> `visit_occurrence` or `visit_detail` for supported explicit components
 - `Specimen` -> `specimen`, with an explicit Patient subject; missing
   collection date or material retains a partial row with diagnostics
 - `DeviceUseStatement` -> `device_exposure`, using referenced `Device.type`
@@ -3429,15 +3429,24 @@ concepts in `provider.gender_concept_id`; `other`, `unknown`, and absent
 gender remain unmapped. `Address.country` is resolved to `location.country_concept_id`,
 and CMS Place of Service codings in `Location.type` are resolved to
 `care_site.place_of_service_concept_id`.
-Within one request, Practitioners with the same single distinct supplied
-NPI value merge into one provider row only when all supplied mapped identity
-attributes in the entire NPI group agree. The NPI system may be
+Within one request, Practitioners and role-only providers with the same
+single distinct confirmed individual NPI merge into one provider row only when
+all supplied mapped identity attributes in the entire NPI group agree. The NPI system may be
 `http://hl7.org/fhir/sid/us-npi` (preferred in FHIR R4),
 `urn:oid:2.16.840.1.113883.4.6`, or bare `2.16.840.1.113883.4.6`;
 these forms are equivalent for matching. OID forms are accepted for compatibility.
 The same matching rule applies to Practitioners contained in valid role
-references. NPI values are compared exactly as supplied, without format
-or checksum validation. Blank values and unknown markers `UNK` and
+references. Only NPIs classified as individuals (Type 1) are used for provider
+identity. Classification trims whitespace and checks ten digits and the NPI
+check digit; source values and merge comparisons remain exact as supplied.
+Top-level Practitioners and role-only sources identified by an organization
+NPI (Type 2) are omitted from provider
+output and reported in `dropped` with `provider_npi_is_organization`.
+An unconfirmed or invalid NPI on a Practitioner leaves its source-scoped
+provider row without `npi`, with an `UNRESOLVED` diagnostic at `identifier`.
+No live public registry request is made. Classification failures return
+`500`; known individual NPIs remain usable for historical care even when
+deactivated. Blank values and unknown markers `UNK` and
 `UNKNOWN` are treated as missing and do not populate `npi` or participate
 in matching. Marker detection ignores case and surrounding whitespace;
 all other values are preserved without trimming. Other identifier systems and names
@@ -3454,14 +3463,14 @@ conflicting value is selected. Each affected row has `CONFLICTING`
 diagnostics at `name`, `gender`, `identifier`, or `birthDate`, linked by
 `omop_table: provider` and `omop_id`. All source gender mappings link to
 their retained or merged provider row.
-Repeated copies of one NPI on a resource are allowed. A resource with
+Repeated copies of one NPI on a resource are allowed. A Practitioner with
 multiple distinct NPIs stays separate, leaves `npi` unset, preserves its
 source-resource identity in `provider_source_value`, and reports a
 `CONFLICTING` diagnostic at `identifier` linked by
 `omop_table: provider` and `omop_id`.
 Row IDs are per response. The API does not merge across requests. For a
-Practitioner with one NPI, `provider_source_value` is that NPI, even when
-its group conflicts. Consumers can use it to deduplicate compatible
+provider with one confirmed individual NPI, `provider_source_value` is that NPI,
+even when its group conflicts. Consumers can use it to deduplicate compatible
 providers across requests, but must preserve rows flagged by identity
 conflict diagnostics and check compatibility across responses. Without
 one unambiguous NPI, source-resource identity is preserved without a
@@ -3470,22 +3479,37 @@ A `PractitionerRole` that identifies one supplied `Practitioner` aliases
 that canonical provider: by a top-level structural reference, a
 parent-contained `#id` reference, or an `identifier.system` and
 `identifier.value` match against a top-level Practitioner. Identifier
-matching uses the equivalent NPI systems and missing-value rules above;
+matching uses the equivalent NPI systems and requires a confirmed individual NPI;
 all other systems and all supplied identifiers match exactly. No remote
-identifier lookup is performed. When `Reference.type` is present it must
+Practitioner resource is fetched. When `Reference.type` is present it must
 be `Practitioner`; duplicate contained IDs and identifier matches to
-different canonical providers are ambiguous. An explicit reference that
-is unresolved, ambiguous, or unsupported retains a role-fallback provider
-row and is returned in `diagnostics`. `provider_role_contexts` preserves role-specific
+different canonical providers are ambiguous. Unresolved literal references,
+unusable identifiers, and ambiguous or unsupported references are reported
+in `diagnostics`.
+`provider_role_contexts` preserves role-specific
 specialty and care-site context that a canonical OMOP provider row cannot
 represent together.
 
-A role whose practitioner reference has only a blank or unknown NPI
-identifier follows the missing-identifier behavior: its fallback row has
-an `UNSUPPORTED` diagnostic explaining that a usable identifier or literal
-reference is required. An unambiguous literal reference still links to
-its Practitioner when the NPI is missing or unknown. Original supplied
-unknown markers remain in the role's `practitioner_identifier` metadata.
+Without a resolvable supplied Practitioner, a role must have one confirmed
+individual NPI in `PractitionerRole.identifier` or
+`PractitionerRole.practitioner.identifier` to emit a provider. The latter
+is a logical reference and does not require a corresponding Practitioner
+resource or produce a missing-Practitioner diagnostic when its NPI is usable.
+NPIs supplied through both fields must agree exactly. The role uses
+the same NPI grouping rules as Practitioners and can merge with compatible
+Practitioners or other roles. Names, gender, and birth information are not
+invented; the role supplies its NPI, specialties, and care-site references.
+Existing `provider_role_contexts` preserve each emitted role's facts when
+multiple roles share one provider. A resolved Practitioner's identity remains
+authoritative.
+Roles without that individual identity are reported in `dropped` with
+`provider_role_requires_individual_npi`, or `provider_role_conflicting_npis`
+for multiple distinct NPIs across either field. A role-only organization
+NPI is reported with `provider_npi_is_organization`.
+Roles whose resolved Practitioner is an
+organization are omitted with `provider_practitioner_is_not_individual`.
+Clinical records are still returned; links to omitted providers remain unset,
+with `UNRESOLVED` diagnostics pointing to the provider omission in `dropped`.
 
 Each `PractitionerRole.specialty` entry resolves independently using its
 supplied codings and explicit text from that entry. NUCC codings resolve
@@ -3699,18 +3723,12 @@ Supplied source, encounter, context, recorder, asserter, performer, and
 informationSource values on DeviceUseStatement are retained only in
 device_exposure_contexts.
 
-Device exposure quantity is reported as follows:
+Device exposure quantity defaults to 1 when quantity evidence is absent.
+Clinical quantities, doses, rates, and numeric Observation results,
+including numeric valueString, do not establish device counts and leave
+quantity omitted. device_exposure_contexts retains the original evidence;
+quantity_basis and diagnostics explain the result.
 
-- When the source has no quantity, dose, rate, or numeric Observation
-  result field, quantity is 1 and device_exposure_contexts.quantity_basis
-  is default_absent_count.
-- When such a field is supplied, including a null or malformed value,
-  quantity is omitted and quantity_basis is unsupported_supplied_evidence.
-  The original values remain in device_exposure_contexts.evidence, and
-  an UNSUPPORTED diagnostic identifies each supplied field.
-
-For example, an Observation with valueQuantity.value of 2 returned as a
-device exposure has no quantity; the value 2 remains in its source context.
 timingTiming.repeat.count remains in source context and does not set
 quantity. unit_concept_id and unit_source_concept_id are always null.
 
@@ -3797,6 +3815,9 @@ Other unsupported `value[x]` forms and Observation components do not
 populate separate converted values. A
 numeric comparator (`<`, `<=`, `>`, `>=`) is represented only by a
 measurement's `operator_concept_id`.
+valueQuantity.value and valueInteger accept JSON numbers. Finite numeric
+valueString results are interpreted equivalently, including optional
+comparators, while preserving the original text in value_source_value.
 
 For Observations returned as `measurement` or `observation` rows,
 Quantity units resolve independently against the table's
@@ -4048,9 +4069,73 @@ Encounter details:
   classification was selected. `visit_source_concept_id` identifies
   the selected original source coding's OMOP concept when available,
   and is `0` otherwise, including for the HL7 encounter class codes
-  listed above. Each eligible Encounter produces one Visit;
-  `classHistory`, `partOf`, and admission/discharge concepts are not
-  mapped.
+  listed above.
+- Explicit `Encounter.partOf` components produce `visit_detail` when the
+  parent is a supplied top-level Encounter with no `partOf`, both
+  Encounters explicitly reference the same unambiguous Patient, and both
+  have status `arrived`, `triaged`, `in-progress`, `onleave`, or `finished`.
+  The parent produces `visit_occurrence`; the child produces only
+  `visit_detail`, linked to that visit and person. References must exactly
+  match supplied `Encounter/id` or Bundle `fullUrl` values, including URNs.
+  Contained, identifier-only, wrong-type, ambiguous, and unresolved
+  references do not establish grouping. Supplied reference types must
+  agree with Encounter and Patient targets.
+- Details preserve the child's own period, classification, EHR type
+  concept `32817`, and directly supported provider/care-site links.
+  Parent fields are not inherited. The existing class/type selection
+  policy applies independently to `visit_detail_concept_id`,
+  `visit_detail_source_value`, and `visit_detail_source_concept_id`.
+  Missing dates and unmapped concepts retain partial rows without date
+  imputation. Primary concept `0` indexes the detail in `rows_for_review`
+  and excludes its dates from observation-period derivation.
+- Selected parent/detail concepts are assessed in the same vocabulary
+  release used for classification. `COMPATIBLE` supports a detail,
+  including same-concept and parent-ancestor/detail-descendant pairs.
+  `UNKNOWN` retains the explicit component as a partial detail with an
+  `UNSUPPORTED` diagnostic at `partOf` explaining the reason.
+  `INCOMPATIBLE` retains the child as an independent `visit_occurrence`,
+  with a `CONFLICTING` diagnostic. It means the selected classifications
+  fail the CDM relationship convention; it does not say the supplied
+  clinical events or FHIR `partOf` relationship are false. Concepts,
+  source classifications and dates are never changed to make a pair fit.
+- `visit_component_contexts` links each assessment to the final emitted
+  detail or standalone visit, preserving the parent reference, assessed
+  concept IDs, vocabulary version, status, reason and available ancestry
+  depth. An unknown assessment alone does not discard facts or index a
+  mapped row for review; existing concept-0 review indexing still applies.
+  Missing, malformed, inconsistent-version, or failed assessment responses
+  are conversion errors rather than successful unknown outcomes.
+- Comparable reversed or disjoint periods prevent grouping. Overlapping
+  periods may extend outside the parent; grouping is retained without
+  clipping the child or expanding the parent. Times with offsets are
+  compared as instants; date-only boundaries by calendar date. Different
+  precision or a timezone on only one timestamp is incomparable. Missing,
+  partial, invalid, or incomparable boundaries cannot establish a
+  contradiction. A `partOf` diagnostic explains non-contained periods
+  (`CONFLICTING`) and incomplete timing (`UNSUPPORTED`), including when
+  grouping is retained. These diagnostics
+  alone do not index a mapped row for review.
+- Unsupported grouping retains independently eligible standalone visits
+  and compatible clinical references to those visits. `partOf` diagnostics
+  explain missing, ambiguous, wrong-type, ineligible, uncertain-status,
+  or cross-patient parents. Cycles and connected hierarchies deeper than
+  parent/child retain standalone output throughout, without choosing a
+  root or recovering a partial subtree. Unknown-status merge stubs do
+  not qualify as components. Ancestors are never fetched or invented.
+- A compatible explicit clinical reference to a detail supplies both
+  `visit_detail_id` and its overarching `visit_occurrence_id`; a parent
+  reference supplies only the visit ID. Links survive placement in all
+  six supported clinical tables, including `device_exposure` and
+  MedicationDispense's R4 `context` path. Failed optional references leave
+  links absent while retaining otherwise supported facts.
+  DeviceUseStatement has no R4 Encounter reference and receives neither
+  link. Dates alone never establish links.
+- Detail classification mappings identify the child, its `partOf`
+  reference, the `visit_detail` table, and detail ID. IDs are request-local;
+  use returned links rather than Encounter input positions or assuming
+  every Encounter is a standalone visit. `classHistory`, `location.period`
+  segmentation, admission/discharge concepts, and inferred sequencing
+  are not mapped.
 
 - Direct `MedicationRequest.dispenseRequest.quantity`, `MedicationDispense.quantity`,
   `MedicationAdministration.dosage.dose`, and `Immunization.doseQuantity`
