@@ -1,3 +1,15 @@
+## [19.1.0] - 2026-11-06
+### Added
+- **`VisitDetailRow`** — new OMOP response type representing a `visit_detail` table row, including visit concept IDs, start/end dates, provider, care site, source value, and a link to the parent `visit_occurrence_id`.
+- **`VisitComponentContext`**, **`VisitComponentContextOmopTable`**, **`VisitPairAssessment`**, **`VisitPairAssessmentStatus`**, **`VisitPairAssessmentReasonCode`**, and **`VisitPairAssessmentInvalidConceptRole`** — new response types and enums capturing the compatibility assessment between parent and child Visit concept pairs for each mapped Encounter component.
+- **`OmopTables.getVisitDetail()`** and **`CreateOmopResponse.getVisitComponentContexts()`** — new accessors exposing `visit_detail` rows and per-component compatibility assessments in FHIR-to-OMOP create responses.
+- **`getVisitDetailId()`** — new optional field added to `ConditionOccurrenceRow`, `DrugExposureRow`, `MeasurementRow`, `ObservationRow`, and `ProcedureOccurrenceRow`, linking each clinical event to its OMOP `visit_detail` sub-encounter.
+
+### Changed
+- **`Fhir2OmopClient.create(...)` — Encounter mapping** — `Encounter.partOf` child Encounters now produce `visit_detail` rows linked to their parent `visit_occurrence` when both share the same unambiguous Patient and an eligible status.
+- **`Fhir2OmopClient.create(...)` — NPI classification** — individual (Type 1) and organization (Type 2) NPIs are now distinguished; organization-NPI sources are omitted from provider output and reported in `dropped` with `provider_npi_is_organization`; role-only providers can emit a provider row using a confirmed individual NPI from `PractitionerRole.identifier` or `PractitionerRole.practitioner.identifier`.
+- **`Fhir2OmopClient.create(...)` — device exposure quantity and Observation value parsing** — device quantity defaults to `1` when evidence is absent; finite numeric `valueString` is now accepted alongside `valueQuantity` and `valueInteger` for both device count and Observation numeric results, preserving the original text in `value_source_value`.
+
 ## [19.0.0] - 2026-11-02
 ### Breaking Changes
 - **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; replace `Builder.action(String)` / `Builder.action(Optional<String>)` calls with the corresponding `ResourceReviewRemediatedAction` enum overloads.
