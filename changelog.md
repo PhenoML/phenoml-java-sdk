@@ -1,3 +1,17 @@
+## [20.0.0] - 2026-11-06
+### Breaking Changes
+- **`PageFilter`** — the `com.phenoml.api.resources.lang2fhir.types.PageFilter` class and all its builder interfaces (`ContextStage`, `_FinalStage`) have been removed; delete all imports, constructor calls, and references from your code.
+- **`DocumentConfig.getPageFilter()`** — removed along with its builder methods (`Builder.pageFilter(PageFilter)` / `Builder.pageFilter(Optional<PageFilter>)`); migrate all usages to `getSplitClassifications()` / `Builder.splitClassifications(...)`.
+
+### Added
+- **`VisitDetailRow`** and **`OmopTables.getVisitDetail()`** — new OMOP `visit_detail` table support: `OmopTables` now exposes an `Optional<List<VisitDetailRow>>` on every FHIR-to-OMOP response, with each row carrying visit concept ID, start/end dates, type concept ID, provider, care site, source value, and parent `visit_occurrence_id`.
+- **`getVisitDetailId()`** — new optional field added to `ConditionOccurrenceRow`, `DrugExposureRow`, `MeasurementRow`, `ObservationRow`, and `ProcedureOccurrenceRow`, linking each clinical event to its OMOP `visit_detail` component.
+- **`VisitComponentContext`** and **`CreateOmopResponse.getVisitComponentContexts()`** — new response type and field capturing child Encounter provenance alongside the emitted OMOP row's table, ID, and `VisitPairAssessment`; builder setters accept `Optional<List<VisitComponentContext>>` or a direct `List<VisitComponentContext>`.
+- **`VisitPairAssessment`** and related enums — new response type surfacing parent/detail Visit concept pair assessments; accompanied by `VisitPairAssessmentStatus` (`COMPATIBLE`, `INCOMPATIBLE`, `UNKNOWN`), `VisitPairAssessmentReasonCode` (nine values), `VisitPairAssessmentInvalidConceptRole` (`PARENT`, `DETAIL`), and `VisitComponentContextOmopTable` (`visit_detail`, `visit_occurrence`, `UNKNOWN`).
+
+### Changed
+- **`DocumentConfig.getSplitClassifications()`** — documentation updated to reflect expanded behavior: accepts up to 20 classifications, assigns at most one per page, leaves unmatched pages ungrouped, returns HTTP 422 when all pages are dropped, and surfaces the classification ID in `resources[].group` on `/lang2fhir/document/multi`.
+
 ## [19.0.0] - 2026-11-02
 ### Breaking Changes
 - **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; replace `Builder.action(String)` / `Builder.action(Optional<String>)` calls with the corresponding `ResourceReviewRemediatedAction` enum overloads.
