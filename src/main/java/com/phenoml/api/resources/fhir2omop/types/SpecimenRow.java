@@ -112,7 +112,10 @@ public final class SpecimenRow {
     }
 
     /**
-     * @return Collection date from collectedDateTime or collectedPeriod.start when day precision exists. Omitted for missing, partial, invalid, or conflicting timing, with a linked diagnostic. Required by CDM 5.4 for loading, but not required for partial API output; downstream loaders own completion.
+     * @return Collection date from collectedDateTime or collectedPeriod.start at day
+     * precision. Missing, partial, invalid, or conflicting timing leaves it absent
+     * with a linked diagnostic; callers must handle required-date completion for
+     * CDM loading.
      */
     @JsonProperty("specimen_date")
     public Optional<String> getSpecimenDate() {
@@ -275,7 +278,10 @@ public final class SpecimenRow {
         _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
         /**
-         * <p>Collection date from collectedDateTime or collectedPeriod.start when day precision exists. Omitted for missing, partial, invalid, or conflicting timing, with a linked diagnostic. Required by CDM 5.4 for loading, but not required for partial API output; downstream loaders own completion.</p>
+         * <p>Collection date from collectedDateTime or collectedPeriod.start at day
+         * precision. Missing, partial, invalid, or conflicting timing leaves it absent
+         * with a linked diagnostic; callers must handle required-date completion for
+         * CDM loading.</p>
          */
         _FinalStage specimenDate(Optional<String> specimenDate);
 
@@ -594,7 +600,10 @@ public final class SpecimenRow {
         }
 
         /**
-         * <p>Collection date from collectedDateTime or collectedPeriod.start when day precision exists. Omitted for missing, partial, invalid, or conflicting timing, with a linked diagnostic. Required by CDM 5.4 for loading, but not required for partial API output; downstream loaders own completion.</p>
+         * <p>Collection date from collectedDateTime or collectedPeriod.start at day
+         * precision. Missing, partial, invalid, or conflicting timing leaves it absent
+         * with a linked diagnostic; callers must handle required-date completion for
+         * CDM loading.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -604,7 +613,10 @@ public final class SpecimenRow {
         }
 
         /**
-         * <p>Collection date from collectedDateTime or collectedPeriod.start when day precision exists. Omitted for missing, partial, invalid, or conflicting timing, with a linked diagnostic. Required by CDM 5.4 for loading, but not required for partial API output; downstream loaders own completion.</p>
+         * <p>Collection date from collectedDateTime or collectedPeriod.start at day
+         * precision. Missing, partial, invalid, or conflicting timing leaves it absent
+         * with a linked diagnostic; callers must handle required-date completion for
+         * CDM loading.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "specimen_date", nulls = Nulls.SKIP)
