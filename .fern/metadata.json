@@ -1,5 +1,5 @@
 {
-  "cliVersion": "5.191.2",
+  "cliVersion": "5.197.0",
   "generatorName": "fernapi/fern-java-sdk",
   "generatorVersion": "4.32.4",
   "generatorConfig": {
@@ -10,10 +10,10 @@
     "enable-wire-tests": true,
     "publish-to": "central"
   },
-  "originGitCommit": "a0adcae40323cfba41fce975d30fc2a650999ced",
+  "originGitCommit": "5bcdd606e3aec65ea82c7e0efd1fda05621e4f99",
   "originGitCommitIsDirty": true,
   "invokedBy": "ci",
   "requestedVersion": "AUTO",
   "ciProvider": "unknown",
-  "sdkVersion": "19.0.0"
+  "sdkVersion": "0.0.0-fern-placeholder"
 }
