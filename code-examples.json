@@ -2,8 +2,8 @@
   "metadata": {
     "language": "java",
     "packageName": "com.phenoml.maven:phenoml-java-sdk",
-    "sdkVersion": "19.0.0",
-    "specCommit": "a0adcae40323cfba41fce975d30fc2a650999ced",
+    "sdkVersion": "20.0.0",
+    "specCommit": "5f62ca0732ba8cab683e4471df423b1f1254ebc9",
     "generatorName": "fernapi/fern-java-sdk"
   },
   "renderRules": {
@@ -1663,6 +1663,64 @@
         }
       }
     },
+    "POST /fhir2omop/batch": {
+      "httpMethod": "POST",
+      "httpPath": "/fhir2omop/batch",
+      "request": {
+        "body": {
+          "request_id": "omop-cohort-2026-11-02-001"
+        }
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.fhir2OmopBatch().create(CreateBatchRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "request_id",
+              "fieldTemplate": ".requestId({{value}})",
+              "kind": "string",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "GET /fhir2omop/batch": {
+      "httpMethod": "GET",
+      "httpPath": "/fhir2omop/batch",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.fhir2OmopBatch().list(ListRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "cursor",
+              "fieldTemplate": ".cursor({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "limit",
+              "fieldTemplate": ".limit({{value}})",
+              "kind": "number",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
     "POST /fhir-provider": {
       "httpMethod": "POST",
       "httpPath": "/fhir-provider",
@@ -2368,12 +2426,6 @@
                 "fieldSeparator": "",
                 "fields": [
                   {
-                    "jsonKey": "page_filter",
-                    "fieldTemplate": ".pageFilter({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
                     "jsonKey": "split_classifications",
                     "fieldTemplate": ".splitClassifications({{value}})",
                     "kind": "list",
@@ -2726,12 +2778,6 @@
               "nested": {
                 "fieldSeparator": "",
                 "fields": [
-                  {
-                    "jsonKey": "page_filter",
-                    "fieldTemplate": ".pageFilter({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
                   {
                     "jsonKey": "split_classifications",
                     "fieldTemplate": ".splitClassifications({{value}})",
