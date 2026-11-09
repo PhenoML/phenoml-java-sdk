@@ -11,6 +11,7 @@ import com.phenoml.api.resources.cohort.AsyncCohortClient;
 import com.phenoml.api.resources.construe.AsyncConstrueClient;
 import com.phenoml.api.resources.fhir.AsyncFhirClient;
 import com.phenoml.api.resources.fhir2omop.AsyncFhir2OmopClient;
+import com.phenoml.api.resources.fhir2omopbatch.AsyncFhir2OmopBatchClient;
 import com.phenoml.api.resources.fhirprovider.AsyncFhirProviderClient;
 import com.phenoml.api.resources.implementationguides.AsyncImplementationGuidesClient;
 import com.phenoml.api.resources.lang2fhir.AsyncLang2FhirClient;
@@ -36,6 +37,8 @@ public class AsyncPhenomlClient implements AutoCloseable {
     protected final Supplier<AsyncFhirClient> fhirClient;
 
     protected final Supplier<AsyncFhir2OmopClient> fhir2OmopClient;
+
+    protected final Supplier<AsyncFhir2OmopBatchClient> fhir2OmopBatchClient;
 
     protected final Supplier<AsyncFhirProviderClient> fhirProviderClient;
 
@@ -63,6 +66,7 @@ public class AsyncPhenomlClient implements AutoCloseable {
         this.construeClient = Suppliers.memoize(() -> new AsyncConstrueClient(clientOptions));
         this.fhirClient = Suppliers.memoize(() -> new AsyncFhirClient(clientOptions));
         this.fhir2OmopClient = Suppliers.memoize(() -> new AsyncFhir2OmopClient(clientOptions));
+        this.fhir2OmopBatchClient = Suppliers.memoize(() -> new AsyncFhir2OmopBatchClient(clientOptions));
         this.fhirProviderClient = Suppliers.memoize(() -> new AsyncFhirProviderClient(clientOptions));
         this.implementationGuidesClient = Suppliers.memoize(() -> new AsyncImplementationGuidesClient(clientOptions));
         this.lang2FhirClient = Suppliers.memoize(() -> new AsyncLang2FhirClient(clientOptions));
@@ -96,6 +100,10 @@ public class AsyncPhenomlClient implements AutoCloseable {
 
     public AsyncFhir2OmopClient fhir2Omop() {
         return this.fhir2OmopClient.get();
+    }
+
+    public AsyncFhir2OmopBatchClient fhir2OmopBatch() {
+        return this.fhir2OmopBatchClient.get();
     }
 
     public AsyncFhirProviderClient fhirProvider() {

@@ -39,6 +39,9 @@ public final class QuantityDenominatorBasis {
         return kind;
     }
 
+    /**
+     * @return Original numeric denominator-basis value, including zero or negative values retained for audit. Successful volume-to-ingredient conversion requires kind PER_UNIT and value 1.
+     */
     @JsonProperty("value")
     public Optional<Double> getValue() {
         return value;
@@ -86,6 +89,9 @@ public final class QuantityDenominatorBasis {
 
         _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
+        /**
+         * <p>Original numeric denominator-basis value, including zero or negative values retained for audit. Successful volume-to-ingredient conversion requires kind PER_UNIT and value 1.</p>
+         */
         _FinalStage value(Optional<Double> value);
 
         _FinalStage value(Double value);
@@ -115,12 +121,19 @@ public final class QuantityDenominatorBasis {
             return this;
         }
 
+        /**
+         * <p>Original numeric denominator-basis value, including zero or negative values retained for audit. Successful volume-to-ingredient conversion requires kind PER_UNIT and value 1.</p>
+         * @return Reference to {@code this} so that method calls can be chained together.
+         */
         @java.lang.Override
         public _FinalStage value(Double value) {
             this.value = Optional.ofNullable(value);
             return this;
         }
 
+        /**
+         * <p>Original numeric denominator-basis value, including zero or negative values retained for audit. Successful volume-to-ingredient conversion requires kind PER_UNIT and value 1.</p>
+         */
         @java.lang.Override
         @JsonSetter(value = "value", nulls = Nulls.SKIP)
         public _FinalStage value(Optional<Double> value) {

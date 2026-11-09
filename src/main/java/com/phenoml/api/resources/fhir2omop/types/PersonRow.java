@@ -175,6 +175,9 @@ public final class PersonRow {
         return careSiteId;
     }
 
+    /**
+     * @return Patient.id, or the first non-empty Patient.identifier.value when id is absent. Omitted when neither is available.
+     */
     @JsonProperty("person_source_value")
     public Optional<String> getPersonSourceValue() {
         return personSourceValue;
@@ -498,6 +501,9 @@ public final class PersonRow {
             return this;
         }
 
+        /**
+         * <p>Patient.id, or the first non-empty Patient.identifier.value when id is absent. Omitted when neither is available.</p>
+         */
         @JsonSetter(value = "person_source_value", nulls = Nulls.SKIP)
         public Builder personSourceValue(Optional<String> personSourceValue) {
             this.personSourceValue = personSourceValue;
