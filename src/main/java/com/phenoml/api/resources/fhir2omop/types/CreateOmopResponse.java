@@ -27,6 +27,8 @@ public final class CreateOmopResponse {
 
     private final Optional<OmopTables> tables;
 
+    private final Optional<List<VisitComponentContext>> visitComponentContexts;
+
     private final Optional<List<QuantityTransformation>> quantityTransformations;
 
     private final Optional<List<RowForReview>> rowsForReview;
@@ -55,6 +57,7 @@ public final class CreateOmopResponse {
             Optional<Boolean> success,
             Optional<String> message,
             Optional<OmopTables> tables,
+            Optional<List<VisitComponentContext>> visitComponentContexts,
             Optional<List<QuantityTransformation>> quantityTransformations,
             Optional<List<RowForReview>> rowsForReview,
             Optional<List<MappingEntry>> mappings,
@@ -70,6 +73,7 @@ public final class CreateOmopResponse {
         this.success = success;
         this.message = message;
         this.tables = tables;
+        this.visitComponentContexts = visitComponentContexts;
         this.quantityTransformations = quantityTransformations;
         this.rowsForReview = rowsForReview;
         this.mappings = mappings;
@@ -100,7 +104,20 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return Audits supplied direct quantities on emitted drug_exposure rows, including derivations and omissions. Resources returned in other clinical tables have no quantity entry. Omitted when no applicable quantity was supplied on a drug_exposure row. Entries use the response's vocabulary release and do not affect terminology mapping counts in summary. The examples use illustrative concept IDs; actual IDs and evidence belong to vocab_version.
+     * @return Compatibility assessments for explicit Encounter components, linked to the
+     * final detail or standalone visit. Omitted when no component is assessed;
+     * assessments do not contribute to terminology counts in summary.
+     */
+    @JsonProperty("visit_component_contexts")
+    public Optional<List<VisitComponentContext>> getVisitComponentContexts() {
+        return visitComponentContexts;
+    }
+
+    /**
+     * @return Audits supplied direct quantities on emitted drug_exposure rows, including
+     * derivations and omissions. Omitted when no applicable quantity was supplied.
+     * Uses the response vocabulary release and does not affect terminology counts
+     * in summary. Example concept IDs are illustrative.
      */
     @JsonProperty("quantity_transformations")
     public Optional<List<QuantityTransformation>> getQuantityTransformations() {
@@ -108,34 +125,19 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return Index of otherwise shapeable clinical rows with uncertain source status
-     * and/or primary concept ID 0. Each entry identifies an existing row in
-     * tables; row payloads are neither moved nor duplicated. Omitted when empty.
-     * Condition unconfirmed/provisional/differential or unreadable supplied
-     * verificationStatus and Encounter unknown/missing/unreadable status are
-     * indexed. Explicit unknown status on MedicationStatement, Observation,
-     * and Procedure is also indexed; missing or unreadable status on these
-     * three types remains dropped. Absent Condition verificationStatus keeps
-     * its existing policy.
-     * Refuted/entered-in-error Conditions and planned/cancelled/entered-in-error
-     * Encounters remain dropped; all patient-reference checks still apply.
-     * Other eligible clinical rows with primary concept 0 are indexed,
-     * including text-only clinical concepts without a standard match and
-     * unresolved Visit classifications.
-     * Unresolved units, routes, result values, or alternate codings alone
+     * @return Index of clinical rows with uncertain source status and/or primary concept 0,
+     * following the endpoint's eligibility policy. Each entry identifies an existing
+     * row in tables; payloads are not moved or duplicated. Omitted when empty.
+     * Unresolved secondary units, routes, result values, or alternate codings alone
      * do not index a mapped row. Administrative/demographic, Specimen, and Death
-     * rows are not indexed. No missing status, date, or concept is invented.
-     * Consumers must filter by this index to exclude uncertain or unresolved
-     * rows: tables contains all shaped rows, including uncertain events that
-     * were previously excluded. Existing concept-0 rows keep their placement.
-     * Validated visit references remain on the rows. After filtering, include
-     * referenced visits or clear optional visit_occurrence_id values pointing
-     * to excluded visits in the load copy. For example, to include indexed
-     * condition 3 and visit 2, keep their existing rows and IDs in tables;
-     * if only condition 3 is selected, clear its reference to excluded visit 2.
-     * Returned observation periods use unindexed clinical rows plus Specimen and Death;
-     * indexed dates never expand them. Recompute periods for a selected load
-     * if needed. Indexed rows may still lack CDM-required fields.
+     * rows are not indexed.
+     * <p>Consumers select or filter the linked table rows. If a selected row points
+     * to a visit or detail marked for exclusion, either keep that target or clear
+     * the row's optional visit_occurrence_id / visit_detail_id links in the load
+     * copy. Each included detail requires its parent visit; keep that parent or
+     * exclude the detail. Returned observation periods exclude indexed dates;
+     * recompute them for a selected load if needed. Indexed rows may still lack
+     * CDM-required fields.</p>
      */
     @JsonProperty("rows_for_review")
     public Optional<List<RowForReview>> getRowsForReview() {
@@ -143,21 +145,14 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return One entry per supported source coding from a resource that shaped a
-     * row, plus entries for text-only primary resources and supplied
-     * Quantity units or specimen sites without coding, describing each
-     * resolution or source-preservation outcome and linking it to its row.
-     * A coded route or Observation valueCodeableConcept is a separate
-     * entry linked to the output row. Observation values returned outside
-     * <code>measurement</code> / <code>observation</code> are preserved here without concept
-     * resolution or a corresponding row column.
-     * For Observations returned as measurement or observation rows, each
-     * supplied Quantity unit has a separate entry linked to that row;
-     * absent units have no entry.
-     * Each supplied specimen unit or site also has a separate entry;
-     * text-only sites are <code>UNMAPPED</code> without a <code>resolution</code> object.
-     * A Patient demographic code links to its person row, or to its
-     * <code>observation</code> race row when the person has more than one race.
+     * @return Source-coding and text outcomes linked to emitted rows. Primary concepts,
+     * coded routes/results, supplied Quantity units, and specimen sites have
+     * separate entries; absent units/sites have none. Text-only sites and units
+     * can have unmapped outcomes without vocabulary resolution.
+     * <p>Values or routes retained outside a compatible destination column omit
+     * omop_field and have selected: false. Demographic entries link to their
+     * Person field or emitted race Observation. See MappingEntry for selection
+     * and provenance semantics, and Summary for field-level counting.</p>
      */
     @JsonProperty("mappings")
     public Optional<List<MappingEntry>> getMappings() {
@@ -165,7 +160,9 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return One entry per source record that produced device exposures. Each entry groups the derived row links and returns their shared timing, device evidence, and quantity explanation once. Original source values may contain clinical data.
+     * @return One context per source record producing device exposures, with links to all
+     * derived rows and their shared timing, device evidence, and quantity basis.
+     * Preserved source values may contain clinical data.
      */
     @JsonProperty("device_exposure_contexts")
     public Optional<List<DeviceExposureContext>> getDeviceExposureContexts() {
@@ -173,7 +170,9 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return Source identities, availability status, and collection timing for emitted specimens, linked by request-local specimen_id. Preserves valued identifier system/value pairs, accession identity, resource id/fullUrl, the chosen source-ID path, and supplied collection/received timing with original precision and offsets.
+     * @return Identity, availability, and collection timing for emitted specimens, linked
+     * by specimen_id. Retains original timing precision/offsets and source
+     * identifiers; source_id_path identifies the selected specimen source ID.
      */
     @JsonProperty("specimen_source_contexts")
     public Optional<List<SpecimenSourceContext>> getSpecimenSourceContexts() {
@@ -181,7 +180,9 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return Supplied dispensing status, timing, instructions, and references linked to each emitted dispensing row, including rows placed in another clinical table. Omitted when there are no emitted dispenses. This response metadata is independent of rows_for_review and does not establish administration or adherence.
+     * @return Supplied dispensing context linked to each emitted dispense's actual output
+     * table and row. Omitted when no dispense is emitted. This provenance does not
+     * establish administration or adherence.
      */
     @JsonProperty("medication_dispense_source_contexts")
     public Optional<List<MedicationDispenseSourceContext>> getMedicationDispenseSourceContexts() {
@@ -189,10 +190,9 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return Additive FHIR provenance for every supplied PractitionerRole. Each
-     * context identifies the canonical or role-fallback provider row and
-     * preserves source role facts that OMOP's singular provider columns
-     * cannot represent together.
+     * @return Source context for every PractitionerRole linked to an emitted provider.
+     * Preserves role-specific facts that the provider's singular specialty and
+     * care-site columns cannot represent together.
      */
     @JsonProperty("provider_role_contexts")
     public Optional<List<ProviderRoleContext>> getProviderRoleContexts() {
@@ -200,19 +200,14 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return Supported resource instances that could not be shaped into an OMOP
-     * row because the subject/patient, clinical code or text, or medication
-     * data was missing or unusable, including an explicit subject/patient
-     * reference that was unresolved, ambiguous, or unsupported, or because
-     * their clinical-event eligibility status excluded them. A resource that
-     * lacks only a date or another CDM-required field is usually returned
-     * as a partial row. Specimen requires an explicit resolvable Patient
-     * subject but retains missing dates/material with linked diagnostics.
-     * DeviceUseStatement also requires an explicit resolvable Patient subject;
-     * missing Device details or timing retain partial exposure rows.
-     * Unsupported resource types are ignored and do not appear here.
-     * Eligibility exclusions use stable, resource-specific <code>reason</code> codes;
-     * other shaping failures retain an explanatory reason string.
+     * @return Supported resources that cannot produce a row because of clinical eligibility
+     * or unusable patient, code/text, or medication evidence. Provider organizations
+     * and roles without a confirmed individual NPI or usable Practitioner are also
+     * reported. Unsupported resource types are ignored. Missing dates or other
+     * CDM-required fields usually retain partial rows; see resource-specific policies
+     * for required evidence.
+     * <p>Eligibility exclusions use stable resource-specific reason codes; other
+     * shaping failures use explanatory reason text.</p>
      */
     @JsonProperty("dropped")
     public Optional<List<DroppedResource>> getDropped() {
@@ -220,39 +215,15 @@ public final class CreateOmopResponse {
     }
 
     /**
-     * @return Explanations for explicit references that could not safely produce
-     * an OMOP link or canonicalize a <code>PractitionerRole</code> provider identity, or explicit
-     * subject/patient references that caused a clinical row to be dropped.
-     * Specimen missing/unusable collection dates, material, subject, status,
-     * and invalid optional quantity are also explained here. Device-use status,
-     * attribution, missing detail, timing omissions/conflicts, UDI ambiguity,
-     * and unsupported device counts are also reported with row links when
-     * a row is retained. A shared issue can link to multiple event rows.
-     * MedicationDispense missing/unusable handover, absent exposure end,
-     * unsupported supplied daysSupply, conflicting routes, and unsafe
-     * medication or authorizing-prescription references are also reported.
-     * Missing optional references are normal and do not produce a diagnostic.
-     * References resolve only against resources supplied in this request.
-     * Outcomes distinguish unresolved, ambiguous, conflicting, and unsupported
-     * conditions as defined in <code>ReferenceDiagnostic.outcome</code>. Patient
-     * demographic extensions that conflict, or a birth sex without
-     * <code>valueCode</code>, are also reported here; their <code>path</code> is
-     * <code>extension:birthsex</code> or <code>extension:ethnicity</code> and they have no
-     * <code>reference</code>. Practitioner identity conflicts that prevent merging also
-     * have no <code>reference</code>: their paths are <code>name</code>, <code>gender</code>, <code>birthDate</code>, or
-     * <code>identifier</code>, their outcome is <code>CONFLICTING</code>, and <code>omop_table: provider</code>
-     * together with <code>omop_id</code> identifies the affected row. For a conflicting
-     * NPI group, every member is flagged, including members missing the conflicting attribute.
-     * The reason identifies the differing mapped attribute and explains why
-     * the entire group remains separate, rather than asserting that each
-     * member individually supplied a conflicting value.
-     * Multiple distinct NPIs on one Practitioner are also diagnosed at
-     * <code>identifier</code> with <code>omop_table: provider</code> and the retained row's <code>omop_id</code>.
-     * Conflicting Encounter classifications are also reported with outcome
-     * <code>CONFLICTING</code> and no <code>reference</code>: path <code>class/type</code> means a mapped
-     * type disagrees with the selected class, which still determines the
-     * Visit; path <code>type</code> means separate type classifications disagree and
-     * no type can supply a Visit when class is missing or unmapped.
+     * @return Explains missing or unusable source data, unresolved links, and conflicting
+     * or unsupported values. When an affected row is emitted, omop_table and
+     * omop_id identify it; otherwise both are omitted. Shared issues may link to
+     * several rows. Diagnostics can accompany retained rows or dropped resources.
+     * <p>outcome classifies the issue, path identifies the source field, and reason
+     * provides context. Missing optional references do not produce diagnostics.
+     * References resolve only against resources supplied in this request. An invalid
+     * or unconfirmed NPI omitted from a retained Practitioner has an UNRESOLVED
+     * diagnostic at identifier.</p>
      */
     @JsonProperty("diagnostics")
     public Optional<List<ReferenceDiagnostic>> getDiagnostics() {
@@ -289,6 +260,7 @@ public final class CreateOmopResponse {
         return success.equals(other.success)
                 && message.equals(other.message)
                 && tables.equals(other.tables)
+                && visitComponentContexts.equals(other.visitComponentContexts)
                 && quantityTransformations.equals(other.quantityTransformations)
                 && rowsForReview.equals(other.rowsForReview)
                 && mappings.equals(other.mappings)
@@ -308,6 +280,7 @@ public final class CreateOmopResponse {
                 this.success,
                 this.message,
                 this.tables,
+                this.visitComponentContexts,
                 this.quantityTransformations,
                 this.rowsForReview,
                 this.mappings,
@@ -337,6 +310,8 @@ public final class CreateOmopResponse {
         private Optional<String> message = Optional.empty();
 
         private Optional<OmopTables> tables = Optional.empty();
+
+        private Optional<List<VisitComponentContext>> visitComponentContexts = Optional.empty();
 
         private Optional<List<QuantityTransformation>> quantityTransformations = Optional.empty();
 
@@ -368,6 +343,7 @@ public final class CreateOmopResponse {
             success(other.getSuccess());
             message(other.getMessage());
             tables(other.getTables());
+            visitComponentContexts(other.getVisitComponentContexts());
             quantityTransformations(other.getQuantityTransformations());
             rowsForReview(other.getRowsForReview());
             mappings(other.getMappings());
@@ -416,7 +392,26 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>Audits supplied direct quantities on emitted drug_exposure rows, including derivations and omissions. Resources returned in other clinical tables have no quantity entry. Omitted when no applicable quantity was supplied on a drug_exposure row. Entries use the response's vocabulary release and do not affect terminology mapping counts in summary. The examples use illustrative concept IDs; actual IDs and evidence belong to vocab_version.</p>
+         * <p>Compatibility assessments for explicit Encounter components, linked to the
+         * final detail or standalone visit. Omitted when no component is assessed;
+         * assessments do not contribute to terminology counts in summary.</p>
+         */
+        @JsonSetter(value = "visit_component_contexts", nulls = Nulls.SKIP)
+        public Builder visitComponentContexts(Optional<List<VisitComponentContext>> visitComponentContexts) {
+            this.visitComponentContexts = visitComponentContexts;
+            return this;
+        }
+
+        public Builder visitComponentContexts(List<VisitComponentContext> visitComponentContexts) {
+            this.visitComponentContexts = Optional.ofNullable(visitComponentContexts);
+            return this;
+        }
+
+        /**
+         * <p>Audits supplied direct quantities on emitted drug_exposure rows, including
+         * derivations and omissions. Omitted when no applicable quantity was supplied.
+         * Uses the response vocabulary release and does not affect terminology counts
+         * in summary. Example concept IDs are illustrative.</p>
          */
         @JsonSetter(value = "quantity_transformations", nulls = Nulls.SKIP)
         public Builder quantityTransformations(Optional<List<QuantityTransformation>> quantityTransformations) {
@@ -430,34 +425,19 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>Index of otherwise shapeable clinical rows with uncertain source status
-         * and/or primary concept ID 0. Each entry identifies an existing row in
-         * tables; row payloads are neither moved nor duplicated. Omitted when empty.
-         * Condition unconfirmed/provisional/differential or unreadable supplied
-         * verificationStatus and Encounter unknown/missing/unreadable status are
-         * indexed. Explicit unknown status on MedicationStatement, Observation,
-         * and Procedure is also indexed; missing or unreadable status on these
-         * three types remains dropped. Absent Condition verificationStatus keeps
-         * its existing policy.
-         * Refuted/entered-in-error Conditions and planned/cancelled/entered-in-error
-         * Encounters remain dropped; all patient-reference checks still apply.
-         * Other eligible clinical rows with primary concept 0 are indexed,
-         * including text-only clinical concepts without a standard match and
-         * unresolved Visit classifications.
-         * Unresolved units, routes, result values, or alternate codings alone
+         * <p>Index of clinical rows with uncertain source status and/or primary concept 0,
+         * following the endpoint's eligibility policy. Each entry identifies an existing
+         * row in tables; payloads are not moved or duplicated. Omitted when empty.
+         * Unresolved secondary units, routes, result values, or alternate codings alone
          * do not index a mapped row. Administrative/demographic, Specimen, and Death
-         * rows are not indexed. No missing status, date, or concept is invented.
-         * Consumers must filter by this index to exclude uncertain or unresolved
-         * rows: tables contains all shaped rows, including uncertain events that
-         * were previously excluded. Existing concept-0 rows keep their placement.
-         * Validated visit references remain on the rows. After filtering, include
-         * referenced visits or clear optional visit_occurrence_id values pointing
-         * to excluded visits in the load copy. For example, to include indexed
-         * condition 3 and visit 2, keep their existing rows and IDs in tables;
-         * if only condition 3 is selected, clear its reference to excluded visit 2.
-         * Returned observation periods use unindexed clinical rows plus Specimen and Death;
-         * indexed dates never expand them. Recompute periods for a selected load
-         * if needed. Indexed rows may still lack CDM-required fields.</p>
+         * rows are not indexed.</p>
+         * <p>Consumers select or filter the linked table rows. If a selected row points
+         * to a visit or detail marked for exclusion, either keep that target or clear
+         * the row's optional visit_occurrence_id / visit_detail_id links in the load
+         * copy. Each included detail requires its parent visit; keep that parent or
+         * exclude the detail. Returned observation periods exclude indexed dates;
+         * recompute them for a selected load if needed. Indexed rows may still lack
+         * CDM-required fields.</p>
          */
         @JsonSetter(value = "rows_for_review", nulls = Nulls.SKIP)
         public Builder rowsForReview(Optional<List<RowForReview>> rowsForReview) {
@@ -471,21 +451,14 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>One entry per supported source coding from a resource that shaped a
-         * row, plus entries for text-only primary resources and supplied
-         * Quantity units or specimen sites without coding, describing each
-         * resolution or source-preservation outcome and linking it to its row.
-         * A coded route or Observation valueCodeableConcept is a separate
-         * entry linked to the output row. Observation values returned outside
-         * <code>measurement</code> / <code>observation</code> are preserved here without concept
-         * resolution or a corresponding row column.
-         * For Observations returned as measurement or observation rows, each
-         * supplied Quantity unit has a separate entry linked to that row;
-         * absent units have no entry.
-         * Each supplied specimen unit or site also has a separate entry;
-         * text-only sites are <code>UNMAPPED</code> without a <code>resolution</code> object.
-         * A Patient demographic code links to its person row, or to its
-         * <code>observation</code> race row when the person has more than one race.</p>
+         * <p>Source-coding and text outcomes linked to emitted rows. Primary concepts,
+         * coded routes/results, supplied Quantity units, and specimen sites have
+         * separate entries; absent units/sites have none. Text-only sites and units
+         * can have unmapped outcomes without vocabulary resolution.</p>
+         * <p>Values or routes retained outside a compatible destination column omit
+         * omop_field and have selected: false. Demographic entries link to their
+         * Person field or emitted race Observation. See MappingEntry for selection
+         * and provenance semantics, and Summary for field-level counting.</p>
          */
         @JsonSetter(value = "mappings", nulls = Nulls.SKIP)
         public Builder mappings(Optional<List<MappingEntry>> mappings) {
@@ -499,7 +472,9 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>One entry per source record that produced device exposures. Each entry groups the derived row links and returns their shared timing, device evidence, and quantity explanation once. Original source values may contain clinical data.</p>
+         * <p>One context per source record producing device exposures, with links to all
+         * derived rows and their shared timing, device evidence, and quantity basis.
+         * Preserved source values may contain clinical data.</p>
          */
         @JsonSetter(value = "device_exposure_contexts", nulls = Nulls.SKIP)
         public Builder deviceExposureContexts(Optional<List<DeviceExposureContext>> deviceExposureContexts) {
@@ -513,7 +488,9 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>Source identities, availability status, and collection timing for emitted specimens, linked by request-local specimen_id. Preserves valued identifier system/value pairs, accession identity, resource id/fullUrl, the chosen source-ID path, and supplied collection/received timing with original precision and offsets.</p>
+         * <p>Identity, availability, and collection timing for emitted specimens, linked
+         * by specimen_id. Retains original timing precision/offsets and source
+         * identifiers; source_id_path identifies the selected specimen source ID.</p>
          */
         @JsonSetter(value = "specimen_source_contexts", nulls = Nulls.SKIP)
         public Builder specimenSourceContexts(Optional<List<SpecimenSourceContext>> specimenSourceContexts) {
@@ -527,7 +504,9 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>Supplied dispensing status, timing, instructions, and references linked to each emitted dispensing row, including rows placed in another clinical table. Omitted when there are no emitted dispenses. This response metadata is independent of rows_for_review and does not establish administration or adherence.</p>
+         * <p>Supplied dispensing context linked to each emitted dispense's actual output
+         * table and row. Omitted when no dispense is emitted. This provenance does not
+         * establish administration or adherence.</p>
          */
         @JsonSetter(value = "medication_dispense_source_contexts", nulls = Nulls.SKIP)
         public Builder medicationDispenseSourceContexts(
@@ -543,10 +522,9 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>Additive FHIR provenance for every supplied PractitionerRole. Each
-         * context identifies the canonical or role-fallback provider row and
-         * preserves source role facts that OMOP's singular provider columns
-         * cannot represent together.</p>
+         * <p>Source context for every PractitionerRole linked to an emitted provider.
+         * Preserves role-specific facts that the provider's singular specialty and
+         * care-site columns cannot represent together.</p>
          */
         @JsonSetter(value = "provider_role_contexts", nulls = Nulls.SKIP)
         public Builder providerRoleContexts(Optional<List<ProviderRoleContext>> providerRoleContexts) {
@@ -560,19 +538,14 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>Supported resource instances that could not be shaped into an OMOP
-         * row because the subject/patient, clinical code or text, or medication
-         * data was missing or unusable, including an explicit subject/patient
-         * reference that was unresolved, ambiguous, or unsupported, or because
-         * their clinical-event eligibility status excluded them. A resource that
-         * lacks only a date or another CDM-required field is usually returned
-         * as a partial row. Specimen requires an explicit resolvable Patient
-         * subject but retains missing dates/material with linked diagnostics.
-         * DeviceUseStatement also requires an explicit resolvable Patient subject;
-         * missing Device details or timing retain partial exposure rows.
-         * Unsupported resource types are ignored and do not appear here.
-         * Eligibility exclusions use stable, resource-specific <code>reason</code> codes;
-         * other shaping failures retain an explanatory reason string.</p>
+         * <p>Supported resources that cannot produce a row because of clinical eligibility
+         * or unusable patient, code/text, or medication evidence. Provider organizations
+         * and roles without a confirmed individual NPI or usable Practitioner are also
+         * reported. Unsupported resource types are ignored. Missing dates or other
+         * CDM-required fields usually retain partial rows; see resource-specific policies
+         * for required evidence.</p>
+         * <p>Eligibility exclusions use stable resource-specific reason codes; other
+         * shaping failures use explanatory reason text.</p>
          */
         @JsonSetter(value = "dropped", nulls = Nulls.SKIP)
         public Builder dropped(Optional<List<DroppedResource>> dropped) {
@@ -586,39 +559,15 @@ public final class CreateOmopResponse {
         }
 
         /**
-         * <p>Explanations for explicit references that could not safely produce
-         * an OMOP link or canonicalize a <code>PractitionerRole</code> provider identity, or explicit
-         * subject/patient references that caused a clinical row to be dropped.
-         * Specimen missing/unusable collection dates, material, subject, status,
-         * and invalid optional quantity are also explained here. Device-use status,
-         * attribution, missing detail, timing omissions/conflicts, UDI ambiguity,
-         * and unsupported device counts are also reported with row links when
-         * a row is retained. A shared issue can link to multiple event rows.
-         * MedicationDispense missing/unusable handover, absent exposure end,
-         * unsupported supplied daysSupply, conflicting routes, and unsafe
-         * medication or authorizing-prescription references are also reported.
-         * Missing optional references are normal and do not produce a diagnostic.
-         * References resolve only against resources supplied in this request.
-         * Outcomes distinguish unresolved, ambiguous, conflicting, and unsupported
-         * conditions as defined in <code>ReferenceDiagnostic.outcome</code>. Patient
-         * demographic extensions that conflict, or a birth sex without
-         * <code>valueCode</code>, are also reported here; their <code>path</code> is
-         * <code>extension:birthsex</code> or <code>extension:ethnicity</code> and they have no
-         * <code>reference</code>. Practitioner identity conflicts that prevent merging also
-         * have no <code>reference</code>: their paths are <code>name</code>, <code>gender</code>, <code>birthDate</code>, or
-         * <code>identifier</code>, their outcome is <code>CONFLICTING</code>, and <code>omop_table: provider</code>
-         * together with <code>omop_id</code> identifies the affected row. For a conflicting
-         * NPI group, every member is flagged, including members missing the conflicting attribute.
-         * The reason identifies the differing mapped attribute and explains why
-         * the entire group remains separate, rather than asserting that each
-         * member individually supplied a conflicting value.
-         * Multiple distinct NPIs on one Practitioner are also diagnosed at
-         * <code>identifier</code> with <code>omop_table: provider</code> and the retained row's <code>omop_id</code>.
-         * Conflicting Encounter classifications are also reported with outcome
-         * <code>CONFLICTING</code> and no <code>reference</code>: path <code>class/type</code> means a mapped
-         * type disagrees with the selected class, which still determines the
-         * Visit; path <code>type</code> means separate type classifications disagree and
-         * no type can supply a Visit when class is missing or unmapped.</p>
+         * <p>Explains missing or unusable source data, unresolved links, and conflicting
+         * or unsupported values. When an affected row is emitted, omop_table and
+         * omop_id identify it; otherwise both are omitted. Shared issues may link to
+         * several rows. Diagnostics can accompany retained rows or dropped resources.</p>
+         * <p>outcome classifies the issue, path identifies the source field, and reason
+         * provides context. Missing optional references do not produce diagnostics.
+         * References resolve only against resources supplied in this request. An invalid
+         * or unconfirmed NPI omitted from a retained Practitioner has an UNRESOLVED
+         * diagnostic at identifier.</p>
          */
         @JsonSetter(value = "diagnostics", nulls = Nulls.SKIP)
         public Builder diagnostics(Optional<List<ReferenceDiagnostic>> diagnostics) {
@@ -663,6 +612,7 @@ public final class CreateOmopResponse {
                     success,
                     message,
                     tables,
+                    visitComponentContexts,
                     quantityTransformations,
                     rowsForReview,
                     mappings,
@@ -682,6 +632,7 @@ public final class CreateOmopResponse {
             if (key.equalsIgnoreCase("success")
                     || key.equalsIgnoreCase("message")
                     || key.equalsIgnoreCase("tables")
+                    || key.equalsIgnoreCase("visit_component_contexts")
                     || key.equalsIgnoreCase("quantity_transformations")
                     || key.equalsIgnoreCase("rows_for_review")
                     || key.equalsIgnoreCase("mappings")

@@ -35,6 +35,8 @@ public final class OmopTables {
 
     private final Optional<List<VisitOccurrenceRow>> visitOccurrence;
 
+    private final Optional<List<VisitDetailRow>> visitDetail;
+
     private final Optional<List<ConditionOccurrenceRow>> conditionOccurrence;
 
     private final Optional<List<DrugExposureRow>> drugExposure;
@@ -59,6 +61,7 @@ public final class OmopTables {
             Optional<List<DeathRow>> death,
             Optional<List<ObservationPeriodRow>> observationPeriod,
             Optional<List<VisitOccurrenceRow>> visitOccurrence,
+            Optional<List<VisitDetailRow>> visitDetail,
             Optional<List<ConditionOccurrenceRow>> conditionOccurrence,
             Optional<List<DrugExposureRow>> drugExposure,
             Optional<List<ProcedureOccurrenceRow>> procedureOccurrence,
@@ -74,6 +77,7 @@ public final class OmopTables {
         this.death = death;
         this.observationPeriod = observationPeriod;
         this.visitOccurrence = visitOccurrence;
+        this.visitDetail = visitDetail;
         this.conditionOccurrence = conditionOccurrence;
         this.drugExposure = drugExposure;
         this.procedureOccurrence = procedureOccurrence;
@@ -117,6 +121,11 @@ public final class OmopTables {
     @JsonProperty("visit_occurrence")
     public Optional<List<VisitOccurrenceRow>> getVisitOccurrence() {
         return visitOccurrence;
+    }
+
+    @JsonProperty("visit_detail")
+    public Optional<List<VisitDetailRow>> getVisitDetail() {
+        return visitDetail;
     }
 
     @JsonProperty("condition_occurrence")
@@ -173,6 +182,7 @@ public final class OmopTables {
                 && death.equals(other.death)
                 && observationPeriod.equals(other.observationPeriod)
                 && visitOccurrence.equals(other.visitOccurrence)
+                && visitDetail.equals(other.visitDetail)
                 && conditionOccurrence.equals(other.conditionOccurrence)
                 && drugExposure.equals(other.drugExposure)
                 && procedureOccurrence.equals(other.procedureOccurrence)
@@ -192,6 +202,7 @@ public final class OmopTables {
                 this.death,
                 this.observationPeriod,
                 this.visitOccurrence,
+                this.visitDetail,
                 this.conditionOccurrence,
                 this.drugExposure,
                 this.procedureOccurrence,
@@ -226,6 +237,8 @@ public final class OmopTables {
 
         private Optional<List<VisitOccurrenceRow>> visitOccurrence = Optional.empty();
 
+        private Optional<List<VisitDetailRow>> visitDetail = Optional.empty();
+
         private Optional<List<ConditionOccurrenceRow>> conditionOccurrence = Optional.empty();
 
         private Optional<List<DrugExposureRow>> drugExposure = Optional.empty();
@@ -252,6 +265,7 @@ public final class OmopTables {
             death(other.getDeath());
             observationPeriod(other.getObservationPeriod());
             visitOccurrence(other.getVisitOccurrence());
+            visitDetail(other.getVisitDetail());
             conditionOccurrence(other.getConditionOccurrence());
             drugExposure(other.getDrugExposure());
             procedureOccurrence(other.getProcedureOccurrence());
@@ -336,6 +350,17 @@ public final class OmopTables {
 
         public Builder visitOccurrence(List<VisitOccurrenceRow> visitOccurrence) {
             this.visitOccurrence = Optional.ofNullable(visitOccurrence);
+            return this;
+        }
+
+        @JsonSetter(value = "visit_detail", nulls = Nulls.SKIP)
+        public Builder visitDetail(Optional<List<VisitDetailRow>> visitDetail) {
+            this.visitDetail = visitDetail;
+            return this;
+        }
+
+        public Builder visitDetail(List<VisitDetailRow> visitDetail) {
+            this.visitDetail = Optional.ofNullable(visitDetail);
             return this;
         }
 
@@ -425,6 +450,7 @@ public final class OmopTables {
                     death,
                     observationPeriod,
                     visitOccurrence,
+                    visitDetail,
                     conditionOccurrence,
                     drugExposure,
                     procedureOccurrence,
@@ -444,6 +470,7 @@ public final class OmopTables {
                     || key.equalsIgnoreCase("death")
                     || key.equalsIgnoreCase("observation_period")
                     || key.equalsIgnoreCase("visit_occurrence")
+                    || key.equalsIgnoreCase("visit_detail")
                     || key.equalsIgnoreCase("condition_occurrence")
                     || key.equalsIgnoreCase("drug_exposure")
                     || key.equalsIgnoreCase("procedure_occurrence")

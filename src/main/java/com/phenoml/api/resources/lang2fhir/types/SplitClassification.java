@@ -39,7 +39,7 @@ public final class SplitClassification {
     }
 
     /**
-     * @return Unique classification id. The reserved id &quot;<strong>ungrouped</strong>&quot; is not allowed.
+     * @return Unique, non-blank classification id. Returned as page_classifications[].classification_id and, for group classifications, as resources[].group and the FHIR meta.tag code. The reserved id &quot;<strong>ungrouped</strong>&quot; is not allowed.
      */
     @JsonProperty("id")
     public String getId() {
@@ -47,7 +47,7 @@ public final class SplitClassification {
     }
 
     /**
-     * @return Natural-language description of pages that belong to this classification.
+     * @return Non-blank natural-language description of the pages that belong to this classification. Each page's text is compared against these descriptions, so describe what distinguishes these pages from the rest of the document.
      */
     @JsonProperty("description")
     public String getDescription() {
@@ -55,7 +55,7 @@ public final class SplitClassification {
     }
 
     /**
-     * @return Operation applied to pages assigned this classification.
+     * @return Operation applied to pages assigned this classification. group keeps the pages and labels resources extracted from them with this id. drop removes the pages before extraction.
      */
     @JsonProperty("operation")
     public SplitClassificationOperation getOperation() {
@@ -93,7 +93,7 @@ public final class SplitClassification {
 
     public interface IdStage {
         /**
-         * <p>Unique classification id. The reserved id &quot;<strong>ungrouped</strong>&quot; is not allowed.</p>
+         * <p>Unique, non-blank classification id. Returned as page_classifications[].classification_id and, for group classifications, as resources[].group and the FHIR meta.tag code. The reserved id &quot;<strong>ungrouped</strong>&quot; is not allowed.</p>
          */
         DescriptionStage id(@NotNull String id);
 
@@ -102,14 +102,14 @@ public final class SplitClassification {
 
     public interface DescriptionStage {
         /**
-         * <p>Natural-language description of pages that belong to this classification.</p>
+         * <p>Non-blank natural-language description of the pages that belong to this classification. Each page's text is compared against these descriptions, so describe what distinguishes these pages from the rest of the document.</p>
          */
         OperationStage description(@NotNull String description);
     }
 
     public interface OperationStage {
         /**
-         * <p>Operation applied to pages assigned this classification.</p>
+         * <p>Operation applied to pages assigned this classification. group keeps the pages and labels resources extracted from them with this id. drop removes the pages before extraction.</p>
          */
         _FinalStage operation(@NotNull SplitClassificationOperation operation);
     }
@@ -143,7 +143,7 @@ public final class SplitClassification {
         }
 
         /**
-         * <p>Unique classification id. The reserved id &quot;<strong>ungrouped</strong>&quot; is not allowed.</p>
+         * <p>Unique, non-blank classification id. Returned as page_classifications[].classification_id and, for group classifications, as resources[].group and the FHIR meta.tag code. The reserved id &quot;<strong>ungrouped</strong>&quot; is not allowed.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -154,7 +154,7 @@ public final class SplitClassification {
         }
 
         /**
-         * <p>Natural-language description of pages that belong to this classification.</p>
+         * <p>Non-blank natural-language description of the pages that belong to this classification. Each page's text is compared against these descriptions, so describe what distinguishes these pages from the rest of the document.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -165,7 +165,7 @@ public final class SplitClassification {
         }
 
         /**
-         * <p>Operation applied to pages assigned this classification.</p>
+         * <p>Operation applied to pages assigned this classification. group keeps the pages and labels resources extracted from them with this id. drop removes the pages before extraction.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

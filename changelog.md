@@ -1,3 +1,18 @@
+## [20.0.0] - 2026-11-09
+### Breaking Changes
+- **`PageFilter`** — the class and its entire builder API (`ContextStage`, `_FinalStage`, `Builder`, `getContext()`) have been removed from `com.phenoml.api.resources.lang2fhir.types`; delete all references to `PageFilter` and its builder.
+- **`DocumentConfig.getPageFilter()` / `Builder.pageFilter(...)`** — removed; replace all `.pageFilter(...)` calls with `.splitClassifications(...)` and read `getSplitClassifications()` instead of `getPageFilter()`.
+
+### Added
+- **`Fhir2OmopBatchClient` / `AsyncFhir2OmopBatchClient`** — new sync and async clients (plus raw-response variants) for managing FHIR-to-OMOP batch conversion jobs, accessible via `PhenomlClient.fhir2OmopBatch()` and `AsyncPhenomlClient.fhir2OmopBatch()`.
+- **Batch job types** — `BatchJob`, `JobDetailResponse`, `JobListResponse`, `ResultsPageResponse`, `UploadItemResponse`, `BatchCounts`, `BatchError`, `BatchItemStatus`, and associated request types (`CreateBatchRequest`, `UploadItemRequest`, `GetRequest`, `GetResultsRequest`, `ListRequest`) support the full batch job lifecycle with idempotency and cursor-based pagination.
+- **`visit_detail` OMOP support** — `OmopTables.getVisitDetail()` returns a new `List<VisitDetailRow>`; `ConditionOccurrenceRow`, `DrugExposureRow`, `MeasurementRow`, `ObservationRow`, and `ProcedureOccurrenceRow` each gain an optional `getVisitDetailId()` field.
+- **`VisitComponentContext` / `VisitPairAssessment`** — new response types surfacing child-Encounter-to-OMOP provenance and parent/detail visit-concept compatibility, with supporting enums `VisitComponentContextOmopTable`, `VisitPairAssessmentStatus`, `VisitPairAssessmentReasonCode`, and `VisitPairAssessmentInvalidConceptRole`.
+- **Typed batch error classes** — `BadRequestError`, `ConflictError`, `ContentTooLargeError`, `NotFoundError`, `UnauthorizedError`, `InternalServerError`, `GatewayTimeoutError`, and `ClientClosedRequestError` added under `com.phenoml.api.resources.fhir2omopbatch.errors`.
+
+### Changed
+- **`DocumentConfig.getSplitClassifications()` / `Builder.splitClassifications(...)`** — now accepts up to 20 classifications; ungrouped pages are kept, dropping all pages returns 422 on `/lang2fhir/document` and `success: false` on `/lang2fhir/document/multi`, and matched pages are attributed via `resources[].group` and FHIR `meta.tag`.
+
 ## [19.0.0] - 2026-11-02
 ### Breaking Changes
 - **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; replace `Builder.action(String)` / `Builder.action(Optional<String>)` calls with the corresponding `ResourceReviewRemediatedAction` enum overloads.
