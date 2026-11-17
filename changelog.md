@@ -1,3 +1,19 @@
+## [20.0.0] - 2026-11-17
+### Breaking Changes
+- **`PageFilter`** — `com.phenoml.api.resources.lang2fhir.types.PageFilter` has been removed; delete all imports, constructor calls, and `PageFilter.builder()` usages.
+- **`DocumentConfig.getPageFilter()`** — removed along with `Builder.pageFilter(Optional<PageFilter>)` and `Builder.pageFilter(PageFilter)`; migrate all `page_filter` usages to `splitClassifications` instead.
+
+### Added
+- **`deidentify()`** — new alpha HIPAA Safe Harbor PHI redaction endpoint on `Lang2FhirClient`, `AsyncLang2FhirClient`, `RawLang2FhirClient`, and `AsyncRawLang2FhirClient`; accepts a PDF, PNG, JPEG, or TIFF document and returns a redacted image-only PDF `InputStream`.
+- **`Fhir2OmopBatchClient` / `AsyncFhir2OmopBatchClient`** — new sync and async clients for the full FHIR-to-OMOP batch job lifecycle (`list`, `create`, `uploadItem`, `finalize`, `cancel`, `get`, `getResults`, `getResult`), accessible via `PhenomlClient.fhir2OmopBatch()`.
+- **`VisitDetailRow`, `VisitComponentContext`, and `VisitPairAssessment` family** — new OMOP response types surfacing sub-visit encounter detail rows, component provenance, and parent/detail concept compatibility assessments including `VisitPairAssessmentStatus`, `VisitPairAssessmentReasonCode`, and `VisitPairAssessmentInvalidConceptRole` enums.
+- **New batch request/response types** — `BatchJob`, `JobDetailResponse`, `JobListResponse`, `ResultsPageResponse`, `UploadItemResponse`, `CreateBatchRequest`, `UploadItemRequest`, `GetRequest`, `GetResultsRequest`, and `ListRequest` support the full batch job lifecycle.
+- **New HPO extraction targets and typed error classes** — `phenoml-hpo-*` resource types added for HPO extraction; `ContentTooLargeError` (413) and a full suite of typed HTTP error classes added under `lang2fhir.errors` and `fhir2omopbatch.errors`.
+
+### Changed
+- **`documentMulti()` page classification** — page classification is now opt-in across all `Lang2FhirClient` variants; all pages are used for extraction by default and `page_classifications` is omitted unless `config.split_classifications` is explicitly set.
+- **`DocumentConfig.getSplitClassifications()`** — documentation updated to reflect a 20-classification limit, single-classification-per-page assignment, ungrouped-page retention, and 422 response when all pages are dropped.
+
 ## [19.0.0] - 2026-11-02
 ### Breaking Changes
 - **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; replace `Builder.action(String)` / `Builder.action(Optional<String>)` calls with the corresponding `ResourceReviewRemediatedAction` enum overloads.
