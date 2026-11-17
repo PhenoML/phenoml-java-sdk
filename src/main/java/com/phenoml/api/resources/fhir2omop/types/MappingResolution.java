@@ -114,7 +114,12 @@ public final class MappingResolution {
     }
 
     /**
-     * @return How the selected concept was reached. DIRECT may use an OMOP Maps to relationship; UMLS_BRIDGE identifies resolution through a shared UMLS concept; CONTEXTUAL identifies an explicit transformation of a substance-coded allergy/intolerance statement using its FHIR context. Specialty text uses CONCEPT_NAME, CONCEPT_SYNONYM, UMLS_STRING, then NUCC_LABEL in that order. NUCC_LABEL removes only the grouping prefix from a NUCC preferred term while retaining the full classification and specialization. Omitted when unavailable or no concept was selected.
+     * @return How the selected concept was reached: DIRECT uses vocabulary identity or
+     * Maps to; UMLS_BRIDGE uses a shared UMLS concept; CONTEXTUAL uses allergy
+     * source context. Specialty text routes identify a concept name (CONCEPT_NAME),
+     * English synonym (CONCEPT_SYNONYM), English UMLS string (UMLS_STRING), or
+     * NUCC preferred label (NUCC_LABEL). Omitted when unavailable or no concept
+     * was selected; paths retain matching evidence.
      */
     @JsonProperty("via")
     public Optional<MappingResolutionVia> getVia() {
@@ -241,7 +246,12 @@ public final class MappingResolution {
         _FinalStage reasonCode(MappingResolutionReasonCode reasonCode);
 
         /**
-         * <p>How the selected concept was reached. DIRECT may use an OMOP Maps to relationship; UMLS_BRIDGE identifies resolution through a shared UMLS concept; CONTEXTUAL identifies an explicit transformation of a substance-coded allergy/intolerance statement using its FHIR context. Specialty text uses CONCEPT_NAME, CONCEPT_SYNONYM, UMLS_STRING, then NUCC_LABEL in that order. NUCC_LABEL removes only the grouping prefix from a NUCC preferred term while retaining the full classification and specialization. Omitted when unavailable or no concept was selected.</p>
+         * <p>How the selected concept was reached: DIRECT uses vocabulary identity or
+         * Maps to; UMLS_BRIDGE uses a shared UMLS concept; CONTEXTUAL uses allergy
+         * source context. Specialty text routes identify a concept name (CONCEPT_NAME),
+         * English synonym (CONCEPT_SYNONYM), English UMLS string (UMLS_STRING), or
+         * NUCC preferred label (NUCC_LABEL). Omitted when unavailable or no concept
+         * was selected; paths retain matching evidence.</p>
          */
         _FinalStage via(Optional<MappingResolutionVia> via);
 
@@ -369,7 +379,12 @@ public final class MappingResolution {
         }
 
         /**
-         * <p>How the selected concept was reached. DIRECT may use an OMOP Maps to relationship; UMLS_BRIDGE identifies resolution through a shared UMLS concept; CONTEXTUAL identifies an explicit transformation of a substance-coded allergy/intolerance statement using its FHIR context. Specialty text uses CONCEPT_NAME, CONCEPT_SYNONYM, UMLS_STRING, then NUCC_LABEL in that order. NUCC_LABEL removes only the grouping prefix from a NUCC preferred term while retaining the full classification and specialization. Omitted when unavailable or no concept was selected.</p>
+         * <p>How the selected concept was reached: DIRECT uses vocabulary identity or
+         * Maps to; UMLS_BRIDGE uses a shared UMLS concept; CONTEXTUAL uses allergy
+         * source context. Specialty text routes identify a concept name (CONCEPT_NAME),
+         * English synonym (CONCEPT_SYNONYM), English UMLS string (UMLS_STRING), or
+         * NUCC preferred label (NUCC_LABEL). Omitted when unavailable or no concept
+         * was selected; paths retain matching evidence.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -379,7 +394,12 @@ public final class MappingResolution {
         }
 
         /**
-         * <p>How the selected concept was reached. DIRECT may use an OMOP Maps to relationship; UMLS_BRIDGE identifies resolution through a shared UMLS concept; CONTEXTUAL identifies an explicit transformation of a substance-coded allergy/intolerance statement using its FHIR context. Specialty text uses CONCEPT_NAME, CONCEPT_SYNONYM, UMLS_STRING, then NUCC_LABEL in that order. NUCC_LABEL removes only the grouping prefix from a NUCC preferred term while retaining the full classification and specialization. Omitted when unavailable or no concept was selected.</p>
+         * <p>How the selected concept was reached: DIRECT uses vocabulary identity or
+         * Maps to; UMLS_BRIDGE uses a shared UMLS concept; CONTEXTUAL uses allergy
+         * source context. Specialty text routes identify a concept name (CONCEPT_NAME),
+         * English synonym (CONCEPT_SYNONYM), English UMLS string (UMLS_STRING), or
+         * NUCC preferred label (NUCC_LABEL). Omitted when unavailable or no concept
+         * was selected; paths retain matching evidence.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "via", nulls = Nulls.SKIP)
