@@ -1229,7 +1229,7 @@ public class Lang2FhirBatchWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"job_id\":\"l2f_batch_6f1d2c3a-8b4e-4f5a-9c7d-0e1f2a3b4c5d\",\"request_id\":\"submit-2025-09-02-batch-001\",\"status\":\"pending\",\"finalized\":false,\"total_items\":12,\"error\":{\"kind\":\"processing_failed\",\"message\":\"the item could not be converted\"},\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\",\"completed_at\":\"2024-01-15T09:30:00Z\",\"expires_at\":\"2024-01-15T09:30:00Z\",\"counts\":{\"total\":12,\"pending\":3,\"processing\":2,\"succeeded\":6,\"failed\":1},\"items\":[{\"item_id\":\"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\",\"id\":\"chart-note-0042\",\"status\":\"pending\",\"attempts\":1,\"detect_retries\":1,\"result_size\":20482,\"error\":{\"kind\":\"processing_failed\",\"message\":\"the item could not be converted\"},\"completed_at\":\"2024-01-15T09:30:00Z\"}],\"next_cursor\":\"next_cursor\",\"has_more\":false}"));
+                                "{\"job_id\":\"l2f_batch_6f1d2c3a-8b4e-4f5a-9c7d-0e1f2a3b4c5d\",\"request_id\":\"submit-2025-09-02-batch-001\",\"status\":\"pending\",\"finalized\":false,\"total_items\":12,\"error\":{\"kind\":\"processing_failed\",\"message\":\"the item could not be converted\"},\"created_at\":\"2024-01-15T09:30:00Z\",\"updated_at\":\"2024-01-15T09:30:00Z\",\"completed_at\":\"2024-01-15T09:30:00Z\",\"expires_at\":\"2024-01-15T09:30:00Z\",\"counts\":{\"total\":12,\"pending\":3,\"processing\":2,\"succeeded\":6,\"failed\":1},\"items\":[{\"item_id\":\"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\",\"id\":\"chart-note-0042\",\"status\":\"pending\",\"attempts\":1,\"result_size\":20482,\"error\":{\"kind\":\"processing_failed\",\"message\":\"the item could not be converted\"},\"completed_at\":\"2024-01-15T09:30:00Z\"}],\"next_cursor\":\"next_cursor\",\"has_more\":false}"));
         JobDetailResponse response = client.lang2FhirBatch()
                 .get("job_id", GetRequest.builder().cursor("cursor").limit(1).build());
         // OAuth: consume the token request
@@ -1275,7 +1275,6 @@ public class Lang2FhirBatchWireTest {
                 + "      \"id\": \"chart-note-0042\",\n"
                 + "      \"status\": \"pending\",\n"
                 + "      \"attempts\": 1,\n"
-                + "      \"detect_retries\": 1,\n"
                 + "      \"result_size\": 20482,\n"
                 + "      \"error\": {\n"
                 + "        \"kind\": \"processing_failed\",\n"
@@ -1509,7 +1508,7 @@ public class Lang2FhirBatchWireTest {
                 new MockResponse()
                         .setResponseCode(200)
                         .setBody(
-                                "{\"results\":[{\"item_id\":\"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\",\"id\":\"chart-note-0042\",\"status\":\"pending\",\"attempts\":1,\"detect_retries\":1,\"result_size\":20482,\"error\":{\"kind\":\"processing_failed\",\"message\":\"the item could not be converted\"},\"completed_at\":\"2024-01-15T09:30:00Z\"}],\"next_cursor\":\"next_cursor\",\"has_more\":false}"));
+                                "{\"results\":[{\"item_id\":\"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\",\"id\":\"chart-note-0042\",\"status\":\"pending\",\"attempts\":1,\"result_size\":20482,\"error\":{\"kind\":\"processing_failed\",\"message\":\"the item could not be converted\"},\"completed_at\":\"2024-01-15T09:30:00Z\"}],\"next_cursor\":\"next_cursor\",\"has_more\":false}"));
         ResultsPageResponse response = client.lang2FhirBatch()
                 .getResults(
                         "job_id",
@@ -1537,7 +1536,6 @@ public class Lang2FhirBatchWireTest {
                 + "      \"id\": \"chart-note-0042\",\n"
                 + "      \"status\": \"pending\",\n"
                 + "      \"attempts\": 1,\n"
-                + "      \"detect_retries\": 1,\n"
                 + "      \"result_size\": 20482,\n"
                 + "      \"error\": {\n"
                 + "        \"kind\": \"processing_failed\",\n"

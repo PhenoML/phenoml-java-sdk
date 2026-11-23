@@ -52,7 +52,7 @@ public final class PageClassification {
     }
 
     /**
-     * @return Whether the page was kept (true) or dropped (false) from FHIR extraction.
+     * @return Whether the page was kept (true) or dropped (false) from FHIR extraction. Pages that could not be classified are kept.
      */
     @JsonProperty("include")
     public Optional<Boolean> getInclude() {
@@ -60,7 +60,7 @@ public final class PageClassification {
     }
 
     /**
-     * @return Split classification id assigned to the page. Omitted or empty for the ungrouped/default bucket.
+     * @return Split classification id assigned to the page. Omitted for ungrouped pages, including pages that could not be classified.
      */
     @JsonProperty("classification_id")
     public Optional<String> getClassificationId() {
@@ -68,7 +68,7 @@ public final class PageClassification {
     }
 
     /**
-     * @return Short LLM-generated explanation of the decision.
+     * @return Short LLM-generated explanation of the decision. When the page could not be classified, says that the classifier was unavailable.
      */
     @JsonProperty("reason")
     public Optional<String> getReason() {
@@ -144,7 +144,7 @@ public final class PageClassification {
         }
 
         /**
-         * <p>Whether the page was kept (true) or dropped (false) from FHIR extraction.</p>
+         * <p>Whether the page was kept (true) or dropped (false) from FHIR extraction. Pages that could not be classified are kept.</p>
          */
         @JsonSetter(value = "include", nulls = Nulls.SKIP)
         public Builder include(Optional<Boolean> include) {
@@ -158,7 +158,7 @@ public final class PageClassification {
         }
 
         /**
-         * <p>Split classification id assigned to the page. Omitted or empty for the ungrouped/default bucket.</p>
+         * <p>Split classification id assigned to the page. Omitted for ungrouped pages, including pages that could not be classified.</p>
          */
         @JsonSetter(value = "classification_id", nulls = Nulls.SKIP)
         public Builder classificationId(Optional<String> classificationId) {
@@ -172,7 +172,7 @@ public final class PageClassification {
         }
 
         /**
-         * <p>Short LLM-generated explanation of the decision.</p>
+         * <p>Short LLM-generated explanation of the decision. When the page could not be classified, says that the classifier was unavailable.</p>
          */
         @JsonSetter(value = "reason", nulls = Nulls.SKIP)
         public Builder reason(Optional<String> reason) {

@@ -85,7 +85,7 @@ public final class CreateMultiResponseResourcesItem {
     }
 
     /**
-     * @return Split classification id assigned to this resource by the /lang2fhir/document/multi endpoint. Omitted when the resource came only from ungrouped pages or raw-text create/multi.
+     * @return Split classification id assigned to this resource by the /lang2fhir/document/multi endpoint. When the resource came from pages in more than one group, this is the group covering the most of its source pages, with ties going to the group with the earliest source page. Omitted when the resource came only from ungrouped pages, when its sourcePages is omitted, or for raw-text create/multi.
      */
     @JsonProperty("group")
     public Optional<String> getGroup() {
@@ -220,7 +220,7 @@ public final class CreateMultiResponseResourcesItem {
         }
 
         /**
-         * <p>Split classification id assigned to this resource by the /lang2fhir/document/multi endpoint. Omitted when the resource came only from ungrouped pages or raw-text create/multi.</p>
+         * <p>Split classification id assigned to this resource by the /lang2fhir/document/multi endpoint. When the resource came from pages in more than one group, this is the group covering the most of its source pages, with ties going to the group with the earliest source page. Omitted when the resource came only from ungrouped pages, when its sourcePages is omitted, or for raw-text create/multi.</p>
          */
         @JsonSetter(value = "group", nulls = Nulls.SKIP)
         public Builder group(Optional<String> group) {

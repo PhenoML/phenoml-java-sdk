@@ -95,9 +95,8 @@ public final class BatchItemStatus {
     }
 
     /**
-     * @return How many times concept detection was re-run for the item because a
-     * pass returned no concepts. Present only on a succeeded item whose
-     * detection re-ran at least once; omitted otherwise.
+     * @return Omitted for new batch items. If present, this is the number of
+     * additional concept detection passes after an empty result.
      */
     @JsonProperty("detect_retries")
     public Optional<Long> getDetectRetries() {
@@ -208,9 +207,8 @@ public final class BatchItemStatus {
         _FinalStage id(String id);
 
         /**
-         * <p>How many times concept detection was re-run for the item because a
-         * pass returned no concepts. Present only on a succeeded item whose
-         * detection re-ran at least once; omitted otherwise.</p>
+         * <p>Omitted for new batch items. If present, this is the number of
+         * additional concept detection passes after an empty result.</p>
          */
         _FinalStage detectRetries(Optional<Long> detectRetries);
 
@@ -358,9 +356,8 @@ public final class BatchItemStatus {
         }
 
         /**
-         * <p>How many times concept detection was re-run for the item because a
-         * pass returned no concepts. Present only on a succeeded item whose
-         * detection re-ran at least once; omitted otherwise.</p>
+         * <p>Omitted for new batch items. If present, this is the number of
+         * additional concept detection passes after an empty result.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -370,9 +367,8 @@ public final class BatchItemStatus {
         }
 
         /**
-         * <p>How many times concept detection was re-run for the item because a
-         * pass returned no concepts. Present only on a succeeded item whose
-         * detection re-ran at least once; omitted otherwise.</p>
+         * <p>Omitted for new batch items. If present, this is the number of
+         * additional concept detection passes after an empty result.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "detect_retries", nulls = Nulls.SKIP)
