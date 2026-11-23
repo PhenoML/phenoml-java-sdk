@@ -11,6 +11,7 @@ import com.phenoml.api.resources.cohort.CohortClient;
 import com.phenoml.api.resources.construe.ConstrueClient;
 import com.phenoml.api.resources.fhir.FhirClient;
 import com.phenoml.api.resources.fhir2omop.Fhir2OmopClient;
+import com.phenoml.api.resources.fhir2omopbatch.Fhir2OmopBatchClient;
 import com.phenoml.api.resources.fhirprovider.FhirProviderClient;
 import com.phenoml.api.resources.implementationguides.ImplementationGuidesClient;
 import com.phenoml.api.resources.lang2fhir.Lang2FhirClient;
@@ -36,6 +37,8 @@ public class PhenomlClient implements AutoCloseable {
     protected final Supplier<FhirClient> fhirClient;
 
     protected final Supplier<Fhir2OmopClient> fhir2OmopClient;
+
+    protected final Supplier<Fhir2OmopBatchClient> fhir2OmopBatchClient;
 
     protected final Supplier<FhirProviderClient> fhirProviderClient;
 
@@ -63,6 +66,7 @@ public class PhenomlClient implements AutoCloseable {
         this.construeClient = Suppliers.memoize(() -> new ConstrueClient(clientOptions));
         this.fhirClient = Suppliers.memoize(() -> new FhirClient(clientOptions));
         this.fhir2OmopClient = Suppliers.memoize(() -> new Fhir2OmopClient(clientOptions));
+        this.fhir2OmopBatchClient = Suppliers.memoize(() -> new Fhir2OmopBatchClient(clientOptions));
         this.fhirProviderClient = Suppliers.memoize(() -> new FhirProviderClient(clientOptions));
         this.implementationGuidesClient = Suppliers.memoize(() -> new ImplementationGuidesClient(clientOptions));
         this.lang2FhirClient = Suppliers.memoize(() -> new Lang2FhirClient(clientOptions));
@@ -96,6 +100,10 @@ public class PhenomlClient implements AutoCloseable {
 
     public Fhir2OmopClient fhir2Omop() {
         return this.fhir2OmopClient.get();
+    }
+
+    public Fhir2OmopBatchClient fhir2OmopBatch() {
+        return this.fhir2OmopBatchClient.get();
     }
 
     public FhirProviderClient fhirProvider() {

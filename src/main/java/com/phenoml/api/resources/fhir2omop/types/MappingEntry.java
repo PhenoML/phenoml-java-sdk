@@ -169,17 +169,13 @@ public final class MappingEntry {
     }
 
     /**
-     * @return ALREADY_STANDARD (source coding is already a standard OMOP concept),
-     * MAPPED (source coding or descriptive source text was mapped to a standard
-     * concept), UNCHECKED (a suggested code has not been validated against
-     * the OMOP vocabulary, so <code>concept_id</code> is <code>0</code>), or UNMAPPED
-     * (no target concept selected, including missing mappings,
-     * target-domain mismatches and ambiguity, or source information
-     * retained without concept resolution as explained in <code>note</code>). For
-     * specialties, this describes the entry-level result selected from
-     * supported codings or explicit text. A local coding can remain
-     * unsupported even when the entry resolves; its independent outcome
-     * remains in resolution.specialty_resolution.coding_results.
+     * @return ALREADY_STANDARD: the source coding is already an OMOP standard concept.
+     * MAPPED: coding or descriptive text resolved to a standard concept.
+     * UNCHECKED: a suggestion is unvalidated and concept ID remains 0.
+     * UNMAPPED: no valid target was selected, or information was retained without
+     * resolution as explained in note.
+     * <p>Specialty entries report the selected field-level outcome; independent
+     * coding support remains in resolution.specialty_resolution.coding_results.</p>
      */
     @JsonProperty("mapping_status")
     public Optional<MappingEntryMappingStatus> getMappingStatus() {
@@ -187,7 +183,12 @@ public final class MappingEntry {
     }
 
     /**
-     * @return Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings, text-only rows, and entries without a corresponding row column. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.
+     * @return Whether this coding supplies the row's source value; always present. False
+     * for alternate codings, text-only rows, specialties, and entries without a
+     * corresponding column. For demographics, marks the code determining the
+     * Person field or race Observation, even without a resolved concept.
+     * Race/ethnicity null flavors, conflicting inputs, overridden Patient gender,
+     * and race categories not determining the field are unselected.
      */
     @JsonProperty("selected")
     public boolean getSelected() {
@@ -200,25 +201,11 @@ public final class MappingEntry {
     }
 
     /**
-     * @return Additional context for the entry, including the output table,
-     * populated fields, source information without a corresponding row
-     * column, and <code>DOMAIN_MISMATCH</code> outcomes. A coded route is noted as
-     * <code>FHIR route</code>. Patient demographic entries name their source and, when
-     * not applied, why:
-     * <ul>
-     * <li><code>US Core birth sex</code>; <code>US Core birth sex; null flavor</code>;
-     * <code>US Core birth sex; outside value set</code>;
-     * <code>US Core birth sex; conflicting values</code></li>
-     * <li><code>FHIR administrative gender; assumed sex at birth</code>;
-     * <code>FHIR administrative gender; not a sex-at-birth value</code>;
-     * <code>FHIR administrative gender; not used, birth sex supplied</code></li>
-     * <li><code>US Core race OMB category</code>;
-     * <code>US Core race OMB category; more than one race</code> (linked to its
-     * <code>observation</code> race row); <code>US Core race; null flavor</code></li>
-     * <li><code>US Core ethnicity OMB category</code>;
-     * <code>US Core ethnicity OMB category; conflicting categories</code>;
-     * <code>US Core ethnicity; null flavor</code></li>
-     * </ul>
+     * @return Explanatory context for source interpretation, table placement, unmapped
+     * outcomes, and values retained without a corresponding row column.
+     * Demographic notes identify the source and why a supplied value was not used.
+     * Notes are human-readable text, not stable identifiers; use selected,
+     * mapping_status, and resolution fields for programmatic decisions.
      */
     @JsonProperty("note")
     public Optional<String> getNote() {
@@ -287,7 +274,12 @@ public final class MappingEntry {
 
     public interface SelectedStage {
         /**
-         * <p>Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings, text-only rows, and entries without a corresponding row column. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.</p>
+         * <p>Whether this coding supplies the row's source value; always present. False
+         * for alternate codings, text-only rows, specialties, and entries without a
+         * corresponding column. For demographics, marks the code determining the
+         * Person field or race Observation, even without a resolved concept.
+         * Race/ethnicity null flavors, conflicting inputs, overridden Patient gender,
+         * and race categories not determining the field are unselected.</p>
          */
         _FinalStage selected(boolean selected);
 
@@ -367,17 +359,13 @@ public final class MappingEntry {
         _FinalStage targetName(String targetName);
 
         /**
-         * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
-         * MAPPED (source coding or descriptive source text was mapped to a standard
-         * concept), UNCHECKED (a suggested code has not been validated against
-         * the OMOP vocabulary, so <code>concept_id</code> is <code>0</code>), or UNMAPPED
-         * (no target concept selected, including missing mappings,
-         * target-domain mismatches and ambiguity, or source information
-         * retained without concept resolution as explained in <code>note</code>). For
-         * specialties, this describes the entry-level result selected from
-         * supported codings or explicit text. A local coding can remain
-         * unsupported even when the entry resolves; its independent outcome
-         * remains in resolution.specialty_resolution.coding_results.</p>
+         * <p>ALREADY_STANDARD: the source coding is already an OMOP standard concept.
+         * MAPPED: coding or descriptive text resolved to a standard concept.
+         * UNCHECKED: a suggestion is unvalidated and concept ID remains 0.
+         * UNMAPPED: no valid target was selected, or information was retained without
+         * resolution as explained in note.</p>
+         * <p>Specialty entries report the selected field-level outcome; independent
+         * coding support remains in resolution.specialty_resolution.coding_results.</p>
          */
         _FinalStage mappingStatus(Optional<MappingEntryMappingStatus> mappingStatus);
 
@@ -388,25 +376,11 @@ public final class MappingEntry {
         _FinalStage resolution(MappingResolution resolution);
 
         /**
-         * <p>Additional context for the entry, including the output table,
-         * populated fields, source information without a corresponding row
-         * column, and <code>DOMAIN_MISMATCH</code> outcomes. A coded route is noted as
-         * <code>FHIR route</code>. Patient demographic entries name their source and, when
-         * not applied, why:</p>
-         * <ul>
-         * <li><code>US Core birth sex</code>; <code>US Core birth sex; null flavor</code>;
-         * <code>US Core birth sex; outside value set</code>;
-         * <code>US Core birth sex; conflicting values</code></li>
-         * <li><code>FHIR administrative gender; assumed sex at birth</code>;
-         * <code>FHIR administrative gender; not a sex-at-birth value</code>;
-         * <code>FHIR administrative gender; not used, birth sex supplied</code></li>
-         * <li><code>US Core race OMB category</code>;
-         * <code>US Core race OMB category; more than one race</code> (linked to its
-         * <code>observation</code> race row); <code>US Core race; null flavor</code></li>
-         * <li><code>US Core ethnicity OMB category</code>;
-         * <code>US Core ethnicity OMB category; conflicting categories</code>;
-         * <code>US Core ethnicity; null flavor</code></li>
-         * </ul>
+         * <p>Explanatory context for source interpretation, table placement, unmapped
+         * outcomes, and values retained without a corresponding row column.
+         * Demographic notes identify the source and why a supplied value was not used.
+         * Notes are human-readable text, not stable identifiers; use selected,
+         * mapping_status, and resolution fields for programmatic decisions.</p>
          */
         _FinalStage note(Optional<String> note);
 
@@ -473,7 +447,12 @@ public final class MappingEntry {
         }
 
         /**
-         * <p>Whether this source coding was selected for the linked row's <code>*_source_value</code> field. Always present; false for alternate codings, text-only rows, and entries without a corresponding row column. For a Patient demographic, it marks the code that determined the PERSON field or race <code>observation</code> row, even when that code has no concept; it is false for race and ethnicity null flavors, conflicting values, a Patient <code>gender</code> overridden by birth sex, and race categories that did not determine the field.</p>
+         * <p>Whether this coding supplies the row's source value; always present. False
+         * for alternate codings, text-only rows, specialties, and entries without a
+         * corresponding column. For demographics, marks the code determining the
+         * Person field or race Observation, even without a resolved concept.
+         * Race/ethnicity null flavors, conflicting inputs, overridden Patient gender,
+         * and race categories not determining the field are unselected.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -484,25 +463,11 @@ public final class MappingEntry {
         }
 
         /**
-         * <p>Additional context for the entry, including the output table,
-         * populated fields, source information without a corresponding row
-         * column, and <code>DOMAIN_MISMATCH</code> outcomes. A coded route is noted as
-         * <code>FHIR route</code>. Patient demographic entries name their source and, when
-         * not applied, why:</p>
-         * <ul>
-         * <li><code>US Core birth sex</code>; <code>US Core birth sex; null flavor</code>;
-         * <code>US Core birth sex; outside value set</code>;
-         * <code>US Core birth sex; conflicting values</code></li>
-         * <li><code>FHIR administrative gender; assumed sex at birth</code>;
-         * <code>FHIR administrative gender; not a sex-at-birth value</code>;
-         * <code>FHIR administrative gender; not used, birth sex supplied</code></li>
-         * <li><code>US Core race OMB category</code>;
-         * <code>US Core race OMB category; more than one race</code> (linked to its
-         * <code>observation</code> race row); <code>US Core race; null flavor</code></li>
-         * <li><code>US Core ethnicity OMB category</code>;
-         * <code>US Core ethnicity OMB category; conflicting categories</code>;
-         * <code>US Core ethnicity; null flavor</code></li>
-         * </ul>
+         * <p>Explanatory context for source interpretation, table placement, unmapped
+         * outcomes, and values retained without a corresponding row column.
+         * Demographic notes identify the source and why a supplied value was not used.
+         * Notes are human-readable text, not stable identifiers; use selected,
+         * mapping_status, and resolution fields for programmatic decisions.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -512,25 +477,11 @@ public final class MappingEntry {
         }
 
         /**
-         * <p>Additional context for the entry, including the output table,
-         * populated fields, source information without a corresponding row
-         * column, and <code>DOMAIN_MISMATCH</code> outcomes. A coded route is noted as
-         * <code>FHIR route</code>. Patient demographic entries name their source and, when
-         * not applied, why:</p>
-         * <ul>
-         * <li><code>US Core birth sex</code>; <code>US Core birth sex; null flavor</code>;
-         * <code>US Core birth sex; outside value set</code>;
-         * <code>US Core birth sex; conflicting values</code></li>
-         * <li><code>FHIR administrative gender; assumed sex at birth</code>;
-         * <code>FHIR administrative gender; not a sex-at-birth value</code>;
-         * <code>FHIR administrative gender; not used, birth sex supplied</code></li>
-         * <li><code>US Core race OMB category</code>;
-         * <code>US Core race OMB category; more than one race</code> (linked to its
-         * <code>observation</code> race row); <code>US Core race; null flavor</code></li>
-         * <li><code>US Core ethnicity OMB category</code>;
-         * <code>US Core ethnicity OMB category; conflicting categories</code>;
-         * <code>US Core ethnicity; null flavor</code></li>
-         * </ul>
+         * <p>Explanatory context for source interpretation, table placement, unmapped
+         * outcomes, and values retained without a corresponding row column.
+         * Demographic notes identify the source and why a supplied value was not used.
+         * Notes are human-readable text, not stable identifiers; use selected,
+         * mapping_status, and resolution fields for programmatic decisions.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "note", nulls = Nulls.SKIP)
@@ -553,17 +504,13 @@ public final class MappingEntry {
         }
 
         /**
-         * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
-         * MAPPED (source coding or descriptive source text was mapped to a standard
-         * concept), UNCHECKED (a suggested code has not been validated against
-         * the OMOP vocabulary, so <code>concept_id</code> is <code>0</code>), or UNMAPPED
-         * (no target concept selected, including missing mappings,
-         * target-domain mismatches and ambiguity, or source information
-         * retained without concept resolution as explained in <code>note</code>). For
-         * specialties, this describes the entry-level result selected from
-         * supported codings or explicit text. A local coding can remain
-         * unsupported even when the entry resolves; its independent outcome
-         * remains in resolution.specialty_resolution.coding_results.</p>
+         * <p>ALREADY_STANDARD: the source coding is already an OMOP standard concept.
+         * MAPPED: coding or descriptive text resolved to a standard concept.
+         * UNCHECKED: a suggestion is unvalidated and concept ID remains 0.
+         * UNMAPPED: no valid target was selected, or information was retained without
+         * resolution as explained in note.</p>
+         * <p>Specialty entries report the selected field-level outcome; independent
+         * coding support remains in resolution.specialty_resolution.coding_results.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override
@@ -573,17 +520,13 @@ public final class MappingEntry {
         }
 
         /**
-         * <p>ALREADY_STANDARD (source coding is already a standard OMOP concept),
-         * MAPPED (source coding or descriptive source text was mapped to a standard
-         * concept), UNCHECKED (a suggested code has not been validated against
-         * the OMOP vocabulary, so <code>concept_id</code> is <code>0</code>), or UNMAPPED
-         * (no target concept selected, including missing mappings,
-         * target-domain mismatches and ambiguity, or source information
-         * retained without concept resolution as explained in <code>note</code>). For
-         * specialties, this describes the entry-level result selected from
-         * supported codings or explicit text. A local coding can remain
-         * unsupported even when the entry resolves; its independent outcome
-         * remains in resolution.specialty_resolution.coding_results.</p>
+         * <p>ALREADY_STANDARD: the source coding is already an OMOP standard concept.
+         * MAPPED: coding or descriptive text resolved to a standard concept.
+         * UNCHECKED: a suggestion is unvalidated and concept ID remains 0.
+         * UNMAPPED: no valid target was selected, or information was retained without
+         * resolution as explained in note.</p>
+         * <p>Specialty entries report the selected field-level outcome; independent
+         * coding support remains in resolution.specialty_resolution.coding_results.</p>
          */
         @java.lang.Override
         @JsonSetter(value = "mapping_status", nulls = Nulls.SKIP)
