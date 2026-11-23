@@ -1,3 +1,19 @@
+## [20.0.0] - 2026-11-23
+### Breaking Changes
+- **`PageFilter`** — the `com.phenoml.api.resources.lang2fhir.types.PageFilter` class has been removed; delete all imports, constructor calls, and `PageFilter.builder()` references.
+- **`DocumentConfig.getPageFilter()`** — removed along with `Builder.pageFilter(...)`; replace with `getSplitClassifications()` and `Builder.splitClassifications(...)` respectively.
+
+### Added
+- **`Lang2FhirClient.deidentify()`, `AsyncLang2FhirClient.deidentify()`, `RawLang2FhirClient.deidentify()`, and `AsyncRawLang2FhirClient.deidentify()`** — new alpha HIPAA Safe Harbor PHI-redaction endpoint accepting PDF, PNG, JPEG, or TIFF input and returning a redacted image-only PDF `InputStream`; a `ContentTooLargeError` (HTTP 413) is thrown when the body exceeds 32 MiB.
+- **`Fhir2OmopBatchClient`, `AsyncFhir2OmopBatchClient`, `RawFhir2OmopBatchClient`, and `AsyncRawFhir2OmopBatchClient`** — new clients (sync, async, and raw variants) for the FHIR-to-OMOP batch job API, accessible via `PhenomlClient.fhir2OmopBatch()`; expose `list()`, `create()`, `uploadItem()`, `finalize()`, `cancel()`, `get()`, `getResults()`, and `getResult()`.
+- **Batch API types** — new request types (`CreateBatchRequest`, `UploadItemRequest`, `GetRequest`, `GetResultsRequest`, `ListRequest`), response types (`BatchJob`, `JobDetailResponse`, `JobListResponse`, `ResultsPageResponse`, `UploadItemResponse`, `BatchCounts`, `BatchError`, `BatchItemStatus`), status enums (`BatchJobStatus`, `BatchItemStatusStatus`), and typed error classes under `com.phenoml.api.resources.fhir2omopbatch.errors`.
+- **OMOP visit-detail types** — `VisitDetailRow`, `VisitComponentContext`, `VisitComponentContextOmopTable`, `VisitPairAssessment`, `VisitPairAssessmentStatus`, `VisitPairAssessmentReasonCode`, and `VisitPairAssessmentInvalidConceptRole` added to support child-Encounter OMOP CDM mapping; `OmopTables.getVisitDetail()` and `CreateOmopResponse.getVisitComponentContexts()` expose the new data.
+- See full changelog for all changes
+
+### Changed
+- **`documentMulti()` page classification behavior`** — page classification is now fully opt-in via `config.split_classifications`; `page_classifications` is omitted from the response by default and the previous automatic dropping of test requisition forms no longer applies.
+- **`DocumentConfig.getSplitClassifications()`** — documentation updated to reflect expanded behavior: accepts up to 20 classifications, unclassifiable pages are kept ungrouped, and exhausting all pages returns 422 on `/lang2fhir/document` or `success: false` on `/lang2fhir/document/multi`.
+
 ## [19.0.0] - 2026-11-02
 ### Breaking Changes
 - **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; replace `Builder.action(String)` / `Builder.action(Optional<String>)` calls with the corresponding `ResourceReviewRemediatedAction` enum overloads.
