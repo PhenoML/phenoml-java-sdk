@@ -1,3 +1,21 @@
+## [20.0.0] - 2026-11-24
+### Breaking Changes
+- **`PhenomlClient.agent()`, `.cohort()`, `.tools()`, `.voice()`, and `.workflows()`** — all five top-level resource accessors (and their `AsyncPhenomlClient` equivalents) have been removed along with every client, request, response, and error type under those packages; remove all imports and call sites and migrate to the replacement APIs.
+- **Typed error classes across `agent`, `cohort`, `tools`, `voice`, and `workflows` packages** — all package-specific typed exceptions (e.g., `InternalServerError`, `NotFoundError`, `UnauthorizedError`, `ForbiddenError`, `BadRequestError`, `GatewayTimeoutError`) have been removed; replace every `catch` block with `catch (PhenomlClientApiException e)` and inspect `e.statusCode()`.
+- **`AsyncLang2FhirClient.search()` and `AsyncRawLang2FhirClient.search()`** — both overloads removed along with `SearchRequest`, `SearchResponse`, `PageFilter`, and `SearchResponseResourceType`; remove all call sites and imports.
+- **`com.phenoml.api.resources.workflows.types.ExecuteWorkflowResponseResults`, `workflows.requests.GetRequest`, `workflows.types.DeleteResponse`, and `agent.requests.ListRequest`** — removed and replaced by new types in `com.phenoml.api.resources.fhir2omopbatch`; migrate to `CreateBatchRequest`, `GetRequest`, `GetResultsRequest`, and `ListRequest` from that package.
+- See full changelog for all changes
+
+### Added
+- **`PhenomlClient.fhir2OmopBatch()` and `AsyncPhenomlClient.fhir2OmopBatch()`** — new accessors for the `Fhir2OmopBatchClient` / `AsyncFhir2OmopBatchClient` enabling batch FHIR-to-OMOP conversion jobs.
+- **`AsyncLang2FhirClient.deidentify()` and `AsyncRawLang2FhirClient.deidentify()`** — new alpha endpoint that redacts PHI from PDF, PNG, JPEG, or TIFF documents using the HIPAA Safe Harbor method and returns a redacted image-only PDF; accepts `File` or `InputStream` inputs with optional `MediaType` and `RequestOptions` overloads.
+- **`DeidentifyRequest`** — new request type for the multipart de-identification endpoint.
+- **`CreateOmopResponse.getVisitComponentContexts()`** — new optional `List<VisitComponentContext>` field reporting compatibility assessments for Encounter components linked to their final detail or standalone visit.
+- **`fhir2omopbatch.errors.ClientClosedRequestError` and `ContentTooLargeError`** — new typed error classes for HTTP 499 and HTTP 413 conditions in the FHIR-to-OMOP batch API.
+
+### Changed
+- **`AsyncLang2FhirClient.documentMulti()` and `AsyncRawLang2FhirClient.documentMulti()` Javadoc** — page-classification documentation updated to clarify that `page_classifications` is omitted by default, pages are kept unless `split_classifications` explicitly drops them, and `split_classifications` constraints (max 20 entries, 64-char ids, 500-char descriptions, reserved `__ungrouped__` id) are now documented.
+
 ## [19.0.0] - 2026-11-02
 ### Breaking Changes
 - **`ResourceReviewRemediated.getAction()`** — now returns `Optional<ResourceReviewRemediatedAction>` instead of `Optional<String>`; replace `Builder.action(String)` / `Builder.action(Optional<String>)` calls with the corresponding `ResourceReviewRemediatedAction` enum overloads.

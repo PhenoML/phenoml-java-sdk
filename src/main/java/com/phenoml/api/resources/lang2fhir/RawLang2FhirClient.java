@@ -7,15 +7,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.phenoml.api.core.BodyProperties;
 import com.phenoml.api.core.ClientOptions;
+import com.phenoml.api.core.FileStream;
 import com.phenoml.api.core.MediaTypes;
 import com.phenoml.api.core.ObjectMappers;
 import com.phenoml.api.core.PhenomlClientApiException;
 import com.phenoml.api.core.PhenomlClientException;
 import com.phenoml.api.core.PhenomlClientHttpResponse;
 import com.phenoml.api.core.RequestOptions;
+import com.phenoml.api.core.ResponseBodyInputStream;
 import com.phenoml.api.core.RetryInterceptor;
 import com.phenoml.api.resources.lang2fhir.errors.BadRequestError;
 import com.phenoml.api.resources.lang2fhir.errors.ClientClosedRequestError;
+import com.phenoml.api.resources.lang2fhir.errors.ContentTooLargeError;
 import com.phenoml.api.resources.lang2fhir.errors.ForbiddenError;
 import com.phenoml.api.resources.lang2fhir.errors.GatewayTimeoutError;
 import com.phenoml.api.resources.lang2fhir.errors.InternalServerError;
@@ -24,18 +27,22 @@ import com.phenoml.api.resources.lang2fhir.errors.UnauthorizedError;
 import com.phenoml.api.resources.lang2fhir.errors.UnprocessableEntityError;
 import com.phenoml.api.resources.lang2fhir.requests.CreateMultiRequest;
 import com.phenoml.api.resources.lang2fhir.requests.CreateRequest;
+import com.phenoml.api.resources.lang2fhir.requests.DeidentifyRequest;
 import com.phenoml.api.resources.lang2fhir.requests.DocumentMultiRequest;
 import com.phenoml.api.resources.lang2fhir.requests.DocumentRequest;
-import com.phenoml.api.resources.lang2fhir.requests.SearchRequest;
 import com.phenoml.api.resources.lang2fhir.types.CreateMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.DocumentMultiResponse;
 import com.phenoml.api.resources.lang2fhir.types.ProfileUploadRequest;
-import com.phenoml.api.resources.lang2fhir.types.SearchResponse;
 import com.phenoml.api.resources.lang2fhir.types.UploadProfileResponse;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Map;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -220,98 +227,6 @@ public class RawLang2FhirClient {
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 422:
                         throw new UnprocessableEntityError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 500:
-                        throw new InternalServerError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                }
-            } catch (JsonProcessingException ignored) {
-                // unable to map error response, throwing generic error
-            }
-            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
-            throw new PhenomlClientApiException(
-                    "Error with status code " + response.code(), response.code(), errorBody, response);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new PhenomlClientException("Network error executing HTTP request", e);
-        }
-    }
-
-    /**
-     * Converts natural language text into FHIR search parameters.
-     * Automatically identifies the appropriate FHIR resource type and generates valid search query parameters.
-     * <p>Supported resource types include: AllergyIntolerance, Appointment, CarePlan, CareTeam, Condition,
-     * Coverage, Device, DiagnosticReport, DocumentReference, Encounter, Goal, Immunization, Location,
-     * Medication, MedicationRequest, Observation, Organization, Patient, PlanDefinition, Practitioner,
-     * PractitionerRole, Procedure, Provenance, Questionnaire, QuestionnaireResponse, RelatedPerson,
-     * Schedule, ServiceRequest, Slot, and Specimen.</p>
-     */
-    public PhenomlClientHttpResponse<SearchResponse> search(SearchRequest request) {
-        return search(request, null);
-    }
-
-    /**
-     * Converts natural language text into FHIR search parameters.
-     * Automatically identifies the appropriate FHIR resource type and generates valid search query parameters.
-     * <p>Supported resource types include: AllergyIntolerance, Appointment, CarePlan, CareTeam, Condition,
-     * Coverage, Device, DiagnosticReport, DocumentReference, Encounter, Goal, Immunization, Location,
-     * Medication, MedicationRequest, Observation, Organization, Patient, PlanDefinition, Practitioner,
-     * PractitionerRole, Procedure, Provenance, Questionnaire, QuestionnaireResponse, RelatedPerson,
-     * Schedule, ServiceRequest, Slot, and Specimen.</p>
-     */
-    public PhenomlClientHttpResponse<SearchResponse> search(SearchRequest request, RequestOptions requestOptions) {
-        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
-                .newBuilder()
-                .addPathSegments("lang2fhir/search");
-        if (requestOptions != null) {
-            requestOptions.getQueryParameters().forEach((_key, _value) -> {
-                httpUrl.addQueryParameter(_key, _value);
-            });
-        }
-        RequestBody body;
-        try {
-            body = RequestBody.create(
-                    ObjectMappers.JSON_MAPPER.writeValueAsBytes(BodyProperties.merge(
-                            request, requestOptions != null ? requestOptions.getBodyProperties() : null)),
-                    MediaTypes.APPLICATION_JSON);
-        } catch (JsonProcessingException e) {
-            throw new PhenomlClientException("Failed to serialize request", e);
-        }
-        Request okhttpRequest = new Request.Builder()
-                .url(httpUrl.build())
-                .method("POST", body)
-                .headers(Headers.of(clientOptions.headers(requestOptions)))
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        OkHttpClient client = clientOptions.httpClient();
-        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
-            client = clientOptions.httpClientWithTimeout(requestOptions);
-        }
-        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
-            okhttpRequest = okhttpRequest
-                    .newBuilder()
-                    .tag(
-                            RetryInterceptor.MaxRetriesOverride.class,
-                            new RetryInterceptor.MaxRetriesOverride(
-                                    requestOptions.getMaxRetries().get()))
-                    .build();
-        }
-        try (Response response = client.newCall(okhttpRequest).execute()) {
-            ResponseBody responseBody = response.body();
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
-            if (response.isSuccessful()) {
-                return new PhenomlClientHttpResponse<>(
-                        ObjectMappers.JSON_MAPPER.readValue(responseBodyString, SearchResponse.class), response);
-            }
-            try {
-                switch (response.code()) {
-                    case 400:
-                        throw new BadRequestError(
-                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
-                    case 401:
-                        throw new UnauthorizedError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 500:
                         throw new InternalServerError(
@@ -552,8 +467,17 @@ public class RawLang2FhirClient {
      * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
      * <p><strong>Patient handling.</strong> Every bundle contains exactly one Patient, and every clinical resource references it. When the document names its patient, the Patient is built from the document. When it names several patients, the Patient is the one <code>primary_patient</code> names, otherwise the one most of the document is about; the others are not represented as Patients. Otherwise it is built from <code>primary_patient</code> when supplied, or is an unidentified Patient carrying only a synthetic identifier. When the document names its patient, the <code>primary_patient</code> identifier is added to that Patient unless its name, birth date, or gender contradicts the document's; the response <code>message</code> says whether it was added or did not match.</p>
      * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). Every Patient carries a synthetic identifier with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code>, so the bundle remains FHIR-valid and US Core conformant. A medical record number stated in the document is added with <code>system: &quot;urn:phenoml:lang2fhir-document-mrn&quot;</code>, and the <code>primary_patient</code> identifier is added as described above. Callers who need a tenant-specific namespace should rewrite these systems after extraction.</p>
-     * <p><strong>Page classification.</strong> When <code>config</code> sets neither <code>split_classifications</code> nor <code>page_filter</code>, pages classified as test requisition forms (lab or diagnostic order forms) are dropped before extraction and reported in <code>page_classifications</code>. Supplying either setting replaces this default.</p>
-     * <p><strong>Split classifications (optional).</strong> <code>config.split_classifications</code> is a caller-defined list, not a fixed taxonomy. Choose each classification <code>id</code> and write a natural-language <code>description</code> for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Classifications with <code>operation: &quot;group&quot;</code> keep matching pages and label resources extracted from those pages; classifications with <code>operation: &quot;drop&quot;</code> remove matching pages before extraction. The <code>clinical</code> and <code>admin</code> ids in the example are illustrative, not a fixed set.</p>
+     * <p><strong>Page classification (optional).</strong> By default, every page with extracted text is used for extraction, and the response omits <code>page_classifications</code>. To classify pages so they can be grouped or dropped before extraction, set <code>config.split_classifications</code>. An empty list is the same as omitting it.</p>
+     * <p><code>split_classifications</code> is a list of up to 20 classifications that you define; there is no fixed taxonomy. Each classification has:</p>
+     * <ul>
+     * <li><code>id</code>: your label for the classification. Ids must be non-blank, unique, up to 64 characters, and must not be the reserved value <code>__ungrouped__</code>.</li>
+     * <li><code>description</code>: a non-blank description, up to 500 characters, of the pages that belong to the classification. Each page's text is compared against these descriptions, so describe what sets those pages apart from the rest of the document.</li>
+     * <li><code>operation</code>: <code>group</code> keeps matching pages and labels the resources extracted from them; <code>drop</code> removes matching pages before extraction.</li>
+     * </ul>
+     * <p>Each page is classified on its own text and assigned at most one classification. A page that does not clearly match any classification is left ungrouped. Ungrouped pages are kept, but resources extracted only from ungrouped pages are not labeled. A page that cannot be classified, for example because classification failed temporarily, is also kept and left ungrouped.</p>
+     * <p>A resource's label comes from its <code>resources[].sourcePages</code>. When those pages include <code>group</code> pages, the resource carries the classification <code>id</code> in <code>resources[].group</code> and as a <code>meta.tag</code> with <code>system: &quot;https://phenoml.com/fhir/split-classification&quot;</code>. When its source pages span more than one group, it takes the group that covers the most of them; ties go to the group with the earliest source page. Resources without <code>sourcePages</code> are not labeled.</p>
+     * <p>The response's <code>page_classifications</code> reports the decision for every page, kept or dropped. When every page is dropped, the response has <code>success: false</code>, a <code>message</code>, and <code>page_classifications</code>, with <code>bundle</code> and <code>resources</code> set to null.</p>
+     * <p>For example, the <code>clinical</code> and <code>admin</code> classifications in the request example keep and label clinical pages and drop administrative pages. To skip lab or diagnostic order forms, add a <code>drop</code> classification that describes them.</p>
      */
     public PhenomlClientHttpResponse<DocumentMultiResponse> documentMulti(DocumentMultiRequest request) {
         return documentMulti(request, null);
@@ -567,8 +491,17 @@ public class RawLang2FhirClient {
      * <p>The complete JSON request body is limited to 32 MiB (33,554,432 bytes). The application enforces this whole-envelope limit, including base64-encoded document <code>content</code>.</p>
      * <p><strong>Patient handling.</strong> Every bundle contains exactly one Patient, and every clinical resource references it. When the document names its patient, the Patient is built from the document. When it names several patients, the Patient is the one <code>primary_patient</code> names, otherwise the one most of the document is about; the others are not represented as Patients. Otherwise it is built from <code>primary_patient</code> when supplied, or is an unidentified Patient carrying only a synthetic identifier. When the document names its patient, the <code>primary_patient</code> identifier is added to that Patient unless its name, birth date, or gender contradicts the document's; the response <code>message</code> says whether it was added or did not match.</p>
      * <p><strong>Patient identifier handling.</strong> US Core requires <code>Patient.identifier</code> (a business identifier such as an MRN). Every Patient carries a synthetic identifier with <code>system: &quot;urn:phenoml:lang2fhir-generated-id&quot;</code> and a UUID <code>value</code>, so the bundle remains FHIR-valid and US Core conformant. A medical record number stated in the document is added with <code>system: &quot;urn:phenoml:lang2fhir-document-mrn&quot;</code>, and the <code>primary_patient</code> identifier is added as described above. Callers who need a tenant-specific namespace should rewrite these systems after extraction.</p>
-     * <p><strong>Page classification.</strong> When <code>config</code> sets neither <code>split_classifications</code> nor <code>page_filter</code>, pages classified as test requisition forms (lab or diagnostic order forms) are dropped before extraction and reported in <code>page_classifications</code>. Supplying either setting replaces this default.</p>
-     * <p><strong>Split classifications (optional).</strong> <code>config.split_classifications</code> is a caller-defined list, not a fixed taxonomy. Choose each classification <code>id</code> and write a natural-language <code>description</code> for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Classifications with <code>operation: &quot;group&quot;</code> keep matching pages and label resources extracted from those pages; classifications with <code>operation: &quot;drop&quot;</code> remove matching pages before extraction. The <code>clinical</code> and <code>admin</code> ids in the example are illustrative, not a fixed set.</p>
+     * <p><strong>Page classification (optional).</strong> By default, every page with extracted text is used for extraction, and the response omits <code>page_classifications</code>. To classify pages so they can be grouped or dropped before extraction, set <code>config.split_classifications</code>. An empty list is the same as omitting it.</p>
+     * <p><code>split_classifications</code> is a list of up to 20 classifications that you define; there is no fixed taxonomy. Each classification has:</p>
+     * <ul>
+     * <li><code>id</code>: your label for the classification. Ids must be non-blank, unique, up to 64 characters, and must not be the reserved value <code>__ungrouped__</code>.</li>
+     * <li><code>description</code>: a non-blank description, up to 500 characters, of the pages that belong to the classification. Each page's text is compared against these descriptions, so describe what sets those pages apart from the rest of the document.</li>
+     * <li><code>operation</code>: <code>group</code> keeps matching pages and labels the resources extracted from them; <code>drop</code> removes matching pages before extraction.</li>
+     * </ul>
+     * <p>Each page is classified on its own text and assigned at most one classification. A page that does not clearly match any classification is left ungrouped. Ungrouped pages are kept, but resources extracted only from ungrouped pages are not labeled. A page that cannot be classified, for example because classification failed temporarily, is also kept and left ungrouped.</p>
+     * <p>A resource's label comes from its <code>resources[].sourcePages</code>. When those pages include <code>group</code> pages, the resource carries the classification <code>id</code> in <code>resources[].group</code> and as a <code>meta.tag</code> with <code>system: &quot;https://phenoml.com/fhir/split-classification&quot;</code>. When its source pages span more than one group, it takes the group that covers the most of them; ties go to the group with the earliest source page. Resources without <code>sourcePages</code> are not labeled.</p>
+     * <p>The response's <code>page_classifications</code> reports the decision for every page, kept or dropped. When every page is dropped, the response has <code>success: false</code>, a <code>message</code>, and <code>page_classifications</code>, with <code>bundle</code> and <code>resources</code> set to null.</p>
+     * <p>For example, the <code>clinical</code> and <code>admin</code> classifications in the request example keep and label clinical pages and drop administrative pages. To skip lab or diagnostic order forms, add a <code>drop</code> classification that describes them.</p>
      */
     public PhenomlClientHttpResponse<DocumentMultiResponse> documentMulti(
             DocumentMultiRequest request, RequestOptions requestOptions) {
@@ -632,6 +565,414 @@ public class RawLang2FhirClient {
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 422:
                         throw new UnprocessableEntityError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 499:
+                        throw new ClientClosedRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 504:
+                        throw new GatewayTimeoutError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            throw new PhenomlClientApiException(
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
+        } catch (JsonProcessingException e) {
+            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new PhenomlClientException("Network error executing HTTP request", e);
+        }
+    }
+
+    /**
+     * <strong>Alpha — under development, use at your own risk.</strong> De-identification is
+     * under active development and has not been validated. Request parameters,
+     * response shape, and results may change between releases. Do not rely on it
+     * as your sole means of de-identification or for production workloads.
+     * <p>Available on dedicated instances only.</p>
+     * <p>Redaction follows the HIPAA Privacy Rule's Safe Harbor method
+     * (45 CFR 164.514(b)(2)) and targets the identifiers it lists. The output is
+     * not certified as de-identified under HIPAA. Before treating a document as
+     * de-identified, you remain responsible for reviewing it and for confirming
+     * that no remaining information could identify the individual.</p>
+     * <p>Finds protected health information (PHI) in a PDF, PNG, JPEG, or TIFF document and
+     * returns a redacted copy with each identifier covered by a black box. Redacted
+     * identifiers include names, dates, ages, addresses and other locations, ZIP codes,
+     * organizations, phone numbers, email addresses, URLs, IP addresses, Social Security
+     * numbers, medical record numbers, and other identifying numbers. Faces, signatures,
+     * barcodes, and patient label stickers are also covered, as are the answer areas next
+     * to identifying form labels such as Name, DOB, or MRN.</p>
+     * <p>Detection favors catching every identifier over preserving surrounding content, so
+     * some non-identifying text may also be covered. When a page can't be redacted
+     * reliably, the whole page is blacked out.</p>
+     * <p>Upload the document as the <code>file</code> part of a <code>multipart/form-data</code> request. The
+     * response body is the redacted document as an image-only PDF (<code>application/pdf</code>)
+     * with one page per input page and no text layer. The submitted document and the
+     * redacted output are not stored.</p>
+     * <p>The complete request body is limited to 32 MiB (33,554,432 bytes).</p>
+     */
+    public PhenomlClientHttpResponse<InputStream> deidentify(File file, DeidentifyRequest request) {
+        return deidentify(file, request, null);
+    }
+
+    /**
+     * <strong>Alpha — under development, use at your own risk.</strong> De-identification is
+     * under active development and has not been validated. Request parameters,
+     * response shape, and results may change between releases. Do not rely on it
+     * as your sole means of de-identification or for production workloads.
+     * <p>Available on dedicated instances only.</p>
+     * <p>Redaction follows the HIPAA Privacy Rule's Safe Harbor method
+     * (45 CFR 164.514(b)(2)) and targets the identifiers it lists. The output is
+     * not certified as de-identified under HIPAA. Before treating a document as
+     * de-identified, you remain responsible for reviewing it and for confirming
+     * that no remaining information could identify the individual.</p>
+     * <p>Finds protected health information (PHI) in a PDF, PNG, JPEG, or TIFF document and
+     * returns a redacted copy with each identifier covered by a black box. Redacted
+     * identifiers include names, dates, ages, addresses and other locations, ZIP codes,
+     * organizations, phone numbers, email addresses, URLs, IP addresses, Social Security
+     * numbers, medical record numbers, and other identifying numbers. Faces, signatures,
+     * barcodes, and patient label stickers are also covered, as are the answer areas next
+     * to identifying form labels such as Name, DOB, or MRN.</p>
+     * <p>Detection favors catching every identifier over preserving surrounding content, so
+     * some non-identifying text may also be covered. When a page can't be redacted
+     * reliably, the whole page is blacked out.</p>
+     * <p>Upload the document as the <code>file</code> part of a <code>multipart/form-data</code> request. The
+     * response body is the redacted document as an image-only PDF (<code>application/pdf</code>)
+     * with one page per input page and no text layer. The submitted document and the
+     * redacted output are not stored.</p>
+     * <p>The complete request body is limited to 32 MiB (33,554,432 bytes).</p>
+     */
+    public PhenomlClientHttpResponse<InputStream> deidentify(
+            File file, DeidentifyRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("lang2fhir/deidentify");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
+        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        try {
+            String fileMimeType = Files.probeContentType(file.toPath());
+            MediaType fileMimeTypeMediaType = fileMimeType != null ? MediaType.parse(fileMimeType) : null;
+            multipartBodyBuilder.addFormDataPart(
+                    "file", file.getName(), RequestBody.create(file, fileMimeTypeMediaType));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        Request.Builder _requestBuilder = new Request.Builder()
+                .url(httpUrl.build())
+                .method("POST", multipartBodyBuilder.build())
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+            okhttpRequest = okhttpRequest
+                    .newBuilder()
+                    .tag(
+                            RetryInterceptor.MaxRetriesOverride.class,
+                            new RetryInterceptor.MaxRetriesOverride(
+                                    requestOptions.getMaxRetries().get()))
+                    .build();
+        }
+        try {
+            Response response = client.newCall(okhttpRequest).execute();
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenomlClientHttpResponse<>(new ResponseBodyInputStream(response), response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 413:
+                        throw new ContentTooLargeError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 499:
+                        throw new ClientClosedRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 504:
+                        throw new GatewayTimeoutError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            throw new PhenomlClientApiException(
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
+        } catch (JsonProcessingException e) {
+            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new PhenomlClientException("Network error executing HTTP request", e);
+        }
+    }
+
+    public PhenomlClientHttpResponse<InputStream> deidentify(InputStream stream, String filename) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("lang2fhir/deidentify");
+        FileStream fs = new FileStream(stream, filename, null);
+        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        multipartBodyBuilder.addFormDataPart("file", filename, fs.toRequestBody());
+        RequestBody body = multipartBodyBuilder.build();
+        Request.Builder _requestBuilder = new Request.Builder();
+        _requestBuilder.url(httpUrl.build());
+        _requestBuilder.method("POST", body);
+        _requestBuilder.headers(Headers.of(this.clientOptions.headers((RequestOptions) null)));
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        try {
+            Response response = client.newCall(okhttpRequest).execute();
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenomlClientHttpResponse<>(new ResponseBodyInputStream(response), response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 413:
+                        throw new ContentTooLargeError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 499:
+                        throw new ClientClosedRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 504:
+                        throw new GatewayTimeoutError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            throw new PhenomlClientApiException(
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
+        } catch (JsonProcessingException e) {
+            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new PhenomlClientException("Network error executing HTTP request", e);
+        }
+    }
+
+    public PhenomlClientHttpResponse<InputStream> deidentify(InputStream stream, String filename, MediaType mediaType) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("lang2fhir/deidentify");
+        FileStream fs = new FileStream(stream, filename, mediaType);
+        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        multipartBodyBuilder.addFormDataPart("file", filename, fs.toRequestBody());
+        RequestBody body = multipartBodyBuilder.build();
+        Request.Builder _requestBuilder = new Request.Builder();
+        _requestBuilder.url(httpUrl.build());
+        _requestBuilder.method("POST", body);
+        _requestBuilder.headers(Headers.of(this.clientOptions.headers((RequestOptions) null)));
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        try {
+            Response response = client.newCall(okhttpRequest).execute();
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenomlClientHttpResponse<>(new ResponseBodyInputStream(response), response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 413:
+                        throw new ContentTooLargeError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 499:
+                        throw new ClientClosedRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 504:
+                        throw new GatewayTimeoutError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            throw new PhenomlClientApiException(
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
+        } catch (JsonProcessingException e) {
+            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new PhenomlClientException("Network error executing HTTP request", e);
+        }
+    }
+
+    public PhenomlClientHttpResponse<InputStream> deidentify(
+            InputStream stream, String filename, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("lang2fhir/deidentify");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
+        FileStream fs = new FileStream(stream, filename, null);
+        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        multipartBodyBuilder.addFormDataPart("file", filename, fs.toRequestBody());
+        RequestBody body = multipartBodyBuilder.build();
+        Request.Builder _requestBuilder = new Request.Builder();
+        _requestBuilder.url(httpUrl.build());
+        _requestBuilder.method("POST", body);
+        _requestBuilder.headers(Headers.of(this.clientOptions.headers(requestOptions)));
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+            okhttpRequest = okhttpRequest
+                    .newBuilder()
+                    .tag(
+                            RetryInterceptor.MaxRetriesOverride.class,
+                            new RetryInterceptor.MaxRetriesOverride(
+                                    requestOptions.getMaxRetries().get()))
+                    .build();
+        }
+        try {
+            Response response = client.newCall(okhttpRequest).execute();
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenomlClientHttpResponse<>(new ResponseBodyInputStream(response), response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 413:
+                        throw new ContentTooLargeError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 499:
+                        throw new ClientClosedRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 500:
+                        throw new InternalServerError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 504:
+                        throw new GatewayTimeoutError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+            } catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            throw new PhenomlClientApiException(
+                    "Error with status code " + response.code(), response.code(), errorBody, response);
+        } catch (JsonProcessingException e) {
+            throw new PhenomlClientException("Failed to deserialize response: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new PhenomlClientException("Network error executing HTTP request", e);
+        }
+    }
+
+    public PhenomlClientHttpResponse<InputStream> deidentify(
+            InputStream stream, String filename, MediaType mediaType, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl())
+                .newBuilder()
+                .addPathSegments("lang2fhir/deidentify");
+        if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+            });
+        }
+        FileStream fs = new FileStream(stream, filename, mediaType);
+        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        multipartBodyBuilder.addFormDataPart("file", filename, fs.toRequestBody());
+        RequestBody body = multipartBodyBuilder.build();
+        Request.Builder _requestBuilder = new Request.Builder();
+        _requestBuilder.url(httpUrl.build());
+        _requestBuilder.method("POST", body);
+        _requestBuilder.headers(Headers.of(this.clientOptions.headers(requestOptions)));
+        Request okhttpRequest = _requestBuilder.build();
+        OkHttpClient client = clientOptions.httpClient();
+        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+        }
+        if (requestOptions != null && requestOptions.getMaxRetries().isPresent()) {
+            okhttpRequest = okhttpRequest
+                    .newBuilder()
+                    .tag(
+                            RetryInterceptor.MaxRetriesOverride.class,
+                            new RetryInterceptor.MaxRetriesOverride(
+                                    requestOptions.getMaxRetries().get()))
+                    .build();
+        }
+        try {
+            Response response = client.newCall(okhttpRequest).execute();
+            ResponseBody responseBody = response.body();
+            if (response.isSuccessful()) {
+                return new PhenomlClientHttpResponse<>(new ResponseBodyInputStream(response), response);
+            }
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            try {
+                switch (response.code()) {
+                    case 400:
+                        throw new BadRequestError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 401:
+                        throw new UnauthorizedError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 403:
+                        throw new ForbiddenError(
+                                ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                    case 413:
+                        throw new ContentTooLargeError(
                                 ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                     case 499:
                         throw new ClientClosedRequestError(

@@ -2,8 +2,8 @@
   "metadata": {
     "language": "java",
     "packageName": "com.phenoml.maven:phenoml-java-sdk",
-    "sdkVersion": "19.0.0",
-    "specCommit": "a0adcae40323cfba41fce975d30fc2a650999ced",
+    "sdkVersion": "20.0.0",
+    "specCommit": "2b7d6b3dd21cdf17500a66b8d6c239084ceeed0a",
     "generatorName": "fernapi/fern-java-sdk"
   },
   "renderRules": {
@@ -16,492 +16,6 @@
     "listSeparator": ", "
   },
   "examples": {
-    "POST /agent/create": {
-      "httpMethod": "POST",
-      "httpPath": "/agent/create",
-      "request": {
-        "body": {
-          "name": "Medical Assistant",
-          "description": "An AI assistant for medical information processing",
-          "prompts": [
-            "prompt_123"
-          ],
-          "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35",
-          "tags": [
-            "medical",
-            "fhir"
-          ]
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Agent created successfully",
-          "data": {
-            "id": "agent_123",
-            "name": "Medical Assistant",
-            "description": "An AI assistant for medical information processing",
-            "prompts": [
-              "prompt_123",
-              "prompt_456"
-            ],
-            "tools": [
-              "mcp_server_123",
-              "mcp_server_456"
-            ],
-            "workflows": [
-              "workflow_123",
-              "workflow_456"
-            ],
-            "tags": [
-              "medical",
-              "fhir"
-            ],
-            "provider": "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
-          }
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().create(AgentCreateRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "name",
-              "fieldTemplate": ".name({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "prompts",
-              "fieldTemplate": ".prompts({{value}})",
-              "kind": "list",
-              "required": true,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
-            },
-            {
-              "jsonKey": "provider",
-              "fieldTemplate": ".provider({{value}})",
-              "kind": "object",
-              "required": true
-            },
-            {
-              "jsonKey": "description",
-              "fieldTemplate": ".description({{value}})",
-              "kind": "string",
-              "required": false
-            },
-            {
-              "jsonKey": "tools",
-              "fieldTemplate": ".tools({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
-            },
-            {
-              "jsonKey": "workflows",
-              "fieldTemplate": ".workflows({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
-            },
-            {
-              "jsonKey": "tags",
-              "fieldTemplate": ".tags({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
-            }
-          ]
-        }
-      }
-    },
-    "GET /agent/list": {
-      "httpMethod": "GET",
-      "httpPath": "/agent/list",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Agents retrieved successfully",
-          "agents": [
-            {
-              "id": "agent_123",
-              "name": "Medical Assistant",
-              "description": "An AI assistant for medical information processing",
-              "prompts": [
-                "prompt_123"
-              ],
-              "tags": [
-                "medical",
-                "fhir"
-              ],
-              "provider": [
-                "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
-              ]
-            },
-            {
-              "id": "agent_456",
-              "name": "Clinical Coding Assistant",
-              "description": "Helps with ICD-10 and SNOMED coding",
-              "prompts": [
-                "prompt_456"
-              ],
-              "tags": [
-                "coding"
-              ],
-              "provider": [
-                "7002b0b4-8d09-445a-bf65-0fafdaf26c35"
-              ]
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().list(ListRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "tags",
-              "fieldTemplate": ".tags({{value}})",
-              "kind": "string",
-              "required": false
-            }
-          ]
-        }
-      }
-    },
-    "POST /agent/chat": {
-      "httpMethod": "POST",
-      "httpPath": "/agent/chat",
-      "request": {
-        "body": {
-          "message": "What is the patient's current condition?",
-          "agent_id": "agent-123",
-          "session_id": "session-abc123"
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Response generated successfully",
-          "response": "Based on the patient records, they have been diagnosed with Type 2 Diabetes Mellitus (ICD-10: E11.65) and Essential Hypertension (ICD-10: I10). Current medications include Metformin 500mg BID and Lisinopril 10mg daily. Most recent HbA1c was 7.2% on 2024-12-15.",
-          "session_id": "session-abc123"
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().chat().send(AgentChatRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "message",
-              "fieldTemplate": ".message({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "agent_id",
-              "fieldTemplate": ".agentId({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "context",
-              "fieldTemplate": ".context({{value}})",
-              "kind": "string",
-              "required": false
-            },
-            {
-              "jsonKey": "session_id",
-              "fieldTemplate": ".sessionId({{value}})",
-              "kind": "string",
-              "required": false
-            },
-            {
-              "jsonKey": "enhanced_reasoning",
-              "fieldTemplate": ".enhancedReasoning({{value}})",
-              "kind": "boolean",
-              "required": false
-            }
-          ]
-        }
-      }
-    },
-    "POST /agent/stream-chat": {
-      "httpMethod": "POST",
-      "httpPath": "/agent/stream-chat",
-      "request": {
-        "body": {
-          "message": "What is the patient's current condition?",
-          "agent_id": "agent-123",
-          "session_id": "session-abc123"
-        }
-      },
-      "response": {
-        "body": null,
-        "streaming": true
-      },
-      "render": {
-        "callTemplate": "client.agent().chat().stream(AgentStreamChatRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "message",
-              "fieldTemplate": ".message({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "agent_id",
-              "fieldTemplate": ".agentId({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "context",
-              "fieldTemplate": ".context({{value}})",
-              "kind": "string",
-              "required": false
-            },
-            {
-              "jsonKey": "session_id",
-              "fieldTemplate": ".sessionId({{value}})",
-              "kind": "string",
-              "required": false
-            },
-            {
-              "jsonKey": "enhanced_reasoning",
-              "fieldTemplate": ".enhancedReasoning({{value}})",
-              "kind": "boolean",
-              "required": false
-            }
-          ]
-        }
-      }
-    },
-    "GET /agent/chat/messages": {
-      "httpMethod": "GET",
-      "httpPath": "/agent/chat/messages",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "session_id": "session_123",
-          "total": 2,
-          "messages": [
-            {
-              "id": "message_001",
-              "session_id": "session_123",
-              "role": "user",
-              "content": "What is the patient's current condition?",
-              "created": "2025-03-01T14:00:00Z",
-              "updated": "2025-03-01T14:00:00Z",
-              "message_order": 1
-            },
-            {
-              "id": "message_002",
-              "session_id": "session_123",
-              "role": "assistant",
-              "content": "Based on the patient records, they have been diagnosed with Type 2 Diabetes Mellitus (ICD-10: E11.65).",
-              "created": "2025-03-01T14:00:02Z",
-              "updated": "2025-03-01T14:00:02Z",
-              "message_order": 2
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().chat().listMessages(ListMessagesRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "chat_session_id",
-              "fieldTemplate": ".chatSessionId({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "num_messages",
-              "fieldTemplate": ".numMessages({{value}})",
-              "kind": "number",
-              "required": false
-            },
-            {
-              "jsonKey": "role",
-              "fieldTemplate": ".role({{value}})",
-              "kind": "enum",
-              "required": false,
-              "enumValues": [
-                "user",
-                "assistant",
-                "model",
-                "function"
-              ]
-            },
-            {
-              "jsonKey": "order",
-              "fieldTemplate": ".order({{value}})",
-              "kind": "enum",
-              "required": false,
-              "enumValues": [
-                "asc",
-                "desc"
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "POST /agent/prompts": {
-      "httpMethod": "POST",
-      "httpPath": "/agent/prompts",
-      "request": {
-        "body": {
-          "name": "Medical Assistant System Prompt",
-          "description": "System prompt for medical assistant agent",
-          "content": "You are a helpful medical assistant specialized in FHIR data processing.",
-          "is_default": false,
-          "tags": [
-            "medical",
-            "system"
-          ]
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Prompt created successfully",
-          "data": {
-            "id": "prompt_123",
-            "name": "Medical Assistant System Prompt",
-            "description": "System prompt for medical assistant agent",
-            "content": "You are a helpful medical assistant...",
-            "is_default": false,
-            "tags": [
-              "medical",
-              "system"
-            ]
-          }
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().prompts().create(AgentPromptsCreateRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "name",
-              "fieldTemplate": ".name({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "content",
-              "fieldTemplate": ".content({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "description",
-              "fieldTemplate": ".description({{value}})",
-              "kind": "string",
-              "required": false
-            },
-            {
-              "jsonKey": "is_default",
-              "fieldTemplate": ".isDefault({{value}})",
-              "kind": "boolean",
-              "required": false
-            },
-            {
-              "jsonKey": "tags",
-              "fieldTemplate": ".tags({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
-            }
-          ]
-        }
-      }
-    },
-    "GET /agent/prompts/list": {
-      "httpMethod": "GET",
-      "httpPath": "/agent/prompts/list",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Prompts retrieved successfully",
-          "prompts": [
-            {
-              "id": "prompt_123",
-              "name": "Medical Assistant System Prompt",
-              "description": "System prompt for medical assistant agent",
-              "content": "You are a helpful medical assistant...",
-              "is_default": false,
-              "tags": [
-                "medical",
-                "system"
-              ]
-            },
-            {
-              "id": "prompt_456",
-              "name": "Clinical Coding Prompt",
-              "description": "Prompt for ICD-10 / SNOMED coding tasks",
-              "content": "You assist with mapping clinical text to standard codes...",
-              "is_default": false,
-              "tags": [
-                "coding"
-              ]
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.agent().prompts().list()",
-        "params": []
-      }
-    },
     "POST /v2/auth/token": {
       "httpMethod": "POST",
       "httpPath": "/v2/auth/token",
@@ -1663,6 +1177,64 @@
         }
       }
     },
+    "POST /fhir2omop/batch": {
+      "httpMethod": "POST",
+      "httpPath": "/fhir2omop/batch",
+      "request": {
+        "body": {
+          "request_id": "omop-cohort-2026-11-02-001"
+        }
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.fhir2OmopBatch().create(CreateBatchRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "request_id",
+              "fieldTemplate": ".requestId({{value}})",
+              "kind": "string",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
+    "GET /fhir2omop/batch": {
+      "httpMethod": "GET",
+      "httpPath": "/fhir2omop/batch",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.fhir2OmopBatch().list(ListRequest.builder(){{__body__}}.build())",
+        "params": [],
+        "body": {
+          "fieldSeparator": "",
+          "fields": [
+            {
+              "jsonKey": "cursor",
+              "fieldTemplate": ".cursor({{value}})",
+              "kind": "string",
+              "required": false
+            },
+            {
+              "jsonKey": "limit",
+              "fieldTemplate": ".limit({{value}})",
+              "kind": "number",
+              "required": false
+            }
+          ]
+        }
+      }
+    },
     "POST /fhir-provider": {
       "httpMethod": "POST",
       "httpPath": "/fhir-provider",
@@ -1870,56 +1442,6 @@
               "fieldTemplate": ".limit({{value}})",
               "kind": "number",
               "required": false
-            }
-          ]
-        }
-      }
-    },
-    "POST /cohort": {
-      "httpMethod": "POST",
-      "httpPath": "/cohort",
-      "request": {
-        "body": {
-          "text": "female patients over 65 with diabetes but not hypertension"
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Cohort analysis completed successfully. Generated 3 search queries from 3 concepts.",
-          "queries": [
-            {
-              "resource_type": "Patient",
-              "search_params": "gender=female&birthdate=le1959-01-01",
-              "concept": "female patients over 65",
-              "exclude": false
-            },
-            {
-              "resource_type": "Condition",
-              "search_params": "code=44054006",
-              "concept": "diabetes",
-              "exclude": false
-            },
-            {
-              "resource_type": "Condition",
-              "search_params": "code=38341003",
-              "concept": "hypertension",
-              "exclude": true
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.cohort().analyze(CohortRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "text",
-              "fieldTemplate": ".text({{value}})",
-              "kind": "string",
-              "required": true
             }
           ]
         }
@@ -2230,36 +1752,6 @@
         }
       }
     },
-    "POST /lang2fhir/search": {
-      "httpMethod": "POST",
-      "httpPath": "/lang2fhir/search",
-      "request": {
-        "body": {
-          "text": "Appointments between March 2-9, 2025"
-        }
-      },
-      "response": {
-        "body": {
-          "resource_type": "Appointment",
-          "search_params": "date=ge2025-03-02&date=le2025-03-09"
-        }
-      },
-      "render": {
-        "callTemplate": "client.lang2Fhir().search(SearchRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "text",
-              "fieldTemplate": ".text({{value}})",
-              "kind": "string",
-              "required": true
-            }
-          ]
-        }
-      }
-    },
     "POST /lang2fhir/profile/upload": {
       "httpMethod": "POST",
       "httpPath": "/lang2fhir/profile/upload",
@@ -2367,12 +1859,6 @@
               "nested": {
                 "fieldSeparator": "",
                 "fields": [
-                  {
-                    "jsonKey": "page_filter",
-                    "fieldTemplate": ".pageFilter({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
                   {
                     "jsonKey": "split_classifications",
                     "fieldTemplate": ".splitClassifications({{value}})",
@@ -2727,12 +2213,6 @@
                 "fieldSeparator": "",
                 "fields": [
                   {
-                    "jsonKey": "page_filter",
-                    "fieldTemplate": ".pageFilter({{value}})",
-                    "kind": "object",
-                    "required": false
-                  },
-                  {
                     "jsonKey": "split_classifications",
                     "fieldTemplate": ".splitClassifications({{value}})",
                     "kind": "list",
@@ -2830,6 +2310,20 @@
             }
           ]
         }
+      }
+    },
+    "POST /lang2fhir/deidentify": {
+      "httpMethod": "POST",
+      "httpPath": "/lang2fhir/deidentify",
+      "request": {
+        "body": null
+      },
+      "response": {
+        "body": null
+      },
+      "render": {
+        "callTemplate": "client.lang2Fhir().deidentify()",
+        "params": []
       }
     },
     "GET /fhir2summary/templates": {
@@ -3093,608 +2587,6 @@
               "jsonKey": "implementation_guide",
               "fieldTemplate": ".implementationGuide({{value}})",
               "kind": "string",
-              "required": false
-            }
-          ]
-        }
-      }
-    },
-    "POST /tools/lang2fhir-and-create": {
-      "httpMethod": "POST",
-      "httpPath": "/tools/lang2fhir-and-create",
-      "request": {
-        "body": {
-          "resource": "condition-encounter-diagnosis",
-          "text": "Patient has severe persistent asthma with acute exacerbation",
-          "provider": "550e8400-e29b-41d4-a716-446655440000"
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "FHIR resource created successfully",
-          "fhir_id": "condition-123",
-          "fhir_resource": {
-            "resourceType": "Condition",
-            "id": "condition-123",
-            "clinicalStatus": {
-              "coding": [
-                {
-                  "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
-                  "code": "active"
-                }
-              ]
-            },
-            "verificationStatus": {
-              "coding": [
-                {
-                  "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
-                  "code": "confirmed"
-                }
-              ]
-            },
-            "category": [
-              {
-                "coding": [
-                  {
-                    "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                    "code": "encounter-diagnosis"
-                  }
-                ]
-              }
-            ],
-            "code": {
-              "coding": [
-                {
-                  "system": "http://snomed.info/sct",
-                  "code": "195967001",
-                  "display": "Asthma"
-                }
-              ],
-              "text": "Severe persistent asthma with acute exacerbation"
-            },
-            "subject": {
-              "reference": "Patient/patient-123"
-            }
-          }
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().createFhirResource(Lang2FhirAndCreateRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "resource",
-              "fieldTemplate": ".resource({{value}})",
-              "kind": "enum",
-              "required": true,
-              "enumValues": [
-                "auto",
-                "appointment",
-                "condition-encounter-diagnosis",
-                "medicationrequest",
-                "careplan",
-                "condition-problems-health-concerns",
-                "coverage",
-                "encounter",
-                "observation-clinical-result",
-                "observation-lab",
-                "patient",
-                "procedure",
-                "questionnaire",
-                "questionnaireresponse",
-                "servicerequest",
-                "simple-observation",
-                "vital-signs"
-              ]
-            },
-            {
-              "jsonKey": "text",
-              "fieldTemplate": ".text({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "provider",
-              "fieldTemplate": ".provider({{value}})",
-              "kind": "string",
-              "required": false
-            }
-          ]
-        }
-      }
-    },
-    "POST /tools/lang2fhir-and-create-multi": {
-      "httpMethod": "POST",
-      "httpPath": "/tools/lang2fhir-and-create-multi",
-      "request": {
-        "body": {
-          "text": "John Smith, 45-year-old male, diagnosed with Type 2 Diabetes. Prescribed Metformin 500mg twice daily.",
-          "version": "R4",
-          "provider": "medplum"
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Created 3 resources",
-          "response_bundle": {
-            "resourceType": "Bundle",
-            "type": "transaction-response",
-            "entry": [
-              {
-                "response": {
-                  "status": "201 Created",
-                  "location": "Patient/patient-001"
-                }
-              },
-              {
-                "response": {
-                  "status": "201 Created",
-                  "location": "Condition/condition-001"
-                }
-              },
-              {
-                "response": {
-                  "status": "201 Created",
-                  "location": "MedicationRequest/medication-001"
-                }
-              }
-            ]
-          },
-          "resource_info": [
-            {
-              "tempId": "urn:uuid:patient-abc123",
-              "resourceType": "Patient",
-              "description": "John Smith, 45-year-old male"
-            },
-            {
-              "tempId": "urn:uuid:condition-abc123",
-              "resourceType": "Condition",
-              "description": "Type 2 Diabetes diagnosis"
-            },
-            {
-              "tempId": "urn:uuid:medication-abc123",
-              "resourceType": "MedicationRequest",
-              "description": "Metformin 500mg twice daily"
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().createFhirResourcesMulti(Lang2FhirAndCreateMultiRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "text",
-              "fieldTemplate": ".text({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "provider",
-              "fieldTemplate": ".provider({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "version",
-              "fieldTemplate": ".version({{value}})",
-              "kind": "string",
-              "required": false
-            }
-          ]
-        }
-      }
-    },
-    "POST /tools/lang2fhir-and-search": {
-      "httpMethod": "POST",
-      "httpPath": "/tools/lang2fhir-and-search",
-      "request": {
-        "body": {
-          "text": "Find all appointments for patient John Doe next week",
-          "count": 10,
-          "provider": "550e8400-e29b-41d4-a716-446655440000"
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Search query generated and executed in FHIR server successfully. Found 1 results.",
-          "resource_type": "Appointment",
-          "search_params": "patient=Patient/patient-123&date=ge2024-01-15&date=le2024-01-22",
-          "fhir_results": [
-            {
-              "resourceType": "Appointment",
-              "id": "appointment-123",
-              "status": "booked",
-              "start": "2024-01-16T10:00:00Z",
-              "end": "2024-01-16T11:00:00Z",
-              "participant": [
-                {
-                  "actor": {
-                    "reference": "Patient/patient-123",
-                    "display": "John Doe"
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().searchFhirResources(Lang2FhirAndSearchRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "text",
-              "fieldTemplate": ".text({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "patient_id",
-              "fieldTemplate": ".patientId({{value}})",
-              "kind": "string",
-              "required": false
-            },
-            {
-              "jsonKey": "count",
-              "fieldTemplate": ".count({{value}})",
-              "kind": "number",
-              "required": false
-            },
-            {
-              "jsonKey": "provider",
-              "fieldTemplate": ".provider({{value}})",
-              "kind": "string",
-              "required": false
-            }
-          ]
-        }
-      }
-    },
-    "POST /tools/cohort": {
-      "httpMethod": "POST",
-      "httpPath": "/tools/cohort",
-      "request": {
-        "body": {
-          "text": "female patients over 20 with diabetes but not hypertension",
-          "provider": "550e8400-e29b-41d4-a716-446655440000"
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Cohort analysis completed successfully. Found 33 patients from 2 search concepts.",
-          "patientIds": [
-            "patient-123",
-            "patient-456",
-            "patient-789"
-          ],
-          "patientCount": 33,
-          "queries": [
-            {
-              "resource_type": "Patient",
-              "search_params": "gender=female&birthdate=le2004-01-01",
-              "concept": "female patients over 20",
-              "exclude": false
-            },
-            {
-              "resource_type": "Condition",
-              "search_params": "code=44054006",
-              "concept": "diabetes",
-              "exclude": false
-            },
-            {
-              "resource_type": "Condition",
-              "search_params": "code=38341003",
-              "concept": "hypertension",
-              "exclude": true
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().analyzeCohort(CohortRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "text",
-              "fieldTemplate": ".text({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "provider",
-              "fieldTemplate": ".provider({{value}})",
-              "kind": "string",
-              "required": true
-            }
-          ]
-        }
-      }
-    },
-    "POST /tools/mcp-server/create": {
-      "httpMethod": "POST",
-      "httpPath": "/tools/mcp-server/create",
-      "request": {
-        "body": {
-          "name": "My MCP Server",
-          "mcp_server_url": "https://mcp.example.com"
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "MCP Server and Tools created successfully",
-          "mcp_servers": [
-            {
-              "id": "123",
-              "name": "My MCP Server",
-              "description": "My MCP Server is a server that provides MCP services",
-              "mcp_server_url": "https://mcp.example.com"
-            }
-          ],
-          "mcp_server_tools": [
-            {
-              "id": "tool-001",
-              "name": "search_endpoints",
-              "description": "Search across the documented endpoints",
-              "input_schema": {
-                "query": "string"
-              },
-              "mcp_server_id": "123",
-              "mcp_server_url": "https://mcp.example.com"
-            },
-            {
-              "id": "tool-002",
-              "name": "get_endpoint",
-              "description": "Fetch a single endpoint by ID",
-              "input_schema": {
-                "endpoint_id": "string"
-              },
-              "mcp_server_id": "123",
-              "mcp_server_url": "https://mcp.example.com"
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().mcpServers().create(McpServerCreateRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "name",
-              "fieldTemplate": ".name({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "mcp_server_url",
-              "fieldTemplate": ".mcpServerUrl({{value}})",
-              "kind": "string",
-              "required": true
-            }
-          ]
-        }
-      }
-    },
-    "GET /tools/mcp-server/list": {
-      "httpMethod": "GET",
-      "httpPath": "/tools/mcp-server/list",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "MCP Servers retrieved successfully",
-          "mcp_servers": [
-            {
-              "id": "123",
-              "name": "My MCP Server",
-              "description": "My MCP Server is a server that provides MCP services",
-              "mcp_server_url": "https://mcp.example.com"
-            },
-            {
-              "id": "456",
-              "name": "Another MCP Server",
-              "description": "A second MCP server",
-              "mcp_server_url": "https://other.mcp.example.com"
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.tools().mcpTools().list()",
-        "params": []
-      }
-    },
-    "POST /transcribe": {
-      "httpMethod": "POST",
-      "httpPath": "/transcribe",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": null
-      },
-      "render": {
-        "callTemplate": "client.voice().voice().transcribe(TranscribeRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "language",
-              "fieldTemplate": ".language({{value}})",
-              "kind": "list",
-              "required": false,
-              "items": {
-                "jsonKey": "",
-                "fieldTemplate": "{{value}}",
-                "kind": "string",
-                "required": true
-              }
-            }
-          ]
-        }
-      }
-    },
-    "GET /workflows": {
-      "httpMethod": "GET",
-      "httpPath": "/workflows",
-      "request": {
-        "body": null
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Workflows retrieved successfully",
-          "workflows": [
-            {
-              "id": "7a8b9c0d-1234-5678-abcd-ef9876543210",
-              "name": "Patient Data Mapping Workflow",
-              "workflow_instructions": "Given diagnosis data, find the patient and create a condition record",
-              "sample_data": {
-                "patient_last_name": "Rippin",
-                "patient_first_name": "Clay",
-                "diagnosis_code": "I10",
-                "encounter_date": "2024-01-15"
-              },
-              "config": {
-                "fhir_provider_ids": [
-                  "550e8400-e29b-41d4-a716-446655440000"
-                ],
-                "dynamic_generation": false
-              },
-              "graph": {
-                "steps": [
-                  {
-                    "id": "step_1_id",
-                    "name": "Find Patient",
-                    "description": "Search for an existing patient by first name and last name",
-                    "type": "search",
-                    "provider_id": "550e8400-e29b-41d4-a716-446655440000"
-                  },
-                  {
-                    "id": "step_2_id",
-                    "name": "Create Condition",
-                    "description": "Create a FHIR Condition resource for the patient",
-                    "type": "create",
-                    "provider_id": "550e8400-e29b-41d4-a716-446655440000"
-                  }
-                ]
-              },
-              "created_at": "2024-01-15T09:30:00Z",
-              "updated_at": "2024-01-15T09:30:00Z"
-            }
-          ]
-        }
-      },
-      "render": {
-        "callTemplate": "client.workflows().list(ListRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "verbose",
-              "fieldTemplate": ".verbose({{value}})",
-              "kind": "boolean",
-              "required": false
-            }
-          ]
-        }
-      }
-    },
-    "POST /workflows": {
-      "httpMethod": "POST",
-      "httpPath": "/workflows",
-      "request": {
-        "body": {
-          "name": "Patient Data Mapping Workflow",
-          "workflow_instructions": "Given diagnosis data, find the patient and create a condition record linked to their encounter",
-          "sample_data": {
-            "patient_last_name": "Rippin",
-            "patient_first_name": "Clay",
-            "diagnosis_code": "I10",
-            "encounter_date": "2024-01-15"
-          },
-          "fhir_provider_id": "550e8400-e29b-41d4-a716-446655440000"
-        }
-      },
-      "response": {
-        "body": {
-          "success": true,
-          "message": "Workflow created successfully",
-          "workflow_id": "7a8b9c0d-1234-5678-abcd-ef9876543210",
-          "workflow": {
-            "id": "7a8b9c0d-1234-5678-abcd-ef9876543210",
-            "name": "Patient Data Mapping Workflow",
-            "workflow_instructions": "Given diagnosis data, find the patient and create a condition record linked to their encounter",
-            "sample_data": {
-              "patient_last_name": "Rippin",
-              "patient_first_name": "Clay",
-              "diagnosis_code": "I10",
-              "encounter_date": "2024-01-15"
-            },
-            "created_at": "2024-01-15T09:30:00Z",
-            "updated_at": "2024-01-15T09:30:00Z"
-          }
-        }
-      },
-      "render": {
-        "callTemplate": "client.workflows().create(CreateWorkflowRequest.builder(){{__body__}}.build())",
-        "params": [],
-        "body": {
-          "fieldSeparator": "",
-          "fields": [
-            {
-              "jsonKey": "name",
-              "fieldTemplate": ".name({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "workflow_instructions",
-              "fieldTemplate": ".workflowInstructions({{value}})",
-              "kind": "string",
-              "required": true
-            },
-            {
-              "jsonKey": "sample_data",
-              "fieldTemplate": ".sampleData({{value}})",
-              "kind": "object",
-              "required": true
-            },
-            {
-              "jsonKey": "fhir_provider_id",
-              "fieldTemplate": ".fhirProviderId({{value}})",
-              "kind": "object",
-              "required": true
-            },
-            {
-              "jsonKey": "dynamic_generation",
-              "fieldTemplate": ".dynamicGeneration({{value}})",
-              "kind": "boolean",
-              "required": false
-            },
-            {
-              "jsonKey": "verbose",
-              "fieldTemplate": ".verbose({{value}})",
-              "kind": "boolean",
               "required": false
             }
           ]
