@@ -21,8 +21,6 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = DocumentConfig.Builder.class)
 public final class DocumentConfig {
-    private final Optional<PageFilter> pageFilter;
-
     private final Optional<List<SplitClassification>> splitClassifications;
 
     private final Optional<ResourceReview> resourceReview;
@@ -30,26 +28,16 @@ public final class DocumentConfig {
     private final Map<String, Object> additionalProperties;
 
     private DocumentConfig(
-            Optional<PageFilter> pageFilter,
             Optional<List<SplitClassification>> splitClassifications,
             Optional<ResourceReview> resourceReview,
             Map<String, Object> additionalProperties) {
-        this.pageFilter = pageFilter;
         this.splitClassifications = splitClassifications;
         this.resourceReview = resourceReview;
         this.additionalProperties = additionalProperties;
     }
 
     /**
-     * @return Deprecated. Use split_classifications instead.
-     */
-    @JsonProperty("page_filter")
-    public Optional<PageFilter> getPageFilter() {
-        return pageFilter;
-    }
-
-    /**
-     * @return Optional per-page split classifications. Mutually exclusive with page_filter. This is a caller-defined list, not a fixed taxonomy: choose each classification id and write a natural-language description for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Pages matching operation=drop are removed before extraction. Pages matching operation=group are kept, and extracted resources attributed to those pages include the classification id in response metadata and FHIR meta.tag. Example ids such as clinical and admin are illustrative, not a fixed set.
+     * @return Optional per-page classifications, applied before extraction; accepts up to 20 classifications. When omitted or empty, every page with extracted text is used. This is a caller-defined list, not a fixed taxonomy: choose each classification id and describe the pages that belong to it. Each page is assigned at most one classification; a page that does not clearly match any, or that cannot be classified, is kept and left ungrouped. Pages matching a drop classification are removed before extraction. Pages matching a group classification are kept; on /lang2fhir/document/multi, resources extracted from them include the classification id in resources[].group and as a FHIR meta.tag. When every page is dropped, /lang2fhir/document returns 422 and /lang2fhir/document/multi returns success false with page_classifications. Example ids such as clinical and admin are illustrative, not a fixed set.
      */
     @JsonProperty("split_classifications")
     public Optional<List<SplitClassification>> getSplitClassifications() {
@@ -73,14 +61,12 @@ public final class DocumentConfig {
     }
 
     private boolean equalTo(DocumentConfig other) {
-        return pageFilter.equals(other.pageFilter)
-                && splitClassifications.equals(other.splitClassifications)
-                && resourceReview.equals(other.resourceReview);
+        return splitClassifications.equals(other.splitClassifications) && resourceReview.equals(other.resourceReview);
     }
 
     @java.lang.Override
     public int hashCode() {
-        return Objects.hash(this.pageFilter, this.splitClassifications, this.resourceReview);
+        return Objects.hash(this.splitClassifications, this.resourceReview);
     }
 
     @java.lang.Override
@@ -94,8 +80,6 @@ public final class DocumentConfig {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class Builder {
-        private Optional<PageFilter> pageFilter = Optional.empty();
-
         private Optional<List<SplitClassification>> splitClassifications = Optional.empty();
 
         private Optional<ResourceReview> resourceReview = Optional.empty();
@@ -105,28 +89,13 @@ public final class DocumentConfig {
         private Builder() {}
 
         public Builder from(DocumentConfig other) {
-            pageFilter(other.getPageFilter());
             splitClassifications(other.getSplitClassifications());
             resourceReview(other.getResourceReview());
             return this;
         }
 
         /**
-         * <p>Deprecated. Use split_classifications instead.</p>
-         */
-        @JsonSetter(value = "page_filter", nulls = Nulls.SKIP)
-        public Builder pageFilter(Optional<PageFilter> pageFilter) {
-            this.pageFilter = pageFilter;
-            return this;
-        }
-
-        public Builder pageFilter(PageFilter pageFilter) {
-            this.pageFilter = Optional.ofNullable(pageFilter);
-            return this;
-        }
-
-        /**
-         * <p>Optional per-page split classifications. Mutually exclusive with page_filter. This is a caller-defined list, not a fixed taxonomy: choose each classification id and write a natural-language description for the per-page classifier. For each page, the classifier assigns the best-matching classification or leaves the page ungrouped. Pages matching operation=drop are removed before extraction. Pages matching operation=group are kept, and extracted resources attributed to those pages include the classification id in response metadata and FHIR meta.tag. Example ids such as clinical and admin are illustrative, not a fixed set.</p>
+         * <p>Optional per-page classifications, applied before extraction; accepts up to 20 classifications. When omitted or empty, every page with extracted text is used. This is a caller-defined list, not a fixed taxonomy: choose each classification id and describe the pages that belong to it. Each page is assigned at most one classification; a page that does not clearly match any, or that cannot be classified, is kept and left ungrouped. Pages matching a drop classification are removed before extraction. Pages matching a group classification are kept; on /lang2fhir/document/multi, resources extracted from them include the classification id in resources[].group and as a FHIR meta.tag. When every page is dropped, /lang2fhir/document returns 422 and /lang2fhir/document/multi returns success false with page_classifications. Example ids such as clinical and admin are illustrative, not a fixed set.</p>
          */
         @JsonSetter(value = "split_classifications", nulls = Nulls.SKIP)
         public Builder splitClassifications(Optional<List<SplitClassification>> splitClassifications) {
@@ -151,14 +120,12 @@ public final class DocumentConfig {
         }
 
         public DocumentConfig build() {
-            return new DocumentConfig(pageFilter, splitClassifications, resourceReview, additionalProperties);
+            return new DocumentConfig(splitClassifications, resourceReview, additionalProperties);
         }
 
         @JsonAnySetter
         private void putAdditionalPropertyFromJson(String key, Object value) {
-            if (key.equalsIgnoreCase("page_filter")
-                    || key.equalsIgnoreCase("split_classifications")
-                    || key.equalsIgnoreCase("resource_review")) {
+            if (key.equalsIgnoreCase("split_classifications") || key.equalsIgnoreCase("resource_review")) {
                 return;
             }
             this.additionalProperties.put(key, value);

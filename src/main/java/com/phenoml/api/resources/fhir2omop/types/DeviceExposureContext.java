@@ -78,7 +78,7 @@ public final class DeviceExposureContext {
     }
 
     /**
-     * @return Applies to every linked exposure. default_absent_count accompanies quantity 1 when the source has no quantity, dose, rate, or numeric Observation result field. unsupported_supplied_evidence accompanies an omitted quantity and UNSUPPORTED diagnostics when such a field is supplied, including null or malformed values.
+     * @return Applies to every linked exposure. default_absent_count identifies the default quantity of 1. unsupported_supplied_evidence identifies omitted quantity due to supplied clinical quantity evidence, including null or malformed numeric fields. UNSUPPORTED diagnostics identify the source paths.
      */
     @JsonProperty("quantity_basis")
     public DeviceExposureContextQuantityBasis getQuantityBasis() {
@@ -141,7 +141,7 @@ public final class DeviceExposureContext {
 
     public interface QuantityBasisStage {
         /**
-         * <p>Applies to every linked exposure. default_absent_count accompanies quantity 1 when the source has no quantity, dose, rate, or numeric Observation result field. unsupported_supplied_evidence accompanies an omitted quantity and UNSUPPORTED diagnostics when such a field is supplied, including null or malformed values.</p>
+         * <p>Applies to every linked exposure. default_absent_count identifies the default quantity of 1. unsupported_supplied_evidence identifies omitted quantity due to supplied clinical quantity evidence, including null or malformed numeric fields. UNSUPPORTED diagnostics identify the source paths.</p>
          */
         _FinalStage quantityBasis(@NotNull DeviceExposureContextQuantityBasis quantityBasis);
     }
@@ -215,7 +215,7 @@ public final class DeviceExposureContext {
         }
 
         /**
-         * <p>Applies to every linked exposure. default_absent_count accompanies quantity 1 when the source has no quantity, dose, rate, or numeric Observation result field. unsupported_supplied_evidence accompanies an omitted quantity and UNSUPPORTED diagnostics when such a field is supplied, including null or malformed values.</p>
+         * <p>Applies to every linked exposure. default_absent_count identifies the default quantity of 1. unsupported_supplied_evidence identifies omitted quantity due to supplied clinical quantity evidence, including null or malformed numeric fields. UNSUPPORTED diagnostics identify the source paths.</p>
          * @return Reference to {@code this} so that method calls can be chained together.
          */
         @java.lang.Override

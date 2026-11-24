@@ -5,37 +5,31 @@ package com.phenoml.api;
 
 import com.phenoml.api.core.ClientOptions;
 import com.phenoml.api.core.Suppliers;
-import com.phenoml.api.resources.agent.AgentClient;
 import com.phenoml.api.resources.authtoken.AuthtokenClient;
-import com.phenoml.api.resources.cohort.CohortClient;
 import com.phenoml.api.resources.construe.ConstrueClient;
 import com.phenoml.api.resources.fhir.FhirClient;
 import com.phenoml.api.resources.fhir2omop.Fhir2OmopClient;
+import com.phenoml.api.resources.fhir2omopbatch.Fhir2OmopBatchClient;
 import com.phenoml.api.resources.fhirprovider.FhirProviderClient;
 import com.phenoml.api.resources.implementationguides.ImplementationGuidesClient;
 import com.phenoml.api.resources.lang2fhir.Lang2FhirClient;
 import com.phenoml.api.resources.lang2fhirbatch.Lang2FhirBatchClient;
 import com.phenoml.api.resources.profiles.ProfilesClient;
 import com.phenoml.api.resources.summary.SummaryClient;
-import com.phenoml.api.resources.tools.ToolsClient;
-import com.phenoml.api.resources.voice.VoiceClient;
-import com.phenoml.api.resources.workflows.WorkflowsClient;
 import java.util.function.Supplier;
 
 public class PhenomlClient implements AutoCloseable {
     protected final ClientOptions clientOptions;
 
-    protected final Supplier<AgentClient> agentClient;
-
     protected final Supplier<AuthtokenClient> authtokenClient;
-
-    protected final Supplier<CohortClient> cohortClient;
 
     protected final Supplier<ConstrueClient> construeClient;
 
     protected final Supplier<FhirClient> fhirClient;
 
     protected final Supplier<Fhir2OmopClient> fhir2OmopClient;
+
+    protected final Supplier<Fhir2OmopBatchClient> fhir2OmopBatchClient;
 
     protected final Supplier<FhirProviderClient> fhirProviderClient;
 
@@ -49,41 +43,23 @@ public class PhenomlClient implements AutoCloseable {
 
     protected final Supplier<SummaryClient> summaryClient;
 
-    protected final Supplier<ToolsClient> toolsClient;
-
-    protected final Supplier<VoiceClient> voiceClient;
-
-    protected final Supplier<WorkflowsClient> workflowsClient;
-
     public PhenomlClient(ClientOptions clientOptions) {
         this.clientOptions = clientOptions;
-        this.agentClient = Suppliers.memoize(() -> new AgentClient(clientOptions));
         this.authtokenClient = Suppliers.memoize(() -> new AuthtokenClient(clientOptions));
-        this.cohortClient = Suppliers.memoize(() -> new CohortClient(clientOptions));
         this.construeClient = Suppliers.memoize(() -> new ConstrueClient(clientOptions));
         this.fhirClient = Suppliers.memoize(() -> new FhirClient(clientOptions));
         this.fhir2OmopClient = Suppliers.memoize(() -> new Fhir2OmopClient(clientOptions));
+        this.fhir2OmopBatchClient = Suppliers.memoize(() -> new Fhir2OmopBatchClient(clientOptions));
         this.fhirProviderClient = Suppliers.memoize(() -> new FhirProviderClient(clientOptions));
         this.implementationGuidesClient = Suppliers.memoize(() -> new ImplementationGuidesClient(clientOptions));
         this.lang2FhirClient = Suppliers.memoize(() -> new Lang2FhirClient(clientOptions));
         this.lang2FhirBatchClient = Suppliers.memoize(() -> new Lang2FhirBatchClient(clientOptions));
         this.profilesClient = Suppliers.memoize(() -> new ProfilesClient(clientOptions));
         this.summaryClient = Suppliers.memoize(() -> new SummaryClient(clientOptions));
-        this.toolsClient = Suppliers.memoize(() -> new ToolsClient(clientOptions));
-        this.voiceClient = Suppliers.memoize(() -> new VoiceClient(clientOptions));
-        this.workflowsClient = Suppliers.memoize(() -> new WorkflowsClient(clientOptions));
-    }
-
-    public AgentClient agent() {
-        return this.agentClient.get();
     }
 
     public AuthtokenClient authtoken() {
         return this.authtokenClient.get();
-    }
-
-    public CohortClient cohort() {
-        return this.cohortClient.get();
     }
 
     public ConstrueClient construe() {
@@ -96,6 +72,10 @@ public class PhenomlClient implements AutoCloseable {
 
     public Fhir2OmopClient fhir2Omop() {
         return this.fhir2OmopClient.get();
+    }
+
+    public Fhir2OmopBatchClient fhir2OmopBatch() {
+        return this.fhir2OmopBatchClient.get();
     }
 
     public FhirProviderClient fhirProvider() {
@@ -120,18 +100,6 @@ public class PhenomlClient implements AutoCloseable {
 
     public SummaryClient summary() {
         return this.summaryClient.get();
-    }
-
-    public ToolsClient tools() {
-        return this.toolsClient.get();
-    }
-
-    public VoiceClient voice() {
-        return this.voiceClient.get();
-    }
-
-    public WorkflowsClient workflows() {
-        return this.workflowsClient.get();
     }
 
     /**
